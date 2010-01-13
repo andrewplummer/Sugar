@@ -8,6 +8,7 @@
   var module;
   var test;
   var assertions;
+  var time;
 
   QUnit = {
     log: function(result, message, environment){
@@ -38,6 +39,7 @@
     },
 
     moduleStart: function(name, environment){
+      if(!time) time = new Date();
       module = $('<ul/>').addClass('module').addClass(name);
     },
 
@@ -45,6 +47,24 @@
       if(!module) return;
       $('#'+underscore(environment)).append(module);
       module = null;
+    },
+
+    done: function(failures, total, environment){
+      var now = new Date();
+      var runtime = new Date() - time;
+      console.info(now.getMilliseconds());
+      console.info(time.getMilliseconds());
+      console.info(runtime);
+      time = null;
+      var stats = $('<p class="stats"/>');
+      var fail
+      stats.append($('<span class="failures">' + failures + ' ' + (failures == 1 ? 'failure' : 'failures') + '</span>'));
+      stats.append($('<span class="assertions">' + total + ' ' + (total == 1 ? 'assertion' : 'assertions') + '</span>'));
+      stats.append($('<span class="runtime">Completed in ' + runtime / 1000 + ' seconds</span>'));
+      $('#'+underscore(environment)).append(stats);
+      if(failures != 0){
+        $('#'+underscore(environment)).addClass('fail');
+      }
     }
 
   }
@@ -52,7 +72,7 @@
   registerEnvironment = function(name){
     environment = $('<li/>').addClass('environment');
     environment.attr('id', underscore(name));
-    environment.append('<h2>'+name+'</h2>');
+    environment.append('<h3>'+name+'</h3>');
     $('#suite .environments').append(environment);
   }
 
