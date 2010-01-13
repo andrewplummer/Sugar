@@ -1,0 +1,84 @@
+
+body {
+  font-family: sans-serif;
+}
+
+ul,li {
+  margin: 0;
+  padding: 0;
+}
+
+ul.module {
+  float: left;
+  margin-right: 5px;
+}
+
+ul.module li {
+  float: left;
+  list-style-type: none;
+}
+
+.test {
+  padding: 2px;
+  cursor: help;
+}
+
+.test h2 {
+  font-size: 12px;
+  margin: 0;
+}
+
+.pass {
+  background-color: #cfc;
+  color: #040;
+}
+
+.fail {
+  background-color: #fcc;
+  color: #400;
+}
+
+iframe {
+  display: none;
+}
+
+.assertions {
+  display: none;
+}
+
+#tooltip {
+  position: absolute;
+  -moz-border-radius:6px;
+  -webkit-border-radius:6px;
+  background-color:rgba(0, 0, 0, 0.8);
+  color:#FFFFFF;
+  font-size:12px;
+  padding:6px;
+  position:absolute;
+  display: none;
+}
+
+#tooltip h4 {
+  margin: 0 0 0.5em 0;
+  max-width: 200px;
+  border-bottom: 2px solid #666;
+  color: #aaa;
+  font-size: 10px;
+}
+
+#tooltip p {
+  margin: 0;
+  white-space: nowrap;
+}
+
+#tooltip .pass {
+  color: #5b5;
+  background-color: transparent;
+  font-weight: bold;
+}
+
+#tooltip .fail {
+  color: #d33;
+  background-color: transparent;
+  font-weight: bold;
+}
