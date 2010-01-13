@@ -20,10 +20,10 @@
     }
   }
 
-  registerEnvironment = function(name){
+  registerEnvironment = function(){
     if(window.parent && window.parent.registerEnvironment){
-      environment = name;
-      window.parent.registerEnvironment(name);
+      environment = arguments[0];
+      window.parent.registerEnvironment.apply(this, arguments);
     }
   }
 
