@@ -40,7 +40,7 @@
   }
 
   function hideTip(){
-  //  tooltip.hide();
+    tooltip.hide();
   }
 
 })();

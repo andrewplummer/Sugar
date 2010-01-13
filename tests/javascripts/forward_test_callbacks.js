@@ -14,7 +14,7 @@
     if(!window.parent || !window.parent.QUnit || !window.parent.QUnit[name]) return;
     QUnit[name] = function(){
       var args = [];
-      for(var i=0;i<arguments.length;i++){ args.push(arguments[i]); }
+      for(var i=0;i<arguments.length;i++){ if(typeof arguments[i] != 'undefined') args.push(arguments[i]); }
       args.push(environment);
       window.parent.QUnit[name].apply(this, args);
     }
