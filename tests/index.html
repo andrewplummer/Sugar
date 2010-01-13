@@ -12,7 +12,10 @@
   <div id="suite">
     <ul class="environments"></ul>
   </div>
-  <div id="tooltip">&nbsp;</div>
+  <div id="tooltip">
+    <div class="content"></div>
+  </div>
+  <div id="tooltip_arrow"></div>
   <div id="env"></div>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
   <script type="text/javascript" src="javascripts/tooltip.js"></script>
@@ -28,7 +31,6 @@
 
       $.each(environments, function(){
         var location = 'environments/' + this + '/test.html';
-        console.log(location);
         var iframe = $('<iframe src="'+location+'" />');
         env.append(iframe);
       });

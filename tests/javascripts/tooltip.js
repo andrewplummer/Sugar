@@ -1,6 +1,7 @@
 (function(){
 
   var tooltip;
+  var arrow;
   var tipInTimeout;
   var tipOutTimeout;
   var active;
@@ -8,6 +9,7 @@
 
   $(document).ready(function(){
     tooltip = $('#tooltip');
+    arrow = $('#tooltip_arrow');
   });
 
   $('[title]').live('mouseover', function(){
@@ -22,7 +24,7 @@
   });
 
   function showTip(){
-    tooltip.html(active.title);
+    $('.content', tooltip).html(active.title);
     tooltip.show();
     var pos = $(active).position();
     var end = pos.top - tooltip.height() - $(active).height();
@@ -33,14 +35,17 @@
       end = pos.top + $(active).height() + 10; 
       start = end + animatedDistance;
     }
-    pos.top = start;
-    pos.left = left;
-    tooltip.css(pos);
-    tooltip.animate({top: end}, 100, 'swing');
+    tooltip.css({top: start, left: left});
+    arrow.stop(false, true).hide();
+    tooltip.animate({top: end}, 100, 'swing', function(){
+      arrow.css({top: pos.top - 7, left: pos.left});
+      arrow.show(100);
+    });
   }
 
   function hideTip(){
-    tooltip.hide();
+    tooltip.stop().hide();
+    arrow.stop(false, true).hide();
   }
 
 })();
