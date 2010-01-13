@@ -52,9 +52,6 @@
     done: function(failures, total, environment){
       var now = new Date();
       var runtime = new Date() - time;
-      console.info(now.getMilliseconds());
-      console.info(time.getMilliseconds());
-      console.info(runtime);
       time = null;
       var stats = $('<p class="stats"/>');
       var fail

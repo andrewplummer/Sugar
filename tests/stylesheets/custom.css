@@ -10,6 +10,10 @@ ul,li,h1,h2,h3,h4,h5,h6,p {
   padding: 0;
 }
 
+ul,li {
+  list-style-type: none;
+}
+
 .header {
   margin-bottom: 1em;
 }
@@ -26,12 +30,18 @@ ul.environments > li {
   clear: left;
   overflow: hidden;
   margin-bottom: 10px;
-  padding: 5px;
+  padding: 10px;
   border: 1px solid #aaa;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   color: #333;
   background-color: #fff;
+}
+
+ul.environments > li.fail {
+  border-color: #caa;
+  background-color: #fff5f5;
+  color: #c33;
 }
 
 ul.module {
@@ -83,7 +93,8 @@ iframe {
   position: absolute;
   -moz-border-radius:6px;
   -webkit-border-radius:6px;
-  background-color:rgba(0, 0, 0, 0.8);
+  background-color: #000;
+  opacity: 0.8;
   color:#FFFFFF;
   font-size:12px;
   padding:6px;
@@ -114,4 +125,13 @@ iframe {
   color: #d33;
   background-color: transparent;
   font-weight: bold;
+}
+
+#tooltip_arrow {
+  display: none;
+  opacity: 0.8;
+  width: 13px;
+  height: 7px;
+  position: absolute;
+  background: url('../images/arrow.gif') no-repeat center center;
 }
