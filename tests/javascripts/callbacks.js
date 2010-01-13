@@ -1,7 +1,4 @@
 
-
-
-
 (function(){
 
   var suite = $('#suite');
@@ -66,10 +63,13 @@
 
   }
 
-  registerEnvironment = function(name){
+  registerEnvironment = function(name, subheader){
     environment = $('<li/>').addClass('environment');
     environment.attr('id', underscore(name));
     environment.append('<h3>'+name+'</h3>');
+    if(subheader){
+      $('h3', environment).append('<span class="subheader">('+subheader+')</span>');
+    }
     $('#suite .environments').append(environment);
   }
 

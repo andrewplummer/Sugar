@@ -44,6 +44,12 @@ ul.environments > li.fail {
   color: #c33;
 }
 
+ul.environments h3 .subheader {
+  font-size: 10px;
+  margin-left: 10px;
+  color: #bbb;
+}
+
 ul.module {
   float: left;
   margin-right: 5px;

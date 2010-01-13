@@ -38,7 +38,7 @@
     tooltip.css({top: start, left: left});
     arrow.stop(false, true).hide();
     tooltip.animate({top: end}, 100, 'swing', function(){
-      arrow.css({top: pos.top - 7, left: pos.left});
+      arrow.css({top: pos.top - 7, left: pos.left - 2});
       arrow.show(100);
     });
   }
