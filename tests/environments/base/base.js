@@ -1,9 +1,5 @@
 module("equiv");
 
-//test("go fuck youreself", function () {
-//    equals($('hey'), document.getElementById('hey'));
-//});
-
 test("Primitive types and constants", function () {
     equals(QUnit.equiv(null, null), true, "null");
     equals(QUnit.equiv(null, {}), false, "null");

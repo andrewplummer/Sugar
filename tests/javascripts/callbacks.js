@@ -10,7 +10,7 @@
   var assertions;
 
   QUnit = {
-    log: function(result, message){
+    log: function(result, message, environment){
       if(!result){
         assertions += '<p class="fail">'+message+'</p>';
       }
@@ -34,29 +34,26 @@
         title += assertions;
       }
 
-      console.info(module);
       module.append($('<li class="test '+css+'"></li>').attr('title', title).append(text));
     },
 
-    moduleStart: function(name){
-      console.info($('li', module));
-      module = $('<ul/>').addClass('module');
+    moduleStart: function(name, environment){
+      module = $('<ul/>').addClass('module').addClass(name);
     },
 
     moduleDone: function(name, failures, total, environment){
-      console.info($('li', module));
+      if(!module) return;
       $('#'+underscore(environment)).append(module);
+      module = null;
     }
 
   }
 
   registerEnvironment = function(name){
-    console.info(module);
     environment = $('<li/>').addClass('environment');
     environment.attr('id', underscore(name));
     environment.append('<h2>'+name+'</h2>');
     $('#suite .environments').append(environment);
-    console.info(module);
   }
 
   function underscore(s){
