@@ -16,3 +16,10 @@ test("Number", function () {
   equals((2).even(), true, 'Number#even');   // 2 is even
 
 });
+
+test("String", function () {
+
+  equals('HAHA'.capitalize(), 'Haha', 'String#capitalize');
+  equals('haha'.capitalize(), 'Haha', 'String#capitalize');
+
+});
