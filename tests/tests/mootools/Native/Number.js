@@ -6,6 +6,102 @@ License:
 	MIT-style license.
 */
 
+test('Number Methods', function () {
+
+	// Number.toInt
+
+  equals((111).toInt(), 111, 'should convert a number to an integer');
+  equals((111).toInt(2), 7, 'should convert a number depending on the radix provided');
+  //ECMA standard, radix is optional so if starts with 0x then parsed as hexadecimal
+  equals((0x16).toInt(10), 22, 'should convert a number depending on the radix provided');
+  //ECMA standard, radix is optional so if starts with 0 then parsed as octal
+  equals((016).toInt(10), 14, 'should convert a number depending on the radix provided');
+
+  // Number.toFloat
+
+    equals((1.00).toFloat(), 1, 'should convert a number to a float');
+    equals((1.12 - 0.12).toFloat(), 1, 'should convert a number to a float');
+    equals((0.0010).toFloat(), 0.001, 'should convert a number to a float');
+    equals((Number.MIN_VALUE).toFloat(), Number.MIN_VALUE, 'should convert a number to a float');
+
+  // Number.limit
+
+    equals((-1).limit(0, 1), 0, 'should limit a number within a range');
+    equals((3).limit(1, 2), 2, 'should limit a number within a range');
+
+    equals((2).limit(0,4), 2, 'should not limit a number if within the range');
+
+  // Number.round
+
+    equals((0.01).round(), 0, 'should round a number to the nearest whole number if units place is not specified');
+
+    equals((0.01).round(2), 0.01, 'should round a number according the units place specified');
+    equals((1).round(3), 1, 'should round a number according the units place specified');
+    equals((-1.01).round(), -1, 'should round a number according the units place specified');
+    equals((-1.01).round(2), -1.01, 'should round a number according the units place specified');
+    equals((111).round(-1), 110, 'should round a number according the units place specified');
+    equals((-111).round(-2), -100, 'should round a number according the units place specified');
+    equals((100).round(-5), 0, 'should round a number according the units place specified');
+
+  // Number.times
+
+    var found = 0;
+    (3).times(function(i){
+      found = i;
+    });
+
+    var found2 = -1;
+    (0).times(function(i){
+      found2 = i;
+    });
+
+    equals(found, 2, 'should call the function for the specified number of times');
+    equals(found2, -1, 'should call the function for the specified number of times');
+
+    var aTest = 'hi';
+    var found3 = false;
+    (1).times(function(i){
+      found3 = (this == aTest);
+    }, aTest);
+    ok(found3, 'should bind and call the function for the specified number of times');
+
+
+});
+
+test('Number Math Methods', function (math) {
+
+  (function(math){
+    var examples = {};
+    new Hash(math).each(function(value, key){
+      var example = {};
+      var b = value.test[1];
+      equals(value.test[0][key](b), Math[key].apply(null, value.test), 'should return the ' + value.title + ' value of the number' + (b ? ' and the passed number' : ''));
+    });
+  })({
+    abs:   { test: [-1], title: 'absolute' },
+    acos:  { test: [0], title: 'arc cosine' },
+    asin:  { test: [0.5], title: 'arc sine' },
+    atan:  { test: [0.5], title: 'arc tangent' },
+    atan2: { test: [0.1, 0.5], title: 'arc tangent' },
+    ceil:  { test: [0.6], title: 'number closest to and not less than the' },
+    cos:   { test: [30], title: 'cosine' },
+    exp:   { test: [2], title: 'exponent' },
+    floor: { test: [2.4], title: 'integer closet to and not greater than' },
+    log:   { test: [2], title: 'log' },
+    max:   { test: [5, 3], title: 'maximum' },
+    min:   { test: [-4, 2], title: 'minimum' },
+    pow:   { test: [2, 2], title: 'power' },
+    sin:   { test: [0.5], title: 'sine' },
+    sqrt:  { test: [4], title: 'square root' },
+    tan:   { test: [0.3], title: 'tangent' }
+  });
+
+});
+
+/*
+ * Leaving original specs in here for reference.
+ *
+
 describe("Number Methods", {
 
 	// Number.toInt
@@ -112,3 +208,4 @@ describe("Number Methods", {
 	sqrt: { test: [4], title: 'square root' },
 	tan: { test: [0.3], title: 'tangent' }
 });
+*/
