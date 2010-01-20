@@ -124,7 +124,10 @@ var QUnit = {
 				callback.call(testEnvironment);
 			} catch(e) {
 				fail("Test " + name + " died, exception and test follows", e, callback);
-				QUnit.ok( false, "Died on test #" + (config.assertions.length + 1) + ": " + e.message );
+        var message = "Died on test " + (config.assertions.length + 1);
+        if(e.lineNumber) message += '#' + e.lineNumber;
+        message += ': ' + e.message;
+				QUnit.ok( false, message );
 				// else next test will carry the responsibility
 				saveGlobal();
 
@@ -305,6 +308,10 @@ var QUnit = {
 		push(expected !== actual, actual, expected, message);
 	},
 	
+	equal: function(actual, expected, message) {
+		push(expected == actual, actual, expected, message);
+	},
+
 	start: function() {
 		// A slight delay, to avoid any current callbacks
 		if ( window.setTimeout ) {
@@ -940,7 +947,7 @@ QUnit.jsDump = (function() {
 			return type;
 		},
 		separator:function() {
-			return this.multiline ?	this.HTML ? '<br />' : '\n' : this.HTML ? '&nbsp;' : ' ';
+			return this.multiline ?	this.HTML ? '' : '\n' : this.HTML ? '&nbsp;' : ' ';
 		},
 		indent:function( extra ) {// extra can be a number, shortcut for increasing-calling-decreasing
 			if ( !this.multiline )

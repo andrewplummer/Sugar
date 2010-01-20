@@ -25,5 +25,3 @@ test("String", function () {
 
 });
 
-function equalWithExceptions(){
-}
