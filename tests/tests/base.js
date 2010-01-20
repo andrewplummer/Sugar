@@ -1365,3 +1365,24 @@ test("Test that must be done at the end because they extend some primitive's pro
     equals(QUnit.equiv(function () {}, re), false, "Same conversely, but ensures that function and regexp are distinct because their constructor are different");
 });
 
+test("Native js for/in loops should not break", function() {
+
+  var obj = {
+    foo: 'bar',
+    num: 3,
+    d: new Date()
+  }
+
+  var count = 0;
+  var result = [];
+  for(var x in obj){
+    result[x] = obj[x];
+    count++;
+  }
+
+  equals(count, 3);
+  equals(result['foo'], obj['foo']);
+  equals(result['num'], obj['num']);
+  equals(result['d'], obj['d']);
+});
+
