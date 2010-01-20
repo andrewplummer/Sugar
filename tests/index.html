@@ -9,6 +9,7 @@
     <h1 id="qunit-header">QUnit Test Suite</h1>
     <h2 id="qunit-useragent"></h2>
   </div>
+  <h3 id="sugar_override">Warning: Override mode active!</h3>
   <div id="suite">
     <ul class="environments"></ul>
   </div>
@@ -29,8 +30,8 @@
 
       $('#qunit-useragent').text(navigator.userAgent);
 
-      $.each(environments, function(){
-        var location = 'environments/' + this + '/test.html';
+      $.each(environments, function(i, environment){
+        var location = 'environments/' + environment + '/test.html';
         var iframe = $('<iframe src="'+location+'" />');
         env.append(iframe);
       });

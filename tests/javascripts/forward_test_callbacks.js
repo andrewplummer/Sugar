@@ -1,7 +1,8 @@
 
+var environment;
+
 (function(){
 
-  var environment;
 
   forwardCallback('log');
   forwardCallback('testStart');
@@ -24,6 +25,7 @@
     if(window.parent && window.parent.registerEnvironment){
       environment = arguments[0];
       window.parent.registerEnvironment.apply(this, arguments);
+      window.parent.sugarOverride = ''.sugarOverride;
     }
   }
 

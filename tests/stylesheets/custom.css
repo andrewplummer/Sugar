@@ -141,3 +141,17 @@ iframe {
   position: absolute;
   background: url('../images/arrow.gif') no-repeat center center;
 }
+
+#sugar_override {
+  display: hidden;
+  background: url('../images/warning.gif') no-repeat 5px center;
+  font-size: 12px;
+  color: #c60;
+  background-color: #fea;
+  margin: 10px 0;
+  padding: 5px 10px 5px 25px;
+  border: 1px solid #eca;
+  -moz-border-radius:6px;
+  -webkit-border-radius:6px;
+  float: left;
+}

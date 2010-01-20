@@ -19,7 +19,11 @@ test("Number", function () {
 
 test("String", function () {
 
+  console.info(environment);
   equals('HAHA'.capitalize(), 'Haha', 'String#capitalize');
   equals('haha'.capitalize(), 'Haha', 'String#capitalize');
 
 });
+
+function equalWithExceptions(){
+}
