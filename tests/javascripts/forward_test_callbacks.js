@@ -33,6 +33,12 @@ var override;
 
 })();
 
-function equalWithException(actual, expected, exception, message){
-  equals(actual, override ? exception : expected, message);
+function equalsWithException(actual, expected, exception, message){
+  if(exception.override && override){
+    equals(actual, exception.override, message);
+  } else if(exception.environment == environment && !override){
+    equals(actual, exception.result, message);
+  } else {
+    equals(actual, expected, message);
+  }
 }

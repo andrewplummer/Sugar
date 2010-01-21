@@ -13,8 +13,8 @@ test("String Methods", function() {
       //equals('i like cookies'.capitalize(), 'I Like Cookies', 'should capitalize each word');
       //equals('I Like cOOKIES'.capitalize(), 'I Like COOKIES', 'should capitalize each word');
 
-      equalWithException('i like cookies'.capitalize(), 'I Like Cookies', 'I like cookies', 'should capitalize each word');
-      equalWithException('I Like cOOKIES'.capitalize(), 'I Like COOKIES', 'I like cookies', 'should capitalize each word');
+      equalsWithException('i like cookies'.capitalize(), 'I Like Cookies', { override: 'I like cookies' }, 'should capitalize each word');
+      equalsWithException('I Like cOOKIES'.capitalize(), 'I Like COOKIES', { override: 'I like cookies' }, 'should capitalize each word');
 
     // String.camelCase
 
