@@ -10,65 +10,52 @@ module('MooTools Element');
 
 test('Element constructor', function() {
 
-  "should return an Element with the correct tag": function(){
     var element = new Element('div');
     equal($type(element)).should_be('element');
-    ok($defined(element.addEvent)).should_be_true();
+    ok($defined(element.addEvent), "should return an Element with the correct tag");
     equal(element.tagName.toLowerCase()).should_be('div');
-  },
 
-  'should return an Element with various attributes': function(){
     var element = new Element('div', { 'id': 'divID', 'title': 'divTitle' });
-    equal(element.id).should_be('divID');
-    equal(element.title).should_be('divTitle');
-  },
+    equal(element.id, 'divID', 'should return an Element with the correct tag');
+    equal(element.title, 'divTitle', 'should return an Element with the correct tag');
 
-  'should return an Element with for attribute': function(){
     var label = new Element('label', { 'for': 'myId' });
-    equal(label.htmlFor).should_be('myId');
-  },
+    equal(label.htmlFor, 'myId', 'should return an Element with for attribute');
 
-  'should return an Element with class attribute': function(){
     var div1 = new Element('div', { 'class': 'class' });
     var div2 = new Element('div', { 'class': 'class1 class2 class3' });
 
-    equal(div1.className).should_be('class');
-    equal(div2.className).should_be('class1 class2 class3');
-  },
+    equal(div1.className, 'class', 'should return an Element with class attribute');
+    equal(div2.className, 'class1 class2 class3', 'should return an Element with class attribute');
 
-  'should return input Elements with name and type attributes': function(){
     var username = new Element('input', { type: 'text', name: 'username', value: 'username' });
     var password = new Element('input', { type: 'password', name: 'password', value: 'password' });
 
-    equal(username.type).should_be('text');
-    equal(username.name).should_be('username');
-    equal(username.value).should_be('username');
+    equal(username.type, 'text', 'should return input Elements with name and type attributes');
+    equal(username.name, 'username', 'should return input Elements with name and type attributes');
+    equal(username.value, 'username', 'should return input Elements with name and type attributes');
 
-    equal(password.type).should_be('password');
-    equal(password.name).should_be('password');
-    equal(password.value).should_be('password');
-  },
+    equal(password.type, 'password', 'should return input Elements with name and type attributes');
+    equal(password.name, 'password', 'should return input Elements with name and type attributes');
+    equal(password.value, 'password', 'should return input Elements with name and type attributes');
 
-  'should return input Elements that are checked': function(){
     var check1 = new Element('input', { type: 'checkbox' });
     var check2 = new Element('input', { type: 'checkbox', checked: true });
     var check3 = new Element('input', { type: 'checkbox', checked: 'checked' });
 
-    equal(check1.checked).should_be_false();
-    ok(check2.checked).should_be_true();
-    ok(check2.checked).should_be_true();
-  },
+    equal(check1.checked, false, 'should return input Elements that are checked');
+    ok(check2.checked, false, 'should return input Elements that are checked')
+    ok(check2.checked, false, 'should return input Elements that are checked');
 
-  "should return a select Element that retains it's selected options": function(){
     var div = new Element('div', { 'html':
-    '<select multiple="multiple" name="select[]">' +
-    '<option value="" name="none">--</option>' +
-    '<option value="volvo" name="volvo">Volvo</option>' +
-    '<option value="saab" name="saab" selected="selected">Saab</option>' +
-    '<option value="opel" name="opel" selected="selected">Opel</option>' +
-    '<option value="bmw" name="bmw">BMW</option>' +
-    '</select>'
-  });
+      '<select multiple="multiple" name="select[]">' +
+      '<option value="" name="none">--</option>' +
+      '<option value="volvo" name="volvo">Volvo</option>' +
+      '<option value="saab" name="saab" selected="selected">Saab</option>' +
+      '<option value="opel" name="opel" selected="selected">Opel</option>' +
+      '<option value="bmw" name="bmw">BMW</option>' +
+      '</select>'
+    });
 
   var select1 = div.getFirst();
   var select2 = new Element('select', { name: 'select[]', multiple: true }).adopt(
@@ -76,16 +63,15 @@ test('Element constructor', function() {
     new Element('option', { name: 'volvo', value: 'volvo', html: 'Volvo' }),
     new Element('option', { name: 'saab', value: 'saab', html: 'Saab', selected: true }),
     new Element('option', { name: 'opel', value: 'opel', html: 'Opel', selected: 'selected' }),
-  new Element('option', { name: 'bmw', value: 'bmw', html: 'BMW' })
-);
+    new Element('option', { name: 'bmw', value: 'bmw', html: 'BMW' })
+  );
 
-ok(select1.multiple).should_be_true();
-ok(select2.multiple).should_be_true();
+  ok(select1.multiple, 'should return input Elements that are checked');
+  ok(select2.multiple, 'should return input Elements that are checked');
 
-equal(select1.name).should_be(select2.name);
-equal(select1.options.length).should_be(select2.options.length);
-equal(select1.toQueryString()).should_be(select2.toQueryString());
-  }
+  equal(select1.name, select2.name, 'should return input Elements that are checked');
+  equal(select1.options.length, select2.options.length, 'should return input Elements that are checked');
+  equal(select1.toQueryString(), select2.toQueryString(), 'should return input Elements that are checked');
 
 });
 
