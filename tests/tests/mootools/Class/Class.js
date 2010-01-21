@@ -6,49 +6,272 @@ License:
 	MIT-style license.
 */
 
+module('MooTools Class');
+
 (function(){
 
-var Animal = new Class({
+  var Animal = new Class({
 
-	initialized: false,
+    initialized: false,
 
-	initialize: function(name, sound){
-		this.name = name;
-		this.sound = sound || '';
-		this.initialized = true;
-	},
+    initialize: function(name, sound){
+      this.name = name;
+      this.sound = sound || '';
+      this.initialized = true;
+    },
 
-	eat: function(){
-		return 'animal:eat:' + this.name;
-	},
+    eat: function(){
+      return 'animal:eat:' + this.name;
+    },
 
-	say: function(){
-		return 'animal:say:' + this.name;
-	}
+    say: function(){
+      return 'animal:say:' + this.name;
+    }
 
-});
+  });
 
-var Cat = new Class({
+  var Cat = new Class({
 
-	Extends: Animal,
+    Extends: Animal,
 
-	ferocious: false,
+    ferocious: false,
 
-	initialize: function(name, sound){
-		this.parent(name, sound || 'miao');
-	},
+    initialize: function(name, sound){
+      this.parent(name, sound || 'miao');
+    },
 
-	eat: function(){
-		return 'cat:eat:' + this.name;
-	},
+    eat: function(){
+      return 'cat:eat:' + this.name;
+    },
 
-	play: function(){
-		return 'cat:play:' + this.name;
-	}
+    play: function(){
+      return 'cat:play:' + this.name;
+    }
 
-});
+  });
 
-var Lion = new Class({
+  var Lion = new Class({
+
+    Extends: Cat,
+
+    ferocious: true,
+
+    initialize: function(name){
+      this.parent(name, 'rarr');
+    },
+
+    eat: function(){
+      return 'lion:eat:' + this.name;
+    }
+
+  });
+
+  var Actions = new Class({
+
+    jump: function(){
+      return 'actions:jump:' + this.name;
+    },
+
+    sleep: function(){
+      return 'actions:sleep:' + this.name;
+    }
+
+  });
+
+  var Attributes = new Class({
+
+    color: function(){
+      return 'attributes:color:' + this.name;
+    },
+
+    size: function(){
+      return 'attributes:size:' + this.name;
+    }
+
+  });
+
+
+  test('Class creation', function() {
+
+    equals($type(Animal), 'class', "Classes should be of type 'class'");
+    ok(Class.type(Animal), 'class', "Classes should be of type 'class'");
+
+    var animal = new Animal('lamina');
+    equals(animal.name, 'lamina', "should call initialize upon instantiation");
+    ok(animal.initialized, "should call initialize upon instantiation");
+    equals(animal.say(), 'animal:say:lamina', "should call initialize upon instantiation");
+
+    var cat = new Cat('fluffy');
+    equals(cat.name, 'fluffy', "should use 'Extend' property to extend another class");
+    equals(cat.sound, 'miao', "should use 'Extend' property to extend another class");
+    equals(cat.ferocious, false, "should use 'Extend' property to extend another class");
+    equals(cat.say(), 'animal:say:fluffy', "should use 'Extend' property to extend another class");
+    equals(cat.eat(), 'cat:eat:fluffy', "should use 'Extend' property to extend another class");
+    equals(cat.play(), 'cat:play:fluffy', "should use 'Extend' property to extend another class");
+
+    var leo = new Lion('leo');
+    equals(leo.name, 'leo', "should use 'Extend' property to extend an extended class");
+    equals(leo.sound, 'rarr', "should use 'Extend' property to extend an extended class");
+    ok(leo.ferocious, "should use 'Extend' property to extend an extended class");
+    equals(leo.say(), 'animal:say:leo', "should use 'Extend' property to extend an extended class");
+    equals(leo.eat(), 'lion:eat:leo', "should use 'Extend' property to extend an extended class");
+    equals(leo.play(), 'cat:play:leo', "should use 'Extend' property to extend an extended class");
+
+    var Dog = new Class({
+      Implements: Animal
+    });
+
+    var rover = new Dog('rover');
+    equals(rover.name, 'rover', "should use 'Implements' property to implement another class");
+    ok(rover.initialized, "should use 'Implements' property to implement another class");
+    equals(rover.eat(), 'animal:eat:rover', "should use 'Implements' property to implement another class");
+
+    var Dog = new Class({
+      Extends: Animal,
+      Implements: [Actions, Attributes]
+    });
+
+    var rover = new Dog('rover');
+    ok(rover.initialized, "should use 'Implements' property to implement any number of classes");
+    equals(rover.eat(), 'animal:eat:rover', "should use 'Implements' property to implement any number of classes");
+    equals(rover.say(), 'animal:say:rover', "should use 'Implements' property to implement any number of classes");
+    equals(rover.jump(), 'actions:jump:rover', "should use 'Implements' property to implement any number of classes");
+    equals(rover.sleep(), 'actions:sleep:rover', "should use 'Implements' property to implement any number of classes");
+    equals(rover.size(), 'attributes:size:rover', "should use 'Implements' property to implement any number of classes");
+    equals(rover.color(), 'attributes:color:rover', "should use 'Implements' property to implement any number of classes");
+
+    var Dog = new Class({
+      Extends: Animal
+    });
+
+    var rover = new Dog('rover');
+
+    Dog.implement({
+      jump: function(){
+        return 'dog:jump:' + this.name;
+      }
+    });
+
+    var spot = new Dog('spot');
+
+    equals(spot.jump(), 'dog:jump:spot', "should alter the Class's prototype when implementing new methods");
+    equals(rover.jump(), 'dog:jump:rover', "should alter the Class's prototype when implementing new methods");
+
+    var Dog = new Class({
+      Extends: Animal
+    });
+
+    var rover = new Dog('rover');
+
+    Animal.implement({
+      jump: function(){
+        return 'animal:jump:' + this.name;
+      }
+    });
+
+    var spot = new Dog('spot');
+
+    equals(spot.jump(), 'animal:jump:spot', "should alter the Class's prototype when implementing new methods into the super class");
+    equals(rover.jump(), 'animal:jump:rover', "should alter the Class's prototype when implementing new methods into the super class");
+
+    var Dog = new Class({
+      Extends: Animal
+    });
+
+    var rover = new Dog('rover');
+    equals(rover.say(), 'animal:say:rover', "should alter the Class's prototype when overwriting methods in the super class");
+
+    Animal.implement({
+      say: function(){
+        return 'NEW:animal:say:' + this.name;
+      }
+    });
+
+    var spot = new Dog('spot');
+
+    equals(spot.say(), 'NEW:animal:say:spot', "should alter the Class's prototype when overwriting methods in the super class");
+    equals(rover.say(), 'NEW:animal:say:rover', "should alter the Class's prototype when overwriting methods in the super class");
+
+  });
+
+  test('Class::implement', function() {
+
+    var Dog = new Class({
+      Extends: Animal
+    });
+
+    Dog.implement(new Actions);
+
+    var rover = new Dog('rover');
+
+    equals(rover.name, 'rover', 'should implement an object');
+    equals(rover.jump(), 'actions:jump:rover', 'should implement an object');
+    equals(rover.sleep(), 'actions:sleep:rover', 'should implement an object');
+
+    var Dog = new Class({
+      Extends: Animal
+    });
+
+    Dog.implement(new Actions).implement(new Attributes);
+
+    var rover = new Dog('rover');
+
+    equals(rover.name, 'rover', 'should implement any number of objects');
+    equals(rover.jump(), 'actions:jump:rover', 'should implement any number of objects');
+    equals(rover.sleep(), 'actions:sleep:rover', 'should implement any number of objects');
+    equals(rover.size(), 'attributes:size:rover', 'should implement any number of objects');
+    equals(rover.color(), 'attributes:color:rover', 'should implement any number of objects');
+
+  });
+
+})();
+
+
+/*
+ *
+ (function(){
+
+   var Animal = new Class({
+
+     initialized: false,
+
+     initialize: function(name, sound){
+       this.name = name;
+       this.sound = sound || '';
+       this.initialized = true;
+     },
+
+     eat: function(){
+       return 'animal:eat:' + this.name;
+     },
+
+     say: function(){
+       return 'animal:say:' + this.name;
+     }
+
+   });
+
+   var Cat = new Class({
+
+     Extends: Animal,
+
+     ferocious: false,
+
+     initialize: function(name, sound){
+       this.parent(name, sound || 'miao');
+     },
+
+     eat: function(){
+       return 'cat:eat:' + this.name;
+     },
+
+     play: function(){
+       return 'cat:play:' + this.name;
+     }
+
+   });
+
+   var Lion = new Class({
 
 	Extends: Cat,
 
@@ -231,7 +454,7 @@ describe('Class creation', {
 
 		value_of(spot.say()).should_be('NEW:animal:say:spot');
 		value_of(rover.say()).should_be('NEW:animal:say:rover');
-	}*/
+	}
 
 });
 
@@ -270,3 +493,5 @@ describe('Class::implement', {
 });
 
 })();
+
+*/
