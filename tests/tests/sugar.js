@@ -20,8 +20,7 @@ test("Number", function () {
 test("String", function () {
 
   console.info(environment);
-  equals('HAHA'.capitalize(), 'Haha', 'String#capitalize');
-  equals('haha'.capitalize(), 'Haha', 'String#capitalize');
+  equalsWithException('HAHA'.capitalize(), 'Haha', { environment: 'MooTools 1.2.4', result: 'HAHA' }, 'String#capitalize');
 
 });
 

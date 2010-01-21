@@ -83,8 +83,3 @@
   }
 
 })();
-
-function equalWithExceptions(){
-console.info('hmmmkay');
-alert("HUI???");
-}
