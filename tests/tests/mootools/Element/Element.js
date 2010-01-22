@@ -780,8 +780,8 @@ test('Element.inject', function() {
 
             ok(!input1.id, 'should clone a text input and retain value');
             equal(input2.id, 'input2', 'should clone a text input and retain value');
-            value_of(input1.value, 'Some Value', 'should clone a text input and retain value');
-            value_of(input2.value, '', 'should clone a text input and retain value');
+            equals(input1.value, 'Some Value', 'should clone a text input and retain value');
+            equals(input2.value, '', 'should clone a text input and retain value');
 
 
 
@@ -793,10 +793,10 @@ test('Element.inject', function() {
             var textarea1 = textareas[0].clone();
             var textarea2 = textareas[1].clone(false, true);
 
-            value_of(!textarea1.id, 'should clone a textarea and retain value');
-            value_of(textarea2.id, 'textarea2', 'should clone a textarea and retain value');
-            value_of(textarea1.value, '', 'should clone a textarea and retain value');
-            value_of(textarea2.value, 'Some-Text-Here', 'should clone a textarea and retain value');
+            ok(!textarea1.id, 'should clone a textarea and retain value');
+            equal(textarea2.id, 'textarea2', 'should clone a textarea and retain value');
+            equal(textarea1.value, '', 'should clone a textarea and retain value');
+            equal(textarea2.value, 'Some-Text-Here', 'should clone a textarea and retain value');
 
 
 
@@ -808,10 +808,10 @@ test('Element.inject', function() {
             var check1 = checks[0].clone();
             var check2 = checks[1].clone(false, true);
 
-            value_of(!check1.id, 'should clone a checkbox and retain checked state');
-            value_of(check2.id, 'check2', 'should clone a checkbox and retain checked state');
-            value_of(check1.checked, false, 'should clone a checkbox and retain checked state');
-            value_of(check2.checked, 'should clone a checkbox and retain checked state');
+            ok(!check1.id, 'should clone a checkbox and retain checked state');
+            equal(check2.id, 'check2', 'should clone a checkbox and retain checked state');
+            equal(check1.checked, false, 'should clone a checkbox and retain checked state');
+            equal(check2.checked, 'should clone a checkbox and retain checked state');
 
 
 
@@ -835,11 +835,11 @@ test('Element.inject', function() {
             var select1 = selects[0].clone(true);
             var select2 = selects[1].clone(true, true);
 
-            value_of(!select1.id, 'should clone a select and retain selected state');
-            value_of(select2.id, 'select2', 'should clone a select and retain selected state');
-            value_of(select1.selectedIndex, 3, 'should clone a select and retain selected state');
-            value_of(select2.options[3].selected, 'should clone a select and retain selected state');
-            value_of(select2.options[4].selected, 'should clone a select and retain selected state');
+            ok(!select1.id, 'should clone a select and retain selected state');
+            equal(select2.id, 'select2', 'should clone a select and retain selected state');
+            equal(select1.selectedIndex, 3, 'should clone a select and retain selected state');
+            ok(select2.options[3].selected, 'should clone a select and retain selected state');
+            ok(select2.options[4].selected, 'should clone a select and retain selected state');
 
           'should clone custom attributes': function(){
             var div = new Element('div');
@@ -847,8 +847,8 @@ test('Element.inject', function() {
             div.setAttribute('bar', ['BAR']);
             var clone = div.clone();
 
-            value_of(clone.getAttribute('foo')).should_be('FOO');
-            value_of(clone.getAttribute('bar')).should_be(['BAR']);
+            equal(clone.getAttribute('foo')).should_be('FOO');
+            equal(clone.getAttribute('bar')).should_be(['BAR']);
           }
 
         });
@@ -857,51 +857,51 @@ test('Element.inject', function() {
 
           'should return true if the Element has the given class': function(){
             var div = new Element('div', {'class': 'header bold'});
-            value_of(div.hasClass('header')).should_be_true();
-            value_of(div.hasClass('bold')).should_be_true();
-            value_of(div.hasClass('random')).should_be_false();
+            ok(div.hasClass('header'), 'should return true if the Element has the given class');
+            ok(div.hasClass('bold'), 'should return true if the Element has the given class');
+            equals(div.hasClass('random'), false, 'should return true if the Element has the given class');
           },
 
           'should add the class to the Element': function(){
             var div = new Element('div');
             div.addClass('myclass');
-            value_of(div.hasClass('myclass')).should_be_true();
+            ok(div.hasClass('myclass')).should_be_true();
           },
 
           'should append classes to the Element': function(){
             var div = new Element('div', {'class': 'myclass'});
             div.addClass('aclass');
-            value_of(div.hasClass('aclass')).should_be_true();
+            ok(div.hasClass('aclass')).should_be_true();
           },
 
           'should remove the class in the Element': function(){
             var div = new Element('div', {'class': 'myclass'});
             div.removeClass('myclass');
-            value_of(div.hasClass('myclass')).should_be_false();
+            equal(div.hasClass('myclass')).should_be_false();
           },
 
           'should only remove the specific class': function(){
             var div = new Element('div', {'class': 'myclass aclass'});
             div.removeClass('myclass');
-            value_of(div.hasClass('myclass')).should_be_false();
+            equal(div.hasClass('myclass')).should_be_false();
           },
 
           'should not remove any class if the class is not found': function(){
             var div = new Element('div', {'class': 'myclass'});
             div.removeClass('extra');
-            value_of(div.hasClass('myclass')).should_be_true();
+            ok(div.hasClass('myclass')).should_be_true();
           },
 
           'should add the class if the Element does not have the class': function(){
             var div = new Element('div');
             div.toggleClass('myclass');
-            value_of(div.hasClass('myclass')).should_be_true();
+            ok(div.hasClass('myclass')).should_be_true();
           },
 
           'should remove the class if the Element does have the class': function(){
             var div = new Element('div', {'class': 'myclass'});
             div.toggleClass('myclass');
-            value_of(div.hasClass('myclass')).should_be_false();
+            equal(div.hasClass('myclass')).should_be_false();
           }
 
         });
@@ -913,7 +913,7 @@ test('Element.inject', function() {
             (5).times(function(i){ children[i] = new Element('p'); });
             var div = new Element('div').adopt(children);
             div.empty();
-            value_of(div.get('html')).should_be('');
+            equal(div.get('html')).should_be('');
           }
 
         });
@@ -923,8 +923,8 @@ test('Element.inject', function() {
           'should obliterate the Element from the universe': function(){
             var div = new Element('div', {id: 'destroy-test'}).inject(document.body);
             var result = div.destroy();
-            value_of(result).should_be_null();
-            value_of($('destroy-test')).should_be_null();
+            equal(result).should_be_null();
+            equal($('destroy-test')).should_be_null();
           }
 
         });
@@ -933,7 +933,7 @@ test('Element.inject', function() {
 
           'should return an empty string for an Element that does not have form Elements': function(){
             var div = new Element('div');
-            value_of(div.toQueryString()).should_be('');
+            equal(div.toQueryString()).should_be('');
           },
 
           'should ignore any form Elements that do not have a name, disabled, or whose value is false': function(){
@@ -945,7 +945,7 @@ test('Element.inject', function() {
               ),
             new Element('textarea', { name: 'textarea', disabled: true, value: 'textarea-value' })
           );
-          value_of(form.toQueryString()).should_be('');
+          equal(form.toQueryString()).should_be('');
         },
 
         "should return a query string from the Element's form Elements": function(){
@@ -960,7 +960,7 @@ test('Element.inject', function() {
           '</select>' +
           '<textarea name="textarea">textarea-value</textarea>'
         });
-        value_of(form.toQueryString()).should_be('input=checked&select[]=saab&select[]=opel&textarea=textarea-value');
+        equal(form.toQueryString()).should_be('input=checked&select[]=saab&select[]=opel&textarea=textarea-value');
       },
 
       "should return a query string containing even empty values, single select must have a selected option": function() {
@@ -975,8 +975,8 @@ test('Element.inject', function() {
           ),
         new Element('textarea', {name: 'textarea', value: ''})
       );
-      value_of(form.toQueryString()).should_be('input=&select[]=&textarea=');
-      value_of(form.getElementsByTagName('select')[0].selectedIndex).should_be(0);
+      equal(form.toQueryString()).should_be('input=&select[]=&textarea=');
+      equal(form.getElementsByTagName('select')[0].selectedIndex).should_be(0);
     },
 
     "should return a query string containing even empty values, multiple select may have no selected options": function() {
@@ -991,7 +991,7 @@ test('Element.inject', function() {
       '</select>' +
       '<textarea name="textarea"></textarea>'
     });
-    value_of(form.toQueryString()).should_be('input=&textarea=');
+    equal(form.toQueryString()).should_be('input=&textarea=');
   },
 
   "should return a query string ignoring submit, reset and file form Elements": function(){
@@ -1002,7 +1002,7 @@ test('Element.inject', function() {
     '<input type="submit" name="go" value="Go" />' +
     '<input type="reset" name="cancel" value="Reset" />'
   });
-  value_of(form.toQueryString()).should_be('input=checked&textarea=textarea-value');
+  equal(form.toQueryString()).should_be('input=checked&textarea=textarea-value');
 }
 
 });
@@ -1012,19 +1012,19 @@ test('Element.getProperty', function() {
   'should getProperty from an Element': function(){
     var anchor1 = new Element('a');
     anchor1.href = 'http://mootools.net';
-    value_of(anchor1.getProperty('href')).should_be('http://mootools.net');
+    equal(anchor1.getProperty('href')).should_be('http://mootools.net');
 
     var anchor2 = new Element('a');
     anchor2.href = '#someLink';
-    value_of(anchor2.getProperty('href')).should_be('#someLink');
+    equal(anchor2.getProperty('href')).should_be('#someLink');
   },
 
   'should getProperty type of an input Element': function(){
     var input1 = new Element('input', {type: 'text'});
-    value_of(input1.getProperty('type')).should_be('text');
+    equal(input1.getProperty('type')).should_be('text');
 
     var input2 = new Element('input', {type: 'checkbox'});
-    value_of(input2.getProperty('type')).should_be('checkbox');
+    equal(input2.getProperty('type')).should_be('checkbox');
 
     var div = new Element('div', {'html':
     '<select name="test" id="test" multiple="multiple">' + 
@@ -1032,50 +1032,50 @@ test('Element.getProperty', function() {
     '</select>'
   });
   var input3 = div.getElement('select');
-  value_of(input3.getProperty('type')).should_be('select-multiple');
-  value_of(input3.getProperty('name')).should_be('test');
+  equal(input3.getProperty('type')).should_be('select-multiple');
+  equal(input3.getProperty('name')).should_be('test');
 },
 
 'should getPropety checked from an input Element': function(){
   var checked1 = new Element('input', { type: 'checkbox' });
   checked1.checked = 'checked';
-  value_of(checked1.getProperty('checked')).should_be_true();
+  ok(checked1.getProperty('checked')).should_be_true();
 
   var checked2 = new Element('input', { type: 'checkbox' });
   checked2.checked = true;
-  value_of(checked2.getProperty('checked')).should_be_true();
+  ok(checked2.getProperty('checked')).should_be_true();
 
   var checked3 = new Element('input', { type: 'checkbox' });
   checked3.checked = false;
-  value_of(checked3.getProperty('checked')).should_be_false();
+  equal(checked3.getProperty('checked')).should_be_false();
 },
 
 'should getProperty disabled from an input Element': function(){
   var disabled1 = new Element('input', { type: 'text' });
   disabled1.disabled = 'disabled';
-  value_of(disabled1.getProperty('disabled')).should_be_true();
+  ok(disabled1.getProperty('disabled')).should_be_true();
 
   var disabled2 = new Element('input', { type: 'text' });
   disabled2.disabled = true;
-  value_of(disabled2.getProperty('disabled')).should_be_true();
+  ok(disabled2.getProperty('disabled')).should_be_true();
 
   var disabled3 = new Element('input', { type: 'text' });
   disabled3.disabled = false;
-  value_of(disabled3.getProperty('disabled')).should_be_false();
+  equal(disabled3.getProperty('disabled')).should_be_false();
 },
 
 'should getProperty readonly from an input Element': function(){
   var readonly1 = new Element('input', { type: 'text' });
   readonly1.readOnly = 'readonly';
-  value_of(readonly1.getProperty('readonly')).should_be_true();
+  ok(readonly1.getProperty('readonly')).should_be_true();
 
   var readonly2 = new Element('input', { type: 'text' });
   readonly2.readOnly = true;
-  value_of(readonly2.getProperty('readonly')).should_be_true();
+  ok(readonly2.getProperty('readonly')).should_be_true();
 
   var readonly3 = new Element('input', { type: 'text' });
   readonly3.readOnly = false;
-  value_of(readonly3.getProperty('readonly')).should_be_false();
+  equal(readonly3.getProperty('readonly')).should_be_false();
 }
 
 });
@@ -1084,60 +1084,60 @@ test('Element.setProperty', function() {
 
   'should setProperty from an Element': function(){
     var anchor1 = new Element('a').setProperty('href', 'http://mootools.net/');
-    value_of(anchor1.getProperty('href')).should_be('http://mootools.net/');
+    equal(anchor1.getProperty('href')).should_be('http://mootools.net/');
 
     var anchor2 = new Element('a').setProperty('href', '#someLink');
-    value_of(anchor2.getProperty('href')).should_be('#someLink');
+    equal(anchor2.getProperty('href')).should_be('#someLink');
   },
 
   'should setProperty type of an input Element': function(){
     var input1 = new Element('input').setProperty('type', 'text');
-    value_of(input1.getProperty('type')).should_be('text');
+    equal(input1.getProperty('type')).should_be('text');
 
     var input2 = new Element('input').setProperty('type', 'checkbox');
-    value_of(input2.getProperty('type')).should_be('checkbox');
+    equal(input2.getProperty('type')).should_be('checkbox');
   },
 
   'should setProperty checked from an input Element': function(){
     var checked1 = new Element('input', { type: 'checkbox' }).setProperty('checked', 'checked');
-    value_of(checked1.getProperty('checked')).should_be_true();
+    ok(checked1.getProperty('checked')).should_be_true();
 
     var checked2 = new Element('input', { type: 'checkbox' }).setProperty('checked', true);
-    value_of(checked2.getProperty('checked')).should_be_true();
+    ok(checked2.getProperty('checked')).should_be_true();
 
     var checked3 = new Element('input', { type: 'checkbox' }).setProperty('checked', false);
-    value_of(checked3.getProperty('checked')).should_be_false();
+    equal(checked3.getProperty('checked')).should_be_false();
   },
 
   'should setProperty disabled of an input Element': function(){
     var disabled1 = new Element('input', { type: 'text' }).setProperty('disabled', 'disabled');
-    value_of(disabled1.getProperty('disabled')).should_be_true();
+    ok(disabled1.getProperty('disabled')).should_be_true();
 
     var disabled2 = new Element('input', { type: 'text' }).setProperty('disabled', true);
-    value_of(disabled2.getProperty('disabled')).should_be_true();
+    ok(disabled2.getProperty('disabled')).should_be_true();
 
     var disabled3 = new Element('input', { type: 'text' }).setProperty('disabled', false);
-    value_of(disabled3.getProperty('disabled')).should_be_false();
+    equal(disabled3.getProperty('disabled')).should_be_false();
   },
 
   'should setProperty readonly of an input Element': function(){
     var readonly1 = new Element('input', { type: 'text' }).setProperty('readonly', 'readonly');
-    value_of(readonly1.getProperty('readonly')).should_be_true();
+    ok(readonly1.getProperty('readonly')).should_be_true();
 
     var readonly2 = new Element('input', { type: 'text' }).setProperty('readonly', true);
-    value_of(readonly2.getProperty('readonly')).should_be_true();
+    ok(readonly2.getProperty('readonly')).should_be_true();
 
     var readonly3 = new Element('input', { type: 'text' }).setProperty('readonly', false);
-    value_of(readonly3.getProperty('readonly')).should_be_false();
+    equal(readonly3.getProperty('readonly')).should_be_false();
   },
 
   'should setProperty defaultValue of an input Element': function(){
     var form = new Element('form');
     var defaultValue = new Element('input', {'type': 'text', 'value': '321'}).setProperty('defaultValue', '123');
     form.grab(defaultValue);
-    value_of(defaultValue.getProperty('value')).should_be('321');
+    equal(defaultValue.getProperty('value')).should_be('321');
     form.reset();
-    value_of(defaultValue.getProperty('value')).should_be('123');
+    equal(defaultValue.getProperty('value')).should_be('123');
   }
 
 });
@@ -1147,7 +1147,7 @@ test('Element.getProperties', function() {
   'should return an object associate with the properties passed': function(){
     var readonly = new Element('input', { type: 'text', readonly: 'readonly' });
     var props = readonly.getProperties('type', 'readonly');
-    value_of(props).should_be({ type: 'text', readonly: true });
+    same(props).should_be({ type: 'text', readonly: true });
   }
 
 });
@@ -1157,7 +1157,7 @@ test('Element.setProperties', function() {
   'should set each property to the Element': function(){
     var readonly = new Element('input').setProperties({ type: 'text', readonly: 'readonly' });
     var props = readonly.getProperties('type', 'readonly');
-    value_of(props).should_be({ type: 'text', readonly: true });
+    same(props).should_be({ type: 'text', readonly: true });
   }
 
 });
@@ -1169,7 +1169,7 @@ test('Element.removeProperty', function() {
     readonly.removeProperty('readonly');
     readonly.removeProperty('maxlength');
     var props = readonly.getProperties('type', 'readonly', 'maxlength');
-    value_of(props).should_be({ type: 'text', readonly: false, maxlength: Browser.Engine.webkit ? 524288 : 0});
+    same(props).should_be({ type: 'text', readonly: false, maxlength: Browser.Engine.webkit ? 524288 : 0});
   }
 
 });
@@ -1179,7 +1179,7 @@ test('Element.removeProperties', function() {
   'should remove each property from the Element': function(){
     var anchor = new Element('a', {href: '#', title: 'title', rel: 'left'});
     anchor.removeProperties('title', 'rel');
-    value_of(anchor.getProperties('href', 'title', 'rel')).should_be({ href: '#' });
+    same(anchor.getProperties('href', 'title', 'rel')).should_be({ href: '#' });
   }
 
 });
@@ -1190,16 +1190,16 @@ test('Element.getPrevious', function() {
     var container = new Element('div');
     var children = [new Element('div'), new Element('div'), new Element('div')];
     container.adopt(children);
-    value_of(children[1].getPrevious()).should_be(children[0]);
-    value_of(children[0].getPrevious()).should_be_null();
+    same(children[1].getPrevious()).should_be(children[0]);
+    equal(children[0].getPrevious()).should_be_null();
   },
 
   'should return the previous Element that matches, otherwise null': function(){
     var container = new Element('div');
     var children = [new Element('a'), new Element('div'), new Element('div'), new Element('div')];
     container.adopt(children);
-    value_of(children[1].getPrevious('a')).should_be(children[0]);
-    value_of(children[1].getPrevious('span')).should_be_null();
+    same(children[1].getPrevious('a')).should_be(children[0]);
+    equal(children[1].getPrevious('span')).should_be_null();
   }
 
 });
@@ -1210,16 +1210,16 @@ test('Element.getAllPrevious', function() {
     var container = new Element('div');
     var children = [new Element('div'), new Element('div'), new Element('div')];
     container.adopt(children);
-    value_of(children[2].getAllPrevious()).should_be([children[1], children[0]]);
-    value_of(children[0].getAllPrevious()).should_be([]);
+    same(children[2].getAllPrevious()).should_be([children[1], children[0]]);
+    same(children[0].getAllPrevious()).should_be([]);
   },
 
   'should return all the previous Elements that match, otherwise an empty array': function(){
     var container = new Element('div');
     var children = [new Element('a'), new Element('div'), new Element('a'), new Element('div')];
     container.adopt(children);
-    value_of(children[3].getAllPrevious('a')).should_be([children[2], children[0]]);
-    value_of(children[1].getAllPrevious('span')).should_be([]);
+    same(children[3].getAllPrevious('a')).should_be([children[2], children[0]]);
+    same(children[1].getAllPrevious('span')).should_be([]);
   }
 
 });
@@ -1230,16 +1230,16 @@ test('Element.getNext', function() {
     var container = new Element('div');
     var children = [new Element('div'), new Element('div'), new Element('div')];
     container.adopt(children);
-    value_of(children[1].getNext()).should_be(children[2]);
-    value_of(children[2].getNext()).should_be_null();
+    same(children[1].getNext()).should_be(children[2]);
+    equal(children[2].getNext()).should_be_null();
   },
 
   'should return the previous Element that matches, otherwise null': function(){
     var container = new Element('div');
     var children = [new Element('div'), new Element('div'), new Element('div'), new Element('a')];
     container.adopt(children);
-    value_of(children[1].getNext('a')).should_be(children[3]);
-    value_of(children[1].getNext('span')).should_be_null();
+    same(children[1].getNext('a')).should_be(children[3]);
+    equal(children[1].getNext('span')).should_be_null();
   }
 
 });
@@ -1250,16 +1250,16 @@ test('Element.getAllNext', function() {
     var container = new Element('div');
     var children = [new Element('div'), new Element('div'), new Element('div')];
     container.adopt(children);
-    value_of(children[0].getAllNext()).should_be(children.slice(1));
-    value_of(children[2].getAllNext()).should_be([]);
+    same(children[0].getAllNext()).should_be(children.slice(1));
+    same(children[2].getAllNext()).should_be([]);
   },
 
   'should return all the next Elements that match, otherwise an empty array': function(){
     var container = new Element('div');
     var children = [new Element('div'), new Element('a'), new Element('div'), new Element('a')];
     container.adopt(children);
-    value_of(children[0].getAllNext('a')).should_be([children[1], children[3]]);
-    value_of(children[0].getAllNext('span')).should_be([]);
+    same(children[0].getAllNext('a')).should_be([children[1], children[3]]);
+    same(children[0].getAllNext('span')).should_be([]);
   }
 
 });
@@ -1270,16 +1270,16 @@ test('Element.getFirst', function() {
     var container = new Element('div');
     var children = [new Element('div'), new Element('a'), new Element('div')];
     container.adopt(children);
-    value_of(container.getFirst()).should_be(children[0]);
-    value_of(children[0].getFirst()).should_be_null();
+    same(container.getFirst()).should_be(children[0]);
+    equal(children[0].getFirst()).should_be_null();
   },
 
   'should return the first Element in the Element that matches, otherwise null': function(){
     var container = new Element('div');
     var children = [new Element('div'), new Element('a'), new Element('div')];
     container.adopt(children);
-    value_of(container.getFirst('a')).should_be(children[1]);
-    value_of(container.getFirst('span')).should_be_null();
+    same(container.getFirst('a')).should_be(children[1]);
+    equal(container.getFirst('span')).should_be_null();
   }
 
 });
@@ -1290,16 +1290,16 @@ test('Element.getLast | Element.getLastChild', function() {
     var container = new Element('div');
     var children = [new Element('div'), new Element('a'), new Element('div')];
     container.adopt(children);
-    value_of(container.getLast()).should_be(children[2]);
-    value_of(children[0].getLast()).should_be_null();
+    same(container.getLast()).should_be(children[2]);
+    equal(children[0].getLast()).should_be_null();
   },
 
   'should return the last Element in the Element that matches, otherwise null': function(){
     var container = new Element('div');
     var children = [new Element('div'), new Element('a'), new Element('div'), new Element('a')];
     container.adopt(children);
-    value_of(container.getLast('a')).should_be(children[3]);
-    value_of(container.getLast('span')).should_be_null();
+    same(container.getLast('a')).should_be(children[3]);
+    equal(container.getLast('span')).should_be_null();
   }
 
 });
@@ -1310,16 +1310,16 @@ test('Element.getParent', function() {
     var container = new Element('p');
     var children = [new Element('div'), new Element('div'), new Element('div')];
     container.adopt(children);
-    value_of(children[1].getParent()).should_be(container);
-    value_of(container.getParent()).should_be_null();
+    same(children[1].getParent()).should_be(container);
+    equal(container.getParent()).should_be_null();
   },
 
   'should return the parent of the Element that matches, otherwise null': function(){
     var container = new Element('p');
     var children = [new Element('div'), new Element('div'), new Element('div')];
     container.adopt(new Element('div').adopt(children));
-    value_of(children[1].getParent('p')).should_be(container);
-    value_of(children[1].getParent('table')).should_be_null();
+    same(children[1].getParent('p')).should_be(container);
+    equal(children[1].getParent('table')).should_be_null();
   }
 
 });
