@@ -77,113 +77,81 @@ test('Element constructor', function() {
 
 test('Element.set', function() {
 
-  "should set a single attribute of an Element": function(){
     var div = new Element('div').set('id', 'some_id');
-    equal(div.id).should_be('some_id');
-  },
+    equal(div.id, 'some_id', 'should set a single attribute of an Element');
 
-  "should set the checked attribute of an Element": function(){
     var input1 = new Element('input', {type: 'checkbox'}).set('checked', 'checked');
     var input2 = new Element('input', {type: 'checkbox'}).set('checked', true);
-    ok(input1.checked).should_be_true();
-    ok(input2.checked).should_be_true();
-  },
+    ok(input1.checked, 'should set the checked attribute of an Element');
+    ok(input2.checked, 'should set the checked attribute of an Element');
 
-  "should set the class name of an element": function(){
     var div = new Element('div').set('class', 'some_class');
-    equal(div.className).should_be('some_class');
-  },
+    equal(div.className, 'some_class', 'should set the class name of an element');
 
-  "should set the for attribute of an element": function(){
     var input = new Element('input', {type: 'text'}).set('for', 'some_element');
-    equal(input.htmlFor).should_be('some_element');
-  },
+    equal(input.htmlFor, 'some_element', 'should set the for attribute of an element');
 
-  "should set the html of an Element": function(){
     var html = '<a href="http://mootools.net/">Link</a>';
     var parent = new Element('div').set('html', html);
-    equal(parent.innerHTML.toLowerCase()).should_be(html.toLowerCase());
-  },
+    equal(parent.innerHTML.toLowerCase(), html.toLowerCase(), 'should set the html of an Element');
 
-  "should set the html of an Element with multiple arguments": function(){
     var html = ['<p>Paragraph</p>', '<a href="http://mootools.net/">Link</a>'];
     var parent = new Element('div').set('html', html);
-    equal(parent.innerHTML.toLowerCase()).should_be(html.join('').toLowerCase());
-  },
+    equal(parent.innerHTML.toLowerCase(), html.join('').toLowerCase(), 'should set the html of an Element with multiple arguments');
 
-  "should set the html of a select Element": function(){
     var html = '<option>option 1</option><option selected="selected">option 2</option>';
     var select = new Element('select').set('html', html);
-    equal(select.getChildren().length).should_be(2);
-    equal(select.options.length).should_be(2);
-    equal(select.selectedIndex).should_be(1);
-  },
+    equal(select.getChildren().length, 2, 'should set the html of a select Element');
+    equal(select.options.length, 2, 'should set the html of a select Element');
+    equal(select.selectedIndex, 1, 'should set the html of a select Element');
 
-  "should set the html of a table Element": function(){
     var html = '<tbody><tr><td>cell 1</td><td>cell 2</td></tr><tr><td class="cell">cell 1</td><td>cell 2</td></tr></tbody>';
     var table = new Element('table').set('html', html);
-    equal(table.getChildren().length).should_be(1);
-    equal(table.getFirst().getFirst().getChildren().length).should_be(2);
-    equal(table.getFirst().getLast().getFirst().className).should_be('cell');
-  },
+    equal(table.getChildren().length, 1, 'should set the html of a table Element');
+    equal(table.getFirst().getFirst().getChildren().length, 2, 'should set the html of a table Element');
+    equal(table.getFirst().getLast().getFirst().className, 'cell', 'should set the html of a table Element');
 
-  "should set the html of a tbody Element": function(){
     var html = '<tr><td>cell 1</td><td>cell 2</td></tr><tr><td class="cell">cell 1</td><td>cell 2</td></tr>';
     var tbody = new Element('tbody').inject(new Element('table')).set('html', html);
-    equal(tbody.getChildren().length).should_be(2);
-    equal(tbody.getLast().getFirst().className).should_be('cell');
-  },
+    equal(tbody.getChildren().length, 2, 'should set the html of a tbody Element');
+    equal(tbody.getLast().getFirst().className, 'cell', 'should set the html of a tbody Element');
 
-  "should set the html of a tr Element": function(){
     var html = '<td class="cell">cell 1</td><td>cell 2</td>';
     var tr = new Element('tr').inject(new Element('tbody').inject(new Element('table'))).set('html', html);
-    equal(tr.getChildren().length).should_be(2);
-    equal(tr.getFirst().className).should_be('cell');
-  },
+    equal(tr.getChildren().length, 2, 'should set the html of a tr Element');
+    equal(tr.getFirst().className, 'cell', 'should set the html of a tr Element');
 
-  "should set the html of a td Element": function(){
     var html = '<span class="span">Some Span</span><a href="#">Some Link</a>';
     var td = new Element('td').inject(new Element('tr').inject(new Element('tbody').inject(new Element('table')))).set('html', html);
-    equal(td.getChildren().length).should_be(2);
-    equal(td.getFirst().className).should_be('span');
-  },
+    equal(td.getChildren().length, 2, 'should set the html of a td Element');
+    equal(td.getFirst().className, 'span', 'should set the html of a td Element');
 
-  "should set the style attribute of an Element": function(){
     var style = 'font-size:12px;line-height:23px;';
     var div = new Element('div').set('style', style);
-    equal(div.style.lineHeight).should_be('23px');
-    equal(div.style.fontSize).should_be('12px');
-  },
+    equal(div.style.lineHeight, '23px', 'should set the style attribute of an Element');
+    equal(div.style.fontSize, '12px', 'should set the style attribute of an Element');
 
-  "should set the text of an element": function(){
     var div = new Element('div').set('text', 'some text content');
-    equal(div.get('text')).should_be('some text content');
-    equal(div.innerHTML).should_be('some text content');
-  },
+    equal(div.get('text'), 'some text content', 'should set the text of an element');
+    equal(div.innerHTML, 'some text content', 'should set the text of an element');
 
-  "should set multiple attributes of an Element": function(){
     var div = new Element('div').set({ id: 'some_id', 'title': 'some_title', 'html': 'some_content' });
-    equal(div.id).should_be('some_id');
-    equal(div.title).should_be('some_title');
-    equal(div.innerHTML).should_be('some_content');
-  },
+    equal(div.id, 'some_id', 'should set multiple attributes of an Element');
+    equal(div.title, 'some_title', 'should set multiple attributes of an Element');
+    equal(div.innerHTML, 'some_content', 'should set multiple attributes of an Element');
 
-  "should set various attributes of a script Element": function(){
     var script = new Element('script').set({ type: 'text/javascript', defer: 'defer' });
-    equal(script.type).should_be('text/javascript');
-    ok(script.defer).should_be_true();
-  },
+    equal(script.type, 'text/javascript', 'should set various attributes of a script Element');
+    ok(script.defer, 'should set various attributes of a script Element');
 
-  "should set various attributes of a table Element": function(){
     var table1 = new Element('table').set({ border: '2', cellpadding: '3', cellspacing: '4', align: 'center' });
     var table2 = new Element('table').set({ cellPadding: '3', cellSpacing: '4' });
-    equal(table1.border).should_be(2);
-    equal(table1.cellPadding).should_be(3);
-    equal(table2.cellPadding).should_be(3);
-    equal(table1.cellSpacing).should_be(4);
-    equal(table2.cellSpacing).should_be(4);
-    equal(table1.align).should_be('center');
-  }
+    equal(table1.border, 2, 'should set various attributes of a table Element');
+    equal(table1.cellPadding, 3, 'should set various attributes of a table Element');
+    equal(table2.cellPadding, 3, 'should set various attributes of a table Element');
+    equal(table1.cellSpacing, 4, 'should set various attributes of a table Element');
+    equal(table2.cellSpacing, 4, 'should set various attributes of a table Element');
+    equal(table1.align, 'center', 'should set various attributes of a table Element');
 
 });
 
@@ -195,147 +163,104 @@ new Element('div', {id: 'el-' + $time()})
 
 test('Elements', function() {
 
-  'should return an array type': function(){
-    ok(Array.type(myElements)).should_be_true();
-  },
+  ok(Array.type(myElements), 'should return an array type');
+  ok(myElements.every(Element.type), 'should return an array of Elements');
+  ok($defined(myElements.addEvent), 'should apply Element prototypes to the returned array');
+  same(myElements.filter('div'), [myElements[0], myElements[2]], 'should return all Elements that match the string matcher');
 
-  'should return an array of Elements': function(){
-    ok(myElements.every(Element.type)).should_be_true();
-  },
-
-  'should apply Element prototypes to the returned array': function(){
-    ok($defined(myElements.addEvent)).should_be_true();
-  },
-
-  'should return all Elements that match the string matcher': function(){
-  same(myElements.filter('div')).should_be([myElements[0], myElements[2]]);
-},
-
-'should return all Elements that match the comparator': function(){
   var elements = myElements.filter(function(element){
     return element.match('a');
   });
-  same(elements).should_be([myElements[1]]);
-}
+  same(elements, [myElements[1]], 'should return all Elements that match the comparator');
 
 });
 
 test('TextNode.constructor', function() {
 
-  'should return a new textnode element': function(){
     var text = document.newTextNode('yo');
-    equal($type(text)).should_be('textnode');
-  }
+    equal($type(text), 'textnode', 'should return a new textnode element');
 
 });
 
 test('IFrame constructor', function() {
 
-  'should return a new IFrame': function(){
     var iFrame1 = document.createElement('iframe');
     var iFrame2 = new IFrame();
-    equal(iFrame1.tagName).should_be(iFrame2.tagName);
-  },
+    equal(iFrame1.tagName, iFrame2.tagName, 'should return a new IFrame');
 
-  'should return the same IFrame if passed': function(){
     var iFrame1 = document.createElement('iframe');
     var iFrame2 = new IFrame(iFrame1);
-    equal(iFrame1).should_be(iFrame2);
-  }
+    equal(iFrame1, iFrame2, 'should return the same IFrame if passed');
 
 });
 
 test('$', function() {
 
-  'before all': function(){
+  //before all
+  (function(){
     Container = document.createElement('div');
     Container.innerHTML = '<div id="dollar"></div>';
     document.body.appendChild(Container);
-  },
+  })();
 
-  'after all': function(){
+  //after all
+  (function(){
     document.body.removeChild(Container);
     Container = null;
-  },
+  })();
 
-  'should return an extended Element by string id': function(){
     var dollar1 = document.getElementById('dollar');
     var dollar2 = $('dollar');
 
-    equal(dollar1).should_be(dollar2);
-    ok($defined(dollar1.addEvent)).should_be_true();
-  },
+    equal(dollar1, dollar2, 'should return an extended Element by string id');
+    ok($defined(dollar1.addEvent), 'should return an extended Element by string id');
 
-  'should return the window if passed': function(){
-    same($(window)).should_be(window);
-  },
+    same($(window), window, 'should return the window if passed');
 
-  'should return the document if passed': function(){
-    same($(document)).should_be(document);
-  },
+    same($(document), document, 'should return the document if passed');
 
-  'should return null if string not found or type mismatch': function(){
-    equal($(1)).should_be_null();
-    equal($('nonexistant')).should_be_null();
-  }
+    equal($(1), null, 'should return null if string not found or type mismatch');
+    equal($('nonexistant'), null, 'should return null if string not found or type mismatch');
 
 });
 
 test('$$', function() {
 
-  'should return all Elements of a specific tag': function(){
-    var divs1 = $$('div');
-    var divs2 = Array.flatten(document.getElementsByTagName('div'));
-    same(divs1).should_be(divs2);
-  },
+  var divs1 = $$('div');
+  var divs2 = Array.flatten(document.getElementsByTagName('div'));
+  same(divs1, divs2, 'should return all Elements of a specific tag');
 
-  'should return multiple Elements for each specific tag': function(){
-    var headers1 = $$('h3', 'h4');
-    var headers2 = Array.flatten([document.getElementsByTagName('h3'), document.getElementsByTagName('h4')]);
-    same(headers1).should_be(headers2);
-  },
+  var headers1 = $$('h3', 'h4');
+  var headers2 = Array.flatten([document.getElementsByTagName('h3'), document.getElementsByTagName('h4')]);
+  same(headers1, headers2, 'should return multiple Elements for each specific tag');
 
-  'should return an empty array if not is found': function(){
-  same($$('not_found')).should_be([]);
-}
+  same($$('not_found'), [], 'should return an empty array if not is found');
 
 });
 
 test('getDocument', function() {
 
-  'should return the owner document for elements': function(){
     var doc = document.newElement('div').getDocument();
-    same(doc).should_be(document);
-  },
+    same(doc, document, 'should return the owner document for elements');
 
-  'should return the owned document for window': function(){
     var doc = window.getDocument();
-    same(doc).should_be(document);
-  },
+    same(doc, document, 'should return the owned document for window');
 
-  'should return self for document': function(){
     var doc = document.getDocument();
-    same(doc).should_be(document);
-  }
+    same(doc, document, 'should return self for document');
 
 });
 
 test('getWindow', function() {
 
-  'should return the owner window for elements': function(){
     var win = document.newElement('div').getWindow();
-    same(win).should_be(window);
-  },
+    same(win, window, 'should return the owner window for elements');
 
-  'should return the owner window for document': function(){
     var win = document.getWindow();
-    same(win).should_be(window);
-  },
+    same(win, window, 'should return the owner window for document');
 
-  'should return self for window': function(){
     var win = window.getWindow();
-    same(win).should_be(window);
-  }
+    same(win, window, 'should return self for window');
 
 });
 
@@ -350,11 +275,9 @@ test('Element.getElement', function() {
     Container = null;
   },
 
-  'should return the first Element to match the tag, otherwise null': function(){
-    var child = Container.getElement('div');
-    equal(child.id).should_be('first');
-    equal(Container.getElement('iframe')).should_be_null();
-  }
+  var child = Container.getElement('div');
+  equal(child.id, 'first', 'should return the first Element to match the tag, otherwise null');
+  equal(Container.getElement('iframe'), null, 'should return the first Element to match the tag, otherwise null');
 
 });
 
@@ -369,45 +292,37 @@ test('Element.getElements', function() {
     Container = null;
   },
 
-  'should return all the elements that match the tag': function(){
     var children = Container.getElements('div');
-    value_of(children).should_have(2, 'items');
-  },
+    console.info('looking at children!');
+    console.info(children);
+    //value_of(children).should_have(2, 'items'); //should return all the elements that match the tag
 
-  'should return all the elements that match the tags': function(){
     var children = Container.getElements('div,a');
-    value_of(children).should_have(3, 'items');
-    equal(children[2].tagName.toLowerCase()).should_be('a');
-  }
+   // value_of(children).should_have(3, 'items');
+    equal(children[2].tagName.toLowerCase(), 'a', 'should return all the elements that match the tags');
 
 });
 
 test('Document.getElement', function() {
 
-  'should return the first Element to match the tag, otherwise null': function(){
     var div = document.getElement('div');
     var ndiv = document.getElementsByTagName('div')[0];
-    same(div).should_be(ndiv);
+    same(div, ndiv, 'should return the first Element to match the tag, otherwise null');
 
     var notfound = document.getElement('canvas');
-    equal(notfound).should_be_null();
-  }
+    equal(notfound, null, 'should return the first Element to match the tag, otherwise null');
 
 });
 
 test('Document.getElements', function() {
 
-  'should return all the elements that match the tag': function(){
     var divs = document.getElements('div');
     var ndivs = $A(document.getElementsByTagName('div'));
-    same(divs).should_be(ndivs);
-  },
+    same(divs, ndivs, 'should return all the elements that match the tag');
 
-  'should return all the elements that match the tags': function(){
     var headers = document.getElements('h3,h4');
     var headers2 = Array.flatten([document.getElementsByTagName('h3'), document.getElementsByTagName('h4')]);
-    equal(headers.length).should_be(headers2.length);
-  }
+    equal(headers.length, headers2.length, 'should return all the elements that match the tags');
 
 });
 
@@ -424,89 +339,65 @@ test('Element.getElementById', function() {
     Container = null;
   },
 
-  'should getElementById that matches the id, otherwise null': function(){
-  same(Container.getElementById('first')).should_be(Container.childNodes[0]);
-  equal(Container.getElementById('not_found')).should_be_null();
-}
+  same(Container.getElementById('first'), Container.childNodes[0], 'should getElementById that matches the id, otherwise null');
+  equal(Container.getElementById('not_found'), null, 'should getElementById that matches the id, otherwise null');
 
 });
 
 test('Element.get style', function() {
 
-  "should return a CSS string representing the Element's styles": function(){
     var style = 'font-size:12px;color:rgb(255,255,255)';
     var myElement = new Element('div').set('style', style);
-    value_of(myElement.get('style').toLowerCase().replace(/\s/g, '').replace(/;$/, '')).should_match(/(font-size:12px;color:rgb\(255,255,255\))|(color:rgb\(255,255,255\);font-size:12px)/);
+    //value_of(myElement.get('style').toLowerCase().replace(/\s/g, '').replace(/;$/, '')).should_match(/(font-size:12px;color:rgb\(255,255,255\))|(color:rgb\(255,255,255\);font-size:12px)/); // should return a CSS string representing the Element's styles
     //I'm replacing these characters (space and the last semicolon) as they are not vital to the style, and browsers sometimes include them, sometimes not.
-  }
 
 });
 
 test('Element.get tag', function() {
 
-  "should return the Element's tag": function(){
-    var myElement = new Element('div');
-    equal(myElement.get('tag')).should_be('div');
-  }
+  var myElement = new Element('div');
+  equal(myElement.get('tag'), 'div', "should return the Element's tag");
 
 });
 
 test('Element.get', function() {
 
-  "should get an absolute href": function(){
-    var link = new Element('a', {href: "http://google.com/"});
-    equal(link.get('href')).should_be("http://google.com/");
-  },
+  var link = new Element('a', {href: "http://google.com/"});
+  equal(link.get('href'), "http://google.com/", 'should get an absolute href');
 
-  "should get an absolute href to the same domain": function(){
-    var link = new Element('a', {href: window.location.href});
-    equal(link.get('href')).should_be(window.location.href);
-  },
+  var link = new Element('a', {href: window.location.href});
+  equal(link.get('href'), window.location.href, 'should get an absolute href to the same domain');
 
-  "should get a relative href": function(){
-    var link = new Element('a', {href: "../index.html"});
-    equal(link.get('href')).should_be("../index.html");
-  },
+  var link = new Element('a', {href: "../index.html"});
+  equal(link.get('href'), "../index.html", 'should get a relative href');
 
-  "should get a host absolute href": function(){
-    var link = new Element('a', {href: "/developers"});
-    equal(link.get('href')).should_be("/developers");
-  },
+  var link = new Element('a', {href: "/developers"});
+  equal(link.get('href'), "/developers", 'should get a host absolute href');
 
-  "should return null when attribute is missing": function(){
-    var link = new Element('a');
-    equal(link.get('href')).should_be_null();
-  }
+  var link = new Element('a');
+  equal(link.get('href'), null, 'should return null when attribute is missing');
 
 });
 
 test('Element.erase', function() {
 
-  "should erase an Element's property": function(){
-    var myElement = new Element('a', {href: 'http://mootools.net/', title: 'mootools!'});
-    equal(myElement.get('title')).should_be('mootools!');
-    equal(myElement.erase('title').get('title')).should_be_null();
-  },
+  var myElement = new Element('a', {href: 'http://mootools.net/', title: 'mootools!'});
+  equal(myElement.get('title'), 'mootools!', "should erase an Element's property");
+  equal(myElement.erase('title').get('title'), null, "should erase an Element's property");
 
-  "should erase an Element's style": function(){
-    var myElement = new Element('div', {style: "color:rgb(255, 255, 255); font-size:12px;"});
-    myElement.erase('style');
-    equal(myElement.get('style')).should_be('');
-  }
+  var myElement = new Element('div', {style: "color:rgb(255, 255, 255); font-size:12px;"});
+  myElement.erase('style');
+  equal(myElement.get('style'), '', "should erase an Element's style");
 
 });
 
 test('Element.match', function() {
 
-  'should return true if tag is not provided': function(){
-    var element = new Element('div');
-    ok(element.match()).should_be_true();
-  },
+  var element = new Element('div');
+  ok(element.match(), 'should return true if tag is not provided');
 
-  "should return true if the Element's tag matches": function(){
-    var element = new Element('div');
-    ok(element.match('div')).should_be_true();
-  }
+  var element = new Element('div');
+  ok(element.match('div'), "should return true if the Element's tag matches");
 
 });
 
@@ -533,81 +424,67 @@ test('Element.inject', function() {
       test = null;
     },
 
-    'should inject the Element before an Element': function(){
       test.inject($('first'), 'before');
-      same(Container.childNodes[0]).should_be(test);
+      same(Container.childNodes[0], test, 'should inject the Element before an Element');
 
       test.inject($('second-child'), 'before');
-      same(Container.childNodes[1].childNodes[1]).should_be(test);
-    },
+      same(Container.childNodes[1].childNodes[1], test, 'should inject the Element before an Element');
 
-    'should inject the Element after an Element': function(){
       test.inject($('first'), 'after');
-      same(Container.childNodes[1]).should_be(test);
+      same(Container.childNodes[1], test, 'should inject the Element after an Element');
 
       test.inject($('first-child'), 'after');
-      same(Container.childNodes[1].childNodes[1]).should_be(test);
-    },
+      same(Container.childNodes[1].childNodes[1], test, 'should inject the Element after an Element');
 
-    'should inject the Element at bottom of an Element': function(){
       var first = $('first');
       test.inject(first, 'bottom');
-      same(first.childNodes[0]).should_be(test);
+      same(first.childNodes[0], test, 'should inject the Element at bottom of an Element');
 
       var second = $('second');
       test.inject(second, 'bottom');
-      same(second.childNodes[2]).should_be(test);
+      same(second.childNodes[2], test, 'should inject the Element at bottom of an Element');
 
       test.inject(Container, 'bottom');
-      same(Container.childNodes[2]).should_be(test);
-    },
+      same(Container.childNodes[2], test, 'should inject the Element at bottom of an Element');
 
-    'should inject the Element inside an Element': function(){
       var first = $('first');
       test.inject(first, 'inside');
-      same(first.childNodes[0]).should_be(test);
+      same(first.childNodes[0], test, 'should inject the Element inside an Element');
 
       var second = $('second');
       test.inject(second, 'inside');
-      same(second.childNodes[2]).should_be(test);
+      same(second.childNodes[2], test, 'should inject the Element inside an Element');
 
       test.inject(Container, 'inside');
-      same(Container.childNodes[2]).should_be(test);
-    },
+      same(Container.childNodes[2], test, 'should inject the Element inside an Element');
 
-    'should inject the Element at the top of an Element': function(){
       test.inject(Container, 'top');
-      same(Container.childNodes[0]).should_be(test);
+      same(Container.childNodes[0], test, 'should inject the Element at the top of an Element');
 
       var second = $('second');
       test.inject(second, 'top');
-      same(second.childNodes[0]).should_be(test);
-    },
+      same(second.childNodes[0], test, 'should inject the Element at the top of an Element');
 
-    'should inject the Element in an Element': function(){
       var first = $('first');
       test.inject(first);
-      same(first.childNodes[0]).should_be(test);
+      same(first.childNodes[0], test, 'should inject the Element in an Element');
 
       var second = $('second');
       test.inject(second);
-      same(second.childNodes[2]).should_be(test);
+      same(second.childNodes[2], test, 'should inject the Element in an Element');
 
       test.inject(Container);
-      same(Container.childNodes[2]).should_be(test);
-    }
+      same(Container.childNodes[2], test, 'should inject the Element in an Element');
 
   });
 
   test('Element.replaces', function() {
 
-    'should replace an Element with the Element': function(){
       var parent = new Element('div');
       var div = new Element('div', {id: 'original'}).inject(parent);
       var el = new Element('div', {id: 'replaced'});
       el.replaces(div);
-      same(parent.childNodes[0]).should_be(el);
-    }
+      same(parent.childNodes[0], el, 'should replace an Element with the Element');
 
   });
 
@@ -633,80 +510,66 @@ test('Element.inject', function() {
         test = null;
       },
 
-      'should grab the Element before this Element': function(){
         $('first').grab(test, 'before');
-        same(Container.childNodes[0]).should_be(test);
+        same(Container.childNodes[0], test, 'should grab the Element before this Element');
 
         $('second-child').grab(test, 'before');
-        same(Container.childNodes[1].childNodes[1]).should_be(test);
-      },
+        same(Container.childNodes[1].childNodes[1], test, 'should grab the Element before this Element');
 
-      'should grab the Element after this Element': function(){
         $('first').grab(test, 'after');
-        same(Container.childNodes[1]).should_be(test);
+        same(Container.childNodes[1], test, 'should grab the Element after this Element');
 
         $('first-child').grab(test, 'after');
-        same(Container.childNodes[1].childNodes[1]).should_be(test);
-      },
+        same(Container.childNodes[1].childNodes[1], test, 'should grab the Element after this Element');
 
-      'should grab the Element at the bottom of this Element': function(){
         var first = $('first');
         first.grab(test, 'bottom');
-        same(first.childNodes[0]).should_be(test);
+        same(first.childNodes[0], test, 'should grab the Element at the bottom of this Element');
 
         var second = $('second');
         second.grab(test, 'bottom');
-        same(second.childNodes[2]).should_be(test);
+        same(second.childNodes[2], test, 'should grab the Element at the bottom of this Element');
 
         Container.grab(test, 'bottom');
-        same(Container.childNodes[2]).should_be(test);
-      },
+        same(Container.childNodes[2], test, 'should grab the Element at the bottom of this Element');
 
-      'should grab the Element inside this Element': function(){
         var first = $('first');
         first.grab(test, 'inside');
-        same(first.childNodes[0]).should_be(test);
+        same(first.childNodes[0], test, 'should grab the Element inside this Element');
 
         var second = $('second');
         second.grab(test, 'inside');
-        same(second.childNodes[2]).should_be(test);
+        same(second.childNodes[2], test, 'should grab the Element inside this Element');
 
         Container.grab(test, 'inside');
-        same(Container.childNodes[2]).should_be(test);
-      },
+        same(Container.childNodes[2], test, 'should grab the Element inside this Element');
 
-      'should grab the Element at the top of this Element': function(){
         Container.grab(test, 'top');
-        same(Container.childNodes[0]).should_be(test);
+        same(Container.childNodes[0], test, 'should grab the Element at the top of this Element');
 
         var second = $('second');
         second.grab(test, 'top');
-        same(second.childNodes[0]).should_be(test);
-      },
+        same(second.childNodes[0], test, 'should grab the Element at the top of this Element');
 
-      'should grab an Element in the Element': function(){
         var first = $('first').grab(test);
-        same(first.childNodes[0]).should_be(test);
+        same(first.childNodes[0], test, 'should grab an Element in the Element');
 
         var second = $('second').grab(test);
-        same(second.childNodes[2]).should_be(test);
+        same(second.childNodes[2], test, 'should grab an Element in the Element');
 
         Container.grab(test);
-        same(Container.childNodes[2]).should_be(test);
-      }
+        same(Container.childNodes[2], test, 'should grab an Element in the Element');
 
     });
 
     test('Element.wraps', function() {
 
-      'should replace and adopt the Element': function(){
         var div = new Element('div');
         var child = new Element('p').inject(div);
 
         var wrapper = new Element('div', {id: 'wrapper'}).wraps(div.childNodes[0]);
-        same(div.childNodes[0]).should_be(wrapper);
-        same(wrapper.childNodes[0]).should_be(child);
-      }
+        same(div.childNodes[0], wrapper, 'should replace and adopt the Element');
+        same(wrapper.childNodes[0], child, 'should replace and adopt the Element');
 
     });
 
@@ -734,67 +597,60 @@ test('Element.inject', function() {
           test = null;
         },
 
-        'should append a TextNode before this Element': function(){
           $('first').appendText('test', 'before');
-          equal(Container.childNodes[0].nodeValue).should_be('test');
+          equal(Container.childNodes[0].nodeValue, 'test', 'should append a TextNode before this Element');
 
           $('second-child').appendText('test', 'before');
-          equal(Container.childNodes[2].childNodes[1].nodeValue).should_be('test');
-        },
+          equal(Container.childNodes[2].childNodes[1].nodeValue, 'test', 'should append a TextNode before this Element');
 
-        'should append a TextNode the Element after this Element': function(){
+
           $('first').appendText('test', 'after');
-          equal(Container.childNodes[1].nodeValue).should_be('test');
+          equal(Container.childNodes[1].nodeValue, 'test', 'should append a TextNode the Element after this Element');
 
           $('first-child').appendText('test', 'after');
-          equal(Container.childNodes[2].childNodes[1].nodeValue).should_be('test');
-        },
+          equal(Container.childNodes[2].childNodes[1].nodeValue, 'test', 'should append a TextNode the Element after this Element');
 
-        'should append a TextNode the Element at the bottom of this Element': function(){
+
           var first = $('first');
           first.appendText('test', 'bottom');
-          equal(first.childNodes[0].nodeValue).should_be('test');
+          equal(first.childNodes[0].nodeValue, 'test', 'should append a TextNode the Element at the bottom of this Element');
 
           var second = $('second');
           second.appendText('test', 'bottom');
-          equal(second.childNodes[2].nodeValue).should_be('test');
+          equal(second.childNodes[2].nodeValue, 'test', 'should append a TextNode the Element at the bottom of this Element');
 
           Container.appendText('test', 'bottom');
-          equal(Container.childNodes[2].nodeValue).should_be('test');
-        },
+          equal(Container.childNodes[2].nodeValue, 'test', 'should append a TextNode the Element at the bottom of this Element');
 
-        'should append a TextNode the Element inside this Element': function(){
+
           var first = $('first');
           first.appendText('test', 'inside');
-          equal(first.childNodes[0].nodeValue).should_be('test');
+          equal(first.childNodes[0].nodeValue, 'test', 'should append a TextNode the Element inside this Element');
 
           var second = $('second');
           second.appendText('test', 'inside');
-          equal(second.childNodes[2].nodeValue).should_be('test');
+          equal(second.childNodes[2].nodeValue, 'test', 'should append a TextNode the Element inside this Element');
 
           Container.appendText('test', 'inside');
-          equal(Container.childNodes[2].nodeValue).should_be('test');
-        },
+          equal(Container.childNodes[2].nodeValue, 'test', 'should append a TextNode the Element inside this Element');
 
-        'should append a TextNode the Element at the top of this Element': function(){
+
           Container.appendText('test', 'top');
-          equal(Container.childNodes[0].nodeValue).should_be('test');
+          equal(Container.childNodes[0].nodeValue, 'test', 'should append a TextNode the Element at the top of this Element');
 
           var second = $('second');
           second.appendText('test', 'top');
-          equal(second.childNodes[0].nodeValue).should_be('test');
-        },
+          equal(second.childNodes[0].nodeValue, 'test', 'should append a TextNode the Element at the top of this Element');
 
-        'should append a TextNode an Element in the Element': function(){
+
           var first = $('first').appendText('test');
-          equal(first.childNodes[0].nodeValue).should_be('test');
+          equal(first.childNodes[0].nodeValue, 'test', 'should append a TextNode an Element in the Element');
 
           var second = $('second').appendText('test');
-          equal(second.childNodes[2].nodeValue).should_be('test');
+          equal(second.childNodes[2].nodeValue, 'test', 'should append a TextNode an Element in the Element');
 
           Container.appendText('test');
-          equal(Container.childNodes[2].nodeValue).should_be('test');
-        }
+          equal(Container.childNodes[2].nodeValue, 'test', 'should append a TextNode an Element in the Element');
 
       });
 
@@ -814,26 +670,23 @@ test('Element.inject', function() {
           Container.empty();
         },
 
-        'should adopt an Element by its id': function(){
+
           var child = new Element('div', {id: 'adopt-me'});
           document.body.appendChild(child);
           Container.adopt('adopt-me');
-          same(Container.childNodes[0]).should_be(child);
-        },
+          same(Container.childNodes[0], child, 'should adopt an Element by its id');
 
-        'should adopt an Element': function(){
+
           var child = new Element('p');
           Container.adopt(child);
-          same(Container.childNodes[0]).should_be(child);
-        },
+          same(Container.childNodes[0], child, 'should adopt an Element');
 
-        'should adopt any number of Elements or ids': function(){
+
           var children = [];
           (4).times(function(i){ children[i] = new Element('span', {id: 'child-' + i}); });
           Container.adopt(children);
-          value_of(Container.childNodes).should_have(4, 'items');
-          same(Container.childNodes[3]).should_be(children[3]);
-        }
+          //value_of(Container.childNodes).should_have(4, 'items');
+          same(Container.childNodes[3], children[3], 'should adopt any number of Elements or ids');
 
       });
 
@@ -849,11 +702,10 @@ test('Element.inject', function() {
           Container = null;
         },
 
-        'should dispose the Element from the DOM': function(){
+
           var child = new Element('div').inject(Container);
           child.dispose();
-          equal(Container.childNodes.length).should_be(0);
-        }
+          equal(Container.childNodes.length, 0, 'should dispose the Element from the DOM');
 
       });
 
@@ -868,64 +720,56 @@ test('Element.inject', function() {
           Container = null;
         },
 
-        'should return a clone': function(){
           var div = new Element('div');
           var clone = div.clone();
-          same(div).should_not_be(clone);
-          equal($type(div)).should_be('element');
-          equal($type(clone)).should_be('element');
-        },
+          ok(div != clone, 'should return a clone');
+          equal($type(div), 'element', 'should return a clone');
+          equal($type(clone), 'element', 'should return a clone');
 
-        'should remove id from clone and clone children by default': function(){
+
           var clone = Container.clone();
-          equal(clone.getElementsByTagName('*').length).should_be(3);
-          equal(clone.className).should_be('moo');
-          equal(clone.id).should_be('');
-          equal(Container.id).should_be('outer');
-        },
+          equal(clone.getElementsByTagName('*').length, 3, 'should remove id from clone and clone children by default');
+          equal(clone.className, 'moo', 'should remove id from clone and clone children by default');
+          equal(clone.id, '', 'should remove id from clone and clone children by default');
+          equal(Container.id, 'outer', 'should remove id from clone and clone children by default');
 
-        'should remove all ids': function(){
+
           var clone = Container.clone(true);
-          equal(clone.id).should_be('');
-          equal(clone.childNodes.length).should_be(2);
-          equal(clone.childNodes[0].id).should_be('');
-          equal(clone.childNodes[0].childNodes[0].id).should_be('');
-          equal(clone.childNodes[0].className).should_be('foo');
-        },
+          equal(clone.id, '', 'should remove all ids');
+          equal(clone.childNodes.length, 2, 'should remove all ids');
+          equal(clone.childNodes[0].id, '', 'should remove all ids');
+          equal(clone.childNodes[0].childNodes[0].id, '', 'should remove all ids');
+          equal(clone.childNodes[0].className, 'foo', 'should remove all ids');
 
-        'should keep id if specified': function(){
+
           var clone = Container.clone(true, true);
-          equal(clone.id).should_be('outer');
-          equal(clone.childNodes.length).should_be(2);
-          equal(clone.childNodes[0].id).should_be('inner1');
-          equal(clone.childNodes[0].childNodes[0].id).should_be('sixfeet');
-          equal(clone.childNodes[0].className).should_be('foo');
-        },
+          equal(clone.id, 'outer', 'should keep id if specified');
+          equal(clone.childNodes.length, 2, 'should keep id if specified');
+          equal(clone.childNodes[0].id, 'inner1', 'should keep id if specified');
+          equal(clone.childNodes[0].childNodes[0].id, 'sixfeet', 'should keep id if specified');
+          equal(clone.childNodes[0].className, 'foo', 'should keep id if specified');
 
-        'should clone empty href attribute': function(){
+
           var clone = new Element('div', {
             html: '<a href="">empty anchor</a>'
             }).getFirst().clone();
 
-            equal(clone.getAttribute('href', 2)).should_be('');
-          },
+            equal(clone.getAttribute('href', 2), '', 'should clone empty href attribute');
 
-          'should not clone Element Storage': function(){
             Container.store('drink', 'milk');
             var clone = Container.clone();
-            equal(clone.retrieve('drink')).should_be_null();
-            equal(Container.retrieve('drink')).should_be('milk');
-          },
+            equal(clone.retrieve('drink'), null, 'should not clone Element Storage');
+            equal(Container.retrieve('drink'), 'milk', 'should not clone Element Storage');
 
-          'should clone child nodes and not copy their uid': function(){
+
+
             var cloned = Container.clone(true).getElements('*');
             var old = Container.getElements('*');
-            equal(cloned.length).should_be(3);
-            equal(old.length).should_be(3);
-            equal($$(old, cloned).length).should_be(6);
-          },
+            equal(cloned.length, 3, 'should clone child nodes and not copy their uid');
+            equal(old.length, 3, 'should clone child nodes and not copy their uid');
+            equal($$(old, cloned).length, 6, 'should clone child nodes and not copy their uid');
 
-          'should clone a text input and retain value': function(){
+
             var inputs = new Element('div', { 'html': '' +
             '<input id="input1" type="text" value="Some Value" />' +
             '<input id="input2" type="text" />'
@@ -934,13 +778,13 @@ test('Element.inject', function() {
             var input1 = inputs[0].clone();
             var input2 = inputs[1].clone(false, true);
 
-            ok(!input1.id).should_be_true();
-            equal(input2.id).should_be('input2');
-            value_of(input1.value).should_be('Some Value');
-            value_of(input2.value).should_be('');
-          },
+            ok(!input1.id, 'should clone a text input and retain value');
+            equal(input2.id, 'input2', 'should clone a text input and retain value');
+            value_of(input1.value, 'Some Value', 'should clone a text input and retain value');
+            value_of(input2.value, '', 'should clone a text input and retain value');
 
-          'should clone a textarea and retain value': function(){
+
+
             var textareas = new Element('div', { 'html': '' +
             '<textarea id="textarea1"></textarea>' +
             '<textarea id="textarea2">Some-Text-Here</textarea>'
@@ -949,13 +793,13 @@ test('Element.inject', function() {
             var textarea1 = textareas[0].clone();
             var textarea2 = textareas[1].clone(false, true);
 
-            value_of(!textarea1.id).should_be_true();
-            value_of(textarea2.id).should_be('textarea2');
-            value_of(textarea1.value).should_be('');
-            value_of(textarea2.value).should_be('Some-Text-Here');
-          },
+            value_of(!textarea1.id, 'should clone a textarea and retain value');
+            value_of(textarea2.id, 'textarea2', 'should clone a textarea and retain value');
+            value_of(textarea1.value, '', 'should clone a textarea and retain value');
+            value_of(textarea2.value, 'Some-Text-Here', 'should clone a textarea and retain value');
 
-          'should clone a checkbox and retain checked state': function(){
+
+
             var checks = new Element('div', { 'html': '' +
             '<input id="check1" type="checkbox" />' +
             '<input id="check2" type="checkbox" checked="checked" />'
@@ -964,13 +808,13 @@ test('Element.inject', function() {
             var check1 = checks[0].clone();
             var check2 = checks[1].clone(false, true);
 
-            value_of(!check1.id).should_be_true();
-            value_of(check2.id).should_be('check2');
-            value_of(check1.checked).should_be_false();
-            value_of(check2.checked).should_be_true();
-          },
+            value_of(!check1.id, 'should clone a checkbox and retain checked state');
+            value_of(check2.id, 'check2', 'should clone a checkbox and retain checked state');
+            value_of(check1.checked, false, 'should clone a checkbox and retain checked state');
+            value_of(check2.checked, 'should clone a checkbox and retain checked state');
 
-          'should clone a select and retain selected state': function(){
+
+
             var selects = new Element('div', { 'html': '' +
             '<select name="select" id="select1">' +
             '<option>--</option>' +
@@ -991,12 +835,11 @@ test('Element.inject', function() {
             var select1 = selects[0].clone(true);
             var select2 = selects[1].clone(true, true);
 
-            value_of(!select1.id).should_be_true();
-            value_of(select2.id).should_be('select2');
-            value_of(select1.selectedIndex).should_be(3);
-            value_of(select2.options[3].selected).should_be_true();
-            value_of(select2.options[4].selected).should_be_true();
-          },
+            value_of(!select1.id, 'should clone a select and retain selected state');
+            value_of(select2.id, 'select2', 'should clone a select and retain selected state');
+            value_of(select1.selectedIndex, 3, 'should clone a select and retain selected state');
+            value_of(select2.options[3].selected, 'should clone a select and retain selected state');
+            value_of(select2.options[4].selected, 'should clone a select and retain selected state');
 
           'should clone custom attributes': function(){
             var div = new Element('div');
