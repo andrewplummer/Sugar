@@ -21,7 +21,7 @@
 
     testDone: function(name, failures, total, environment){
       var text,css;
-      var title = '<h4>' + name + '</h4>';
+      var title = '<h5>' + name + '</h5>';
       if(failures == 0){
         text = '.';
         css = 'pass';
@@ -32,12 +32,14 @@
         title += assertions;
       }
 
-      module.append($('<li class="test '+css+'"></li>').attr('title', title).append(text));
+      $('ul', module).append($('<li class="test '+css+'"></li>').attr('title', title).append(text));
     },
 
     moduleStart: function(name, environment){
       if(!time) time = new Date();
-      module = $('<ul/>').addClass('module').addClass(name);
+      var tests = $('<ul/>').addClass(name);
+      var header = $('<h4/>').text(name);
+      module = $('<div class="module"/>').append(header).append(tests);
     },
 
     moduleDone: function(name, failures, total, environment){

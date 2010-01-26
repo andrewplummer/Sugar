@@ -6,7 +6,7 @@ License:
 	MIT-style license.
 */
 
-module('Mootools Core');
+module('Mootools');
 
 test('$A', function() {
 

@@ -5,8 +5,6 @@ License:
 	MIT-style license.
 */
 
-module('MooTools Element');
-
 test('Element constructor', function() {
 
   (function(){

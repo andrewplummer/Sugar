@@ -6,8 +6,6 @@ License:
 	MIT-style license.
 */
 
-module('Mootools Array');
-
 test("Array Methods", function(){
 
   // Array.flatten

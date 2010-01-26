@@ -6,8 +6,6 @@ License:
 	MIT-style license.
 */
 
-module('MooTools Class');
-
 (function(){
 
   var Animal = new Class({
