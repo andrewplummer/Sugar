@@ -1,7 +1,46 @@
 var globalArgsTest = 'nothing to see here';
 
+
+module('Prototype');
+
+// Adapter
+//
+var Test = {
+  Unit: {
+    Runner: function(tests){
+      for(var test_name in tests){
+        if(tests.hasOwnProperty(test_name)){
+          var stored = tests[test_name];
+          (function(name){
+            test(name, function(){
+            console.info(test_name);
+            Test.Unit.currentTestName = name;
+            stored.apply(Test.Unit); 
+          });
+        })(test_name);
+        }
+      }
+    },
+    currentTestName: null,
+    assertEnumEqual: function(tested, assertion){
+      console.info('poo');
+      same(assertion, tested, this.currentTestName);
+    },
+    assertEqual: function(tested, assertion){
+      console.info('poo');
+      equal(assertion, tested, this.currentTestName);
+    },
+    assertIdentical: function(tested, assertion){
+      console.info('poo');
+      equal(assertion, tested, this.currentTestName);
+    }
+  }
+};
+
+
 new Test.Unit.Runner({
   test$A: function(){
+    console.info(this);
     this.assertEnumEqual([], $A({}));
   },
   
