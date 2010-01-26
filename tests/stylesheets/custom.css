@@ -90,7 +90,7 @@ ul,li {
 }
 
 iframe {
-  display: none;
+  visibility: hidden;
 }
 
 .stats {
