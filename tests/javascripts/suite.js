@@ -4,19 +4,23 @@
   var suite = $('#suite');
   var module;
   var test;
-  var assertions;
+  var failedAssertions;
+  var totalAssertions;
   var time;
 
   QUnit = {
     log: function(result, message, environment){
       if(!result){
-        assertions += '<p class="fail">'+message+'</p>';
+        failedAssertions += '<p class="fail">'+message+'</p>';
+      } else {
+        totalAssertions++;
       }
     },
 
     testStart: function(){
       test = $('<ul class="test"/>');
-      assertions = '';
+      failedAssertions = '';
+      totalAssertions = 1;
     },
 
     testDone: function(name, failures, total, environment){
@@ -25,11 +29,11 @@
       if(failures == 0){
         text = '.';
         css = 'pass';
-        title += '<p class="pass">Pass</p>';
+        title += '<p class="pass">Pass ('+totalAssertions+' assertions)</p>';
       } else {
         text = 'F';
         css = 'fail';
-        title += assertions;
+        title += failedAssertions;
       }
 
       $('ul', module).append($('<li class="test '+css+'"></li>').attr('title', title).append(text));
