@@ -19,7 +19,6 @@ test("Number", function () {
 
 test("String", function () {
 
-  console.info(environment);
   equalsWithException('HAHA'.capitalize(), 'Haha', { environment: 'MooTools 1.2.4', result: 'HAHA' }, 'String#capitalize');
 
 });
