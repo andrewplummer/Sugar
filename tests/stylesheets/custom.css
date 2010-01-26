@@ -23,10 +23,10 @@ ul,li {
   font-size: 14px;
 }
 
-ul.environments {
+.environments {
 }
 
-ul.environments > li {
+.environments > li {
   clear: left;
   overflow: hidden;
   margin-bottom: 10px;
@@ -38,24 +38,33 @@ ul.environments > li {
   background-color: #fff;
 }
 
-ul.environments > li.fail {
+.environments > li.fail {
   border-color: #caa;
   background-color: #fff5f5;
   color: #c33;
 }
 
-ul.environments h3 .subheader {
+.environment h3 {
+  margin-bottom: 10px;
+}
+
+.environment h3 .subheader {
   font-size: 10px;
   margin-left: 10px;
   color: #bbb;
 }
 
-ul.module {
+.module {
   float: left;
   margin-right: 5px;
 }
 
-ul.module li {
+.module h4 {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.module ul li {
   float: left;
   list-style-type: none;
 }
