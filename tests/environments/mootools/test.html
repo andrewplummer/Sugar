@@ -5,6 +5,8 @@
     <!-- qunit setup -->
     <script type="text/javascript" src="../../javascripts/qunit.js"></script>
     <script type="text/javascript" src="../../javascripts/environment.js"></script>
+    <!-- test adapter -->
+    <script type="text/javascript" src="../../javascripts/adapters/mootools.js"></script>
     <!-- environment -->
     <script type="text/javascript" src="mootools-1.2.4-core-jm.js"></script>
     <!-- sugar -->
@@ -13,6 +15,10 @@
     <script type="text/javascript" src="../../tests/javascript.js"></script>
     <script type="text/javascript" src="../../tests/sugar.js"></script>
     <!-- mootools tests -->
+    <script type="text/javascript">
+      module('Mootools');
+      registerEnvironment('MooTools 1.2.4');
+    </script>
     <script type="text/javascript" src="../../tests/mootools/Core/Core.js"></script>
     <script type="text/javascript" src="../../tests/mootools/Core/Browser.js"></script>
     <script type="text/javascript" src="../../tests/mootools/Native/Array.js"></script>
@@ -26,9 +32,6 @@
     <script type="text/javascript" src="../../tests/mootools/Element/Element.Style.js"></script>
     <script type="text/javascript" src="../../tests/mootools/Element/Element.Dimensions.js"></script>
     <script type="text/javascript" src="../../tests/mootools/Utilities/Cookie.js"></script>
-    <script type="text/javascript">
-      registerEnvironment('MooTools 1.2.4');
-    </script>
   </head>
   <body>
     <div id="main">

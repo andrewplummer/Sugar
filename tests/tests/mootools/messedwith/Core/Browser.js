@@ -6,6 +6,28 @@ License:
 	MIT-style license.
 */
 
+test('$exec', function() {
+
+  $exec.call($exec, 'var execSpec = 42');
+  equals(window.execSpec, 42, 'should evaluate on global scope');
+  equals($exec('$empty();'), '$empty();', 'should return the evaluated script');
+
+});
+
+test('Document', function() {
+
+  same(document.window, window, 'should hold the parent window');
+  equals(document.head.tagName.toLowerCase(), 'head', 'should hold the head element');
+
+});
+
+test('Window', function() {
+
+  ok($defined(window.Element.prototype), 'should set the Element prototype');
+
+});
+
+/*
 describe('$exec', {
 
 	'should evaluate on global scope': function(){
@@ -38,3 +60,4 @@ describe('Window', {
 	}
 
 });
+*/
