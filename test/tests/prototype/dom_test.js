@@ -54,8 +54,12 @@ new Test.Unit.Runner({
     
     this.assertIdentical(document.getElementById('testdiv'), $('testdiv'));
     this.assertEnumEqual([ $('testdiv'), $('container') ], $('testdiv', 'container'));
-    this.assertEnumEqual([ $('testdiv'), undefined, $('container') ],
+
+    // AP: NOT undefined... null!
+    this.assertEnumEqual([ $('testdiv'), null, $('container') ],
       $('testdiv', 'noWayThisIDExists', 'container'));
+    //this.assertEnumEqual([ $('testdiv'), undefined, $('container') ],
+    //  $('testdiv', 'noWayThisIDExists', 'container'));
     var elt = $('testdiv');
     this.assertIdentical(elt, $(elt));
     this.assertRespondsTo('hide', elt);
