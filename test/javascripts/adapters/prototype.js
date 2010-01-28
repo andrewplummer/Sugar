@@ -30,19 +30,22 @@ var Test = {
 
 QUnitBridge = {
   assertEnumEqual: function(){
-    same(arguments[0], arguments[1], currentTest);
+    same(arguments[1], arguments[0], currentTest);
   },
   assertEqual: function(){
-    same(arguments[0], arguments[1], currentTest);
+    same(arguments[1], arguments[0], currentTest);
   },
   assertHashEqual: function(){
-    same(arguments[0], arguments[1], currentTest);
+    same(arguments[1], arguments[0], currentTest);
   },
   assertIdentical: function(){
-    equal(arguments[0], arguments[1], currentTest);
+    equal(arguments[1], arguments[0], currentTest);
   },
   assertNotIdentical: function(){
-    ok(arguments[0] != arguments[1], currentTest);
+    ok(arguments[1] != arguments[0], currentTest);
+  },
+  assertNotEqual: function(){
+    ok(arguments[1] != arguments[0], currentTest);
   },
   assertUndefined: function(){
     ok(typeof arguments[0] == 'undefined', currentTest);
@@ -50,11 +53,35 @@ QUnitBridge = {
   assert: function(){
     ok(arguments[0], currentTest, currentTest);
   },
+  assertRespondsTo: function(name, obj){
+    ok(typeof arguments[1][arguments[0]] != 'undefined');
+  },
+  assertNothingRaised: function(){
+    // do something here
+  },
+  assertElementsMatch: function(){
+    var first = arguments[0];
+    for(var i=1;i < arguments.length;i++){
+      equal(first, $$(arguments[i]), currentTest);
+    }
+  },
+  assertElementMatches: function(){
+    this.assertElementsMatch(arguments[0], arguments[1]);
+  },
   benchmark: function(){
     var startTime = new Date();
     arguments[0].call();
     var endTime = new Date();
     ok(endTime - startTime < arguments[1], currentTest);
+  },
+  wait: function(time, func){
+    var self = this;
+    setTimeout(function(){ func.call(self); }, time);
+  },
+  info: function(){
+    if(typeof console != 'undefined'){
+      console.log(arguments[0]);
+    }
   },
   assertRaise: function(){
     try {
@@ -63,11 +90,18 @@ QUnitBridge = {
       equal(error.name, arguments[0], currentTest);
     }
   },
-  assertMatch: function(){
-    equal(arguments[0], arguments[1], currentTest);
+  assertMatch: function(reg, test){
+    if(typeof reg != 'object'){
+      reg = new RegExp(reg);
+    }
+    console.info(typeof reg);
+    ok(reg.test(test), currentTest);
   },
   assertNull: function(){
     equal(arguments[0], null, currentTest)
+  },
+  assertNotNull: function(){
+    ok(arguments[0] != null, currentTest)
   },
   fail: function(occurrence){
 
