@@ -594,7 +594,10 @@ new Test.Unit.Runner({
     this.assertElementMatches(element.previous(1), 'li');
     this.assertElementMatches(element.previous('.first'), 'li.first');
     this.assertEqual(undefined, element.previous(3));
-    this.assertEqual(undefined, $('navigation_test').down().previous());
+
+    // AP: This returns null, not undefined
+    this.assertEqual(null, $('navigation_test').down().previous());
+
     this.assertElementMatches(element.previous('.non-existant, .first'), 'li.first');
     
     var dummy = $(document.createElement('DIV'));
@@ -609,7 +612,10 @@ new Test.Unit.Runner({
     this.assertElementMatches(element.next(2), 'li.last');
     this.assertElementMatches(element.next('.last'), 'li.last');
     this.assertEqual(undefined, element.next(3));
-    this.assertEqual(undefined, element.next(2).next());
+
+    // AP: This returns null, not undefined
+    this.assertEqual(null, element.next(2).next());
+
     this.assertElementMatches(element.next('.non-existant, .last'), 'li.last');
     
     var dummy = $(document.createElement('DIV'));
