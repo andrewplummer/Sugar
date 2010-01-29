@@ -62,11 +62,11 @@ QUnitBridge = {
   assertElementsMatch: function(){
     var first = arguments[0];
     for(var i=1;i < arguments.length;i++){
-      equal(first, $$(arguments[i]), currentTest);
+      ok(first[i-1].match(arguments[i]), currentTest);
     }
   },
   assertElementMatches: function(){
-    this.assertElementsMatch(arguments[0], arguments[1]);
+    ok(arguments[0].match(arguments[1]), currentTest);
   },
   benchmark: function(){
     var startTime = new Date();
@@ -94,7 +94,6 @@ QUnitBridge = {
     if(typeof reg != 'object'){
       reg = new RegExp(reg);
     }
-    console.info(typeof reg);
     ok(reg.test(test), currentTest);
   },
   assertNull: function(){
