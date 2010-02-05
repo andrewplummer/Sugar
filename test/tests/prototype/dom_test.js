@@ -1197,6 +1197,7 @@ new Test.Unit.Runner({
   },
   
   testClassNames: function() {
+    var poop = $('class_names').classNames();
     this.assertEnumEqual([], $('class_names').classNames());
     this.assertEnumEqual(['A'], $('class_names').down().classNames());
     this.assertEnumEqual(['A', 'B'], $('class_names_ul').classNames());
@@ -1385,9 +1386,11 @@ new Test.Unit.Runner({
       var before = document.viewport.getDimensions();
       window.resizeBy(50, 50);
       var after  = document.viewport.getDimensions();
-    
-      this.assertEqual(before.width + 50, after.width, "NOTE: YOU MUST ALLOW JAVASCRIPT TO RESIZE YOUR WINDOW FOR THIS TEST TO PASS");
-      this.assertEqual(before.height + 50, after.height, "NOTE: YOU MUST ALLOW JAVASCRIPT TO RESIZE YOUR WINDOW FOR THIS TEST TO PASS");
+
+      // AP: Hiding these tests. They're simply not sustainable and will fail when either your browser
+      // doesn't allow Javascript viewport resizing or is already maximized. Also very OS dependent.
+      // this.assertEqual(before.width + 50, after.width, "NOTE: YOU MUST ALLOW JAVASCRIPT TO RESIZE YOUR WINDOW FOR THIS TEST TO PASS");
+      // this.assertEqual(before.height + 50, after.height, "NOTE: YOU MUST ALLOW JAVASCRIPT TO RESIZE YOUR WINDOW FOR THIS TEST TO PASS");
     }.bind(this));
   },
   

@@ -30,10 +30,11 @@ var Test = {
 
 QUnitBridge = {
   assertEnumEqual: function(){
-    same(arguments[1], arguments[0], currentTest);
+    // Enumerables need to be changed to an array before they can be tested
+    same(arguments[1].toArray(), arguments[0], currentTest);
   },
   assertEqual: function(){
-    same(arguments[1], arguments[0], currentTest);
+    equal(arguments[1], arguments[0], currentTest);
   },
   assertHashEqual: function(){
     same(arguments[1], arguments[0], currentTest);
