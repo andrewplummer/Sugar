@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Event Delegate Tests</title>
+</head>
+<body class="yui-skin-sam">
+
+	<div id="container">
+		<button id="button-1">Click Me!</button>
+		<a id="anchor-1" href="http://www.yahoo.com">Click Me!</a>
+		<input type="text" id="text-1">
+	</div>
+
+	<!-- YUI3 Core //-->
+	<script type="text/javascript" src="../../../build/yui/yui-debug.js"></script>
+	<!-- Initialization process //-->
+	<script type="text/javascript">
+		YUI({
+		    base: "../../../build/",
+		    filter: 'debug',
+		    combine: false,
+	        useConsole: true,
+	        logExclude: {deprecated: 1,
+            Dom: true, Selector: true, Node: true, attribute: true, base: true, event: true, widget: true}
+		}).use('console', 'test', 'event', 'event-simulate', function (Y) {
+			
+			var Assert = Y.Assert;
+			
+		    // creating the console...
+			(new Y.Console()).render();
+			
+			// starting the testing process
+			
+			// add the test cases and suites 
+			Y.Test.Runner.add(new Y.Test.Case({
+				
+				name: "Event Focus And Blur Test",
+				
+				test_add_focus: function(){
+					
+					var foo = false, 
+						target,
+						boundEl,
+
+						onFocus = function(e) {
+
+							foo = true;
+							boundEl = this;
+							target = e.target;
+
+						};
+					
+					Y.on('focus', onFocus, '#container');
+
+					Y.one('#button-1').focus();
+
+					Assert.isTrue(foo, "simple focus fails, container should pickup the focus event");
+					Assert.areEqual(target, Y.one('#button-1'), "the target is the incorrect node, should be the actual focus target");
+					Assert.areEqual(boundEl, Y.one('#container'), "the default scope should be the bound element");
+
+					foo = false;
+					target = null;
+					boundEl = null;
+
+					Y.one('#text-1').focus();
+					Y.one('#button-1').focus();
+
+					Assert.isTrue(foo, "simple focus fails, container should pickup the focus event");
+					Assert.areEqual(target, Y.one('#button-1'), "the target is the incorrect node, should be the actual focus target");
+					Assert.areEqual(boundEl, Y.one('#container'), "the default scope should be the bound element");
+					
+					Y.one('#button-1').blur();
+					
+				},
+
+				test_remove_focus: function () {
+
+					var foo = false,
+
+						onFocus = function(e) {
+
+							foo = true;
+
+						};
+					
+					var handle = Y.on('focus', onFocus, '#container');
+
+					Y.one('#button-1').focus();
+
+					Assert.isTrue(foo, "simple focus fails, container should pickup the focus event");
+					
+					handle.detach();
+					
+					Y.one('#button-1').blur();						
+					
+					foo = false;
+					
+					Y.one('#button-1').focus();
+
+					Assert.isFalse(foo, "container should not pickup the focus event after listener is removed");
+					
+					Y.one('#button-1').blur();
+			
+				},
+				
+				test_purge_focus: function () {
+				
+					var foo = false,
+				
+						onFocus = function(e) {
+				
+							foo = true;
+				
+						};
+					
+					Y.on('focus', onFocus, '#container');
+				
+					Y.one('#button-1').focus();
+				
+					Assert.isTrue(foo, "simple focus fails, container should pickup the focus event");
+					
+					Y.Event.purgeElement('#container', false, 'focus');
+					
+					Y.one('#button-1').blur();
+				
+					foo = false;
+					
+					Y.one('#button-1').focus();
+				
+					Assert.isFalse(foo, "container should not pickup the focus event after listener has been purged");
+					
+				},
+								
+
+		        test_add_blur: function () {
+
+					var foo = false, 
+						target,
+						boundEl,
+
+						onBlur = function(e) {
+
+							foo = true;
+							boundEl = this;
+							target = e.target;
+
+						};
+					
+					Y.on('blur', onBlur, '#container');
+
+					Y.one('#button-1').focus();
+					Y.one('#button-1').blur();
+
+					Assert.isTrue(foo, "simple blur fails, container should pickup the focus event");
+					Assert.areEqual(target, Y.one('#button-1'), "the target is the incorrect node, should be the actual blur target");
+					Assert.areEqual(boundEl, Y.one('#container'), "the default scope should be the bound element");
+					
+					foo = false;
+					target = null;
+					boundEl = null;
+					
+					Y.one('#button-1').focus();
+					Y.one('#text-1').focus();
+					
+					Assert.isTrue(foo, "simple blur fails, container should pickup the focus event");
+					Assert.areEqual(target, Y.one('#button-1'), "the target is the incorrect node, should be the actual blur target");
+					Assert.areEqual(boundEl, Y.one('#container'), "the default scope should be the bound element");						
+
+		        },
+		
+				test_remove_blur: function () {
+
+					var foo = false, 
+
+						onBlur = function(e) {
+
+							foo = true;
+
+						};
+					
+					var handle = Y.on('blur', onBlur, '#container');
+
+					Y.one('#button-1').focus();
+					Y.one('#button-1').blur();
+
+					Assert.isTrue(foo, "simple focus fails, container should pickup the focus event");
+					
+					foo = false;
+
+					handle.detach();
+					
+					Y.one('#button-1').focus();
+					Y.one('#text-1').focus();
+					
+					Assert.isFalse(foo, "container should not pickup the blur event after listener has been removed");
+			
+				},
+
+				test_purge_blur: function () {
+
+					var foo = false,
+
+						onBlur = function(e) {
+
+							foo = true;
+
+						};
+					
+					Y.on('blur', onBlur, '#container');
+
+					Y.one('#button-1').focus();
+					Y.one('#button-1').blur();
+
+					Assert.isTrue(foo, "simple focus fails, container should pickup the focus event");
+					
+					foo = false;
+
+					Y.Event.purgeElement('#container', false, 'blur');
+					
+					Y.one('#button-1').focus();
+					Y.one('#text-1').focus();
+					
+					Assert.isFalse(foo, "container should not pickup the blur event after listener has been purged");
+			
+				}				
+				
+			})); 
+			
+			//run all tests 
+			Y.Test.Runner.run();
+			
+			/* finishing the testing process */
+			
+		});
+	</script>
+</body>
+</html>

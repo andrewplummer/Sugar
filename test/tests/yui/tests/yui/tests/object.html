@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>YUI Object Tests</title>
+</head>
+
+<body class="yui-skin-sam">
+<h1>Object Tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" disabled="true" /></p>
+
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+<script type="text/javascript">
+
+(function() {
+    YUI({
+        base: "../../../build/",
+        filter: "debug",
+        logExclude: {
+            attribute: true, 
+            dom: true, 
+            node: true, 
+            event: true, 
+            base: true, 
+            widget: true, 
+            selector: true
+        },
+        useConsole: true
+    }).use("dump", "test", "console", "event-custom", function(Y) {
+
+        var button = Y.get('#btnRun');
+
+        // Set up the page
+        button.set("disabled", false);
+        Y.on("click", function() {
+            Y.Test.Runner.run();
+        }, button);
+
+        // var myConsole = new Y.Console().render();
+
+        var o = {
+            a1: {
+                a2: {
+                    a3: 'a'
+                }
+            },
+            b1: {
+                b2: 'b' 
+            },
+            c1: 'c'
+        }
+ 
+        var testObject = new Y.Test.Case({
+            name: "Object tests",
+        
+            'getValue deep path test': function() {
+                Y.Assert.areEqual('c', Y.Object.getValue(o, 'c1'));
+                Y.Assert.areEqual('a', Y.Object.getValue(o, ['a1', 'a2', 'a3']));
+                Y.Assert.areEqual(undefined, Y.Object.getValue(o, ['b1', 'b2', 'b3']));
+            },
+            
+            'setValue deep path test': function() {
+
+                Y.Object.setValue(o, 'c1', 'changed_c');
+                Y.Object.setValue(o, ['a1', 'a2', 'a3'], 'changed_a');
+                Y.Object.setValue(o, ['b1', 'b2', 'b3'], 'changed_b');
+
+                Y.Assert.areEqual('changed_c', Y.Object.getValue(o, 'c1'));
+                Y.Assert.areEqual('changed_a', Y.Object.getValue(o, ['a1', 'a2', 'a3']));
+                Y.Assert.areEqual(undefined, Y.Object.getValue(o, ['b1', 'b2', 'b3']));
+            }
+
+        });
+        
+
+        Y.Test.Runner.add(testObject);
+        Y.Test.Runner.run();
+    });
+})();
+</script>
+</body>
+</html>

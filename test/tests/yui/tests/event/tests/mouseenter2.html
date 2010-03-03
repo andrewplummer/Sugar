@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>MouseEnter and MouseLeave Event Tests</title>
+
+	<link rel="stylesheet" type="text/css" href="../../../build/reset/reset-min.css">
+	<link rel="stylesheet" type="text/css" href="../../../build/base/base-min.css">
+
+	<style type="text/css">
+	
+		.container {
+			background-color: #ccc;
+			padding: 20px;
+			margin: 10px 0;
+			border-width: 1px;
+			border-style: solid;
+			border-color: #ccc;
+		}
+		
+		.container.hover {
+			background-color: #fc0;
+		}
+		
+		.container ul {
+			list-style: none;
+			padding: 10px;
+			margin: 0;
+			background-color: #333;
+		}
+
+		.container ul li {
+			margin: 10px;
+			padding: 1px;
+			background-color: #999;
+			border-width: 1px;
+			border-style: solid;
+			border-color: #999;			
+		}
+		
+		.container ul li.hover {
+			background-color: #ff6;
+		}
+
+		.container ul li em {
+			display: block;
+			margin: 10px;
+			padding: 5px;
+			background-color: #666;			
+		}
+		
+		.outline,
+		.container ul li.outline {
+			border-color: #f00;
+		}
+		
+		.container.focus {
+			background-color: blue;
+		}
+	
+	</style>
+
+</head>
+<body>
+
+	<h1>MouseEnter and MouseLeave Event Tests</h1>
+
+	<ul>
+		<li>The background color of the <code>div</code> element should turn 
+		orange and have a red outline when you move the mouse over it.</li>
+		<li>The background color of each <code>li</code> should change to yellow
+		when you mouse over it and have a red outline.</li>		
+	</ul>
+
+	<script type="text/javascript" src="../../../build/yui/yui-debug.js"></script>
+
+	<script type="text/javascript">
+		YUI({
+		    base: "../../../build/",
+		    filter: 'debug'		
+		}).use('event', 'node-style', function (Y) {
+
+			//	Build the content via a timer to test Event's mechanism to 
+			//	defer the attachment of listeners until they are available 
+			//	in the DOM
+			
+			Y.Lang.later(3000, Y, function () {
+				Y.one('body').append('<div id="container-1" class="container"><ul id="ul-1"><li><em>Item Type One</em></li><li><em>Item Type Two</em></li><li><em>Item Type Three</em></li></ul></div><button id="remove-listeners">Remove Listeners</button>');
+			});
+			
+			
+			var onContainerMouseEnter = function (event) {
+
+				if (event.currentTarget == this) {
+					this.addClass("hover");					
+				}
+				
+			};
+			
+			var onContainerMouseLeave = function (event) {
+
+				if (event.currentTarget == this) {
+					this.removeClass("hover");
+				}
+				
+			};
+
+			var onLIMouseEnter = function (event) {
+
+				if (event.container.get("id") == "container-1") {
+					this.addClass("hover");
+				}
+				
+			};
+			
+			var onLIMouseLeave = function (event) {
+
+				if (event.container.get("id") == "container-1") {
+					this.removeClass("hover");
+				}
+				
+			};
+			
+			var addContainerOutline = function (event, className) {
+
+				event.currentTarget.addClass(className);
+
+			};
+			
+			var removeContainerOutline = function (event) {
+
+				event.currentTarget.removeClass(this);
+
+			};
+
+			
+			var addLIOutline = function (event, className) {
+			
+				event.currentTarget.addClass(className);
+			
+			};
+			
+			var removeLIOutline = function (event) {
+			
+				event.currentTarget.removeClass(this);
+			
+			};
+			
+			var setLIColor = function (event) {
+
+				this.setStyle("color", "#fff");				
+
+			};
+			
+			var removeLIColor = function (event) {
+
+				this.setStyle("color", "");
+								
+			};
+			
+			var handle1 = Y.on("mouseenter", onContainerMouseEnter, "#container-1");
+			var handle2 = Y.on("mouseleave", onContainerMouseLeave, "#container-1");
+
+			var handle3 = Y.on("mouseenter", addContainerOutline, "#container-1", Y, "outline");
+			var handle4 = Y.on("mouseleave", removeContainerOutline, "#container-1", "outline");
+
+			var handle5 = Y.on("mouseenter", setLIColor, "#container-1 li");
+			var handle6 = Y.on("mouseleave", removeLIColor, "#container-1 li");
+
+			var handle7 = Y.delegate("mouseenter", onLIMouseEnter, "#container-1", "li");
+			var handle8 = Y.delegate("mouseleave", onLIMouseLeave, "#container-1", "li");
+
+			var handle9 = Y.delegate("mouseenter", addLIOutline, "#container-1", "li", Y, "outline");
+			var handle10 = Y.delegate("mouseleave", removeLIOutline, "#container-1", "li", "outline");
+				
+
+			Y.on("click", function () {
+
+				handle1.detach(); 
+				handle2.detach(); 
+				handle3.detach(); 
+				handle4.detach(); 
+				handle5.detach(); 
+				handle6.detach(); 
+				handle7.detach(); 
+				handle8.detach();                 
+				handle9.detach(); 
+				handle10.detach();
+				
+			}, "#remove-listeners");
+				
+		});
+	
+	</script>
+
+</body>
+</html>

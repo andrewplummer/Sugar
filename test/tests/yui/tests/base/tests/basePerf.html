@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>YUI: Base Perf</title>
+</head>
+<body class="yui-skin-sam">
+
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+
+<p>This test creates a class with 20 attributes and extends from Y.Base.</p>
+
+<div id="results"></div>
+
+<script>
+
+YUI({base: '../../../build/', filter:"raw"}).use('dump', 'base', 'node', function(Y) {
+
+    var res = document.getElementById('results');
+
+    var Test = function() {
+        if (Test.superclass) {
+            Test.superclass.constructor.apply(this, arguments);
+        }
+    };
+
+    Test.NAME = 'test';
+
+    Test.ATTRS = {
+
+        attr1: {
+            value: "Foo",
+            setter: function(n) {
+                return n;
+            }
+        },
+
+        attr2: {
+            value: "Bar",
+            setter: function(n) {
+                return n;
+            }
+        },
+
+        attr3: {
+            value: true
+        },
+
+        attr4: {
+            value: 3
+        },
+
+        attr5: {
+            value: 3
+        },
+
+        attr6: {
+            value: false,
+            setter: function(lock) {
+                return lock;
+            }
+        },
+
+        attr7: {
+            value: false
+        },
+
+        attr8: {
+            value: true
+        },
+
+        attr9: {
+            value: true
+        },
+
+        attr10: {
+            value: false
+        },
+
+        attr11: {
+            value: true
+        },
+
+        attr12: {
+            value: false
+        },
+
+        attr13: {
+            value: false
+        },
+
+        attr14: {
+            value: false,
+            setter: function(val) {
+                return val;
+            }
+        },
+
+        attr15: {
+            value: null,
+            setter: function(val) {
+                return false;
+            }
+        },
+
+        attr16: {
+            value: ['default'],
+
+            getter: function() {
+                return false;
+            },
+
+            setter: function(g) {
+                return g;
+            }
+        },
+        attr17: {
+            value: null,
+            setter: function(g) {
+                return g;
+            }
+        },
+        attr18: {
+            writeOnce: true,
+            value: null
+        },
+        attr19: {
+            writeOnce: true,
+            value: null
+        },
+        attr20: {
+            writeOnce: true,
+            value: null
+        }
+    };
+
+    Y.extend(Test, Y.Base, {
+        foo: function() {}
+    });
+
+    var start, end, i, t, n = 1000;
+
+    // console.profile("Base");
+    start = new Date().getTime();
+    for (i = 0; i < n; i++) {
+        t = new Test();
+    }
+    end = new Date().getTime();
+    // console.profileEnd();
+
+    res.innerHTML = "Avg Time:" + ((end-start)/n);
+
+    var t = new Test();
+    res.innerHTML += "<pre>" + Y.dump(t.getAttrs()) + "</pre>";
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>DragDrop Tests</title>
+    <script type="text/javascript" src="../../../build/yui/yui.js"></script>
+
+    <style>
+        #wrap {
+            width: 900px;
+            height: 600px;
+            border: 1px solid black;
+            position: relative;
+        }
+        #drag {
+            height: 100px;
+            width: 100px;
+            border: 1px solid black;
+            background-color: #ccc;
+            position: relative;
+            z-index: 1;
+        }
+        #drop {
+            position: absolute;
+            height: 200px;
+            width: 200px;
+            border: 1px solid black;
+            background-color: #ccc;
+            top: 10px;
+            right: 10px;
+        }
+        .yui-skin-sam .yui-console-entry-pass .yui-console-entry-cat {
+            background-color: green;
+            color: white;
+            font-weight: bold;
+        }
+        .yui-skin-sam .yui-console-entry-src,
+        .yui-skin-sam .yui-console-entry-time {
+            display: none;
+        }
+        .yui-skin-sam .yui-console-entry {
+            position: relative;
+        }
+        .yui-skin-sam .yui-console-entry-pass .yui-console-entry-content {
+            position: absolute;
+            top: 1px;
+            right: 4px;
+        }
+        .yui-skin-sam .yui-console-entry-fail .yui-console-entry-cat {
+            background-color: red;
+            color: white;
+            font-weight: bold;
+        }
+        .yui-skin-sam .yui-console-bd {
+            height: auto !important;
+        }
+    </style>
+
+</head>
+<body class="yui-skin-sam">
+    <div id="wrap">
+        <div id="drag"></div>
+        <div id="drop"></div>
+    </div>
+<script type="text/javascript" src="dd.js"></script>
+</body>
+</html>

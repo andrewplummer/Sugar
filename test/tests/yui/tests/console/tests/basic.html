@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/console/assets/skins/sam/console-filters.css">
+    <style type="text/css">
+#c {
+    margin-bottom: 1em;
+}
+    </style>
+</head>
+<body class="yui-skin-sam">
+<div class="markup">
+    <div id="c"></div>
+    <input type="button" id="foo" value="Log foo msg">
+    <input type="button" id="info" value="Log info msg">
+    <input type="button" id="warn" value="Log warn msg">
+    <input type="button" id="error" value="Log error msg">
+    <button type="button" id="hide">Hide</button>
+    <button type="button" id="show">Show</button>
+    <button type="button" id="collapse">Collapse</button>
+    <button type="button" id="expand">Expand</button>
+    <button type="button" id="destroy">Destroy</button>
+    <button type="button" id="throttle">Throttle</button>
+    <button type="button" id="limit">Limit cache</button>
+</div>
+
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+<script type="text/javascript">
+YUI({
+    //useBrowserConsole:false,
+    //logLevel: 'warn',
+    //filter: 'debug',
+    //logInclude : { global: true },
+    //logExclude : { attribute: true },
+    filters : {
+        console: 'raw',
+        'console-filters': 'debug'
+    },
+    base: '../../../build/'
+}).use('console','console-filters', function (Y) {
+
+var x = {
+    foo : 0,
+    info : 0,
+    warn : 0,
+    error : 0
+};
+
+Y.on('click',function (e) { Y.log('FOO message '+(++x.foo),'foo'); },'#foo');
+Y.on('click',function (e) { Y.log('INFO message long message that should trigger scroll bars '+(++x.info)); },'#info');
+Y.on('click',function (e) { Y.log('WARN message '+(++x.warn),'warn'); },'#warn');
+Y.on('click',function (e) { Y.log('ERROR message '+(++x.error),'error'); },'#error');
+Y.get('#hide').on('click', function () { yconsole.hide(); });
+Y.get('#show').on('click', function () { yconsole.show(); });
+Y.get('#collapse').on('click', function () { yconsole.collapse(); });
+Y.get('#expand').on('click', function () { yconsole.expand(); });
+Y.get('#destroy').on('click', function () { yconsole.destroy(); });
+Y.get('#throttle').on('click', function () {
+    for (var i = 0; i < 500; ++i) {
+        Y.log('Throttle message ' + i);
+    }
+});
+Y.get('#limit').on('click', function () {
+    yconsole.filter.set('cacheLimit', 500);
+});
+
+var yconsole = new Y.Console({
+    //useBrowserConsole: true,
+    //verbose : true,
+    //consoleLimit : 10,
+    boundingBox: '#c',
+    //style : 'inline',
+    logLevel : "Garbage",
+    newestOnTop : false
+});
+
+//yconsole.plug(Y.Plugin.ConsoleFilters);
+
+yconsole.render();
+
+//Y.log('testing');
+//Y.log('testing known category','info');
+Y.log('Using a custom source and category','note','my-app');
+Y.log('Standard info message');
+Y.log('This is a warning','warn','attribute');
+Y.log('This is an error','error','event');
+//Y.log('testing known source','info','global');
+//Y.log('testing new source','info','bar');
+//yconsole.log("Test from the console object",'info','Console');
+//Y.log('testing warn','warn');
+//Y.log('testing long warn that will take up multiple lines in the console','warn');
+//Y.log('testing error','error');
+//Y.log('testing long error that will take up multiple lines in the console','error');
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js"></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

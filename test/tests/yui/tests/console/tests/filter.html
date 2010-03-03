@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" id="locallink" rel="stylesheet" href="../../../build/console/assets/skins/sam/console.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/test/assets/test-console.css">
+    <style type="text/css" id="styleblock" class="highlight-ignore">
+        #log {
+            position: static;
+        }
+        h1 {
+            font: normal 125%/1.4 Arial, sans-serif;
+        }
+        .yui-skin-sam .yui-console .yui-console-content {
+            font-size: 10px;
+            width: 32em;
+        }
+        .yui-skin-sam .yui-console .yui-console-bd {
+            height: 50em;
+        }
+        .yui-skin-sam .yui-console-entry-pass .yui-console-entry-cat {
+            background: #070;
+            color: #fff;
+        }
+        .yui-skin-sam .yui-console-entry-fail .yui-console-entry-cat {
+            background: #700;
+            color: #fff;
+        }
+        .highlight-example {
+            display: inline;
+            float: left;
+            width: 650px;
+        }
+        .highlight-example h2 {
+            display: none;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<h1>Console filter plugin tests</h1>
+<div id="log"></div>
+
+<script type="text/javascript" src="../../../build/yui/yui-debug.js"></script>
+<script type="text/javascript" src="../../../build/console/console-filters.js"></script>
+<script type="text/javascript">
+YUI({
+    base : '../../../build/',
+    filter : 'raw',
+    useBrowserConsole : false,
+    logExclude : {event:true,attribute:true,base:true,widget:true,Selector:true}
+}).use('test','console','plugin','console-filters',function (Y) {
+
+var suite = new Y.Test.Suite("Tests");
+
+suite.add(new Y.Test.Case({
+    name : "instantiation",
+
+    test_instantiation : function () {
+        var c = new Y.Console({
+            newestOnTop: true,
+            boundingBox: '#testbed'
+        });
+        
+        c.plug(Y.Plugin.ConsoleFilters);
+
+        c.destroy();
+    },
+
+    test_render : function () {
+        var c = new Y.Console({
+            newestOnTop: true,
+            boundingBox: '#testbed'
+        });
+        
+        c.plug(Y.Plugin.ConsoleFilters);
+
+        c.render();
+
+        c.destroy();
+    }
+}));
+
+suite.add(new Y.Test.Case({
+    name : "ui",
+
+    "Filter controls should be in the footer" : function () {
+    }
+}));
+
+
+var yconsole = new Y.Console({ boundingBox:"#log", newestOnTop: false }).
+                plug(Y.Plugin.ConsoleFilters).
+                render();
+
+
+//yconsole.hideCategory('info');
+yconsole.printLogEntry = function (m) {
+    if (m.category === 'section') {
+        this._addToConsole(Y.Node.create("<h3>"+m.message+"</h3>"));
+        return this;
+    } else if (m.category === "break") {
+        this._addToConsole(Y.Node.create("<br>"));
+        return this;
+    } else if (m.category === "info") {
+        return this;
+    } else {
+        return Y.Console.prototype.printLogEntry.call(this,m);
+    }
+};
+
+Y.log("Tests","section","TestRunner");
+
+Y.Test.Runner.add(suite);
+
+Y.Test.Runner.run();
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js"></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

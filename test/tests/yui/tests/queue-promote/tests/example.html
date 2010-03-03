@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+    <title>Y.Queue test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+</head>
+<body>
+    <button type="button" id="go">Go</button>
+    <div id="results"></div>
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+<script type="text/javascript">
+YUI({
+    base : '../../../build/',
+    filter : 'debug'
+}).use('queue','io-base', 'node', function (Y) {
+
+    function f(message) {
+        document.getElementById('results').appendChild(
+            document.createElement('p')).innerHTML =
+                message || 'Default message';
+    };
+
+    function MyObject(msg) {
+        this.message = msg;
+    };
+    MyObject.prototype.myFunc = function () {
+        f("My Function in my scope, yo.  My message = " + this.message);
+    };
+
+    Y.get('#go').on('click', function () {
+        var m = new MyObject("Message a go-go");
+
+        Y.AsyncQueue(null,//{ timeout : 10 },
+            f, // Default message
+            f, // Default message
+            {
+               fn         : f,
+               args       : ["FOO"],
+               iterations : 3,
+               timeout    : 1000
+            },
+            function () {
+               this.pause();
+               var self = this;
+               setTimeout(function () { self.run(); },7000);
+            },
+            {
+                fn : function () {
+                    Y.io('io_success.txt', {
+                        on : {
+                            success : function (id,o) {
+                                f("Back from IO: " + o.responseText);
+                            },
+                            failure : function (id) {
+                                f("Failed SUCCESS IO");
+                            }
+
+                        }
+                    });
+                    Y.io('io_failure.txt', {
+                        on : {
+                            success : function (id,o) {
+                                f("Back from IO: " + o.responseText);
+                            },
+                            failure : function (id) {
+                                f("Failed FAILURE IO (this is good)");
+                            }
+                        }
+                    });
+                    Y.io('io_timeout.php', {
+                        on : {
+                            success : function (id,o) {
+                                f("Back from IO: " + o.responseText);
+                            },
+                            failure : function () {
+                                f("Failed TIMEOUT IO (this is good)");
+                            }
+                        },
+                        timeout : 3000
+                    });
+                },
+                waitForIOResponse : true
+            },
+            {
+               fn      : m.myFunc,
+               context : m,
+               //timeout : -1,
+               timeout : -1,
+               until   : function () {
+                   var elems = document.getElementsByTagName('p');
+                   return (elems.length > 20);
+               }
+        }).run();
+
+    });
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js" ></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

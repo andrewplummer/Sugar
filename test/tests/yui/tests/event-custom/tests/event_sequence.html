@@ -1,0 +1,844 @@
+<!doctype html>
+<html>
+<head>
+    <title>Testing Event firing sequence</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/console/assets/skins/sam/console.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/test/assets/test-console.css">
+    <style type="text/css" id="styleblock" class="highlight-ignore">
+        h1 {
+            font: normal 125%/1.4 Arial, sans-serif;
+        }
+        .yui-skin-sam .yui-console .yui-console-content {
+            font-size: 10px;
+            width: 32em;
+        }
+        .yui-skin-sam .yui-console .yui-console-bd {
+            height: 50em;
+        }
+        .yui-skin-sam .yui-console-entry-pass .yui-console-entry-cat {
+            background: #070;
+            color: #fff;
+        }
+        .yui-skin-sam .yui-console-entry-fail .yui-console-entry-cat {
+            background: #700;
+            color: #fff;
+        }
+        .highlight-example {
+            display: inline;
+            float: left;
+            width: 650px;
+        }
+        .highlight-example h2 {
+            display: none;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<h1>Testing event firing sequence</h1>
+
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+<script type="text/javascript" src="../../../build/event-custom/event-custom-debug.js"></script>
+<script type="text/javascript" src="../../../build/console/console-debug.js"></script>
+<script type="text/javascript" src="../../../build/test/test-debug.js"></script>
+<script type="text/javascript">
+YUI({
+    base : '../../../build/',
+    filter : 'debug',
+    useBrowserConsole : false,
+    logInclude : { TestRunner: true }
+}).use('test','console',function (Y) {
+
+// Remove when YUI global supports on/after
+if (!YUI.on) {
+    YUI.on = YUI.after = function () {};
+}
+
+var suite = new Y.Test.Suite("Event firing sequence test");
+
+/*****************************/
+/*     Tests begin here      */
+/*****************************/
+suite.add(new Y.Test.Case({
+    name : "single event sequence",
+
+    setUp : function () {
+        this.source = new Y.EventTarget;
+    },
+
+    test_seqSimple : function () {
+        var results = '';
+
+        this.source.publish('foo');
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'B'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame("AB",results);
+    },
+
+    test_seqDefaultFnComplete : function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            defaultFn: function () { results += 'B'; }});
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'C'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame("ABC",results);
+    },
+
+    test_seqDefaultFnPrevented : function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            emitFacade: true,
+            defaultFn: function () { results += '1'; }});
+
+        this.source.on('foo', function (e) {
+            results += 'A';
+            e.preventDefault();
+        });
+        this.source.after('foo', function () { results += '2'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame("A",results);
+    },
+
+    test_seqPreventedFnComplete : function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            preventedFn: function () { results += '1'; }});
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'B'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame("AB",results);
+    },
+
+    test_seqPreventedFnPrevented : function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            emitFacade: true,
+            preventedFn: function () { results += 'B'; }});
+
+        this.source.on('foo', function (e) {
+            results += 'A';
+            e.preventDefault();
+        });
+        this.source.after('foo', function () { results += '1'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame("AB",results);
+    },
+
+    test_seqDefaultAndPreventedFnComplete : function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            defaultFn: function () { results += 'B'; },
+            preventedFn: function () { results += '1'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'C'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame("ABC",results);
+    },
+
+    test_seqDefaultAndPreventedFnPrevented : function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            emitFacade: true,
+            defaultFn: function () { results += '1'; },
+            preventedFn: function () { results += 'B'; }
+        });
+
+        this.source.on('foo', function (e) {
+            results += 'A';
+            e.preventDefault();
+        });
+        this.source.after('foo', function () { results += '2'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame("AB",results);
+    }
+}));
+
+suite.add(new Y.Test.Case({
+    name : "broadcast",
+        
+    setUp : function () {
+        this.source = new Y.EventTarget;
+    },
+
+    test_broadcast0: function () {
+        var results = '';
+
+        this.source.publish('foo', { broadcast: 0 });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'B'; });
+
+        Y.on('foo', function () { results += '1'; });
+        Y.after('foo', function () { results += '2'; });
+
+        YUI.on('foo', function () { results += '3'; });
+        YUI.after('foo', function () { results += '4'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('AB', results);
+    },
+
+    test_broadcast1: function () {
+        var results = '';
+
+        this.source.publish('foo', { broadcast: 1 });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'D'; });
+
+        Y.on('foo', function () { results += 'B'; });
+        Y.after('foo', function () { results += 'C'; });
+
+        YUI.on('foo', function () { results += '1'; });
+        YUI.after('foo', function () { results += '2'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCD', results);
+    },
+
+    test_broadcast2: function () {
+        var results = '';
+
+        this.source.publish('foo', { broadcast: 2 });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'F'; });
+
+        Y.on('foo', function () { results += 'B'; });
+        Y.after('foo', function () { results += 'E'; });
+
+        YUI.on('foo', function () { results += 'C'; });
+        YUI.after('foo', function () { results += 'D'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDEF', results);
+    },
+
+    test_broadcast1Complete: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 1,
+            emitFacade: true,
+            defaultFn: function () { results += 'C'; },
+            preventedFn: function () { results += '1'; },
+            stoppedFn: function () { results += '2' }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'E'; });
+
+        Y.on('foo', function () { results += 'B'; });
+        Y.after('foo', function () { results += 'D'; });
+
+        YUI.on('foo', function () { results += '3'; });
+        YUI.after('foo', function () { results += '4'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDE', results);
+    },
+
+    test_broadcast1Prevented: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 1,
+            emitFacade: true,
+            defaultFn: function () { results += '1'; },
+            preventedFn: function () { results += 'C'; },
+            stoppedFn: function () { results += '2' }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += '3'; });
+
+        Y.on('foo', function (e) {
+            results += 'B';
+            e.preventDefault();
+        });
+        Y.after('foo', function () { results += '4'; });
+
+        YUI.on('foo', function () { results += '5'; });
+        YUI.after('foo', function () { results += '6'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABC', results);
+    },
+
+    test_broadcast1StoppedAtSource: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 1,
+            emitFacade: true,
+            defaultFn: function () { results += 'C'; },
+            preventedFn: function () { results += '1'; },
+            stoppedFn: function () { results += 'B' }
+        });
+
+        this.source.on('foo', function (e) {
+            results += 'A';
+            e.stopPropagation();
+        });
+        this.source.after('foo', function () { results += 'D'; });
+
+        Y.on('foo', function () { results += '1'; });
+        Y.after('foo', function () { results += '2'; });
+
+        YUI.on('foo', function () { results += '3'; });
+        YUI.after('foo', function () { results += '4'; });
+
+        this.source.fire('foo');
+
+        // Is this right?  stopProp allows defaultFn, but to what level should
+        // the after subscribers be executed?
+        Y.Assert.areSame('ABCD', results);
+    },
+
+    test_broadcast1StoppedAtYUIInstance: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 1,
+            emitFacade: true,
+            defaultFn: function () { results += 'D'; },
+            preventedFn: function () { results += '1'; },
+            stoppedFn: function () { results += 'C' }
+        });
+
+        this.source.on('foo', function (e) { results += 'A'; });
+        this.source.after('foo', function () { results += 'F'; });
+
+        Y.on('foo', function (e) {
+            results += 'B';
+            e.stopPropagation();
+        });
+        Y.after('foo', function () { results += 'E'; });
+
+        YUI.on('foo', function () { results += '2'; });
+        YUI.after('foo', function () { results += '3'; });
+
+        this.source.fire('foo');
+
+        // Is this right?  stopProp allows defaultFn, but to what level should
+        // the after subscribers be executed?
+        Y.Assert.areSame('ABCDEF', results);
+    },
+
+    test_broadcast2Complete: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 2,
+            emitFacade: true,
+            defaultFn: function () { results += 'C'; },
+            preventedFn: function () { results += '1'; },
+            stoppedFn: function () { results += '2' }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'E'; });
+
+        Y.on('foo', function () { results += 'B'; });
+        Y.after('foo', function () { results += 'D'; });
+
+        YUI.on('foo', function () { results += '3'; });
+        YUI.after('foo', function () { results += '4'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDE', results);
+    },
+
+    test_broadcast2PreventedAtYUIInstance: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 2,
+            emitFacade: true,
+            defaultFn: function () { results += '1'; },
+            preventedFn: function () { results += 'C'; },
+            stoppedFn: function () { results += '2' }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += '3'; });
+
+        Y.on('foo', function (e) {
+            results += 'B';
+            e.preventDefault();
+        });
+        Y.after('foo', function () { results += '4'; });
+
+        // preventDefault does not stop event bubbling
+        YUI.on('foo', function () { results += 'D'; });
+        YUI.after('foo', function () { results += '6'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCD', results);
+    },
+
+    test_broadcast2PreventedAtYUIGlobal: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 2,
+            emitFacade: true,
+            defaultFn: function () { results += '1'; },
+            preventedFn: function () { results += 'D'; },
+            stoppedFn: function () { results += '2' }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += '3'; });
+
+        Y.on('foo', function (e) { results += 'B'; });
+        Y.after('foo', function () { results += '4'; });
+
+        YUI.on('foo', function (e) {
+            results += 'C';
+            e.preventDefault();
+        });
+        YUI.after('foo', function () { results += '5'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCD', results);
+    },
+
+    test_broadcast2StoppedAtSource: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 2,
+            emitFacade: true,
+            defaultFn: function () { results += 'C'; },
+            preventedFn: function () { results += '1'; },
+            stoppedFn: function () { results += 'B' }
+        });
+
+        this.source.on('foo', function (e) {
+            results += 'A';
+            e.stopPropagation();
+        });
+        this.source.after('foo', function () { results += 'D'; });
+
+        Y.on('foo', function () { results += '1'; });
+        Y.after('foo', function () { results += '2'; });
+
+        YUI.on('foo', function () { results += '3'; });
+        YUI.after('foo', function () { results += '4'; });
+
+        this.source.fire('foo');
+
+        // Is this right?  stopProp allows defaultFn, but to what level should
+        // the after subscribers be executed?
+        Y.Assert.areSame('ABCD', results);
+    },
+
+    test_broadcast2StoppedAtYUIInstance: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 2,
+            emitFacade: true,
+            defaultFn: function () { results += 'D'; },
+            preventedFn: function () { results += '1'; },
+            stoppedFn: function () { results += 'C' }
+        });
+
+        this.source.on('foo', function (e) { results += 'A'; });
+        this.source.after('foo', function () { results += 'F'; });
+
+        Y.on('foo', function (e) {
+            results += 'B';
+            e.stopPropagation();
+        });
+        Y.after('foo', function () { results += 'E'; });
+
+        YUI.on('foo', function () { results += '2'; });
+        YUI.after('foo', function () { results += '3'; });
+
+        this.source.fire('foo');
+
+        // Is this right?  stopProp allows defaultFn, but to what level should
+        // the after subscribers be executed?
+        Y.Assert.areSame('ABCDEF', results);
+    },
+
+    test_broadcast2StoppedAtYUIGlobal: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 2,
+            emitFacade: true,
+            defaultFn: function () { results += 'E'; },
+            preventedFn: function () { results += '1'; },
+            stoppedFn: function () { results += 'D' }
+        });
+
+        this.source.on('foo', function (e) { results += 'A'; });
+        this.source.after('foo', function () { results += 'H'; });
+
+        Y.on('foo', function () { results += 'B'; });
+        Y.after('foo', function () { results += 'G'; });
+
+        YUI.on('foo', function (e) {
+            results += 'C';
+            e.stopPropagation(); // should be moot at this point
+        });
+        YUI.after('foo', function () { results += 'F'; });
+
+        this.source.fire('foo');
+
+        // Is this right?  stopProp allows defaultFn, but to what level should
+        // the after subscribers be executed?
+        Y.Assert.areSame('ABCDEFGH', results);
+    }
+
+}));
+
+suite.add(new Y.Test.Case({
+    name : "bubble",
+
+    setUp : function () {
+        this.source = new Y.EventTarget;
+        this.middleMan1 = new Y.EventTarget;
+        this.middleMan2 = new Y.EventTarget;
+
+        this.source.addTarget(this.middleMan1);
+        this.source.addTarget(this.middleMan2);
+    },
+
+    test_bubbleComplete: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 0,
+            defaultFn : function () { results += 'D'; },
+            preventedFn : function () { results += '1'; },
+            stoppedFn : function () { results += '2'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'G'; });
+
+        this.middleMan1.on('foo', function () { results += 'B'; });
+        this.middleMan1.after('foo', function () { results += 'F'; });
+
+        this.middleMan2.on('foo', function () { results += 'C'; });
+        this.middleMan2.after('foo', function () { results += 'E'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDEFG', results);
+    },
+
+    test_bubblePrevented: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 0,
+            emitFacade: true,
+            defaultFn : function () { results += '1'; },
+            preventedFn : function () { results += 'C'; },
+            stoppedFn : function () { results += '2'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += '3'; });
+
+        this.middleMan1.on('foo', function (e) {
+            results += 'B';
+            e.preventDefault();
+        });
+        this.middleMan1.after('foo', function () { results += '4'; });
+
+        this.middleMan2.on('foo', function () { results += 'D'; });
+        this.middleMan2.after('foo', function () { results += '5'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCD', results);
+    },
+
+    test_bubbleStopped: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            broadcast: 0,
+            emitFacade: true,
+            defaultFn : function () { results += 'D'; },
+            preventedFn : function () { results += '1'; },
+            stoppedFn : function () { results += 'C'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'F'; });
+
+        this.middleMan1.on('foo', function (e) {
+            results += 'B';
+            e.stopPropagation();
+        });
+        this.middleMan1.after('foo', function () { results += 'E'; });
+
+        this.middleMan2.on('foo', function () { results += '2'; });
+        this.middleMan2.after('foo', function () { results += '3'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDEF', results);
+    },
+
+    test_bubbleAndBroadcast1Complete: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            emitFacade: true,
+            broadcast: 1,
+            defaultFn : function () { results += 'E'; },
+            preventedFn : function () { results += '1'; },
+            stoppedFn : function () { results += '2'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'I'; });
+
+        this.middleMan1.on('foo', function (e) { results += 'B'; });
+        this.middleMan1.after('foo', function () { results += 'H'; });
+
+        this.middleMan2.on('foo', function () { results += 'C'; });
+        this.middleMan2.after('foo', function () { results += 'G'; });
+
+        Y.on('foo', function () { results += 'D'; });
+        Y.after('foo', function () { results += 'F'; });
+
+        YUI.on('foo', function () { results += '3'; });
+        YUI.after('foo', function () { results += '4'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDEFGHI', results);
+    },
+
+    test_bubbleAndBroadcast1Prevented: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            emitFacade: true,
+            broadcast: 1,
+            defaultFn : function () { results += '1'; },
+            preventedFn : function () { results += 'C'; },
+            stoppedFn : function () { results += '2'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += '3'; });
+
+        this.middleMan1.on('foo', function (e) {
+            results += 'B';
+            e.preventDefault();
+        });
+        this.middleMan1.after('foo', function () { results += '4'; });
+
+        this.middleMan2.on('foo', function () { results += 'D'; });
+        this.middleMan2.after('foo', function () { results += '5'; });
+
+        Y.on('foo', function () { results += 'E'; });
+        Y.after('foo', function () { results += '6'; });
+
+        YUI.on('foo', function () { results += '7'; });
+        YUI.after('foo', function () { results += '8'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDE', results);
+    },
+
+    test_bubbleAndBroadcast1Stopped: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            emitFacade: true,
+            broadcast: 1,
+            defaultFn : function () { results += 'E'; },
+            preventedFn : function () { results += '1'; },
+            stoppedFn : function () { results += 'D'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'H'; });
+
+        this.middleMan1.on('foo', function (e) { results += 'B'; });
+        this.middleMan1.after('foo', function () { results += 'G'; });
+
+        this.middleMan2.on('foo', function (e) {
+            results += 'C';
+            e.stopPropagation();
+        });
+        this.middleMan2.after('foo', function () { results += 'F'; });
+
+        Y.on('foo', function () { results += '2'; });
+        Y.after('foo', function () { results += '3'; });
+
+        YUI.on('foo', function () { results += '4'; });
+        YUI.after('foo', function () { results += '5'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDEFGH', results);
+    },
+
+    test_bubbleAndBroadcast2Prevented: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            emitFacade: true,
+            broadcast: 2,
+            defaultFn : function () { results += '1'; },
+            preventedFn : function () { results += 'D'; },
+            stoppedFn : function () { results += '2'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += '3'; });
+
+        this.middleMan1.on('foo', function (e) { results += 'B'; });
+        this.middleMan1.after('foo', function () { results += '4'; });
+
+        this.middleMan2.on('foo', function (e) {
+            results += 'C';
+            e.preventDefault();
+        });
+        this.middleMan2.after('foo', function () { results += '5'; });
+
+        Y.on('foo', function () { results += 'E'; });
+        Y.after('foo', function () { results += '6'; });
+
+        YUI.on('foo', function () { results += 'F'; });
+        YUI.after('foo', function () { results += '7'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDE', results);
+    },
+
+    test_bubbleAndBroadcast2Stopped: function () {
+        var results = '';
+
+        this.source.publish('foo', {
+            emitFacade: true,
+            broadcast: 2,
+            defaultFn : function () { results += 'E'; },
+            preventedFn : function () { results += '1'; },
+            stoppedFn : function () { results += 'D'; }
+        });
+
+        this.source.on('foo', function () { results += 'A'; });
+        this.source.after('foo', function () { results += 'H'; });
+
+        this.middleMan1.on('foo', function (e) { results += 'B'; });
+        this.middleMan1.after('foo', function () { results += 'G'; });
+
+        this.middleMan2.on('foo', function (e) {
+            results += 'C';
+            e.stopPropagation();
+        });
+        this.middleMan2.after('foo', function () { results += 'F'; });
+
+        Y.on('foo', function () { results += '2'; });
+        Y.after('foo', function () { results += '3'; });
+
+        YUI.on('foo', function () { results += '4'; });
+        YUI.after('foo', function () { results += '5'; });
+
+        this.source.fire('foo');
+
+        Y.Assert.areSame('ABCDEFGH', results);
+    }
+
+}));
+
+// Work around for Y.substitute handling "{key:value}" as tokens
+Y.Console.prototype.printLogEntry = function (m) {
+    m = Y.merge(
+        this._htmlEscapeMessage(m),
+        Y.Console.ENTRY_CLASSES,
+        {
+            cat_class : this.getClassName('entry',m.category),
+            src_class : this.getClassName('entry',m.source)
+        });
+    
+    var n = Y.Node.create(this.get('entryTemplate').replace(/\{([\w-]+)\}/g,
+            function (_,k) { return k in m ? m[k] : ''; }));
+    
+    this._addToConsole(n);
+    
+    return this;
+};
+
+var yconsole = new Y.Console({
+    contentBox:"log",
+    newestOnTop: false,
+    height: '500px'
+}).render();
+
+//yconsole.hideCategory('info');
+yconsole.printLogEntry = function (m) {
+    if (m.category === 'section') {
+        this._addToConsole(Y.Node.create("<h3>"+m.message+"</h3>"));
+        return this;
+    } else if (m.category === "break") {
+        this._addToConsole(Y.Node.create("<br>"));
+        return this;
+    } else if (m.category === "info") {
+        return this;
+    } else {
+        return Y.Console.prototype.printLogEntry.call(this,m);
+    }
+};
+
+Y.log("Tests","section","TestRunner");
+
+Y.Test.Runner.add(suite);
+
+Y.Test.Runner.run();
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js"></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

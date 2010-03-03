@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>YUI FocusManager Node Plugin Tests</title>
+
+	<style type="text/css">
+
+		/*	Force the viewport to scroll to test the Focus Manager's ability to 
+		 	prevent the viewport from scrolling when the user is using the 
+			arrow keys to move focus among a set of descendants in Opera. */
+
+		body {
+			height: 10000px;
+		}
+
+		.focused {
+
+			border: solid 1px #ffcc00;
+			background-color: yellow;
+
+		}
+	
+	</style>
+
+</head>
+<body class="yui-skin-sam">
+
+<h1>YUI Focus Manager Node Plugin Tests</h1>
+
+<h2>Test 1</h2>
+<p>
+Test the Focus Manager's ability to make a set of non-natively focusable 
+elements focusable.  Using the Focus Manager Node Plugin the user should be 
+able to move focus among each <code>&#60;li&#62;</code> and be able to click 
+each <code>&#60;li&#62;</code> by pressing the enter key while focused on it.
+(Note: This test won't work in Safari 3 as it doesn't support the 
+<code>tabIndex</code> attribute on all elements.)
+</p>
+<ul id="list-1">
+	<li>One</li>
+	<li>Two</li>
+	<li>Three</li>
+	<li>Four</li>
+</ul>
+
+<h2>Test 2</h2>
+<p>
+Test the Focus Manager's ability to ensure that <code>&#60;a&#62;</code> 
+elements without an <code>href</code> attribute still fire a click event 
+while the user presses the enter key while focused on them.
+</p>
+<ul id="list-2">
+	<li><a>One</a></li>
+	<li><a>Two</a></li>
+	<li><a>Three</a></li>
+	<li><a>Four</a></li>
+</ul>
+
+
+<h2>Test 3</h2>
+<p>
+Test the Focus Manager's ability to manager a set of natively focusable 
+descendants.
+</p>
+<ul id="list-3">
+	<li><input type="button" name="button-1" value="One"></li>
+	<li><input type="button" name="button-2" value="Two"></li>
+	<li><input type="button" name="button-3" value="Three"></li>
+	<li><input type="button" name="button-4" value="Four"></li>
+</ul>
+
+
+<script src="../../../build/yui/yui.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+	YUI({ 
+			base:"../../../build/", 
+			timeout: 10000, 
+			filters: {
+				'node-focusmanager': 'debug'
+			} 
+		}).use("node-focusmanager", "node-event-simulate", "console", "dd-drag", function(Y) {
+	
+       	var myConsole = new Y.Console().render();
+
+	 	var dd = new Y.DD.Drag({ node: myConsole.get("boundingBox") });
+
+		var listone = Y.Node.get("#list-1");
+		
+		listone.plug(Y.Plugin.NodeFocusManager, {
+			descendants: "li",
+			keys: { next: "down:40", previous: "down:38" },
+			focusClass: "focused"
+		});
+
+		listone.on("click", function (event) {
+		
+			Y.log(event.target.get("text"));
+			
+		});
+
+
+		var listtwo = Y.Node.get("#list-2");
+		
+		listtwo.plug(Y.Plugin.NodeFocusManager, {
+			descendants: "a",
+			keys: { next: "down:40", previous: "down:38" },
+			focusClass: "focused"
+		});	
+
+		listtwo.on("click", function (event) {
+		
+			Y.log(event.target.get("text"));
+			
+		});
+		
+
+		var listthree = Y.Node.get("#list-3");
+		
+		listthree.plug(Y.Plugin.NodeFocusManager, {
+			descendants: "input",
+			keys: { next: "down:40", previous: "down:38" },
+			focusClass: "focused"
+		});	
+
+		listthree.on("click", function (event) {
+		
+			Y.log(event.target.get("value"));
+			
+		});			
+
+	});
+
+</script>
+
+</body>
+</html>
