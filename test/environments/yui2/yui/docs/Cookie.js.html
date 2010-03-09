@@ -1,0 +1,615 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: cookie   Cookie.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>cookie&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_cookie.html" title="cookie">cookie</a>
+                
+                 &gt; Cookie.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * Utilities for cookie management</span>
+<span class="c"> * @namespace YAHOO.util</span>
+<span class="c"> * @module cookie</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">namespace</span><span class="o">(</span><span class="s2">&quot;util&quot;</span><span class="o">);</span>
+
+<span class="c">/**</span>
+<span class="c"> * Cookie utility.</span>
+<span class="c"> * @class Cookie</span>
+<span class="c"> * @static</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Cookie</span> <span class="o">=</span> <span class="o">{</span>
+    
+    <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>    <span class="c">// Private Methods</span>
+<span class="c"></span>    <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>    
+    <span class="c">/**</span>
+<span class="c">     * Creates a cookie string that can be assigned into document.cookie.</span>
+<span class="c">     * @param {String} name The name of the cookie.</span>
+<span class="c">     * @param {String} value The value of the cookie.</span>
+<span class="c">     * @param {Boolean} encodeValue True to encode the value, false to leave as-is.</span>
+<span class="c">     * @param {Object} options (Optional) Options for the cookie.</span>
+<span class="c">     * @return {String} The formatted cookie string.</span>
+<span class="c">     * @method _createCookieString</span>
+<span class="c">     * @private</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">_createCookieString</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">value</span> <span class="c">/*:Variant*/</span><span class="o">,</span> <span class="nx">encodeValue</span> <span class="c">/*:Boolean*/</span><span class="o">,</span> <span class="nx">options</span> <span class="c">/*:Object*/</span><span class="o">)</span> <span class="c">/*:String*/</span> <span class="o">{</span>
+        
+        <span class="c">//shortcut</span>
+<span class="c"></span>        <span class="k">var</span> <span class="nx">lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">,</span>
+            <span class="nx">text</span> <span class="o">=</span> <span class="nb">encodeURIComponent</span><span class="o">(</span><span class="nx">name</span><span class="o">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="o">(</span><span class="nx">encodeValue</span> <span class="o">?</span> <span class="nb">encodeURIComponent</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span> <span class="o">:</span> <span class="nx">value</span><span class="o">);</span>
+        
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">options</span><span class="o">)){</span>
+            <span class="c">//expiration date</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">options</span><span class="o">.</span><span class="nx">expires</span> <span class="k">instanceof</span> <span class="nb">Date</span><span class="o">){</span>
+                <span class="nx">text</span> <span class="o">+=</span> <span class="s2">&quot;; expires=&quot;</span> <span class="o">+</span> <span class="nx">options</span><span class="o">.</span><span class="nx">expires</span><span class="o">.</span><span class="nx">toUTCString</span><span class="o">();</span>
+            <span class="o">}</span>
+            
+            <span class="c">//path</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">options</span><span class="o">.</span><span class="nx">path</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="nx">options</span><span class="o">.</span><span class="nx">path</span> <span class="o">!==</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+                <span class="nx">text</span> <span class="o">+=</span> <span class="s2">&quot;; path=&quot;</span> <span class="o">+</span> <span class="nx">options</span><span class="o">.</span><span class="nx">path</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="c">//domain</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">options</span><span class="o">.</span><span class="nx">domain</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="nx">options</span><span class="o">.</span><span class="nx">domain</span> <span class="o">!==</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+                <span class="nx">text</span> <span class="o">+=</span> <span class="s2">&quot;; domain=&quot;</span> <span class="o">+</span> <span class="nx">options</span><span class="o">.</span><span class="nx">domain</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="c">//secure</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">options</span><span class="o">.</span><span class="nx">secure</span> <span class="o">===</span> <span class="kc">true</span><span class="o">){</span>
+                <span class="nx">text</span> <span class="o">+=</span> <span class="s2">&quot;; secure&quot;</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        
+        <span class="k">return</span> <span class="nx">text</span><span class="o">;</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Formats a cookie value for an object containing multiple values.</span>
+<span class="c">     * @param {Object} hash An object of key-value pairs to create a string for.</span>
+<span class="c">     * @return {String} A string suitable for use as a cookie value.</span>
+<span class="c">     * @method _createCookieHashString</span>
+<span class="c">     * @private</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">_createCookieHashString</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">hash</span> <span class="c">/*:Object*/</span><span class="o">)</span> <span class="c">/*:String*/</span> <span class="o">{</span>
+        
+        <span class="c">//shortcuts</span>
+<span class="c"></span>        <span class="k">var</span> <span class="nx">lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">hash</span><span class="o">)){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie._createCookieHashString(): Argument must be an object.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">var</span> <span class="nx">text</span> <span class="c">/*:Array*/</span> <span class="o">=</span> <span class="o">[];</span>
+        
+        <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">hash</span><span class="o">){</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">hash</span><span class="o">,</span> <span class="nx">key</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">hash</span><span class="o">[</span><span class="nx">key</span><span class="o">])</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">hash</span><span class="o">[</span><span class="nx">key</span><span class="o">])){</span>
+                <span class="nx">text</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nb">encodeURIComponent</span><span class="o">(</span><span class="nx">key</span><span class="o">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="o">(</span><span class="nb">String</span><span class="o">(</span><span class="nx">hash</span><span class="o">[</span><span class="nx">key</span><span class="o">])));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        
+        <span class="k">return</span> <span class="nx">text</span><span class="o">.</span><span class="nx">join</span><span class="o">(</span><span class="s2">&quot;&amp;&quot;</span><span class="o">);</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Parses a cookie hash string into an object.</span>
+<span class="c">     * @param {String} text The cookie hash string to parse. The string should already be URL-decoded.</span>
+<span class="c">     * @return {Object} An object containing entries for each cookie value.</span>
+<span class="c">     * @method _parseCookieHash</span>
+<span class="c">     * @private</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">_parseCookieHash</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">text</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:Object*/</span> <span class="o">{</span>
+        
+        <span class="k">var</span> <span class="nx">hashParts</span> <span class="c">/*:Array*/</span> <span class="o">=</span> <span class="nx">text</span><span class="o">.</span><span class="nx">split</span><span class="o">(</span><span class="s2">&quot;&amp;&quot;</span><span class="o">),</span>
+            <span class="nx">hashPart</span> <span class="c">/*:Array*/</span> <span class="o">=</span> <span class="kc">null</span><span class="o">,</span>
+            <span class="nx">hash</span> <span class="c">/*:Object*/</span> <span class="o">=</span> <span class="o">{};</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">text</span><span class="o">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">){</span>
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">=</span><span class="m">0</span><span class="o">,</span> <span class="nx">len</span><span class="o">=</span><span class="nx">hashParts</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="nx">i</span><span class="o">++){</span>
+                <span class="nx">hashPart</span> <span class="o">=</span> <span class="nx">hashParts</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">split</span><span class="o">(</span><span class="s2">&quot;=&quot;</span><span class="o">);</span>
+                <span class="nx">hash</span><span class="o">[</span><span class="nb">decodeURIComponent</span><span class="o">(</span><span class="nx">hashPart</span><span class="o">[</span><span class="m">0</span><span class="o">])]</span> <span class="o">=</span> <span class="nb">decodeURIComponent</span><span class="o">(</span><span class="nx">hashPart</span><span class="o">[</span><span class="m">1</span><span class="o">]);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        
+        <span class="k">return</span> <span class="nx">hash</span><span class="o">;</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Parses a cookie string into an object representing all accessible cookies.</span>
+<span class="c">     * @param {String} text The cookie string to parse.</span>
+<span class="c">     * @param {Boolean} decode (Optional) Indicates if the cookie values should be decoded or not. Default is true.</span>
+<span class="c">     * @return {Object} An object containing entries for each accessible cookie.</span>
+<span class="c">     * @method _parseCookieString</span>
+<span class="c">     * @private</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">_parseCookieString</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">text</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">decode</span> <span class="c">/*:Boolean*/</span><span class="o">)</span> <span class="c">/*:Object*/</span> <span class="o">{</span>
+        
+        <span class="k">var</span> <span class="nx">cookies</span> <span class="c">/*:Object*/</span> <span class="o">=</span> <span class="o">{};</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">text</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="nx">text</span><span class="o">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+            
+            <span class="k">var</span> <span class="nx">decodeValue</span> <span class="o">=</span> <span class="o">(</span><span class="nx">decode</span> <span class="o">===</span> <span class="kc">false</span> <span class="o">?</span> <span class="k">function</span><span class="o">(</span><span class="nx">s</span><span class="o">){</span><span class="k">return</span> <span class="nx">s</span><span class="o">;}</span> <span class="o">:</span> <span class="nb">decodeURIComponent</span><span class="o">);</span>
+            
+            <span class="k">var</span> <span class="nx">cookieParts</span> <span class="c">/*:Array*/</span> <span class="o">=</span> <span class="nx">text</span><span class="o">.</span><span class="nx">split</span><span class="o">(</span><span class="sr">/;\s/g</span><span class="o">),</span>
+                <span class="nx">cookieName</span> <span class="c">/*:String*/</span> <span class="o">=</span> <span class="kc">null</span><span class="o">,</span>
+                <span class="nx">cookieValue</span> <span class="c">/*:String*/</span> <span class="o">=</span> <span class="kc">null</span><span class="o">,</span>
+                <span class="nx">cookieNameValue</span> <span class="c">/*:Array*/</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">=</span><span class="m">0</span><span class="o">,</span> <span class="nx">len</span><span class="o">=</span><span class="nx">cookieParts</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="nx">i</span><span class="o">++){</span>
+                
+                <span class="c">//check for normally-formatted cookie (name-value)</span>
+<span class="c"></span>                <span class="nx">cookieNameValue</span> <span class="o">=</span> <span class="nx">cookieParts</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">match</span><span class="o">(</span><span class="sr">/([^=]+)=/i</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">cookieNameValue</span> <span class="k">instanceof</span> <span class="nb">Array</span><span class="o">){</span>
+                    <span class="k">try</span> <span class="o">{</span>
+                        <span class="nx">cookieName</span> <span class="o">=</span> <span class="nb">decodeURIComponent</span><span class="o">(</span><span class="nx">cookieNameValue</span><span class="o">[</span><span class="m">1</span><span class="o">]);</span>
+                        <span class="nx">cookieValue</span> <span class="o">=</span> <span class="nx">decodeValue</span><span class="o">(</span><span class="nx">cookieParts</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">substring</span><span class="o">(</span><span class="nx">cookieNameValue</span><span class="o">[</span><span class="m">1</span><span class="o">].</span><span class="nx">length</span><span class="o">+</span><span class="m">1</span><span class="o">));</span>
+                    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nx">ex</span><span class="o">){</span>
+                        <span class="c">//ignore the entire cookie - encoding is likely invalid</span>
+<span class="c"></span>                    <span class="o">}</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="c">//means the cookie does not have an &quot;=&quot;, so treat it as a boolean flag</span>
+<span class="c"></span>                    <span class="nx">cookieName</span> <span class="o">=</span> <span class="nb">decodeURIComponent</span><span class="o">(</span><span class="nx">cookieParts</span><span class="o">[</span><span class="nx">i</span><span class="o">]);</span>
+                    <span class="nx">cookieValue</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="nx">cookies</span><span class="o">[</span><span class="nx">cookieName</span><span class="o">]</span> <span class="o">=</span> <span class="nx">cookieValue</span><span class="o">;</span>
+            <span class="o">}</span>
+
+        <span class="o">}</span>
+        
+        <span class="k">return</span> <span class="nx">cookies</span><span class="o">;</span>
+    <span class="o">},</span>
+    
+    <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>    <span class="c">// Public Methods</span>
+<span class="c"></span>    <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>    
+    <span class="c">/**</span>
+<span class="c">     * Determines if the cookie with the given name exists. This is useful for</span>
+<span class="c">     * Boolean cookies (those that do not follow the name=value convention).</span>
+<span class="c">     * @param {String} name The name of the cookie to check.</span>
+<span class="c">     * @return {Boolean} True if the cookie exists, false if not.</span>
+<span class="c">     * @method exists</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">exists</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)</span> <span class="o">||</span> <span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.exists(): Cookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">var</span> <span class="nx">cookies</span> <span class="c">/*:Object*/</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_parseCookieString</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">cookie</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        
+        <span class="k">return</span> <span class="nx">cookies</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">name</span><span class="o">);</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Returns the cookie value for the given name.</span>
+<span class="c">     * @param {String} name The name of the cookie to retrieve.</span>
+<span class="c">     * @param {Object|Function} options (Optional) An object containing one or more</span>
+<span class="c">     *      cookie options: raw (true/false) and converter (a function).</span>
+<span class="c">     *      The converter function is run on the value before returning it. The</span>
+<span class="c">     *      function is not used if the cookie doesn&#39;t exist. The function can be</span>
+<span class="c">     *      passed instead of the options object for backwards compatibility.</span>
+<span class="c">     * @return {Variant} If no converter is specified, returns a string or null if</span>
+<span class="c">     *      the cookie doesn&#39;t exist. If the converter is specified, returns the value</span>
+<span class="c">     *      returned from the converter or null if the cookie doesn&#39;t exist.</span>
+<span class="c">     * @method get</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">get</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">options</span> <span class="c">/*:Variant*/</span><span class="o">)</span> <span class="c">/*:Variant*/</span><span class="o">{</span>
+        
+        <span class="k">var</span> <span class="nx">lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">,</span>
+            <span class="nx">converter</span><span class="o">;</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">options</span><span class="o">))</span> <span class="o">{</span>
+            <span class="nx">converter</span> <span class="o">=</span> <span class="nx">options</span><span class="o">;</span>
+            <span class="nx">options</span> <span class="o">=</span> <span class="o">{};</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">options</span><span class="o">))</span> <span class="o">{</span>
+            <span class="nx">converter</span> <span class="o">=</span> <span class="nx">options</span><span class="o">.</span><span class="nx">converter</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">options</span> <span class="o">=</span> <span class="o">{};</span>
+        <span class="o">}</span>
+        
+        <span class="k">var</span> <span class="nx">cookies</span> <span class="c">/*:Object*/</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_parseCookieString</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">cookie</span><span class="o">,</span> <span class="o">!</span><span class="nx">options</span><span class="o">.</span><span class="nx">raw</span><span class="o">);</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)</span> <span class="o">||</span> <span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.get(): Cookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">cookies</span><span class="o">[</span><span class="nx">name</span><span class="o">]))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">converter</span><span class="o">)){</span>
+            <span class="k">return</span> <span class="nx">cookies</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">converter</span><span class="o">(</span><span class="nx">cookies</span><span class="o">[</span><span class="nx">name</span><span class="o">]);</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Returns the value of a subcookie.</span>
+<span class="c">     * @param {String} name The name of the cookie to retrieve.</span>
+<span class="c">     * @param {String} subName The name of the subcookie to retrieve.</span>
+<span class="c">     * @param {Function} converter (Optional) A function to run on the value before returning</span>
+<span class="c">     *      it. The function is not used if the cookie doesn&#39;t exist.</span>
+<span class="c">     * @return {Variant} If the cookie doesn&#39;t exist, null is returned. If the subcookie</span>
+<span class="c">     *      doesn&#39;t exist, null if also returned. If no converter is specified and the</span>
+<span class="c">     *      subcookie exists, a string is returned. If a converter is specified and the</span>
+<span class="c">     *      subcookie exists, the value returned from the converter is returned.</span>
+<span class="c">     * @method getSub</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">getSub</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">subName</span><span class="o">,</span> <span class="nx">converter</span><span class="o">)</span> <span class="o">{</span>
+        
+        <span class="k">var</span> <span class="nx">lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">,</span>
+            <span class="nx">hash</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getSubs</span><span class="o">(</span><span class="nx">name</span><span class="o">);</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">hash</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">subName</span><span class="o">)</span> <span class="o">||</span> <span class="nx">subName</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.getSub(): Subcookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+            <span class="o">}</span>
+            
+            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">hash</span><span class="o">[</span><span class="nx">subName</span><span class="o">])){</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">converter</span><span class="o">)){</span>
+                <span class="k">return</span> <span class="nx">hash</span><span class="o">[</span><span class="nx">subName</span><span class="o">];</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="nx">converter</span><span class="o">(</span><span class="nx">hash</span><span class="o">[</span><span class="nx">subName</span><span class="o">]);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Returns an object containing name-value pairs stored in the cookie with the given name.</span>
+<span class="c">     * @param {String} name The name of the cookie to retrieve.</span>
+<span class="c">     * @return {Object} An object of name-value pairs if the cookie with the given name</span>
+<span class="c">     *      exists, null if it does not.</span>
+<span class="c">     * @method getSubs</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">getSubs</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:Object*/</span> <span class="o">{</span>
+    
+        <span class="k">var</span> <span class="nx">isString</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">;</span>
+        
+        <span class="c">//check cookie name</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(!</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)</span> <span class="o">||</span> <span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.getSubs(): Cookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">var</span> <span class="nx">cookies</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_parseCookieString</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">cookie</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">isString</span><span class="o">(</span><span class="nx">cookies</span><span class="o">[</span><span class="nx">name</span><span class="o">])){</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_parseCookieHash</span><span class="o">(</span><span class="nx">cookies</span><span class="o">[</span><span class="nx">name</span><span class="o">]);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Removes a cookie from the machine by setting its expiration date to</span>
+<span class="c">     * sometime in the past.</span>
+<span class="c">     * @param {String} name The name of the cookie to remove.</span>
+<span class="c">     * @param {Object} options (Optional) An object containing one or more</span>
+<span class="c">     *      cookie options: path (a string), domain (a string),</span>
+<span class="c">     *      and secure (true/false). The expires option will be overwritten</span>
+<span class="c">     *      by the method.</span>
+<span class="c">     * @return {String} The created cookie string.</span>
+<span class="c">     * @method remove</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">remove</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">options</span> <span class="c">/*:Object*/</span><span class="o">)</span> <span class="c">/*:String*/</span> <span class="o">{</span>
+        
+        <span class="c">//check cookie name</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(!</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)</span> <span class="o">||</span> <span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.remove(): Cookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="c">//set options - clone options so the original isn&#39;t affected</span>
+<span class="c"></span>        <span class="nx">options</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">merge</span><span class="o">(</span><span class="nx">options</span> <span class="o">||</span> <span class="o">{},</span> <span class="o">{</span>
+            <span class="nx">expires</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="o">(</span><span class="m">0</span><span class="o">)</span>
+        <span class="o">});</span>
+        
+        <span class="c">//set cookie</span>
+<span class="c"></span>        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">options</span><span class="o">);</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Removes a subcookie with a given name. Removing the last subcookie</span>
+<span class="c">     *      won&#39;t remove the entire cookie unless options.removeIfEmpty is true.</span>
+<span class="c">     * @param {String} name The name of the cookie in which the subcookie exists.</span>
+<span class="c">     * @param {String} subName The name of the subcookie to remove.</span>
+<span class="c">     * @param {Object} options (Optional) An object containing one or more</span>
+<span class="c">     *      cookie options: path (a string), domain (a string), expires (a Date object),</span>
+<span class="c">     *      removeIfEmpty (true/false), and secure (true/false). This must be the same</span>
+<span class="c">     *      settings as the original subcookie.</span>
+<span class="c">     * @return {String} The created cookie string.</span>
+<span class="c">     * @method removeSub</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">removeSub</span> <span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">subName</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">options</span> <span class="c">/*:Object*/</span><span class="o">)</span> <span class="c">/*:String*/</span> <span class="o">{</span>
+        
+        <span class="k">var</span> <span class="nx">lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+        
+        <span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="o">{};</span>
+        
+        <span class="c">//check cookie name</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)</span> <span class="o">||</span> <span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.removeSub(): Cookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="c">//check subcookie name</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">subName</span><span class="o">)</span> <span class="o">||</span> <span class="nx">subName</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.removeSub(): Subcookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="c">//get all subcookies for this cookie</span>
+<span class="c"></span>        <span class="k">var</span> <span class="nx">subs</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getSubs</span><span class="o">(</span><span class="nx">name</span><span class="o">);</span>
+        
+        <span class="c">//delete the indicated subcookie</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">subs</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">subs</span><span class="o">,</span> <span class="nx">subName</span><span class="o">)){</span>
+            <span class="nx">delete</span> <span class="nx">subs</span><span class="o">[</span><span class="nx">subName</span><span class="o">];</span>
+
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">options</span><span class="o">.</span><span class="nx">removeIfEmpty</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c">//reset the cookie</span>
+<span class="c"></span>
+                <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">setSubs</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">subs</span><span class="o">,</span> <span class="nx">options</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="c">//reset the cookie if there are subcookies left, else remove</span>
+<span class="c"></span>                <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">subs</span><span class="o">){</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">subs</span><span class="o">,</span> <span class="nx">key</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">subs</span><span class="o">[</span><span class="nx">key</span><span class="o">])</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">subs</span><span class="o">[</span><span class="nx">key</span><span class="o">])){</span>
+                        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">setSubs</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">subs</span><span class="o">,</span> <span class="nx">options</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+                
+                <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">remove</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">options</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+        <span class="o">}</span>
+        
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Sets a cookie with a given name and value.</span>
+<span class="c">     * @param {String} name The name of the cookie to set.</span>
+<span class="c">     * @param {Variant} value The value to set for the cookie.</span>
+<span class="c">     * @param {Object} options (Optional) An object containing one or more</span>
+<span class="c">     *      cookie options: path (a string), domain (a string), expires (a Date object),</span>
+<span class="c">     *      raw (true/false), and secure (true/false).</span>
+<span class="c">     * @return {String} The created cookie string.</span>
+<span class="c">     * @method set</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">set</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">value</span> <span class="c">/*:Variant*/</span><span class="o">,</span> <span class="nx">options</span> <span class="c">/*:Object*/</span><span class="o">)</span> <span class="c">/*:String*/</span> <span class="o">{</span>
+        
+        <span class="k">var</span> <span class="nx">lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+        
+        <span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="o">{};</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.set(): Cookie name must be a string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">value</span><span class="o">)){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.set(): Value cannot be undefined.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">var</span> <span class="nx">text</span> <span class="c">/*:String*/</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_createCookieString</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">value</span><span class="o">,</span> <span class="o">!</span><span class="nx">options</span><span class="o">.</span><span class="nx">raw</span><span class="o">,</span> <span class="nx">options</span><span class="o">);</span>
+        <span class="nb">document</span><span class="o">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="nx">text</span><span class="o">;</span>
+        <span class="k">return</span> <span class="nx">text</span><span class="o">;</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Sets a sub cookie with a given name to a particular value.</span>
+<span class="c">     * @param {String} name The name of the cookie to set.</span>
+<span class="c">     * @param {String} subName The name of the subcookie to set.</span>
+<span class="c">     * @param {Variant} value The value to set.</span>
+<span class="c">     * @param {Object} options (Optional) An object containing one or more</span>
+<span class="c">     *      cookie options: path (a string), domain (a string), expires (a Date object),</span>
+<span class="c">     *      and secure (true/false).</span>
+<span class="c">     * @return {String} The created cookie string.</span>
+<span class="c">     * @method setSub</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">setSub</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">subName</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">value</span> <span class="c">/*:Variant*/</span><span class="o">,</span> <span class="nx">options</span> <span class="c">/*:Object*/</span><span class="o">)</span> <span class="c">/*:String*/</span> <span class="o">{</span>
+        
+        <span class="k">var</span> <span class="nx">lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)</span> <span class="o">||</span> <span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.setSub(): Cookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">subName</span><span class="o">)</span> <span class="o">||</span> <span class="nx">subName</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="o">){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.setSub(): Subcookie name must be a non-empty string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">value</span><span class="o">)){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.setSub(): Subcookie value cannot be undefined.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">var</span> <span class="nx">hash</span> <span class="c">/*:Object*/</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getSubs</span><span class="o">(</span><span class="nx">name</span><span class="o">);</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">hash</span><span class="o">)){</span>
+            <span class="nx">hash</span> <span class="o">=</span> <span class="o">{};</span>
+        <span class="o">}</span>
+        
+        <span class="nx">hash</span><span class="o">[</span><span class="nx">subName</span><span class="o">]</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+        
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">setSubs</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">hash</span><span class="o">,</span> <span class="nx">options</span><span class="o">);</span>
+        
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Sets a cookie with a given name to contain a hash of name-value pairs.</span>
+<span class="c">     * @param {String} name The name of the cookie to set.</span>
+<span class="c">     * @param {Object} value An object containing name-value pairs.</span>
+<span class="c">     * @param {Object} options (Optional) An object containing one or more</span>
+<span class="c">     *      cookie options: path (a string), domain (a string), expires (a Date object),</span>
+<span class="c">     *      and secure (true/false).</span>
+<span class="c">     * @return {String} The created cookie string.</span>
+<span class="c">     * @method setSubs</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">setSubs</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">value</span> <span class="c">/*:Object*/</span><span class="o">,</span> <span class="nx">options</span> <span class="c">/*:Object*/</span><span class="o">)</span> <span class="c">/*:String*/</span> <span class="o">{</span>
+        
+        <span class="k">var</span> <span class="nx">lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.setSubs(): Cookie name must be a string.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">value</span><span class="o">)){</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="o">(</span><span class="s2">&quot;Cookie.setSubs(): Cookie value must be an object.&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">var</span> <span class="nx">text</span> <span class="c">/*:String*/</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_createCookieString</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_createCookieHashString</span><span class="o">(</span><span class="nx">value</span><span class="o">),</span> <span class="kc">false</span><span class="o">,</span> <span class="nx">options</span><span class="o">);</span>
+        <span class="nb">document</span><span class="o">.</span><span class="nx">cookie</span> <span class="o">=</span> <span class="nx">text</span><span class="o">;</span>
+        <span class="k">return</span> <span class="nx">text</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">};</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class="selected"><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.Cookie.html" title="YAHOO.util.Cookie">YAHOO.util.Cookie</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="Cookie.js.html" title="Cookie.js">Cookie.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.util.Cookie", "name": "_createCookieHashString", "url": "YAHOO.util.Cookie.html#method__createCookieHashString", "type": "method"}, {"access": "private", "host": "YAHOO.util.Cookie", "name": "_createCookieString", "url": "YAHOO.util.Cookie.html#method__createCookieString", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "exists", "url": "YAHOO.util.Cookie.html#method_exists", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "get", "url": "YAHOO.util.Cookie.html#method_get", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "getSub", "url": "YAHOO.util.Cookie.html#method_getSub", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "getSubs", "url": "YAHOO.util.Cookie.html#method_getSubs", "type": "method"}, {"access": "private", "host": "YAHOO.util.Cookie", "name": "_parseCookieHash", "url": "YAHOO.util.Cookie.html#method__parseCookieHash", "type": "method"}, {"access": "private", "host": "YAHOO.util.Cookie", "name": "_parseCookieString", "url": "YAHOO.util.Cookie.html#method__parseCookieString", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "remove", "url": "YAHOO.util.Cookie.html#method_remove", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "removeSub", "url": "YAHOO.util.Cookie.html#method_removeSub", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "set", "url": "YAHOO.util.Cookie.html#method_set", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "setSub", "url": "YAHOO.util.Cookie.html#method_setSub", "type": "method"}, {"access": "", "host": "YAHOO.util.Cookie", "name": "setSubs", "url": "YAHOO.util.Cookie.html#method_setSubs", "type": "method"}];
+</script>
+</body>
+</html>

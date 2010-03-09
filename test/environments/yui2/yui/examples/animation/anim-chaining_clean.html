@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Chaining Animations Using <code>onComplete</code></title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+	#animator {
+		background-color:#003366; 
+		color:#fff; 
+		height:15em; 
+		width: 15em; 
+		position:relative;
+		margin:1em;
+		padding:1em;
+	}
+
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Chaining Animations Using <code>onComplete</code></h1>
+
+<div class="exampleIntro">
+	<p>A common use case for animation involves causing two or more animations to fire sequentially.  This is known as <em>chaining</em>.  It's easy to chain animations using the <a href="http://developer.yahoo.com/yui/animation/">YUI Animation Utility</a>'s custom events.</p>
+
+<p>In this example, a color animation is set to fire <em>after</em> an animation of position. Click the button below to start the sequence.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<!--markup for YUI Button Control-->
+<span id="startAnim" class="yui-button yui-link-button">
+    <em class="first-child">
+        <a href="#" title="Click here to begin the chained animations.">Click here to begin the chained animations.</a>
+    </em>
+</span>
+
+<!--The animated element.-->
+<div id="animator">
+	This element will animate position
+    and then color when you click the 
+    button.
+</div>
+
+<script language="javascript">
+
+//Setup the example once the animator div is present
+//in the DOM.
+YAHOO.util.Event.onAvailable("animator", function() {
+
+	//This is the first animation; this one will 
+	//fire when the button is clicked.
+	var move = new YAHOO.util.Anim("animator", {
+		left: {from:0, to:75}
+	}, 1);
+	
+	//This is the second animation; it will fire
+	//when the first animation is complete.
+	var changeColor = new YAHOO.util.ColorAnim("animator", {
+		backgroundColor: {from:"#003366", to:"#ff0000"}
+	}, 1);
+
+	//Here's the chaining glue: We subscribe to the
+	//first animation's onComplete event, and in 
+	//our handler we animate the second animation:
+	move.onComplete.subscribe(function() {
+		changeColor.animate();
+	});
+	
+	//Here we set up our YUI Button and subcribe to
+	//its click event.  When clicked, it will
+	//animate the first animation:
+	var startAnim = new YAHOO.widget.Button("startAnim");
+	startAnim.subscribe("click", function() {
+		//reset the color value to the start so that
+		//the animation can be run multiple times:
+		YAHOO.util.Dom.setStyle("animator", "backgroundColor", "#003366");
+		move.animate();
+	});
+	
+	//You can also make use of the onStart and onTween
+	//custom events in Animation; here, we'll log all
+	//of changeColor's custom events and peek at their
+	//argument signatures:
+	changeColor.onStart.subscribe(function() {
+		YAHOO.log("changeColor animation is starting.", "info", "example");
+	});
+
+	changeColor.onTween.subscribe(function(s, o) {
+		YAHOO.log("changeColor onTween firing with these arguments: " + 
+			YAHOO.lang.dump(o), "info", "example");
+	});
+	
+	changeColor.onComplete.subscribe(function(s, o) {
+		YAHOO.log("changeColor onComplete firing with these arguments: " + 
+			YAHOO.lang.dump(o), "info", "example");
+	});
+});
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

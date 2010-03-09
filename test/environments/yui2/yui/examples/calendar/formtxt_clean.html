@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Calendar and Text Fields</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#date1 { width:100px }
+	#cal1Container { margin-right:10px;margin-bottom:10px }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Calendar and Text Fields</h1>
+
+<div class="exampleIntro">
+	<p>
+This example builds upon the <a href="events.html">Events</a> example, by demonstrating how you can use the select event to set the state of a text box on the page. 
+</p>
+<p>It also demonstates how to limit the dates which can be selected using the mindate/maxdate properties and how the current page and selected date can be set on the Calendar after it is first rendered.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="cal1Container"></div>
+
+<form name="dates" id="dates">
+    <input type="text" name="date1" id="date1" />
+    <button type="button" id="update">Update Calendar</button>
+</form>
+
+<script type="text/javascript">
+    YAHOO.namespace("example.calendar");
+
+    YAHOO.example.calendar.init = function() {
+
+        function handleSelect(type,args,obj) {
+            var dates = args[0]; 
+            var date = dates[0];
+            var year = date[0], month = date[1], day = date[2];
+            
+            var txtDate1 = document.getElementById("date1");
+            txtDate1.value = month + "/" + day + "/" + year;
+        }
+
+        function updateCal() {
+            var txtDate1 = document.getElementById("date1");
+
+            if (txtDate1.value != "") {
+                YAHOO.example.calendar.cal1.select(txtDate1.value);
+                var selectedDates = YAHOO.example.calendar.cal1.getSelectedDates();
+                if (selectedDates.length > 0) {
+                    var firstDate = selectedDates[0];
+                    YAHOO.example.calendar.cal1.cfg.setProperty("pagedate", (firstDate.getMonth()+1) + "/" + firstDate.getFullYear());
+                    YAHOO.example.calendar.cal1.render();
+                } else {
+                    alert("Cannot select a date before 1/1/2006 or after 12/31/2010");
+                }
+                
+            }
+        }
+
+        // For this example page, stop the Form from being submitted, and update the cal instead
+        function handleSubmit(e) {
+            updateCal();
+            YAHOO.util.Event.preventDefault(e);
+        }
+        
+        YAHOO.example.calendar.cal1 = new YAHOO.widget.Calendar("cal1","cal1Container", 
+                                                                    { mindate:"1/1/2006",
+                                                                      maxdate:"12/31/2010" });
+        YAHOO.example.calendar.cal1.selectEvent.subscribe(handleSelect, YAHOO.example.calendar.cal1, true);
+        YAHOO.example.calendar.cal1.render();
+
+        YAHOO.util.Event.addListener("update", "click", updateCal);
+        YAHOO.util.Event.addListener("dates", "submit", handleSubmit);
+    }
+
+    YAHOO.util.Event.onDOMReady(YAHOO.example.calendar.init);
+</script>
+
+<div style="clear:both" ></div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

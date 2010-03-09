@@ -1,0 +1,1530 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: uploader  YAHOO.widget.FlashAdapter   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Uploader&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_uploader.html" title="uploader">uploader</a>
+                 &gt; YAHOO.widget.FlashAdapter 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.FlashAdapter</b>
+                        <span class="extends">
+                        </span>
+
+                            <span class="extends" rel="yui:extends">
+                          - uses 
+                            
+                                <span rel="extend" resource="YAHOO.util.AttributeProvider.html">
+                                <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>
+                                </span>
+                            
+                            
+                        </span>
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Wraps Flash embedding functionality and allows communication with SWF through
+attributes.
+                    </div>
+
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__attributes">
+                                    <h4><a name="property__attributes" property="yui:name">_attributes</a>
+                                        - <code>private <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The initializing attributes are stored here until the SWF is ready.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__containerID">
+                                    <h4><a name="property__containerID" property="yui:name">_containerID</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The ID of the containing DIV.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__id">
+                                    <h4><a name="property__id" property="yui:name">_id</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The id of this instance.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__initialized">
+                                    <h4><a name="property__initialized" property="yui:name">_initialized</a>
+                                        - <code>private <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Indicates whether the SWF has been initialized and is ready
+to communicate with JavaScript
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__swf">
+                                    <h4><a name="property__swf" property="yui:name">_swf</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A reference to the embedded SWF file.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__swfURL">
+                                    <h4><a name="property__swfURL" property="yui:name">_swfURL</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The URL of the SWF file.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_proxyFunctionCount">
+                                    <h4><a name="property_proxyFunctionCount" property="yui:name">proxyFunctionCount</a>
+                                        - <code>private static <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The number of proxy functions that have been created.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.AttributeProvider.html#property__configs">
+                                        <a class="private" href="YAHOO.util.AttributeProvider.html#property__configs" property="yui:name" title="_configs">_configs</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method__embedSWF">
+                                    <h4>
+                                        <a name="method__embedSWF">_embedSWF</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_embedSWF</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Embeds the SWF in the page and associates it with this instance.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__eventHandler">
+                                    <h4>
+                                        <a name="method__eventHandler">_eventHandler</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_eventHandler</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles or re-dispatches events received from the SWF.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__getAltText">
+                                    <h4>
+                                        <a name="method__getAltText">_getAltText</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_getAltText</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Getter for altText attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__getSWFURL">
+                                    <h4>
+                                        <a name="method__getSWFURL">_getSWFURL</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_getSWFURL</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Getter for swfURL attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initAttributes">
+                                    <h4>
+                                        <a name="method__initAttributes">_initAttributes</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initAttributes</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the attributes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__loadHandler">
+                                    <h4>
+                                        <a name="method__loadHandler">_loadHandler</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_loadHandler</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Called when the SWF has been initialized.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setAltText">
+                                    <h4>
+                                        <a name="method__setAltText">_setAltText</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setAltText</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Setter for altText attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_destroy">
+                                    <h4>
+                                        <a name="method_destroy">destroy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">destroy</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Nulls out the entire FlashAdapter instance and related objects and removes attached
+event listeners and clears out DOM elements inside the container. After calling
+this method, the instance reference should be expliclitly nulled by implementer,
+as in myChart = null. Use with caution!
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Public accessor to the unique name of the FlashAdapter instance.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Unique name of the FlashAdapter instance.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_YAHOO.widget.FlashAdapter.createProxyFunction">
+                                    <h4>
+                                        <a name="method_YAHOO.widget.FlashAdapter.createProxyFunction">YAHOO.widget.FlashAdapter.createProxyFunction</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                         static 
+                                        
+                                        void
+                                            <strong property="yui:name">YAHOO.widget.FlashAdapter.createProxyFunction</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates a globally accessible function that wraps a function reference.
+Returns the proxy function's name as a string for use by the SWF through
+ExternalInterface.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_YAHOO.widget.FlashAdapter.eventHandler">
+                                    <h4>
+                                        <a name="method_YAHOO.widget.FlashAdapter.eventHandler">YAHOO.widget.FlashAdapter.eventHandler</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                         static 
+                                        
+                                        void
+                                            <strong property="yui:name">YAHOO.widget.FlashAdapter.eventHandler</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Receives event messages from SWF and passes them to the correct instance
+of FlashAdapter.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_YAHOO.widget.FlashAdapter.removeProxyFunction">
+                                    <h4>
+                                        <a name="method_YAHOO.widget.FlashAdapter.removeProxyFunction">YAHOO.widget.FlashAdapter.removeProxyFunction</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                         static 
+                                        
+                                        void
+                                            <strong property="yui:name">YAHOO.widget.FlashAdapter.removeProxyFunction</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes a function created with createProxyFunction()
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_configureAttribute">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_configureAttribute" property="yui:name" title="configureAttribute">configureAttribute</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent" property="yui:name" title="fireBeforeChangeEvent">fireBeforeChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireChangeEvent" property="yui:name" title="fireChangeEvent">fireChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_get">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_get" property="yui:name" title="get">get</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_getAttributeConfig" property="yui:name" title="getAttributeConfig">getAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeKeys">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_getAttributeKeys" property="yui:name" title="getAttributeKeys">getAttributeKeys</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_refresh">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_refresh" property="yui:name" title="refresh">refresh</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_register">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_register" property="yui:name" title="register">register</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig" property="yui:name" title="resetAttributeConfig">resetAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetValue">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_resetValue" property="yui:name" title="resetValue">resetValue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_set">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributeConfig">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributeConfig" property="yui:name" title="setAttributeConfig">setAttributeConfig</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributes">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributes" property="yui:name" title="setAttributes">setAttributes</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_altTextChange">
+                                    <h4>
+                                        <a name="event_altTextChange">altTextChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">altTextChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'altText' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_backgroundColorChange">
+                                    <h4>
+                                        <a name="event_backgroundColorChange">backgroundColorChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">backgroundColorChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'backgroundColor' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeAltTextChange">
+                                    <h4>
+                                        <a name="event_beforeAltTextChange">beforeAltTextChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeAltTextChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'altText' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeBackgroundColorChange">
+                                    <h4>
+                                        <a name="event_beforeBackgroundColorChange">beforeBackgroundColorChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeBackgroundColorChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'backgroundColor' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeExpressInstallChange">
+                                    <h4>
+                                        <a name="event_beforeExpressInstallChange">beforeExpressInstallChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeExpressInstallChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'expressInstall' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeSwfURLChange">
+                                    <h4>
+                                        <a name="event_beforeSwfURLChange">beforeSwfURLChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeSwfURLChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'swfURL' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeVersionChange">
+                                    <h4>
+                                        <a name="event_beforeVersionChange">beforeVersionChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeVersionChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'version' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeWmodeChange">
+                                    <h4>
+                                        <a name="event_beforeWmodeChange">beforeWmodeChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeWmodeChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'wmode' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_contentReady">
+                                    <h4>
+                                        <a name="event_contentReady">contentReady</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">contentReady</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the SWF is initialized and communication is possible.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_expressInstallChange">
+                                    <h4>
+                                        <a name="event_expressInstallChange">expressInstallChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">expressInstallChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'expressInstall' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_swfURLChange">
+                                    <h4>
+                                        <a name="event_swfURLChange">swfURLChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">swfURLChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'swfURL' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_versionChange">
+                                    <h4>
+                                        <a name="event_versionChange">versionChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">versionChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'version' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_wmodeChange">
+                                    <h4>
+                                        <a name="event_wmodeChange">wmodeChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">wmodeChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'wmode' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+                        <div class="section field details">
+                            <h3 id="configattributes">Configuration Attributes</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:attribute" resource="#config_altText">
+                                    <h4><a name="config_altText">altText</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The alternative text to provide for screen readers and other assistive technology.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_backgroundColor">
+                                    <h4><a name="config_backgroundColor">backgroundColor</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The background color of the SWF. Only available in the constructor because it may not be
+set after Flash Player has been embedded in the page.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_expressInstall">
+                                    <h4><a name="config_expressInstall">expressInstall</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            URL pointing to a SWF file that handles Flash Player's express
+install feature. Only available in the constructor because it may not be
+set after Flash Player has been embedded in the page.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_swfURL">
+                                    <h4><a name="config_swfURL">swfURL</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Absolute or relative URL to the SWF displayed by the FlashAdapter. Only available in the constructor because it may not be
+set after Flash Player has been embedded in the page.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_version">
+                                    <h4><a name="config_version">version</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Minimum required version for the SWF file. Only available in the constructor because it may not be
+set after Flash Player has been embedded in the page.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_wmode">
+                                    <h4><a name="config_wmode">wmode</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Sets the window mode of the Flash Player control. May be
+"window", "opaque", or "transparent". Only available in the constructor
+because it may not be set after Flash Player has been embedded in the page.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+
+                            </div>
+                        </div>
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class="selected"><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="YAHOO.widget.FlashAdapter.html" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a></li>
+                                <li class=""><a href="YAHOO.widget.Uploader.html" title="YAHOO.widget.Uploader">YAHOO.widget.Uploader</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="FlashAdapter.js.html" title="FlashAdapter.js">FlashAdapter.js</a></li>
+                                <li class=""><a href="swfobject.js.html" title="swfobject.js">swfobject.js</a></li>
+                                <li class=""><a href="Uploader.js.html" title="Uploader.js">Uploader.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__attributes" title="_attributes">_attributes</a></li>
+                                <li class="private"><a href="#property__containerID" title="_containerID">_containerID</a></li>
+                                <li class="private"><a href="#property__id" title="_id">_id</a></li>
+                                <li class="private"><a href="#property__initialized" title="_initialized">_initialized</a></li>
+                                <li class="private"><a href="#property__swf" title="_swf">_swf</a></li>
+                                <li class="private"><a href="#property__swfURL" title="_swfURL">_swfURL</a></li>
+                                <li class="private"><a href="#property_proxyFunctionCount" title="proxyFunctionCount">proxyFunctionCount</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method__embedSWF" title="_embedSWF">_embedSWF</a></li>
+                                <li class="private"><a href="#method__eventHandler" title="_eventHandler">_eventHandler</a></li>
+                                <li class="private"><a href="#method__getAltText" title="_getAltText">_getAltText</a></li>
+                                <li class="private"><a href="#method__getSWFURL" title="_getSWFURL">_getSWFURL</a></li>
+                                <li class="private"><a href="#method__initAttributes" title="_initAttributes">_initAttributes</a></li>
+                                <li class="private"><a href="#method__loadHandler" title="_loadHandler">_loadHandler</a></li>
+                                <li class="private"><a href="#method__setAltText" title="_setAltText">_setAltText</a></li>
+                                <li class=""><a href="#method_destroy" title="destroy">destroy</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                                <li class="private"><a href="#method_YAHOO.widget.FlashAdapter.createProxyFunction" title="YAHOO.widget.FlashAdapter.createProxyFunction">YAHOO.widget.FlashAdapter.createProxyFunction</a></li>
+                                <li class="private"><a href="#method_YAHOO.widget.FlashAdapter.eventHandler" title="YAHOO.widget.FlashAdapter.eventHandler">YAHOO.widget.FlashAdapter.eventHandler</a></li>
+                                <li class="private"><a href="#method_YAHOO.widget.FlashAdapter.removeProxyFunction" title="YAHOO.widget.FlashAdapter.removeProxyFunction">YAHOO.widget.FlashAdapter.removeProxyFunction</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_altTextChange" title="altTextChange">altTextChange</a></li>
+                                <li class=""><a href="#event_backgroundColorChange" title="backgroundColorChange">backgroundColorChange</a></li>
+                                <li class=""><a href="#event_beforeAltTextChange" title="beforeAltTextChange">beforeAltTextChange</a></li>
+                                <li class=""><a href="#event_beforeBackgroundColorChange" title="beforeBackgroundColorChange">beforeBackgroundColorChange</a></li>
+                                <li class=""><a href="#event_beforeExpressInstallChange" title="beforeExpressInstallChange">beforeExpressInstallChange</a></li>
+                                <li class=""><a href="#event_beforeSwfURLChange" title="beforeSwfURLChange">beforeSwfURLChange</a></li>
+                                <li class=""><a href="#event_beforeVersionChange" title="beforeVersionChange">beforeVersionChange</a></li>
+                                <li class=""><a href="#event_beforeWmodeChange" title="beforeWmodeChange">beforeWmodeChange</a></li>
+                                <li class=""><a href="#event_contentReady" title="contentReady">contentReady</a></li>
+                                <li class=""><a href="#event_expressInstallChange" title="expressInstallChange">expressInstallChange</a></li>
+                                <li class=""><a href="#event_swfURLChange" title="swfURLChange">swfURLChange</a></li>
+                                <li class=""><a href="#event_versionChange" title="versionChange">versionChange</a></li>
+                                <li class=""><a href="#event_wmodeChange" title="wmodeChange">wmodeChange</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="configList" class="module">
+                        <h4>Configuration Attributes</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#config_altText" title="altText">altText</a></li>
+                                <li class=""><a href="#config_backgroundColor" title="backgroundColor">backgroundColor</a></li>
+                                <li class=""><a href="#config_expressInstall" title="expressInstall">expressInstall</a></li>
+                                <li class=""><a href="#config_swfURL" title="swfURL">swfURL</a></li>
+                                <li class=""><a href="#config_version" title="version">version</a></li>
+                                <li class=""><a href="#config_wmode" title="wmode">wmode</a></li>
+                        </ul>
+                    </div>
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "altText", "url": "YAHOO.widget.FlashAdapter.html#config_altText", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "altTextChange", "url": "YAHOO.widget.FlashAdapter.html#event_altTextChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_attributes", "url": "YAHOO.widget.FlashAdapter.html#property__attributes", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "backgroundColor", "url": "YAHOO.widget.FlashAdapter.html#config_backgroundColor", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "backgroundColorChange", "url": "YAHOO.widget.FlashAdapter.html#event_backgroundColorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeAltTextChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeAltTextChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeBackgroundColorChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeBackgroundColorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeExpressInstallChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeExpressInstallChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeSwfURLChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeSwfURLChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeVersionChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeVersionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeWmodeChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeWmodeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "cancel", "url": "YAHOO.widget.Uploader.html#method_cancel", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Uploader", "name": "Chart.SWFURL", "url": "YAHOO.widget.Uploader.html#property_Chart.SWFURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "clearFileList", "url": "YAHOO.widget.Uploader.html#method_clearFileList", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "click", "url": "YAHOO.widget.Uploader.html#event_click", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_containerID", "url": "YAHOO.widget.FlashAdapter.html#property__containerID", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "contentReady", "url": "YAHOO.widget.FlashAdapter.html#event_contentReady", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "destroy", "url": "YAHOO.widget.FlashAdapter.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "disable", "url": "YAHOO.widget.Uploader.html#method_disable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_embedSWF", "url": "YAHOO.widget.FlashAdapter.html#method__embedSWF", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "enable", "url": "YAHOO.widget.Uploader.html#method_enable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_eventHandler", "url": "YAHOO.widget.FlashAdapter.html#method__eventHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "expressInstall", "url": "YAHOO.widget.FlashAdapter.html#config_expressInstall", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "expressInstallChange", "url": "YAHOO.widget.FlashAdapter.html#event_expressInstallChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "fileSelect", "url": "YAHOO.widget.Uploader.html#event_fileSelect", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_getAltText", "url": "YAHOO.widget.FlashAdapter.html#method__getAltText", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_getSWFURL", "url": "YAHOO.widget.FlashAdapter.html#method__getSWFURL", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_id", "url": "YAHOO.widget.FlashAdapter.html#property__id", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_initAttributes", "url": "YAHOO.widget.FlashAdapter.html#method__initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_initialized", "url": "YAHOO.widget.FlashAdapter.html#property__initialized", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_loadHandler", "url": "YAHOO.widget.FlashAdapter.html#method__loadHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "mouseDown", "url": "YAHOO.widget.Uploader.html#event_mouseDown", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "mouseUp", "url": "YAHOO.widget.Uploader.html#event_mouseUp", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "proxyFunctionCount", "url": "YAHOO.widget.FlashAdapter.html#property_proxyFunctionCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "removeFile", "url": "YAHOO.widget.Uploader.html#method_removeFile", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "rollOut", "url": "YAHOO.widget.Uploader.html#event_rollOut", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "rollOver", "url": "YAHOO.widget.Uploader.html#event_rollOver", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setAllowLogging", "url": "YAHOO.widget.Uploader.html#method_setAllowLogging", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setAllowMultipleFiles", "url": "YAHOO.widget.Uploader.html#method_setAllowMultipleFiles", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_setAltText", "url": "YAHOO.widget.FlashAdapter.html#method__setAltText", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setFileFilters", "url": "YAHOO.widget.Uploader.html#method_setFileFilters", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setSimUploadLimit", "url": "YAHOO.widget.Uploader.html#method_setSimUploadLimit", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_swf", "url": "YAHOO.widget.FlashAdapter.html#property__swf", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_swfURL", "url": "YAHOO.widget.FlashAdapter.html#property__swfURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "swfURL", "url": "YAHOO.widget.FlashAdapter.html#config_swfURL", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "swfURLChange", "url": "YAHOO.widget.FlashAdapter.html#event_swfURLChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "toString", "url": "YAHOO.widget.FlashAdapter.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "upload", "url": "YAHOO.widget.Uploader.html#method_upload", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadAll", "url": "YAHOO.widget.Uploader.html#method_uploadAll", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadCancel", "url": "YAHOO.widget.Uploader.html#event_uploadCancel", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadComplete", "url": "YAHOO.widget.Uploader.html#event_uploadComplete", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadCompleteData", "url": "YAHOO.widget.Uploader.html#event_uploadCompleteData", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadError", "url": "YAHOO.widget.Uploader.html#event_uploadError", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadProgress", "url": "YAHOO.widget.Uploader.html#event_uploadProgress", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadStart", "url": "YAHOO.widget.Uploader.html#event_uploadStart", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadThese", "url": "YAHOO.widget.Uploader.html#method_uploadThese", "type": "method"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "version", "url": "YAHOO.widget.FlashAdapter.html#config_version", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "versionChange", "url": "YAHOO.widget.FlashAdapter.html#event_versionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "wmode", "url": "YAHOO.widget.FlashAdapter.html#config_wmode", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "wmodeChange", "url": "YAHOO.widget.FlashAdapter.html#event_wmodeChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.createProxyFunction", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.createProxyFunction", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.eventHandler", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.eventHandler", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.removeProxyFunction", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.removeProxyFunction", "type": "method"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>Connection Manager: Cross-Domain Transactions with Connection Manager</title>
+
+<link rel="stylesheet" type="text/css" href="../../build/reset/reset.css"> 
+<link rel="stylesheet" type="text/css" href="../../build/base/base.css"> 
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts.css"> 
+
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+
+</head>
+
+<body>
+
+<h1>Connection Manager: Cross-Domain Transactions with Connection Manager</h1>
+
+
+<button id="fetch" disabled="disabled" onClick="send()">Load JSON RSS news feed from Yahoo! Pipes.</button>
+
+<div id="output">
+	<ul id='list'>
+		<li>Content from Yahoo! Pipes feed will display here.</li>
+    </ul>
+</div>
+
+<script language="javascript">
+
+//Data fetched will be displayed in a UL in the
+//element #output:
+var output = document.getElementById('list'),
+YCM = YAHOO.util.Connect;
+
+//Event handler called when the transaction begins:
+var handleStart = function(e, a) {
+	YAHOO.log("Transaction " + a[0].tId + " is starting.", "info", "example");
+	output.innerHTML = "<li>Loading news stories via Yahoo! Pipes feed...</li>";
+}
+
+//Event handler for the success event -- use this handler to write the fetched
+//RSS items to the page.
+var handleSuccess = function(o) {
+
+	//We use JSON.parse to sanitize the JSON (as opposed to simply eval'ing
+	//it into the page):
+	var oRSS = YAHOO.lang.JSON.parse(o.responseText);
+
+	//From here, we simply access the JSON data from where it's provided
+	//in the Yahoo! Pipes output:
+	if (oRSS && oRSS.count) {
+
+		var s = "<!--begin news stories fetched via Yahoo! Pipes-->",
+			//t in this case is our simple template; this is fed to
+			//YAHOO.Lang.substitute as we loop through RSS items:
+			t = "<li><a href='{link}'>{title}</a>, {pubDate}</li>";
+
+		for (var i=0; i<oRSS.count; i++) {
+			s += YAHOO.lang.substitute(t, oRSS.value.items[i]);
+		}
+
+		//Output the string to the page:
+		output.innerHTML = s;
+
+	} else {
+		//No news stories were found in the feed.
+		output.innerHTML = "<li>The RSS feed did not return any items.</li>";
+	}
+}
+
+//In the event that the HTTP status returned is > 399, a
+//failure is reported and this function is called:
+var handleFailure = function(o) {
+	YAHOO.log("ERROR " + o.id + " " + o.argument, "info", "example");
+}
+
+//Set up the callback object used for the transaction.
+var callback = {
+	success: handleSuccess,
+	failure: handleFailure,
+	xdr: true
+};
+
+//Enable the request button when the Flash transport is
+//initialized.
+YCM.xdrReadyEvent.subscribe(function() {
+	document.getElementById('fetch').disabled = false;
+});
+
+//Listen for Connection Manager's start event.
+YCM.startEvent.subscribe(handleStart);
+
+//Initialize the Flash transport.
+YCM.transport('../../build/connection/connection.swf');
+
+//Wire the button to a click handler to fire a request each
+//time the button is clicked:
+var send = function(o) {
+	YAHOO.log("Click detected; beginning io request to Yahoo! Pipes.", "info", "example");
+	var obj = YCM.asyncRequest('GET',
+		//this is a specific Pipes feed, populated with cycling news:
+		"http://pipes.yahooapis.com/pipes/pipe.run?_id=giWz8Vc33BG6rQEQo_NLYQ&_render=json",
+		callback
+	);
+}
+</script>
+
+</body>
+</html>

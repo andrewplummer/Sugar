@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Editor inside a Tabview Control</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/tabview/assets/skins/sam/tabview.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/tabview/tabview-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/editor/editor-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Editor inside a Tabview Control</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates how to render an Editor inside of a <a href="http://developer.yahoo.com/yui/tabview/">TabView Control</a>.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+.yui-content {
+    height: 250px;
+}
+.yui-content textarea {
+    visibility: hidden;
+}
+</style>
+
+<div id="e_tabs"></div>
+
+<script>
+
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        editorTab = null,
+        myEditor = null;
+
+
+    YAHOO.log('Create the Tabview..', 'info', 'example');
+    var myTabs = new YAHOO.widget.TabView('e_tabs');
+	
+    YAHOO.log('Add the first tab..', 'info', 'example');
+    myTabs.addTab( new YAHOO.widget.Tab({
+        label: 'Tab One Label',
+        content: '<p>Tab One Content</p>',
+        active: true
+    }));
+    
+    YAHOO.log('Add the editor tab..', 'info', 'example');
+    editorTab = new YAHOO.widget.Tab({
+        label: 'Editor Tab',
+        content: '<textarea id="editor">This is the editor content.. You can edit me!</textarea> '
+    });
+
+    myTabs.addTab(editorTab);
+    
+    YAHOO.log('Add the third tab..', 'info', 'example');
+    myTabs.addTab( new YAHOO.widget.Tab({
+        label: 'Tab Three Label',
+        content: '<p>Tab Three Content</p>'
+    }));
+    
+    myTabs.on('activeTabChange', function(ev) {
+        YAHOO.log('Active tab Change, check to see if we are showing the editor..', 'info', 'example');
+         if (ev.newValue == editorTab) {
+            var myConfig = {
+                height: '100px',
+                width: '600px',
+                animate: true,
+                dompath: true
+            };
+            if (!myEditor) {
+                YAHOO.log('Create the Editor..', 'info', 'example');
+                myEditor = new YAHOO.widget.Editor('editor', myConfig);
+                myEditor.render();
+            }
+         }
+    });
+
+
+
+})();
+</script>
+
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,1114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: DataTable Control: Row Expansion</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* custom styles for this example */
+#expandable_table{width:500px;}
+		
+/** 
+*
+* Style the yui-dt-expandablerow-trigger column 
+*
+**/
+.yui-dt-expandablerow-trigger{
+	width:18px;
+	height:22px;
+	cursor:pointer;
+}
+.yui-dt-expanded .yui-dt-expandablerow-trigger{
+	background:url(../datatable/assets/images/arrow_open.png) 4px 4px no-repeat;
+}
+.yui-dt-expandablerow-trigger, .yui-dt-collapsed .yui-dt-expandablerow-trigger{
+	background:url(../datatable/assets/images/arrow_closed.png) 4px 4px no-repeat;
+}
+.yui-dt-expanded .yui-dt-expandablerow-trigger.spinner{
+	background:url(../datatable/assets/img/spinner.gif) 1px 4px no-repeat;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: DataTable Control: Row Expansion</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+            <cite class="byline">DataTable Row Expansion was developed by <a href='http://standardpixel.com'>Eric Gelinas</a>. This was originally a concept for <a href='http://apt.yahoo.com/'>Yahoo! APT</a> by Ryan Leffel with designs by Edward Zee.</cite>
+    
+	<div class="promo">
+	<h1>DataTable Control: Row Expansion</h1>
+	
+	<div class="exampleIntro">
+	<!-- Introductory text -->
+<p>A demonstration of the DataTable's row expansion feature to display a list of "Interestingness" from <a href="flickr.com">Flickr</a>. When the table first loads, it displays a list of image titles. When a row is expanded the photo is displayed in the expansion area along with a link to the Flickr user's photostream. This example uses a simple string-based template to format the row expansion area.</p>
+			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="dt_rowexp_basic_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	
+<div id="expandable_table"></div>
+
+<script type="text/javascript">
+/* This code should not be modified */
+/**********
+*
+* Row Expansion Plugin for the YUI DataTable
+* Author: gelinase@yahoo-inc.com / Eric Gelinas
+* @submodule Row Expansion
+* @class YAHOO.widget.DataTable
+***********/
+
+(function(){
+	var	Dom = YAHOO.util.Dom,
+			STRING_STATENAME  = 'yui_dt_state',
+			CLASS_EXPANDED    = 'yui-dt-expanded',
+			CLASS_COLLAPSED   = 'yui-dt-collapsed',
+			CLASS_EXPANSION   = 'yui-dt-expansion',
+			CLASS_LINER       = 'yui-dt-liner',
+
+			//From YUI 3
+			indexOf = function(a, val) {
+				for (var i=0; i<a.length; i=i+1) {
+					if (a[i] === val) {
+						return i;
+					}
+				}
+
+				return -1;
+			};
+
+	YAHOO.lang.augmentObject(
+		YAHOO.widget.DataTable.prototype ,
+		{
+
+			/////////////////////////////////////////////////////////////////////////////
+			//
+			// Private members
+			//
+			/////////////////////////////////////////////////////////////////////////////
+
+			/**
+				* Gets state object for a specific record associated with the DataTable.
+				* @method _getRecordState
+				* @param {Mixed} record_id Record / Row / or Index id
+				* @param {String} key Key to return within the state object. Default is to
+				* return all as a map
+				* @return {Object} State data object
+				* @type mixed
+				* @private
+			**/
+			_getRecordState : function( record_id, key ){
+
+				var	row_data    = this.getRecord( record_id ),
+						row_state   = row_data.getData( STRING_STATENAME ),
+						state_data  = ( row_state && key ) ? row_state[ key ] : row_state;
+
+				return state_data || {};
+
+			},
+
+			/**
+				* Sets a value to a state object with a unique id for a record which
+				* is associated with the DataTable
+				* @method _setRecordState
+				* @param {Mixed} record_id Record / Row / or Index id
+				* @param {String} key Key to use in map
+				* @param {Mixed} value Value to assign to the key
+				* @return {Object} State data object
+				* @type mixed
+				* @private
+			**/
+			_setRecordState : function( record_id, key, value ){
+
+				var	row_data      = this.getRecord( record_id ).getData(),
+						merged_data   = row_data[ STRING_STATENAME ] || {};
+
+				merged_data[ key ] = value;
+
+				this.getRecord( record_id ).setData( STRING_STATENAME, merged_data );
+
+				return merged_data;
+
+			},
+
+			/////////////////////////////////////////////////////////////////////////////
+			//
+			// Public methods
+			//
+			/////////////////////////////////////////////////////////////////////////////
+
+			/**
+				* Over-ridden initAttributes method from DataTable
+				* @method initAttributes
+				* @param {Mixed} record_id Record / Row / or Index id
+				* @param {String} key Key to use in map
+				* @param {Mixed} value Value to assign to the key
+				* @return {Object} State data object
+				* @type mixed
+			**/
+			initAttributes : function( oConfigs ) {
+
+				oConfigs = oConfigs || {};
+
+				YAHOO.widget.DataTable.superclass.initAttributes.call( this, oConfigs );
+
+					/**
+					* @attribute rowExpansionTemplate
+					* @description Value for the rowExpansionTemplate attribute.
+					* @type {Mixed}
+					* @default ""
+					**/
+					this.setAttributeConfig("rowExpansionTemplate", {
+							value: "",
+							validator: function( template ){
+						return (
+							YAHOO.lang.isString( template ) ||
+							YAHOO.lang.isFunction( template )
+						);
+					},
+					method: this.initRowExpansion
+					});
+
+			},
+
+			/**
+				* Initializes row expansion on the DataTable instance
+				* @method initRowExpansion
+				* @param {Mixed} template a string template or function to be called when
+				* Row is expanded
+				* @type mixed
+			**/
+			initRowExpansion : function( template ){
+
+				//Set subscribe restore method
+				this.subscribe( 'postRenderEvent', this.onEventRestoreRowExpansion );
+
+				//Setup template
+				this.rowExpansionTemplate = template;
+
+				//Set table level state
+				this.a_rowExpansions = [];
+
+			},
+
+			/**
+				* Toggles the expansion state of a row
+				* @method toggleRowExpansion
+				* @param {Mixed} record_id Record / Row / or Index id
+				* @type mixed
+			**/
+			toggleRowExpansion : function( record_id ){
+
+				var state = this._getRecordState( record_id );
+
+				if( state && state.expanded ){
+
+					this.collapseRow( record_id );
+
+				} else {
+
+					this.expandRow( record_id );
+
+				}
+
+			},
+
+			/**
+				* Sets the expansion state of a row to expanded
+				* @method expandRow
+				* @param {Mixed} record_id Record / Row / or Index id
+				* @param {Boolean} restore will restore an exisiting state for a
+				* row that has been collapsed by a non user action
+				* @return {Boolean} successful
+				* @type mixed
+			**/
+			expandRow : function( record_id, restore ){
+
+				var state = this._getRecordState( record_id );
+
+				if( !state.expanded || restore ){
+
+					var	row_data          = this.getRecord( record_id ),
+							row               = this.getRow( row_data ),
+							new_row           = document.createElement('tr'),
+							column_length     = this.getFirstTrEl().childNodes.length,
+							expanded_data     = row_data.getData(),
+							expanded_content  = null,
+							template          = this.rowExpansionTemplate,
+							next_sibling      = Dom.getNextSibling( row );
+
+					//Construct expanded row body
+					new_row.className = CLASS_EXPANSION;
+					var new_column = document.createElement( 'td' );
+					new_column.colSpan = column_length;
+
+					new_column.innerHTML = '<div class="'+ CLASS_LINER +'"></div>';
+					new_row.appendChild( new_column );
+
+					var liner_element = new_row.firstChild.firstChild;
+
+					if( YAHOO.lang.isString( template ) ){
+
+						liner_element.innerHTML = YAHOO.lang.substitute(
+							template,
+							expanded_data
+						);
+
+					} else if( YAHOO.lang.isFunction( template ) ) {
+
+						template( {
+							row_element : new_row,
+							liner_element : liner_element,
+							data : row_data,
+							state : state
+
+						} );
+
+					} else {
+
+						return false;
+
+					}
+
+					//Insert new row
+					newRow = Dom.insertAfter( new_row, row );
+
+					if (newRow.innerHTML.length) {
+
+						this._setRecordState( record_id, 'expanded', true );
+
+						if( !restore ){
+
+							this.a_rowExpansions.push( this.getRecord( record_id ).getId() );
+
+						}
+
+						Dom.removeClass( row, CLASS_COLLAPSED );
+						Dom.addClass( row, CLASS_EXPANDED );
+
+						//Fire custom event
+						this.fireEvent( "rowExpandEvent", { record_id : row_data.getId() } );
+
+						return true;
+
+					} else {
+
+						return false;
+
+					}
+
+				}
+
+			},
+
+			/**
+				* Sets the expansion state of a row to collapsed
+				* @method collapseRow
+				* @param {Mixed} record_id Record / Row / or Index id
+				* @return {Boolean} successful
+				* @type mixed
+			**/
+			collapseRow : function( record_id ){
+
+				var	row_data    = this.getRecord( record_id ),
+						row         = Dom.get( row_data.getId() ),
+						state       = row_data.getData( STRING_STATENAME );
+
+				if( state && state.expanded ){
+
+					var	next_sibling    = Dom.getNextSibling( row ),
+							hash_index      = indexOf( this.a_rowExpansions, record_id );
+
+					if( Dom.hasClass( next_sibling, CLASS_EXPANSION ) ) {
+
+						next_sibling.parentNode.removeChild( next_sibling );
+						this.a_rowExpansions.splice( hash_index, 1 );
+						this._setRecordState( record_id, 'expanded', false );
+
+						Dom.addClass( row, CLASS_COLLAPSED );
+						Dom.removeClass( row, CLASS_EXPANDED );
+
+						//Fire custom event
+						this.fireEvent("rowCollapseEvent", { record_id : row_data.getId() } );
+
+						return true;
+
+					} else {
+
+						return false;
+
+					}
+
+				}
+
+			},
+
+			/**
+				* Collapses all expanded rows. This should be called before any action where
+				* the row expansion markup would interfear with normal DataTable markup handling.
+				* This method does not remove exents attached during implementation. All event
+				* handlers should be removed separately.
+				* @method collapseAllRows
+				* @type mixed
+			**/
+			collapseAllRows : function(){
+
+				var rows = this.a_rowExpansions;
+
+				for( var i = 0, l = rows.length; l > i; i++ ){
+
+					//Always pass 0 since collapseRow removes item from the a_rowExpansions array
+					this.collapseRow( rows[ 0 ] );
+
+				}
+
+				a_rowExpansions = [];
+
+			},
+
+			/**
+				* Restores rows which have an expanded state but no markup. This
+				* is to be called to restore row expansions after the DataTable
+				* renders or the collapseAllRows is called.
+				* @method collapseAllRows
+				* @type mixed
+			**/
+			restoreExpandedRows : function(){
+
+				var	expanded_rows = this.a_rowExpansions;
+
+				if( !expanded_rows.length ){
+
+					return;
+
+				}
+
+				if( this.a_rowExpansions.length ){
+
+					for( var i = 0, l = expanded_rows.length; l > i; i++ ){
+
+						this.expandRow( expanded_rows[ i ] , true );
+
+					}
+
+				}
+
+			},
+
+			/**
+				* Abstract method which restores row expansion for subscribing to the
+				* DataTable postRenderEvent.
+				* @method onEventRestoreRowExpansion
+				* @param {Object} oArgs context of a subscribed event
+				* @type mixed
+			**/
+			onEventRestoreRowExpansion : function( oArgs ){
+
+				this.restoreExpandedRows();
+
+			},
+
+			/**
+				* Abstract method which toggles row expansion for subscribing to the
+				* DataTable postRenderEvent.
+				* @method onEventToggleRowExpansion
+				* @param {Object} oArgs context of a subscribed event
+				* @type mixed
+			**/
+			onEventToggleRowExpansion : function( oArgs ){
+
+				if( YAHOO.util.Dom.hasClass( oArgs.target, 'yui-dt-expandablerow-trigger' ) ){
+
+					this.toggleRowExpansion( oArgs.target );
+
+				}
+
+			}
+
+		}, true //This boolean is needed to override members of the original object
+	);
+
+})();
+</script>
+
+<script type="text/javascript">
+/* Modify as needed */
+YAHOO.util.Event.onDOMReady( function() {
+		YAHOO.example.Basic = function() {
+
+				/**
+				*
+				* Create a YUI DataSource instance. This will create an XHR datasource and will use YQL 
+				* to query the Flickr web service.
+				*
+				**/
+				var myDataSource = new YAHOO.util.DataSource('assets/php/yql_proxy.php?q=select%20*%20from%20flickr.photos.interestingness(20)&format=json');
+						myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+						myDataSource.connXhrMode = "queueRequests";
+						myDataSource.responseSchema = {
+							resultsList: "query.results.photo"
+						};
+
+				/**
+				*
+				* Create a YUI DataTable instance.
+				*
+				**/
+				var myDataTable = new YAHOO.widget.DataTable(
+						"expandable_table",
+						[
+							{
+								label:"",
+								/**
+								* This formatter adds a class that will be used to style a 
+								* trigger in the first column
+								**/
+								formatter:function( el, oRecord, oColumn, oData ) {
+
+									YAHOO.util.Dom.addClass( el.parentNode, "yui-dt-expandablerow-trigger" );
+
+								}
+							},
+							{
+								key:"title",
+								label:"Interestingness",
+								width : '200px',
+								/**
+								* This formatter includes a default string in cells where the record
+								* is missing a title. This just makes the finsished product look nicer.
+								**/
+								formatter: function( el, oRecord, oColumn, oData ){
+									
+									el.innerHTML = oData || '--[ No description ]--';
+									
+								}
+							}
+						],
+						myDataSource,
+							{ 
+								/**
+								* The "rowExpansionTemplate" property is passed a string. This is passed 
+								* through YAHOO.lang.substitute which can match tokens (represented with brackets), 
+								* which contain keys from the DataTables data.
+								**/
+								rowExpansionTemplate : '<img src="http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_m_d.jpg" /><div><a href="http://flickr.com/photos/{owner}">See more photos from this Flickr User</a></div>' 
+							}
+						);
+
+				/**
+				*
+				* Subscribe to the "cellClickEvent" which will yui-dt-expandablerow-trigger the expansion 
+				* when the user clicks on the yui-dt-expandablerow-trigger column
+				*
+				**/
+				myDataTable.subscribe( 'cellClickEvent', myDataTable.onEventToggleRowExpansion );
+				
+				return {
+						oDS: myDataSource,
+						oDT: myDataTable
+				};
+		}();
+});
+</script>
+	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<!-- Example text. Note that code excerpts are housed in special
+textarea's that are used to do syntax highlighting -->
+
+<h2 class="first">Sample Code for this Example</h2>
+
+<p>Custom CSS for this example:</p>
+<textarea name="code" class="CSS" cols="60" rows="1">
+/** 
+*
+* Style the yui-dt-expandablerow-trigger column 
+*
+**/
+.yui-dt-expandablerow-trigger{
+    width:18px;
+    height:22px;
+    cursor:pointer;
+}
+.yui-dt-expanded .yui-dt-expandablerow-trigger{
+    background:url(arrow_open.png) 4px 4px no-repeat;
+}
+.yui-dt-expandablerow-trigger, .yui-dt-collapsed .yui-dt-expandablerow-trigger{
+    background:url(arrow_closed.png) 4px 4px no-repeat;
+}
+.yui-dt-expanded .yui-dt-expandablerow-trigger.spinner{
+    background:url(spinner.gif) 1px 4px no-repeat;
+}
+
+/** 
+*
+* Style the expansion row
+*
+**/
+.yui-dt-expansion .yui-dt-liner{
+    padding:0;
+    border:solid 0 #bbb;
+    border-width: 0 0 2px 0;
+}
+.yui-dt-expansion .yui-dt-liner th, .yui-dt-expansion .yui-dt-liner table{
+    border:none;
+    background-color:#fff;
+}
+.yui-dt-expansion .yui-dt-liner th, .yui-dt-expansion .yui-dt-liner table th{
+    background-image:none;
+    background-color:#eee;
+}
+.yui-dt-expansion .yui-dt-liner th, .yui-dt-expansion .yui-dt-liner table td{
+    border:solid 0 #eee;
+    border-width: 0 0 1px 1px;
+}
+.yui-dt-expansion .yui-dt-liner th, .yui-dt-expansion .yui-dt-liner table td div{
+    padding:3px;
+    overflow:hidden;
+    width:100px;
+}
+.yui-dt-expansion .yui-dt-liner th, .yui-dt-expansion .yui-dt-liner table td.big div{
+    width:300px;
+}
+.yui-dt-expansion .yui-dt-liner th, .yui-dt-expansion .yui-dt-liner table td ul{ padding:0;margin:0; }
+</textarea>
+
+<p>DataTable RowExpansion extension code:</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+/* This code should not be modified */
+
+(function(){
+
+var Dom = YAHOO.util.Dom,
+
+    STRING_STATENAME  = 'yui_dt_state',
+
+    CLASS_EXPANDED    = 'yui-dt-expanded',
+    CLASS_COLLAPSED   = 'yui-dt-collapsed',
+    CLASS_EXPANSION   = 'yui-dt-expansion',
+    CLASS_LINER       = 'yui-dt-liner',
+
+    //From YUI 3
+    indexOf = function(a, val) {
+        for (var i=0; i<a.length; i=i+1) {
+            if (a[i] === val) {
+                return i;
+            }
+        }
+
+        return -1;
+    };
+
+YAHOO.lang.augmentObject(
+        YAHOO.widget.DataTable.prototype , {
+
+        ////////////////////////////////////////////////////////////////////
+        //
+        // Private members
+        //
+        ////////////////////////////////////////////////////////////////////
+
+        /**
+            * Gets state object for a specific record associated with the
+            * DataTable.
+            * @method _getRecordState
+            * @param {Mixed} record_id Record / Row / or Index id
+            * @param {String} key Key to return within the state object.
+            * Default is to return all as a map
+            * @return {Object} State data object
+            * @type mixed
+            * @private
+        **/
+        _getRecordState : function( record_id, key ){
+            var row_data    = this.getRecord( record_id ),
+                row_state   = row_data.getData( STRING_STATENAME ),
+                state_data  = (row_state && key) ? row_state[ key ]:row_state;
+
+            return state_data || {};
+        },
+
+        /**
+            * Sets a value to a state object with a unique id for a record
+            * which is associated with the DataTable
+            * @method _setRecordState
+            * @param {Mixed} record_id Record / Row / or Index id
+            * @param {String} key Key to use in map
+            * @param {Mixed} value Value to assign to the key
+            * @return {Object} State data object
+            * @type mixed
+            * @private
+        **/
+        _setRecordState : function( record_id, key, value ){
+            var row_data      = this.getRecord( record_id ).getData(),
+                merged_data   = row_data[ STRING_STATENAME ] || {};
+
+            merged_data[ key ] = value;
+
+            this.getRecord(record_id).setData(STRING_STATENAME, merged_data);
+
+            return merged_data;
+
+        },
+
+        //////////////////////////////////////////////////////////////////////
+        //
+        // Public methods
+        //
+        //////////////////////////////////////////////////////////////////////
+
+        /**
+            * Over-ridden initAttributes method from DataTable
+            * @method initAttributes
+            * @param {Mixed} record_id Record / Row / or Index id
+            * @param {String} key Key to use in map
+            * @param {Mixed} value Value to assign to the key
+            * @return {Object} State data object
+            * @type mixed
+        **/
+        initAttributes : function( oConfigs ) {
+
+            oConfigs = oConfigs || {};
+
+            YAHOO.widget.DataTable.superclass.initAttributes.call(this,
+                oConfigs);
+
+                /**
+                * @attribute rowExpansionTemplate
+                * @description Value for the rowExpansionTemplate attribute.
+                * @type {Mixed}
+                * @default ""
+                **/
+                this.setAttributeConfig("rowExpansionTemplate", {
+                        value: "",
+                        validator: function( template ){
+                    return (
+                        YAHOO.lang.isString( template ) ||
+                        YAHOO.lang.isFunction( template )
+                    );
+                },
+                method: this.initRowExpansion
+                });
+
+        },
+
+        /**
+            * Initializes row expansion on the DataTable instance
+            * @method initRowExpansion
+            * @param {Mixed} template a string template or function to be
+            * called when Row is expanded
+            * @type mixed
+        **/
+        initRowExpansion : function( template ){
+            //Set subscribe restore method
+            this.subscribe('postRenderEvent',
+                this.onEventRestoreRowExpansion);
+
+            //Setup template
+            this.rowExpansionTemplate = template;
+
+            //Set table level state
+            this.a_rowExpansions = [];
+        },
+
+        /**
+            * Toggles the expansion state of a row
+            * @method toggleRowExpansion
+            * @param {Mixed} record_id Record / Row / or Index id
+            * @type mixed
+        **/
+        toggleRowExpansion : function( record_id ){
+            var state = this._getRecordState( record_id );
+            
+            if( state && state.expanded ){
+                this.collapseRow( record_id );
+            } else {
+                this.expandRow( record_id );
+            }
+        },
+
+        /**
+            * Sets the expansion state of a row to expanded
+            * @method expandRow
+            * @param {Mixed} record_id Record / Row / or Index id
+            * @param {Boolean} restore will restore an exisiting state for a
+            * row that has been collapsed by a non user action
+            * @return {Boolean} successful
+            * @type mixed
+        **/
+        expandRow : function( record_id, restore ){
+
+            var state = this._getRecordState( record_id );
+
+            if( !state.expanded || restore ){
+
+                var row_data          = this.getRecord( record_id ),
+                    row               = this.getRow( row_data ),
+                    new_row           = document.createElement('tr'),
+                    column_length     = this.getFirstTrEl().childNodes.length,
+                    expanded_data     = row_data.getData(),
+                    expanded_content  = null,
+                    template          = this.rowExpansionTemplate,
+                    next_sibling      = Dom.getNextSibling( row );
+
+                //Construct expanded row body
+                new_row.className = CLASS_EXPANSION;
+                var new_column = document.createElement( 'td' );
+                new_column.colSpan = column_length;
+
+                new_column.innerHTML = '<div class="'+CLASS_LINER+'"></div>';
+                new_row.appendChild( new_column );
+
+                var liner_element = new_row.firstChild.firstChild;
+
+                if( YAHOO.lang.isString( template ) ){
+
+                    liner_element.innerHTML = YAHOO.lang.substitute( 
+                        template, 
+                        expanded_data
+                    );
+
+                } else if( YAHOO.lang.isFunction( template ) ) {
+
+                    template( {
+                        row_element : new_row,
+                        liner_element : liner_element,
+                        data : row_data, 
+                        state : state 
+
+                    } );
+
+                } else {
+                    return false;
+                }
+
+                //Insert new row
+                newRow = Dom.insertAfter( new_row, row );
+
+                if (newRow.innerHTML.length) {
+
+                    this._setRecordState( record_id, 'expanded', true );
+
+                    if( !restore ){
+                        this.a_rowExpansions.push(
+                            this.getRecord(record_id).getId()
+                        );
+                    }
+
+                    Dom.removeClass( row, CLASS_COLLAPSED );
+                    Dom.addClass( row, CLASS_EXPANDED );
+
+                    //Fire custom event
+                    this.fireEvent( "rowExpandEvent",
+                        { record_id : row_data.getId() } );
+
+                    return true;
+                } else {
+                    return false;
+                } 
+            }
+        },
+
+        /**
+            * Sets the expansion state of a row to collapsed
+            * @method collapseRow
+            * @param {Mixed} record_id Record / Row / or Index id
+            * @return {Boolean} successful
+            * @type mixed
+        **/
+        collapseRow : function( record_id ){
+            var row_data    = this.getRecord( record_id ),
+                row         = Dom.get( row_data.getId() ),
+                state       = row_data.getData( STRING_STATENAME );
+
+            if( state && state.expanded ){
+                var next_sibling = Dom.getNextSibling( row ),
+                        hash_index = indexOf(this.a_rowExpansions, record_id);
+
+                if( Dom.hasClass( next_sibling, CLASS_EXPANSION ) ) {
+                    next_sibling.parentNode.removeChild( next_sibling );
+                    this.a_rowExpansions.splice( hash_index, 1 );
+                    this._setRecordState( record_id, 'expanded', false );
+
+                    Dom.addClass( row, CLASS_COLLAPSED );
+                    Dom.removeClass( row, CLASS_EXPANDED );
+
+                    //Fire custom event
+                    this.fireEvent("rowCollapseEvent",
+                        {record_id:row_data.getId()});
+
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        },
+
+        /**
+            * Collapses all expanded rows. This should be called before any
+            * action where the row expansion markup would interfere with
+            * normal DataTable markup handling. This method does not remove
+            * events attached during implementation. All event handlers should
+            * be removed separately.
+            * @method collapseAllRows
+            * @type mixed
+        **/
+        collapseAllRows : function(){
+            var rows = this.a_rowExpansions;
+
+            for( var i = 0, l = rows.length; l > i; i++ ){
+                //Always pass 0 since collapseRow
+                //removes item from the a_rowExpansions array
+                this.collapseRow( rows[ 0 ] );
+
+            }
+
+            a_rowExpansions = [];
+
+        },
+
+        /**
+            * Restores rows which have an expanded state but no markup. This
+            * is to be called to restore row expansions after the DataTable
+            * renders or the collapseAllRows is called.
+            * @method collapseAllRows
+            * @type mixed
+        **/
+        restoreExpandedRows : function(){
+            var expanded_rows = this.a_rowExpansions;
+            
+            if( !expanded_rows.length ){
+                return;
+            }
+
+            if( this.a_rowExpansions.length ){
+                for( var i = 0, l = expanded_rows.length; l > i; i++ ){
+                    this.expandRow( expanded_rows[ i ] , true );
+                }
+            }
+        },
+
+        /**
+            * Abstract method which restores row expansion for subscribing to
+            * the DataTable postRenderEvent.
+            * @method onEventRestoreRowExpansion
+            * @param {Object} oArgs context of a subscribed event
+            * @type mixed
+        **/
+        onEventRestoreRowExpansion : function( oArgs ){
+            this.restoreExpandedRows();
+        },
+
+        /**
+            * Abstract method which toggles row expansion for subscribing to
+            * the DataTable postRenderEvent.
+            * @method onEventToggleRowExpansion
+            * @param {Object} oArgs context of a subscribed event
+            * @type mixed
+        **/
+        onEventToggleRowExpansion : function( oArgs ){
+            if(YAHOO.util.Dom.hasClass(oArgs.target,
+                'yui-dt-expandablerow-trigger')){
+                this.toggleRowExpansion( oArgs.target );
+            }
+        }
+
+    }, true //This boolean needed to override members of the original object
+);
+
+})();
+</textarea>
+
+<p>JavaScript to run this example:</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+/* Modify as needed */
+
+YAHOO.util.Event.onDOMReady( function() {
+    YAHOO.example.Basic = function() {
+        var expansionFormatter  = function(el, oRecord, oColumn, oData) {
+            var cell_element    = el.parentNode;
+
+            //Set trigger
+            if( oData ){ //Row is closed
+                YAHOO.util.Dom.addClass( cell_element,
+                    "yui-dt-expandablerow-trigger" );
+            }
+
+        };
+
+        var myDataSource = new
+            YAHOO.util.DataSource(YAHOO.example.interestingness);
+            myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+            myDataSource.responseSchema = {
+                fields: ["title","farm","server","id","secret","owner"]
+            };
+
+        var myDataTable = new YAHOO.widget.DataTable(
+                "event_table",
+                [
+                    {
+                        key:"farm",
+                        label:"",
+                        formatter:expansionFormatter
+                    },
+                    {
+                        key:"title",
+                        label:"Interestingness",
+                        width : '200px',
+                        sortable:true
+                    }
+                ],
+                myDataSource,
+                    { rowExpansionTemplate :
+                    '<img src="http://farm{farm}.static.flickr.com/'+
+                    '{server}/{id}_{secret}_m_d.jpg" />' }
+                );
+
+        //Subscribe to a click event to bind to
+        myDataTable.subscribe( 'cellClickEvent',
+            myDataTable.onEventToggleRowExpansion );
+        
+        return {
+            oDS: myDataSource,
+            oDT: myDataTable
+        };
+    }();
+});
+</textarea>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?connection&json&datasource&datatable&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerGloss"><p><strong>Note:</strong> Logging and debugging is currently turned off for this example.</p> 
+							<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="dt_rowexp_basic_log.html">Reload with logging<br />
+	 and debugging enabled.</a></span></span></p></div>
+	
+						</div>
+					
+				
+					<div id="examples">
+						<h3>DataTable Control Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../datatable/dt_basic.html'>Basic Example</a></li><li><a href='../datatable/dt_enhanced.html'>Progressive Enhancement</a></li><li><a href='../datatable/dt_formatting.html'>Custom Cell Formatting</a></li><li><a href='../datatable/dt_row_coloring.html'>Conditional row coloring</a></li><li><a href='../datatable/dt_nestedheaders.html'>Nested Headers</a></li><li><a href='../datatable/dt_xhrjson.html'>JSON Data Over XHR</a></li><li><a href='../datatable/dt_xhrpostxml.html'>XML Data Over XHR With POST</a></li><li><a href='../datatable/dt_xpath.html'>XML Data with XPath</a></li><li><a href='../datatable/dt_xhrtext.html'>Textual Data Over XHR</a></li><li><a href='../datatable/dt_polling.html'>Polling the DataSource</a></li><li><a href='../datatable/dt_rowdatamod.html'>Adding, Updating, and Deleting Rows</a></li><li><a href='../datatable/dt_clientpagination.html'>Client-side Pagination</a></li><li><a href='../datatable/dt_clientsorting.html'>Client-side Sorting</a></li><li><a href='../datatable/dt_dynamicdata.html'>Server-side Pagination and Sorting for Dynamic Data</a></li><li><a href='../datatable/dt_bhm.html'>Integrating Browser History Manager with Server-side Pagination and Sorting</a></li><li><a href='../datatable/dt_fixedscroll.html'>XY-scrolling, Y-scrolling, and X-scrolling</a></li><li><a href='../datatable/dt_rowselect.html'>Row Selection</a></li><li><a href='../datatable/dt_cellselect.html'>Cell Selection</a></li><li><a href='../datatable/dt_cellediting.html'>Inline Cell Editing</a></li><li><a href='../datatable/dt_colshowhide.html'>Showing, Hiding, and Reordering Columns.</a></li><li><a href='../datatable/dt_highlighting.html'>Highlighting Cells, Rows, or Columns</a></li><li><a href='../datatable/dt_ddrows.html'>Reorder Rows with Drag and Drop</a></li><li class='selected'><a href='../datatable/dt_rowexp_basic.html'>Row Expansion</a></li><li><a href='../datatable/dt_contextmenu.html'>Context Menu Integration</a></li><li><a href='../paginator/pag_configuration.html'>Configuring the Paginator (included with examples for Paginator)</a></li><li><a href='../datatable/dt_tabview.html'>TabView Integration</a></li><li><a href='../datatable/dt_complex.html'>Complex Example of Multiple Features</a></li><li><a href='../datatable/dt_localfilter.html'>Client-side Filtering of Local Data</a></li><li><a href='../datatable/dt_dynamicfilter.html'>Filtering of Dynamic Data</a></li><li><a href='../datatable/dt_autocomplete.html'>Datatable with Autocomplete</a></li><li><a href='../datatable/dt_skinning.html'>Skinning Model</a></li><li><a href='../progressbar/pb_ratings.html'>Ratings (included with examples for ProgressBar Control)</a></li><li><a href='../datasource/datasource_yql.html'>YQLDataSource (included with examples for DataSource Utility)</a></li><li><a href='../layout/adv_layout.html'>Complex Application (included with examples for Layout Manager)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More DataTable Control Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/datatable/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_datatable.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/datatable.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="selected "><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

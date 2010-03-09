@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Plain Text Switcher</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/editor/editor-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Plain Text Switcher</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates how to toggle from a plain text field to the Rich Text Editor with a simple button click.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+    #toggleEditor {
+        margin: 1em;
+    }
+</style>
+
+<button type="button" id="toggleEditor">Toggle Editor</button><br>
+<form method="post" action="#" id="form1">
+<textarea id="editor" name="editor" rows="20" cols="75">
+This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>
+</textarea>
+</form>
+
+<script>
+
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event;
+    
+    YAHOO.log('Create Button Control (#toggleEditor)', 'info', 'example');
+    var _button = new YAHOO.widget.Button('toggleEditor');
+    _button.addClass('toggleEditor');
+
+    var myConfig = {
+        height: '300px',
+        width: '600px',
+        animate: true,
+        dompath: true,
+        focusAtStart: true
+    };
+
+    var state = 'on';
+    YAHOO.log('Set state to on..', 'info', 'example');
+
+    YAHOO.log('Create the Editor..', 'info', 'example');
+    var myEditor = new YAHOO.widget.Editor('editor', myConfig);
+    myEditor.render();
+
+    _button.on('click', function(ev) {
+        Event.stopEvent(ev);
+        if (state == 'on') {
+            YAHOO.log('state is on, so turn off', 'info', 'example');
+            state = 'off';
+            myEditor.saveHTML();
+            YAHOO.log('Save the Editors HTML', 'info', 'example');
+            var stripHTML = /<\S[^><]*>/g;
+            myEditor.get('textarea').value = myEditor.get('textarea').value.replace(/<br>/gi, '\n').replace(stripHTML, '');
+            YAHOO.log('Strip the HTML markup from the string.', 'info', 'example');
+            YAHOO.log('Set Editor container to position: absolute, top: -9999px, left: -9999px. Set textarea visible', 'info', 'example');
+
+            var fc = myEditor.get('element').previousSibling,
+                el = myEditor.get('element');
+
+            Dom.setStyle(fc, 'position', 'absolute');
+            Dom.setStyle(fc, 'top', '-9999px');
+            Dom.setStyle(fc, 'left', '-9999px');
+            myEditor.get('element_cont').removeClass('yui-editor-container');
+            Dom.setStyle(el, 'visibility', 'visible');
+            Dom.setStyle(el, 'top', '');
+            Dom.setStyle(el, 'left', '');
+            Dom.setStyle(el, 'position', 'static');
+        } else {
+            YAHOO.log('state is off, so turn on', 'info', 'example');
+            state = 'on';
+            YAHOO.log('Set Editor container to position: static, top: 0, left: 0. Set textarea to hidden', 'info', 'example');
+
+            var fc = myEditor.get('element').previousSibling,
+                el = myEditor.get('element');
+
+            Dom.setStyle(fc, 'position', 'static');
+            Dom.setStyle(fc, 'top', '0');
+            Dom.setStyle(fc, 'left', '0');
+            Dom.setStyle(el, 'visibility', 'hidden');
+            Dom.setStyle(el, 'top', '-9999px');
+            Dom.setStyle(el, 'left', '-9999px');
+            Dom.setStyle(el, 'position', 'absolute');
+            myEditor.get('element_cont').addClass('yui-editor-container');
+            YAHOO.log('Reset designMode on the Editor', 'info', 'example');
+            myEditor._setDesignMode('on');
+            YAHOO.log('Inject the HTML from the textarea into the editor', 'info', 'example');
+            myEditor.setEditorHTML(myEditor.get('textarea').value.replace(/\n/g, '<br>'));
+        }
+    });
+})();
+</script>
+
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

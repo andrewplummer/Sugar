@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Loading Images Below the Fold</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/imageloader/imageloader-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Loading Images Below the Fold</h1>
+
+<div class="exampleIntro">
+	<p>Often pages will have a number of images below the fold, hidden from the user's view. These are prime candidates to load with the <a href="http://developer.yahoo.com/yui/imageloader/">ImageLoader Utility</a>.</p>
+
+<p>All the images in this example belong to the same group, and all load immediately only if they appear above the fold of the page.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+
+.everything .cont { border:1px solid #888; width:100px; margin:25px 50px; }
+.everything .right { margin-left:300px; }
+#img1Cont, #img5Cont { height:75px; }
+#img2Cont { height:67px; }
+#img3Cont { height:53px; }
+#img4Cont { height:72px; }
+
+</style>
+
+
+<div class='everything' id='everything'>
+	<div class='cont' id='img1Cont'>
+		<img id='img1' />
+	</div>
+	<div class='cont right' id='img2Cont'>
+		<img id='img2' />
+	</div>
+	<div class='cont' id='img3Cont'>
+		<img id='img3' />
+	</div>
+	<div class='cont right' id='img4Cont'>
+		<img id='img4' />
+	</div>
+	<div class='cont' id='img5Cont'>
+		<img id='img5' />
+	</div>
+</div>
+
+
+<script>
+
+var foldGroup = new YAHOO.util.ImageLoader.group(window, 'scroll');
+foldGroup.registerSrcImage('img1', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/museum.jpg');
+foldGroup.registerSrcImage('img2', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/uluru.jpg');
+foldGroup.registerSrcImage('img3', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/katatjuta.jpg');
+foldGroup.registerSrcImage('img4', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/morraine.jpg');
+foldGroup.registerSrcImage('img5', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/japan.jpg');
+foldGroup.foldConditional = true;
+//foldGroup.addTrigger(window, 'resize');
+foldGroup.name = 'fold_group';
+
+/*
+ * This uncustomary wait before adding the resize trigger is done specifically to cater to IE for this example.
+ * In IE and with the Logger enabled, IE fires an immediate resize event while rendering the Logger module, consequently loading all the images in the example.
+ * This 200 ms delay allows IE to render the Logger without interference.
+ * In your code, you would add the resize trigger in a straightforward fashion, as is documented in the example.
+ */
+YAHOO.util.Event.addListener(window, 'load', function() { setTimeout("foldGroup.addTrigger(window, 'resize')", 200); });
+
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Split Buttons</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    /*
+        Set the "zoom" property to "normal" since it is set to "1" by the 
+        ".example-container .bd" rule in yui.css and this causes a Menu
+        instance's width to expand to 100% of the browser viewport.
+    */
+    
+    div.yuimenu .bd {
+    
+        zoom: normal;
+    
+    }
+
+    #button-example-form fieldset {
+
+        border: 2px groove #ccc;
+        margin: .5em;
+        padding: .5em;
+
+    }
+    
+    #splitbutton3menu,
+    #splitbutton4menu {
+    
+        position: absolute;
+        visibility: hidden;
+        border: solid 1px #000;
+        padding: .5em;
+        background-color: #ccc;
+    
+    }
+
+    #button-example-form-postdata {
+    
+        border: dashed 1px #666;
+        background-color: #ccc;
+        padding: 1em;
+    
+    }
+
+    #button-example-form-postdata h2 {
+    
+        margin: 0 0 .5em 0;
+        padding: 0;
+        border: none;
+    
+    }
+
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Split Buttons</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates different ways to create and use a Split Button.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+	//	"contentready" event handler for the "splitbuttonsfrommarkup" <fieldset>
+
+	YAHOO.util.Event.onContentReady("splitbuttonsfrommarkup", function () {
+
+		//	Create a Button using an existing <input> and <select> element.
+		//	Because the "type" attribute of the <input> element was set to 
+		//	"submit" - clicking on any MenuItem in the Button's Menu will
+		//	automatically submit the Button's parent <form>.
+
+		var oSplitButton1 = new YAHOO.widget.Button("splitbutton1", { type: "split", menu: "splitbutton1select" });
+
+		//	"render" event handler for the Button's Menu
+
+		var onMenuRender = function (p_sType, p_aArgs) {
+		
+			this.addItems([
+
+				{ text: "Four", value: 4 },
+				{ text: "Five", value: 5 }
+
+			]);
+			
+		};
+
+		//	Add some additional MenuItems to the Button's Menu once it has been rendered
+		
+		oSplitButton1.getMenu().subscribe("render", onMenuRender);
+
+		//	"submit" event handler for the <form>
+		
+		var onExampleSubmit = function (p_oEvent) {
+
+			var bSubmit = window.confirm("Are you sure you want to submit this form?");
+
+			if(!bSubmit) {
+				YAHOO.util.Event.preventDefault(p_oEvent);
+			}
+
+		};
+
+		//	Add a "submit" event handler to the <form> to confirm that 
+		//	clicking on one of the MenuItems in the Button's Menu 
+		//	submits the <form>.
+
+		YAHOO.util.Event.on("button-example-form", "submit", onExampleSubmit);
+
+
+
+		//	"click" event handler for the Button - called when the user clicks 
+		//	on the Button's text label, not when the user clicks on the area 
+		//	of the Button that displays the Button's Menu.
+
+		var onButtonClick = function () {
+		
+			YAHOO.log("You clicked the Button.");
+			
+		};
+
+		//	Create a Button using an existing <input> and <select> element
+
+		var oSplitButton2 = new YAHOO.widget.Button("splitbutton2", { type: "split", menu: "splitbutton2select", onclick: { fn: onButtonClick } });
+
+		//	Click event listener for the second Button's Menu instance
+
+		var onMenuClick = function (p_sType, p_aArgs) {
+
+			var oEvent = p_aArgs[0],	//	DOM event
+				oMenuItem = p_aArgs[1];	//	MenuItem instance that was the target of the event
+
+			if (oMenuItem) {
+				YAHOO.log("[MenuItem Properties] text: " + oMenuItem.cfg.getProperty("text") + ", value: " + oMenuItem.value);
+			}
+
+		};
+
+		//	Add a "click" event listener for the Button's Menu
+
+		oSplitButton2.getMenu().subscribe("click", onMenuClick);
+		
+		//	"option" event listener - called when the user clicks on the 
+		//	area of the Button that displays its Menu.
+		
+		var onOption = function () {
+			
+			YAHOO.log("You clicked the Split Button's option area.");
+			
+		};
+
+		//	Add a listener for the Button's "option" event
+
+		oSplitButton2.on("option", onOption);
+
+		
+
+		// Create a Button using an existing <input> element and an Overlay instance as its menu
+
+		var oSplitButton3 = new YAHOO.widget.Button("splitbutton3", { type: "split", menu: "splitbutton3menu" });
+
+	});
+
+
+
+	//	Search for an element to place the Split Button into via the 
+	//	Event Utility's "onContentReady" method
+
+	YAHOO.util.Event.onContentReady("splitbuttonsfromjavascript", function () {
+
+		//	Create two Buttons without using existing markup
+
+
+		// Instantiate an Overlay instance
+
+		var oOverlay = new YAHOO.widget.Overlay("splitbutton4menu", { visible: false });
+
+		oOverlay.setBody("Split Button 4 Menu");
+
+		// Instantiate a Split Button
+
+		var oSplitButton4 = new YAHOO.widget.Button({ type: "split",  label: "Split Button 4", menu: oOverlay, container: this });
+
+
+
+		//	"click" event handler for each item in the Button's Menu
+
+		var onMenuItemClick = function (p_sType, p_aArgs, p_oItem) {
+			
+			var sText = p_oItem.cfg.getProperty("text");
+			
+			YAHOO.log("[MenuItem Properties] text: " + sText + ", value: " + p_oItem.value);
+
+		};
+
+		//	Create an array of YAHOO.widget.MenuItem configuration properties
+
+		var aSplitButton5Menu = [
+
+			{ text: "One", value: 1, onclick: { fn: onMenuItemClick } },
+			{ text: "Two", value: 2, onclick: { fn: onMenuItemClick } },
+			{ text: "Three", value: 3, onclick: { fn: onMenuItemClick } }
+
+		];
+
+		//	Instantiate a Split Button using the array of YAHOO.widget.MenuItem 
+		//	configuration properties as the value for the "menu" 
+		//	configuration attribute.
+
+		var oSplitButton5 = new YAHOO.widget.Button({ type: "split",  label: "Split Button 5", name: "splitbutton5", menu: aSplitButton5Menu, container: this });
+    
+	});
+
+</script>
+
+<form id="button-example-form" name="button-example-form" method="post">
+
+    <fieldset id="splitbuttons">
+        <legend>Split Buttons</legend>
+
+        <fieldset id="splitbuttonsfrommarkup">
+            <legend>From Markup</legend>
+
+            <input type="submit" id="splitbutton1" name="splitbutton1_button" value="Split Button 1">
+            <select id="splitbutton1select" name="splitbutton1select" multiple>
+                <option value="0">One</option>
+                <option value="1">Two</option>
+                <option value="2">Three</option>                
+            </select>
+
+            <input type="button" id="splitbutton2" name="splitbutton2_button" value="Split Button 2">
+            <select id="splitbutton2select" name="splitbutton2select">
+                <option value="0">One</option>
+                <option value="1">Two</option>
+                <option value="2">Three</option>                
+            </select>
+
+            <input type="button" id="splitbutton3" name="splitbutton3_button" value="Split Button 3">
+            <div id="splitbutton3menu" class="yui-overlay">
+                <div class="bd">Split Button 3 Menu</div>
+            </div>
+
+        </fieldset>
+
+        <fieldset id="splitbuttonsfromjavascript">
+            <legend>From JavaScript</legend>
+        </fieldset>
+
+    </fieldset> 
+
+</form>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

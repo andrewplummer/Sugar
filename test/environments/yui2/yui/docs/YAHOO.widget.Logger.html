@@ -1,0 +1,1199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: logger  YAHOO.widget.Logger   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Logger Widget&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_logger.html" title="logger">logger</a>
+                 &gt; YAHOO.widget.Logger 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        <code>static</code>
+                        
+                            Class <b property="yui:name">YAHOO.widget.Logger</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        The singleton Logger class provides core log management functionality. Saves
+logs written through the global YAHOO.log function or written by a LogWriter
+instance. Provides access to logs for reading by a LogReader instance or
+native browser console such as the Firebug extension to Firefox or Safari's
+JavaScript console through integration with the console.log() method.
+                    </div>
+
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__browserConsoleEnabled">
+                                    <h4><a name="property__browserConsoleEnabled" property="yui:name">_browserConsoleEnabled</a>
+                                        - <code>private static <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Internal property to track whether output to browser console is enabled.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: false
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__lastTime">
+                                    <h4><a name="property__lastTime" property="yui:name">_lastTime</a>
+                                        - <code>private static <span property="yui:type">Date</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Timestamp of last logged message.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__stack">
+                                    <h4><a name="property__stack" property="yui:name">_stack</a>
+                                        - <code>private static <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Array to hold all log messages.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__startTime">
+                                    <h4><a name="property__startTime" property="yui:name">_startTime</a>
+                                        - <code>private static <span property="yui:type">Date</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Static timestamp of Logger initialization.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_categories">
+                                    <h4><a name="property_categories" property="yui:name">categories</a>
+                                        - <code>static <span property="yui:type">String[]</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Array of categories.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: ["info","warn","error","time","window"]
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_loggerEnabled">
+                                    <h4><a name="property_loggerEnabled" property="yui:name">loggerEnabled</a>
+                                        - <code>static <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            True if Logger is enabled, false otherwise.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: true
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_maxStackEntries">
+                                    <h4><a name="property_maxStackEntries" property="yui:name">maxStackEntries</a>
+                                        - <code>static <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Upper limit on size of internal stack.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 2500
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_sources">
+                                    <h4><a name="property_sources" property="yui:name">sources</a>
+                                        - <code>static <span property="yui:type">String[]</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Array of sources.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: ["global"]
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method__createNewCategory">
+                                    <h4>
+                                        <a name="method__createNewCategory">_createNewCategory</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createNewCategory</strong>
+                                           (
+                                                
+                                                        
+                                                         sCategory
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates a new category of log messages and fires categoryCreateEvent.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sCategory</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Category name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__createNewSource">
+                                    <h4>
+                                        <a name="method__createNewSource">_createNewSource</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createNewSource</strong>
+                                           (
+                                                
+                                                        
+                                                         sSource
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates a new source of log messages and fires sourceCreateEvent.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sSource</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Source name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__isNewCategory">
+                                    <h4>
+                                        <a name="method__isNewCategory">_isNewCategory</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">_isNewCategory</strong>
+                                           (
+                                                
+                                                        
+                                                         sCategory
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Checks to see if a category has already been created.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sCategory</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Category name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Returns true if category is unknown, else returns false.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__isNewSource">
+                                    <h4>
+                                        <a name="method__isNewSource">_isNewSource</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">_isNewSource</strong>
+                                           (
+                                                
+                                                        
+                                                         sSource
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Checks to see if a source already exists.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sSource</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Source name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Returns true if source is unknown, else returns false.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onWindowError">
+                                    <h4>
+                                        <a name="method__onWindowError">_onWindowError</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onWindowError</strong>
+                                           (
+                                                
+                                                        
+                                                         sMsg
+                                                    
+                                                
+                                                        , 
+                                                         sUrl
+                                                    
+                                                
+                                                        , 
+                                                         sLine
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles logging of messages due to window error events.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sMsg</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The error message.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sUrl</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  URL of the error.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sLine</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Line number of the error.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__printToBrowserConsole">
+                                    <h4>
+                                        <a name="method__printToBrowserConsole">_printToBrowserConsole</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_printToBrowserConsole</strong>
+                                           (
+                                                
+                                                        
+                                                         oEntry
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Outputs a log message to global console.log() function.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oEntry</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Log entry object.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_disableBrowserConsole">
+                                    <h4>
+                                        <a name="method_disableBrowserConsole">disableBrowserConsole</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">disableBrowserConsole</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Disables output to the browser's global console.log() function, which is used
+by the Firebug extension to Firefox as well as Safari.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_enableBrowserConsole">
+                                    <h4>
+                                        <a name="method_enableBrowserConsole">enableBrowserConsole</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">enableBrowserConsole</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Enables output to the browser's global console.log() function, which is used
+by the Firebug extension to Firefox as well as Safari.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getStack">
+                                    <h4>
+                                        <a name="method_getStack">getStack</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object[]
+                                            <strong property="yui:name">getStack</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Public accessor to internal stack of log message objects.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object[]
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Array of log message objects.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getStartTime">
+                                    <h4>
+                                        <a name="method_getStartTime">getStartTime</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Date
+                                            <strong property="yui:name">getStartTime</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Public accessor to internal start time.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Date
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Internal date of when Logger singleton was initialized.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_handleWindowErrors">
+                                    <h4>
+                                        <a name="method_handleWindowErrors">handleWindowErrors</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">handleWindowErrors</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Surpresses native JavaScript errors and outputs to console. By default,
+Logger does not handle JavaScript window error events.
+NB: Not all browsers support the window.onerror event.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_log">
+                                    <h4>
+                                        <a name="method_log">log</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">log</strong>
+                                           (
+                                                
+                                                        
+                                                         sMsg
+                                                    
+                                                
+                                                        , 
+                                                         sCategory
+                                                    
+                                                
+                                                        , 
+                                                         sSource
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Saves a log message to the stack and fires newLogEvent. If the log message is
+assigned to an unknown category, creates a new category. If the log message is
+from an unknown source, creates a new source.  If browser console is enabled,
+outputs the log message to browser console.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sMsg</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The log message.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sCategory</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Category of log message, or null.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sSource</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Source of LogWriter, or null if global.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_reset">
+                                    <h4>
+                                        <a name="method_reset">reset</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">reset</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Resets internal stack and startTime, enables Logger, and fires logResetEvent.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_unhandleWindowErrors">
+                                    <h4>
+                                        <a name="method_unhandleWindowErrors">unhandleWindowErrors</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">unhandleWindowErrors</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Unsurpresses native JavaScript errors. By default,
+Logger does not handle JavaScript window error events.
+NB: Not all browsers support the window.onerror event.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_categoryCreateEvent">
+                                    <h4>
+                                        <a name="event_categoryCreateEvent">categoryCreateEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">categoryCreateEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         sCategory
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when a new category has been created.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">sCategory</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  Category name.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_logResetEvent">
+                                    <h4>
+                                        <a name="event_logResetEvent">logResetEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">logResetEvent</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when the Logger has been reset has been created.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_newLogEvent">
+                                    <h4>
+                                        <a name="event_newLogEvent">newLogEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">newLogEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         sMsg
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when a new log message has been created.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">sMsg</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  Log message.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_sourceCreateEvent">
+                                    <h4>
+                                        <a name="event_sourceCreateEvent">sourceCreateEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">sourceCreateEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         sSource
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when a new source has been named.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">sSource</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  Source name.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class="selected"><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="LogMsg.html" title="LogMsg">LogMsg</a></li>
+                                <li class=""><a href="LogReader.html" title="LogReader">LogReader</a></li>
+                                <li class=""><a href="LogWriter.html" title="LogWriter">LogWriter</a></li>
+                                <li class="selected"><a href="YAHOO.widget.Logger.html" title="YAHOO.widget.Logger">YAHOO.widget.Logger</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Logger.js.html" title="Logger.js">Logger.js</a></li>
+                                <li class=""><a href="LogMsg.js.html" title="LogMsg.js">LogMsg.js</a></li>
+                                <li class=""><a href="LogReader.js.html" title="LogReader.js">LogReader.js</a></li>
+                                <li class=""><a href="LogWriter.js.html" title="LogWriter.js">LogWriter.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__browserConsoleEnabled" title="_browserConsoleEnabled">_browserConsoleEnabled</a></li>
+                                <li class="private"><a href="#property__lastTime" title="_lastTime">_lastTime</a></li>
+                                <li class="private"><a href="#property__stack" title="_stack">_stack</a></li>
+                                <li class="private"><a href="#property__startTime" title="_startTime">_startTime</a></li>
+                                <li class=""><a href="#property_categories" title="categories">categories</a></li>
+                                <li class=""><a href="#property_loggerEnabled" title="loggerEnabled">loggerEnabled</a></li>
+                                <li class=""><a href="#property_maxStackEntries" title="maxStackEntries">maxStackEntries</a></li>
+                                <li class=""><a href="#property_sources" title="sources">sources</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method__createNewCategory" title="_createNewCategory">_createNewCategory</a></li>
+                                <li class="private"><a href="#method__createNewSource" title="_createNewSource">_createNewSource</a></li>
+                                <li class="private"><a href="#method__isNewCategory" title="_isNewCategory">_isNewCategory</a></li>
+                                <li class="private"><a href="#method__isNewSource" title="_isNewSource">_isNewSource</a></li>
+                                <li class="private"><a href="#method__onWindowError" title="_onWindowError">_onWindowError</a></li>
+                                <li class="private"><a href="#method__printToBrowserConsole" title="_printToBrowserConsole">_printToBrowserConsole</a></li>
+                                <li class=""><a href="#method_disableBrowserConsole" title="disableBrowserConsole">disableBrowserConsole</a></li>
+                                <li class=""><a href="#method_enableBrowserConsole" title="enableBrowserConsole">enableBrowserConsole</a></li>
+                                <li class=""><a href="#method_getStack" title="getStack">getStack</a></li>
+                                <li class=""><a href="#method_getStartTime" title="getStartTime">getStartTime</a></li>
+                                <li class=""><a href="#method_handleWindowErrors" title="handleWindowErrors">handleWindowErrors</a></li>
+                                <li class=""><a href="#method_log" title="log">log</a></li>
+                                <li class=""><a href="#method_reset" title="reset">reset</a></li>
+                                <li class=""><a href="#method_unhandleWindowErrors" title="unhandleWindowErrors">unhandleWindowErrors</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_categoryCreateEvent" title="categoryCreateEvent">categoryCreateEvent</a></li>
+                                <li class=""><a href="#event_logResetEvent" title="logResetEvent">logResetEvent</a></li>
+                                <li class=""><a href="#event_newLogEvent" title="newLogEvent">newLogEvent</a></li>
+                                <li class=""><a href="#event_sourceCreateEvent" title="sourceCreateEvent">sourceCreateEvent</a></li>
+                        </ul>
+                    </div>
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "LogReader", "name": "autoRender", "url": "LogReader.html#property_autoRender", "type": "property"}, {"access": "", "host": "LogReader", "name": "BASIC_TEMPLATE", "url": "LogReader.html#property_BASIC_TEMPLATE", "type": "property"}, {"access": "", "host": "LogReader", "name": "bottom", "url": "LogReader.html#property_bottom", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_browserConsoleEnabled", "url": "YAHOO.widget.Logger.html#property__browserConsoleEnabled", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_btnClear", "url": "LogReader.html#property__btnClear", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_btnCollapse", "url": "LogReader.html#property__btnCollapse", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_btnPause", "url": "LogReader.html#property__btnPause", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_buffer", "url": "LogReader.html#property__buffer", "type": "property"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "categories", "url": "YAHOO.widget.Logger.html#property_categories", "type": "property"}, {"access": "", "host": "LogMsg", "name": "category", "url": "LogMsg.html#property_category", "type": "property"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "categoryCreateEvent", "url": "YAHOO.widget.Logger.html#event_categoryCreateEvent", "type": "event"}, {"access": "private", "host": "LogReader", "name": "_categoryFilters", "url": "LogReader.html#property__categoryFilters", "type": "property"}, {"access": "", "host": "LogReader", "name": "clearConsole", "url": "LogReader.html#method_clearConsole", "type": "method"}, {"access": "", "host": "LogReader", "name": "collapse", "url": "LogReader.html#method_collapse", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_consoleMsgCount", "url": "LogReader.html#property__consoleMsgCount", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_createCategoryCheckbox", "url": "LogReader.html#method__createCategoryCheckbox", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_createNewCategory", "url": "YAHOO.widget.Logger.html#method__createNewCategory", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_createNewSource", "url": "YAHOO.widget.Logger.html#method__createNewSource", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_createSourceCheckbox", "url": "LogReader.html#method__createSourceCheckbox", "type": "method"}, {"access": "", "host": "LogReader", "name": "destroy", "url": "LogReader.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "disableBrowserConsole", "url": "YAHOO.widget.Logger.html#method_disableBrowserConsole", "type": "method"}, {"access": "", "host": "LogReader", "name": "draggable", "url": "LogReader.html#property_draggable", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elBtns", "url": "LogReader.html#property__elBtns", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elCategoryFilters", "url": "LogReader.html#property__elCategoryFilters", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elCollapse", "url": "LogReader.html#property__elCollapse", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elConsole", "url": "LogReader.html#property__elConsole", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elContainer", "url": "LogReader.html#property__elContainer", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elDefaultContainer", "url": "LogReader.html#property__elDefaultContainer", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elFt", "url": "LogReader.html#property__elFt", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elHd", "url": "LogReader.html#property__elHd", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elSourceFilters", "url": "LogReader.html#property__elSourceFilters", "type": "property"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "enableBrowserConsole", "url": "YAHOO.widget.Logger.html#method_enableBrowserConsole", "type": "method"}, {"access": "", "host": "LogReader", "name": "entryFormat", "url": "LogReader.html#property_entryFormat", "type": "property"}, {"access": "", "host": "LogReader", "name": "ENTRY_TEMPLATE", "url": "LogReader.html#property_ENTRY_TEMPLATE", "type": "property"}, {"access": "", "host": "LogReader", "name": "expand", "url": "LogReader.html#method_expand", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_filterCheckboxes", "url": "LogReader.html#property__filterCheckboxes", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_filterLogs", "url": "LogReader.html#method__filterLogs", "type": "method"}, {"access": "", "host": "LogReader", "name": "fontSize", "url": "LogReader.html#property_fontSize", "type": "property"}, {"access": "", "host": "LogReader", "name": "footerEnabled", "url": "LogReader.html#property_footerEnabled", "type": "property"}, {"access": "", "host": "LogReader", "name": "getCategories", "url": "LogReader.html#method_getCategories", "type": "method"}, {"access": "", "host": "LogReader", "name": "getCheckbox", "url": "LogReader.html#method_getCheckbox", "type": "method"}, {"access": "", "host": "LogReader", "name": "getLastTime", "url": "LogReader.html#method_getLastTime", "type": "method"}, {"access": "", "host": "LogWriter", "name": "getSource", "url": "LogWriter.html#method_getSource", "type": "method"}, {"access": "", "host": "LogReader", "name": "getSources", "url": "LogReader.html#method_getSources", "type": "method"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "getStack", "url": "YAHOO.widget.Logger.html#method_getStack", "type": "method"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "getStartTime", "url": "YAHOO.widget.Logger.html#method_getStartTime", "type": "method"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "handleWindowErrors", "url": "YAHOO.widget.Logger.html#method_handleWindowErrors", "type": "method"}, {"access": "", "host": "LogReader", "name": "height", "url": "LogReader.html#property_height", "type": "property"}, {"access": "", "host": "LogReader", "name": "hide", "url": "LogReader.html#method_hide", "type": "method"}, {"access": "", "host": "LogReader", "name": "hideCategory", "url": "LogReader.html#method_hideCategory", "type": "method"}, {"access": "", "host": "LogReader", "name": "hideSource", "url": "LogReader.html#method_hideSource", "type": "method"}, {"access": "private", "host": "LogReader", "name": "html2Text", "url": "LogReader.html#method_html2Text", "type": "method"}, {"access": "protected", "host": "LogReader", "name": "_init", "url": "LogReader.html#method__init", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initCategories", "url": "LogReader.html#method__initCategories", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initConsoleEl", "url": "LogReader.html#method__initConsoleEl", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initContainerEl", "url": "LogReader.html#method__initContainerEl", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initDragDrop", "url": "LogReader.html#method__initDragDrop", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initFooterEl", "url": "LogReader.html#method__initFooterEl", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initHeaderEl", "url": "LogReader.html#method__initHeaderEl", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initSources", "url": "LogReader.html#method__initSources", "type": "method"}, {"access": "", "host": "LogReader", "name": "isCollapsed", "url": "LogReader.html#property_isCollapsed", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_isNewCategory", "url": "YAHOO.widget.Logger.html#method__isNewCategory", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_isNewSource", "url": "YAHOO.widget.Logger.html#method__isNewSource", "type": "method"}, {"access": "", "host": "LogReader", "name": "isPaused", "url": "LogReader.html#property_isPaused", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_lastTime", "url": "LogReader.html#property__lastTime", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_lastTime", "url": "YAHOO.widget.Logger.html#property__lastTime", "type": "property"}, {"access": "", "host": "LogReader", "name": "left", "url": "LogReader.html#property_left", "type": "property"}, {"access": "", "host": "LogWriter", "name": "log", "url": "LogWriter.html#method_log", "type": "method"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "log", "url": "YAHOO.widget.Logger.html#method_log", "type": "method"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "loggerEnabled", "url": "YAHOO.widget.Logger.html#property_loggerEnabled", "type": "property"}, {"access": "", "host": "LogReader", "name": "logReaderEnabled", "url": "LogReader.html#property_logReaderEnabled", "type": "property"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "logResetEvent", "url": "YAHOO.widget.Logger.html#event_logResetEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "maxStackEntries", "url": "YAHOO.widget.Logger.html#property_maxStackEntries", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_memberName", "url": "LogReader.html#property__memberName", "type": "property"}, {"access": "", "host": "LogMsg", "name": "msg", "url": "LogMsg.html#property_msg", "type": "property"}, {"access": "", "host": "LogReader", "name": "newestOnTop", "url": "LogReader.html#property_newestOnTop", "type": "property"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "newLogEvent", "url": "YAHOO.widget.Logger.html#event_newLogEvent", "type": "event"}, {"access": "private", "host": "LogReader", "name": "_onCategoryCreate", "url": "LogReader.html#method__onCategoryCreate", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onCheckCategory", "url": "LogReader.html#method__onCheckCategory", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onCheckSource", "url": "LogReader.html#method__onCheckSource", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onClickClearBtn", "url": "LogReader.html#method__onClickClearBtn", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onClickCollapseBtn", "url": "LogReader.html#method__onClickCollapseBtn", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onClickPauseBtn", "url": "LogReader.html#method__onClickPauseBtn", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onNewLog", "url": "LogReader.html#method__onNewLog", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onReset", "url": "LogReader.html#method__onReset", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onSourceCreate", "url": "LogReader.html#method__onSourceCreate", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_onWindowError", "url": "YAHOO.widget.Logger.html#method__onWindowError", "type": "method"}, {"access": "", "host": "LogReader", "name": "outputBuffer", "url": "LogReader.html#property_outputBuffer", "type": "property"}, {"access": "", "host": "LogReader", "name": "pause", "url": "LogReader.html#method_pause", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_printBuffer", "url": "LogReader.html#method__printBuffer", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_printToBrowserConsole", "url": "YAHOO.widget.Logger.html#method__printToBrowserConsole", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_printToConsole", "url": "LogReader.html#method__printToConsole", "type": "method"}, {"access": "", "host": "LogReader", "name": "render", "url": "LogReader.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "reset", "url": "YAHOO.widget.Logger.html#method_reset", "type": "method"}, {"access": "", "host": "LogReader", "name": "resume", "url": "LogReader.html#method_resume", "type": "method"}, {"access": "", "host": "LogReader", "name": "right", "url": "LogReader.html#property_right", "type": "property"}, {"access": "", "host": "LogWriter", "name": "setSource", "url": "LogWriter.html#method_setSource", "type": "method"}, {"access": "", "host": "LogReader", "name": "setTitle", "url": "LogReader.html#method_setTitle", "type": "method"}, {"access": "", "host": "LogReader", "name": "show", "url": "LogReader.html#method_show", "type": "method"}, {"access": "", "host": "LogReader", "name": "showCategory", "url": "LogReader.html#method_showCategory", "type": "method"}, {"access": "", "host": "LogReader", "name": "showSource", "url": "LogReader.html#method_showSource", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_sName", "url": "LogReader.html#property__sName", "type": "property"}, {"access": "", "host": "LogMsg", "name": "source", "url": "LogMsg.html#property_source", "type": "property"}, {"access": "private", "host": "LogWriter", "name": "_source", "url": "LogWriter.html#property__source", "type": "property"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "sourceCreateEvent", "url": "YAHOO.widget.Logger.html#event_sourceCreateEvent", "type": "event"}, {"access": "", "host": "LogMsg", "name": "sourceDetail", "url": "LogMsg.html#property_sourceDetail", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_sourceFilters", "url": "LogReader.html#property__sourceFilters", "type": "property"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "sources", "url": "YAHOO.widget.Logger.html#property_sources", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_stack", "url": "YAHOO.widget.Logger.html#property__stack", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Logger", "name": "_startTime", "url": "YAHOO.widget.Logger.html#property__startTime", "type": "property"}, {"access": "", "host": "LogReader", "name": "thresholdMax", "url": "LogReader.html#property_thresholdMax", "type": "property"}, {"access": "", "host": "LogReader", "name": "thresholdMin", "url": "LogReader.html#property_thresholdMin", "type": "property"}, {"access": "", "host": "LogMsg", "name": "time", "url": "LogMsg.html#property_time", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_timeout", "url": "LogReader.html#property__timeout", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_title", "url": "LogReader.html#property__title", "type": "property"}, {"access": "", "host": "LogReader", "name": "top", "url": "LogReader.html#property_top", "type": "property"}, {"access": "", "host": "LogWriter", "name": "toString", "url": "LogWriter.html#method_toString", "type": "method"}, {"access": "", "host": "LogReader", "name": "toString", "url": "LogReader.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Logger", "name": "unhandleWindowErrors", "url": "YAHOO.widget.Logger.html#method_unhandleWindowErrors", "type": "method"}, {"access": "", "host": "LogReader", "name": "verboseOutput", "url": "LogReader.html#property_verboseOutput", "type": "property"}, {"access": "", "host": "LogReader", "name": "VERBOSE_TEMPLATE", "url": "LogReader.html#property_VERBOSE_TEMPLATE", "type": "property"}, {"access": "", "host": "LogReader", "name": "width", "url": "LogReader.html#property_width", "type": "property"}];
+</script>
+</body>
+</html>

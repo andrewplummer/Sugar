@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Chart with 2 Numeric Axes</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		width: 500px;
+		height: 350px;
+		margin-bottom: 10px;
+	}
+	.yui-dt-table {width: 500px;}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Chart with 2 Numeric Axes</h1>
+
+<div class="exampleIntro">
+	<p>A <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> may employ two Numeric Axes of different scale to display data sets with different ranges in the same area.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">Monthly Expenses</span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<div id="datatable"></div>
+
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+	//--- data
+
+		YAHOO.example.monthlyExpenses =
+		[
+			{ month: "January", rent: 3880.00, car: 298.68, power:56.98, cable:115.50 },
+			{ month: "February", rent: 3880.00, car: 298.68, power:68.99, cable:115.42 },
+			{ month: "March", rent: 3880.00, car: 298.68, power:46.85, cable:123.76 },
+			{ month: "April", rent: 3880.00, car: 315.71, power:42.52, cable:105.44 },
+			{ month: "May", rent: 4010.00, car: 315.71, power:59.67, cable:111.42 },
+			{ month: "June", rent: 4910.00, car: 315.71, power:68.98, cable:114.32 }
+		];
+
+		//data source
+		var myDataSource = new YAHOO.util.DataSource( YAHOO.example.monthlyExpenses );
+		myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+		myDataSource.responseSchema =
+		{
+			fields: [ "month", "rent", "car", "power", "cable" ]
+		};
+
+		//label function
+		YAHOO.example.formatCurrencyAxisLabel = function( value )
+		{
+			return YAHOO.util.Number.format( value,
+			{
+				prefix: "$",
+				thousandsSeparator: ",",
+				decimalPlaces: 2
+			});
+		}
+
+		//dataTip function
+		YAHOO.example.getDataTipText = function( item, index, series )
+		{
+				var toolTipText = series.displayName + " for " + item.month;
+				toolTipText += "\n" + YAHOO.example.formatCurrencyAxisLabel( item[series.yField] );
+				return toolTipText;
+		}
+
+		//numeric axis
+		var currencyAxis = new YAHOO.widget.NumericAxis();
+		currencyAxis.labelFunction = YAHOO.example.formatCurrencyAxisLabel;
+		currencyAxis.alwaysShowZero = false;
+		currencyAxis.calculateByLabelSize = true;
+		currencyAxis.position = "right";
+		currencyAxis.title = "Utilities";
+
+		//secondary numeric axis
+		var currencyAxis2 = new YAHOO.widget.NumericAxis();
+		currencyAxis2.order = "secondary";
+		currencyAxis2.position = "left";
+		currencyAxis2.title = "Rent";
+		currencyAxis2.labelFunction = YAHOO.example.formatCurrencyAxisLabel;
+		currencyAxis2.alwaysShowZero = false;
+
+		//create an array of numeric axes
+		var axes = new Array();
+		axes.push(currencyAxis);
+		axes.push(currencyAxis2);	
+		
+		//series definition
+		var seriesDef =
+		[
+			{ displayName: "Rent", yField: "rent", axis:"secondary", style:{color:0x6238A7, size:8}},
+			{ displayName: "Car", yField: "car", axis:"primary", style:{color:0x00E72E, size:8} },
+			{ displayName: "Power", yField:"power", axis:"primary", style:{color:0xFFA329, size:8} },
+			{ displayName: "Cable", yField:"cable", axis:"primary", style:{color:0xFF4AD8, size:8} }
+		];		
+
+		//styles
+		var styleDef = {
+							padding:0,
+							border:{size:3, color:0x8899dd},
+							background:{color:0xaeb7dc}, 
+							dataTip:{font:{color:"#000000"}, background:{color:0x00E72E, alpha:.3}},
+							font:{color: "#eeeeee"},
+							yAxis:
+							{
+								labelDistance:0, 
+								titleRotation:-90, 
+								titleFont:{color:0xeeeeee}, 
+								minorTicks:{display:"none"}, 
+								majorGridLines:{color:0xeeeeee}, 
+								color:0xeeeeee, 
+								majorTicks:{color:0xeeeeee}
+							},
+							secondaryYAxis:
+							{ 
+								titleRotation:90
+							}, 
+							xAxis:
+							{
+								majorTicks:{display:"none"}, 
+								labelRotation:-45, 
+								size:0
+							}
+						}
+
+
+		//chart
+		var mychart = new YAHOO.widget.LineChart( "chart", myDataSource,
+		{
+			constrainViewport:false,
+			series: seriesDef,
+			xField: "month",
+			yAxes: axes,
+			style: styleDef
+		});
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

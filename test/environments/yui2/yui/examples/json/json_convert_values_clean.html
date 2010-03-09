@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Adding new object members during parsing</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#demo table {
+    border: 3px solid #89d;
+    border-collapse: collapse;
+}
+#demo caption {
+    margin: 3px 0;
+    font-weight: bold;
+    color: #333;
+    margin: 1em 0 1ex;
+}
+#demo table th {
+    background: #89d;
+    color: #fff;
+    padding: 1ex 1em;
+}
+#demo table td {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: .5ex 1ex;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Adding new object members during parsing</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to use the <code>reviver</code> parameter in <code>JSON.parse</code> to add new object members and format existing members during the parsing phase.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <p>Choose a currency, then get the data</p>
+    <select id="currencies">
+        <option value="ARS">Argentine Peso</option>
+        <option value="AUD">Australian Dollar</option>
+        <option value="BRL">Brazilian Real</option>
+        <option value="GBP">British Pound</option>
+        <option value="CAD">Canadian Dollar</option>
+        <option value="CNY">Chinese Yuan</option>
+        <option value="COP">Colombian Peso</option>
+        <option value="HRK">Croatian Kuna</option>
+        <option value="CZK">Czech Koruna</option>
+        <option value="DKK">Danish Krone</option>
+        <option value="EEK">Estonian Kroon</option>
+        <option value="EUR">Euro</option>
+        <option value="HKD">Hong Kong Dollar</option>
+        <option value="HUF">Hungarian Forint</option>
+        <option value="ISK">Iceland Krona</option>
+        <option value="INR">Indian Rupee</option>
+        <option value="JPY">Japanese Yen</option>
+        <option value="KRW">Korean Won</option>
+        <option value="LVL">Latvian Lat</option>
+        <option value="LTL">Lithuanian Lita</option>
+        <option value="MYR">Malaysian Ringgit</option>
+        <option value="MXN">Mexican Peso</option>
+        <option value="NZD">New Zealand Dollar</option>
+        <option value="NOK">Norwegian Krone</option>
+        <option value="PHP">Philippine Peso</option>
+        <option value="PLN">Polish Zloty</option>
+        <option value="RUB">Russian Rouble</option>
+        <option value="SGD">Singapore Dollar</option>
+        <option value="SKK">Slovak Koruna</option>
+        <option value="ZAR">South African Rand</option>
+        <option value="LKR">Sri Lanka Rupee</option>
+        <option value="SEK">Swedish Krona</option>
+        <option value="TRY">Turkey Lira</option>
+        <option value="USD" selected="selected">U.S. Dollar</option>
+        <option value="CHF">Swiss Franc</option>
+        <option value="TWD">Taiwan Dollar</option>
+        <option value="THB">Thai Baht</option>
+    </select>
+    <input type="button" id="demo_go" value="Get Data">
+
+    <table cellspacing="0">
+    <caption>Inventory</caption>
+    <thead>
+        <tr>
+            <th>SKU</th>
+            <th>Item</th>
+            <th>Price (USD)</th>
+            <th>Price (<span>USD</span>)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td colspan="4">Click <em>Get Data</em></td></tr>
+    </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+// Set up some shortcuts
+var JSON  = YAHOO.lang.JSON,
+    Dom   = YAHOO.util.Dom,
+    Event = YAHOO.util.Event,
+    Demo;
+
+// To avoid a Safari issue with JSON reviver adding properties
+JSON.useNativeParse = false;
+
+Demo = YAHOO.namespace('demo').JSONReviver = {
+    rates : {"USD":1,"EUR":0.6661,"GBP":0.5207,"AUD":1.1225,"BRL":1.609,"NZD":1.4198,"CAD":1.0667,"CHF":1.0792,"CNY":6.8587 ,"DKK":4.9702,"HKD":7.8064,"INR":42.0168,"JPY":109.8901,"KRW":1000,"LKR":107.5269,"MXN":10.1317,"MYR" :3.3167,"NOK":5.3277,"SEK":6.2617,"SGD":1.4073,"THB":33.7838,"TWD":31.1526,"VEF":2.1445,"ZAR":7.6923 ,"BGN":1.3028,"CZK":16.0514,"EEK":10.4275,"HUF":158.7302,"LTL":2.2999,"LVL":0.4692,"PLN":2.1758,"RON" :2.3804,"SKK":20.2429,"ISK":4.8008,"HRK":81.3008,"RUB":24.3309,"TRY":1.1811,"PHP":44.2478,"COP":2000 ,"ARS":3.1289},
+
+    currency : 'USD',
+
+    formatCurrency : function (amt) {
+        amt += amt % 1 ? "0" : ".00";
+        return amt.substr(0,amt.indexOf('.')+3);
+    },
+
+    convert : function (k,v) {
+        // 'this' will refer to the object containing the key:value pair,
+        // so this will add a new object member while leaving the original
+        // in tact (but formatted to two decimal places).  If the original
+        // is not needed, just return the converted value.
+        if (k === 'Price') {
+            var x = Math.round(v * Demo.rates[Demo.currency] * 100) / 100;
+            this.convertedPrice = Demo.formatCurrency(x); // added to item
+            return Demo.formatCurrency(v); // assigned to item.Price
+        }
+        return v;
+    },
+
+    updateTable : function (inventory) {
+        var demo       = Dom.get('demo'),
+            tbl        = demo.getElementsByTagName('table')[0],
+            tbody      = tbl.getElementsByTagName('tbody')[0],
+            col_header = tbl.getElementsByTagName('span')[0],
+            tmp        = document.createElement('div'),
+            html       = ["<table><tbody>"],i,j = 1,l,item;
+
+        // Update the column header
+        col_header.innerHTML = Demo.currency;
+
+        if (inventory) {
+            for (i = 0, l = inventory.length; i < l; ++i) {
+                item = inventory[i];
+                html[j++] = '<tr><td>';
+                html[j++] = item.SKU;
+                html[j++] = '</td><td>';
+                html[j++] = item.Item;
+                html[j++] = '</td><td>';
+                html[j++] = item.Price;
+                html[j++] = '</td><td>';
+                html[j++] = item.convertedPrice;
+                html[j++] = '</td></tr>';
+            }
+        } else {
+            html[j++] = '<tr><td colspan="4">No Inventory data</td></tr>';
+        }
+        html[j] = "</tbody></table>";
+
+        tmp.innerHTML = html.join('');
+
+        tbl.replaceChild(tmp.getElementsByTagName('tbody')[0], tbody);
+    }
+};
+
+Event.on('demo_go','click', function (e) {
+
+    var self = this,     // Cache this for the async callback closure
+        sel  = Dom.get('currencies'); // Store the requested currency
+
+    // Disable the button temporarily
+    this.disabled = true;
+
+    // Store the requested currency
+    Demo.currency = sel.value;
+
+    YAHOO.util.Connect.asyncRequest('GET','assets/data.php',{
+        timeout : 3000,
+        success : function (res) {
+            var inventory;
+            try {
+                inventory = JSON.parse(res.responseText,Demo.convert);
+
+                Demo.updateTable(inventory);
+            }
+            catch(e) {
+                alert("Error getting inventory data");
+            }
+            finally {
+                self.disabled = false;
+            }
+        },
+        failure : function () {
+            alert("Error getting inventory data");
+        }
+    });
+});
+
+});
+</script>
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

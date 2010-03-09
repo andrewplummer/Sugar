@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Simple Testing Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/yuitest/assets/skins/sam/yuitest.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/yuitest/yuitest-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Simple Testing Example</h1>
+
+<div class="exampleIntro">
+	<p>This example shows basic usage of the YUI Test framework for testing browser-based JavaScript code. 
+  Two different <a href="/yui/yuitest/#testcase"><code>TestCase</code></a> objects are created and added to a
+  <a href="/yui/yuitest/#testsuite"><code>TestSuite</code></a> object. The <a href="/yui/yuitest/#testrunner"><code>TestRunner</code></a>
+  is then used to run the tests once the page has loaded.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="testLogger"></div>
+<script type="text/javascript">
+
+    YAHOO.namespace("example.yuitest");
+    
+    YAHOO.example.yuitest.DataTestCase = new YAHOO.tool.TestCase({
+    
+        //name of the test case - if not provided, one is auto-generated
+        name : "Data Tests",
+        
+        //---------------------------------------------------------------------
+        // setUp and tearDown methods - optional
+        //---------------------------------------------------------------------
+        
+        /*
+         * Sets up data that is needed by each test.
+         */
+        setUp : function () {
+            this.data = {
+                name: "yuitest",
+                year: 2007,
+                beta: true
+            };
+        },
+        
+        /*
+         * Cleans up everything that was created by setUp().
+         */
+        tearDown : function () {
+            delete this.data;
+        },
+        
+        //---------------------------------------------------------------------
+        // Test methods - names must begin with "test"
+        //---------------------------------------------------------------------
+        
+        testName : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            Assert.isObject(this.data);
+            Assert.isString(this.data.name);
+            Assert.areEqual("yuitest", this.data.name);            
+        },
+        
+        testYear : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            Assert.isObject(this.data);
+            Assert.isNumber(this.data.year);
+            Assert.areEqual(2007, this.data.year);            
+        },
+        
+        testBeta : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            Assert.isObject(this.data);
+            Assert.isBoolean(this.data.beta);
+            Assert.isTrue(this.data.beta);
+        }
+    
+    });
+    
+    YAHOO.example.yuitest.ArrayTestCase = new YAHOO.tool.TestCase({
+    
+        //name of the test case - if not provided, one is auto-generated
+        name : "Array Tests",
+        
+        //---------------------------------------------------------------------
+        // setUp and tearDown methods - optional
+        //---------------------------------------------------------------------
+        
+        /*
+         * Sets up data that is needed by each test.
+         */
+        setUp : function () {
+            this.data = [0,1,2,3,4]
+        },
+        
+        /*
+         * Cleans up everything that was created by setUp().
+         */
+        tearDown : function () {
+            delete this.data;
+        },
+        
+        //---------------------------------------------------------------------
+        // Test methods - names must begin with "test"
+        //---------------------------------------------------------------------
+        
+        testPop : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            var value = this.data.pop();
+            
+            Assert.areEqual(4, this.data.length);
+            Assert.areEqual(4, value);            
+        },        
+        
+        testPush : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            this.data.push(5);
+            
+            Assert.areEqual(6, this.data.length);
+            Assert.areEqual(5, this.data[5]);            
+        },
+        
+        testSplice : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            this.data.splice(2, 1, 6, 7);
+            
+            Assert.areEqual(6, this.data.length);
+            Assert.areEqual(6, this.data[2]);           
+            Assert.areEqual(7, this.data[3]);           
+        }
+    
+    });    
+
+    YAHOO.example.yuitest.ExampleSuite = new YAHOO.tool.TestSuite("Example Suite");
+    YAHOO.example.yuitest.ExampleSuite.add(YAHOO.example.yuitest.DataTestCase);
+    YAHOO.example.yuitest.ExampleSuite.add(YAHOO.example.yuitest.ArrayTestCase);
+    
+     
+    YAHOO.util.Event.onDOMReady(function (){
+        //create the logger
+        var logger = new YAHOO.tool.TestLogger("testLogger");
+        YAHOO.tool.TestRunner.add(YAHOO.example.yuitest.ExampleSuite);
+
+        //run the tests
+        YAHOO.tool.TestRunner.run();
+    });
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

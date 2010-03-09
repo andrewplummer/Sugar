@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Chart with Legend Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		float: left;
+		width: 450px;
+		height: 300px;
+	}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Chart with Legend Example</h1>
+
+<div class="exampleIntro">
+	<p>A legend may be displayed with the <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> by setting a few simple styles. This example shows you how.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">Survey: What is your favorite season?</span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can install the latest version at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+//--- data
+
+	YAHOO.example.publicOpinion =
+	[
+		{ response: "Summer", count: 564815 },
+		{ response: "Fall", count: 664182 },
+		{ response: "Spring", count: 248124 },
+		{ response: "Winter", count: 271214 },
+		{ response: "Undecided", count: 81845 }
+	]
+
+	var opinionData = new YAHOO.util.DataSource( YAHOO.example.publicOpinion );
+	opinionData.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	opinionData.responseSchema = { fields: [ "response", "count" ] };
+
+//--- chart
+
+	var mychart = new YAHOO.widget.PieChart( "chart", opinionData,
+	{
+		dataField: "count",
+		categoryField: "response",
+		style:
+		{
+			padding: 20,
+			legend:
+			{
+				display: "right",
+				padding: 10,
+				spacing: 5,
+				font:
+				{
+					family: "Arial",
+					size: 13
+				}
+			}
+		},
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

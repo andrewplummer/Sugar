@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Adding, Updating, and Deleting Rows</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/paginator/assets/skins/sam/paginator.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/paginator/paginator-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* custom styles for this example */
+.modform {margin-bottom: 1em;}
+.index {width:5em;}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Adding, Updating, and Deleting Rows</h1>
+
+<div class="exampleIntro">
+	<p>Adding, updating, and deleting row data dynamically.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<form class="modform">
+    <select id="mode">
+        <option value="add">Add</option>
+        <option value="update">Update</option>
+        <option value="deletestandard">Delete top-to-bottom</option>
+        <option value="deletereverse">Delete bottom-up</option>
+    </select>
+        
+    <select id="count">
+        <option value=1>1</option>
+        <option value=5>5</option>
+        <option value=10>10</option>
+        <option value=25>25</option>
+        <option value=100>100</option>
+    </select>
+    
+    row(s) at index
+    
+    <input id="index" type="text" value="0" class="index">
+   
+    <span id="go" class="yui-button yui-push-button">
+        <span class="first-child">
+            <button type="button">Go!</button>
+        </span>
+    </span>
+</form>
+
+<div id="container"></div>
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    YAHOO.example.RowDataMod = function() {
+        var myColumnDefs = [
+            {key:"row", label:"row counter", resizeable:true,sortable:true},
+            {key:"one",resizeable:true},
+            {key:"two",resizeable:true},
+            {key:"three",resizeable:true}   
+        ];
+
+        var myDataSource = new YAHOO.util.DataSource([]);
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+        myDataSource.responseSchema = {
+            fields: ["one","two","three"]
+        };
+        
+        var myDataTable = new YAHOO.widget.DataTable("container",
+                myColumnDefs, myDataSource, {});
+                
+        var i=1,
+            bReverseSorted = false;
+
+        // Track when Column is reverse-sorted, since new data will come in out of order
+        var trackReverseSorts = function(oArg) {
+            bReverseSorted = (oArg.dir === YAHOO.widget.DataTable.CLASS_DESC);
+        };
+        
+        var globalDataCount = -1,
+            getData = function(count) {
+                if(count) {
+                    var allData = [];
+                    for(var i=0; i<count; i++) {
+                        globalDataCount++;
+                        allData.push({row:globalDataCount, one:"one", two:"two", three:"three"});
+                    }
+                    return allData;
+                }
+                else {
+                    globalDataCount++;
+                    return {row:globalDataCount, one:"one", two:"two", three:"three"};
+                }
+            };
+        
+        // Add/update/delete rows as indicated
+        var handleClick = function() {
+            // Reset sort
+            myDataTable.set("sortedBy", null);
+            
+            var mode = YAHOO.util.Dom.get("mode").value,
+                count = parseInt(YAHOO.util.Dom.get("count").value),
+                index = parseInt(YAHOO.util.Dom.get("index").value);
+                
+            if(YAHOO.lang.isNumber(index)) {
+                switch(mode) {
+                    case "add":
+                        if(count === 1) {
+                            myDataTable.addRow(getData(), index);
+                        }
+                        else {
+                            myDataTable.addRows(getData(count), index);
+                        }
+                        return;
+                    case "update":
+                        if(count === 1) {
+                            myDataTable.updateRow(index, getData());
+                        }
+                        else {
+                            myDataTable.updateRows(index, getData(count));
+                        }
+                        return;
+                    case "deletestandard":
+                        if(count === 1) {
+                            myDataTable.deleteRow(index);
+                        }
+                        else {
+                            myDataTable.deleteRows(index, count);
+                        }
+                        return;
+                    case "deletereverse":
+                        if(count === 1) {
+                            myDataTable.deleteRow(index, -1);
+                        }
+                        else {
+                            myDataTable.deleteRows(index, count*-1);
+                        }
+                        return;
+                    default:
+                        break;
+                }
+            
+            }
+            YAHOO.log("Could not continue due to invalid index.");
+        }
+
+        var btn = new YAHOO.widget.Button("go");
+        btn.on("click", handleClick);
+
+        return {
+            ds: myDataSource,
+            dt: myDataTable
+        };
+    }();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

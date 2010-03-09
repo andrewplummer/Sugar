@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Simple Storage Example &mdash; Saving In-Progress Text Entry</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/cookie/cookie-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/swfstore/swfstore-min.js"></script>
+<script type="text/javascript" src="../../build/storage/storage-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+#textentry {
+  height:100px;
+  width:400px;
+  background-color:#dedede;
+  color:#2D119F;
+  font-weight:bold;
+}
+
+#autosave {
+  margin-top: 5px;
+  font-size: 10px;
+  color: #666666;
+}
+
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Simple Storage Example &mdash; Saving In-Progress Text Entry</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates a rudimentary use case for the <a href="http://developer.yahoo.com/yui/storage/">Storage Utility</a>.  When you enter text in the text field below, your content will be locally saved on every fifth <code>keypress</code>.  If your browser supports one of the Storage Utility's storage mechanisms (Gears, SWF, and HTML5 are tried, in that order), your last-saved content will persist when you reload the page.</p>
+
+<p>Watch the logger on the right side of the page as you type for feedback about what the example is doing.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<form action="." method="post" id="textentryform">
+
+   <textarea id="textentry">Text entered here will be autosaved as you type.</textarea>
+   <p id="autosave">#</p>
+
+</form>
+
+<!--Always include gears_init.js when you want to support Google Gears:-->
+<script type="text/javascript" src="../storage/assets/gears_init.js"></script> 
+
+<script language="javascript">
+
+YAHOO.util.Event.onDOMReady(function() {
+
+  var ctr = 0,
+      storageEngine;
+
+  YAHOO.util.StorageEngineSWF.SWFURL = 'swfstore.swf';
+
+  //wrap instantiation in a try/catch to handle situations where
+  //the client browser does not support any of your desired 
+  //storage engines; use the catch statement to handle those
+  //unsupported browsers.  In this case, we're using Storage as
+  //an enhancement, and we can fail gracefully if instantiation
+  //fails.
+  try {
+    storageEngine = YAHOO.util.StorageManager.get(
+      YAHOO.util.StorageEngineGears.ENGINE_NAME,
+      YAHOO.util.StorageManager.LOCATION_LOCAL,
+      {   
+        order: [
+          YAHOO.util.StorageEngineGears,
+          YAHOO.util.StorageEngineSWF,
+          YAHOO.util.StorageEngineHTML5
+          ],
+        force: false
+      }
+     );
+  } catch(e) {
+    YAHOO.log("No supported storage mechanism present.");
+    storageEngine = false;
+  }
+
+  //storageEngine will be truthy if instantiation succeeded and
+  //false if no engine was available or if instantiation failed
+  //for any reason.
+  if(storageEngine) {
+
+    //If we got a valid storage engine, we can make use of it.
+    //Use the custom event CE_READY to identify the moment
+    storageEngine.subscribe(storageEngine.CE_READY, function(e) {
+       YAHOO.log("A Storage instance is ready using " + 
+          storageEngine.getName() + 
+          "; start typing in the text box and content will be saved every five keystrokes.", "info", "example");
+
+        //Prepopulate the text field with saved contents, if present.
+       if(storageEngine.hasKey("simple-storage-textentry")) {
+         YAHOO.log(storageEngine.getItem("simple-storage-textentry"));
+         YAHOO.util.Dom.get("textentry").value = storageEngine.getItem("simple-storage-textentry");
+       }
+
+      //Set up an event listener to trigger the Storage set method 
+      //every five keystrokes.
+      YAHOO.util.Event.on("textentry", "keypress", function(e) {
+        ctr++;
+  
+        if(!(ctr%5)) { //on every fifth keystroke, autosave the contents
+          storageEngine.setItem("simple-storage-textentry", YAHOO.util.Dom.get("textentry").value);
+          document.getElementById("autosave").innerHTML = "last saved at " + (new Date).toString();
+          YAHOO.log("Autosaved textarea content to " + 
+            storageEngine.getName() + " via Storage Utility.", "info", "example");
+        }
+      });
+    });
+  }
+
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

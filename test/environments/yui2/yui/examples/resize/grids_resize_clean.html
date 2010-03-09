@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Split Pane resizing with Grids CSS</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/grids/grids-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/resize/assets/skins/sam/resize.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/resize/resize-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Split Pane resizing with Grids CSS</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to make a resizable split pane with <a href="http://developer.yahoo.com/yui/grids/">Grids CSS</a>.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+#pg p {
+     margin: 1em;
+}
+#pg {
+    width: 600px;
+    height: 200px;
+}
+#pg .yui-g {
+    height: 200px;
+    width: 600px;
+    overflow: hidden;
+}
+#pg .yui-g .first {
+    background-color: yellow;
+}
+#pg .yui-u {
+    height: 100%;
+    background-color: orange;
+    overflow: hidden;
+}
+    
+</style>
+
+<div id="pg">
+    <div class="yui-g">
+        <div class="yui-u first" id="sizeIt">
+            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse justo nibh, pharetra at, adipiscing ullamcorper, rutrum ac, enim. Nullam pretium interdum metus. Ut in neque. Vivamus ut lorem vitae turpis porttitor tempor. Nam consectetuer est quis lacus. Mauris ut diam nec diam tincidunt eleifend. Vivamus magna. Praesent commodo egestas metus. Praesent condimentum bibendum metus. Sed sem sem, molestie et, venenatis eget, suscipit quis, dui. Morbi molestie, ipsum nec posuere lobortis, massa diam aliquet pede, tempor ultricies neque tortor sit amet nisi. Suspendisse vel quam in nisl dictum condimentum. Maecenas volutpat leo vitae leo. Nullam elit arcu, ullamcorper commodo, elementum nec, dictum nec, augue. Maecenas at tellus vitae ante fermentum elementum. Ut auctor ante et nisi. Suspendisse sagittis tristique eros.</p>
+        </div>
+        <div class="yui-u" id="sizeIt2">
+            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse justo nibh, pharetra at, adipiscing ullamcorper, rutrum ac, enim. Nullam pretium interdum metus. Ut in neque. Vivamus ut lorem vitae turpis porttitor tempor. Nam consectetuer est quis lacus. Mauris ut diam nec diam tincidunt eleifend. Vivamus magna. Praesent commodo egestas metus. Praesent condimentum bibendum metus. Sed sem sem, molestie et, venenatis eget, suscipit quis, dui. Morbi molestie, ipsum nec posuere lobortis, massa diam aliquet pede, tempor ultricies neque tortor sit amet nisi. Suspendisse vel quam in nisl dictum condimentum. Maecenas volutpat leo vitae leo. Nullam elit arcu, ullamcorper commodo, elementum nec, dictum nec, augue. Maecenas at tellus vitae ante fermentum elementum. Ut auctor ante et nisi. Suspendisse sagittis tristique eros.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        col1 = null
+        col2 = null;
+
+    Event.onDOMReady(function() {
+        var size = parseInt(Dom.getStyle('pg', 'width'), 10);
+        col1 = Dom.get('sizeIt');
+        col2 = Dom.get('sizeIt2');
+        var max = (size - 150);
+        var resize = new YAHOO.util.Resize('sizeIt', {
+            handles: ['r'],
+            minWidth: 150,
+            maxWidth: max
+        });
+        resize.on('resize', function(ev) {
+            var w = ev.width;
+            Dom.setStyle(col1, 'height', '');
+            Dom.setStyle(col2, 'width', (size - w - 6) + 'px');
+        });
+
+        resize.resize(null, 200, 200, 0, 0, true);
+    });
+
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

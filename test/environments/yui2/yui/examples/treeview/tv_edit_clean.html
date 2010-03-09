@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Inline Editing of TreeView Node Labels</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<link rel="stylesheet" type="text/css" href="../../build/treeview/assets/skins/sam/treeview.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+<script type="text/javascript" src="../../build/treeview/treeview-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Inline Editing of TreeView Node Labels</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates label editing and keyboard navigation in the YUI TreeView Control. 
+As you interact with the TreeView instance below, you'll find that some nodes allow you to edit them -
+double-click on node labels to open the inline editor. 
+This example also demonstrates how you can use arrow keys, +/- keys (expand/collapse), 
+and the enter key to navigate and control the TreeView instance.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="treeView" style="background-color:white"></div>
+<div id="msg">&nbsp;</div>
+<script type="text/javascript">
+
+//global variable to allow console inspection of tree:
+var tree;
+
+//anonymous function wraps the remainder of the logic:
+(function() {
+	var treeInit = function() {
+		tree = new YAHOO.widget.TreeView("treeView", [
+			'Label 0',
+			{type:'Text', label:'Label 1', editable:true},
+			{type:'Text', label:'Branch 2', editable:true, expanded:true, children:[
+				{type:'Text', label:'Branch 2-0', editable:true, children: [
+					'Label 2-0-0',
+					'Label 2-0-1'
+				]},
+				
+				{type:'Text', label:'Branch 2-1', editable:true, children: [
+					'Label 2-1-0',
+					'Label 2-1-1'
+				]},
+			]},
+			{type:'Text',label:'YAHOO', href:'http://www.yahoo.com', target:'YAHOO\'s home page'},
+			{type:'DateNode',label:'31.3.2001',editable:true, calendarConfig: {
+				DATE_FIELD_DELIMITER:".",
+				MDY_DAY_POSITION:1,
+				MDY_MONTH_POSITION:2,
+				MDY_YEAR_POSITION:3
+			}},
+			{type:'text',label:'Branch 3', editable:true, expanded:false, children:[
+				'Label 3-0',
+				'Label 3-1'
+			]}
+		]);
+		tree.render();
+
+		tree.subscribe('dblClickEvent',tree.onEventEditNode);
+		
+		tree.root.children[1].focus();
+		
+		tree.subscribe('enterKeyPressed',function(node) {
+			YAHOO.util.Dom.get('msg').innerHTML = 'Enter key pressed on node: ' + node.label;
+		});
+		tree.subscribe('clickEvent',function(oArgs) {
+			YAHOO.util.Dom.get('msg').innerHTML = 'Click on node: ' + oArgs.node.label;
+		});
+		tree.subscribe('dblClickEvent',function(oArgs) {
+			YAHOO.util.Dom.get('msg').innerHTML = 'Double click on node: ' + oArgs.node.label;
+		});
+		
+			
+	};
+
+	//Add an onDOMReady handler to build the tree when the document is ready
+    YAHOO.util.Event.onDOMReady(treeInit);
+
+})();
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

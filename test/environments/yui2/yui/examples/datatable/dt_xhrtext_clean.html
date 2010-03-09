@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Textual Data Over XHR</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* custom styles for this example */
+#textWithHeaderData {margin-top:2em;}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Textual Data Over XHR</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates how to populate a DataTable with delimited text
+data over XHR. In the second instance, the data includes header data as the first
+row, which is parsed out with a custom implementation of the DataSource method
+doBeforeCallback().</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="text"></div>
+<div id="textWithHeaderData"></div>
+
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    YAHOO.example.XHR_Text = function() {
+        var formatUrl = function(elCell, oRecord, oColumn, sData) {
+            elCell.innerHTML = "<a href='" + oRecord.getData("Url") + "' target='_blank'>" + sData + "</a>";
+        };
+
+        var myColumnDefs = [
+            {key:"Name", sortable:true, formatter:formatUrl},
+            {key:"Phone"},
+            {key:"City"},
+            {key:"Rating", formatter:YAHOO.widget.DataTable.formatNumber, sortable:true}
+
+        ];
+
+        var myDataSource = new YAHOO.util.DataSource("assets/php/text_proxy.txt");
+        //myDataSource.responseType = YAHOO.util.DataSource.TYPE_TEXT;
+        myDataSource.responseSchema = {
+            recordDelim: "\n",
+            fieldDelim: "|",
+            fields: ["Name","Address","City","Phone",{key:"Rating",parser:"number"},"Url"]
+        };
+
+        var myDataTable = new YAHOO.widget.DataTable("text", myColumnDefs,
+                myDataSource, {caption:"Example: Textual Data Over XHR"});
+
+
+
+        var moreColumnDefs = [
+            {key:"Restaurant", sortable:true, formatter:formatUrl},
+            {key:"Location"},
+            {key:"Town"},
+            {key:"Stars", formatter:YAHOO.widget.DataTable.formatNumber, sortable:true}
+        ];
+
+        var anotherDataSource = new YAHOO.util.DataSource("assets/php/text_with_headers_proxy.txt");
+        anotherDataSource.responseType = YAHOO.util.DataSource.TYPE_TEXT;
+        anotherDataSource.responseSchema = {
+            recordDelim: "\n",
+            fieldDelim: "|",
+            fields: ["Restaurant","Location","Town","Telephone",{key:"Stars",parser:"number"},"Url"]
+        };
+        // Upgrade note: As of 2.5.0, the second argument is the full type-converted
+        // response from the live data, and not the unconverted raw response
+        anotherDataSource.doBeforeCallback = function(oRequest, oFullResponse, oParsedResponse) {
+            // Remove the first result (i.e., the headers);
+            oParsedResponse.results.shift();
+            return oParsedResponse;
+        };
+
+        anotherDataTable = new YAHOO.widget.DataTable("textWithHeaderData", moreColumnDefs,
+                anotherDataSource, {caption:"Example: First Record Holds Header Data"});
+                
+        return {
+            oDS: myDataSource,
+            oDT: myDataTable,
+            oDS2: anotherDataSource,
+            oDT2: anotherDataTable
+        };
+    }();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

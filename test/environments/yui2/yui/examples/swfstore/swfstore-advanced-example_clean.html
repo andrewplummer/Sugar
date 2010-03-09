@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>SWFStore Advanced Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/cookie/cookie-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/swfstore/swfstore-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<STYLE type="text/css">
+
+#controls label  
+{
+	clear: left;
+	float: left;
+	width: 10em; 
+} 
+
+#controls textarea  
+{
+	width: 24em; 
+}
+
+</STYLE>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>SWFStore Advanced Example</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to get, set, and remove items from storage using the <a href="http://developer.yahoo.com/yui/swfstore/">YUI SWFStore Utility</a> and how to display stored data using a <a href="http://developer.yahoo.com/yui/datatable/">YUI DataTable</a>.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+
+
+<!--Placeholder for SWF, will be replaced with embedded SWF if proper Flash Player is installed-->
+<div id="swfstoreContainer" style="width:0px;height:0px;">Unable to load Flash content. The YUI File SWFStore Control requires Flash Player 9.0.115 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<!--Input Controls-->
+
+<div id="controls">
+	<label for="valueField">Text to store:</label>
+	<textarea cols="30" id="valueField" rows="5"></textarea>
+	<br/>
+
+	<label for="nameField">Storage name:</label>
+
+	<input id="nameField" type="text" value=""/>
+	<input id="save-button" name="save-button" type="Button" value="Save" /> <input id="remove-button" name="remove-button" type="Button" value="Remove" />
+
+	<br/>
+	<br/>
+	<input id="purge-button" name="purge-button" type="Button" value="Purge All Local Data" />
+	<input id="removeat-button" name="removeat-button" type="Button" value="Remove Item At:" /> <input id="indexField" type="text" value="0" size="3"/>
+
+	<br/>
+	<br/>
+
+	<fieldset id="checkboxOptions">
+        <legend>Additional Option:</legend>
+		<input id="sharedata-button" name="sharedata-button" type="Button" value="Share Data"/>
+		<input id="compression-button" name="compression-button" type="Button" value="Use Compression"/>
+	</fieldset>
+
+<br/>
+<div id="datatableContainer" style="x:40" ></div>
+</div>
+
+<!--Local Scripts-->
+<script type="text/javascript" >
+	/**
+	 * Pointer to the SWFStore instance
+	 */
+	var swfstore;
+
+	/**
+	 * Pointer to the DataTable instance
+	 */
+	var datatable;
+
+	var saveButton;
+	var purgeButton;
+	var removeButton;
+	var removeAtButton;
+	var compressionCheckbox;
+	var sharedataCheckbox;
+
+	/**
+	 * Initialization scripts
+	 */
+	 function initialize()
+	 {
+		var shareData = sharedataCheckbox.get("checked");
+		var useCompression = compressionCheckbox.get("checked");
+
+		saveButton.set("disabled", true);
+		purgeButton.set("disabled", true);
+		removeButton.set("disabled", true);
+		removeAtButton.set("disabled", true);
+		sharedataCheckbox.set("disabled", true);
+		compressionCheckbox.set("disabled", true);
+
+		//the swfstore instance
+		swfstore = new YAHOO.util.SWFStore("swfstoreContainer", shareData, useCompression);
+
+		//some basic listeners for user feedback
+		swfstore.addListener("save", onSave);
+		swfstore.addListener("error", onError);
+		swfstore.addListener("quotaExceededError", onError);
+		swfstore.addListener("securityError", onError);
+		swfstore.addListener("contentReady", onContentReady);
+	}
+
+	/**
+	 * Function to let us change the shareData property of the SWFStore
+	 */
+	 function changeShareData(event)
+	 {
+		swfstore.setShareData(event.newValue);
+		resetDataTable();
+	 }
+
+	/**
+	 * Function to let us change the useCompression property of the SWFStore
+	 */
+	 function changeUseCompression(event)
+	 {
+		swfstore.setUseCompression(event.newValue);
+	 }
+
+	/**
+	 * This gets called once SWFStore is initialized and ready to be used.
+	 * We disabled the buttons previously, so once they're usable we'll enable them here.
+	 */
+	function onContentReady(event)
+	{
+		saveButton.set("disabled", false);
+		purgeButton.set("disabled", false);
+		removeButton.set("disabled", false);
+		removeAtButton.set("disabled", false);
+		sharedataCheckbox.set("disabled", false);
+		compressionCheckbox.set("disabled", false);
+		load();
+	}
+
+	/**
+	 * Clear out all data
+	 */
+	function purge()
+	{
+	 	swfstore.clear();
+	}
+
+	/**
+	 * Called when a save is successful
+	 */
+	function onSave(event)
+	{
+
+		//added
+		if(event.info == "add" || event.info == "update")
+		{
+			var newobj = {name: event.key, value: event.newValue};
+
+			var len = datatable.getRecordSet().getLength();
+
+			//loop through current records and see if this has been added before
+			for (var i = 0; i < len; i++ )
+			{
+				var rec = datatable.getRecord(i);
+				var data = rec.getData();
+
+				//if it's been added already, update it
+				if(data.name == event.key)
+				{
+					datatable.updateRow(i, newobj);
+					return;
+				}
+			}
+
+			//if it's not been added, add it
+			datatable.addRow(newobj);
+		}
+
+		//removed
+		else if(event.info == "delete")
+		{
+			//var index = parseInt(YAHOO.util.Dom.get('indexField').value);
+			datatable.deleteRow(event.index);
+		}
+
+		//cleared
+		else
+		{
+			datatable.deleteRows(0, datatable.getRecordSet().getLength());
+		}
+	}
+
+	/**
+	 * Called when something bad happens
+	 */
+	function onError(event)
+	{
+		YAHOO.log("Event " + event.message);
+	}
+
+	/**
+	 * Gets the data from swfstore when the page loads
+	 */
+	function load()
+	{
+		//could use swfstore.getItems(), but that would not separate the data into fields
+		var len = swfstore.getLength();
+
+		var arr = [];
+
+	    for (var i = 0; i < len; i++) {
+			arr.push({ name:swfstore.getNameAt(i), value: swfstore.getValueAt(i) })
+	    }
+
+		var datasource = new YAHOO.util.LocalDataSource(arr);
+
+		datasource.responseSchema = {fields : ["name", "value"]};
+
+		var configs =
+		{
+			scrollable: true
+		}
+
+		var columns =
+		[
+			{key:"name", label:"Storage Name (Key)"},
+			{key:"value", label:"Text Stored"}
+		];
+
+		datatable = new YAHOO.widget.DataTable("datatableContainer", columns, datasource, configs);
+	}
+
+	/**
+	 * Resets DataTable views when "Share Data" is enabled or disabled.
+	 */
+	function resetDataTable() {
+		var i, len = swfstore.getLength();
+
+		if (datatable.getRecordSet().getLength() > 0) {
+			datatable.deleteRows(0, datatable.getRecordSet().getLength());
+		}
+
+	    for (i = 0; i < len; i++) {
+	    	datatable.addRow({name: swfstore.getNameAt(i), value: swfstore.getValueAt(i)});
+	    }
+	}
+
+	/**
+	 * Save the data locally
+	 */
+	function save()
+	{
+		swfstore.setItem(  YAHOO.util.Dom.get('nameField').value, YAHOO.util.Dom.get('valueField').value);
+	}
+
+	/**
+	 * Remove an item from storage
+	 */
+	function remove()
+	{
+		var obj = YAHOO.util.Dom.get('nameField').value;
+		swfstore.removeItem(obj);
+
+	}
+
+	/**
+	 * Remove an item from storage at a certain location
+	 */
+	function removeItemAt()
+	{
+		var index = parseInt(YAHOO.util.Dom.get('indexField').value);
+		swfstore.removeItemAt(index);
+
+	}
+
+/**
+ * Called when the buttons are ready to be initialized
+ */
+	function onButtonsReady()
+{
+
+        saveButton = new YAHOO.widget.Button("save-button");
+		purgeButton = new YAHOO.widget.Button("purge-button");
+		removeButton = new YAHOO.widget.Button("remove-button");
+		removeAtButton = new YAHOO.widget.Button("removeat-button");
+		compressionCheckbox = new YAHOO.widget.Button("compression-button", {
+	                                        type:"checkbox",
+	                                        value:"0",
+	                                        checked:false});
+		sharedataCheckbox = new YAHOO.widget.Button("sharedata-button", {
+	                                        type:"checkbox",
+	                                        value:"0",
+	                                        checked:false});
+
+		saveButton.on("click", save);
+		purgeButton.on("click", purge);
+		removeButton.on("click", remove);
+		removeAtButton.on("click", removeItemAt);
+		compressionCheckbox.on("checkedChange", changeUseCompression);
+		sharedataCheckbox.on("checkedChange", changeShareData);
+
+		//initialize
+		initialize();
+
+		YAHOO.util.Dom.get('nameField').focus()
+    }
+
+    YAHOO.util.Event.onContentReady("controls", onButtonsReady);
+
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

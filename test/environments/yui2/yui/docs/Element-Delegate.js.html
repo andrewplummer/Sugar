@@ -1,0 +1,270 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: element-delegate   Element-Delegate.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Element Event Delegation Module&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_element-delegate.html" title="element-delegate">element-delegate</a>
+                
+                 &gt; Element-Delegate.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * Augments the Element Utility with a &lt;code&gt;delegate&lt;/code&gt; method that </span>
+<span class="c"> * facilitates easy creation of delegated event listeners.  (Note: Using CSS </span>
+<span class="c"> * selectors as the filtering criteria for delegated event listeners requires </span>
+<span class="c"> * inclusion of the Selector Utility.)</span>
+<span class="c"> *</span>
+<span class="c"> * @module element-delegate</span>
+<span class="c"> * @title Element Event Delegation Module</span>
+<span class="c"> * @namespace YAHOO.util</span>
+<span class="c"> * @requires element, event-delegate</span>
+<span class="c"> */</span>
+
+<span class="o">(</span><span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+
+	<span class="k">var</span> <span class="nx">Event</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">,</span>
+		<span class="nx">delegates</span> <span class="o">=</span> <span class="o">[],</span>
+		<span class="nx">specialTypes</span> <span class="o">=</span> <span class="o">{</span>
+			<span class="nx">mouseenter</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+			<span class="nx">mouseleave</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="o">};</span>
+
+	<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">augmentObject</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Element</span><span class="o">.</span><span class="nx">prototype</span><span class="o">,</span> <span class="o">{</span>
+
+	    <span class="c">/**</span>
+<span class="c">         * Appends a delegated event listener.  Delegated event listeners </span>
+<span class="c">		 * receive two arguments by default: the DOM event and the element  </span>
+<span class="c">		 * specified by the filtering function or CSS selector.</span>
+<span class="c">		 * (Note: Using the delegate method requires the element-delegate </span>
+<span class="c">		 * module.  Using CSS selectors as the filtering criteria for delegated </span>
+<span class="c">		 * event listeners requires inclusion of the Selector Utility.)</span>
+<span class="c">	     * @method delegate</span>
+<span class="c">	     * @param {String} type The name of the event to listen for</span>
+<span class="c">	     * @param {Function} fn The handler to call when the event fires</span>
+<span class="c">		 * @param {Function|string} filter Function or CSS selector used to </span>
+<span class="c">		 * determine for what element(s) the event listener should be called. </span>
+<span class="c">		 * When a function is specified, the function should return an </span>
+<span class="c">		 * HTML element.  Using a CSS Selector requires the inclusion of the </span>
+<span class="c">		 * CSS Selector Utility.</span>
+<span class="c">	     * @param {Any} obj A variable to pass to the handler</span>
+<span class="c">	     * @param {Object} scope The object to use for the scope of the handler </span>
+<span class="c">         * @return {boolean} Returns true if the delegated event listener </span>
+<span class="c">		 * was added successfully</span>
+<span class="c">         * @for Element</span>
+<span class="c">	     */</span>
+		<span class="nx">delegate</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">fn</span><span class="o">,</span> <span class="nx">filter</span><span class="o">,</span> <span class="nx">obj</span><span class="o">,</span> <span class="nx">overrideContext</span><span class="o">)</span> <span class="o">{</span>
+
+			<span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">filter</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Selector</span><span class="o">)</span> <span class="o">{</span>
+				<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Using a CSS selector to define the filtering criteria for a delegated listener requires the Selector Utility.&quot;</span><span class="o">,</span> <span class="s2">&quot;error&quot;</span><span class="o">,</span> <span class="s2">&quot;Element&quot;</span><span class="o">);</span>
+		        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+			<span class="o">}</span>
+			
+			<span class="k">if</span> <span class="o">(!</span><span class="nx">Event</span><span class="o">.</span><span class="nx">_createDelegate</span><span class="o">)</span> <span class="o">{</span>
+		        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Using delegate functionality requires the event-delegate module.&quot;</span><span class="o">,</span> <span class="s2">&quot;error&quot;</span><span class="o">,</span> <span class="s2">&quot;Element&quot;</span><span class="o">);</span>
+		        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+			<span class="o">}</span>			
+
+			<span class="k">var</span> <span class="nx">sType</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">_getType</span><span class="o">(</span><span class="nx">type</span><span class="o">),</span>
+				<span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">),</span>
+				<span class="nx">fnDelegate</span><span class="o">,</span>
+				<span class="nx">fnMouseDelegate</span><span class="o">,</span>
+
+				<span class="nx">fnWrapper</span> <span class="o">=</span> <span class="k">function</span> <span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+
+					<span class="k">return</span> <span class="nx">fnDelegate</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">e</span><span class="o">);</span>
+
+				<span class="o">};</span>
+
+			<span class="k">if</span> <span class="o">(</span><span class="nx">specialTypes</span><span class="o">[</span><span class="nx">type</span><span class="o">])</span> <span class="o">{</span>
+
+				<span class="k">if</span> <span class="o">(!</span><span class="nx">Event</span><span class="o">.</span><span class="nx">_createMouseDelegate</span><span class="o">)</span> <span class="o">{</span>
+			        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Delegating a &quot;</span> <span class="o">+</span> <span class="nx">type</span> <span class="o">+</span> <span class="s2">&quot; event requires the event-mouseleave module.&quot;</span><span class="o">,</span> <span class="s2">&quot;error&quot;</span><span class="o">,</span> <span class="s2">&quot;Element&quot;</span><span class="o">);</span>
+			        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>				
+				<span class="o">}</span>
+
+				<span class="nx">fnMouseDelegate</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">_createMouseDelegate</span><span class="o">(</span><span class="nx">fn</span><span class="o">,</span> <span class="nx">obj</span><span class="o">,</span> <span class="nx">overrideContext</span><span class="o">);</span>
+
+				<span class="nx">fnDelegate</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">_createDelegate</span><span class="o">(</span><span class="k">function</span> <span class="o">(</span><span class="nx">event</span><span class="o">,</span> <span class="nx">matchedEl</span><span class="o">,</span> <span class="nx">container</span><span class="o">)</span> <span class="o">{</span>
+
+					<span class="k">return</span> <span class="nx">fnMouseDelegate</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="nx">matchedEl</span><span class="o">,</span> <span class="nx">event</span><span class="o">,</span> <span class="nx">container</span><span class="o">);</span>
+
+				<span class="o">},</span> <span class="nx">filter</span><span class="o">,</span> <span class="nx">obj</span><span class="o">,</span> <span class="nx">overrideContext</span><span class="o">);</span>
+
+			<span class="o">}</span>
+			<span class="k">else</span> <span class="o">{</span>
+				<span class="nx">fnDelegate</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">_createDelegate</span><span class="o">(</span><span class="nx">fn</span><span class="o">,</span> <span class="nx">filter</span><span class="o">,</span> <span class="nx">obj</span><span class="o">,</span> <span class="nx">overrideContext</span><span class="o">);</span>
+			<span class="o">}</span>
+
+
+			<span class="nx">delegates</span><span class="o">.</span><span class="nx">push</span><span class="o">([</span><span class="nx">el</span><span class="o">,</span> <span class="nx">sType</span><span class="o">,</span> <span class="nx">fn</span><span class="o">,</span> <span class="nx">fnWrapper</span><span class="o">]);</span>
+
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="nx">sType</span><span class="o">,</span> <span class="nx">fnWrapper</span><span class="o">);</span>
+
+		<span class="o">},</span>
+
+
+	    <span class="c">/**</span>
+<span class="c">	     * Remove a delegated event listener</span>
+<span class="c">	     * @method removeDelegate</span>
+<span class="c">	     * @param {String} type The name of the event to listen for</span>
+<span class="c">	     * @param {Function} fn The function call when the event fires</span>
+<span class="c">         * @return {boolean} Returns true if the unbind was successful, false </span>
+<span class="c">         *  otherwise.</span>
+<span class="c">         * @for Element</span>
+<span class="c">	     */</span>
+		<span class="nx">removeDelegate</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">fn</span><span class="o">)</span> <span class="o">{</span>
+
+			<span class="k">var</span> <span class="nx">sType</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">_getType</span><span class="o">(</span><span class="nx">type</span><span class="o">),</span>
+				<span class="nx">index</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">_getCacheIndex</span><span class="o">(</span><span class="nx">delegates</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">),</span> <span class="nx">sType</span><span class="o">,</span> <span class="nx">fn</span><span class="o">),</span>
+				<span class="nx">returnVal</span><span class="o">,</span>
+				<span class="nx">cacheItem</span><span class="o">;</span>
+
+		    <span class="k">if</span> <span class="o">(</span><span class="nx">index</span> <span class="o">&gt;=</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+		        <span class="nx">cacheItem</span> <span class="o">=</span> <span class="nx">delegates</span><span class="o">[</span><span class="nx">index</span><span class="o">];</span>
+		    <span class="o">}</span>
+
+		    <span class="k">if</span> <span class="o">(</span><span class="nx">cacheItem</span><span class="o">)</span> <span class="o">{</span>
+
+		        <span class="nx">returnVal</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">removeListener</span><span class="o">(</span><span class="nx">cacheItem</span><span class="o">[</span><span class="m">1</span><span class="o">],</span> <span class="nx">cacheItem</span><span class="o">[</span><span class="m">3</span><span class="o">]);</span>
+
+				<span class="k">if</span> <span class="o">(</span><span class="nx">returnVal</span><span class="o">)</span> <span class="o">{</span>
+		            <span class="nx">delete</span> <span class="nx">delegates</span><span class="o">[</span><span class="nx">index</span><span class="o">][</span><span class="m">2</span><span class="o">];</span>
+		            <span class="nx">delete</span> <span class="nx">delegates</span><span class="o">[</span><span class="nx">index</span><span class="o">][</span><span class="m">3</span><span class="o">];</span>
+		            <span class="nx">delegates</span><span class="o">.</span><span class="nx">splice</span><span class="o">(</span><span class="nx">index</span><span class="o">,</span> <span class="m">1</span><span class="o">);</span>
+				<span class="o">}</span>
+
+			<span class="o">}</span>
+
+			<span class="k">return</span> <span class="nx">returnVal</span><span class="o">;</span>
+
+		<span class="o">}</span>
+		
+	<span class="o">});</span>
+
+<span class="o">}());</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class="selected"><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="Element-Delegate.js.html" title="Element-Delegate.js">Element-Delegate.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [];
+</script>
+</body>
+</html>

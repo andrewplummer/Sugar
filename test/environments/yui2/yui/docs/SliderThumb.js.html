@@ -1,0 +1,416 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: slider   SliderThumb.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Slider Widget&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_slider.html" title="slider">slider</a>
+                
+                 &gt; SliderThumb.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * A drag and drop implementation to be used as the thumb of a slider.</span>
+<span class="c"> * @class SliderThumb</span>
+<span class="c"> * @extends YAHOO.util.DD</span>
+<span class="c"> * @constructor</span>
+<span class="c"> * @param {String} id the id of the slider html element</span>
+<span class="c"> * @param {String} sGroup the group of related DragDrop items</span>
+<span class="c"> * @param {int} iLeft the number of pixels the element can move left</span>
+<span class="c"> * @param {int} iRight the number of pixels the element can move right</span>
+<span class="c"> * @param {int} iUp the number of pixels the element can move up</span>
+<span class="c"> * @param {int} iDown the number of pixels the element can move down</span>
+<span class="c"> * @param {int} iTickSize optional parameter for specifying that the element </span>
+<span class="c"> * should move a certain number pixels at a time.</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">SliderThumb</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">sGroup</span><span class="o">,</span> <span class="nx">iLeft</span><span class="o">,</span> <span class="nx">iRight</span><span class="o">,</span> <span class="nx">iUp</span><span class="o">,</span> <span class="nx">iDown</span><span class="o">,</span> <span class="nx">iTickSize</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">SliderThumb</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">id</span><span class="o">,</span> <span class="nx">sGroup</span><span class="o">);</span>
+
+        <span class="c">/**</span>
+<span class="c">         * The id of the thumbs parent HTML element (the slider background </span>
+<span class="c">         * element).</span>
+<span class="c">         * @property parentElId</span>
+<span class="c">         * @type string</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">parentElId</span> <span class="o">=</span> <span class="nx">sGroup</span><span class="o">;</span>
+    <span class="o">}</span>
+
+
+    <span class="k">this</span><span class="o">.</span><span class="nx">logger</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">LogWriter</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">toString</span><span class="o">());</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Overrides the isTarget property in YAHOO.util.DragDrop</span>
+<span class="c">     * @property isTarget</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">isTarget</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="c">/**</span>
+<span class="c">     * The tick size for this slider</span>
+<span class="c">     * @property tickSize</span>
+<span class="c">     * @type int</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">tickSize</span> <span class="o">=</span> <span class="nx">iTickSize</span><span class="o">;</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Informs the drag and drop util that the offsets should remain when</span>
+<span class="c">     * resetting the constraints.  This preserves the slider value when</span>
+<span class="c">     * the constraints are reset</span>
+<span class="c">     * @property maintainOffset</span>
+<span class="c">     * @type boolean</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">maintainOffset</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="nx">initSlider</span><span class="o">(</span><span class="nx">iLeft</span><span class="o">,</span> <span class="nx">iRight</span><span class="o">,</span> <span class="nx">iUp</span><span class="o">,</span> <span class="nx">iDown</span><span class="o">,</span> <span class="nx">iTickSize</span><span class="o">);</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Turns off the autoscroll feature in drag and drop</span>
+<span class="c">     * @property scroll</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">scroll</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+<span class="o">};</span> 
+
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">SliderThumb</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DD</span><span class="o">,</span> <span class="o">{</span>
+
+    <span class="c">/**</span>
+<span class="c">     * The (X and Y) difference between the thumb location and its parent </span>
+<span class="c">     * (the slider background) when the control is instantiated.</span>
+<span class="c">     * @property startOffset</span>
+<span class="c">     * @type [int, int]</span>
+<span class="c">     */</span>
+    <span class="nx">startOffset</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Override the default setting of dragOnly to true.</span>
+<span class="c">     * @property dragOnly</span>
+<span class="c">     * @type boolean</span>
+<span class="c">     * @default true</span>
+<span class="c">     */</span>
+    <span class="nx">dragOnly</span> <span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Flag used to figure out if this is a horizontal or vertical slider</span>
+<span class="c">     * @property _isHoriz</span>
+<span class="c">     * @type boolean</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">_isHoriz</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Cache the last value so we can check for change</span>
+<span class="c">     * @property _prevVal</span>
+<span class="c">     * @type int</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">_prevVal</span><span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * The slider is _graduated if there is a tick interval defined</span>
+<span class="c">     * @property _graduated</span>
+<span class="c">     * @type boolean</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">_graduated</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+
+
+    <span class="c">/**</span>
+<span class="c">     * Returns the difference between the location of the thumb and its parent.</span>
+<span class="c">     * @method getOffsetFromParent</span>
+<span class="c">     * @param {[int, int]} parentPos Optionally accepts the position of the parent</span>
+<span class="c">     * @type [int, int]</span>
+<span class="c">     */</span>
+    <span class="nx">getOffsetFromParent0</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">parentPos</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">myPos</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getXY</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">getEl</span><span class="o">()),</span>
+            <span class="nx">ppos</span>  <span class="o">=</span> <span class="nx">parentPos</span> <span class="o">||</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getXY</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">parentElId</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="o">[</span> <span class="o">(</span><span class="nx">myPos</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">-</span> <span class="nx">ppos</span><span class="o">[</span><span class="m">0</span><span class="o">]),</span> <span class="o">(</span><span class="nx">myPos</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">-</span> <span class="nx">ppos</span><span class="o">[</span><span class="m">1</span><span class="o">])</span> <span class="o">];</span>
+    <span class="o">},</span>
+
+    <span class="nx">getOffsetFromParent</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">parentPos</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getEl</span><span class="o">(),</span> <span class="nx">newOffset</span><span class="o">,</span>
+            <span class="nx">myPos</span><span class="o">,</span><span class="nx">ppos</span><span class="o">,</span><span class="nx">l</span><span class="o">,</span><span class="nx">t</span><span class="o">,</span><span class="nx">deltaX</span><span class="o">,</span><span class="nx">deltaY</span><span class="o">,</span><span class="nx">newLeft</span><span class="o">,</span><span class="nx">newTop</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">deltaOffset</span><span class="o">)</span> <span class="o">{</span>
+
+            <span class="nx">myPos</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getXY</span><span class="o">(</span><span class="nx">el</span><span class="o">);</span>
+            <span class="nx">ppos</span>  <span class="o">=</span> <span class="nx">parentPos</span> <span class="o">||</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getXY</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">parentElId</span><span class="o">);</span>
+
+            <span class="nx">newOffset</span> <span class="o">=</span> <span class="o">[</span> <span class="o">(</span><span class="nx">myPos</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">-</span> <span class="nx">ppos</span><span class="o">[</span><span class="m">0</span><span class="o">]),</span> <span class="o">(</span><span class="nx">myPos</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">-</span> <span class="nx">ppos</span><span class="o">[</span><span class="m">1</span><span class="o">])</span> <span class="o">];</span>
+
+            <span class="nx">l</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;left&quot;</span><span class="o">),</span> <span class="m">10</span> <span class="o">);</span>
+            <span class="nx">t</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;top&quot;</span> <span class="o">),</span> <span class="m">10</span> <span class="o">);</span>
+
+            <span class="nx">deltaX</span> <span class="o">=</span> <span class="nx">l</span> <span class="o">-</span> <span class="nx">newOffset</span><span class="o">[</span><span class="m">0</span><span class="o">];</span>
+            <span class="nx">deltaY</span> <span class="o">=</span> <span class="nx">t</span> <span class="o">-</span> <span class="nx">newOffset</span><span class="o">[</span><span class="m">1</span><span class="o">];</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nb">isNaN</span><span class="o">(</span><span class="nx">deltaX</span><span class="o">)</span> <span class="o">||</span> <span class="nb">isNaN</span><span class="o">(</span><span class="nx">deltaY</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;element does not have a position style def yet&quot;</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">deltaOffset</span> <span class="o">=</span> <span class="o">[</span><span class="nx">deltaX</span><span class="o">,</span> <span class="nx">deltaY</span><span class="o">];</span>
+            <span class="o">}</span>
+
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">newLeft</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;left&quot;</span><span class="o">),</span> <span class="m">10</span> <span class="o">);</span>
+            <span class="nx">newTop</span>  <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;top&quot;</span> <span class="o">),</span> <span class="m">10</span> <span class="o">);</span>
+
+            <span class="nx">newOffset</span>  <span class="o">=</span> <span class="o">[</span><span class="nx">newLeft</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">deltaOffset</span><span class="o">[</span><span class="m">0</span><span class="o">],</span> <span class="nx">newTop</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">deltaOffset</span><span class="o">[</span><span class="m">1</span><span class="o">]];</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nx">newOffset</span><span class="o">;</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Set up the slider, must be called in the constructor of all subclasses</span>
+<span class="c">     * @method initSlider</span>
+<span class="c">     * @param {int} iLeft the number of pixels the element can move left</span>
+<span class="c">     * @param {int} iRight the number of pixels the element can move right</span>
+<span class="c">     * @param {int} iUp the number of pixels the element can move up</span>
+<span class="c">     * @param {int} iDown the number of pixels the element can move down</span>
+<span class="c">     * @param {int} iTickSize the width of the tick interval.</span>
+<span class="c">     */</span>
+    <span class="nx">initSlider</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">iLeft</span><span class="o">,</span> <span class="nx">iRight</span><span class="o">,</span> <span class="nx">iUp</span><span class="o">,</span> <span class="nx">iDown</span><span class="o">,</span> <span class="nx">iTickSize</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">initLeft</span> <span class="o">=</span> <span class="nx">iLeft</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">initRight</span> <span class="o">=</span> <span class="nx">iRight</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">initUp</span> <span class="o">=</span> <span class="nx">iUp</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">initDown</span> <span class="o">=</span> <span class="nx">iDown</span><span class="o">;</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="nx">setXConstraint</span><span class="o">(</span><span class="nx">iLeft</span><span class="o">,</span> <span class="nx">iRight</span><span class="o">,</span> <span class="nx">iTickSize</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setYConstraint</span><span class="o">(</span><span class="nx">iUp</span><span class="o">,</span> <span class="nx">iDown</span><span class="o">,</span> <span class="nx">iTickSize</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">iTickSize</span> <span class="o">&amp;&amp;</span> <span class="nx">iTickSize</span> <span class="o">&gt;</span> <span class="m">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_graduated</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="nx">_isHoriz</span>  <span class="o">=</span> <span class="o">(</span><span class="nx">iLeft</span> <span class="o">||</span> <span class="nx">iRight</span><span class="o">);</span> 
+        <span class="k">this</span><span class="o">.</span><span class="nx">_isVert</span>   <span class="o">=</span> <span class="o">(</span><span class="nx">iUp</span>   <span class="o">||</span> <span class="nx">iDown</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">_isRegion</span> <span class="o">=</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_isHoriz</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="nx">_isVert</span><span class="o">);</span> 
+
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Clear&#39;s the slider&#39;s ticks</span>
+<span class="c">     * @method clearTicks</span>
+<span class="c">     */</span>
+    <span class="nx">clearTicks</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">SliderThumb</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">clearTicks</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">tickSize</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">_graduated</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">},</span>
+
+
+    <span class="c">/**</span>
+<span class="c">     * Gets the current offset from the element&#39;s start position in</span>
+<span class="c">     * pixels.</span>
+<span class="c">     * @method getValue</span>
+<span class="c">     * @return {int} the number of pixels (positive or negative) the</span>
+<span class="c">     * slider has moved from the start position.</span>
+<span class="c">     */</span>
+    <span class="nx">getValue</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_isHoriz</span><span class="o">)</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="nx">getXValue</span><span class="o">()</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">getYValue</span><span class="o">();</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Gets the current X offset from the element&#39;s start position in</span>
+<span class="c">     * pixels.</span>
+<span class="c">     * @method getXValue</span>
+<span class="c">     * @return {int} the number of pixels (positive or negative) the</span>
+<span class="c">     * slider has moved horizontally from the start position.</span>
+<span class="c">     */</span>
+    <span class="nx">getXValue</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">available</span><span class="o">)</span> <span class="o">{</span> 
+            <span class="k">return</span> <span class="m">0</span><span class="o">;</span> 
+        <span class="o">}</span>
+        <span class="k">var</span> <span class="nx">newOffset</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getOffsetFromParent</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span><span class="o">(</span><span class="nx">newOffset</span><span class="o">[</span><span class="m">0</span><span class="o">]))</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">lastOffset</span> <span class="o">=</span> <span class="nx">newOffset</span><span class="o">;</span>
+            <span class="k">return</span> <span class="o">(</span><span class="nx">newOffset</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">startOffset</span><span class="o">[</span><span class="m">0</span><span class="o">]);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;can&#39;t get offset, using old value: &quot;</span> <span class="o">+</span> 
+                <span class="k">this</span><span class="o">.</span><span class="nx">lastOffset</span><span class="o">[</span><span class="m">0</span><span class="o">]);</span>
+            <span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">lastOffset</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">startOffset</span><span class="o">[</span><span class="m">0</span><span class="o">]);</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Gets the current Y offset from the element&#39;s start position in</span>
+<span class="c">     * pixels.</span>
+<span class="c">     * @method getYValue</span>
+<span class="c">     * @return {int} the number of pixels (positive or negative) the</span>
+<span class="c">     * slider has moved vertically from the start position.</span>
+<span class="c">     */</span>
+    <span class="nx">getYValue</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">available</span><span class="o">)</span> <span class="o">{</span> 
+            <span class="k">return</span> <span class="m">0</span><span class="o">;</span> 
+        <span class="o">}</span>
+        <span class="k">var</span> <span class="nx">newOffset</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getOffsetFromParent</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span><span class="o">(</span><span class="nx">newOffset</span><span class="o">[</span><span class="m">1</span><span class="o">]))</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">lastOffset</span> <span class="o">=</span> <span class="nx">newOffset</span><span class="o">;</span>
+            <span class="k">return</span> <span class="o">(</span><span class="nx">newOffset</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">startOffset</span><span class="o">[</span><span class="m">1</span><span class="o">]);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;can&#39;t get offset, using old value: &quot;</span> <span class="o">+</span> 
+                <span class="k">this</span><span class="o">.</span><span class="nx">lastOffset</span><span class="o">[</span><span class="m">1</span><span class="o">]);</span>
+            <span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">lastOffset</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">startOffset</span><span class="o">[</span><span class="m">1</span><span class="o">]);</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Thumb toString</span>
+<span class="c">     * @method toString</span>
+<span class="c">     * @return {string} string representation of the instance</span>
+<span class="c">     */</span>
+    <span class="nx">toString</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span> 
+        <span class="k">return</span> <span class="s2">&quot;SliderThumb &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">id</span><span class="o">;</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * The onchange event for the handle/thumb is delegated to the YAHOO.widget.Slider</span>
+<span class="c">     * instance it belongs to.</span>
+<span class="c">     * @method onChange</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">onChange</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">x</span><span class="o">,</span> <span class="nx">y</span><span class="o">)</span> <span class="o">{</span> 
+    <span class="o">}</span>
+
+<span class="o">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class="selected"><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.DualSlider.html" title="YAHOO.widget.DualSlider">YAHOO.widget.DualSlider</a></li>
+                                <li class=""><a href="YAHOO.widget.Slider.html" title="YAHOO.widget.Slider">YAHOO.widget.Slider</a></li>
+                                <li class=""><a href="YAHOO.widget.SliderThumb.html" title="YAHOO.widget.SliderThumb">YAHOO.widget.SliderThumb</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="DualSlider.js.html" title="DualSlider.js">DualSlider.js</a></li>
+                                <li class=""><a href="Slider.js.html" title="Slider.js">Slider.js</a></li>
+                                <li class="selected"><a href="SliderThumb.js.html" title="SliderThumb.js">SliderThumb.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.DualSlider", "name": "activeSlider", "url": "YAHOO.widget.DualSlider.html#property_activeSlider", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "animate", "url": "YAHOO.widget.Slider.html#property_animate", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "animationDuration", "url": "YAHOO.widget.Slider.html#property_animationDuration", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "b4MouseDown", "url": "YAHOO.widget.Slider.html#method_b4MouseDown", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "backgroundEnabled", "url": "YAHOO.widget.Slider.html#property_backgroundEnabled", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "baselinePos", "url": "YAHOO.widget.Slider.html#property_baselinePos", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Slider", "name": "_bindKeyEvents", "url": "YAHOO.widget.Slider.html#method__bindKeyEvents", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.DualSlider", "name": "_bindKeyEvents", "url": "YAHOO.widget.DualSlider.html#method__bindKeyEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "change", "url": "YAHOO.widget.Slider.html#event_change", "type": "event"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "change", "url": "YAHOO.widget.DualSlider.html#event_change", "type": "event"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "_cleanEvent", "url": "YAHOO.widget.DualSlider.html#method__cleanEvent", "type": "method"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "clearTicks", "url": "YAHOO.widget.SliderThumb.html#method_clearTicks", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "dragOnly", "url": "YAHOO.widget.Slider.html#property_dragOnly", "type": "property"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "dragOnly", "url": "YAHOO.widget.SliderThumb.html#property_dragOnly", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "enableKeys", "url": "YAHOO.widget.Slider.html#property_enableKeys", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "endMove", "url": "YAHOO.widget.Slider.html#method_endMove", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "fireEvents", "url": "YAHOO.widget.Slider.html#method_fireEvents", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "focus", "url": "YAHOO.widget.Slider.html#method_focus", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "_getNextX", "url": "YAHOO.widget.Slider.html#method__getNextX", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "_getNextY", "url": "YAHOO.widget.Slider.html#method__getNextY", "type": "method"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "getOffsetFromParent", "url": "YAHOO.widget.SliderThumb.html#method_getOffsetFromParent", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "getThumb", "url": "YAHOO.widget.Slider.html#method_getThumb", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "getValue", "url": "YAHOO.widget.Slider.html#method_getValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "getValue", "url": "YAHOO.widget.SliderThumb.html#method_getValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "getXValue", "url": "YAHOO.widget.Slider.html#method_getXValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "getXValue", "url": "YAHOO.widget.SliderThumb.html#method_getXValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "getYValue", "url": "YAHOO.widget.Slider.html#method_getYValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "getYValue", "url": "YAHOO.widget.SliderThumb.html#method_getYValue", "type": "method"}, {"access": "private", "host": "YAHOO.widget.SliderThumb", "name": "_graduated", "url": "YAHOO.widget.SliderThumb.html#property__graduated", "type": "property"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "_handleDrag", "url": "YAHOO.widget.DualSlider.html#method__handleDrag", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "handleKeyDown", "url": "YAHOO.widget.Slider.html#method_handleKeyDown", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.DualSlider", "name": "_handleKeyDown", "url": "YAHOO.widget.DualSlider.html#method__handleKeyDown", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "handleKeyPress", "url": "YAHOO.widget.Slider.html#method_handleKeyPress", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.DualSlider", "name": "_handleKeyPress", "url": "YAHOO.widget.DualSlider.html#method__handleKeyPress", "type": "method"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "_handleMaxChange", "url": "YAHOO.widget.DualSlider.html#method__handleMaxChange", "type": "method"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "_handleMinChange", "url": "YAHOO.widget.DualSlider.html#method__handleMinChange", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.DualSlider", "name": "_handleMouseDown", "url": "YAHOO.widget.DualSlider.html#method__handleMouseDown", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.DualSlider", "name": "_handleMouseUp", "url": "YAHOO.widget.DualSlider.html#method__handleMouseUp", "type": "method"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "_handleSlideEnd", "url": "YAHOO.widget.DualSlider.html#method__handleSlideEnd", "type": "method"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "_handleSlideStart", "url": "YAHOO.widget.DualSlider.html#method__handleSlideStart", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "initSlider", "url": "YAHOO.widget.Slider.html#method_initSlider", "type": "method"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "initSlider", "url": "YAHOO.widget.SliderThumb.html#method_initSlider", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "initThumb", "url": "YAHOO.widget.Slider.html#method_initThumb", "type": "method"}, {"access": "private", "host": "YAHOO.widget.SliderThumb", "name": "_isHoriz", "url": "YAHOO.widget.SliderThumb.html#property__isHoriz", "type": "property"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "isHoriz", "url": "YAHOO.widget.DualSlider.html#property_isHoriz", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "isTarget", "url": "YAHOO.widget.Slider.html#property_isTarget", "type": "property"}, {"access": "private", "host": "YAHOO.widget.SliderThumb", "name": "isTarget", "url": "YAHOO.widget.SliderThumb.html#property_isTarget", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "keyIncrement", "url": "YAHOO.widget.Slider.html#property_keyIncrement", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "lastOffset", "url": "YAHOO.widget.Slider.html#property_lastOffset", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "lock", "url": "YAHOO.widget.Slider.html#method_lock", "type": "method"}, {"access": "private", "host": "YAHOO.widget.SliderThumb", "name": "maintainOffset", "url": "YAHOO.widget.SliderThumb.html#property_maintainOffset", "type": "property"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "maxSlider", "url": "YAHOO.widget.DualSlider.html#property_maxSlider", "type": "property"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "maxVal", "url": "YAHOO.widget.DualSlider.html#property_maxVal", "type": "property"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "minRange", "url": "YAHOO.widget.DualSlider.html#property_minRange", "type": "property"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "minSlider", "url": "YAHOO.widget.DualSlider.html#property_minSlider", "type": "property"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "minVal", "url": "YAHOO.widget.DualSlider.html#property_minVal", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "_mouseDown", "url": "YAHOO.widget.Slider.html#property__mouseDown", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "moveComplete", "url": "YAHOO.widget.Slider.html#property_moveComplete", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "moveOneTick", "url": "YAHOO.widget.Slider.html#method_moveOneTick", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "moveThumb", "url": "YAHOO.widget.Slider.html#method_moveThumb", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "onAvailable", "url": "YAHOO.widget.Slider.html#method_onAvailable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "onChange", "url": "YAHOO.widget.Slider.html#method_onChange", "type": "method"}, {"access": "private", "host": "YAHOO.widget.SliderThumb", "name": "onChange", "url": "YAHOO.widget.SliderThumb.html#method_onChange", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "onDrag", "url": "YAHOO.widget.Slider.html#method_onDrag", "type": "method"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "_oneTimeCallback", "url": "YAHOO.widget.DualSlider.html#method__oneTimeCallback", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "onMouseDown", "url": "YAHOO.widget.Slider.html#method_onMouseDown", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "onSliderEnd", "url": "YAHOO.widget.Slider.html#method_onSliderEnd", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "onSlideStart", "url": "YAHOO.widget.Slider.html#method_onSlideStart", "type": "method"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "parentElId", "url": "YAHOO.widget.SliderThumb.html#property_parentElId", "type": "property"}, {"access": "private", "host": "YAHOO.widget.SliderThumb", "name": "_prevVal", "url": "YAHOO.widget.SliderThumb.html#property__prevVal", "type": "property"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "ready", "url": "YAHOO.widget.DualSlider.html#event_ready", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Slider", "name": "resetThumbConstraints", "url": "YAHOO.widget.Slider.html#method_resetThumbConstraints", "type": "method"}, {"access": "private", "host": "YAHOO.widget.SliderThumb", "name": "scroll", "url": "YAHOO.widget.SliderThumb.html#property_scroll", "type": "property"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "selectActiveSlider", "url": "YAHOO.widget.DualSlider.html#method_selectActiveSlider", "type": "method"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "setMaxValue", "url": "YAHOO.widget.DualSlider.html#method_setMaxValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "setMinValue", "url": "YAHOO.widget.DualSlider.html#method_setMinValue", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Slider", "name": "_setRegionValue", "url": "YAHOO.widget.Slider.html#method__setRegionValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "setRegionValue", "url": "YAHOO.widget.Slider.html#method_setRegionValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "setStartSliderState", "url": "YAHOO.widget.Slider.html#method_setStartSliderState", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "setThumbCenterPoint", "url": "YAHOO.widget.Slider.html#method_setThumbCenterPoint", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Slider", "name": "_setValue", "url": "YAHOO.widget.Slider.html#method__setValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "setValue", "url": "YAHOO.widget.Slider.html#method_setValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "setValues", "url": "YAHOO.widget.DualSlider.html#method_setValues", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "_silent", "url": "YAHOO.widget.Slider.html#property__silent", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "slideEnd", "url": "YAHOO.widget.Slider.html#event_slideEnd", "type": "event"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "slideEnd", "url": "YAHOO.widget.DualSlider.html#event_slideEnd", "type": "event"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "Slider.ANIM_AVAIL", "url": "YAHOO.widget.Slider.html#property_Slider.ANIM_AVAIL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "Slider.SOURCE_KEY_EVENT", "url": "YAHOO.widget.Slider.html#property_Slider.SOURCE_KEY_EVENT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "Slider.SOURCE_SET_VALUE", "url": "YAHOO.widget.Slider.html#property_Slider.SOURCE_SET_VALUE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "Slider.SOURCE_UI_EVENT", "url": "YAHOO.widget.Slider.html#property_Slider.SOURCE_UI_EVENT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "slideStart", "url": "YAHOO.widget.Slider.html#event_slideStart", "type": "event"}, {"access": "", "host": "YAHOO.widget.DualSlider", "name": "slideStart", "url": "YAHOO.widget.DualSlider.html#event_slideStart", "type": "event"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "SOURCE_SET_VALUE", "url": "YAHOO.widget.Slider.html#property_SOURCE_SET_VALUE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "SOURCE_UI_EVENT", "url": "YAHOO.widget.Slider.html#property_SOURCE_UI_EVENT", "type": "property"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "startOffset", "url": "YAHOO.widget.SliderThumb.html#property_startOffset", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "thumb", "url": "YAHOO.widget.Slider.html#property_thumb", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "thumbCenterPoint", "url": "YAHOO.widget.Slider.html#property_thumbCenterPoint", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Slider", "name": "thumbMouseUp", "url": "YAHOO.widget.Slider.html#method_thumbMouseUp", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "tickPause", "url": "YAHOO.widget.Slider.html#property_tickPause", "type": "property"}, {"access": "private", "host": "YAHOO.widget.SliderThumb", "name": "tickSize", "url": "YAHOO.widget.SliderThumb.html#property_tickSize", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "toString", "url": "YAHOO.widget.Slider.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.SliderThumb", "name": "toString", "url": "YAHOO.widget.SliderThumb.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "type", "url": "YAHOO.widget.Slider.html#property_type", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "unlock", "url": "YAHOO.widget.Slider.html#method_unlock", "type": "method"}, {"access": "private", "host": "YAHOO.widget.DualSlider", "name": "updateValue", "url": "YAHOO.widget.DualSlider.html#method_updateValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "valueChangeSource", "url": "YAHOO.widget.Slider.html#property_valueChangeSource", "type": "property"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "verifyOffset", "url": "YAHOO.widget.Slider.html#method_verifyOffset", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "YAHOO.widget.Slider.getHorizDualSlider", "url": "YAHOO.widget.Slider.html#method_YAHOO.widget.Slider.getHorizDualSlider", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "YAHOO.widget.Slider.getHorizSlider", "url": "YAHOO.widget.Slider.html#method_YAHOO.widget.Slider.getHorizSlider", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "YAHOO.widget.Slider.getSliderRegion", "url": "YAHOO.widget.Slider.html#method_YAHOO.widget.Slider.getSliderRegion", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "YAHOO.widget.Slider.getVertDualSlider", "url": "YAHOO.widget.Slider.html#method_YAHOO.widget.Slider.getVertDualSlider", "type": "method"}, {"access": "", "host": "YAHOO.widget.Slider", "name": "YAHOO.widget.Slider.getVertSlider", "url": "YAHOO.widget.Slider.html#method_YAHOO.widget.Slider.getVertSlider", "type": "method"}];
+</script>
+</body>
+</html>

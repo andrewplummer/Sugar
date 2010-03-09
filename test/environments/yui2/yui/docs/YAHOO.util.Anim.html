@@ -1,0 +1,1295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: animation  YAHOO.util.Anim   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>animation&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_animation.html" title="animation">animation</a>
+                 &gt; YAHOO.util.Anim 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.util.Anim</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                        <dl class="subclasses" rel="yui:subclasses">
+                            <dt>Known Subclasses:</dt>
+                            <dd>
+                                    <span rel="yui:subclass" resource="YAHOO.util.ColorAnim.html">
+                                    <a href="YAHOO.util.ColorAnim.html" property="yui:name" title="YAHOO.util.ColorAnim">YAHOO.util.ColorAnim</a>
+                                    </span>
+                            </dd>
+                       </dl>
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Base animation class that provides the interface for building animated effects.
+<p>Usage: var myAnim = new YAHOO.util.Anim(el, { width: { from: 10, to: 100 } }, 1, YAHOO.util.Easing.easeOut);</p>
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.util.Anim</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                el
+
+                                                , 
+                                                attributes
+
+                                                , 
+                                                duration
+
+                                                , 
+                                                method
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">el</span>
+                                                    &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> Reference to the element that will be animated</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">attributes</span>
+                                                    &lt;<span property="yui:type">Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The attribute(s) to be animated.  
+Each attribute is an object with at minimum a "to" or "by" member defined.  
+Additional optional members are "from" (defaults to current value), "units" (defaults to "px").  
+All attribute names use camelCase.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">duration</span>
+                                                    &lt;<span property="yui:type">Number</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> (optional, defaults to 1 second) Length of animation (frames or seconds), defaults to time-based</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">method</span>
+                                                    &lt;<span property="yui:type">Function</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> (optional, defaults to YAHOO.util.Easing.easeNone) Computes the values that are applied to the attributes per frame (generally a YAHOO.util.Easing method)</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__onComplete">
+                                    <h4><a name="property__onComplete" property="yui:name">_onComplete</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Custom event that fires after onComplete
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__onStart">
+                                    <h4><a name="property__onStart" property="yui:name">_onStart</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Custom event that fires after onStart, useful in subclassing
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__onTween">
+                                    <h4><a name="property__onTween" property="yui:name">_onTween</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Custom event that fires after onTween
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_actualFrames">
+                                    <h4><a name="property_actualFrames" property="yui:name">actualFrames</a>
+                                        - <code>private <span property="yui:type">Int</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The number of frames this animation was able to execute.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_attributes">
+                                    <h4><a name="property_attributes" property="yui:name">attributes</a>
+                                        - <code><span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The collection of attributes to be animated.  
+Each attribute must have at least a "to" or "by" defined in order to animate.  
+If "to" is supplied, the animation will end with the attribute at that value.  
+If "by" is supplied, the animation will end at that value plus its starting value. 
+If both are supplied, "to" is used, and "by" is ignored. 
+Optional additional member include "from" (the value the attribute should start animating from, defaults to current value), and "unit" (the units to apply to the values).
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_currentFrame">
+                                    <h4><a name="property_currentFrame" property="yui:name">currentFrame</a>
+                                        - <code><span property="yui:type">Int</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The location of the current animation on the timeline.
+In time-based animations, this is used by AnimMgr to ensure the animation finishes on time.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_duration">
+                                    <h4><a name="property_duration" property="yui:name">duration</a>
+                                        - <code><span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The length of the animation.  Defaults to "1" (second).
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_el">
+                                    <h4><a name="property_el" property="yui:name">el</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The element to be animated.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_isAnimated">
+                                    <h4><a name="property_isAnimated" property="yui:name">isAnimated</a>
+                                        - <code>private <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Whether or not the animation is running.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_method">
+                                    <h4><a name="property_method" property="yui:name">method</a>
+                                        - <code><span property="yui:type">Function</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The method that will provide values to the attribute(s) during the animation. 
+Defaults to "YAHOO.util.Easing.easeNone".
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_startTime">
+                                    <h4><a name="property_startTime" property="yui:name">startTime</a>
+                                        - <code>private <span property="yui:type">Date</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A Date object that is created when the animation begins.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_totalFrames">
+                                    <h4><a name="property_totalFrames" property="yui:name">totalFrames</a>
+                                        - <code><span property="yui:type">Int</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The total number of frames to be executed.
+In time-based animations, this is used by AnimMgr to ensure the animation finishes on time.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_useSeconds">
+                                    <h4><a name="property_useSeconds" property="yui:name">useSeconds</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Whether or not the duration should be treated as seconds.
+Defaults to true.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:method" resource="#method_animate">
+                                    <h4>
+                                        <a name="method_animate">animate</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">animate</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Starts the animation by registering it with the animation manager.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_doMethod">
+                                    <h4>
+                                        <a name="method_doMethod">doMethod</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">doMethod</strong>
+                                           (
+                                                
+                                                        
+                                                         attr
+                                                    
+                                                
+                                                        , 
+                                                         start
+                                                    
+                                                
+                                                        , 
+                                                         end
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the value computed by the animation's "method".
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The name of the attribute.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">start</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The value this attribute should start from for this animation.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">end</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The value this attribute should end at for this animation.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The Value to be applied to the attribute.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getAttribute">
+                                    <h4>
+                                        <a name="method_getAttribute">getAttribute</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">getAttribute</strong>
+                                           (
+                                                
+                                                        
+                                                         attr
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns current value of the attribute.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The name of the attribute.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">val The current value of the attribute.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getDefaultUnit">
+                                    <h4>
+                                        <a name="method_getDefaultUnit">getDefaultUnit</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">getDefaultUnit</strong>
+                                           (
+                                                
+                                                        
+                                                         attr
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the unit to use when none is supplied.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">attr</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The name of the attribute.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The default unit to be used.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getEl">
+                                    <h4>
+                                        <a name="method_getEl">getEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">getEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a reference to the animated element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getStartTime">
+                                    <h4>
+                                        <a name="method_getStartTime">getStartTime</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Date
+                                            <strong property="yui:name">getStartTime</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the animation start time.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Date
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">current value of startTime.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_init">
+                                    <h4>
+                                        <a name="method_init">init</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">init</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         attributes
+                                                    
+                                                
+                                                        , 
+                                                         duration
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Constructor for Anim instance.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Reference to the element that will be animated</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attributes</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The attribute(s) to be animated.  
+Each attribute is an object with at minimum a "to" or "by" member defined.  
+Additional optional members are "from" (defaults to current value), "units" (defaults to "px").  
+All attribute names use camelCase.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">duration</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional, defaults to 1 second) Length of animation (frames or seconds), defaults to time-based</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional, defaults to YAHOO.util.Easing.easeNone) Computes the values that are applied to the attributes per frame (generally a YAHOO.util.Easing method)</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_isAnimated">
+                                    <h4>
+                                        <a name="method_isAnimated">isAnimated</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">isAnimated</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Checks whether the element is currently animated.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">current value of isAnimated.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_onTween">
+                                    <h4>
+                                        <a name="method_onTween">onTween</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onTween</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Feeds the starting and ending values for each animated attribute to doMethod once per frame, then applies the resulting value to the attribute(s).
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setAttribute">
+                                    <h4>
+                                        <a name="method_setAttribute">setAttribute</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setAttribute</strong>
+                                           (
+                                                
+                                                        
+                                                         attr
+                                                    
+                                                
+                                                        , 
+                                                         val
+                                                    
+                                                
+                                                        , 
+                                                         unit
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Applies a value to an attribute.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The name of the attribute.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">val</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The value to be applied to the attribute.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">unit</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The unit ('px', '%', etc.) of the value.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setEl">
+                                    <h4>
+                                        <a name="method_setEl">setEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Changes the animated element
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_setRuntimeAttribute">
+                                    <h4>
+                                        <a name="method_setRuntimeAttribute">setRuntimeAttribute</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setRuntimeAttribute</strong>
+                                           (
+                                                
+                                                        
+                                                         attr
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the actual values to be used during the animation.  Should only be needed for subclass use.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The attribute object</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_stop">
+                                    <h4>
+                                        <a name="method_stop">stop</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">stop</strong>
+                                           (
+                                                
+                                                        
+                                                         finish
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Stops the animation.  Normally called by AnimMgr when animation completes.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">finish</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) If true, animation will jump to final frame.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Provides a readable name for the Anim instance.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_onComplete">
+                                    <h4>
+                                        <a name="event_onComplete">onComplete</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">onComplete</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Custom event that fires when animation ends
+Listen via subscribe method (e.g. myAnim.onComplete.subscribe(someFunction)
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_onStart">
+                                    <h4>
+                                        <a name="event_onStart">onStart</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">onStart</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Custom event that fires when animation begins
+Listen via subscribe method (e.g. myAnim.onStart.subscribe(someFunction)
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_onTween">
+                                    <h4>
+                                        <a name="event_onTween">onTween</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">onTween</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Custom event that fires between each frame
+Listen via subscribe method (e.g. myAnim.onTween.subscribe(someFunction)
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="YAHOO.util.Anim.html" title="YAHOO.util.Anim">YAHOO.util.Anim</a></li>
+                                <li class=""><a href="YAHOO.util.AnimMgr.html" title="YAHOO.util.AnimMgr">YAHOO.util.AnimMgr</a></li>
+                                <li class=""><a href="YAHOO.util.Bezier.html" title="YAHOO.util.Bezier">YAHOO.util.Bezier</a></li>
+                                <li class=""><a href="YAHOO.util.ColorAnim.html" title="YAHOO.util.ColorAnim">YAHOO.util.ColorAnim</a></li>
+                                <li class=""><a href="YAHOO.util.Easing.html" title="YAHOO.util.Easing">YAHOO.util.Easing</a></li>
+                                <li class=""><a href="YAHOO.util.Motion.html" title="YAHOO.util.Motion">YAHOO.util.Motion</a></li>
+                                <li class=""><a href="YAHOO.util.Scroll.html" title="YAHOO.util.Scroll">YAHOO.util.Scroll</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Anim.js.html" title="Anim.js">Anim.js</a></li>
+                                <li class=""><a href="AnimMgr.js.html" title="AnimMgr.js">AnimMgr.js</a></li>
+                                <li class=""><a href="Bezier.js.html" title="Bezier.js">Bezier.js</a></li>
+                                <li class=""><a href="ColorAnim.js.html" title="ColorAnim.js">ColorAnim.js</a></li>
+                                <li class=""><a href="Easing.js.html" title="Easing.js">Easing.js</a></li>
+                                <li class=""><a href="Motion.js.html" title="Motion.js">Motion.js</a></li>
+                                <li class=""><a href="Scroll.js.html" title="Scroll.js">Scroll.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__onComplete" title="_onComplete">_onComplete</a></li>
+                                <li class="private"><a href="#property__onStart" title="_onStart">_onStart</a></li>
+                                <li class="private"><a href="#property__onTween" title="_onTween">_onTween</a></li>
+                                <li class="private"><a href="#property_actualFrames" title="actualFrames">actualFrames</a></li>
+                                <li class=""><a href="#property_attributes" title="attributes">attributes</a></li>
+                                <li class=""><a href="#property_currentFrame" title="currentFrame">currentFrame</a></li>
+                                <li class=""><a href="#property_duration" title="duration">duration</a></li>
+                                <li class="private"><a href="#property_el" title="el">el</a></li>
+                                <li class="private"><a href="#property_isAnimated" title="isAnimated">isAnimated</a></li>
+                                <li class=""><a href="#property_method" title="method">method</a></li>
+                                <li class="private"><a href="#property_startTime" title="startTime">startTime</a></li>
+                                <li class=""><a href="#property_totalFrames" title="totalFrames">totalFrames</a></li>
+                                <li class=""><a href="#property_useSeconds" title="useSeconds">useSeconds</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#method_animate" title="animate">animate</a></li>
+                                <li class=""><a href="#method_doMethod" title="doMethod">doMethod</a></li>
+                                <li class=""><a href="#method_getAttribute" title="getAttribute">getAttribute</a></li>
+                                <li class=""><a href="#method_getDefaultUnit" title="getDefaultUnit">getDefaultUnit</a></li>
+                                <li class=""><a href="#method_getEl" title="getEl">getEl</a></li>
+                                <li class=""><a href="#method_getStartTime" title="getStartTime">getStartTime</a></li>
+                                <li class=""><a href="#method_init" title="init">init</a></li>
+                                <li class=""><a href="#method_isAnimated" title="isAnimated">isAnimated</a></li>
+                                <li class="private"><a href="#method_onTween" title="onTween">onTween</a></li>
+                                <li class=""><a href="#method_setAttribute" title="setAttribute">setAttribute</a></li>
+                                <li class=""><a href="#method_setEl" title="setEl">setEl</a></li>
+                                <li class="private"><a href="#method_setRuntimeAttribute" title="setRuntimeAttribute">setRuntimeAttribute</a></li>
+                                <li class=""><a href="#method_stop" title="stop">stop</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_onComplete" title="onComplete">onComplete</a></li>
+                                <li class=""><a href="#event_onStart" title="onStart">onStart</a></li>
+                                <li class=""><a href="#event_onTween" title="onTween">onTween</a></li>
+                        </ul>
+                    </div>
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.util.Anim", "name": "actualFrames", "url": "YAHOO.util.Anim.html#property_actualFrames", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "animate", "url": "YAHOO.util.Anim.html#method_animate", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "attributes", "url": "YAHOO.util.Anim.html#property_attributes", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "currentFrame", "url": "YAHOO.util.Anim.html#property_currentFrame", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "doMethod", "url": "YAHOO.util.Anim.html#method_doMethod", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "duration", "url": "YAHOO.util.Anim.html#property_duration", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "el", "url": "YAHOO.util.Anim.html#property_el", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getAttribute", "url": "YAHOO.util.Anim.html#method_getAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getDefaultUnit", "url": "YAHOO.util.Anim.html#method_getDefaultUnit", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getEl", "url": "YAHOO.util.Anim.html#method_getEl", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getStartTime", "url": "YAHOO.util.Anim.html#method_getStartTime", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "init", "url": "YAHOO.util.Anim.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "isAnimated", "url": "YAHOO.util.Anim.html#property_isAnimated", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "isAnimated", "url": "YAHOO.util.Anim.html#method_isAnimated", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "method", "url": "YAHOO.util.Anim.html#property_method", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onComplete", "url": "YAHOO.util.Anim.html#property__onComplete", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onComplete", "url": "YAHOO.util.Anim.html#event_onComplete", "type": "event"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onStart", "url": "YAHOO.util.Anim.html#property__onStart", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onStart", "url": "YAHOO.util.Anim.html#event_onStart", "type": "event"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onTween", "url": "YAHOO.util.Anim.html#property__onTween", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "onTween", "url": "YAHOO.util.Anim.html#method_onTween", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onTween", "url": "YAHOO.util.Anim.html#event_onTween", "type": "event"}, {"access": "", "host": "YAHOO.util.Anim", "name": "setAttribute", "url": "YAHOO.util.Anim.html#method_setAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "setEl", "url": "YAHOO.util.Anim.html#method_setEl", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "setRuntimeAttribute", "url": "YAHOO.util.Anim.html#method_setRuntimeAttribute", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "startTime", "url": "YAHOO.util.Anim.html#property_startTime", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "stop", "url": "YAHOO.util.Anim.html#method_stop", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "toString", "url": "YAHOO.util.Anim.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "totalFrames", "url": "YAHOO.util.Anim.html#property_totalFrames", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "useSeconds", "url": "YAHOO.util.Anim.html#property_useSeconds", "type": "property"}];
+</script>
+</body>
+</html>

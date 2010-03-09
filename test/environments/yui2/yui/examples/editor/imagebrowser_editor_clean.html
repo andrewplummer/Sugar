@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Editor with Custom Image Browser</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/editor/editor-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Editor with Custom Image Browser</h1>
+
+<div class="exampleIntro">
+	<p>This example will show how to open an "Image Browser" for the YUI Rich Text Editor.</p>
+<p><strong>Note</strong>: The "Image Browser" window will probably be blocked by your popup blocker.</p>
+<p>Now, click on the "Insert Image" icon (the one outlined in blue) to see the "Image Browser" window.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style type="text/css" media="screen">
+    #msgpost_container span.yui-toolbar-insertimage, #msgpost_container span.yui-toolbar-insertimage span.first-child {
+        border-color: blue;
+    }
+</style>
+
+<textarea id="msgpost">This is a test</textarea>
+
+<script type="text/javascript">
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        win = null;
+
+    var myEditor = new YAHOO.widget.Editor('msgpost', {
+        height: '300px',
+        width: '600px',
+        dompath: true, //Turns on the bar at the bottom
+        animate: true //Animates the opening, closing and moving of Editor windows
+    });
+    myEditor.on('toolbarLoaded', function() {
+        //When the toolbar is loaded, add a listener to the insertimage button
+        this.toolbar.on('insertimageClick', function() {
+            //Get the selected element
+            var _sel = this._getSelectedElement();
+            //If the selected element is an image, do the normal thing so they can manipulate the image
+            if (_sel && _sel.tagName && (_sel.tagName.toLowerCase() == 'img')) {
+                //Do the normal thing here..
+            } else {
+                //They don't have a selected image, open the image browser window
+                win = window.open('assets/browser.php', 'IMAGE_BROWSER', 'left=20,top=20,width=500,height=500,toolbar=0,resizable=0,status=0');
+                if (!win) {
+                    //Catch the popup blocker
+                    alert('Please disable your popup blocker!!');
+                }
+                //This is important.. Return false here to not fire the rest of the listeners
+                return false;
+            }
+        }, this, true);
+    }, myEditor, true);
+    myEditor.on('afterOpenWindow', function() {
+        //When the window opens, disable the url of the image so they can't change it
+        var url = Dom.get(myEditor.get('id') + '_insertimage_url');
+        if (url) {
+            url.disabled = true;
+        }
+    }, myEditor, true);
+    myEditor.render();
+
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

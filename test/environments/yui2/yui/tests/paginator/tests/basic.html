@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+<head>
+    <title>Paginator Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/paginator/assets/skins/sam/paginator.css">
+    <style type="text/css" class="highlight-ignore">
+        h1 {
+            font: normal 125%/1.4 Arial, sans-serif;
+        }
+        .yui-log {
+            display: inline;
+            float: right;
+            position: relative;
+        }
+        .yui-log .yui-log-bd {
+            height: 525px;
+        }
+        .highlight-example {
+            display: inline;
+            float: left;
+            width: 650px;
+        }
+        .highlight-example h2 {
+            display: none;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<h1>Paginator Tests</h1>
+<input type="button" id="go" value="recordOffset -= 3">
+<input type="button" id="del" value="totalRecords -= 3">
+<input type="button" id="add" value="totalRecords += 3">
+<div id="log"></div>
+<div id="ex"></div>
+<div id="testbed"></div>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="../../../build/element/element-debug.js"></script>
+<script type="text/javascript" src="../../../build/paginator/paginator-debug.js"></script>
+<script type="text/javascript">
+(function () {
+
+var t = YAHOO.tool,
+    u = YAHOO.util,
+    TestSuite   = t.TestSuite,
+    TestCase    = t.TestCase,
+    TestLogger  = t.TestLogger,
+    TestRunner  = t.TestRunner,
+    Event       = u.Event,
+    Dom         = u.Dom,
+    Assert      = u.Assert,
+    AAssert     = u.ArrayAssert,
+    OAssert     = u.ObjectAssert,
+    Paginator   = YAHOO.widget.Paginator,
+    testbed     = Dom.get('testbed'),
+    suite;
+
+suite = new TestSuite("Paginator Tests");
+
+suite.add(new TestCase({
+    name : "Construction",
+
+    testNoParams : function () {
+        this.paginator = new YAHOO.widget.Paginator();
+        Assert.isInstanceOf(YAHOO.widget.Paginator,this.paginator,"Constructor did not return a Paginator instance");
+        Assert.areSame(0,this.paginator.get('rowsPerPage'),"rowsPerPage attribute value did not default to 0");
+    },
+
+    testRowsPerPage : function () {
+        this.paginator = new YAHOO.widget.Paginator({ rowsPerPage : 10 });
+        Assert.isInstanceOf(YAHOO.widget.Paginator,this.paginator,"Constructor did not return a Paginator instance");
+        Assert.areSame(10,this.paginator.get('rowsPerPage'),"rowsPerPage assignment in constructor did not take");
+        Assert.areSame(0,this.paginator.get('totalRecords'),"totalRecords did not default to 0");
+    }
+}));
+
+suite.add(new TestCase({
+    name : "Render",
+
+    setUp : function () {
+        this.paginator = new YAHOO.widget.Paginator({
+            rowsPerPage : 10,
+            totalRecords : 50
+        });
+    },
+
+    tearDown : function () {
+        if (this.paginator && this.paginator.destroy) {
+            this.paginator.destroy();
+        }
+        Event.purgeElement(testbed);
+        testbed.innerHTML = '';
+    },
+
+    testRender : function () {
+        testbed.innerHTML = '';
+        Assert.areEqual("",testbed.innerHTML);
+
+        this.paginator.set('containers',[testbed]);
+        this.paginator.render();
+
+        Assert.areSame(true,this.paginator.get('rendered'));
+        Assert.areNotEqual("",testbed.innerHTML);
+    },
+
+    testMultipleContainers : function () {
+    }
+}));
+
+suite.add(new TestCase({
+    name : "Templates",
+
+    setUp : function () {
+        this.paginator = new YAHOO.widget.Paginator({
+            rowsPerPage : 10,
+            totalRecords : 50
+        });
+    },
+
+    tearDown : function () {
+        if (this.paginator && this.paginator.destroy) {
+            this.paginator.destroy();
+        }
+        Event.purgeElement(testbed);
+        testbed.innerHTML = '';
+    },
+
+    testDefaultTemplate : function () {
+    },
+
+    testRPPTemplate : function () {
+    },
+
+    testChangePropagatesToComponents : function () {
+    }
+}));
+
+/*
+Needed tests
+page links - current is centered
+first/next deactivated when on 1
+*/
+YAHOO.util.Event.onDOMReady(function () {
+
+    var logger = new TestLogger("log");
+    logger.hideCategory('info');
+
+    var p = new YAHOO.widget.Paginator({
+        rowsPerPage   :17,
+        totalRecords  :10,
+        containers    :'ex',
+        template      : YAHOO.widget.Paginator.TEMPLATE_ROWS_PER_PAGE,
+        pageLinks     : 5,
+        rowsPerPageOptions : [10,17,33],
+        alwaysVisible : false
+    });
+    p.subscribe('changeRequest', function (state) {
+        this.setState(state);
+    });
+    p.subscribe('totalRecordsChange',function (e) {
+        if (window.console) {
+            console.log("totalRecords changed from "+e.prevValue+" to "+e.newValue);
+        }
+    });
+    p.subscribe('pageChange',function (e) {
+        if (window.console) {
+            console.log("Page changed from "+e.prevValue+" to page "+e.newValue);
+        }
+    });
+    p.render();
+
+
+    YAHOO.util.Event.on('go','click',function (e) {
+        YAHOO.util.Event.preventDefault(e);
+
+        p.set('recordOffset',Math.max(0,p.get('recordOffset') - 3));
+    });
+    YAHOO.util.Event.on('del','click',function (e) {
+        YAHOO.util.Event.preventDefault(e);
+
+        p.set('totalRecords',Math.max(0,p.get('totalRecords') - 3));
+    });
+    YAHOO.util.Event.on('add','click',function (e) {
+        YAHOO.util.Event.preventDefault(e);
+
+        p.set('totalRecords',p.get('totalRecords') + 3);
+    });
+
+    TestRunner.add(suite);
+
+    TestRunner.run();
+});
+
+})();
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js"></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

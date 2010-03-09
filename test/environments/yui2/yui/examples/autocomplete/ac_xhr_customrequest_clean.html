@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Customizing Remote Requests</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+label {
+    color:#E76300;
+    font-weight:bold;
+}
+#myAutoComplete {
+    width:40em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Customizing Remote Requests</h1>
+
+<div class="exampleIntro">
+	<p>This AutoComplete implementation points to the Yahoo! Search webservice using an XHRDataSource. Since the third-party API requires certain application-specific paramaters to be passed in, the generateRequest() method has been redefined to append these special values. The <code>queryDelay</code> paramater has been increased to account for the large data payload returned by the Yahoo! Search webservice, so as to reduce throttle client-side processing.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<label for="myInput">Yahoo! Search:</label>
+<div id="myAutoComplete">
+	<input id="myInput" type="text">
+	<div id="myContainer"></div>
+</div>
+
+<script type="text/javascript">
+YAHOO.example.RemoteCustomRequest = function() {
+    // Use an XHRDataSource
+    var oDS = new YAHOO.util.XHRDataSource("assets/php/ysearch_proxy.php");
+    // Set the responseType
+    oDS.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
+    // Define the schema of the JSON results
+    oDS.responseSchema = {
+        resultsList : "ResultSet.Result",
+        fields : ["Title"]
+    };
+
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("myInput", "myContainer", oDS);
+    // Throttle requests sent
+    oAC.queryDelay = .5;
+    // The webservice needs additional parameters
+    oAC.generateRequest = function(sQuery) {
+        return "?output=json&results=100&query=" + sQuery ;
+    };
+    
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+}();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

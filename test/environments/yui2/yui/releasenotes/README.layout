@@ -1,0 +1,43 @@
+**** version 2.8.0 ****
+    * 2528175 - Resize event of a layout is fired twice when using the resize handles
+	* 2527868 - top panel's header always displayed in a layout in IE7
+	* 2527803 - Example: Simple Application broken on IE7
+	* 2527706 - Can't set maxHeight/maxWidth after creation
+
+
+**** version 2.7.0 ****
+
+    * 1940339 - Add resizing class to center unit whilst resizing
+    * 2144192 - !!!)double "_rendered" instead of "_unit" prop def
+    * 2481958 - Typos in Layout Manager API docs
+    * 2481962 - Getting Started sample code
+    * 2511189 - _rendered property found twice 
+
+**** version 2.6.0 ****
+
+    Enhancements:
+        * Added support for the new useShim config on Resize objects
+        * Added support (via Caridy) for ajax content retrieval
+        * Promoted to GA Status - beta flag removed from files.
+
+    Bug Fixes:
+        * 1961290 Conflict w/prototype.js 1.6.2.0
+        * 2059693 collapse property doesn't work properly without header
+        * 1997164 Wrong unit size after expand if animation is false
+        * Remove over use of overflow hidden
+	    * 1925551 Blank space after expanding LayoutUnit
+        * 1927265 Layout needs destroy clean-up method
+	    * 1964055 mouseup during resize of layout unit on top of an iframe
+
+**** version 2.5.1 ***
+    Bug Fixes:
+        * handling of scrollbar on panel resize is inconsistent
+        * 1900012 LayoutUnit loses scrolled state on resize
+        * 1901621 Left Unit Disappears on Expand
+        * 1904062 Layout Manager documentation error
+        * Don't assume element with id "doc" is the body
+        * Removed the requirement for the collapse config option in order to programatically collapse a unit.   
+
+**** version 2.5.0 ***
+
+Initial Release

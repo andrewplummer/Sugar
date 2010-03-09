@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>FunctionDataSource to Search Multiple Fields of an Address Book at Runtime</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#myAutoComplete {
+    width:15em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+.match {
+    font-weight:bold;
+}
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>FunctionDataSource to Search Multiple Fields of an Address Book at Runtime</h1>
+
+<div class="exampleIntro">
+	<p>This example uses a FunctionDataSource to perform string matching against multiple fields of a contacts database at runtime. Since the data for this example is loaded into local memory, queries should be quite fast to return data, but use of the custom function allows a more complex search algorithm. A custom formatter allows users to see their search term within the result set. An itemSelectEvent handler is used to update the input field with a custom value and to populate a hidden form field with the selected contact's ID for eventually submitting back to a server.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<label for="myInput">Find a contact:</label>
+<div id="myAutoComplete">
+	<input id="myInput" type="text">
+	<div id="myContainer"></div>
+	<input id="myHidden" type="hidden">
+</div>
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+YAHOO.example.FnMultipleFields = function(){
+    var myContacts = [
+        {id:0, fname:"Alice", lname:"Abrams", nname:"ace"},
+        {id:1, fname:"Abraham", lname:"Axelrod", nname:"Abe"},
+        {id:2, fname:"Bruce", lname:"Baxter", nname:null},
+        {id:3, fname:"Robert", lname:"Brown", nname:"Bob"},
+        {id:4, fname:"Carl", lname:"Carlson", nname:null},
+        {id:5, fname:"Charlie", lname:"Chaplin", nname:"Chuck"},
+        {id:6, fname:"Darla", lname:"Darling", nname:null},
+        {id:7, fname:"David", lname:"Dashing", nname:"Dave"},
+        {id:8, fname:"Egbert", lname:"Excellent", nname:null},
+        {id:9, fname:"Engleberg", lname:"Humperdink", nname:null}
+    ];
+    
+    // Define a custom search function for the DataSource
+    var matchNames = function(sQuery) {
+        // Case insensitive matching
+        var query = sQuery.toLowerCase(),
+            contact,
+            i=0,
+            l=myContacts.length,
+            matches = [];
+        
+        // Match against each name of each contact
+        for(; i<l; i++) {
+            contact = myContacts[i];
+            if((contact.fname.toLowerCase().indexOf(query) > -1) ||
+                (contact.lname.toLowerCase().indexOf(query) > -1) ||
+                (contact.nname && (contact.nname.toLowerCase().indexOf(query) > -1))) {
+                matches[matches.length] = contact;
+            }
+        }
+
+        return matches;
+    };
+
+    // Use a FunctionDataSource
+    var oDS = new YAHOO.util.FunctionDataSource(matchNames);
+    oDS.responseSchema = {
+        fields: ["id", "fname", "lname", "nname"]
+    }
+
+    // Instantiate AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("myInput", "myContainer", oDS);
+    oAC.useShadow = true;
+    oAC.resultTypeList = false;
+    
+    
+    // Custom formatter to highlight the matching letters
+    oAC.formatResult = function(oResultData, sQuery, sResultMatch) {
+        var query = sQuery.toLowerCase(),
+            fname = oResultData.fname,
+            lname = oResultData.lname,
+            nname = oResultData.nname || "", // Guard against null value
+            query = sQuery.toLowerCase(),
+            fnameMatchIndex = fname.toLowerCase().indexOf(query),
+            lnameMatchIndex = lname.toLowerCase().indexOf(query),
+            nnameMatchIndex = nname.toLowerCase().indexOf(query),
+            displayfname, displaylname, displaynname;
+            
+        if(fnameMatchIndex > -1) {
+            displayfname = highlightMatch(fname, query, fnameMatchIndex);
+        }
+        else {
+            displayfname = fname;
+        }
+
+        if(lnameMatchIndex > -1) {
+            displaylname = highlightMatch(lname, query, lnameMatchIndex);
+        }
+        else {
+            displaylname = lname;
+        }
+
+        if(nnameMatchIndex > -1) {
+            displaynname = "(" + highlightMatch(nname, query, nnameMatchIndex) + ")";
+        }
+        else {
+            displaynname = nname ? "(" + nname + ")" : "";
+        }
+
+        return displayfname + " " + displaylname + " " + displaynname;
+        
+    };
+    
+    // Helper function for the formatter
+    var highlightMatch = function(full, snippet, matchindex) {
+        return full.substring(0, matchindex) + 
+                "<span class='match'>" + 
+                full.substr(matchindex, snippet.length) + 
+                "</span>" +
+                full.substring(matchindex + snippet.length);
+    };
+
+    // Define an event handler to populate a hidden form field
+    // when an item gets selected and populate the input field
+    var myHiddenField = YAHOO.util.Dom.get("myHidden");
+    var myHandler = function(sType, aArgs) {
+        var myAC = aArgs[0]; // reference back to the AC instance
+        var elLI = aArgs[1]; // reference to the selected LI element
+        var oData = aArgs[2]; // object literal of selected item's result data
+        
+        // update hidden form field with the selected item's ID
+        myHiddenField.value = oData.id;
+        
+        myAC.getInputEl().value = oData.fname + " " + oData.lname + (oData.nname ? " (" + oData.nname + ")" : "");
+    };
+    oAC.itemSelectEvent.subscribe(myHandler);
+    
+    return {
+        oDS: oDS,
+        oAC: oAC 
+    };
+}();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

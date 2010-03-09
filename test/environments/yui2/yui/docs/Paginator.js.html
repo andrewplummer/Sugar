@@ -1,0 +1,1243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: paginator   Paginator.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>paginator&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_paginator.html" title="paginator">paginator</a>
+                
+                 &gt; Paginator.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="o">(</span><span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+<span class="c">/**</span>
+<span class="c"> * The Paginator widget provides a set of controls to navigate through paged</span>
+<span class="c"> * data.</span>
+<span class="c"> *</span>
+<span class="c"> * @module paginator</span>
+<span class="c"> * @uses YAHOO.util.EventProvider</span>
+<span class="c"> * @uses YAHOO.util.AttributeProvider</span>
+<span class="c"> */</span>
+
+<span class="k">var</span> <span class="nx">Dom</span>        <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">,</span>
+    <span class="nx">lang</span>       <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">,</span>
+    <span class="nx">isObject</span>   <span class="o">=</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">,</span>
+    <span class="nx">isFunction</span> <span class="o">=</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">,</span>
+    <span class="nx">isArray</span>    <span class="o">=</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">isArray</span><span class="o">,</span>
+    <span class="nx">isString</span>   <span class="o">=</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">;</span>
+
+<span class="c">/**</span>
+<span class="c"> * Instantiate a Paginator, passing a configuration object to the contructor.</span>
+<span class="c"> * The configuration object should contain the following properties:</span>
+<span class="c"> * &lt;ul&gt;</span>
+<span class="c"> *   &lt;li&gt;rowsPerPage : &lt;em&gt;n&lt;/em&gt; (int)&lt;/li&gt;</span>
+<span class="c"> *   &lt;li&gt;totalRecords : &lt;em&gt;n&lt;/em&gt; (int or Paginator.VALUE_UNLIMITED)&lt;/li&gt;</span>
+<span class="c"> *   &lt;li&gt;containers : &lt;em&gt;id | el | arr&lt;/em&gt; (HTMLElement reference, its id, or an array of either)&lt;/li&gt;</span>
+<span class="c"> * &lt;/ul&gt;</span>
+<span class="c"> *</span>
+<span class="c"> * @namespace YAHOO.widget</span>
+<span class="c"> * @class Paginator</span>
+<span class="c"> * @constructor</span>
+<span class="c"> * @param config {Object} Object literal to set instance and ui component</span>
+<span class="c"> * configuration.</span>
+<span class="c"> */</span>
+<span class="k">function</span> <span class="nx">Paginator</span><span class="o">(</span><span class="nx">config</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">var</span> <span class="nx">UNLIMITED</span> <span class="o">=</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span><span class="o">,</span>
+        <span class="nx">attrib</span><span class="o">,</span> <span class="nx">initialPage</span><span class="o">,</span> <span class="nx">records</span><span class="o">,</span> <span class="nx">perPage</span><span class="o">,</span> <span class="nx">startIndex</span><span class="o">;</span>
+
+    <span class="nx">config</span> <span class="o">=</span> <span class="nx">isObject</span><span class="o">(</span><span class="nx">config</span><span class="o">)</span> <span class="o">?</span> <span class="nx">config</span> <span class="o">:</span> <span class="o">{};</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="nx">initConfig</span><span class="o">();</span>
+
+    <span class="k">this</span><span class="o">.</span><span class="nx">initEvents</span><span class="o">();</span>
+
+    <span class="c">// Set the basic config keys first</span>
+<span class="c"></span>    <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">,</span><span class="nx">config</span><span class="o">.</span><span class="nx">rowsPerPage</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">(</span><span class="nx">config</span><span class="o">.</span><span class="nx">totalRecords</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">,</span><span class="nx">config</span><span class="o">.</span><span class="nx">totalRecords</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="k">this</span><span class="o">.</span><span class="nx">initUIComponents</span><span class="o">();</span>
+
+    <span class="c">// Update the other config values</span>
+<span class="c"></span>    <span class="k">for</span> <span class="o">(</span><span class="nx">attrib</span> <span class="k">in</span> <span class="nx">config</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">config</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">attrib</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">attrib</span><span class="o">,</span><span class="nx">config</span><span class="o">[</span><span class="nx">attrib</span><span class="o">],</span><span class="kc">true</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c">// Calculate the initial record offset</span>
+<span class="c"></span>    <span class="nx">initialPage</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;initialPage&#39;</span><span class="o">);</span>
+    <span class="nx">records</span>     <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">);</span>
+    <span class="nx">perPage</span>     <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="nx">initialPage</span> <span class="o">&gt;</span> <span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="nx">perPage</span> <span class="o">!==</span> <span class="nx">UNLIMITED</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">startIndex</span> <span class="o">=</span> <span class="o">(</span><span class="nx">initialPage</span> <span class="o">-</span> <span class="m">1</span><span class="o">)</span> <span class="o">*</span> <span class="nx">perPage</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">records</span> <span class="o">===</span> <span class="nx">UNLIMITED</span> <span class="o">||</span> <span class="nx">startIndex</span> <span class="o">&lt;</span> <span class="nx">records</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">,</span><span class="nx">startIndex</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+
+<span class="c">// Static members</span>
+<span class="c"></span><span class="nx">lang</span><span class="o">.</span><span class="nx">augmentObject</span><span class="o">(</span><span class="nx">Paginator</span><span class="o">,</span> <span class="o">{</span>
+    <span class="c">/**</span>
+<span class="c">     * Incrementing index used to give instances unique ids.</span>
+<span class="c">     * @static</span>
+<span class="c">     * @property Paginator.id</span>
+<span class="c">     * @type number</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">id</span> <span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Base of id strings used for ui components.</span>
+<span class="c">     * @static</span>
+<span class="c">     * @property Paginator.ID_BASE</span>
+<span class="c">     * @type string</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">ID_BASE</span> <span class="o">:</span> <span class="s1">&#39;yui-pg&#39;</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Used to identify unset, optional configurations, or used explicitly in</span>
+<span class="c">     * the case of totalRecords to indicate unlimited pagination.</span>
+<span class="c">     * @static</span>
+<span class="c">     * @property Paginator.VALUE_UNLIMITED</span>
+<span class="c">     * @type number</span>
+<span class="c">     * @final</span>
+<span class="c">     */</span>
+    <span class="nx">VALUE_UNLIMITED</span> <span class="o">:</span> <span class="o">-</span><span class="m">1</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Default template used by Paginator instances.  Update this if you want</span>
+<span class="c">     * all new Paginators to use a different default template.</span>
+<span class="c">     * @static</span>
+<span class="c">     * @property Paginator.TEMPLATE_DEFAULT</span>
+<span class="c">     * @type string</span>
+<span class="c">     */</span>
+    <span class="nx">TEMPLATE_DEFAULT</span> <span class="o">:</span> <span class="s2">&quot;{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}&quot;</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Common alternate pagination format, including page links, links for</span>
+<span class="c">     * previous, next, first and last pages as well as a rows-per-page</span>
+<span class="c">     * dropdown.  Offered as a convenience.</span>
+<span class="c">     * @static</span>
+<span class="c">     * @property Paginator.TEMPLATE_ROWS_PER_PAGE</span>
+<span class="c">     * @type string</span>
+<span class="c">     */</span>
+    <span class="nx">TEMPLATE_ROWS_PER_PAGE</span> <span class="o">:</span> <span class="s2">&quot;{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}&quot;</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Storage object for UI Components</span>
+<span class="c">     * @static</span>
+<span class="c">     * @property Paginator.ui</span>
+<span class="c">     */</span>
+    <span class="nx">ui</span> <span class="o">:</span> <span class="o">{},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Similar to YAHOO.lang.isNumber, but allows numeric strings.  This is</span>
+<span class="c">     * is used for attribute validation in conjunction with getters that return</span>
+<span class="c">     * numbers.</span>
+<span class="c">     *</span>
+<span class="c">     * @method Paginator.isNumeric</span>
+<span class="c">     * @param v {Number|String} value to be checked for number or numeric string</span>
+<span class="c">     * @returns {Boolean} true if the input is coercable into a finite number</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">isNumeric</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">v</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nb">isFinite</span><span class="o">(+</span><span class="nx">v</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Return a number or null from input</span>
+<span class="c">     *</span>
+<span class="c">     * @method Paginator.toNumber</span>
+<span class="c">     * @param n {Number|String} a number or numeric string</span>
+<span class="c">     * @return Number</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="nx">toNumber</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">n</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nb">isFinite</span><span class="o">(+</span><span class="nx">n</span><span class="o">)</span> <span class="o">?</span> <span class="o">+</span><span class="nx">n</span> <span class="o">:</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">},</span><span class="kc">true</span><span class="o">);</span>
+
+
+<span class="c">// Instance members and methods</span>
+<span class="c"></span><span class="nx">Paginator</span><span class="o">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="o">{</span>
+
+    <span class="c">// Instance members</span>
+<span class="c"></span>
+    <span class="c">/**</span>
+<span class="c">     * Array of nodes in which to render pagination controls.  This is set via</span>
+<span class="c">     * the &amp;quot;containers&amp;quot; attribute.</span>
+<span class="c">     * @property _containers</span>
+<span class="c">     * @type Array(HTMLElement)</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">_containers</span> <span class="o">:</span> <span class="o">[],</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Flag used to indicate multiple attributes are being updated via setState</span>
+<span class="c">     * @property _batch</span>
+<span class="c">     * @type boolean</span>
+<span class="c">     * @protected</span>
+<span class="c">     */</span>
+    <span class="nx">_batch</span> <span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Used by setState to indicate when a page change has occurred</span>
+<span class="c">     * @property _pageChanged</span>
+<span class="c">     * @type boolean</span>
+<span class="c">     * @protected</span>
+<span class="c">     */</span>
+    <span class="nx">_pageChanged</span> <span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Temporary state cache used by setState to keep track of the previous</span>
+<span class="c">     * state for eventual pageChange event firing</span>
+<span class="c">     * @property _state</span>
+<span class="c">     * @type Object</span>
+<span class="c">     * @protected</span>
+<span class="c">     */</span>
+    <span class="nx">_state</span> <span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+
+    <span class="c">// Instance methods</span>
+<span class="c"></span>
+    <span class="c">/**</span>
+<span class="c">     * Initialize the Paginator&#39;s attributes (see YAHOO.util.Element class</span>
+<span class="c">     * AttributeProvider).</span>
+<span class="c">     * @method initConfig</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">initConfig</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+
+        <span class="k">var</span> <span class="nx">UNLIMITED</span> <span class="o">=</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span><span class="o">;</span>
+
+        <span class="c">/**</span>
+<span class="c">         * REQUIRED. Number of records constituting a &amp;quot;page&amp;quot;</span>
+<span class="c">         * @attribute rowsPerPage</span>
+<span class="c">         * @type integer</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span>     <span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">,</span>
+            <span class="nx">setter</span>    <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">toNumber</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * REQUIRED. Node references or ids of nodes in which to render the</span>
+<span class="c">         * pagination controls.</span>
+<span class="c">         * @attribute containers</span>
+<span class="c">         * @type {string|HTMLElement|Array(string|HTMLElement)}</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;containers&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span>     <span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">val</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="nx">isArray</span><span class="o">(</span><span class="nx">val</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">val</span> <span class="o">=</span> <span class="o">[</span><span class="nx">val</span><span class="o">];</span>
+                <span class="o">}</span>
+                <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">val</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">isString</span><span class="o">(</span><span class="nx">val</span><span class="o">[</span><span class="nx">i</span><span class="o">])</span> <span class="o">||</span> 
+                        <span class="o">(</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">val</span><span class="o">[</span><span class="nx">i</span><span class="o">])</span> <span class="o">&amp;&amp;</span> <span class="nx">val</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="m">1</span><span class="o">))</span> <span class="o">{</span>
+                        <span class="k">continue</span><span class="o">;</span>
+                    <span class="o">}</span>
+                    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">},</span>
+            <span class="nx">method</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">val</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">val</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">val</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="nx">isArray</span><span class="o">(</span><span class="nx">val</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">val</span> <span class="o">=</span> <span class="o">[</span><span class="nx">val</span><span class="o">];</span>
+                <span class="o">}</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_containers</span> <span class="o">=</span> <span class="nx">val</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Total number of records to paginate through</span>
+<span class="c">         * @attribute totalRecords</span>
+<span class="c">         * @type integer</span>
+<span class="c">         * @default 0</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span>     <span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">,</span>
+            <span class="nx">setter</span>    <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">toNumber</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Zero based index of the record considered first on the current page.</span>
+<span class="c">         * For page based interactions, don&#39;t modify this attribute directly;</span>
+<span class="c">         * use setPage(n).</span>
+<span class="c">         * @attribute recordOffset</span>
+<span class="c">         * @type integer</span>
+<span class="c">         * @default 0</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span>     <span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">val</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">var</span> <span class="nx">total</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">(</span><span class="nx">val</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">val</span> <span class="o">=</span> <span class="o">+</span><span class="nx">val</span><span class="o">;</span>
+                    <span class="k">return</span> <span class="nx">total</span> <span class="o">===</span> <span class="nx">UNLIMITED</span> <span class="o">||</span> <span class="nx">total</span> <span class="o">&gt;</span> <span class="nx">val</span> <span class="o">||</span>
+                           <span class="o">(</span><span class="nx">total</span> <span class="o">===</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nx">val</span> <span class="o">===</span> <span class="m">0</span><span class="o">);</span>
+                <span class="o">}</span>
+
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">},</span>
+            <span class="nx">setter</span>    <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">toNumber</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Page to display on initial paint</span>
+<span class="c">         * @attribute initialPage</span>
+<span class="c">         * @type integer</span>
+<span class="c">         * @default 1</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;initialPage&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span>     <span class="o">:</span> <span class="m">1</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">,</span>
+            <span class="nx">setter</span>    <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">toNumber</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Template used to render controls.  The string will be used as</span>
+<span class="c">         * innerHTML on all specified container nodes.  Bracketed keys</span>
+<span class="c">         * (e.g. {pageLinks}) in the string will be replaced with an instance</span>
+<span class="c">         * of the so named ui component.</span>
+<span class="c">         * @see Paginator.TEMPLATE_DEFAULT</span>
+<span class="c">         * @see Paginator.TEMPLATE_ROWS_PER_PAGE</span>
+<span class="c">         * @attribute template</span>
+<span class="c">         * @type string</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;template&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span> <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">TEMPLATE_DEFAULT</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="nx">isString</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Class assigned to the element(s) containing pagination controls.</span>
+<span class="c">         * @attribute containerClass</span>
+<span class="c">         * @type string</span>
+<span class="c">         * @default &#39;yui-pg-container&#39;</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;containerClass&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span> <span class="o">:</span> <span class="s1">&#39;yui-pg-container&#39;</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="nx">isString</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Display pagination controls even when there is only one page.  Set</span>
+<span class="c">         * to false to forgo rendering and/or hide the containers when there</span>
+<span class="c">         * is only one page of data.  Note if you are using the rowsPerPage</span>
+<span class="c">         * dropdown ui component, visibility will be maintained as long as the</span>
+<span class="c">         * number of records exceeds the smallest page size.</span>
+<span class="c">         * @attribute alwaysVisible</span>
+<span class="c">         * @type boolean</span>
+<span class="c">         * @default true</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;alwaysVisible&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span> <span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">isBoolean</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Update the UI immediately upon interaction.  If false, changeRequest</span>
+<span class="c">         * subscribers or other external code will need to explicitly set the</span>
+<span class="c">         * new values in the paginator to trigger repaint.</span>
+<span class="c">         * @attribute updateOnChange</span>
+<span class="c">         * @type boolean</span>
+<span class="c">         * @default false</span>
+<span class="c">         * @deprecated use changeRequest listener that calls setState</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;updateOnChange&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span>     <span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+            <span class="nx">validator</span> <span class="o">:</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">isBoolean</span>
+        <span class="o">});</span>
+
+
+
+        <span class="c">// Read only attributes</span>
+<span class="c"></span>
+        <span class="c">/**</span>
+<span class="c">         * Unique id assigned to this instance</span>
+<span class="c">         * @attribute id</span>
+<span class="c">         * @type integer</span>
+<span class="c">         * @final</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;id&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span>    <span class="o">:</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">id</span><span class="o">++,</span>
+            <span class="nx">readOnly</span> <span class="o">:</span> <span class="kc">true</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Indicator of whether the DOM nodes have been initially created</span>
+<span class="c">         * @attribute rendered</span>
+<span class="c">         * @type boolean</span>
+<span class="c">         * @final</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;rendered&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span>    <span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+            <span class="nx">readOnly</span> <span class="o">:</span> <span class="kc">true</span>
+        <span class="o">});</span>
+
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Initialize registered ui components onto this instance.</span>
+<span class="c">     * @method initUIComponents</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">initUIComponents</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">ui</span> <span class="o">=</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">ui</span><span class="o">,</span>
+            <span class="nx">name</span><span class="o">,</span><span class="nx">UIComp</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nx">name</span> <span class="k">in</span> <span class="nx">ui</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">ui</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">name</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nx">UIComp</span> <span class="o">=</span> <span class="nx">ui</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">UIComp</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="nx">isFunction</span><span class="o">(</span><span class="nx">UIComp</span><span class="o">.</span><span class="nx">init</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">UIComp</span><span class="o">.</span><span class="nx">init</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Initialize this instance&#39;s CustomEvents.</span>
+<span class="c">     * @method initEvents</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">initEvents</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="c">/**</span>
+<span class="c">         * Event fired when the Paginator is initially rendered</span>
+<span class="c">         * @event render</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s1">&#39;render&#39;</span><span class="o">);</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Event fired when the Paginator is initially rendered</span>
+<span class="c">         * @event rendered</span>
+<span class="c">         * @deprecated use render event</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s1">&#39;rendered&#39;</span><span class="o">);</span> <span class="c">// backward compatibility</span>
+<span class="c"></span>
+        <span class="c">/**</span>
+<span class="c">         * Event fired when a change in pagination values is requested,</span>
+<span class="c">         * either by interacting with the various ui components or via the</span>
+<span class="c">         * setStartIndex(n) etc APIs.</span>
+<span class="c">         * Subscribers will receive the proposed state as the first parameter.</span>
+<span class="c">         * The proposed state object will contain the following keys:</span>
+<span class="c">         * &lt;ul&gt;</span>
+<span class="c">         *   &lt;li&gt;paginator - the Paginator instance&lt;/li&gt;</span>
+<span class="c">         *   &lt;li&gt;page&lt;/li&gt;</span>
+<span class="c">         *   &lt;li&gt;totalRecords&lt;/li&gt;</span>
+<span class="c">         *   &lt;li&gt;recordOffset - index of the first record on the new page&lt;/li&gt;</span>
+<span class="c">         *   &lt;li&gt;rowsPerPage&lt;/li&gt;</span>
+<span class="c">         *   &lt;li&gt;records - array containing [start index, end index] for the records on the new page&lt;/li&gt;</span>
+<span class="c">         *   &lt;li&gt;before - object literal with all these keys for the current state&lt;/li&gt;</span>
+<span class="c">         * &lt;/ul&gt;</span>
+<span class="c">         * @event changeRequest</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s1">&#39;changeRequest&#39;</span><span class="o">);</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Event fired when attribute changes have resulted in the calculated</span>
+<span class="c">         * current page changing.</span>
+<span class="c">         * @event pageChange</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s1">&#39;pageChange&#39;</span><span class="o">);</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Event that fires before the destroy event.</span>
+<span class="c">         * @event beforeDestroy</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s1">&#39;beforeDestroy&#39;</span><span class="o">);</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Event used to trigger cleanup of ui components</span>
+<span class="c">         * @event destroy</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s1">&#39;destroy&#39;</span><span class="o">);</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="nx">_selfSubscribe</span><span class="o">();</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Subscribes to instance attribute change events to automate certain</span>
+<span class="c">     * behaviors.</span>
+<span class="c">     * @method _selfSubscribe</span>
+<span class="c">     * @protected</span>
+<span class="c">     */</span>
+    <span class="nx">_selfSubscribe</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="c">// Listen for changes to totalRecords and alwaysVisible </span>
+<span class="c"></span>        <span class="k">this</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s1">&#39;totalRecordsChange&#39;</span><span class="o">,</span><span class="k">this</span><span class="o">.</span><span class="nx">updateVisibility</span><span class="o">,</span><span class="k">this</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s1">&#39;alwaysVisibleChange&#39;</span><span class="o">,</span><span class="k">this</span><span class="o">.</span><span class="nx">updateVisibility</span><span class="o">,</span><span class="k">this</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c">// Fire the pageChange event when appropriate</span>
+<span class="c"></span>        <span class="k">this</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s1">&#39;totalRecordsChange&#39;</span><span class="o">,</span><span class="k">this</span><span class="o">.</span><span class="nx">_handleStateChange</span><span class="o">,</span><span class="k">this</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s1">&#39;recordOffsetChange&#39;</span><span class="o">,</span><span class="k">this</span><span class="o">.</span><span class="nx">_handleStateChange</span><span class="o">,</span><span class="k">this</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s1">&#39;rowsPerPageChange&#39;</span><span class="o">,</span><span class="k">this</span><span class="o">.</span><span class="nx">_handleStateChange</span><span class="o">,</span><span class="k">this</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c">// Update recordOffset when totalRecords is reduced below</span>
+<span class="c"></span>        <span class="k">this</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s1">&#39;totalRecordsChange&#39;</span><span class="o">,</span><span class="k">this</span><span class="o">.</span><span class="nx">_syncRecordOffset</span><span class="o">,</span><span class="k">this</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Sets recordOffset to the starting index of the previous page when</span>
+<span class="c">     * totalRecords is reduced below the current recordOffset.</span>
+<span class="c">     * @method _syncRecordOffset</span>
+<span class="c">     * @param e {Event} totalRecordsChange event</span>
+<span class="c">     * @protected</span>
+<span class="c">     */</span>
+    <span class="nx">_syncRecordOffset</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">v</span> <span class="o">=</span> <span class="nx">e</span><span class="o">.</span><span class="nx">newValue</span><span class="o">,</span><span class="nx">rpp</span><span class="o">,</span><span class="nx">state</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">e</span><span class="o">.</span><span class="nx">prevValue</span> <span class="o">!==</span> <span class="nx">v</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">v</span> <span class="o">!==</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">rpp</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">);</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="nx">rpp</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">)</span> <span class="o">&gt;=</span> <span class="nx">v</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">state</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">({</span>
+                        <span class="nx">totalRecords</span> <span class="o">:</span> <span class="nx">e</span><span class="o">.</span><span class="nx">prevValue</span><span class="o">,</span>
+                        <span class="nx">recordOffset</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">)</span>
+                    <span class="o">});</span>
+
+                    <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">,</span> <span class="nx">state</span><span class="o">.</span><span class="nx">before</span><span class="o">.</span><span class="nx">recordOffset</span><span class="o">);</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_firePageChange</span><span class="o">(</span><span class="nx">state</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Fires the pageChange event when the state attributes have changed in</span>
+<span class="c">     * such a way as to locate the current recordOffset on a new page.</span>
+<span class="c">     * @method _handleStateChange</span>
+<span class="c">     * @param e {Event} the attribute change event</span>
+<span class="c">     * @protected</span>
+<span class="c">     */</span>
+    <span class="nx">_handleStateChange</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">e</span><span class="o">.</span><span class="nx">prevValue</span> <span class="o">!==</span> <span class="nx">e</span><span class="o">.</span><span class="nx">newValue</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">change</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_state</span> <span class="o">||</span> <span class="o">{},</span>
+                <span class="nx">state</span><span class="o">;</span>
+
+            <span class="nx">change</span><span class="o">[</span><span class="nx">e</span><span class="o">.</span><span class="nx">type</span><span class="o">.</span><span class="nx">replace</span><span class="o">(</span><span class="sr">/Change$/</span><span class="o">,</span><span class="s1">&#39;&#39;</span><span class="o">)]</span> <span class="o">=</span> <span class="nx">e</span><span class="o">.</span><span class="nx">prevValue</span><span class="o">;</span>
+            <span class="nx">state</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">(</span><span class="nx">change</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">state</span><span class="o">.</span><span class="nx">page</span> <span class="o">!==</span> <span class="nx">state</span><span class="o">.</span><span class="nx">before</span><span class="o">.</span><span class="nx">page</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_batch</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_pageChanged</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_firePageChange</span><span class="o">(</span><span class="nx">state</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Fires a pageChange event in the form of a standard attribute change</span>
+<span class="c">     * event with additional properties prevState and newState.</span>
+<span class="c">     * @method _firePageChange</span>
+<span class="c">     * @param state {Object} the result of getState(oldState)</span>
+<span class="c">     * @protected</span>
+<span class="c">     */</span>
+    <span class="nx">_firePageChange</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">state</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">state</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">current</span> <span class="o">=</span> <span class="nx">state</span><span class="o">.</span><span class="nx">before</span><span class="o">;</span>
+            <span class="nx">delete</span> <span class="nx">state</span><span class="o">.</span><span class="nx">before</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;pageChange&#39;</span><span class="o">,{</span>
+                <span class="nx">type</span>      <span class="o">:</span> <span class="s1">&#39;pageChange&#39;</span><span class="o">,</span>
+                <span class="nx">prevValue</span> <span class="o">:</span> <span class="nx">state</span><span class="o">.</span><span class="nx">page</span><span class="o">,</span>
+                <span class="nx">newValue</span>  <span class="o">:</span> <span class="nx">current</span><span class="o">.</span><span class="nx">page</span><span class="o">,</span>
+                <span class="nx">prevState</span> <span class="o">:</span> <span class="nx">state</span><span class="o">,</span>
+                <span class="nx">newState</span>  <span class="o">:</span> <span class="nx">current</span>
+            <span class="o">});</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Render the pagination controls per the format attribute into the</span>
+<span class="c">     * specified container nodes.</span>
+<span class="c">     * @method render</span>
+<span class="c">     * @return the Paginator instance</span>
+<span class="c">     * @chainable</span>
+<span class="c">     */</span>
+    <span class="nx">render</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rendered&#39;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">var</span> <span class="nx">template</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;template&#39;</span><span class="o">),</span>
+            <span class="nx">state</span>    <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">(),</span>
+            <span class="c">// ex. yui-pg0-1 (first paginator, second container)</span>
+<span class="c"></span>            <span class="nx">id_base</span>  <span class="o">=</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">ID_BASE</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;id&#39;</span><span class="o">)</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span><span class="o">,</span>
+            <span class="nx">i</span><span class="o">,</span> <span class="nx">len</span><span class="o">;</span>
+
+        <span class="c">// Assemble the containers, keeping them hidden</span>
+<span class="c"></span>        <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_containers</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_renderTemplate</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_containers</span><span class="o">[</span><span class="nx">i</span><span class="o">],</span><span class="nx">template</span><span class="o">,</span><span class="nx">id_base</span><span class="o">+</span><span class="nx">i</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c">// Show the containers if appropriate</span>
+<span class="c"></span>        <span class="k">this</span><span class="o">.</span><span class="nx">updateVisibility</span><span class="o">();</span>
+
+        <span class="c">// Set render attribute manually to support its readOnly contract</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_containers</span><span class="o">.</span><span class="nx">length</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;rendered&#39;</span><span class="o">,</span> <span class="o">{</span> <span class="nx">value</span><span class="o">:</span> <span class="kc">true</span> <span class="o">});</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;render&#39;</span><span class="o">,</span> <span class="nx">state</span><span class="o">);</span>
+            <span class="c">// For backward compatibility</span>
+<span class="c"></span>            <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;rendered&#39;</span><span class="o">,</span> <span class="nx">state</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Creates the individual ui components and renders them into a container.</span>
+<span class="c">     *</span>
+<span class="c">     * @method _renderTemplate</span>
+<span class="c">     * @param container {HTMLElement} where to add the ui components</span>
+<span class="c">     * @param template {String} the template to use as a guide for rendering</span>
+<span class="c">     * @param id_base {String} id base for the container&#39;s ui components</span>
+<span class="c">     * @param hide {Boolean} leave the container hidden after assembly</span>
+<span class="c">     * @protected</span>
+<span class="c">     */</span>
+    <span class="nx">_renderTemplate</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">container</span><span class="o">,</span> <span class="nx">template</span><span class="o">,</span> <span class="nx">id_base</span><span class="o">,</span> <span class="nx">hide</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">containerClass</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;containerClass&#39;</span><span class="o">),</span>
+            <span class="nx">markers</span><span class="o">,</span> <span class="nx">i</span><span class="o">,</span> <span class="nx">len</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">container</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c">// Hide the container while its contents are rendered</span>
+<span class="c"></span>        <span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="nx">container</span><span class="o">,</span><span class="s1">&#39;display&#39;</span><span class="o">,</span><span class="s1">&#39;none&#39;</span><span class="o">);</span>
+
+        <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">container</span><span class="o">,</span> <span class="nx">containerClass</span><span class="o">);</span>
+
+        <span class="c">// Place the template innerHTML, adding marker spans to the template</span>
+<span class="c"></span>        <span class="c">// html to indicate drop zones for ui components</span>
+<span class="c"></span>        <span class="nx">container</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">template</span><span class="o">.</span><span class="nx">replace</span><span class="o">(</span><span class="sr">/\{([a-z0-9_ \-]+)\}/gi</span><span class="o">,</span>
+            <span class="s1">&#39;&lt;span class=&quot;yui-pg-ui yui-pg-ui-$1&quot;&gt;&lt;/span&gt;&#39;</span><span class="o">);</span>
+
+        <span class="c">// Replace each marker with the ui component&#39;s render() output</span>
+<span class="c"></span>        <span class="nx">markers</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">getElementsByClassName</span><span class="o">(</span><span class="s1">&#39;yui-pg-ui&#39;</span><span class="o">,</span><span class="s1">&#39;span&#39;</span><span class="o">,</span><span class="nx">container</span><span class="o">);</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">markers</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">renderUIComponent</span><span class="o">(</span><span class="nx">markers</span><span class="o">[</span><span class="nx">i</span><span class="o">],</span> <span class="nx">id_base</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">hide</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c">// Show the container allowing page reflow</span>
+<span class="c"></span>            <span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="nx">container</span><span class="o">,</span><span class="s1">&#39;display&#39;</span><span class="o">,</span><span class="s1">&#39;&#39;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Replaces a marker node with a rendered UI component, determined by the</span>
+<span class="c">     * yui-pg-ui-(UI component class name) in the marker&#39;s className. e.g.</span>
+<span class="c">     * yui-pg-ui-PageLinks =&gt; new YAHOO.widget.Paginator.ui.PageLinks(this)</span>
+<span class="c">     *</span>
+<span class="c">     * @method renderUIComponent</span>
+<span class="c">     * @param marker {HTMLElement} the marker node to replace</span>
+<span class="c">     * @param id_base {String} string base the component&#39;s generated id</span>
+<span class="c">     */</span>
+    <span class="nx">renderUIComponent</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">marker</span><span class="o">,</span> <span class="nx">id_base</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">par</span>    <span class="o">=</span> <span class="nx">marker</span><span class="o">.</span><span class="nx">parentNode</span><span class="o">,</span>
+            <span class="nx">name</span>   <span class="o">=</span> <span class="sr">/yui-pg-ui-(\w+)/</span><span class="o">.</span><span class="nx">exec</span><span class="o">(</span><span class="nx">marker</span><span class="o">.</span><span class="nx">className</span><span class="o">),</span>
+            <span class="nx">UIComp</span> <span class="o">=</span> <span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">ui</span><span class="o">[</span><span class="nx">name</span><span class="o">[</span><span class="m">1</span><span class="o">]],</span>
+            <span class="nx">comp</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">UIComp</span><span class="o">))</span> <span class="o">{</span>
+            <span class="nx">comp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">UIComp</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">comp</span><span class="o">.</span><span class="nx">render</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nx">par</span><span class="o">.</span><span class="nx">replaceChild</span><span class="o">(</span><span class="nx">comp</span><span class="o">.</span><span class="nx">render</span><span class="o">(</span><span class="nx">id_base</span><span class="o">),</span><span class="nx">marker</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Removes controls from the page and unhooks events.</span>
+<span class="c">     * @method destroy</span>
+<span class="c">     */</span>
+    <span class="nx">destroy</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;beforeDestroy&#39;</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;destroy&#39;</span><span class="o">);</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;rendered&#39;</span><span class="o">,{</span><span class="nx">value</span><span class="o">:</span><span class="kc">false</span><span class="o">});</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">unsubscribeAll</span><span class="o">();</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Hides the containers if there is only one page of data and attribute</span>
+<span class="c">     * alwaysVisible is false.  Conversely, it displays the containers if either</span>
+<span class="c">     * there is more than one page worth of data or alwaysVisible is turned on.</span>
+<span class="c">     * @method updateVisibility</span>
+<span class="c">     */</span>
+    <span class="nx">updateVisibility</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">alwaysVisible</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;alwaysVisible&#39;</span><span class="o">),</span>
+            <span class="nx">totalRecords</span><span class="o">,</span><span class="nx">visible</span><span class="o">,</span><span class="nx">rpp</span><span class="o">,</span><span class="nx">rppOptions</span><span class="o">,</span><span class="nx">i</span><span class="o">,</span><span class="nx">len</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">e</span> <span class="o">||</span> <span class="nx">e</span><span class="o">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;alwaysVisibleChange&#39;</span> <span class="o">||</span> <span class="o">!</span><span class="nx">alwaysVisible</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">totalRecords</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">);</span>
+            <span class="nx">visible</span>      <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="nx">rpp</span>          <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">);</span>
+            <span class="nx">rppOptions</span>   <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPageOptions&#39;</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">isArray</span><span class="o">(</span><span class="nx">rppOptions</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">rppOptions</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">rpp</span> <span class="o">=</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">min</span><span class="o">(</span><span class="nx">rpp</span><span class="o">,</span><span class="nx">rppOptions</span><span class="o">[</span><span class="nx">i</span><span class="o">]);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">totalRecords</span> <span class="o">!==</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span> <span class="o">&amp;&amp;</span>
+                <span class="nx">totalRecords</span> <span class="o">&lt;=</span> <span class="nx">rpp</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">visible</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="nx">visible</span> <span class="o">=</span> <span class="nx">visible</span> <span class="o">||</span> <span class="nx">alwaysVisible</span><span class="o">;</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_containers</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_containers</span><span class="o">[</span><span class="nx">i</span><span class="o">],</span><span class="s1">&#39;display&#39;</span><span class="o">,</span>
+                    <span class="nx">visible</span> <span class="o">?</span> <span class="s1">&#39;&#39;</span> <span class="o">:</span> <span class="s1">&#39;none&#39;</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+
+
+
+    <span class="c">/**</span>
+<span class="c">     * Get the configured container nodes</span>
+<span class="c">     * @method getContainerNodes</span>
+<span class="c">     * @return {Array} array of HTMLElement nodes</span>
+<span class="c">     */</span>
+    <span class="nx">getContainerNodes</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_containers</span><span class="o">;</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get the total number of pages in the data set according to the current</span>
+<span class="c">     * rowsPerPage and totalRecords values.  If totalRecords is not set, or</span>
+<span class="c">     * set to YAHOO.widget.Paginator.VALUE_UNLIMITED, returns</span>
+<span class="c">     * YAHOO.widget.Paginator.VALUE_UNLIMITED.</span>
+<span class="c">     * @method getTotalPages</span>
+<span class="c">     * @return {number}</span>
+<span class="c">     */</span>
+    <span class="nx">getTotalPages</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">records</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">),</span>
+            <span class="nx">perPage</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">);</span>
+
+        <span class="c">// rowsPerPage not set.  Can&#39;t calculate</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(!</span><span class="nx">perPage</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">records</span> <span class="o">===</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">ceil</span><span class="o">(</span><span class="nx">records</span><span class="o">/</span><span class="nx">perPage</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Does the requested page have any records?</span>
+<span class="c">     * @method hasPage</span>
+<span class="c">     * @param page {number} the page in question</span>
+<span class="c">     * @return {boolean}</span>
+<span class="c">     */</span>
+    <span class="nx">hasPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">page</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span><span class="o">(</span><span class="nx">page</span><span class="o">)</span> <span class="o">||</span> <span class="nx">page</span> <span class="o">&lt;</span> <span class="m">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">var</span> <span class="nx">totalPages</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTotalPages</span><span class="o">();</span>
+
+        <span class="k">return</span> <span class="o">(</span><span class="nx">totalPages</span> <span class="o">===</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span> <span class="o">||</span> <span class="nx">totalPages</span> <span class="o">&gt;=</span> <span class="nx">page</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get the page number corresponding to the current record offset.</span>
+<span class="c">     * @method getCurrentPage</span>
+<span class="c">     * @return {number}</span>
+<span class="c">     */</span>
+    <span class="nx">getCurrentPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">perPage</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">perPage</span> <span class="o">||</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="m">0</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">floor</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">)</span> <span class="o">/</span> <span class="nx">perPage</span><span class="o">)</span> <span class="o">+</span> <span class="m">1</span><span class="o">;</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Are there records on the next page?</span>
+<span class="c">     * @method hasNextPage</span>
+<span class="c">     * @return {boolean}</span>
+<span class="c">     */</span>
+    <span class="nx">hasNextPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">currentPage</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getCurrentPage</span><span class="o">(),</span>
+            <span class="nx">totalPages</span>  <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTotalPages</span><span class="o">();</span>
+
+        <span class="k">return</span> <span class="nx">currentPage</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="nx">totalPages</span> <span class="o">===</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span> <span class="o">||</span> <span class="nx">currentPage</span> <span class="o">&lt;</span> <span class="nx">totalPages</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get the page number of the next page, or null if the current page is the</span>
+<span class="c">     * last page.</span>
+<span class="c">     * @method getNextPage</span>
+<span class="c">     * @return {number}</span>
+<span class="c">     */</span>
+    <span class="nx">getNextPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">hasNextPage</span><span class="o">()</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="nx">getCurrentPage</span><span class="o">()</span> <span class="o">+</span> <span class="m">1</span> <span class="o">:</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Is there a page before the current page?</span>
+<span class="c">     * @method hasPreviousPage</span>
+<span class="c">     * @return {boolean}</span>
+<span class="c">     */</span>
+    <span class="nx">hasPreviousPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">getCurrentPage</span><span class="o">()</span> <span class="o">&gt;</span> <span class="m">1</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get the page number of the previous page, or null if the current page</span>
+<span class="c">     * is the first page.</span>
+<span class="c">     * @method getPreviousPage</span>
+<span class="c">     * @return {number}</span>
+<span class="c">     */</span>
+    <span class="nx">getPreviousPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">hasPreviousPage</span><span class="o">()</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="nx">getCurrentPage</span><span class="o">()</span> <span class="o">-</span> <span class="m">1</span> <span class="o">:</span> <span class="m">1</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get the start and end record indexes of the specified page.</span>
+<span class="c">     * @method getPageRecords</span>
+<span class="c">     * @param page {number} (optional) The page (current page if not specified)</span>
+<span class="c">     * @return {Array} [start_index, end_index]</span>
+<span class="c">     */</span>
+    <span class="nx">getPageRecords</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">page</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span><span class="o">(</span><span class="nx">page</span><span class="o">))</span> <span class="o">{</span>
+            <span class="nx">page</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getCurrentPage</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">var</span> <span class="nx">perPage</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">),</span>
+            <span class="nx">records</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">),</span>
+            <span class="nx">start</span><span class="o">,</span> <span class="nx">end</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">page</span> <span class="o">||</span> <span class="o">!</span><span class="nx">perPage</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nx">start</span> <span class="o">=</span> <span class="o">(</span><span class="nx">page</span> <span class="o">-</span> <span class="m">1</span><span class="o">)</span> <span class="o">*</span> <span class="nx">perPage</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">records</span> <span class="o">!==</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">start</span> <span class="o">&gt;=</span> <span class="nx">records</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="nx">end</span> <span class="o">=</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">min</span><span class="o">(</span><span class="nx">start</span> <span class="o">+</span> <span class="nx">perPage</span><span class="o">,</span> <span class="nx">records</span><span class="o">)</span> <span class="o">-</span> <span class="m">1</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">end</span> <span class="o">=</span> <span class="nx">start</span> <span class="o">+</span> <span class="nx">perPage</span> <span class="o">-</span> <span class="m">1</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="o">[</span><span class="nx">start</span><span class="o">,</span><span class="nx">end</span><span class="o">];</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Set the current page to the provided page number if possible.</span>
+<span class="c">     * @method setPage</span>
+<span class="c">     * @param newPage {number} the new page number</span>
+<span class="c">     * @param silent {boolean} whether to forcibly avoid firing the</span>
+<span class="c">     * changeRequest event</span>
+<span class="c">     */</span>
+    <span class="nx">setPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">page</span><span class="o">,</span><span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">hasPage</span><span class="o">(</span><span class="nx">page</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="nx">page</span> <span class="o">!==</span> <span class="k">this</span><span class="o">.</span><span class="nx">getCurrentPage</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;updateOnChange&#39;</span><span class="o">)</span> <span class="o">||</span> <span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">,</span> <span class="o">(</span><span class="nx">page</span> <span class="o">-</span> <span class="m">1</span><span class="o">)</span> <span class="o">*</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">));</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;changeRequest&#39;</span><span class="o">,</span><span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">({</span><span class="s1">&#39;page&#39;</span><span class="o">:</span><span class="nx">page</span><span class="o">}));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get the number of rows per page.</span>
+<span class="c">     * @method getRowsPerPage</span>
+<span class="c">     * @return {number} the current setting of the rowsPerPage attribute</span>
+<span class="c">     */</span>
+    <span class="nx">getRowsPerPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Set the number of rows per page.</span>
+<span class="c">     * @method setRowsPerPage</span>
+<span class="c">     * @param rpp {number} the new number of rows per page</span>
+<span class="c">     * @param silent {boolean} whether to forcibly avoid firing the</span>
+<span class="c">     * changeRequest event</span>
+<span class="c">     */</span>
+    <span class="nx">setRowsPerPage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">rpp</span><span class="o">,</span><span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">(</span><span class="nx">rpp</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">+</span><span class="nx">rpp</span> <span class="o">&gt;</span> <span class="m">0</span> <span class="o">&amp;&amp;</span>
+            <span class="o">+</span><span class="nx">rpp</span> <span class="o">!==</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;updateOnChange&#39;</span><span class="o">)</span> <span class="o">||</span> <span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">,</span><span class="nx">rpp</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;changeRequest&#39;</span><span class="o">,</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">({</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">:+</span><span class="nx">rpp</span><span class="o">}));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get the total number of records.</span>
+<span class="c">     * @method getTotalRecords</span>
+<span class="c">     * @return {number} the current setting of totalRecords attribute</span>
+<span class="c">     */</span>
+    <span class="nx">getTotalRecords</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Set the total number of records.</span>
+<span class="c">     * @method setTotalRecords</span>
+<span class="c">     * @param total {number} the new total number of records</span>
+<span class="c">     * @param silent {boolean} whether to forcibly avoid firing the changeRequest event</span>
+<span class="c">     */</span>
+    <span class="nx">setTotalRecords</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">total</span><span class="o">,</span><span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">(</span><span class="nx">total</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">+</span><span class="nx">total</span> <span class="o">&gt;=</span> <span class="m">0</span> <span class="o">&amp;&amp;</span>
+            <span class="o">+</span><span class="nx">total</span> <span class="o">!==</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;updateOnChange&#39;</span><span class="o">)</span> <span class="o">||</span> <span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">,</span><span class="nx">total</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;changeRequest&#39;</span><span class="o">,</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">({</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">:+</span><span class="nx">total</span><span class="o">}));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get the index of the first record on the current page</span>
+<span class="c">     * @method getStartIndex</span>
+<span class="c">     * @return {number} the index of the first record on the current page</span>
+<span class="c">     */</span>
+    <span class="nx">getStartIndex</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Move the record offset to a new starting index.  This will likely cause</span>
+<span class="c">     * the calculated current page to change.  You should probably use setPage.</span>
+<span class="c">     * @method setStartIndex</span>
+<span class="c">     * @param offset {number} the new record offset</span>
+<span class="c">     * @param silent {boolean} whether to forcibly avoid firing the changeRequest event</span>
+<span class="c">     */</span>
+    <span class="nx">setStartIndex</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">offset</span><span class="o">,</span><span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">(</span><span class="nx">offset</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">+</span><span class="nx">offset</span> <span class="o">&gt;=</span> <span class="m">0</span> <span class="o">&amp;&amp;</span>
+            <span class="o">+</span><span class="nx">offset</span> <span class="o">!==</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;updateOnChange&#39;</span><span class="o">)</span> <span class="o">||</span> <span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">,</span><span class="nx">offset</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;changeRequest&#39;</span><span class="o">,</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">({</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">:+</span><span class="nx">offset</span><span class="o">}));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Get an object literal describing the current state of the paginator.  If</span>
+<span class="c">     * an object literal of proposed values is passed, the proposed state will</span>
+<span class="c">     * be returned as an object literal with the following keys:</span>
+<span class="c">     * &lt;ul&gt;</span>
+<span class="c">     * &lt;li&gt;paginator - instance of the Paginator&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;page - number&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;totalRecords - number&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;recordOffset - number&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;rowsPerPage - number&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;records - [ start_index, end_index ]&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;before - (OPTIONAL) { state object literal for current state }&lt;/li&gt;</span>
+<span class="c">     * &lt;/ul&gt;</span>
+<span class="c">     * @method getState</span>
+<span class="c">     * @return {object}</span>
+<span class="c">     * @param changes {object} OPTIONAL object literal with proposed values</span>
+<span class="c">     * Supported change keys include:</span>
+<span class="c">     * &lt;ul&gt;</span>
+<span class="c">     * &lt;li&gt;rowsPerPage&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;totalRecords&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;recordOffset OR&lt;/li&gt;</span>
+<span class="c">     * &lt;li&gt;page&lt;/li&gt;</span>
+<span class="c">     * &lt;/ul&gt;</span>
+<span class="c">     */</span>
+    <span class="nx">getState</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">changes</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">UNLIMITED</span> <span class="o">=</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">VALUE_UNLIMITED</span><span class="o">,</span>
+            <span class="nx">M</span> <span class="o">=</span> <span class="nb">Math</span><span class="o">,</span> <span class="nx">max</span> <span class="o">=</span> <span class="nx">M</span><span class="o">.</span><span class="nx">max</span><span class="o">,</span> <span class="nx">ceil</span> <span class="o">=</span> <span class="nx">M</span><span class="o">.</span><span class="nx">ceil</span><span class="o">,</span>
+            <span class="nx">currentState</span><span class="o">,</span> <span class="nx">state</span><span class="o">,</span> <span class="nx">offset</span><span class="o">;</span>
+
+        <span class="k">function</span> <span class="nx">normalizeOffset</span><span class="o">(</span><span class="nx">offset</span><span class="o">,</span><span class="nx">total</span><span class="o">,</span><span class="nx">rpp</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">offset</span> <span class="o">&lt;=</span> <span class="m">0</span> <span class="o">||</span> <span class="nx">total</span> <span class="o">===</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="m">0</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">total</span> <span class="o">===</span> <span class="nx">UNLIMITED</span> <span class="o">||</span> <span class="nx">total</span> <span class="o">&gt;</span> <span class="nx">offset</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="nx">offset</span> <span class="o">-</span> <span class="o">(</span><span class="nx">offset</span> <span class="o">%</span> <span class="nx">rpp</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="nx">total</span> <span class="o">-</span> <span class="o">(</span><span class="nx">total</span> <span class="o">%</span> <span class="nx">rpp</span> <span class="o">||</span> <span class="nx">rpp</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="nx">currentState</span> <span class="o">=</span> <span class="o">{</span>
+            <span class="nx">paginator</span>    <span class="o">:</span> <span class="k">this</span><span class="o">,</span>
+            <span class="nx">totalRecords</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;totalRecords&#39;</span><span class="o">),</span>
+            <span class="nx">rowsPerPage</span>  <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">),</span>
+            <span class="nx">records</span>      <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">getPageRecords</span><span class="o">()</span>
+        <span class="o">};</span>
+        <span class="nx">currentState</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">=</span> <span class="nx">normalizeOffset</span><span class="o">(</span>
+                                        <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;recordOffset&#39;</span><span class="o">),</span>
+                                        <span class="nx">currentState</span><span class="o">.</span><span class="nx">totalRecords</span><span class="o">,</span>
+                                        <span class="nx">currentState</span><span class="o">.</span><span class="nx">rowsPerPage</span><span class="o">);</span>
+        <span class="nx">currentState</span><span class="o">.</span><span class="nx">page</span> <span class="o">=</span> <span class="nx">ceil</span><span class="o">(</span><span class="nx">currentState</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">/</span>
+                                 <span class="nx">currentState</span><span class="o">.</span><span class="nx">rowsPerPage</span><span class="o">)</span> <span class="o">+</span> <span class="m">1</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">changes</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">currentState</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nx">state</span> <span class="o">=</span> <span class="o">{</span>
+            <span class="nx">paginator</span>    <span class="o">:</span> <span class="k">this</span><span class="o">,</span>
+            <span class="nx">before</span>       <span class="o">:</span> <span class="nx">currentState</span><span class="o">,</span>
+
+            <span class="nx">rowsPerPage</span>  <span class="o">:</span> <span class="nx">changes</span><span class="o">.</span><span class="nx">rowsPerPage</span> <span class="o">||</span> <span class="nx">currentState</span><span class="o">.</span><span class="nx">rowsPerPage</span><span class="o">,</span>
+            <span class="nx">totalRecords</span> <span class="o">:</span> <span class="o">(</span><span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">(</span><span class="nx">changes</span><span class="o">.</span><span class="nx">totalRecords</span><span class="o">)</span> <span class="o">?</span>
+                                <span class="nx">max</span><span class="o">(</span><span class="nx">changes</span><span class="o">.</span><span class="nx">totalRecords</span><span class="o">,</span><span class="nx">UNLIMITED</span><span class="o">)</span> <span class="o">:</span>
+                                <span class="o">+</span><span class="nx">currentState</span><span class="o">.</span><span class="nx">totalRecords</span><span class="o">)</span>
+        <span class="o">};</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">state</span><span class="o">.</span><span class="nx">totalRecords</span> <span class="o">===</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">=</span>
+            <span class="nx">state</span><span class="o">.</span><span class="nx">page</span>         <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">offset</span> <span class="o">=</span> <span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">(</span><span class="nx">changes</span><span class="o">.</span><span class="nx">page</span><span class="o">)</span> <span class="o">?</span>
+                        <span class="o">(</span><span class="nx">changes</span><span class="o">.</span><span class="nx">page</span> <span class="o">-</span> <span class="m">1</span><span class="o">)</span> <span class="o">*</span> <span class="nx">state</span><span class="o">.</span><span class="nx">rowsPerPage</span> <span class="o">:</span>
+                        <span class="nx">Paginator</span><span class="o">.</span><span class="nx">isNumeric</span><span class="o">(</span><span class="nx">changes</span><span class="o">.</span><span class="nx">recordOffset</span><span class="o">)</span> <span class="o">?</span>
+                            <span class="o">+</span><span class="nx">changes</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">:</span>
+                            <span class="nx">currentState</span><span class="o">.</span><span class="nx">recordOffset</span><span class="o">;</span>
+
+            <span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">=</span> <span class="nx">normalizeOffset</span><span class="o">(</span><span class="nx">offset</span><span class="o">,</span>
+                                    <span class="nx">state</span><span class="o">.</span><span class="nx">totalRecords</span><span class="o">,</span>
+                                    <span class="nx">state</span><span class="o">.</span><span class="nx">rowsPerPage</span><span class="o">);</span>
+
+            <span class="nx">state</span><span class="o">.</span><span class="nx">page</span> <span class="o">=</span> <span class="nx">ceil</span><span class="o">(</span><span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">/</span> <span class="nx">state</span><span class="o">.</span><span class="nx">rowsPerPage</span><span class="o">)</span> <span class="o">+</span> <span class="m">1</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nx">state</span><span class="o">.</span><span class="nx">records</span> <span class="o">=</span> <span class="o">[</span> <span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span><span class="o">,</span>
+                          <span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">+</span> <span class="nx">state</span><span class="o">.</span><span class="nx">rowsPerPage</span> <span class="o">-</span> <span class="m">1</span> <span class="o">];</span>
+
+        <span class="c">// limit upper index to totalRecords - 1</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="nx">state</span><span class="o">.</span><span class="nx">totalRecords</span> <span class="o">!==</span> <span class="nx">UNLIMITED</span> <span class="o">&amp;&amp;</span>
+            <span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">&lt;</span> <span class="nx">state</span><span class="o">.</span><span class="nx">totalRecords</span> <span class="o">&amp;&amp;</span> <span class="nx">state</span><span class="o">.</span><span class="nx">records</span> <span class="o">&amp;&amp;</span>
+            <span class="nx">state</span><span class="o">.</span><span class="nx">records</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">&gt;</span> <span class="nx">state</span><span class="o">.</span><span class="nx">totalRecords</span> <span class="o">-</span> <span class="m">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">state</span><span class="o">.</span><span class="nx">records</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">=</span> <span class="nx">state</span><span class="o">.</span><span class="nx">totalRecords</span> <span class="o">-</span> <span class="m">1</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nx">state</span><span class="o">;</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Convenience method to facilitate setting state attributes rowsPerPage,</span>
+<span class="c">     * totalRecords, recordOffset in batch.  Also supports calculating</span>
+<span class="c">     * recordOffset from state.page if state.recordOffset is not provided.</span>
+<span class="c">     * Fires only a single pageChange event, if appropriate.</span>
+<span class="c">     * This will not fire a changeRequest event.</span>
+<span class="c">     * @method setState</span>
+<span class="c">     * @param state {Object} Object literal of attribute:value pairs to set</span>
+<span class="c">     */</span>
+    <span class="nx">setState</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">state</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">state</span><span class="o">))</span> <span class="o">{</span>
+            <span class="c">// get flux state based on current state with before state as well</span>
+<span class="c"></span>            <span class="k">this</span><span class="o">.</span><span class="nx">_state</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">({});</span>
+
+            <span class="c">// use just the state props from the input obj</span>
+<span class="c"></span>            <span class="nx">state</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="nx">page</span>         <span class="o">:</span> <span class="nx">state</span><span class="o">.</span><span class="nx">page</span><span class="o">,</span>
+                <span class="nx">rowsPerPage</span>  <span class="o">:</span> <span class="nx">state</span><span class="o">.</span><span class="nx">rowsPerPage</span><span class="o">,</span>
+                <span class="nx">totalRecords</span> <span class="o">:</span> <span class="nx">state</span><span class="o">.</span><span class="nx">totalRecords</span><span class="o">,</span>
+                <span class="nx">recordOffset</span> <span class="o">:</span> <span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span>
+            <span class="o">};</span>
+
+            <span class="c">// calculate recordOffset from page if recordOffset not specified.</span>
+<span class="c"></span>            <span class="c">// not using lang.isNumber for support of numeric strings</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">state</span><span class="o">.</span><span class="nx">page</span> <span class="o">&amp;&amp;</span> <span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">===</span> <span class="kc">undefined</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">state</span><span class="o">.</span><span class="nx">recordOffset</span> <span class="o">=</span> <span class="o">(</span><span class="nx">state</span><span class="o">.</span><span class="nx">page</span> <span class="o">-</span> <span class="m">1</span><span class="o">)</span> <span class="o">*</span>
+                    <span class="o">(</span><span class="nx">state</span><span class="o">.</span><span class="nx">rowsPerPage</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;rowsPerPage&#39;</span><span class="o">));</span>
+            <span class="o">}</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">_batch</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_pageChanged</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">state</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">state</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">k</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="nx">_configs</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">k</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">k</span><span class="o">,</span><span class="nx">state</span><span class="o">[</span><span class="nx">k</span><span class="o">]);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">_batch</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_pageChanged</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_pageChanged</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+                <span class="k">this</span><span class="o">.</span><span class="nx">_firePageChange</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">getState</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_state</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">};</span>
+
+<span class="nx">lang</span><span class="o">.</span><span class="nx">augmentProto</span><span class="o">(</span><span class="nx">Paginator</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">AttributeProvider</span><span class="o">);</span>
+
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Paginator</span> <span class="o">=</span> <span class="nx">Paginator</span><span class="o">;</span>
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class="selected"><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Paginator.html" title="YAHOO.widget.Paginator">YAHOO.widget.Paginator</a></li>
+                                <li class=""><a href="YAHOO.widget.Paginator.ui.CurrentPageReport.html" title="YAHOO.widget.Paginator.ui.CurrentPageReport">YAHOO.widget.Paginator.ui.CurrentPageReport</a></li>
+                                <li class=""><a href="YAHOO.widget.Paginator.ui.FirstPageLink.html" title="YAHOO.widget.Paginator.ui.FirstPageLink">YAHOO.widget.Paginator.ui.FirstPageLink</a></li>
+                                <li class=""><a href="YAHOO.widget.Paginator.ui.LastPageLink.html" title="YAHOO.widget.Paginator.ui.LastPageLink">YAHOO.widget.Paginator.ui.LastPageLink</a></li>
+                                <li class=""><a href="YAHOO.widget.Paginator.ui.NextPageLink.html" title="YAHOO.widget.Paginator.ui.NextPageLink">YAHOO.widget.Paginator.ui.NextPageLink</a></li>
+                                <li class=""><a href="YAHOO.widget.Paginator.ui.PageLinks.html" title="YAHOO.widget.Paginator.ui.PageLinks">YAHOO.widget.Paginator.ui.PageLinks</a></li>
+                                <li class=""><a href="YAHOO.widget.Paginator.ui.PreviousPageLink.html" title="YAHOO.widget.Paginator.ui.PreviousPageLink">YAHOO.widget.Paginator.ui.PreviousPageLink</a></li>
+                                <li class=""><a href="YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html" title="YAHOO.widget.Paginator.ui.RowsPerPageDropdown">YAHOO.widget.Paginator.ui.RowsPerPageDropdown</a></li>
+                                <li class=""><a href="YAHOO.widget.Paginator.ui.YourComponent.html" title="YAHOO.widget.Paginator.ui.YourComponent">YAHOO.widget.Paginator.ui.YourComponent</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="CurrentPageReport.js.html" title="CurrentPageReport.js">CurrentPageReport.js</a></li>
+                                <li class=""><a href="FirstPageLink.js.html" title="FirstPageLink.js">FirstPageLink.js</a></li>
+                                <li class=""><a href="LastPageLink.js.html" title="LastPageLink.js">LastPageLink.js</a></li>
+                                <li class=""><a href="NextPageLink.js.html" title="NextPageLink.js">NextPageLink.js</a></li>
+                                <li class=""><a href="PageLinks.js.html" title="PageLinks.js">PageLinks.js</a></li>
+                                <li class="selected"><a href="Paginator.js.html" title="Paginator.js">Paginator.js</a></li>
+                                <li class=""><a href="PreviousPageLink.js.html" title="PreviousPageLink.js">PreviousPageLink.js</a></li>
+                                <li class=""><a href="RowsPerPageDropDown.js.html" title="RowsPerPageDropDown.js">RowsPerPageDropDown.js</a></li>
+                                <li class=""><a href="UIComponentTemplate.js.html" title="UIComponentTemplate.js">UIComponentTemplate.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "protected", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "all", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#property_all", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "alwaysVisible", "url": "YAHOO.widget.Paginator.html#config_alwaysVisible", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "alwaysVisibleChange", "url": "YAHOO.widget.Paginator.html#event_alwaysVisibleChange", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Paginator", "name": "_batch", "url": "YAHOO.widget.Paginator.html#property__batch", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeAlwaysVisibleChange", "url": "YAHOO.widget.Paginator.html#event_beforeAlwaysVisibleChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeContainerClassChange", "url": "YAHOO.widget.Paginator.html#event_beforeContainerClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeContainersChange", "url": "YAHOO.widget.Paginator.html#event_beforeContainersChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "beforeCurrentPageClassChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_beforeCurrentPageClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeDestroy", "url": "YAHOO.widget.Paginator.html#event_beforeDestroy", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "beforeFirstPageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#event_beforeFirstPageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "beforeFirstPageLinkLabelChange", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#event_beforeFirstPageLinkLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeIdChange", "url": "YAHOO.widget.Paginator.html#event_beforeIdChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeInitialPageChange", "url": "YAHOO.widget.Paginator.html#event_beforeInitialPageChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "beforeLastPageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#event_beforeLastPageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "beforeLastPageLinkLabelChange", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#event_beforeLastPageLinkLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "beforeMyAttrChange", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#event_beforeMyAttrChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "beforeNextPageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#event_beforeNextPageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "beforeNextPageLinkLabelChange", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#event_beforeNextPageLinkLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "beforePageLabelBuilderChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_beforePageLabelBuilderChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "beforePageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_beforePageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "beforePageLinksChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_beforePageLinksChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "beforePageLinksContainerClassChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_beforePageLinksContainerClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "beforePageReportClassChange", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#event_beforePageReportClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "beforePageReportTemplateChange", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#event_beforePageReportTemplateChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "beforePageReportValueGenaratorChange", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#event_beforePageReportValueGenaratorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "beforePreviousPageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#event_beforePreviousPageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "beforePreviousPageLinkLabelChange", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#event_beforePreviousPageLinkLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeRecordOffsetChange", "url": "YAHOO.widget.Paginator.html#event_beforeRecordOffsetChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeRenderedChange", "url": "YAHOO.widget.Paginator.html#event_beforeRenderedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeRowsPerPageChange", "url": "YAHOO.widget.Paginator.html#event_beforeRowsPerPageChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "beforeRowsPerPageDropdownClassChange", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#event_beforeRowsPerPageDropdownClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "beforeRowsPerPageOptionsChange", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#event_beforeRowsPerPageOptionsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeTemplateChange", "url": "YAHOO.widget.Paginator.html#event_beforeTemplateChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeTotalRecordsChange", "url": "YAHOO.widget.Paginator.html#event_beforeTotalRecordsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "beforeUpdateOnChangeChange", "url": "YAHOO.widget.Paginator.html#event_beforeUpdateOnChangeChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "bindUI", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_bindUI", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "button", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#property_button", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "calculateRange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#method_calculateRange", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "changeRequest", "url": "YAHOO.widget.Paginator.html#event_changeRequest", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "container", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#property_container", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "containerClass", "url": "YAHOO.widget.Paginator.html#config_containerClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "containerClassChange", "url": "YAHOO.widget.Paginator.html#event_containerClassChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator", "name": "_containers", "url": "YAHOO.widget.Paginator.html#property__containers", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "containers", "url": "YAHOO.widget.Paginator.html#config_containers", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "containersChange", "url": "YAHOO.widget.Paginator.html#event_containersChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "current", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#property_current", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "current", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#property_current", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "current", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#property_current", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "current", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#property_current", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "current", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#property_current", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "currentPageClass", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#config_currentPageClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "currentPageClassChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_currentPageClassChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "destroy", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#method_destroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "destroy", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#method_destroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "destroy", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#method_destroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "destroy", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "destroy", "url": "YAHOO.widget.Paginator.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "destroy", "url": "YAHOO.widget.Paginator.html#event_destroy", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "destroy", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#method_destroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "destroy", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#method_destroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "destroy", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#method_destroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "destroy", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_destroy", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Paginator", "name": "_firePageChange", "url": "YAHOO.widget.Paginator.html#method__firePageChange", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "firstPageLinkClass", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#config_firstPageLinkClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "firstPageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#event_firstPageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "firstPageLinkLabel", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#config_firstPageLinkLabel", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "firstPageLinkLabelChange", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#event_firstPageLinkLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getContainerNodes", "url": "YAHOO.widget.Paginator.html#method_getContainerNodes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getCurrentPage", "url": "YAHOO.widget.Paginator.html#method_getCurrentPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getNextPage", "url": "YAHOO.widget.Paginator.html#method_getNextPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getPageRecords", "url": "YAHOO.widget.Paginator.html#method_getPageRecords", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getPreviousPage", "url": "YAHOO.widget.Paginator.html#method_getPreviousPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getRowsPerPage", "url": "YAHOO.widget.Paginator.html#method_getRowsPerPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getStartIndex", "url": "YAHOO.widget.Paginator.html#method_getStartIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getState", "url": "YAHOO.widget.Paginator.html#method_getState", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getTotalPages", "url": "YAHOO.widget.Paginator.html#method_getTotalPages", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "getTotalRecords", "url": "YAHOO.widget.Paginator.html#method_getTotalRecords", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Paginator", "name": "_handleStateChange", "url": "YAHOO.widget.Paginator.html#method__handleStateChange", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "_handleTotalRecordsChange", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#method__handleTotalRecordsChange", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "hasNextPage", "url": "YAHOO.widget.Paginator.html#method_hasNextPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "hasPage", "url": "YAHOO.widget.Paginator.html#method_hasPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "hasPreviousPage", "url": "YAHOO.widget.Paginator.html#method_hasPreviousPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "id", "url": "YAHOO.widget.Paginator.html#config_id", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "idChange", "url": "YAHOO.widget.Paginator.html#event_idChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "init", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "init", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "init", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "init", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "init", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "init", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "init", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "init", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator", "name": "initConfig", "url": "YAHOO.widget.Paginator.html#method_initConfig", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator", "name": "initEvents", "url": "YAHOO.widget.Paginator.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "initialPage", "url": "YAHOO.widget.Paginator.html#config_initialPage", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "initialPageChange", "url": "YAHOO.widget.Paginator.html#event_initialPageChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "initListeners", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_initListeners", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "initUI", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_initUI", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator", "name": "initUIComponents", "url": "YAHOO.widget.Paginator.html#method_initUIComponents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "lastPageLinkClass", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#config_lastPageLinkClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "lastPageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#event_lastPageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "lastPageLinkLabel", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#config_lastPageLinkLabel", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "lastPageLinkLabelChange", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#event_lastPageLinkLabelChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "link", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#property_link", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "link", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#property_link", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "link", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#property_link", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "link", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#property_link", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "myAttr", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#config_myAttr", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "myAttrChange", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#event_myAttrChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "na", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#property_na", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "nextPageLinkClass", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#config_nextPageLinkClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "nextPageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#event_nextPageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "nextPageLinkLabel", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#config_nextPageLinkLabel", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "nextPageLinkLabelChange", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#event_nextPageLinkLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "onChange", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#method_onChange", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "onClick", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#method_onClick", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "onClick", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#method_onClick", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "onClick", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#method_onClick", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "onClick", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#method_onClick", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "onClick", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#method_onClick", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "onClick", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_onClick", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "pageChange", "url": "YAHOO.widget.Paginator.html#event_pageChange", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Paginator", "name": "_pageChanged", "url": "YAHOO.widget.Paginator.html#property__pageChanged", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "pageLabelBuilder", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#config_pageLabelBuilder", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "pageLabelBuilderChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_pageLabelBuilderChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "pageLinkClass", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#config_pageLinkClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "pageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_pageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "pageLinks", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#config_pageLinks", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "pageLinksChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_pageLinksChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "pageLinksContainerClass", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#config_pageLinksContainerClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "pageLinksContainerClassChange", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#event_pageLinksContainerClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "pageReportClass", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#config_pageReportClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "pageReportClassChange", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#event_pageReportClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "pageReportTemplate", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#config_pageReportTemplate", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "pageReportTemplateChange", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#event_pageReportTemplateChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "pageReportValueGenarator", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#config_pageReportValueGenarator", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "pageReportValueGenaratorChange", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#event_pageReportValueGenaratorChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator", "name": "Paginator.id", "url": "YAHOO.widget.Paginator.html#property_Paginator.id", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator", "name": "Paginator.ID_BASE", "url": "YAHOO.widget.Paginator.html#property_Paginator.ID_BASE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "Paginator.isNumeric", "url": "YAHOO.widget.Paginator.html#method_Paginator.isNumeric", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "Paginator.TEMPLATE_DEFAULT", "url": "YAHOO.widget.Paginator.html#property_Paginator.TEMPLATE_DEFAULT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "Paginator.TEMPLATE_ROWS_PER_PAGE", "url": "YAHOO.widget.Paginator.html#property_Paginator.TEMPLATE_ROWS_PER_PAGE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "Paginator.toNumber", "url": "YAHOO.widget.Paginator.html#method_Paginator.toNumber", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "Paginator.ui", "url": "YAHOO.widget.Paginator.html#property_Paginator.ui", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "Paginator.VALUE_UNLIMITED", "url": "YAHOO.widget.Paginator.html#property_Paginator.VALUE_UNLIMITED", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "previousPageLinkClass", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#config_previousPageLinkClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "previousPageLinkClassChange", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#event_previousPageLinkClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "previousPageLinkLabel", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#config_previousPageLinkLabel", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "previousPageLinkLabelChange", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#event_previousPageLinkLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "rebuild", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#method_rebuild", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "rebuild", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#method_rebuild", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "rebuild", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_rebuild", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "recordOffset", "url": "YAHOO.widget.Paginator.html#config_recordOffset", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "recordOffsetChange", "url": "YAHOO.widget.Paginator.html#event_recordOffsetChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "render", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "render", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "render", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "render", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "render", "url": "YAHOO.widget.Paginator.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "render", "url": "YAHOO.widget.Paginator.html#event_render", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "render", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "render", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "render", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "render", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "rendered", "url": "YAHOO.widget.Paginator.html#event_rendered", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "rendered", "url": "YAHOO.widget.Paginator.html#config_rendered", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "renderedChange", "url": "YAHOO.widget.Paginator.html#event_renderedChange", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Paginator", "name": "_renderTemplate", "url": "YAHOO.widget.Paginator.html#method__renderTemplate", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "renderUIComponent", "url": "YAHOO.widget.Paginator.html#method_renderUIComponent", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "rowsPerPage", "url": "YAHOO.widget.Paginator.html#config_rowsPerPage", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "rowsPerPageChange", "url": "YAHOO.widget.Paginator.html#event_rowsPerPageChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "rowsPerPageDropdownClass", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#config_rowsPerPageDropdownClass", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "rowsPerPageDropdownClassChange", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#event_rowsPerPageDropdownClassChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "rowsPerPageOptions", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#config_rowsPerPageOptions", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "rowsPerPageOptionsChange", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#event_rowsPerPageOptionsChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "select", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#property_select", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Paginator", "name": "_selfSubscribe", "url": "YAHOO.widget.Paginator.html#method__selfSubscribe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "setPage", "url": "YAHOO.widget.Paginator.html#method_setPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "setRowsPerPage", "url": "YAHOO.widget.Paginator.html#method_setRowsPerPage", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "setStartIndex", "url": "YAHOO.widget.Paginator.html#method_setStartIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "setState", "url": "YAHOO.widget.Paginator.html#method_setState", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "setTotalRecords", "url": "YAHOO.widget.Paginator.html#method_setTotalRecords", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "span", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#property_span", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "span", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#property_span", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "span", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#property_span", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "span", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#property_span", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "span", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#property_span", "type": "property"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "sprintf", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#method_sprintf", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Paginator", "name": "_state", "url": "YAHOO.widget.Paginator.html#property__state", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Paginator", "name": "_syncRecordOffset", "url": "YAHOO.widget.Paginator.html#method__syncRecordOffset", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "template", "url": "YAHOO.widget.Paginator.html#config_template", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "templateChange", "url": "YAHOO.widget.Paginator.html#event_templateChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "totalRecords", "url": "YAHOO.widget.Paginator.html#config_totalRecords", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "totalRecordsChange", "url": "YAHOO.widget.Paginator.html#event_totalRecordsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PageLinks", "name": "update", "url": "YAHOO.widget.Paginator.ui.PageLinks.html#method_update", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.NextPageLink", "name": "update", "url": "YAHOO.widget.Paginator.ui.NextPageLink.html#method_update", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.LastPageLink", "name": "update", "url": "YAHOO.widget.Paginator.ui.LastPageLink.html#method_update", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.CurrentPageReport", "name": "update", "url": "YAHOO.widget.Paginator.ui.CurrentPageReport.html#method_update", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown", "name": "update", "url": "YAHOO.widget.Paginator.ui.RowsPerPageDropdown.html#method_update", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.FirstPageLink", "name": "update", "url": "YAHOO.widget.Paginator.ui.FirstPageLink.html#method_update", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.PreviousPageLink", "name": "update", "url": "YAHOO.widget.Paginator.ui.PreviousPageLink.html#method_update", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator.ui.YourComponent", "name": "update", "url": "YAHOO.widget.Paginator.ui.YourComponent.html#method_update", "type": "method"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "updateOnChange", "url": "YAHOO.widget.Paginator.html#config_updateOnChange", "type": "config"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "updateOnChangeChange", "url": "YAHOO.widget.Paginator.html#event_updateOnChangeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Paginator", "name": "updateVisibility", "url": "YAHOO.widget.Paginator.html#method_updateVisibility", "type": "method"}];
+</script>
+</body>
+</html>

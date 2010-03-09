@@ -1,0 +1,521 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: dragdrop   DD.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Drag and Drop&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_dragdrop.html" title="dragdrop">dragdrop</a>
+                
+                 &gt; DD.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * A DragDrop implementation where the linked element follows the </span>
+<span class="c"> * mouse cursor during a drag.</span>
+<span class="c"> * @class DD</span>
+<span class="c"> * @extends YAHOO.util.DragDrop</span>
+<span class="c"> * @namespace YAHOO.util</span>
+<span class="c"> * @constructor</span>
+<span class="c"> * @param {String} id the id of the linked element </span>
+<span class="c"> * @param {String} sGroup the group of related DragDrop items</span>
+<span class="c"> * @param {object} config an object containing configurable attributes</span>
+<span class="c"> *                Valid properties for DD: </span>
+<span class="c"> *                    scroll</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DD</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">sGroup</span><span class="o">,</span> <span class="nx">config</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">init</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">sGroup</span><span class="o">,</span> <span class="nx">config</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">};</span>
+
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DD</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DragDrop</span><span class="o">,</span> <span class="o">{</span>
+
+    <span class="c">/**</span>
+<span class="c">     * When set to true, the utility automatically tries to scroll the browser</span>
+<span class="c">     * window when a drag and drop element is dragged near the viewport boundary.</span>
+<span class="c">     * Defaults to true.</span>
+<span class="c">     * @property scroll</span>
+<span class="c">     * @type boolean</span>
+<span class="c">     */</span>
+    <span class="nx">scroll</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span> 
+
+    <span class="c">/**</span>
+<span class="c">     * Sets the pointer offset to the distance between the linked element&#39;s top </span>
+<span class="c">     * left corner and the location the element was clicked</span>
+<span class="c">     * @method autoOffset</span>
+<span class="c">     * @param {int} iPageX the X coordinate of the click</span>
+<span class="c">     * @param {int} iPageY the Y coordinate of the click</span>
+<span class="c">     */</span>
+    <span class="nx">autoOffset</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">iPageX</span><span class="o">,</span> <span class="nx">iPageY</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">iPageX</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">startPageX</span><span class="o">;</span>
+        <span class="k">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">iPageY</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">startPageY</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setDelta</span><span class="o">(</span><span class="nx">x</span><span class="o">,</span> <span class="nx">y</span><span class="o">);</span>
+        <span class="c">// this.logger.log(&quot;autoOffset el pos: &quot; + aCoord + &quot;, delta: &quot; + x + &quot;,&quot; + y);</span>
+<span class="c"></span>    <span class="o">},</span>
+
+    <span class="c">/** </span>
+<span class="c">     * Sets the pointer offset.  You can call this directly to force the </span>
+<span class="c">     * offset to be in a particular location (e.g., pass in 0,0 to set it </span>
+<span class="c">     * to the center of the object, as done in YAHOO.widget.Slider)</span>
+<span class="c">     * @method setDelta</span>
+<span class="c">     * @param {int} iDeltaX the distance from the left</span>
+<span class="c">     * @param {int} iDeltaY the distance from the top</span>
+<span class="c">     */</span>
+    <span class="nx">setDelta</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">iDeltaX</span><span class="o">,</span> <span class="nx">iDeltaY</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">deltaX</span> <span class="o">=</span> <span class="nx">iDeltaX</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">deltaY</span> <span class="o">=</span> <span class="nx">iDeltaY</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;deltaX:&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">deltaX</span> <span class="o">+</span> <span class="s2">&quot;, deltaY:&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">deltaY</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Sets the drag element to the location of the mousedown or click event, </span>
+<span class="c">     * maintaining the cursor location relative to the location on the element </span>
+<span class="c">     * that was clicked.  Override this if you want to place the element in a </span>
+<span class="c">     * location other than where the cursor is.</span>
+<span class="c">     * @method setDragElPos</span>
+<span class="c">     * @param {int} iPageX the X coordinate of the mousedown or drag event</span>
+<span class="c">     * @param {int} iPageY the Y coordinate of the mousedown or drag event</span>
+<span class="c">     */</span>
+    <span class="nx">setDragElPos</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">iPageX</span><span class="o">,</span> <span class="nx">iPageY</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c">// the first time we do this, we are going to check to make sure</span>
+<span class="c"></span>        <span class="c">// the element has css positioning</span>
+<span class="c"></span>
+        <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getDragEl</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">alignElWithMouse</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">iPageX</span><span class="o">,</span> <span class="nx">iPageY</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Sets the element to the location of the mousedown or click event, </span>
+<span class="c">     * maintaining the cursor location relative to the location on the element </span>
+<span class="c">     * that was clicked.  Override this if you want to place the element in a </span>
+<span class="c">     * location other than where the cursor is.</span>
+<span class="c">     * @method alignElWithMouse</span>
+<span class="c">     * @param {HTMLElement} el the element to move</span>
+<span class="c">     * @param {int} iPageX the X coordinate of the mousedown or drag event</span>
+<span class="c">     * @param {int} iPageY the Y coordinate of the mousedown or drag event</span>
+<span class="c">     */</span>
+    <span class="nx">alignElWithMouse</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">iPageX</span><span class="o">,</span> <span class="nx">iPageY</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">oCoord</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTargetCoord</span><span class="o">(</span><span class="nx">iPageX</span><span class="o">,</span> <span class="nx">iPageY</span><span class="o">);</span>
+        <span class="c">// this.logger.log(&quot;****alignElWithMouse : &quot; + el.id + &quot;, &quot; + aCoord + &quot;, &quot; + el.style.display);</span>
+<span class="c"></span>
+        <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">deltaSetXY</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">aCoord</span> <span class="o">=</span> <span class="o">[</span><span class="nx">oCoord</span><span class="o">.</span><span class="nx">x</span><span class="o">,</span> <span class="nx">oCoord</span><span class="o">.</span><span class="nx">y</span><span class="o">];</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">setXY</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">aCoord</span><span class="o">);</span>
+
+            <span class="k">var</span> <span class="nx">newLeft</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;left&quot;</span><span class="o">),</span> <span class="m">10</span> <span class="o">);</span>
+            <span class="k">var</span> <span class="nx">newTop</span>  <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;top&quot;</span> <span class="o">),</span> <span class="m">10</span> <span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">deltaSetXY</span> <span class="o">=</span> <span class="o">[</span> <span class="nx">newLeft</span> <span class="o">-</span> <span class="nx">oCoord</span><span class="o">.</span><span class="nx">x</span><span class="o">,</span> <span class="nx">newTop</span> <span class="o">-</span> <span class="nx">oCoord</span><span class="o">.</span><span class="nx">y</span> <span class="o">];</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;left&quot;</span><span class="o">,</span> <span class="o">(</span><span class="nx">oCoord</span><span class="o">.</span><span class="nx">x</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">deltaSetXY</span><span class="o">[</span><span class="m">0</span><span class="o">])</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="o">);</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;top&quot;</span><span class="o">,</span>  <span class="o">(</span><span class="nx">oCoord</span><span class="o">.</span><span class="nx">y</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">deltaSetXY</span><span class="o">[</span><span class="m">1</span><span class="o">])</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">this</span><span class="o">.</span><span class="nx">cachePosition</span><span class="o">(</span><span class="nx">oCoord</span><span class="o">.</span><span class="nx">x</span><span class="o">,</span> <span class="nx">oCoord</span><span class="o">.</span><span class="nx">y</span><span class="o">);</span>
+        <span class="k">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+        <span class="nx">setTimeout</span><span class="o">(</span><span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nx">self</span><span class="o">.</span><span class="nx">autoScroll</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="nx">self</span><span class="o">,</span> <span class="nx">oCoord</span><span class="o">.</span><span class="nx">x</span><span class="o">,</span> <span class="nx">oCoord</span><span class="o">.</span><span class="nx">y</span><span class="o">,</span> <span class="nx">el</span><span class="o">.</span><span class="nx">offsetHeight</span><span class="o">,</span> <span class="nx">el</span><span class="o">.</span><span class="nx">offsetWidth</span><span class="o">);</span>
+        <span class="o">},</span> <span class="m">0</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Saves the most recent position so that we can reset the constraints and</span>
+<span class="c">     * tick marks on-demand.  We need to know this so that we can calculate the</span>
+<span class="c">     * number of pixels the element is offset from its original position.</span>
+<span class="c">     * @method cachePosition</span>
+<span class="c">     * @param iPageX the current x position (optional, this just makes it so we</span>
+<span class="c">     * don&#39;t have to look it up again)</span>
+<span class="c">     * @param iPageY the current y position (optional, this just makes it so we</span>
+<span class="c">     * don&#39;t have to look it up again)</span>
+<span class="c">     */</span>
+    <span class="nx">cachePosition</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">iPageX</span><span class="o">,</span> <span class="nx">iPageY</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">iPageX</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">lastPageX</span> <span class="o">=</span> <span class="nx">iPageX</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">lastPageY</span> <span class="o">=</span> <span class="nx">iPageY</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">aCoord</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getXY</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">getEl</span><span class="o">());</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">lastPageX</span> <span class="o">=</span> <span class="nx">aCoord</span><span class="o">[</span><span class="m">0</span><span class="o">];</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">lastPageY</span> <span class="o">=</span> <span class="nx">aCoord</span><span class="o">[</span><span class="m">1</span><span class="o">];</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Auto-scroll the window if the dragged object has been moved beyond the </span>
+<span class="c">     * visible window boundary.</span>
+<span class="c">     * @method autoScroll</span>
+<span class="c">     * @param {int} x the drag element&#39;s x position</span>
+<span class="c">     * @param {int} y the drag element&#39;s y position</span>
+<span class="c">     * @param {int} h the height of the drag element</span>
+<span class="c">     * @param {int} w the width of the drag element</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="nx">autoScroll</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">x</span><span class="o">,</span> <span class="nx">y</span><span class="o">,</span> <span class="nx">h</span><span class="o">,</span> <span class="nx">w</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">scroll</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c">// The client height</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">clientH</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">DDM</span><span class="o">.</span><span class="nx">getClientHeight</span><span class="o">();</span>
+
+            <span class="c">// The client width</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">clientW</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">DDM</span><span class="o">.</span><span class="nx">getClientWidth</span><span class="o">();</span>
+
+            <span class="c">// The amt scrolled down</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">st</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">DDM</span><span class="o">.</span><span class="nx">getScrollTop</span><span class="o">();</span>
+
+            <span class="c">// The amt scrolled right</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">sl</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">DDM</span><span class="o">.</span><span class="nx">getScrollLeft</span><span class="o">();</span>
+
+            <span class="c">// Location of the bottom of the element</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">bot</span> <span class="o">=</span> <span class="nx">h</span> <span class="o">+</span> <span class="nx">y</span><span class="o">;</span>
+
+            <span class="c">// Location of the right of the element</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">right</span> <span class="o">=</span> <span class="nx">w</span> <span class="o">+</span> <span class="nx">x</span><span class="o">;</span>
+
+            <span class="c">// The distance from the cursor to the bottom of the visible area, </span>
+<span class="c"></span>            <span class="c">// adjusted so that we don&#39;t scroll if the cursor is beyond the</span>
+<span class="c"></span>            <span class="c">// element drag constraints</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">toBot</span> <span class="o">=</span> <span class="o">(</span><span class="nx">clientH</span> <span class="o">+</span> <span class="nx">st</span> <span class="o">-</span> <span class="nx">y</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">deltaY</span><span class="o">);</span>
+
+            <span class="c">// The distance from the cursor to the right of the visible area</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">toRight</span> <span class="o">=</span> <span class="o">(</span><span class="nx">clientW</span> <span class="o">+</span> <span class="nx">sl</span> <span class="o">-</span> <span class="nx">x</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">deltaX</span><span class="o">);</span>
+
+            <span class="c">// this.logger.log( &quot; x: &quot; + x + &quot; y: &quot; + y + &quot; h: &quot; + h + </span>
+<span class="c"></span>            <span class="c">// &quot; clientH: &quot; + clientH + &quot; clientW: &quot; + clientW + </span>
+<span class="c"></span>            <span class="c">// &quot; st: &quot; + st + &quot; sl: &quot; + sl + &quot; bot: &quot; + bot + </span>
+<span class="c"></span>            <span class="c">// &quot; right: &quot; + right + &quot; toBot: &quot; + toBot + &quot; toRight: &quot; + toRight);</span>
+<span class="c"></span>
+            <span class="c">// How close to the edge the cursor must be before we scroll</span>
+<span class="c"></span>            <span class="c">// var thresh = (document.all) ? 100 : 40;</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">thresh</span> <span class="o">=</span> <span class="m">40</span><span class="o">;</span>
+
+            <span class="c">// How many pixels to scroll per autoscroll op.  This helps to reduce </span>
+<span class="c"></span>            <span class="c">// clunky scrolling. IE is more sensitive about this ... it needs this </span>
+<span class="c"></span>            <span class="c">// value to be higher.</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">scrAmt</span> <span class="o">=</span> <span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">all</span><span class="o">)</span> <span class="o">?</span> <span class="m">80</span> <span class="o">:</span> <span class="m">30</span><span class="o">;</span>
+
+            <span class="c">// Scroll down if we are near the bottom of the visible page and the </span>
+<span class="c"></span>            <span class="c">// obj extends below the crease</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span> <span class="nx">bot</span> <span class="o">&gt;</span> <span class="nx">clientH</span> <span class="o">&amp;&amp;</span> <span class="nx">toBot</span> <span class="o">&lt;</span> <span class="nx">thresh</span> <span class="o">)</span> <span class="o">{</span> 
+                <span class="nb">window</span><span class="o">.</span><span class="nx">scrollTo</span><span class="o">(</span><span class="nx">sl</span><span class="o">,</span> <span class="nx">st</span> <span class="o">+</span> <span class="nx">scrAmt</span><span class="o">);</span> 
+            <span class="o">}</span>
+
+            <span class="c">// Scroll up if the window is scrolled down and the top of the object</span>
+<span class="c"></span>            <span class="c">// goes above the top border</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="nx">st</span> <span class="o">&amp;&amp;</span> <span class="nx">st</span> <span class="o">&gt;</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nx">y</span> <span class="o">-</span> <span class="nx">st</span> <span class="o">&lt;</span> <span class="nx">thresh</span> <span class="o">)</span> <span class="o">{</span> 
+                <span class="nb">window</span><span class="o">.</span><span class="nx">scrollTo</span><span class="o">(</span><span class="nx">sl</span><span class="o">,</span> <span class="nx">st</span> <span class="o">-</span> <span class="nx">scrAmt</span><span class="o">);</span> 
+            <span class="o">}</span>
+
+            <span class="c">// Scroll right if the obj is beyond the right border and the cursor is</span>
+<span class="c"></span>            <span class="c">// near the border.</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span> <span class="nx">right</span> <span class="o">&gt;</span> <span class="nx">clientW</span> <span class="o">&amp;&amp;</span> <span class="nx">toRight</span> <span class="o">&lt;</span> <span class="nx">thresh</span> <span class="o">)</span> <span class="o">{</span> 
+                <span class="nb">window</span><span class="o">.</span><span class="nx">scrollTo</span><span class="o">(</span><span class="nx">sl</span> <span class="o">+</span> <span class="nx">scrAmt</span><span class="o">,</span> <span class="nx">st</span><span class="o">);</span> 
+            <span class="o">}</span>
+
+            <span class="c">// Scroll left if the window has been scrolled to the right and the obj</span>
+<span class="c"></span>            <span class="c">// extends past the left border</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">sl</span> <span class="o">&amp;&amp;</span> <span class="nx">sl</span> <span class="o">&gt;</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nx">x</span> <span class="o">-</span> <span class="nx">sl</span> <span class="o">&lt;</span> <span class="nx">thresh</span> <span class="o">)</span> <span class="o">{</span> 
+                <span class="nb">window</span><span class="o">.</span><span class="nx">scrollTo</span><span class="o">(</span><span class="nx">sl</span> <span class="o">-</span> <span class="nx">scrAmt</span><span class="o">,</span> <span class="nx">st</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">},</span>
+
+    <span class="c">/*</span>
+<span class="c">     * Sets up config options specific to this class. Overrides</span>
+<span class="c">     * YAHOO.util.DragDrop, but all versions of this method through the </span>
+<span class="c">     * inheritance chain are called</span>
+<span class="c">     */</span>
+    <span class="nx">applyConfig</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DD</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">applyConfig</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">scroll</span> <span class="o">=</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">.</span><span class="nx">scroll</span> <span class="o">!==</span> <span class="kc">false</span><span class="o">);</span>
+    <span class="o">},</span>
+
+    <span class="c">/*</span>
+<span class="c">     * Event that fires prior to the onMouseDown event.  Overrides </span>
+<span class="c">     * YAHOO.util.DragDrop.</span>
+<span class="c">     */</span>
+    <span class="nx">b4MouseDown</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setStartPosition</span><span class="o">();</span>
+        <span class="c">// this.resetConstraints();</span>
+<span class="c"></span>        <span class="k">this</span><span class="o">.</span><span class="nx">autoOffset</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">.</span><span class="nx">getPageX</span><span class="o">(</span><span class="nx">e</span><span class="o">),</span> 
+                            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">.</span><span class="nx">getPageY</span><span class="o">(</span><span class="nx">e</span><span class="o">));</span>
+    <span class="o">},</span>
+
+    <span class="c">/*</span>
+<span class="c">     * Event that fires prior to the onDrag event.  Overrides </span>
+<span class="c">     * YAHOO.util.DragDrop.</span>
+<span class="c">     */</span>
+    <span class="nx">b4Drag</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setDragElPos</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">.</span><span class="nx">getPageX</span><span class="o">(</span><span class="nx">e</span><span class="o">),</span> 
+                            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">.</span><span class="nx">getPageY</span><span class="o">(</span><span class="nx">e</span><span class="o">));</span>
+    <span class="o">},</span>
+
+    <span class="nx">toString</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">(</span><span class="s2">&quot;DD &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">id</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c">//////////////////////////////////////////////////////////////////////////</span>
+<span class="c"></span>    <span class="c">// Debugging ygDragDrop events that can be overridden</span>
+<span class="c"></span>    <span class="c">//////////////////////////////////////////////////////////////////////////</span>
+<span class="c"></span>    <span class="c">/*</span>
+<span class="c">    startDrag: function(x, y) {</span>
+<span class="c">        this.logger.log(this.id.toString()  + &quot; startDrag&quot;);</span>
+<span class="c">    },</span>
+<span class="c"></span>
+<span class="c">    onDrag: function(e) {</span>
+<span class="c">        this.logger.log(this.id.toString() + &quot; onDrag&quot;);</span>
+<span class="c">    },</span>
+<span class="c"></span>
+<span class="c">    onDragEnter: function(e, id) {</span>
+<span class="c">        this.logger.log(this.id.toString() + &quot; onDragEnter: &quot; + id);</span>
+<span class="c">    },</span>
+<span class="c"></span>
+<span class="c">    onDragOver: function(e, id) {</span>
+<span class="c">        this.logger.log(this.id.toString() + &quot; onDragOver: &quot; + id);</span>
+<span class="c">    },</span>
+<span class="c"></span>
+<span class="c">    onDragOut: function(e, id) {</span>
+<span class="c">        this.logger.log(this.id.toString() + &quot; onDragOut: &quot; + id);</span>
+<span class="c">    },</span>
+<span class="c"></span>
+<span class="c">    onDragDrop: function(e, id) {</span>
+<span class="c">        this.logger.log(this.id.toString() + &quot; onDragDrop: &quot; + id);</span>
+<span class="c">    },</span>
+<span class="c"></span>
+<span class="c">    endDrag: function(e) {</span>
+<span class="c">        this.logger.log(this.id.toString() + &quot; endDrag&quot;);</span>
+<span class="c">    }</span>
+<span class="c"></span>
+<span class="c">    */</span>
+
+<span class="c">/**</span>
+<span class="c">* @event mouseDownEvent</span>
+<span class="c">* @description Provides access to the mousedown event. The mousedown does not always result in a drag operation.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+
+<span class="c">/**</span>
+<span class="c">* @event b4MouseDownEvent</span>
+<span class="c">* @description Provides access to the mousedown event, before the mouseDownEvent gets fired. Returning false will cancel the drag.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+
+<span class="c">/**</span>
+<span class="c">* @event mouseUpEvent</span>
+<span class="c">* @description Fired from inside DragDropMgr when the drag operation is finished.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+
+<span class="c">/**</span>
+<span class="c">* @event b4StartDragEvent</span>
+<span class="c">* @description Fires before the startDragEvent, returning false will cancel the startDrag Event.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+
+<span class="c">/**</span>
+<span class="c">* @event startDragEvent</span>
+<span class="c">* @description Occurs after a mouse down and the drag threshold has been met. The drag threshold default is either 3 pixels of mouse movement or 1 full second of holding the mousedown. </span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+
+<span class="c">/**</span>
+<span class="c">* @event b4EndDragEvent</span>
+<span class="c">* @description Fires before the endDragEvent. Returning false will cancel.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+
+<span class="c">/**</span>
+<span class="c">* @event endDragEvent</span>
+<span class="c">* @description Fires on the mouseup event after a drag has been initiated (startDrag fired).</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+
+<span class="c">/**</span>
+<span class="c">* @event dragEvent</span>
+<span class="c">* @description Occurs every mousemove event while dragging.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event b4DragEvent</span>
+<span class="c">* @description Fires before the dragEvent.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event invalidDropEvent</span>
+<span class="c">* @description Fires when the dragged objects is dropped in a location that contains no drop targets.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event b4DragOutEvent</span>
+<span class="c">* @description Fires before the dragOutEvent</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event dragOutEvent</span>
+<span class="c">* @description Fires when a dragged object is no longer over an object that had the onDragEnter fire. </span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event dragEnterEvent</span>
+<span class="c">* @description Occurs when the dragged object first interacts with another targettable drag and drop object.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event b4DragOverEvent</span>
+<span class="c">* @description Fires before the dragOverEvent.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event dragOverEvent</span>
+<span class="c">* @description Fires every mousemove event while over a drag and drop object.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event b4DragDropEvent </span>
+<span class="c">* @description Fires before the dragDropEvent</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="c">/**</span>
+<span class="c">* @event dragDropEvent</span>
+<span class="c">* @description Fires when the dragged objects is dropped on another.</span>
+<span class="c">* @type YAHOO.util.CustomEvent See &lt;a href=&quot;YAHOO.util.Element.html#addListener&quot;&gt;Element.addListener&lt;/a&gt; for more information on listening for this event.</span>
+<span class="c">*/</span>
+<span class="o">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class="selected"><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.DD.html" title="YAHOO.util.DD">YAHOO.util.DD</a></li>
+                                <li class=""><a href="YAHOO.util.DDProxy.html" title="YAHOO.util.DDProxy">YAHOO.util.DDProxy</a></li>
+                                <li class=""><a href="YAHOO.util.DDTarget.html" title="YAHOO.util.DDTarget">YAHOO.util.DDTarget</a></li>
+                                <li class=""><a href="YAHOO.util.DragDrop.html" title="YAHOO.util.DragDrop">YAHOO.util.DragDrop</a></li>
+                                <li class=""><a href="YAHOO.util.DragDropMgr.html" title="YAHOO.util.DragDropMgr">YAHOO.util.DragDropMgr</a></li>
+                                <li class=""><a href="YAHOO.util.DragDropMgr.ElementWrapper.html" title="YAHOO.util.DragDropMgr.ElementWrapper">YAHOO.util.DragDropMgr.ElementWrapper</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="DD.js.html" title="DD.js">DD.js</a></li>
+                                <li class=""><a href="DDProxy.js.html" title="DDProxy.js">DDProxy.js</a></li>
+                                <li class=""><a href="DDTarget.js.html" title="DDTarget.js">DDTarget.js</a></li>
+                                <li class=""><a href="DragDrop.js.html" title="DragDrop.js">DragDrop.js</a></li>
+                                <li class=""><a href="DragDropMgr.js.html" title="DragDropMgr.js">DragDropMgr.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_activateShim", "url": "YAHOO.util.DragDropMgr.html#method__activateShim", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "addInvalidHandleClass", "url": "YAHOO.util.DragDrop.html#method_addInvalidHandleClass", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "addInvalidHandleId", "url": "YAHOO.util.DragDrop.html#method_addInvalidHandleId", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "addInvalidHandleType", "url": "YAHOO.util.DragDrop.html#method_addInvalidHandleType", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_addListeners", "url": "YAHOO.util.DragDropMgr.html#method__addListeners", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "addToGroup", "url": "YAHOO.util.DragDrop.html#method_addToGroup", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "alignElWithMouse", "url": "YAHOO.util.DD.html#method_alignElWithMouse", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "applyConfig", "url": "YAHOO.util.DragDrop.html#method_applyConfig", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "autoOffset", "url": "YAHOO.util.DD.html#method_autoOffset", "type": "method"}, {"access": "private", "host": "YAHOO.util.DD", "name": "autoScroll", "url": "YAHOO.util.DD.html#method_autoScroll", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "available", "url": "YAHOO.util.DragDrop.html#property_available", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "b4Drag", "url": "YAHOO.util.DragDrop.html#method_b4Drag", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "b4DragDrop", "url": "YAHOO.util.DragDrop.html#method_b4DragDrop", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "b4DragDropEvent", "url": "YAHOO.util.DD.html#event_b4DragDropEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "b4DragDropEvent", "url": "YAHOO.util.DDProxy.html#event_b4DragDropEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "b4DragDropEvent", "url": "YAHOO.util.DragDrop.html#event_b4DragDropEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DD", "name": "b4DragEvent", "url": "YAHOO.util.DD.html#event_b4DragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "b4DragEvent", "url": "YAHOO.util.DDProxy.html#event_b4DragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "b4DragEvent", "url": "YAHOO.util.DragDrop.html#event_b4DragEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "b4DragOut", "url": "YAHOO.util.DragDrop.html#method_b4DragOut", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "b4DragOutEvent", "url": "YAHOO.util.DD.html#event_b4DragOutEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "b4DragOutEvent", "url": "YAHOO.util.DDProxy.html#event_b4DragOutEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "b4DragOutEvent", "url": "YAHOO.util.DragDrop.html#event_b4DragOutEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "b4DragOver", "url": "YAHOO.util.DragDrop.html#method_b4DragOver", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "b4DragOverEvent", "url": "YAHOO.util.DD.html#event_b4DragOverEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "b4DragOverEvent", "url": "YAHOO.util.DDProxy.html#event_b4DragOverEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "b4DragOverEvent", "url": "YAHOO.util.DragDrop.html#event_b4DragOverEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "b4EndDrag", "url": "YAHOO.util.DragDrop.html#method_b4EndDrag", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "b4EndDragEvent", "url": "YAHOO.util.DD.html#event_b4EndDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "b4EndDragEvent", "url": "YAHOO.util.DDProxy.html#event_b4EndDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "b4EndDragEvent", "url": "YAHOO.util.DragDrop.html#event_b4EndDragEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "b4MouseDown", "url": "YAHOO.util.DragDrop.html#method_b4MouseDown", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "b4MouseDownEvent", "url": "YAHOO.util.DD.html#event_b4MouseDownEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "b4MouseDownEvent", "url": "YAHOO.util.DDProxy.html#event_b4MouseDownEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "b4MouseDownEvent", "url": "YAHOO.util.DragDrop.html#event_b4MouseDownEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "b4StartDrag", "url": "YAHOO.util.DragDrop.html#method_b4StartDrag", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "b4StartDragEvent", "url": "YAHOO.util.DD.html#event_b4StartDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "b4StartDragEvent", "url": "YAHOO.util.DDProxy.html#event_b4StartDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "b4StartDragEvent", "url": "YAHOO.util.DragDrop.html#event_b4StartDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DD", "name": "cachePosition", "url": "YAHOO.util.DD.html#method_cachePosition", "type": "method"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "centerFrame", "url": "YAHOO.util.DDProxy.html#property_centerFrame", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "clearConstraints", "url": "YAHOO.util.DragDrop.html#method_clearConstraints", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "clearTicks", "url": "YAHOO.util.DragDrop.html#method_clearTicks", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "clickPixelThresh", "url": "YAHOO.util.DragDropMgr.html#property_clickPixelThresh", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "clickTimeout", "url": "YAHOO.util.DragDropMgr.html#property_clickTimeout", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "clickTimeThresh", "url": "YAHOO.util.DragDropMgr.html#property_clickTimeThresh", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "clickValidator", "url": "YAHOO.util.DragDrop.html#method_clickValidator", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "config", "url": "YAHOO.util.DragDrop.html#property_config", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "constrainX", "url": "YAHOO.util.DragDrop.html#property_constrainX", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "constrainY", "url": "YAHOO.util.DragDrop.html#property_constrainY", "type": "property"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "createFrame", "url": "YAHOO.util.DDProxy.html#method_createFrame", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr.ElementWrapper", "name": "css", "url": "YAHOO.util.DragDropMgr.ElementWrapper.html#property_css", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "cursorIsOver", "url": "YAHOO.util.DragDrop.html#property_cursorIsOver", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_deactivateShim", "url": "YAHOO.util.DragDropMgr.html#method__deactivateShim", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_debugShim", "url": "YAHOO.util.DragDropMgr.html#property__debugShim", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "deltaX", "url": "YAHOO.util.DragDropMgr.html#property_deltaX", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "deltaX", "url": "YAHOO.util.DragDrop.html#property_deltaX", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "deltaY", "url": "YAHOO.util.DragDropMgr.html#property_deltaY", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "deltaY", "url": "YAHOO.util.DragDrop.html#property_deltaY", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "_domRef", "url": "YAHOO.util.DragDrop.html#property__domRef", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "dragCurrent", "url": "YAHOO.util.DragDropMgr.html#property_dragCurrent", "type": "property"}, {"access": "", "host": "YAHOO.util.DD", "name": "dragDropEvent", "url": "YAHOO.util.DD.html#event_dragDropEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "dragDropEvent", "url": "YAHOO.util.DDProxy.html#event_dragDropEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "dragDropEvent", "url": "YAHOO.util.DragDrop.html#event_dragDropEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "dragElId", "url": "YAHOO.util.DragDrop.html#property_dragElId", "type": "property"}, {"access": "", "host": "YAHOO.util.DD", "name": "dragEnterEvent", "url": "YAHOO.util.DD.html#event_dragEnterEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "dragEnterEvent", "url": "YAHOO.util.DDProxy.html#event_dragEnterEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "dragEnterEvent", "url": "YAHOO.util.DragDrop.html#event_dragEnterEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DD", "name": "dragEvent", "url": "YAHOO.util.DD.html#event_dragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "dragEvent", "url": "YAHOO.util.DDProxy.html#event_dragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "dragEvent", "url": "YAHOO.util.DragDrop.html#event_dragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "dragOnly", "url": "YAHOO.util.DragDrop.html#property_dragOnly", "type": "property"}, {"access": "", "host": "YAHOO.util.DD", "name": "dragOutEvent", "url": "YAHOO.util.DD.html#event_dragOutEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "dragOutEvent", "url": "YAHOO.util.DDProxy.html#event_dragOutEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "dragOutEvent", "url": "YAHOO.util.DragDrop.html#event_dragOutEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DD", "name": "dragOverEvent", "url": "YAHOO.util.DD.html#event_dragOverEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "dragOverEvent", "url": "YAHOO.util.DDProxy.html#event_dragOverEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "dragOverEvent", "url": "YAHOO.util.DragDrop.html#event_dragOverEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "dragOvers", "url": "YAHOO.util.DragDropMgr.html#property_dragOvers", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "dragThreshMet", "url": "YAHOO.util.DragDropMgr.html#property_dragThreshMet", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr.ElementWrapper", "name": "el", "url": "YAHOO.util.DragDropMgr.ElementWrapper.html#property_el", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "elementCache", "url": "YAHOO.util.DragDropMgr.html#property_elementCache", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "endDrag", "url": "YAHOO.util.DragDrop.html#method_endDrag", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "endDragEvent", "url": "YAHOO.util.DD.html#event_endDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "endDragEvent", "url": "YAHOO.util.DDProxy.html#event_endDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "endDragEvent", "url": "YAHOO.util.DragDrop.html#event_endDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "events", "url": "YAHOO.util.DragDrop.html#property_events", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_execOnAll", "url": "YAHOO.util.DragDropMgr.html#method__execOnAll", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "fireEvents", "url": "YAHOO.util.DragDropMgr.html#method_fireEvents", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "fromTimeout", "url": "YAHOO.util.DragDropMgr.html#property_fromTimeout", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getBestMatch", "url": "YAHOO.util.DragDropMgr.html#method_getBestMatch", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getClientHeight", "url": "YAHOO.util.DragDropMgr.html#method_getClientHeight", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getClientWidth", "url": "YAHOO.util.DragDropMgr.html#method_getClientWidth", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getCss", "url": "YAHOO.util.DragDropMgr.html#method_getCss", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getDDById", "url": "YAHOO.util.DragDropMgr.html#method_getDDById", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "getDragEl", "url": "YAHOO.util.DragDrop.html#method_getDragEl", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "getEl", "url": "YAHOO.util.DragDrop.html#method_getEl", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getElement", "url": "YAHOO.util.DragDropMgr.html#method_getElement", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "getElWrapper", "url": "YAHOO.util.DragDropMgr.html#method_getElWrapper", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getLocation", "url": "YAHOO.util.DragDropMgr.html#method_getLocation", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getPosX", "url": "YAHOO.util.DragDropMgr.html#method_getPosX", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getPosY", "url": "YAHOO.util.DragDropMgr.html#method_getPosY", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getRelated", "url": "YAHOO.util.DragDropMgr.html#method_getRelated", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "getScroll", "url": "YAHOO.util.DragDropMgr.html#method_getScroll", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getScrollLeft", "url": "YAHOO.util.DragDropMgr.html#method_getScrollLeft", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getScrollTop", "url": "YAHOO.util.DragDropMgr.html#method_getScrollTop", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "getStyle", "url": "YAHOO.util.DragDropMgr.html#method_getStyle", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "getTargetCoord", "url": "YAHOO.util.DragDrop.html#method_getTargetCoord", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "getTick", "url": "YAHOO.util.DragDrop.html#method_getTick", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "groups", "url": "YAHOO.util.DragDrop.html#property_groups", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "handleElId", "url": "YAHOO.util.DragDrop.html#property_handleElId", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "handleIds", "url": "YAHOO.util.DragDropMgr.html#property_handleIds", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "handleMouseDown", "url": "YAHOO.util.DragDropMgr.html#method_handleMouseDown", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "handleMouseDown", "url": "YAHOO.util.DragDrop.html#method_handleMouseDown", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "handleMouseMove", "url": "YAHOO.util.DragDropMgr.html#method_handleMouseMove", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "handleMouseUp", "url": "YAHOO.util.DragDropMgr.html#method_handleMouseUp", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "handleOnAvailable", "url": "YAHOO.util.DragDrop.html#method_handleOnAvailable", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "handleWasClicked", "url": "YAHOO.util.DragDropMgr.html#method_handleWasClicked", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "hasOuterHandles", "url": "YAHOO.util.DragDrop.html#property_hasOuterHandles", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr.ElementWrapper", "name": "id", "url": "YAHOO.util.DragDropMgr.ElementWrapper.html#property_id", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "id", "url": "YAHOO.util.DragDrop.html#property_id", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "ids", "url": "YAHOO.util.DragDropMgr.html#property_ids", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "init", "url": "YAHOO.util.DragDropMgr.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "init", "url": "YAHOO.util.DragDrop.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "initFrame", "url": "YAHOO.util.DDProxy.html#method_initFrame", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "initialized", "url": "YAHOO.util.DragDropMgr.html#property_initialized", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "initTarget", "url": "YAHOO.util.DragDrop.html#method_initTarget", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "interactionInfo", "url": "YAHOO.util.DragDropMgr.html#property_interactionInfo", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "INTERSECT", "url": "YAHOO.util.DragDropMgr.html#property_INTERSECT", "type": "property"}, {"access": "", "host": "YAHOO.util.DD", "name": "invalidDropEvent", "url": "YAHOO.util.DD.html#event_invalidDropEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "invalidDropEvent", "url": "YAHOO.util.DDProxy.html#event_invalidDropEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "invalidDropEvent", "url": "YAHOO.util.DragDrop.html#event_invalidDropEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "invalidHandleClasses", "url": "YAHOO.util.DragDrop.html#property_invalidHandleClasses", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "invalidHandleIds", "url": "YAHOO.util.DragDrop.html#property_invalidHandleIds", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "invalidHandleTypes", "url": "YAHOO.util.DragDrop.html#property_invalidHandleTypes", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "isDragDrop", "url": "YAHOO.util.DragDropMgr.html#method_isDragDrop", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "isHandle", "url": "YAHOO.util.DragDropMgr.html#method_isHandle", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "isLegalTarget", "url": "YAHOO.util.DragDropMgr.html#method_isLegalTarget", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "isLocked", "url": "YAHOO.util.DragDropMgr.html#method_isLocked", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "isLocked", "url": "YAHOO.util.DragDrop.html#method_isLocked", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "isOverTarget", "url": "YAHOO.util.DragDropMgr.html#method_isOverTarget", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "isTarget", "url": "YAHOO.util.DragDrop.html#property_isTarget", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "isTypeOfDD", "url": "YAHOO.util.DragDropMgr.html#method_isTypeOfDD", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "isValidHandleChild", "url": "YAHOO.util.DragDrop.html#method_isValidHandleChild", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "locationCache", "url": "YAHOO.util.DragDropMgr.html#property_locationCache", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "lock", "url": "YAHOO.util.DragDropMgr.html#method_lock", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "lock", "url": "YAHOO.util.DragDrop.html#method_lock", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "locked", "url": "YAHOO.util.DragDropMgr.html#property_locked", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "locked", "url": "YAHOO.util.DragDrop.html#property_locked", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "maintainOffset", "url": "YAHOO.util.DragDrop.html#property_maintainOffset", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "maxX", "url": "YAHOO.util.DragDrop.html#property_maxX", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "maxY", "url": "YAHOO.util.DragDrop.html#property_maxY", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "minX", "url": "YAHOO.util.DragDrop.html#property_minX", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "minY", "url": "YAHOO.util.DragDrop.html#property_minY", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "mode", "url": "YAHOO.util.DragDropMgr.html#property_mode", "type": "property"}, {"access": "", "host": "YAHOO.util.DD", "name": "mouseDownEvent", "url": "YAHOO.util.DD.html#event_mouseDownEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "mouseDownEvent", "url": "YAHOO.util.DDProxy.html#event_mouseDownEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "mouseDownEvent", "url": "YAHOO.util.DragDrop.html#event_mouseDownEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DD", "name": "mouseUpEvent", "url": "YAHOO.util.DD.html#event_mouseUpEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "mouseUpEvent", "url": "YAHOO.util.DDProxy.html#event_mouseUpEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "mouseUpEvent", "url": "YAHOO.util.DragDrop.html#event_mouseUpEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "moveToEl", "url": "YAHOO.util.DragDropMgr.html#method_moveToEl", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "numericSort", "url": "YAHOO.util.DragDropMgr.html#method_numericSort", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "on", "url": "YAHOO.util.DragDrop.html#method_on", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onAvailable", "url": "YAHOO.util.DragDrop.html#method_onAvailable", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onDrag", "url": "YAHOO.util.DragDrop.html#method_onDrag", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onDragDrop", "url": "YAHOO.util.DragDrop.html#method_onDragDrop", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onDragEnter", "url": "YAHOO.util.DragDrop.html#method_onDragEnter", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onDragOut", "url": "YAHOO.util.DragDrop.html#method_onDragOut", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onDragOver", "url": "YAHOO.util.DragDrop.html#method_onDragOver", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onInvalidDrop", "url": "YAHOO.util.DragDrop.html#method_onInvalidDrop", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_onLoad", "url": "YAHOO.util.DragDropMgr.html#method__onLoad", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onMouseDown", "url": "YAHOO.util.DragDrop.html#method_onMouseDown", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "onMouseUp", "url": "YAHOO.util.DragDrop.html#method_onMouseUp", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_onResize", "url": "YAHOO.util.DragDropMgr.html#method__onResize", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_onUnload", "url": "YAHOO.util.DragDropMgr.html#method__onUnload", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "overlap", "url": "YAHOO.util.DragDrop.html#property_overlap", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "padding", "url": "YAHOO.util.DragDrop.html#property_padding", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "POINT", "url": "YAHOO.util.DragDropMgr.html#property_POINT", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "preventDefault", "url": "YAHOO.util.DragDropMgr.html#property_preventDefault", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "primaryButtonOnly", "url": "YAHOO.util.DragDrop.html#property_primaryButtonOnly", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "refreshCache", "url": "YAHOO.util.DragDropMgr.html#method_refreshCache", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "regDragDrop", "url": "YAHOO.util.DragDropMgr.html#method_regDragDrop", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "regHandle", "url": "YAHOO.util.DragDropMgr.html#method_regHandle", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_remove", "url": "YAHOO.util.DragDropMgr.html#method__remove", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "removeDDFromGroup", "url": "YAHOO.util.DragDropMgr.html#method_removeDDFromGroup", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "removeFromGroup", "url": "YAHOO.util.DragDrop.html#method_removeFromGroup", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "removeInvalidHandleClass", "url": "YAHOO.util.DragDrop.html#method_removeInvalidHandleClass", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "removeInvalidHandleId", "url": "YAHOO.util.DragDrop.html#method_removeInvalidHandleId", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "removeInvalidHandleType", "url": "YAHOO.util.DragDrop.html#method_removeInvalidHandleType", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "resetConstraints", "url": "YAHOO.util.DragDrop.html#method_resetConstraints", "type": "method"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "resizeFrame", "url": "YAHOO.util.DDProxy.html#property_resizeFrame", "type": "property"}, {"access": "private", "host": "YAHOO.util.DDProxy", "name": "_resizeProxy", "url": "YAHOO.util.DDProxy.html#method__resizeProxy", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "scroll", "url": "YAHOO.util.DD.html#property_scroll", "type": "property"}, {"access": "", "host": "YAHOO.util.DD", "name": "setDelta", "url": "YAHOO.util.DD.html#method_setDelta", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "setDragElId", "url": "YAHOO.util.DragDrop.html#method_setDragElId", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "setDragElPos", "url": "YAHOO.util.DD.html#method_setDragElPos", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "setHandleElId", "url": "YAHOO.util.DragDrop.html#method_setHandleElId", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "setInitialPosition", "url": "YAHOO.util.DragDrop.html#method_setInitialPosition", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "setOuterHandleElId", "url": "YAHOO.util.DragDrop.html#method_setOuterHandleElId", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "setPadding", "url": "YAHOO.util.DragDrop.html#method_setPadding", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "setStartPosition", "url": "YAHOO.util.DragDrop.html#method_setStartPosition", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "setXConstraint", "url": "YAHOO.util.DragDrop.html#method_setXConstraint", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "setXTicks", "url": "YAHOO.util.DragDrop.html#method_setXTicks", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "setYConstraint", "url": "YAHOO.util.DragDrop.html#method_setYConstraint", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "setYTicks", "url": "YAHOO.util.DragDrop.html#method_setYTicks", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_shim", "url": "YAHOO.util.DragDropMgr.html#property__shim", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_shimActive", "url": "YAHOO.util.DragDropMgr.html#property__shimActive", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_shimState", "url": "YAHOO.util.DragDropMgr.html#property__shimState", "type": "property"}, {"access": "private", "host": "YAHOO.util.DDProxy", "name": "showFrame", "url": "YAHOO.util.DDProxy.html#method_showFrame", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_sizeShim", "url": "YAHOO.util.DragDropMgr.html#method__sizeShim", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "startDrag", "url": "YAHOO.util.DragDropMgr.html#method_startDrag", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "startDrag", "url": "YAHOO.util.DragDrop.html#method_startDrag", "type": "method"}, {"access": "", "host": "YAHOO.util.DD", "name": "startDragEvent", "url": "YAHOO.util.DD.html#event_startDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "startDragEvent", "url": "YAHOO.util.DDProxy.html#event_startDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "startDragEvent", "url": "YAHOO.util.DragDrop.html#event_startDragEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "startPageX", "url": "YAHOO.util.DragDrop.html#property_startPageX", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "startPageY", "url": "YAHOO.util.DragDrop.html#property_startPageY", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "startX", "url": "YAHOO.util.DragDropMgr.html#property_startX", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "startY", "url": "YAHOO.util.DragDropMgr.html#property_startY", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "stopDrag", "url": "YAHOO.util.DragDropMgr.html#method_stopDrag", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "stopEvent", "url": "YAHOO.util.DragDropMgr.html#method_stopEvent", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "stopPropagation", "url": "YAHOO.util.DragDropMgr.html#property_stopPropagation", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "STRICT_INTERSECT", "url": "YAHOO.util.DragDropMgr.html#property_STRICT_INTERSECT", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "swapNode", "url": "YAHOO.util.DragDropMgr.html#method_swapNode", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "_timeoutCount", "url": "YAHOO.util.DragDropMgr.html#property__timeoutCount", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "toString", "url": "YAHOO.util.DragDrop.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "unlock", "url": "YAHOO.util.DragDropMgr.html#method_unlock", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "unlock", "url": "YAHOO.util.DragDrop.html#method_unlock", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "unreg", "url": "YAHOO.util.DragDrop.html#method_unreg", "type": "method"}, {"access": "private", "host": "YAHOO.util.DragDropMgr", "name": "unregAll", "url": "YAHOO.util.DragDropMgr.html#method_unregAll", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "useCache", "url": "YAHOO.util.DragDropMgr.html#property_useCache", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "useShim", "url": "YAHOO.util.DragDropMgr.html#property_useShim", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "useShim", "url": "YAHOO.util.DragDrop.html#property_useShim", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDropMgr", "name": "verifyEl", "url": "YAHOO.util.DragDropMgr.html#method_verifyEl", "type": "method"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "xTicks", "url": "YAHOO.util.DragDrop.html#property_xTicks", "type": "property"}, {"access": "", "host": "YAHOO.util.DDProxy", "name": "YAHOO.util.DDProxy.dragElId", "url": "YAHOO.util.DDProxy.html#property_YAHOO.util.DDProxy.dragElId", "type": "property"}, {"access": "private", "host": "YAHOO.util.DragDrop", "name": "__ygDragDrop", "url": "YAHOO.util.DragDrop.html#property___ygDragDrop", "type": "property"}, {"access": "", "host": "YAHOO.util.DragDrop", "name": "yTicks", "url": "YAHOO.util.DragDrop.html#property_yTicks", "type": "property"}];
+</script>
+</body>
+</html>

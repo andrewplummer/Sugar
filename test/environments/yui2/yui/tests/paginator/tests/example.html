@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+    <title>Paginator Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/paginator/assets/skins/sam/paginator.css">
+    <style type="text/css" class="highlight-ignore">
+        h1 {
+            font: normal 125%/1.4 Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<h1>Paginator Examples</h1>
+<h2>rpp:10, tot:93</h2>
+<div id="p1"></div>
+
+<h2>rpp:10, tot:3</h2>
+<div id="p2"></div>
+
+<h2>rpp:10, tot:93, pageLinks: 5</h2>
+<div id="p3"></div>
+
+<h2>rpp:10, tot:93, recOff: 20, template: RPP</h2>
+<div id="p4"></div>
+
+<h2>rpp:10, tot:133, template: (custom)</h2>
+<div id="p5"></div>
+
+<h2>rpp:10, tot:93, ui.* manual render only</h2>
+<div id="p6"></div>
+
+<h2>rpp:10, tot:93, render() + ui.* manual render</h2>
+<div id="p7-1"></div>
+<div id="p7"></div>
+
+<h2>rpp:10, tot:93, progressive enhance container and specific el</h2>
+<div id="p8-container"></div>
+<span id="p8-component" class="yui-pg-ui-NextPageLink"></span>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/element/element.js"></script>
+<script type="text/javascript" src="../../../build/paginator/paginator-debug.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+var Paginator = YAHOO.widget.Paginator,
+    p;
+
+function update(state) { this.setState(state); }
+
+var p = new Paginator({
+    rowsPerPage   :10,
+    totalRecords  :93,
+    containers    :'p1'
+});
+p.on('changeRequest',update);
+p.render();
+
+p = new Paginator({
+    rowsPerPage   :10,
+    totalRecords  :3,
+    containers    :'p2'
+});
+p.on('changeRequest',update);
+p.render();
+
+p = new Paginator({
+    rowsPerPage   :10,
+    totalRecords  :93,
+    containers    :'p3',
+    pageLinks     :5
+});
+p.on('changeRequest',update);
+p.render();
+
+p = new Paginator({
+    rowsPerPage   :10,
+    totalRecords  :93,
+    containers    :'p4',
+    recordOffset  :20,
+    template      :Paginator.TEMPLATE_ROWS_PER_PAGE,
+    rowsPerPageOptions: [10,25,50,'All']
+});
+p.on('changeRequest',update);
+p.render();
+
+p = new Paginator({
+    rowsPerPage   :10,
+    totalRecords  :133,
+    containers    :'p5',
+    template : "{PreviousPageLink} <strong>{CurrentPageReport}</strong> {NextPageLink}"
+});
+p.on('changeRequest',update);
+p.render();
+
+var p6 = document.getElementById('p6'),
+    p6_pag = new Paginator({
+        rowsPerPage : 10,
+        totalRecords : Paginator.VALUE_UNLIMITED,
+        initialPage : 5,
+        pageReportTemplate : "<strong>{currentPage}</strong>",
+        nextPageLinkLabel : '&gt;'
+    });
+p6_pag.on('changeRequest',update);
+p6.appendChild(new Paginator.ui.CurrentPageReport(p6_pag).render('p6'));
+p6.appendChild(new Paginator.ui.NextPageLink(p6_pag).render('p6'));
+
+var p7 = new Paginator({
+    rowsPerPage   :10,
+    totalRecords  :93,
+    containers    :'p7'
+});
+p7.on('changeRequest',update);
+p7.subscribe('render', function () {
+    document.getElementById('p7-1').appendChild(
+        new Paginator.ui.CurrentPageReport(p7).render('p7'));
+});
+
+p7.render();
+
+var p8 = new Paginator({
+    containers : document.createElement('div'),
+    template: '',
+    rowsPerPage: 10,
+    totalRecords: 93,
+    rowsPerPageOptions: [10,25,50]
+});
+p8.render();
+p8.on('changeRequest',update);
+p8._renderTemplate(document.getElementById('p8-container'),
+    "{PageLinks} {RowsPerPageDropdown} {LastPageLink}",
+    "p8_manual");
+p8._renderUIComponent(document.getElementById('p8-component'), 'p8_component');
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js"></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

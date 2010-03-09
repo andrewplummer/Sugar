@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>ImageLoader with TabView</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/tabview/assets/skins/sam/tabview.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/imageloader/imageloader-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/tabview/tabview-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>ImageLoader with TabView</h1>
+
+<div class="exampleIntro">
+	<p>Here we demonstrate integrating the <a href="http://developer.yahoo.com/yui/imageloader/">ImageLoader Utility</a> with the <a href="http://developer.yahoo.com/yui/tabview/">TabView Control</a>.</p>
+
+<p>Also illustrated are the considerations for the ImageLoader group triggers, as they involve some reasoning on the developer's part.</p>
+
+<p>Here, each tab contains images and a corresponding ImageLoader group. Triggers are set as <code>mouseover</code> events of each tab.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<html>
+
+<!-- optional skin for border tabs --> 
+<link rel='stylesheet' type='text/css' href='http://yui.yahooapis.com/2.2.2/build/tabview/assets/border_tabs.css'> 
+
+<style type='text/css'>
+#demo { width:350px; }
+#demo .yui-content { padding:20px; } /* pad content container */
+#demo img { margin-right:20px; }
+#tabone, #tabtwo, #tabthree { height:80px; }
+</style>
+
+
+<div id='demo' class='yui-navset'>
+	<ul class='yui-nav'>
+		<li class='selected' id='tabOneLabel'><a href='#tabone'><em>Tab One</em></a></li>
+		<li id='tabTwoLabel'><a href='#tabtwo'><em>Tab Two</em></a></li>
+		<li id='tabThreeLabel'><a href='#tabthree'><em>Tab Three</em></a></li>
+	</ul>
+	<div class='yui-content'>
+		<div id='tabone'>
+			<img id='imgOne' src='http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/museum.jpg' />
+		</div>
+		<div id='tabtwo'>
+			<img id='imgTwo' title='"imgTwo"' />
+			<img id='imgThree' title='"imgThree"' />
+		</div>
+		<div id='tabthree'>
+			<img id='imgFour' title='"imgFour"' />
+			<img id='imgFive' title='"imgFive"' />
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+var tabView = new YAHOO.widget.TabView('demo');
+
+var tabTwoImageGroup = new YAHOO.util.ImageLoader.group('tabTwoLabel', 'mouseover');
+tabTwoImageGroup.registerSrcImage('imgTwo', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/uluru.jpg');
+tabTwoImageGroup.registerSrcImage('imgThree', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/katatjuta.jpg');
+tabTwoImageGroup.addTrigger('tabTwoLabel', 'focus');
+tabTwoImageGroup.name = 'tab_two_group';
+
+var tabThreeImageGroup = new YAHOO.util.ImageLoader.group('tabThreeLabel', 'mouseover');
+tabThreeImageGroup.registerSrcImage('imgFour', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/morraine.jpg');
+tabThreeImageGroup.registerSrcImage('imgFive', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/japan.jpg');
+tabThreeImageGroup.addTrigger('tabThreeLabel', 'focus');
+tabThreeImageGroup.name = 'tab_three_group';
+
+
+</script>
+
+</html>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

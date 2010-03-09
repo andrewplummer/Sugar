@@ -1,0 +1,1752 @@
+'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <title>YAHOO.widget.Menu Tests</title>
+
+        <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+        <link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">
+        <link type="text/css" rel="stylesheet" href="../../../build/menu/assets/skins/sam/menu.css">
+    
+        <script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+        <script type="text/javascript" src="../../../build/container/container_core-min.js"></script>
+        <script type="text/javascript" src="../../../build/menu/menu.js"></script>
+        <script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+        <script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+    
+        <script type="text/javascript">
+
+            YAHOO.util.Event.onDOMReady(function () {
+
+                var Assert = YAHOO.util.Assert,
+                    ArrayAssert = YAHOO.util.ArrayAssert,
+                    ObjectAssert = YAHOO.util.ObjectAssert,
+                    CustomEvent = YAHOO.util.CustomEvent,
+                    Dom = YAHOO.util.Dom,
+                    MenuManager = YAHOO.widget.MenuManager,
+                    Menu = YAHOO.widget.Menu,
+                    MenuItem = YAHOO.widget.MenuItem,
+                    
+                    oLogger = new YAHOO.tool.TestLogger(),
+                    
+                    oMenu,
+                    oMenuItem;
+
+
+                var oMenuTestCase = new YAHOO.tool.TestCase({
+                
+                    name: "Menu Test Case",
+                    
+                    testConstructor: function () {
+
+                        // Test #1: Instantiate a YAHOO.widget.Menu instance using existing markup
+
+                        oMenu = new Menu("basicmenufrommarkup");
+                        oMenu.render();
+
+                        Assert.isInstanceOf(Menu, oMenu, "Constructor should return an instance of YAHOO.widget.Menu.");
+                        Assert.isTrue((oMenu.getItems().length == 4), "The \"getItems\" method should return an array of four YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.srcElement.tagName.toLowerCase() == "div"), "The source element for the menu should be a DIV element.");
+                        Assert.isTrue(Dom.inDocument(oMenu.element), "The menu should be in the document.");
+
+                        oMenu.destroy();
+                        oMenu = null;
+
+
+                        // Test #2: Instantiate a YAHOO.widget.Menu instance using no existing markup
+
+                        oMenu = new Menu(Dom.generateId());
+                        oMenu.addItems(["Menu Item 1", "Menu Item 2", "Menu Item 3", "Menu Item 4"]);
+                        oMenu.render(document.body);
+
+                        Assert.isInstanceOf(Menu, oMenu, "Constructor should return an instance of YAHOO.widget.Menu.");
+                        Assert.isTrue((oMenu.getItems().length == 4), "he \"getItems\" method should return an array of four YAHOO.widget.MenuItem instances.");
+                        Assert.isNull(oMenu.srcElement, "There should be no source element for this menu since it was created from script.");
+                        Assert.isTrue(Dom.inDocument(oMenu.element), "The menu should be in the document.");
+
+                        oMenu.destroy();
+                        oMenu = null;
+
+
+                        // Test #3: Instantiate a YAHOO.widget.Menu instance using a <SELECT> element as a data source
+
+                        oMenu = new Menu("select1");
+                        oMenu.render(document.body);
+                        oMenu.show();
+                        
+                        Assert.isInstanceOf(Menu, oMenu, "Constructor should return an instance of YAHOO.widget.Menu.");
+                        Assert.isTrue((oMenu.getItems().length == 4), "he \"getItems\" method should return an array of four YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.srcElement.tagName.toLowerCase() == "select"), "The source element for the menu should be a SELECT element.");
+                        Assert.isTrue(Dom.inDocument(oMenu.element), "The menu should be in the document.");
+                        
+                        oMenu.destroy();
+                        oMenu = null;
+ 
+
+                        // Test #3: Instantiate a YAHOO.widget.Menu instance using a <SELECT> element with <OPTGROUP>s as a data source
+
+                        oMenu = new Menu("select2");
+                        oMenu.render(document.body);
+                        oMenu.show();
+
+                        Assert.isInstanceOf(Menu, oMenu, "Constructor should return an instance of YAHOO.widget.Menu.");
+                        Assert.isTrue((oMenu.getItems().length == 4), "he \"getItems\" method should return an array of four YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.srcElement.tagName.toLowerCase() == "select"), "The source element for the menu should be a SELECT element.");
+                        Assert.isTrue(Dom.inDocument(oMenu.element), "The menu should be in the document.");
+
+                        oMenu.destroy();
+                        oMenu = null;
+
+                    },
+
+                    testProperties: function () {
+
+                        // Test #1:  Verify the default value of the "CSS_CLASS_NAME" constant is being applied
+
+                        oMenu = new Menu(Dom.generateId());
+                        oMenu.render(document.body);
+
+                        Assert.isTrue(Dom.hasClass(oMenu.element, YAHOO.widget.Menu.prototype.CSS_CLASS_NAME, "The root element of the menu should have a CSS class name of \"yuimenu.\""));
+
+                        oMenu.destroy();
+                        
+
+                        // Test #2:  Verify it is possible to change the default value of the "CSS_CLASS_NAME" constant
+
+                        YAHOO.widget.Menu.prototype.CSS_CLASS_NAME = "some-css-class-name";
+
+                        oMenu = new Menu(Dom.generateId());
+                        oMenu.render(document.body);
+
+                        Assert.isTrue(Dom.hasClass(oMenu.element, "some-css-class-name", "The root element of the menu should have a CSS class name of \"some-css-class-name.\""));
+
+                        oMenu.destroy();                        
+
+                        YAHOO.widget.Menu.prototype.CSS_CLASS_NAME = "yuimenu";
+
+
+
+                        // Test #3: Verify it is possible to change the default value of the "GROUP_TITLE_TAG_NAME" constant
+
+                        YAHOO.widget.Menu.prototype.GROUP_TITLE_TAG_NAME = "h1";
+                        
+                        oMenu = new Menu(Dom.generateId());
+                        
+                        oMenu.addItems(["MenuItem 0", "MenuItem 1", "MenuItem 2", "MenuItem 4"]);
+                        
+                        oMenu.setItemGroupTitle("This is the first group title");
+                        
+                        oMenu.render(document.body);
+                        
+                        Assert.isTrue((oMenu.element.getElementsByTagName("h1").length == 1), "The menu should contain one H1 element.");
+                        
+                        oMenu.destroy();
+                        
+                        YAHOO.widget.Menu.prototype.GROUP_TITLE_TAG_NAME = "h6";
+
+
+
+                        // Test #4: Verify the "lazyload" property works when building menus from script
+
+                        var aItemData = [
+                        
+                            { 
+                                text: "Menu Item 1", submenu: { 
+                                id: (Dom.generateId()), 
+                                itemdata: [
+                                    {
+                                        text: "Menu Item 1", 
+                                        submenu: { 
+                                            id: (Dom.generateId()), 
+                                            itemdata: ["Menu Item 1", "Menu Item 2"] 
+                                        } 
+                                    }, 
+                                    "Menu Item 2"
+                                ] } 
+                            },
+
+                            { 
+                                text: "Menu Item 2", submenu: { 
+                                id: (Dom.generateId()), 
+                                itemdata: [
+                                    {
+                                        text: "Menu Item 1", 
+                                        submenu: { 
+                                            id: (Dom.generateId()), 
+                                            itemdata: ["Menu Item 1", "Menu Item 2"] 
+                                        } 
+                                    }, 
+                                    "Menu Item 2"
+                                ] } 
+                            }
+                        
+                        ];
+                        
+
+                        oMenu = new Menu(Dom.generateId(), { lazyload: true, itemdata: aItemData });
+                        oMenu.render(document.body);
+                        oMenu.show();
+                        
+                        var aSubmenus = oMenu.getSubmenus();
+                        
+                        Assert.isTrue((aSubmenus.length == 2), "The root menu should have two submenus.");
+                        Assert.isFalse(Dom.inDocument(aSubmenus[0].element), "The first submenu should not yet be rendered into the document.");
+                        Assert.isFalse(Dom.inDocument(aSubmenus[0].element), "The second submenu should not yet be rendered into the document.");
+                        
+                        ArrayAssert.isEmpty(aSubmenus[0].getItems(), "The \"getItems\" method should return an empty array.");
+                        ArrayAssert.isEmpty(aSubmenus[1].getItems(), "The \"getItems\" method should return an empty array.");
+                        
+                        aSubmenus[0].show();
+                        aSubmenus[1].show();
+                        
+                        ArrayAssert.isNotEmpty(aSubmenus[0].getItems(), "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances once the submenu is made visible.");
+                        ArrayAssert.isNotEmpty(aSubmenus[1].getItems(), "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances once the submenu is made visible.");
+                        
+                        oMenu.destroy();
+                        
+
+                        // Test #5: Verify the "lazyload" property works when building menus from existing markup
+                        
+                        oMenu = new Menu("menu1", { lazyload: true });
+                        oMenu.render();
+                        
+                        oMenu.show();
+
+                        aSubmenus = oMenu.getSubmenus();
+
+                        Assert.isTrue((aSubmenus.length == 2), "The root menu should have two submenus.");
+
+                        ArrayAssert.isEmpty(aSubmenus[0].getItems(), "The \"getItems\" method should return an empty array.");
+                        ArrayAssert.isEmpty(aSubmenus[1].getItems(), "The \"getItems\" method should return an empty array.");
+                        
+                        aSubmenus[0].show();
+                        aSubmenus[1].show();
+                        
+                        ArrayAssert.isNotEmpty(aSubmenus[0].getItems(), "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances once the submenu is made visible.");
+                        ArrayAssert.isNotEmpty(aSubmenus[1].getItems(), "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances once the submenu is made visible.");
+                        
+                        oMenu.destroy();
+
+                    },
+                    
+                    testConfigurationProperties: function () {
+
+                        // Test the "visible" configuration property
+
+
+                        // Test #1: The default value for the "visible" configuration property is false
+
+                        oMenu = new Menu(Dom.generateId());
+                        oMenu.render(document.body);
+
+                        Assert.isFalse(oMenu.cfg.getProperty("visible"), "The value of the \"visible\" configuration property is not correct.");
+                        Assert.areEqual("hidden", oMenu.element.style.visibility, "The Menu is not hidden when it should be.");
+
+
+                        // Test #2: Setting the "visible" configuration to "true" at runtime
+
+                        oMenu.cfg.setProperty("visible", true);
+
+                        Assert.isTrue(oMenu.cfg.getProperty("visible"), "The value of the \"visible\" configuration property is not correct.");
+                        Assert.areEqual("visible", oMenu.element.style.visibility, "The Menu is not hidden when it should be.");
+
+                        oMenu.destroy();
+
+
+                        // Test #3: Setting the "visible" configuration property via the constructor
+
+                        oMenu = new Menu(Dom.generateId(), { visible: true });                        
+                        oMenu.render(document.body);
+
+                        Assert.isTrue(oMenu.cfg.getProperty("visible"), "The value of the \"visible\" configuration property is not correct.");
+                        Assert.areEqual("visible", oMenu.element.style.visibility, "The Menu is not visible when it should be.");
+
+
+                        // Test #4: Setting the "visible" configuration to "false" at runtime
+
+                        oMenu.cfg.setProperty("visible", false);
+
+                        Assert.isFalse(oMenu.cfg.getProperty("visible"), "The value of the \"visible\" configuration property is not correct.");
+                        Assert.areEqual("hidden", oMenu.element.style.visibility, "The Menu is not hidden when it should be.");
+
+                        oMenu.destroy();
+
+
+                        // Test #5: Setting the "position" configuration to "static" should set the "visible" configuration property to "true"
+
+                        oMenu = new Menu(Dom.generateId(), { position: "static" });
+                        oMenu.render(document.body);
+
+                        Assert.isTrue(oMenu.cfg.getProperty("visible"), "The value of the \"visible\" configuration property is not correct.");
+                        Assert.areEqual("visible", oMenu.element.style.visibility, "The Menu is not hidden when it should be.");
+
+                        oMenu.destroy();
+
+
+                        // Test the "position" configuration property
+                        
+
+                        // Test #1: The default value for the "position" configuration property is "dynamic"
+
+                        oMenu = new Menu(Dom.generateId());
+                        oMenu.render(document.body);
+
+                        Assert.areEqual("dynamic", oMenu.cfg.getProperty("position"), "The Menu's position is not correct.");
+                        Assert.areEqual("absolute", oMenu.element.style.position, "The Menu's position is not correct");
+
+
+                        // Test #2: Setting the value of the "position" configuration property at runtime
+
+                        oMenu.cfg.setProperty("position", "static");
+
+                        Assert.areEqual("static", oMenu.cfg.getProperty("position"), "The Menu's position is not correct.");
+                        Assert.areEqual("static", oMenu.element.style.position, "The Menu's position is not correct");
+
+                        oMenu.destroy();
+
+
+                        // Test #3: Setting the value of the "position" configuration property via the constructor
+
+                        oMenu = new Menu(Dom.generateId(), { position: "static" });
+                        oMenu.render(document.body);
+
+                        Assert.areEqual("static", oMenu.cfg.getProperty("position"), "The Menu's position is not correct.");
+                        Assert.areEqual("static", oMenu.element.style.position, "The Menu's position is not correct");
+
+
+                        // Test #4: Setting the value of the "position" configuration property at runtime
+
+                        oMenu.cfg.setProperty("position", "dynamic");
+
+                        Assert.areEqual("dynamic", oMenu.cfg.getProperty("position"), "The Menu's position is not correct.");
+                        Assert.areEqual("absolute", oMenu.element.style.position, "The Menu's position is not correct");
+
+                        oMenu.destroy();
+
+
+
+                        // Test the "container" configuration property
+
+
+                        // Test #1: The default value of the "container" configuration property should be document.body
+
+                        oMenu = new Menu(Dom.generateId());
+                        
+                        Assert.areEqual(document.body, oMenu.cfg.getProperty("container"), "The Menu's container is not correct");
+
+                        oMenu.destroy();
+                        
+                        
+                        // Test #2: Setting the "container" configuration property via the constructor
+
+                        oMenu = new Menu(Dom.generateId(), { lazyload: true, container: "menucontainer" });
+                        
+                        oMenu.show();
+                        
+                        var oContainer = Dom.get("menucontainer");
+                        
+                        Assert.areEqual(oContainer, oMenu.cfg.getProperty("container"), "The Menu's container is not correct");
+
+                        oMenu.destroy();
+                        
+                        oContainer = null;
+
+
+                        // Test #3: Setting the "container" configuration property via the constructor
+
+                        oContainer = Dom.get("menucontainer");
+
+                        oMenu = new Menu(Dom.generateId(), { lazyload: true, container: oContainer });
+                        
+                        oMenu.show();
+                        
+                        Assert.areEqual(oContainer, oMenu.cfg.getProperty("container"), "The Menu's container is not correct");
+
+                        oMenu.destroy();
+                        
+                        oContainer = null;
+
+
+                        // Test #4: Setting the "container" configuration property at runtime
+
+                        oMenu = new Menu(Dom.generateId(), { lazyload: true });
+                        
+                        oMenu.cfg.setProperty("container", "menucontainer");
+                        
+                        oMenu.show();
+                        
+                        oContainer = Dom.get("menucontainer");
+                        
+                        Assert.areEqual(oContainer, oMenu.cfg.getProperty("container"), "The Menu's container is not correct");
+
+                        oMenu.destroy();
+                        
+                        oContainer = null;                        
+
+
+                        // Test #5: Setting the "container" configuration property at runtime
+                        
+                        oContainer = Dom.get("menucontainer");
+                        
+                        oMenu = new Menu(Dom.generateId(), { lazyload: true });
+
+                        oMenu.cfg.setProperty("container", oContainer);
+                        
+                        oMenu.show();
+                        
+                        Assert.areEqual(oContainer, oMenu.cfg.getProperty("container"), "The Menu's container is not correct");
+
+                        oMenu.destroy();
+                        
+                        oContainer = null;
+                        
+                        
+                        // Test the "classname" configuration property
+                        
+                        // Test #1: Setting via the constructor
+                        
+                        oMenu = new Menu(Dom.generateId(), { classname: "some-custom-class-name" });
+                        
+                        oMenu.render(document.body);
+                        
+                        Assert.isTrue(Dom.hasClass(oMenu.element, "some-custom-class-name"), "The Menu doe not have the correct CSS class name applied.");
+                                                
+
+                        // Test #2: Setting at runtime
+                        
+                        oMenu.cfg.setProperty("classname", "another-custom-class-name");
+
+                        Assert.isFalse(Dom.hasClass(oMenu.element, "some-custom-class-name"), "The Menu doe not have the correct CSS class name applied.");
+                        Assert.isTrue(Dom.hasClass(oMenu.element, "another-custom-class-name"), "The Menu doe not have the correct CSS class name applied.");
+
+                        oMenu.destroy();
+                        
+                        
+                        // Test the "maxheight" configuration property
+                        
+                        // Test #1: Setting the "maxheight" configuration property via the constructor
+
+                        oMenu = new Menu(Dom.generateId(), { maxheight: 100 });
+
+                        for (var i = 0; i < 20; i++) {
+                        
+                            oMenu.addItem("Menu Item " + i);
+                        
+                        }
+                        
+                        oMenu.render(document.body);
+
+                        Assert.areEqual(100, oMenu.cfg.getProperty("maxheight"), "The value of the \"maxheight\" property should be 100.");
+
+
+                        // Test #2: Setting the "maxheight" configuration property at runtime
+
+                        oMenu.cfg.setProperty("maxheight", 10);
+
+                        Assert.areEqual(10, oMenu.cfg.getProperty("maxheight"), "The value of the \"maxheight\" property should be 10.");
+
+                        oMenu.destroy();
+
+
+                        // Test #3: 
+
+                        oMenu = new Menu(Dom.generateId(), { maxheight: 98 }); // setting maxheight to 98 to take box model into consideration
+                        
+                        for (var i = 0; i < 20; i++) {
+                        
+                            oMenu.addItem("Menu Item " + i);
+                        
+                        }
+                        
+                        oMenu.render(document.body);
+                        
+                        oMenu.show();
+
+                        Assert.areEqual(oMenu.element.offsetHeight, (YAHOO.env.ua.ie ? 98 : 100), "The offsetHeight of the menu's element should be " + (YAHOO.env.ua.ie ? 98 : 100) + ".");
+                        Assert.isTrue(Dom.hasClass(oMenu.body, "yui-menu-body-scrolled"), "The Menu doe not have the correct CSS class name applied.");
+
+                        oMenu.hide();
+
+
+    
+                        // Test #4: Cannot be less then value of minscrollheight
+                        
+                        oMenu.cfg.setProperty("maxheight", 48);
+                        
+                        oMenu.show();
+                        
+
+                        
+                        Assert.areNotEqual(oMenu.element.offsetHeight , 50, "Setting the \"maxheight\" property should have failed since the value is below the value defined by the \"minscrollheight\" property.");
+                        Assert.areEqual((oMenu.element.offsetHeight - (YAHOO.env.ua.ie ? 0 : 2)), oMenu.cfg.getProperty("minscrollheight"), "The \"maxheight\" property should be set to the value of the \"minscrollheight\" property.");
+                        
+                        oMenu.hide();        
+
+
+
+                        // Test #5: Adjusting the minscrollheight
+
+                        oMenu.cfg.setProperty("minscrollheight", 40);
+                        oMenu.cfg.setProperty("maxheight", 48);
+                        
+                        oMenu.show();
+
+
+
+                        Assert.areEqual((oMenu.element.offsetHeight + (YAHOO.env.ua.ie ? 2 : 0)), 50, "The offsetHeight of the menu's element should be 50.");
+
+
+                        // Test #6: Turning it off
+
+                        oMenu.hide();
+                        
+                        oMenu.cfg.setProperty("maxheight", 0);
+                        
+                        oMenu.show();
+                        
+                        Assert.isFalse(Dom.hasClass(oMenu.body, "yui-menu-body-scrolled"), "The menu's body should not have the CSS class name \"yui-menu-body-scrolled\" applied.");
+                        
+
+                        // Test #7: auto behavior
+                        
+                        oMenu.hide();
+                        
+                        for (i = 0; i < 40; i++) {
+                        
+                            oMenu.addItem("Menu Item " + i);
+                        
+                        }
+
+                        oMenu.show();
+                        
+                        Assert.isTrue(Dom.hasClass(oMenu.body, "yui-menu-body-scrolled"), "The menu's body should have the CSS class name \"yui-menu-body-scrolled\" applied.");
+                        Assert.isTrue((oMenu.element.offsetHeight < Dom.getViewportHeight()) , "The offsetHeight of the menu's element should be less than the offsetHeight of the browser viewport.");
+                        
+                        oMenu.destroy();
+
+                    },
+                    
+                    testMethods: function () {
+
+                        oMenu = new Menu(Dom.generateId());
+
+
+                        // Test the "addItem" method
+
+                        // Test "addItem" by passing a string label for the YAHOO.widget.MenuItem instance to be created.  Add the item to the first item group.
+                        
+                        oMenuItem = oMenu.addItem("Menu Item 1");
+
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"addItem\" method should return an instance of YAHOO.widget.MenuItem.");
+                        Assert.isTrue((oMenu.getItems().length == 1) , "The \"addItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[0].length == 1) , "The \"addItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+                        Assert.isTrue((oMenu.getItem(0, 0) == oMenuItem) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItems()[0] == oMenuItem) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[0][0] == oMenuItem) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        
+                        oMenuItem = null;
+
+
+                        // Test "addItem" by passing a YAHOO.widget.MenuItem instance.  Add the item to the second item group.
+
+                        oMenuItem = oMenu.addItem(new MenuItem("Menu Item 2"), 1);
+
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"addItem\" method should return an instance of YAHOO.widget.MenuItem.");
+                        Assert.isTrue((oMenu.getItems().length == 2) , "The \"addItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[1].length == 1) , "The \"addItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+                        Assert.isTrue((oMenu.getItem(0, 1) == oMenuItem) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItems()[1] == oMenuItem) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[1][0] == oMenuItem) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+
+                        oMenuItem = null;
+
+
+                        // Test "addItem" by passing an object literal of YAHOO.widget.MenuItem configuration properties.  Add the item to the third item group.
+
+                        oMenuItem = oMenu.addItem({ text: "Menu Item 3" }, 2);
+                        
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"addItem\" method should return an instance of YAHOO.widget.MenuItem.");
+                        Assert.isTrue((oMenu.getItems().length == 3) , "The \"addItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[2].length == 1) , "The \"addItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+                        Assert.isTrue((oMenu.getItem(0, 2) == oMenuItem) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItems()[2] == oMenuItem) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[2][0] == oMenuItem) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+
+                        oMenuItem = null;                        
+
+
+
+                        // Test the "insertItem" method                        
+
+                        // Test "insertItem" by passing a string label for the YAHOO.widget.MenuItem instance to be created.  Insert the item before the first item in the first group.
+
+                        oMenuItem = oMenu.insertItem("Menu Item 4", 0);
+                        
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"insertItem\" method should return an instance of YAHOO.widget.MenuItem.");
+                        Assert.isTrue((oMenu.getItems().length == 4) , "The \"insertItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[0].length == 2) , "The \"insertItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+                        Assert.isTrue((oMenu.getItem(0, 0) == oMenuItem) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItems()[0] == oMenuItem) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[0][0] == oMenuItem) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        
+                        oMenuItem = null;
+                        
+
+                        // Test "insertItem" by passing a YAHOO.widget.MenuItem instance.  Insert the item before the first item in the second group.
+
+                        oMenuItem = oMenu.insertItem(new MenuItem("Menu Item 5"), 0, 1);
+
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"insertItem\" method should return an instance of YAHOO.widget.MenuItem.");
+                        Assert.isTrue((oMenu.getItems().length == 5) , "The \"insertItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[1].length == 2) , "The \"insertItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+                        Assert.isTrue((oMenu.getItem(0, 1) == oMenuItem) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItems()[2] == oMenuItem) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[1][0] == oMenuItem) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+
+                        oMenuItem = null;
+
+
+                        // Test "insertItem" by passing an object literal of YAHOO.widget.MenuItem configuration properties.  Insert the item before the first item in the third group.
+
+                        oMenuItem = oMenu.insertItem({ text: "Menu Item 6" }, 0, 2);
+
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"insertItem\" method should return an instance of YAHOO.widget.MenuItem.");
+                        Assert.isTrue((oMenu.getItems().length == 6) , "The \"insertItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[2].length == 2) , "The \"insertItem\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+                        Assert.isTrue((oMenu.getItem(0, 2) == oMenuItem) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItems()[4] == oMenuItem) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[2][0] == oMenuItem) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+
+                        oMenuItem = null;
+
+                        
+
+                        // Test the "addItems" method
+                        
+                        // Test "addItems" by appending two new items to the first item group
+
+                        var aMenuItems = oMenu.addItems(["Menu Item 7", "Menu Item 8"]);
+
+                        Assert.isInstanceOf(MenuItem, aMenuItems[0], "The \"addItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isInstanceOf(MenuItem, aMenuItems[1], "The \"addItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItems().length == 8) , "The \"addItems\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[0].length == 4) , "The \"addItems\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+                        Assert.isTrue((oMenu.getItem(2, 0) == aMenuItems[0]) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItem(3, 0) == aMenuItems[1]) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItems()[2] == aMenuItems[0]) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItems()[3] == aMenuItems[1]) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[0][2] == aMenuItems[0]) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[0][3] == aMenuItems[1]) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+
+                        aMenuItems = null;
+
+
+                        // Test "addItems" by appending two new items to the second item group
+
+                        aMenuItems = oMenu.addItems(["Menu Item 9", "Menu Item 10"], 1);
+
+                        Assert.isInstanceOf(MenuItem, aMenuItems[0], "The \"addItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isInstanceOf(MenuItem, aMenuItems[1], "The \"addItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItems().length == 10) , "The \"addItems\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[1].length == 4) , "The \"addItems\" method should increment the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+                        Assert.isTrue((oMenu.getItem(2, 1) == aMenuItems[0]) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItem(3, 1) == aMenuItems[1]) , "The \"getItem\" method should return a YAHOO.widget.MenuItem instance.");
+                        Assert.isTrue((oMenu.getItems()[6] == aMenuItems[0]) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItems()[7] == aMenuItems[1]) , "The \"getItems\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[1][2] == aMenuItems[0]) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isTrue((oMenu.getItemGroups()[1][3] == aMenuItems[1]) , "The \"getItemGroups\" method should return an array of YAHOO.widget.MenuItem instances.");
+
+                        aMenuItems = null;
+
+
+                        // Test "setItemGroupTitle" by adding titles to each of the three item groups
+
+                        oMenu.setItemGroupTitle("Group 1");
+                        oMenu.setItemGroupTitle("Group 2", 1);                    
+                        oMenu.setItemGroupTitle("Group 3", 2);
+
+
+
+                        // Render and show the menu
+
+                        oMenu.render(document.body);
+                        oMenu.show();
+                        
+
+                        // Verify the title elements are in the DOM
+
+                        var aTitles = oMenu.element.getElementsByTagName(YAHOO.widget.Menu.prototype.GROUP_TITLE_TAG_NAME);
+                        
+                        Assert.isTrue((aTitles.length == 3), "The menu should have three title elements.");
+                        
+
+
+                        // Test the "removeItem" method
+
+                        // Test the "removeItem" method by passing the index of the YAHOO.widget.MenuItem instance to be removed.  This should remove the first item from the first item group.
+
+                        var nMenuItems = oMenu.getItems().length;
+
+                        oMenuItem = oMenu.removeItem(0);
+
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"removeItem\" method should return a reference to the YAHOO.widget.MenuItem instance that was removed from the menu.");
+                        Assert.areNotEqual((oMenu.getItem(0), oMenuItem), "The first item in the menu should not be equal to the YAHOO.widget.MenuItem instance that was removed.");
+                        Assert.isTrue((nMenuItems > oMenu.getItems().length), "The \"removeItem\" method should decrement the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[0].length == 3), "The \"removeItem\" method should decrement the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+
+                        nMenuItems = null;
+                        oMenuItem = null;
+
+
+                        // Test the "removeItem" method by passing the index of the YAHOO.widget.MenuItem instance to be removed and the index of the group it should be removed from.  This should remove the first item from the second item group.
+
+                        nMenuItems = oMenu.getItems().length;
+
+                        oMenuItem = oMenu.removeItem(0, 1);
+                        
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"removeItem\" method should return a reference to the YAHOO.widget.MenuItem instance that was removed from the menu.");
+                        Assert.areNotEqual((oMenu.getItem(0, 1), oMenuItem), "The first item in the menu should not be equal to the YAHOO.widget.MenuItem instance that was removed.");
+                        Assert.isTrue((nMenuItems > oMenu.getItems().length), "The \"removeItem\" method should decrement the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[1].length == 3), "The \"removeItem\" method should decrement the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+
+                        nMenuItems = null;
+                        oMenuItem = null;
+
+
+                        // Test the "removeItem" method by passing a reference to the YAHOO.widget.MenuItem instance to be removed.  This should remove the first item from the first item group.
+
+                        nMenuItems = oMenu.getItems().length;
+
+                        oMenuItem = oMenu.removeItem(oMenu.getItem(0));
+                        
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"removeItem\" method should return a reference to the YAHOO.widget.MenuItem instance that was removed from the menu.");
+                        Assert.areNotEqual((oMenu.getItem(0), oMenuItem), "The first item in the menu should not be equal to the YAHOO.widget.MenuItem instance that was removed.");
+                        Assert.isTrue((nMenuItems > oMenu.getItems().length), "The \"removeItem\" method should decrement the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[0].length == 2), "The \"removeItem\" method should decrement the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+
+                        nMenuItems = null;
+                        oMenuItem = null;
+
+
+                        // Test the "removeItem" method by passing a reference to the YAHOO.widget.MenuItem instance to be removed and the index of the group it should be removed from.  This should remove the first item from the second item group.
+
+                        nMenuItems = oMenu.getItems().length;
+
+                        oMenuItem = oMenu.removeItem(oMenu.getItem(0, 1), 1);
+                        
+                        Assert.isInstanceOf(MenuItem, oMenuItem, "The \"removeItem\" method should return a reference to the YAHOO.widget.MenuItem instance that was removed from the menu.");
+                        Assert.areNotEqual((oMenu.getItem(0, 1), oMenuItem), "The first item in the menu should not be equal to the YAHOO.widget.MenuItem instance that was removed.");
+                        Assert.isTrue((nMenuItems > oMenu.getItems().length), "The \"removeItem\" method should decrement the number of YAHOO.widget.MenuItem instances returned by the \"getItems\" method.");
+                        Assert.isTrue((oMenu.getItemGroups()[1].length == 2), "The \"removeItem\" method should decrement the number of YAHOO.widget.MenuItem instances returned by the \"getItemGroups\" method.");
+
+                        nMenuItems = null;
+                        oMenuItem = null;
+
+                        
+
+                        // Test the focus related methods
+
+                        // Test the "setInitialFocus" method.
+                        
+                        function focusTest1() {
+
+							Assert.isTrue(oMenu.hasFocus(), "The menu isn't focused when it should be.");
+							Assert.isTrue(oMenu.getItem(0).hasFocus(), "The first item in the menu isn't focused when it should be.");
+                        
+                        	this.unsubscribe("focus", focusTest1);
+                        
+                        }
+                        
+                        oMenu.subscribe("focus", focusTest1);
+                        
+                        oMenu.setInitialFocus();
+
+
+                        // Test the "blur" method                        
+
+						function focusTest2() {
+
+							Assert.isFalse(oMenu.hasFocus(), "The menu isn't blurred when it should be.");
+							Assert.isFalse(oMenu.getItem(0).hasFocus(), "The first item in the menu isn't blurred when it should be.");
+
+                        	this.unsubscribe("blur", focusTest2);
+						
+						}
+
+                        oMenu.subscribe("blur", focusTest2);
+                        
+                        oMenu.blur();
+                        
+
+                        // Test the "focus" method
+
+						function focusTest3() {
+
+							Assert.isTrue(oMenu.hasFocus(), "The menu isn't focused when it should be.");
+							Assert.isTrue(oMenu.getItem(0).hasFocus(), "The first item in the menu isn't focused when it should be.");
+
+							this.unsubscribe("focus", focusTest3);
+						
+						}
+
+						oMenu.subscribe("focus", focusTest3);
+                        
+                        oMenu.focus();
+                        
+                        oMenu.blur();
+                        
+                        
+                        // Test focus related methods with the first item in the first group disabled
+
+                        // Test the "setInitialFocus" method
+
+						function focusTest4() {
+
+							Assert.isTrue(oMenu.hasFocus(), "The menu isn't focused when it should be.");
+							Assert.isTrue(oMenu.getItem(1).hasFocus(), "The second item in the menu isn't focused when it should be.");
+						
+							this.unsubscribe("focus", focusTest4);
+						
+						}
+
+						oMenu.subscribe("focus", focusTest4);
+
+                        oMenu.getItem(0).cfg.setProperty("disabled", true);
+
+                        oMenu.setInitialFocus();
+                        
+
+                        // Test the "blur" method
+                        
+						function focusTest6() {
+
+							Assert.isFalse(oMenu.hasFocus(), "The menu isn't blurred when it should be.");
+							Assert.isFalse(oMenu.getItem(1).hasFocus(), "The second item in the menu isn't blurred when it should be.");
+						
+							this.unsubscribe("blur", focusTest6);
+						
+						}
+                        
+						oMenu.subscribe("blur", focusTest6);
+                        
+                        oMenu.blur();
+                        
+                        
+                        // Test the "focus" method
+
+						function focusTest7() {
+
+							Assert.isTrue(oMenu.hasFocus(), "The menu isn't focused when it should be.");
+							Assert.isTrue(oMenu.getItem(1).hasFocus(), "The second item in the menu isn't focused when it should be.");
+						
+							this.unsubscribe("focus", focusTest7);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest7);
+                        
+                        oMenu.focus();
+                        
+                        oMenu.blur();
+                        
+
+                        // Test focus related methods with both the first and second item in the first group disabled
+
+                        // Test the "setInitialFocus" method
+
+						function focusTest8() {
+
+							Assert.isTrue(oMenu.hasFocus(), "The menu isn't focused when it should be.");
+							Assert.isTrue(oMenu.getItem(0, 1).hasFocus(), "The first item in the second group isn't focused when it should be.");
+						
+							this.unsubscribe("focus", focusTest8);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest8);
+                        
+                        oMenu.getItem(1).cfg.setProperty("disabled", true);
+                        
+                        oMenu.setInitialFocus();
+                        
+                        
+                        // Test the "blur" method
+
+						function focusTest9() {
+
+							Assert.isFalse(oMenu.hasFocus(), "The menu isn't blurred when it should be.");
+							Assert.isFalse(oMenu.getItem(0, 1).hasFocus(), "The first item in the second group isn't blurred when it should be.");
+						
+							this.unsubscribe("focus", focusTest9);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest9);
+                        
+                        oMenu.blur();
+                        
+                        
+                        // Test the "focus" method
+                        
+						function focusTest10() {
+						
+							Assert.isTrue(oMenu.hasFocus(), "The menu isn't focused when it should be.");
+							Assert.isTrue(oMenu.getItem(0, 1).hasFocus(), "The first item in the second group isn't focused when it should be.");
+
+							this.unsubscribe("focus", focusTest10);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest10);
+                        
+                        oMenu.focus();
+                        
+                        oMenu.blur();
+
+
+                        // Test focus related methods with the menu disabled
+
+                        // Test setInitialFocus
+
+						function focusTest11() {
+
+	                        Assert.isFalse(oMenu.hasFocus(), "The menu isn't blurred when it should be.");
+						
+							this.unsubscribe("focus", focusTest11);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest11);
+
+                        oMenu.cfg.setProperty("disabled", true);
+                        
+                        oMenu.setInitialFocus();
+                        
+						oMenu.blur();
+                        
+                        
+                        // Test focus
+                        
+						function focusTest12() {
+
+	                        Assert.isFalse(oMenu.hasFocus(), "The menu isn't blurred when it should be.");
+						
+							this.unsubscribe("focus", focusTest12);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest12);
+
+                        oMenu.focus();
+
+                        oMenu.cfg.setProperty("disabled", false);
+
+
+
+                        // Test the "setInitialSelection" and the "clearActiveItem" methods along with the "activeItem" property
+
+                        oMenu.setInitialSelection();
+
+                        Assert.isTrue(oMenu.getItem(0).cfg.getProperty("selected"), "The first item in the menu should be selected.");
+                        Assert.isTrue((oMenu.activeItem == oMenu.getItem(0)), "The \"activeItem\" property should return a reference to the first item the menu.");
+
+
+                        oMenu.getItem(0).cfg.setProperty("disabled", true);
+
+                        oMenu.setInitialSelection();
+
+                        Assert.isTrue(oMenu.getItem(1).cfg.getProperty("selected"), "The second item in the menu should be selected.");
+                        Assert.isTrue((oMenu.activeItem == oMenu.getItem(1)), "The \"activeItem\" property should return a reference to the second item the menu.");
+
+
+                        oMenu.getItem(1).cfg.setProperty("disabled", true);
+
+                        oMenu.setInitialSelection();
+
+                        Assert.isTrue(oMenu.getItem(0, 1).cfg.getProperty("selected"), "The first item in the menu's second group should be selected.");
+                        Assert.isTrue((oMenu.activeItem == oMenu.getItem(0, 1)), "The \"activeItem\" property should return a reference to the first item the menu's second group.");
+                        
+                        
+                        oMenu.cfg.setProperty("disabled", true);
+
+                        oMenu.setInitialSelection();
+
+                        Assert.isNull(oMenu.activeItem, "The \"activeItem\" property should return null when the menu is disabled.");
+
+
+                        oMenu.cfg.setProperty("disabled", false);
+
+                        oMenu.setInitialSelection();
+
+                        oMenu.clearActiveItem();
+
+                        Assert.isNull(oMenu.activeItem, "The \"activeItem\" property should return null after the \"clearActiveItem\" method is called.");
+
+
+                        oMenu.setInitialSelection();
+
+
+						function focusTest13() {
+						
+							oMenu.clearActiveItem(true);
+	
+							Assert.isFalse(oMenu.hasFocus(), "The menu should not have focus when \"true\" is passed to the \"clearActiveItem\" method.");
+							Assert.isNull(oMenu.activeItem, "The \"activeItem\" property should return null after the \"clearActiveItem\" method is called.");
+
+							this.unsubscribe("focus", focusTest13);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest13);
+
+                        oMenu.focus();
+
+
+
+                        
+						function focusTest14() {
+
+							oMenu.clearActiveItem(true);
+	
+							Assert.isFalse(oMenu.hasFocus(), "The menu should not have focus when \"true\" is passed to the \"clearActiveItem\" method.");
+							Assert.isNull(oMenu.activeItem, "The \"activeItem\" property should return null after the \"clearActiveItem\" method is called.");
+						
+							this.unsubscribe("focus", focusTest14);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest14);
+
+                        oMenu.getItem(0).cfg.setProperty("disabled", true);
+
+                        oMenu.setInitialSelection();
+                        
+                        oMenu.focus();
+                        
+
+
+
+                        oMenu.getItem(1).cfg.setProperty("disabled", true);
+
+                        oMenu.setInitialSelection();
+
+						function focusTest15() {
+						
+							oMenu.clearActiveItem(true);
+	
+							Assert.isFalse(oMenu.hasFocus(), "The menu should not have focus when \"true\" is passed to the \"clearActiveItem\" method.");
+							Assert.isNull(oMenu.activeItem, "The \"activeItem\" property should return null after the \"clearActiveItem\" method is called.");
+
+							this.unsubscribe("focus", focusTest15);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest15);
+
+                        oMenu.focus();
+
+
+                        // Test clearContent
+
+                        oMenu.clearContent();
+
+                        ArrayAssert.isEmpty(oMenu.getItemGroups() , "The \"getItemGroups\" method should return an empty array after a call to the \"clearContent\" method.");
+                        ArrayAssert.isEmpty(oMenu.getItems() , "The \"getItems\" method should return an empty array after a call to the \"clearContent\" method.");
+                      
+
+                        oMenu.destroy();
+                        
+                        oMenu = null;
+                        
+
+                        // Test "positionOffScreen" and the "OFF_SCREEN_POSITION" constant
+
+                        oMenu = new Menu(Dom.generateId());
+                        
+                        oMenu.addItems(["MenuItem 0", "MenuItem 1", "MenuItem 2", "MenuItem 4"]);
+                        
+                        oMenu.render(document.body);
+                        
+                        oMenu.show();
+                        
+                        oMenu.positionOffScreen();
+
+                        Assert.isTrue((parseInt(Dom.getStyle(oMenu.element, "top"), 10) < 0) , "The \"top\" style property should be less than 0.");
+                        Assert.isTrue((parseInt(Dom.getStyle(oMenu.element, "left"), 10) < 0), "The \"left\" style property should be less than 0.");
+                        
+                        oMenu.destroy();
+                        oMenu = null;
+
+
+
+                        // Test the "getRoot" and "getSubmenus" methods along with the "parent" property
+
+                        var oSubMenu1 = new Menu(Dom.generateId());
+
+                        oSubMenu1.addItems(["MenuItem 0", "MenuItem 1", "MenuItem 2", "MenuItem 4"]);
+
+
+                        var oSubMenu2 = new Menu(Dom.generateId());
+
+                        oSubMenu2.addItems(["MenuItem 0", "MenuItem 1", "MenuItem 2", "MenuItem 4"]);
+                        
+                        
+                        oMenu = new Menu(Dom.generateId());
+                        
+                        oMenu.addItems([
+                        
+                            { text: "Menu Item 1", submenu: oSubMenu1 },
+                            { text: "Menu Item 2", submenu: oSubMenu2 }
+                        
+                        ]);
+
+                        oMenu.render(document.body);
+                        
+                        oMenu.show();
+
+                        
+                        var aSubmenus = oMenu.getSubmenus();
+                        
+                        Assert.isArray(aSubmenus, "The \"getSubmenus\" method should return an array of YAHOO.widget.Menu instances.")
+                        Assert.isTrue((aSubmenus.length == 2) , "The \"getSubmenus\" method should return an array of two YAHOO.widget.Menu instances.")
+                        
+                        Assert.areEqual(oSubMenu1.getRoot(), oMenu,  "The \"getRoot\" method should return a reference to the root YAHOO.widget.Menu instance.");
+                        Assert.areEqual(oSubMenu2.getRoot(), oMenu,  "The \"getRoot\" method should return a reference to the root YAHOO.widget.Menu instance.");
+                        
+                        Assert.isInstanceOf(MenuItem, oSubMenu1.parent, "The immediate parent of a submenu should be a YAHOO.widget.MenuItem instance."); 
+                        Assert.isInstanceOf(MenuItem, oSubMenu2.parent, "The immediate parent of a submenu should be a YAHOO.widget.MenuItem instance.");
+                        
+                        Assert.areEqual(oMenu, oSubMenu1.parent.parent, "The immediate parent of a YAHOO.widget.MenuItem should be a YAHOO.widget.Menu instance."); 
+                        Assert.areEqual(oMenu, oSubMenu2.parent.parent, "The immediate parent of a YAHOO.widget.MenuItem should be a YAHOO.widget.Menu instance.");
+                    
+                        oMenu.destroy();
+                    
+                    },
+
+                    testEvents: function () {
+
+                        oMenu = new Menu(Dom.generateId());
+
+                        Assert.isInstanceOf(CustomEvent, oMenu.mouseOverEvent, "Menu event \"mouseOverEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.mouseOutEvent, "Menu event \"mouseOutEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.mouseDownEvent, "Menu event \"mouseDownEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.mouseUpEvent, "Menu event \"mouseUpEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.clickEvent, "Menu event \"clickEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.keyDownEvent, "Menu event \"keyDownEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.keyUpEvent, "Menu event \"keyUpEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.keyPressEvent, "Menu event \"keyPressEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.focusEvent, "Menu event \"focusEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.blurEvent, "Menu event \"blurEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.itemAddedEvent, "Menu event \"itemAddedEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenu.itemRemovedEvent, "Menu event \"itemRemovedEvent\" is not an instance of YAHOO.util.CustomEvent.");
+
+                        oMenu.destroy();
+
+                    }
+
+                });
+
+
+                var oMenuItemTestCase = new YAHOO.tool.TestCase({
+                
+                    name: "MenuItem Test Case",
+
+                    testProperties: function () {
+
+                        // Test that the "value" and "srcElement" properties and "text" configuration property are set correctly when building a menu using an <OPTION> or <OPTGROUP> element as a data source
+
+                        oMenu = new Menu("select2");
+                        
+                        oMenu.render(document.body);
+                        oMenu.show();
+
+                        var oSelect = Dom.get("select2"),
+                            aOptionGroups = oSelect.getElementsByTagName("optgroup"),
+                            aOptions = oSelect.getElementsByTagName("option");
+                        
+                        Assert.areEqual(oMenu.getItem(0).cfg.getProperty("text"), aOptionGroups[0].label, "The value of the \"text\" configuration property should be equal to the value of the \"label\" attribute of the source element.");
+
+                        Assert.areEqual(oMenu.getItem(0).cfg.getProperty("submenu").getItem(0).cfg.getProperty("text"), aOptions[0].text, "The value of the \"text\" configuration property should be equal to the value of the \"text\" attribute of the source element.");
+                        Assert.areEqual(oMenu.getItem(0).cfg.getProperty("submenu").getItem(0).value, aOptions[0].value, "The value of the \"value\" property should be equal to the value of the \"value\" attribute of the source element.");
+
+                        Assert.areEqual(oMenu.getItem(0).srcElement, aOptionGroups[0], "The \"srcElement\" property should be equal to the source <OPTGROUP> element.");
+                        Assert.areEqual(oMenu.getItem(0).cfg.getProperty("submenu").getItem(0).srcElement, aOptions[0], "The \"srcElement\" property should be equal to the source <OPTION> element.");
+
+
+                        // Test the "id" property
+
+                        Assert.areEqual(oMenu.getItem(0).id, "first-optgroup", "The id of the YAHOO.widget.MenuItem instance should be \"first-optgroup.\"");
+                        Assert.areEqual(oMenu.getItem(0).cfg.getProperty("submenu").getItem(0).id, "first-option", "The id of the YAHOO.widget.MenuItem instance should be \"first-option.\"");
+
+
+                        oMenu.destroy();
+                        oMenu = null;
+
+
+                        YAHOO.widget.MenuItem.prototype.CSS_CLASS_NAME = "custom-menuitem-class-name";
+                        YAHOO.widget.MenuItem.prototype.CSS_LABEL_CLASS_NAME = "custom-menuitemlabel-class-name";
+                    
+                        oMenu = new Menu(Dom.generateId());
+                        
+                        oMenu.addItems([
+                            [ { id: "a-menu-item-id", text: "Menu Item 1" }, "Menu Item 2"],
+                            ["Menu Item 1", "Menu Item 2"]
+                        ]);
+                        
+                        oMenu.render(document.body);
+                        
+                        Assert.areEqual(oMenu.getItem(0).element, Dom.get("a-menu-item-id"), "The id of the YAHOO.widget.MenuItem instance should be \"a-menu-item-id.\"");
+
+
+                        // Test setting the "CSS_CLASS_NAME" and "CSS_LABEL_CLASS_NAME"
+                        
+                        Assert.areEqual(Dom.getElementsByClassName(YAHOO.widget.MenuItem.prototype.CSS_CLASS_NAME , "li" , oMenu.element).length, 4 , "There should be four elements with a class name of \"custom-menuitem-class-name.\"");
+                        Assert.areEqual(Dom.getElementsByClassName(YAHOO.widget.MenuItem.prototype.CSS_LABEL_CLASS_NAME , "a" , oMenu.element).length, 4, "There should be four elements with a class name of \"custom-menuitemlabel-class-name.\"");
+
+
+                        // Test the "index" and "groupIndex" properties                    
+
+                        Assert.areEqual(oMenu.getItem(0).index, 0, "The \"index\" property of the first item in the first group should be 0.");
+                        Assert.areEqual(oMenu.getItem(0).groupIndex, 0, "The \"groupIndex\" property of the first item in the first group should be 0.The \"index\" property of the first item in the first group should be 0."); 
+  
+                        Assert.areEqual(oMenu.getItem(0, 1).index, 0, "The \"index\" property of the first item in the second group should be 0.");
+                        Assert.areEqual(oMenu.getItem(0, 1).groupIndex, 1, "The \"groupIndex\" property of the first item in the second group should be 0.The \"index\" property of the first item in the first group should be 1.");
+
+                        oMenu.destroy();
+                        oMenu = null;
+                    
+                        YAHOO.widget.MenuItem.prototype.CSS_CLASS_NAME = "yuimenuitem";
+                        YAHOO.widget.MenuItem.prototype.CSS_LABEL_CLASS_NAME = "yuimenuitemlabel";
+                    
+                    },
+
+
+                    testConfigurationProperties: function () {
+
+                        oMenu = new Menu(Dom.generateId());
+                        
+                        oMenu.addItems([
+
+                            { text: "Menu Item 1", checked: true },
+                            { text: "Menu Item 2", submenu: { id: Dom.generateId(), itemdata: ["Menu Item 1", "Menu Item 2"] } },
+                            { text: "Menu Item 3", selected: true },
+                            { text: "Menu Item 4", disabled: true },
+
+                            // Test "selected" with other configuration properties
+
+                            { text: "Menu Item 5", checked: true, selected: true },
+                            { text: "Menu Item 6", submenu: { id: Dom.generateId(), itemdata: ["Menu Item 1", "Menu Item 2"] }, selected: true },
+
+
+                            // Test "disabled" with other configuration properties
+
+                            { text: "Menu Item 7", checked: true, disabled: true },
+                            { text: "Menu Item 8", submenu: { id: Dom.generateId(), itemdata: ["Menu Item 1", "Menu Item 2"] }, disabled: true }
+
+                        
+                        ]);
+
+
+                        oMenu.render(document.body);
+                        oMenu.show();
+
+                        Assert.areEqual(oMenu.getItem(0).cfg.getProperty("url"), "#", "The value of the \"url\" configuration property should be \"#.\"");
+
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(0).element, "yuimenuitem-checked"), "The root <LI> element should have a CSS class name of \"yuimenuitem-checked.\"");
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(0).element.firstChild, "yuimenuitemlabel-checked"), "The <A> element should have a CSS class name of \"yuimenuitemlabel-checked.\"");
+                        
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(1).element, "yuimenuitem-hassubmenu"), "The root <LI> element should have a CSS class name of \"yuimenuitem-hassubmenu.\"");
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(1).element.firstChild, "yuimenuitemlabel-hassubmenu"), "The <A> element should have a CSS class name of \"yuimenuitemlabel-hassubmenu.\"");
+
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(2).element, "yuimenuitem-selected"), "The root <LI> element should have a CSS class name of \"yuimenuitem-selected.\"");
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(2).element.firstChild, "yuimenuitemlabel-selected"), "The <A> element should have a CSS class name of \"yuimenuitemlabel-selected.\"");
+
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(3).element, "yuimenuitem-disabled"), "The root <LI> element should have a CSS class name of \"yuimenuitem-disabled.\"");
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(3).element.firstChild, "yuimenuitemlabel-disabled"), "The <A> element should have a CSS class name of \"yuimenuitemlabel-disabled.\"");
+
+
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(4).element, "yuimenuitem-checked-selected"), "The root <LI> element should have a CSS class name of \"yuimenuitem-checked-selected.\"");
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(4).element.firstChild, "yuimenuitemlabel-checked-selected"), "The <A> element should have a CSS class name of \"yuimenuitemlabel-checked-selected.\"");
+
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(5).element, "yuimenuitem-hassubmenu-selected"), "The root <LI> element should have a CSS class name of \"yuimenuitem-hassubmenu-selected.\"");
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(5).element.firstChild, "yuimenuitemlabel-hassubmenu-selected"), "The <A> element should have a CSS class name of \"yuimenuitemlabel-hassubmenu-selected.\"");
+
+
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(6).element, "yuimenuitem-checked-disabled"), "The root <LI> element should have a CSS class name of \"yuimenuitem-checked-disabled.\"");
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(6).element.firstChild, "yuimenuitemlabel-checked-disabled"), "The <A> element should have a CSS class name of \"yuimenuitemlabel-checked-disabled.\"");
+
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(7).element, "yuimenuitem-hassubmenu-disabled"), "The root <LI> element should have a CSS class name of \"yuimenuitem-hassubmenu-disabled.\"");
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(7).element.firstChild, "yuimenuitemlabel-hassubmenu-disabled"), "The <A> element should have a CSS class name of \"yuimenuitemlabel-hassubmenu-disabled.\"");
+
+
+                        // Test the "classname" configuration property
+
+                        oMenu.addItem({ text: "Menu Item 9", classname: "special-menuitem-class-name" });
+
+                        Assert.isTrue(Dom.hasClass(oMenu.getItem(8).element, "special-menuitem-class-name"), "The root <LI> element should have a CSS class name of \"special-menuitem-class-name.\"");
+
+
+                        // Test the "onclick" configuration property
+
+                        var bOnClick1Fired = false,
+                            bOnClick2Fired = false,
+                            bOnClick3Fired = false,
+                            handler2Obj,
+                            handler3Obj,
+                            handler3Scope;
+
+                        function onClick1() {
+                        
+                            bOnClick1Fired = true;
+                        
+                        }
+
+                        function onClick2(p_sType, p_aArgs, p_oObj) {
+                        
+                            bOnClick2Fired = true;
+
+                            handler2Obj = p_oObj;
+                        
+                        }
+                        
+                        function onClick3(p_sType, p_aArgs, p_oObj) {
+
+                            bOnClick3Fired = true;
+
+                            handler3Obj = p_oObj;
+                            
+                            handler3Scope = this;
+                        
+                        }
+
+
+                        var aSomeArray = ["val1","val2"];
+
+                        oMenu.addItem({ text: "Menu Item 10", onclick: { fn: onClick1 } });
+                        oMenu.addItem({ text: "Menu Item 11", onclick: { fn: onClick2, obj: aSomeArray } });
+                        oMenu.addItem({ text: "Menu Item 12", onclick: { fn: onClick3, obj: aSomeArray, scope: oMenu } });
+
+
+                        oMenu.getItem(9).clickEvent.fire();
+                        oMenu.getItem(10).clickEvent.fire();
+                        oMenu.getItem(11).clickEvent.fire();
+
+
+                        Assert.isTrue(bOnClick1Fired, "The click event handler should have been called.");
+
+                        Assert.isTrue(bOnClick2Fired, "The click event handler should have been called.");
+                        Assert.areEqual(handler2Obj, aSomeArray, "The object passed back to the event handler should be an array.");
+
+                        Assert.isTrue(bOnClick3Fired, "The click event handler should have been called.");
+                        Assert.areEqual(handler3Obj, aSomeArray, "The object passed back to the event handler should be an array.");
+                        Assert.areEqual(handler3Scope, oMenu, "The scope of the event handler should be the parent menu.");
+
+                        oMenu.destroy();
+                        oMenu = null;
+
+                    },
+                    
+                    testMethods: function () {
+
+                        oMenu = new Menu(Dom.generateId());
+                    
+                        oMenu.addItems(["Menu Item One", "Menu Item Two", "Menu Item Three", "Menu Item Four"]);
+                        oMenu.render(document.body);
+                        oMenu.show();
+
+
+                        // Test the "focus," "blur," and "hasFocus" methods
+
+						function focusTest16() {
+
+	                        Assert.isTrue(oMenu.getItem(0).hasFocus(), "The first item in the menu should have focus.");
+						
+							this.unsubscribe("focus", focusTest16);
+						
+						}
+                        
+						oMenu.subscribe("focus", focusTest16);
+
+                        oMenu.getItem(0).focus();
+                        
+
+						function focusTest5() {
+
+	                        Assert.isFalse(oMenu.getItem(0).hasFocus(), "The first item in the menu should not have focus.");
+						
+							this.unsubscribe("blur", focusTest5);
+						
+						}
+                        
+						oMenu.subscribe("blur", focusTest5);
+
+                        oMenu.getItem(0).blur();
+
+
+                        // Test the "getPreviousSibling" and "getNextSibling"
+  
+                        Assert.areEqual(oMenu.getItem(0), oMenu.getItem(1).getPreviousSibling(), "The \"getPreviousSibling\" method should return a reference to the first item in the menu.");
+                        Assert.areEqual(oMenu.getItem(1), oMenu.getItem(0).getNextSibling(), "The \"getNextSibling\" method should return a reference to the second item in the menu.");
+
+
+                        // Test the "getPreviousEnabledSibling" and "getNextEnabledSibling"
+
+                        oMenu.getItem(1).cfg.setProperty("disabled", true);
+                        oMenu.getItem(3).cfg.setProperty("disabled", true);
+  
+                        Assert.areEqual(oMenu.getItem(2), oMenu.getItem(0).getPreviousEnabledSibling(), "The \"getPreviousEnabledSibling\" method should return a reference to the third item in the menu.");
+                        Assert.areEqual(oMenu.getItem(2), oMenu.getItem(0).getNextEnabledSibling(), "The \"getNextEnabledSibling\" method should return a reference to the third item in the menu.");
+
+
+                        // Test the "destroy" method
+
+                        oMenu.getItem(0).destroy();
+                        oMenu.getItem(0).destroy();
+                        oMenu.getItem(0).destroy();
+                        oMenu.getItem(0).destroy();
+  
+                        ArrayAssert.isEmpty(oMenu.getItems(), "The \"getItems\" method should return an empty array once all of the items in it have been destroyed.");
+                        
+                        
+                        oMenu.destroy();
+                        oMenu = null;
+                    
+                    },
+
+                    testEvents: function () {
+
+                        oMenuItem = new MenuItem("MenuItem");
+
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.mouseOverEvent, "MenuItem event \"mouseOverEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.mouseOutEvent, "MenuItem event \"mouseOutEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.mouseDownEvent, "MenuItem event \"mouseDownEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.mouseUpEvent, "MenuItem event \"mouseUpEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.clickEvent, "MenuItem event \"clickEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.keyDownEvent, "MenuItem event \"keyDownEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.keyUpEvent, "MenuItem event \"keyUpEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.keyPressEvent, "MenuItem event \"keyPressEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.focusEvent, "MenuItem event \"focusEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.blurEvent, "MenuItem event \"blurEvent\" is not an instance of YAHOO.util.CustomEvent.");
+                        Assert.isInstanceOf(CustomEvent, oMenuItem.destroyEvent, "MenuItem event \"destroyEvent\" is not an instance of YAHOO.util.CustomEvent.");
+
+                        oMenuItem.destroy();
+
+                    }
+
+                });
+                
+                var oMenuManagerTestCase = new YAHOO.tool.TestCase({
+                
+                    name: "MenuManager Test Case",
+                    
+                    testMethods: function () {
+
+                        var aMenus = [];
+
+                        aMenus[0] = new Menu(Dom.generateId());
+                        aMenus[0].render(document.body);
+                        aMenus[0].show();
+                        
+                        aMenus[1] = new Menu(Dom.generateId(), { visible: true });
+                        aMenus[1].render(document.body);
+
+                        aMenus[2] = new Menu(Dom.generateId());
+                        aMenus[2].render(document.body);
+                        aMenus[2].cfg.setProperty("visible", true);
+                        
+                        aMenus[3] = new Menu(Dom.generateId(), { position: "static" });
+                        aMenus[3].render(document.body);
+
+
+                        // Test the "getMenus" and "getVisible" methods
+
+                        var oVisible = MenuManager.getVisible(),
+                            oMenus = MenuManager.getMenus();
+
+                        ObjectAssert.hasProperty(aMenus[0].id, oMenus, "The first menu should be in the collection of menus.");
+                        ObjectAssert.hasProperty(aMenus[1].id, oMenus, "The second menu should be in the collection of menus.");
+                        ObjectAssert.hasProperty(aMenus[2].id, oMenus, "The third menu should be in the collection of menus.");
+                        ObjectAssert.hasProperty(aMenus[3].id, oMenus, "The fourth menu should be in the collection of menus.");
+
+                        ObjectAssert.hasProperty(aMenus[0].id, oVisible, "The first menu should be in the collection of visible menus.");
+                        ObjectAssert.hasProperty(aMenus[1].id, oVisible, "The second menu should be in the collection of visible menus.");
+                        ObjectAssert.hasProperty(aMenus[2].id, oVisible, "The third menu should be in the collection of visible menus.");
+                        ObjectAssert.hasProperty(aMenus[3].id, oVisible, "The fourth menu should be in the collection of visible menus.");
+
+
+                        // Test the "hideVisible" method
+
+                        YAHOO.widget.MenuManager.hideVisible();
+                        
+                        oVisible = MenuManager.getVisible();
+
+                        Assert.isUndefined(oVisible[aMenus[0].id], "The first menu should be in the collection of visible menus.");
+                        Assert.isUndefined(oVisible[aMenus[1].id], "The second menu should be in the collection of visible menus.");
+                        Assert.isUndefined(oVisible[aMenus[2].id], "The third menu should be in the collection of visible menus.");
+                        ObjectAssert.hasProperty(aMenus[3].id, oVisible, "The fourth menu should be in the collection of visible menus.");
+
+                        aMenus[3].hide();
+
+                        Assert.isUndefined(oVisible[aMenus[3].id], "The third menu should be in the collection of visible menus.");
+                        
+                        aMenus[0].show();
+                        aMenus[1].show();
+                        aMenus[2].show();
+                        aMenus[3].show();
+
+                        ObjectAssert.hasProperty(aMenus[0].id, oVisible, "The first menu should be in the collection of visible menus.");
+                        ObjectAssert.hasProperty(aMenus[1].id, oVisible, "The second menu should be in the collection of visible menus.");
+                        ObjectAssert.hasProperty(aMenus[2].id, oVisible, "The third menu should be in the collection of visible menus.");
+                        ObjectAssert.hasProperty(aMenus[3].id, oVisible, "The fourth menu should be in the collection of visible menus.");
+
+
+
+                        // Test the "addMenu" and "removeMenu" methods
+
+                        MenuManager.removeMenu(aMenus[0]);
+
+                        oVisible = MenuManager.getVisible();
+                        oMenus = MenuManager.getMenus();
+
+                        Assert.isUndefined(oVisible[aMenus[0].id], "The first menu should not be in the collection of visible menus.");
+                        Assert.isUndefined(oMenus[aMenus[0].id], "The first menu should not be in the collection of menus.");
+
+
+                        MenuManager.addMenu(aMenus[0]);
+
+                        ObjectAssert.hasProperty(aMenus[0].id, oMenus, "The first menu should be in the collection of menus.");
+
+
+                        // Test the "getMenu" and "getMenuItem" methods
+
+                        Assert.isInstanceOf(Menu, MenuManager.getMenu(aMenus[0].element.id), "The \"getMenu\" method should return a YAHOO.widget.Menu instance.");
+                        
+                        aMenus[0].addItem({ text: "Menu Item 1", id: "yui-menuitem-1" });
+
+                        Assert.isInstanceOf(MenuItem, MenuManager.getMenuItem("yui-menuitem-1"), "The \"getMenuItem\" method should return a YAHOO.widget.MenuItem instance.");
+
+
+                        aMenus[4] = new Menu("menuwithitemgroups");
+                        aMenus[4].render();
+                        
+                        Assert.isArray(MenuManager.getMenuItemGroup("itemgroup1") , "The \"getItemGroup\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isArray(MenuManager.getMenuItemGroup("itemgroup2") , "The \"getItemGroup\" method should return an array of YAHOO.widget.MenuItem instances.");
+                        Assert.isArray(MenuManager.getMenuItemGroup("itemgroup3") , "The \"getItemGroup\" method should return an array of YAHOO.widget.MenuItem instances.");
+
+
+                        // Test the "getFocusedMenu" and "getFocusedMenuItem" methods
+
+                        aMenus[4].show();
+
+						aMenus[4].subscribe("focus", function () {
+						
+							Assert.isInstanceOf(Menu, MenuManager.getFocusedMenu(), " ");
+							Assert.isInstanceOf(MenuItem, MenuManager.getFocusedMenuItem(), " ");
+						
+						});
+
+                        aMenus[4].focus();
+
+
+                        aMenus[0].destroy();
+                        aMenus[1].destroy();
+                        aMenus[2].destroy();
+                        aMenus[3].destroy();
+                        aMenus[4].destroy();
+
+
+                        Assert.isUndefined(oVisible[aMenus[0].id], "The first menu should not be in the collection of visible menus.");
+                        Assert.isUndefined(oVisible[aMenus[1].id], "The second menu should not be in the collection of visible menus.");
+                        Assert.isUndefined(oVisible[aMenus[2].id], "The third menu should not be in the collection of visible menus.");
+                        Assert.isUndefined(oVisible[aMenus[3].id], "The fourth menu should not be in the collection of visible menus.");
+                        Assert.isUndefined(oVisible[aMenus[3].id], "The fifth menu should not be in the collection of visible menus.");
+
+                        Assert.isUndefined(oMenus[aMenus[0].id], "The first menu should not be in the collection of menus.");
+                        Assert.isUndefined(oMenus[aMenus[1].id], "The second menu should not be in the collection of menus.");
+                        Assert.isUndefined(oMenus[aMenus[2].id], "The third menu should not be in the collection of menus.");
+                        Assert.isUndefined(oMenus[aMenus[3].id], "The fourth menu should not be in the collection of menus.");
+                        Assert.isUndefined(oMenus[aMenus[4].id], "The fifth menu should not be in the collection of menus.");
+
+                    }
+
+                });
+
+
+                YAHOO.tool.TestRunner.add(oMenuTestCase);
+                YAHOO.tool.TestRunner.add(oMenuItemTestCase);
+                YAHOO.tool.TestRunner.add(oMenuManagerTestCase);
+
+
+                if (parent && parent != window) {
+                    YAHOO.tool.TestManager.load();
+                } else {
+                    YAHOO.tool.TestRunner.run();
+                }
+            
+            });
+
+        </script>	
+	
+    </head>
+    <body class="yui-skin-sam">
+    
+        <div id="menucontainer"></div>
+        
+        <div id="basicmenufrommarkup" class="yuimenu">
+            <div class="bd">
+                <ul class="first-of-type">
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 1</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 2</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 3</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 4</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="menu1" class="yuimenu">
+            <div class="bd">
+                <ul class="first-of-type">
+                    <li class="yuimenuitem">
+                    
+                        <a class="yuimenuitemlabel" href="#">Menu Item 1</a>
+                        <div id="menu2" class="yuimenu">
+                            <div class="bd">
+                                <ul>
+                                    <li class="yuimenuitem">
+
+                                        <a class="yuimenuitemlabel" href="#menu3">Menu Item 1</a>
+                                        <div id="menu3" class="yuimenu">
+                                            <div class="bd">
+                                                <ul class="first-of-type">
+                                                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 1</a></li>
+                                                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 2</a></li>
+                                                </ul>            
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                    <li class="yuimenuitem">
+                                    
+                                        <a class="yuimenuitemlabel" href="#menu4">Menu Item 2</a>
+                                        <div id="menu4" class="yuimenu">
+                                            <div class="bd">
+                                                <ul class="first-of-type">
+                                                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 1</a></li>
+                                                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 2</a></li>
+                                                </ul>            
+                                            </div>
+                                        </div>
+                                    
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>                    
+                    
+                    </li>
+                    <li class="yuimenuitem">
+                    
+                        <a class="yuimenuitemlabel" href="#menu5">Menu Item 1</a>
+                        <div id="menu5" class="yuimenu">
+                            <div class="bd">
+                                <ul>
+                                    <li class="yuimenuitem">
+
+                                        <a class="yuimenuitemlabel" href="#menu6">Menu Item 1</a>
+                                        <div id="menu6" class="yuimenu">
+                                            <div class="bd">
+                                                <ul class="first-of-type">
+                                                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 1</a></li>
+                                                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 2</a></li>
+                                                </ul>            
+                                            </div>
+                                        </div>
+
+                                    </li>
+                                    <li class="yuimenuitem">
+                                    
+                                        <a class="yuimenuitemlabel" href="#menu7">Menu Item 2</a>
+                                        <div id="menu7" class="yuimenu">
+                                            <div class="bd">
+                                                <ul class="first-of-type">
+                                                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 1</a></li>
+                                                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 2</a></li>
+                                                </ul>            
+                                            </div>
+                                        </div>
+                                    
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>                    
+                    
+                    </li>
+                </ul>            
+            </div>
+        </div>
+
+        <div id="menuwithitemgroups" class="yuimenu">
+            <div class="bd">
+
+                <ul class="first-of-type" id="itemgroup1">
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 1</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 2</a></li>
+                </ul>
+
+                <ul id="itemgroup2">
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 1</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 2</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 3</a></li>
+                </ul>
+
+                <ul id="itemgroup3">
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 1</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 2</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 3</a></li>
+                    <li class="yuimenuitem"><a class="yuimenuitemlabel" href="#">Menu Item 4</a></li>
+                </ul>
+
+            </div>
+        </div>
+
+        <select id="select1" name="select1">
+            <option value="menuitem1">Menu Item 1</option>
+            <option value="menuitem2">Menu Item 2</option>
+            <option value="menuitem3">Menu Item 3</option>
+            <option value="menuitem4">Menu Item 4</option>
+        </select>
+    
+        <select id="select2" name="select2">
+            <optgroup label="Menu Item 1" id="first-optgroup">
+                <option value="menuitem1" id="first-option">Menu Item 1</option>
+                <option value="menuitem2">Menu Item 2</option>
+            </optgroup>
+            <optgroup label="Menu Item 2">
+                <option value="menuitem1">Menu Item 1</option>
+                <option value="menuitem2">Menu Item 2</option>
+            </optgroup>
+            <optgroup label="Menu Item 3">
+                <option value="menuitem1">Menu Item 1</option>
+                <option value="menuitem2">Menu Item 2</option>
+            </optgroup>
+            <optgroup label="Menu Item 4">
+                <option value="menuitem1">Menu Item 1</option>
+                <option value="menuitem2">Menu Item 2</option>
+            </optgroup>
+        </select>
+        
+        <div id="menu-for-menuitem-tests" class="yuimenu">
+            <div class="bd">
+                <ul class="first-of-type">
+                    <li class="yuimenuitem"><a href="#">Menu Item One</a></li>
+                    <li class="yuimenuitem"><a href="#test">Menu Item One</a></li>
+                    <li class="yuimenuitem"><a href="test.html#test">Menu Item One</a></li>
+                    <li class="yuimenuitem"><a href="../../test.html#test">Menu Item Two</a></li>
+                    <li class="yuimenuitem"><a href="http://www.fake.com/test.html#test">Menu Item Two</a></li>
+                    <li class="yuimenuitem"><a href="http://www.yahoo.com" target="_blank">Menu Item Two</a></li>
+                </ul>            
+            </div>
+        </div>
+    
+    </body>
+</html>

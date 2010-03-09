@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Menu Right Click Test</title>
+
+	<link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts-min.css" />
+	<link rel="stylesheet" type="text/css" href="../../../build/menu/assets/skins/sam/menu.css" />
+
+	<style type="text/css">
+
+	    /*
+	        Position and hide the Menu instance to prevent a flash of unstyled 
+	        content when the page is loading.
+	    */
+
+	    div.yuimenu {
+
+	        position: absolute;
+	        visibility: hidden;
+
+	    }
+
+	</style>
+
+	<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../../build/container/container_core-min.js"></script>
+	<script type="text/javascript" src="../../../build/menu/menu-min.js"></script>
+
+	<script type="text/javascript">
+
+	    /*
+	         Initialize and render the Menu when its elements are ready 
+	         to be scripted.
+	    */
+
+	    YAHOO.util.Event.onContentReady("basicmenu", function () {
+
+	        /*
+	             Instantiate a Menu:  The first argument passed to the 
+	             constructor is the id of the element in the page 
+	             representing the Menu; the second is an object literal 
+	             of configuration properties.
+	        */
+
+	        var oMenu = new YAHOO.widget.Menu("basicmenu", { fixedcenter: true });
+
+
+	        /*
+	             Call the "render" method with no arguments since the 
+	             markup for this Menu instance is already exists in the page.
+	        */
+
+	        oMenu.render();
+
+			//	Bind a "click" event handler to the Menu to test that 
+			//	the "click" event doesn't fire when the user right clicks
+			//	on the the Menu instance.
+
+			oMenu.subscribe("click", function () {
+
+				alert("If you see this alert the bug is not fixed.");
+
+			});
+
+
+	        YAHOO.util.Event.addListener("menutoggle", "click", oMenu.show, null, oMenu);
+
+	    });
+
+	</script>
+
+</head>
+
+<body class=" yui-skin-sam">
+
+	<h1>Menu Right Click Test</h1>
+
+	<p>
+		This is a test case for <a href="http://yuilibrary.com/projects/yui2/ticket/2527869" title="#2527869 Menu click event incorrectly called for right click in Firefox :: YUI 2.x :: YUI Library">bug 2527869</a>.
+	</p>
+	<p>
+		Right click on the Menu using Firefox for Windows.  
+		The Menu should remain visible, and the browser's context menu should 
+		appear.  If an alert pops up, the bug is not fixed.
+	</p>
+
+	<button id="menutoggle" type="button">Show Menu</button>
+
+	<div id="basicmenu" class="yuimenu">
+	    <div class="bd">
+	        <ul class="first-of-type">
+	            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://mail.yahoo.com">Yahoo! Mail</a></li>
+	            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://addressbook.yahoo.com">Yahoo! Address Book</a></li>
+	            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://calendar.yahoo.com">Yahoo! Calendar</a></li>
+	            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://notepad.yahoo.com">Yahoo! Notepad</a></li>
+	        </ul>            
+	    </div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Button Click Label Test</title>
+
+	<link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts-min.css">
+	<link rel="stylesheet" type="text/css" href="../../../build/button/assets/skins/sam/button.css">
+
+	<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+	<script type="text/javascript" src="../../../build/button/button-min.js"></script>
+
+
+	<script type="text/javascript">
+	
+		YAHOO.util.Event.onDOMReady(function () {
+		
+			var oButton1 = new YAHOO.widget.Button("checkbox-1");
+			var oButton2 = new YAHOO.widget.Button("checkbox-2");
+			var oButton3 = new YAHOO.widget.Button("checkbox-3");
+			
+			var oButton4 = new YAHOO.widget.Button("radio-1");
+			var oButton5 = new YAHOO.widget.Button("radio-2");
+			var oButton6 = new YAHOO.widget.Button("radio-3");	
+			
+			var buttonGroup = new YAHOO.widget.ButtonGroup("buttongroup1");
+			
+		});
+
+	</script>
+
+</head>
+<body class="yui-skin-sam">
+
+	<h1>Button Click Label Test</h1>
+	<p>Test case for <a href="http://yuilibrary.com/projects/yui2/ticket/2527640">bug 2527640</a>.</p>
+	<p>Clicking on the <code>&#60;label&#62;</code> for each Button instance should both focus and check or uncheck the Button.</p>
+
+	<form id="form-1" method="post">
+
+		<fieldset>
+			<legend>Checkboxes</legend>
+			<label for="checkbox-1">Checkbox 1</label>
+			<input type="checkbox" name="checkbox-1" id="checkbox-1" value="1">
+
+			<label for="checkbox-2">Checkbox 2</label>
+			<input type="checkbox" name="checkbox-2" id="checkbox-2" value="2">
+
+			<label for="checkbox-3">Checkbox 3</label>
+			<input type="checkbox" name="checkbox-3" id="checkbox-3" value="3">
+		</fieldset>
+
+		<fieldset>	
+			<legend>Radio Buttons</legend>
+			<label for="radio-1">Radio 1</label>
+			<input type="radio" name="radio-field" id="radio-1" value="1">
+
+			<label for="radio-2">Radio 2</label>
+			<input type="radio" name="radio-field" id="radio-2" value="2">
+
+			<label for="radio-3">Radio 3</label>
+			<input type="radio" name="radio-field" id="radio-3" value="3">
+
+
+            <div id="buttongroup1" class="yui-buttongroup">
+				<label for="radio-4">Radio Group<label>
+                <input id="radio-4" type="radio" name="radiofield4" value="Radio 4">
+                <input id="radio-5" type="radio" name="radiofield5" value="Radio 5">
+                <input id="radio-6" type="radio" name="radiofield6" value="Radio 6">
+                <input id="radio-7" type="radio" name="radiofield6" value="Radio 7">
+            </div>			
+			
+		</fieldset>
+				
+	</form>
+
+</body>
+</html>

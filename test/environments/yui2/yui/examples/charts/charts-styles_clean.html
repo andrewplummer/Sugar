@@ -1,0 +1,254 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Styling Lines, Borders and Fills</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		width: 500px;
+		height: 350px;
+	}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Styling Lines, Borders and Fills</h1>
+
+<div class="exampleIntro">
+	<p>The <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> offers customization through its style and series style objects. This example demonstrates one way to customize a Line Chart.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>
+
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">January Daily Profits</span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<script type="text/javascript">
+YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+//--- data
+
+	//revenue and expenses per day
+	var dailyFinancials =
+	[
+		{date:"1/1/2009", revenue:14002, expenses:15000},
+		{date:"1/2/2009", revenue:14027, expenses:16527},
+		{date:"1/3/2009", revenue:15083, expenses:17283},
+		{date:"1/4/2009", revenue:15006, expenses:18694},
+		{date:"1/5/2009", revenue:15035, expenses:18235},
+		{date:"1/6/2009", revenue:17871, expenses:18371},
+		{date:"1/7/2009", revenue:25887, expenses:17787},
+		{date:"1/8/2009", revenue:16149, expenses:16149},
+		{date:"1/9/2009", revenue:17366, expenses:15666},
+		{date:"1/10/2009", revenue:16424, expenses:15776},
+		{date:"1/11/2009", revenue:15817, expenses:18717},
+		{date:"1/12/2009", revenue:13554, expenses:18154},
+		{date:"1/13/2009", revenue:19782, expenses:18182},
+		{date:"1/14/2009", revenue:24400, expenses:18600},
+		{date:"1/15/2009", revenue:21780, expenses:18480},
+		{date:"1/16/2009", revenue:16681, expenses:21581},
+		{date:"1/17/2009", revenue:24645, expenses:21745},
+		{date:"1/18/2009", revenue:22212, expenses:20388},
+		{date:"1/19/2009", revenue:24026, expenses:24726},
+		{date:"1/20/2009", revenue:29264, expenses:24864},
+		{date:"1/21/2009", revenue:19922, expenses:23622},
+		{date:"1/22/2009", revenue:12373, expenses:18773},
+		{date:"1/23/2009", revenue:11944, expenses:18444},
+		{date:"1/24/2009", revenue:23741, expenses:18641},
+		{date:"1/25/2009", revenue:24758, expenses:19758},
+		{date:"1/26/2009", revenue:31611, expenses:19611},
+		{date:"1/27/2009", revenue:25612, expenses:18212},
+		{date:"1/28/2009", revenue:26830, expenses:18330},
+		{date:"1/29/2009", revenue:27929, expenses:19029},
+		{date:"1/30/2009", revenue:28153, expenses:19953},
+		{date:"1/31/2009", revenue:28018, expenses:18118}
+	];
+
+	//calculate profits from revenue and expenses
+	function calculateProfits(dataArray)
+	{
+		var dataLength = dataArray.length;
+		for(var i = 0; i < dataLength; i++)
+		{
+			var dataObj = dataArray[i];
+			dataObj.profits = dataObj.revenue - dataObj.expenses;
+		}
+
+		return dataArray;
+	}
+
+	var myDataSource = new YAHOO.util.DataSource(calculateProfits(dailyFinancials));
+	myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	myDataSource.responseSchema =
+	{
+		fields:
+		[
+			"date",
+			"expenses",
+			"revenue",
+			"profits"
+		]
+	};
+
+//--- chart
+
+	//series definition
+	var seriesDef = [
+		{
+			displayName:"Expenses",
+			yField:"expenses",
+			style:
+			{
+				lineColor:0xB5BAC8,
+				lineAlpha:.5,
+				borderColor:0xB5BAC8,
+				fillColor:0xB5BAC8
+			}
+		},
+		{
+			displayName:"Revenue",
+			yField:"revenue",
+			style:
+			{
+				lineColor:0xB5BAC8,
+				lineAlpha:.5,
+				borderColor:0xB5BAC8,
+				fillColor:0xffffff
+			}
+		},
+		{
+			displayName:"Profits",
+			yField:"profits",
+			style:
+			{
+				lineColor:0x79839B,
+				borderColor:0x79839B,
+				fillColor:0x79839B
+			}
+		}
+	];
+
+	//Style object
+	var styleDef =
+	{
+		xAxis:
+		{
+			majorTicks:
+			{
+				display:"inside",
+				length:3,
+				size:1
+			},
+			minorTicks:
+			{
+				display:"inside",
+				length:2
+			},
+			labelRotation: -90
+		},
+		yAxis:
+		{
+			zeroGridLine:
+			{
+				size:2,
+				color:0xff0000
+			},
+			minorTicks:{display:"none"}
+		}
+	}
+
+	//format date labels
+	YAHOO.example.formatTimeData = function(value, major)
+	{
+		var formattedData = YAHOO.util.Date.format(new Date(value), {format:"%b %e"});
+		return formattedData.toString();
+	}
+
+	//format currency labels
+	YAHOO.example.formatCurrencyAxisLabel = function( value )
+	{
+		return YAHOO.util.Number.format( value,
+		{
+			prefix: "$",
+			thousandsSeparator: ",",
+			decimalPlaces: 2
+		});
+	}
+
+	//DataTip function for the chart
+	YAHOO.example.formatDataTipText = function(item, index, series)
+	{
+		var str = series.displayName + " for " + item.date;
+		str += "\n" + YAHOO.example.formatCurrencyAxisLabel(item[(series.displayName).toLowerCase()]);
+		return str;
+	}
+
+	//Create a TimeAxis for displaying dates
+	var myTimeAxis = new YAHOO.widget.TimeAxis();
+	myTimeAxis.labelFunction = YAHOO.example.formatTimeData;
+	myTimeAxis.majorTimeUnit = "day";
+
+	//create a Numeric Axis for displaying dollars
+	myCurrencyAxis = new YAHOO.widget.NumericAxis();
+	myCurrencyAxis.labelFunction = YAHOO.example.formatCurrencyAxisLabel;
+
+	//create a Chart
+	var mychart = new YAHOO.widget.LineChart("chart", myDataSource,
+	{
+		series: seriesDef,
+		style: styleDef,
+		xField: "date",
+		xAxis: myTimeAxis,
+		yAxis: myCurrencyAxis,
+		dataTipFunction:YAHOO.example.formatDataTipText,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

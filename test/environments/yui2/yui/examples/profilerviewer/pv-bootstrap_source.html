@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>ProfileViewer: Profiling Calendar</title>
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts.css"> 
+<link rel="stylesheet" type="text/css" href="assets/dpSyntaxHighlighter.css"> 
+
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/profiler/profiler-min.js"></script>
+<script type="text/javascript" src="assets/dpSyntaxHighlighter.js"></script>
+<style type="text/css">
+	body {
+		margin:1em;
+	}
+
+	a.button {
+		background:#3f6bc3; 
+		font:bold 11px arial; 
+		color:#fff; 
+		padding:4px; 
+		margin:0 0 0 10px; 
+		border:1px solid #3f567d; 
+		cursor:pointer;
+		display:-moz-inline-stack;
+		display:inline-block;
+	}
+	
+	a.disabled {background:#666;}
+</style>
+
+</head>
+
+<body class="yui-skin-sam">
+
+<h1>Using Profiler/ProfilerViewer to Inspect Non-YUI Code</h1>
+
+<p>The <a href="http://developer.yahoo.com/yui/profilerviewer/">ProfilerViewer Control</a> (and the <a href="http://developer.yahoo.com/yui/profiler/">Profiler</a> that drives it) is code-agnostic: It can be used as easily to profile your own code or third-party code as it can to profile YUI modules.  In this example, we use Profiler and ProfilerViewer to profile the <a href="http://code.google.com/p/syntaxhighlighter/">DP Syntax Highlighter</a> script that the YUI Project uses for code highlighting on our website.</p>
+<p>To lighten the initial YUI footprint on the page (and minimize the impact of YUI on the script being profiled), this example takes the following steps:</p>
+<ol><li><a href="http://developer.yahoo.com/yui/yuiloader/">YUI Loader</a> and Profiler are loaded first, along with the script being profiled. By putting only a tiny amount of YUI code on the page, we should be able to run DP Syntax Highlighter without its performance being impacted much by YUI.</li>
+  <li>Once DP Syntax Highlighter has run, highlighting the codeblocks in the tutorial below, click on the link below reading &quot;Show Code Profile.&quot; This will trigger YUI Loader to load ProfilerViewer and its dependencies, rendering the display and allowing you to explore the performance profile of the Syntax Highlighter.</li>
+</ol>
+
+<p><a class="button" id="showProfile" onClick="YAHOO.example.pv.showProfilerViewer()">Show Code Profile</a></p>
+
+<hr>
+
+<p>Here's how we accomplish the steps outlined above.  (Note: It's the script-based code-highlighting used below that's being profiled in this example.)</p>
+
+<p>First, we load the minimal dependencies for profiling code with YUI Profiler.  To that, we add the DP Syntax Highlighter code (ie, the code that we'll be profiling).</p>
+
+<textarea name="code" class="HTML" cols="60" rows="1"><script type="text/javascript" src="http://yui.yahooapis.com//build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com//build/profiler/profiler-min.js"></script>
+<script type="text/javascript" src="http://developer.yahoo.com/yui/examples/profilerviewer/assets/dpSyntaxHighlighter.js"></script></textarea>
+
+
+
+<p>Next, we set up a simple initialization function that (a) sets up the code we want to profile then (b) executes the code:</p>
+
+
+<textarea name="code" class="CSS" cols="60" rows="1">YAHOO.example.pv.init = function() {
+
+	//profile the Syntax Highlighter; note: we want to register the
+	//object for profiling before we execute the highlighting code:
+	YAHOO.tool.Profiler.registerConstructor("dp.sh.Highlighter");
+	YAHOO.tool.Profiler.registerObject("dpSyntaxHighlighter", dp, true);
+
+	//Highlight code:
+	dp.SyntaxHighlighter.HighlightAll('code');
+
+};
+
+YAHOO.example.pv.init();</textarea>
+
+<p>At this point, we've told Profiler what parts of Syntax Highlighter we want profiled and we've then run Syntax Highlighter, capturing data about its performance.  And we've done all this with the smallest possible amount of YUI code on the page.  <em>Note that Profiler is loaded now, but ProfilerViewer and all of the YUI infrastructure it leverages &mdash; like Element, DataTable and Charts &mdash; is still absent.</em></p>
+
+<p>Now it's time to set up a button that brings in the YUI ProfilerViewer and all of its dependencies.  That button executes the following code:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">//When the showProfile button is clicked, use YUI Loader to get all required
+//dependencies and then show the profile:
+YAHOO.example.pv.showProfilerViewer = function() {
+
+	//disable the button once it's clicked:
+	document.getElementById("showProfile").onclick = "";
+	document.getElementById("showProfile").className += " disabled";
+	
+	//private function renders the viewer once dependencies are loaded:
+	var showViewer = function() {
+
+		//instantiate ProfilerViewer with desired options:
+		var pv = new YAHOO.widget.ProfilerViewer("", {
+			visible: true, //expand the viewer mmediately after instantiation
+			showChart: true,
+			base:"../../build/",
+			swfUrl: "../../build/charts/assets/charts.swf"
+		});
+	};
+
+	//private function gets dependencies for ProfilerViewer:
+	var getProfilerViewer = function() {
+		var loader = new YAHOO.util.YUILoader({
+			base: "../../build/",
+			require: ["profilerviewer"], //YUI Loader will handle all dependencies
+									  //for us. Nice!
+			onSuccess: showViewer
+		});
+		loader.insert();
+	};
+	
+	//fire getProfilerViewer to trigger the loading and display of the viewer
+	//console:
+	getProfilerViewer();
+
+};</textarea>
+
+<p>You can use similar strategies to leverage YUI's Profiler and ProfilerViewer on your projects &mdash; even those that aren't based on YUI.</p>
+
+<p>The full script souce for this example follows:</p>
+	
+<textarea name="code" class="JScript" cols="60" rows="1">YAHOO.namespace("example.pv");
+
+YAHOO.example.pv.init = function() {
+
+	//profile the Syntax Highlighter; note: we want to register the
+	//object for profiling before we execute the highlighting code:
+	YAHOO.tool.Profiler.registerConstructor("dp.sh.Highlighter");
+	YAHOO.tool.Profiler.registerObject("dpSyntaxHighlighter", dp, true);
+
+	//Highlight code:
+	dp.SyntaxHighlighter.HighlightAll('code');
+
+};
+
+//When the showProfile button is clicked, use YUI Loader to get all required
+//dependencies and then show the profile:
+YAHOO.example.pv.showProfilerViewer = function() {
+
+	//disable button:
+	document.getElementById("showProfile").onclick = "";
+	document.getElementById("showProfile").className += " disabled";
+	
+	//private function renders the viewer once dependencies are loaded:
+	var showViewer = function() {
+
+		//instantiate ProfilerViewer with desired options:
+		var pv = new YAHOO.widget.ProfilerViewer("", {
+			visible: true, //expand the viewer mmediately after instantiation
+			showChart: true,
+			base:"../../build/",
+			swfUrl: "../../build/charts/assets/charts.swf"
+		});
+	};
+
+	//private function gets dependencies for ProfilerViewer:
+	var getProfilerViewer = function() {
+		var loader = new YAHOO.util.YUILoader({
+			base: "../../build/",
+			require: ["profilerviewer"], //YUI Loader will handle all dependencies
+									  //for us. Nice!
+			onSuccess: showViewer
+		});
+		loader.insert();
+	};
+	
+	//fire getProfilerViewer to trigger the loading and display of the viewer
+	//console:
+	getProfilerViewer();
+
+};
+
+YAHOO.example.pv.init();</textarea>
+
+<script type="text/javascript">
+	
+YAHOO.namespace("example.pv");
+
+YAHOO.example.pv.init = function() {
+
+	//profile the Syntax Highlighter; note: we want to register the
+	//object for profiling before we execute the highlighting code:
+	YAHOO.tool.Profiler.registerConstructor("dp.sh.Highlighter");
+	YAHOO.tool.Profiler.registerObject("dpSyntaxHighlighter", dp, true);
+
+	//Highlight code:
+	dp.SyntaxHighlighter.HighlightAll('code');
+
+};
+
+//When the showProfile button is clicked, use YUI Loader to get all required
+//dependencies and then show the profile:
+YAHOO.example.pv.showProfilerViewer = function() {
+
+	//disable button:
+	document.getElementById("showProfile").onclick = "";
+	document.getElementById("showProfile").className += " disabled";
+	
+	//private function renders the viewer once dependencies are loaded:
+	var showViewer = function() {
+
+		//instantiate ProfilerViewer with desired options:
+		var pv = new YAHOO.widget.ProfilerViewer("", {
+			visible: true, //expand the viewer mmediately after instantiation
+			showChart: true,
+			base:"../../build/",
+			swfUrl: "../../build/charts/assets/charts.swf"
+		});
+		//Just to make the instance publicly accessible via the console:
+		YAHOO.example.pv.instance = pv;
+	};
+
+	//private function gets dependencies for ProfilerViewer:
+	var getProfilerViewer = function() {
+		var loader = new YAHOO.util.YUILoader({
+			base: "../../build/",
+			require: ["profilerviewer"], //YUI Loader will handle all dependencies
+									  	 //for us. Nice!
+			onSuccess: showViewer
+		});
+		loader.insert();
+	};
+	
+	//fire getProfilerViewer to trigger the loading and display of the viewer
+	//console:
+	getProfilerViewer();
+
+};
+
+YAHOO.example.pv.init();
+
+</script>
+</body>
+</html>

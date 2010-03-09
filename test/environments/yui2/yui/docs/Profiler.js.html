@@ -1,0 +1,691 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: profiler   Profiler.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>profiler&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_profiler.html" title="profiler">profiler</a>
+                
+                 &gt; Profiler.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">namespace</span><span class="o">(</span><span class="s2">&quot;tool&quot;</span><span class="o">);</span>
+
+<span class="c">/**</span>
+<span class="c"> * The YUI JavaScript profiler.</span>
+<span class="c"> * @module profiler</span>
+<span class="c"> * @namespace YAHOO.tool</span>
+<span class="c"> * @requires yahoo</span>
+<span class="c"> */</span>
+
+<span class="c">/**</span>
+<span class="c"> * Profiles functions in JavaScript.</span>
+<span class="c"> * @namespace YAHOO.tool</span>
+<span class="c"> * @class Profiler</span>
+<span class="c"> * @static</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">tool</span><span class="o">.</span><span class="nx">Profiler</span> <span class="o">=</span> <span class="k">function</span><span class="o">(){</span>
+
+
+    <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>    <span class="c">// Private Variables and Functions</span>
+<span class="c"></span>    <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>    
+    <span class="k">var</span> <span class="nx">container</span>   <span class="o">=</span> <span class="o">{},</span>   <span class="c">//Container object on which to put the original unprofiled methods.</span>
+<span class="c"></span>        <span class="nx">report</span>      <span class="o">=</span> <span class="o">{},</span>   <span class="c">//Profiling information for functions</span>
+<span class="c"></span>        <span class="nx">stopwatches</span> <span class="o">=</span> <span class="o">{},</span>   <span class="c">//Additional stopwatch information</span>
+<span class="c"></span>        
+        <span class="nx">WATCH_STARTED</span>   <span class="o">=</span> <span class="m">0</span><span class="o">,</span>
+        <span class="nx">WATCH_STOPPED</span>   <span class="o">=</span> <span class="m">1</span><span class="o">,</span>
+        <span class="nx">WATCH_PAUSED</span>    <span class="o">=</span> <span class="m">2</span><span class="o">,</span>    
+        
+        <span class="nx">lang</span>    <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Creates a report object with the given name.</span>
+<span class="c">     * @param {String} name The name to store for the report object.</span>
+<span class="c">     * @return {Void}</span>
+<span class="c">     * @method createReport</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">function</span> <span class="nx">createReport</span><span class="o">(</span><span class="nx">name</span><span class="o">){</span>
+        <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">]</span> <span class="o">=</span> <span class="o">{</span>
+            <span class="nx">calls</span><span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+            <span class="nx">max</span><span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+            <span class="nx">min</span><span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+            <span class="nx">avg</span><span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+            <span class="nx">points</span><span class="o">:</span> <span class="o">[]</span>
+        <span class="o">};</span>      
+    <span class="o">}</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Called when a method ends execution. Marks the start and end time of the </span>
+<span class="c">     * method so it can calculate how long the function took to execute. Also </span>
+<span class="c">     * updates min/max/avg calculations for the function.</span>
+<span class="c">     * @param {String} name The name of the function to mark as stopped.</span>
+<span class="c">     * @param {int} duration The number of milliseconds it took the function to</span>
+<span class="c">     *      execute.</span>
+<span class="c">     * @return {Void}</span>
+<span class="c">     * @method saveDataPoint</span>
+<span class="c">     * @private</span>
+<span class="c">     * @static</span>
+<span class="c">     */</span>
+    <span class="k">function</span> <span class="nx">saveDataPoint</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">duration</span><span class="o">){</span>
+
+        <span class="c">//get the function data</span>
+<span class="c"></span>        <span class="k">var</span> <span class="nx">functionData</span> <span class="c">/*:Object*/</span> <span class="o">=</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+        
+        <span class="c">//just in case clear() was called</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(!</span><span class="nx">functionData</span><span class="o">){</span>
+            <span class="nx">functionData</span> <span class="o">=</span> <span class="nx">createReport</span><span class="o">(</span><span class="nx">name</span><span class="o">);</span>
+        <span class="o">}</span>
+    
+        <span class="c">//increment the calls</span>
+<span class="c"></span>        <span class="nx">functionData</span><span class="o">.</span><span class="nx">calls</span><span class="o">++;</span>
+        <span class="nx">functionData</span><span class="o">.</span><span class="nx">points</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">duration</span><span class="o">);</span>
+
+        <span class="c">//if it&#39;s already been called at least once, do more complex calculations</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="nx">functionData</span><span class="o">.</span><span class="nx">calls</span> <span class="o">&gt;</span> <span class="m">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">functionData</span><span class="o">.</span><span class="nx">avg</span> <span class="o">=</span> <span class="o">((</span><span class="nx">functionData</span><span class="o">.</span><span class="nx">avg</span><span class="o">*(</span><span class="nx">functionData</span><span class="o">.</span><span class="nx">calls</span><span class="o">-</span><span class="m">1</span><span class="o">))+</span><span class="nx">duration</span><span class="o">)/</span><span class="nx">functionData</span><span class="o">.</span><span class="nx">calls</span><span class="o">;</span>
+            <span class="nx">functionData</span><span class="o">.</span><span class="nx">min</span> <span class="o">=</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">min</span><span class="o">(</span><span class="nx">functionData</span><span class="o">.</span><span class="nx">min</span><span class="o">,</span> <span class="nx">duration</span><span class="o">);</span>
+            <span class="nx">functionData</span><span class="o">.</span><span class="nx">max</span> <span class="o">=</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">max</span><span class="o">(</span><span class="nx">functionData</span><span class="o">.</span><span class="nx">max</span><span class="o">,</span> <span class="nx">duration</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">functionData</span><span class="o">.</span><span class="nx">avg</span> <span class="o">=</span> <span class="nx">duration</span><span class="o">;</span>
+            <span class="nx">functionData</span><span class="o">.</span><span class="nx">min</span> <span class="o">=</span> <span class="nx">duration</span><span class="o">;</span>
+            <span class="nx">functionData</span><span class="o">.</span><span class="nx">max</span> <span class="o">=</span> <span class="nx">duration</span><span class="o">;</span>
+        <span class="o">}</span>                             
+    
+    <span class="o">}</span>
+
+    <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>    <span class="c">// Singleton Object</span>
+<span class="c"></span>    <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>    
+    <span class="k">return</span> <span class="o">{</span>
+    
+        <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>        <span class="c">// Utility Methods</span>
+<span class="c"></span>        <span class="c">//-------------------------------------------------------------------------        </span>
+<span class="c"></span>        
+        <span class="c">/**</span>
+<span class="c">         * Removes all report data from the profiler.</span>
+<span class="c">         * @param {String} name (Optional) The name of the report to clear. If</span>
+<span class="c">         *      omitted, then all report data is cleared.</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method clear</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">clear</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">){</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">name</span><span class="o">)){</span>
+                <span class="nx">delete</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+                <span class="nx">delete</span> <span class="nx">stopwatches</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nx">report</span> <span class="o">=</span> <span class="o">{};</span>
+                <span class="nx">stopwatches</span> <span class="o">=</span> <span class="o">{};</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Returns the uninstrumented version of a function/object.</span>
+<span class="c">         * @param {String} name The name of the function/object to retrieve.</span>
+<span class="c">         * @return {Function|Object} The uninstrumented version of a function/object.</span>
+<span class="c">         * @method getOriginal</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>    
+        <span class="nx">getOriginal</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">){</span>
+            <span class="k">return</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+        <span class="o">},</span>
+    
+        <span class="c">/**</span>
+<span class="c">         * Instruments a method to have profiling calls.</span>
+<span class="c">         * @param {String} name The name of the report for the function.</span>
+<span class="c">         * @param {Function} method The function to instrument.</span>
+<span class="c">         * @return {Function} An instrumented version of the function.</span>
+<span class="c">         * @method instrument</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">instrument</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">method</span><span class="o">){</span>
+        
+            <span class="c">//create instrumented version of function</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">newMethod</span> <span class="o">=</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+    
+                <span class="k">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="o">(),</span>
+                    <span class="nx">retval</span> <span class="o">=</span> <span class="nx">method</span><span class="o">.</span><span class="nx">apply</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">arguments</span><span class="o">),</span>
+                    <span class="nx">stop</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="o">();</span>
+                
+                <span class="nx">saveDataPoint</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">stop</span><span class="o">-</span><span class="nx">start</span><span class="o">);</span>
+                
+                <span class="k">return</span> <span class="nx">retval</span><span class="o">;</span>                
+            
+            <span class="o">};</span>     
+
+            <span class="c">//copy the function properties over</span>
+<span class="c"></span>            <span class="nx">lang</span><span class="o">.</span><span class="nx">augmentObject</span><span class="o">(</span><span class="nx">newMethod</span><span class="o">,</span> <span class="nx">method</span><span class="o">);</span>
+            
+            <span class="c">//assign prototype and flag as being profiled</span>
+<span class="c"></span>            <span class="nx">newMethod</span><span class="o">.</span><span class="nx">__yuiProfiled</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="nx">newMethod</span><span class="o">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">method</span><span class="o">.</span><span class="nx">prototype</span><span class="o">;</span>
+            
+            <span class="c">//store original method</span>
+<span class="c"></span>            <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">]</span> <span class="o">=</span> <span class="nx">method</span><span class="o">;</span>
+            <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">__yuiFuncName</span> <span class="o">=</span> <span class="nx">name</span><span class="o">;</span>
+            
+            <span class="c">//create the report</span>
+<span class="c"></span>            <span class="nx">createReport</span><span class="o">(</span><span class="nx">name</span><span class="o">);</span>
+
+            <span class="c">//return the new method</span>
+<span class="c"></span>            <span class="k">return</span> <span class="nx">newMethod</span><span class="o">;</span>
+        <span class="o">},</span>    
+        
+        <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>        <span class="c">// Stopwatch Methods</span>
+<span class="c"></span>        <span class="c">//-------------------------------------------------------------------------        </span>
+<span class="c"></span>        
+        <span class="c">/**</span>
+<span class="c">         * Pauses profiling information for a given name.</span>
+<span class="c">         * @param {String} name The name of the data point.</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method pause</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>        
+        <span class="nx">pause</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">){</span>
+            <span class="k">var</span> <span class="nx">now</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="o">(),</span>
+                <span class="nx">stopwatch</span> <span class="o">=</span> <span class="nx">stopwatches</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+                
+            <span class="k">if</span> <span class="o">(</span><span class="nx">stopwatch</span> <span class="o">&amp;&amp;</span> <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">state</span> <span class="o">==</span> <span class="nx">WATCH_STARTED</span><span class="o">){</span>
+                <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">total</span> <span class="o">+=</span> <span class="o">(</span><span class="nx">now</span> <span class="o">-</span> <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">start</span><span class="o">);</span>
+                <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">start</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">state</span> <span class="o">=</span> <span class="nx">WATCH_PAUSED</span><span class="o">;</span>
+            <span class="o">}</span>
+        
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Start profiling information for a given name. The name cannot be the name</span>
+<span class="c">         * of a registered function or object. This is used to start timing for a</span>
+<span class="c">         * particular block of code rather than instrumenting the entire function.</span>
+<span class="c">         * @param {String} name The name of the data point.</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method start</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">start</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">){</span>
+            <span class="k">if</span><span class="o">(</span><span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">]){</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="o">(</span><span class="s2">&quot;Cannot use &#39;&quot;</span> <span class="o">+</span> <span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;&#39; for profiling through start(), name is already in use.&quot;</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            
+                <span class="c">//create report if necessary</span>
+<span class="c"></span>                <span class="k">if</span> <span class="o">(!</span><span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">]){</span>
+                    <span class="nx">createReport</span><span class="o">(</span><span class="nx">name</span><span class="o">);</span>
+                <span class="o">}</span>
+                
+                <span class="c">//create stopwatch object if necessary</span>
+<span class="c"></span>                <span class="k">if</span> <span class="o">(!</span><span class="nx">stopwatches</span><span class="o">[</span><span class="nx">name</span><span class="o">]){</span>             
+                    <span class="nx">stopwatches</span><span class="o">[</span><span class="nx">name</span><span class="o">]</span> <span class="o">=</span> <span class="o">{</span>
+                        <span class="nx">state</span><span class="o">:</span> <span class="nx">WATCH_STOPPED</span><span class="o">,</span>
+                        <span class="nx">start</span><span class="o">:</span> <span class="m">0</span><span class="o">,</span>
+                        <span class="nx">total</span><span class="o">:</span> <span class="m">0</span>
+                    <span class="o">};</span>
+                <span class="o">}</span>
+                
+                <span class="k">if</span> <span class="o">(</span><span class="nx">stopwatches</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">state</span> <span class="o">==</span> <span class="nx">WATCH_STOPPED</span><span class="o">){</span>
+                    <span class="nx">stopwatches</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">state</span> <span class="o">=</span> <span class="nx">WATCH_STARTED</span><span class="o">;</span>
+                    <span class="nx">stopwatches</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="o">();</span>                    
+                <span class="o">}</span>
+
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Stops profiling information for a given name.</span>
+<span class="c">         * @param {String} name The name of the data point.</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method stop</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">stop</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">){</span>
+            <span class="k">var</span> <span class="nx">now</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="o">(),</span>
+                <span class="nx">stopwatch</span> <span class="o">=</span> <span class="nx">stopwatches</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+                
+            <span class="k">if</span> <span class="o">(</span><span class="nx">stopwatch</span><span class="o">){</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">stopwatch</span><span class="o">.</span><span class="nx">state</span> <span class="o">==</span> <span class="nx">WATCH_STARTED</span><span class="o">){</span>
+                    <span class="nx">saveDataPoint</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">total</span> <span class="o">+</span> <span class="o">(</span><span class="nx">now</span> <span class="o">-</span> <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">start</span><span class="o">));</span>                    
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">stopwatch</span><span class="o">.</span><span class="nx">state</span> <span class="o">==</span> <span class="nx">WATCH_PAUSED</span><span class="o">){</span>
+                    <span class="nx">saveDataPoint</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">total</span><span class="o">);</span>
+                <span class="o">}</span>
+                
+                <span class="c">//reset stopwatch information</span>
+<span class="c"></span>                <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">start</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">total</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                <span class="nx">stopwatch</span><span class="o">.</span><span class="nx">state</span> <span class="o">=</span> <span class="nx">WATCH_STOPPED</span><span class="o">;</span>                
+            <span class="o">}</span>
+        <span class="o">},</span>
+    
+        <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>        <span class="c">// Reporting Methods</span>
+<span class="c"></span>        <span class="c">//-------------------------------------------------------------------------    </span>
+<span class="c"></span>        
+        <span class="c">/**</span>
+<span class="c">         * Returns the average amount of time (in milliseconds) that the function</span>
+<span class="c">         * with the given name takes to execute.</span>
+<span class="c">         * @param {String} name The name of the function whose data should be returned.</span>
+<span class="c">         *      If an object type method, it should be &#39;constructor.prototype.methodName&#39;;</span>
+<span class="c">         *      a normal object method would just be &#39;object.methodName&#39;.</span>
+<span class="c">         * @return {float} The average time it takes the function to execute.</span>
+<span class="c">         * @method getAverage</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">getAverage</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:float*/</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">avg</span><span class="o">;</span>
+        <span class="o">},</span>
+    
+        <span class="c">/**</span>
+<span class="c">         * Returns the number of times that the given function has been called.</span>
+<span class="c">         * @param {String} name The name of the function whose data should be returned.</span>
+<span class="c">         * @return {int} The number of times the function was called.</span>
+<span class="c">         * @method getCallCount</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">getCallCount</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:int*/</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">calls</span><span class="o">;</span>    
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Returns the maximum amount of time (in milliseconds) that the function</span>
+<span class="c">         * with the given name takes to execute.</span>
+<span class="c">         * @param {String} name The name of the function whose data should be returned.</span>
+<span class="c">         *      If an object type method, it should be &#39;constructor.prototype.methodName&#39;;</span>
+<span class="c">         *      a normal object method would just be &#39;object.methodName&#39;.</span>
+<span class="c">         * @return {float} The maximum time it takes the function to execute.</span>
+<span class="c">         * @method getMax</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">getMax</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:int*/</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">max</span><span class="o">;</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Returns the minimum amount of time (in milliseconds) that the function</span>
+<span class="c">         * with the given name takes to execute.</span>
+<span class="c">         * @param {String} name The name of the function whose data should be returned.</span>
+<span class="c">         *      If an object type method, it should be &#39;constructor.prototype.methodName&#39;;</span>
+<span class="c">         *      a normal object method would just be &#39;object.methodName&#39;.</span>
+<span class="c">         * @return {float} The minimum time it takes the function to execute.</span>
+<span class="c">         * @method getMin</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">getMin</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:int*/</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">min</span><span class="o">;</span>
+        <span class="o">},</span>
+    
+        <span class="c">/**</span>
+<span class="c">         * Returns an object containing profiling data for a single function.</span>
+<span class="c">         * The object has an entry for min, max, avg, calls, and points).</span>
+<span class="c">         * @return {Object} An object containing profile data for a given function.</span>
+<span class="c">         * @method getFunctionReport</span>
+<span class="c">         * @static</span>
+<span class="c">         * @deprecated Use getReport() instead.</span>
+<span class="c">         */</span>
+        <span class="nx">getFunctionReport</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:Object*/</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+        <span class="o">},</span>
+    
+        <span class="c">/**</span>
+<span class="c">         * Returns an object containing profiling data for a single function.</span>
+<span class="c">         * The object has an entry for min, max, avg, calls, and points).</span>
+<span class="c">         * @return {Object} An object containing profile data for a given function.</span>
+<span class="c">         * @method getReport</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">getReport</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:Object*/</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+        <span class="o">},</span>
+    
+        <span class="c">/**</span>
+<span class="c">         * Returns an object containing profiling data for all of the functions </span>
+<span class="c">         * that were profiled. The object has an entry for each function and </span>
+<span class="c">         * returns all information (min, max, average, calls, etc.) for each</span>
+<span class="c">         * function.</span>
+<span class="c">         * @return {Object} An object containing all profile data.</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">getFullReport</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">filter</span> <span class="c">/*:Function*/</span><span class="o">)</span> <span class="c">/*:Object*/</span> <span class="o">{</span>
+            <span class="nx">filter</span> <span class="o">=</span> <span class="nx">filter</span> <span class="o">||</span> <span class="k">function</span><span class="o">(){</span><span class="k">return</span> <span class="kc">true</span><span class="o">;};</span>
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">filter</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">var</span> <span class="nx">fullReport</span> <span class="o">=</span> <span class="o">{};</span>
+                
+                <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">name</span> <span class="k">in</span> <span class="nx">report</span><span class="o">){</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">filter</span><span class="o">(</span><span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">])){</span>
+                        <span class="nx">fullReport</span><span class="o">[</span><span class="nx">name</span><span class="o">]</span> <span class="o">=</span> <span class="nx">report</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>    
+                    <span class="o">}</span>
+                <span class="o">}</span>
+                
+                <span class="k">return</span> <span class="nx">fullReport</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+    
+        <span class="c">//-------------------------------------------------------------------------</span>
+<span class="c"></span>        <span class="c">// Profiling Methods</span>
+<span class="c"></span>        <span class="c">//-------------------------------------------------------------------------   </span>
+<span class="c"></span>        
+        <span class="c">/**</span>
+<span class="c">         * Sets up a constructor for profiling, including all properties and methods on the prototype.</span>
+<span class="c">         * @param {string} name The fully-qualified name of the function including namespace information.</span>
+<span class="c">         * @param {Object} owner (Optional) The object that owns the function (namespace or containing object).</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method registerConstructor</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">registerConstructor</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">owner</span> <span class="c">/*:Object*/</span><span class="o">)</span> <span class="c">/*:Void*/</span> <span class="o">{</span>    
+            <span class="k">this</span><span class="o">.</span><span class="nx">registerFunction</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">owner</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        <span class="o">},</span>
+    
+        <span class="c">/**</span>
+<span class="c">         * Sets up a function for profiling. It essentially overwrites the function with one</span>
+<span class="c">         * that has instrumentation data. This method also creates an entry for the function</span>
+<span class="c">         * in the profile report. The original function is stored on the container object.</span>
+<span class="c">         * @param {String} name The full name of the function including namespacing. This</span>
+<span class="c">         *      is the name of the function that is stored in the report.</span>
+<span class="c">         * @param {Object} owner (Optional) The object that owns the function. If the function</span>
+<span class="c">         *      isn&#39;t global then this argument is required. This could be the namespace that</span>
+<span class="c">         *      the function belongs to, such as YAHOO.util.Dom, or the object on which it&#39;s</span>
+<span class="c">         *      a method.</span>
+<span class="c">         * @param {Boolean} registerPrototype (Optional) Indicates that the prototype should</span>
+<span class="c">         *      also be instrumented. Setting to true has the same effect as calling</span>
+<span class="c">         *      registerConstructor().</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method registerFunction</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>     
+        <span class="nx">registerFunction</span> <span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">owner</span> <span class="c">/*:Object*/</span><span class="o">,</span> <span class="nx">registerPrototype</span> <span class="c">/*:Boolean*/</span><span class="o">)</span> <span class="c">/*:Void*/</span><span class="o">{</span>
+        
+            <span class="c">//figure out the function name without namespacing</span>
+<span class="c"></span>            <span class="k">var</span> <span class="nx">funcName</span> <span class="o">=</span> <span class="o">(</span><span class="nx">name</span><span class="o">.</span><span class="nx">indexOf</span><span class="o">(</span><span class="s2">&quot;.&quot;</span><span class="o">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="m">1</span> <span class="o">?</span> 
+                    <span class="nx">name</span><span class="o">.</span><span class="nx">substring</span><span class="o">(</span><span class="nx">name</span><span class="o">.</span><span class="nx">lastIndexOf</span><span class="o">(</span><span class="s2">&quot;.&quot;</span><span class="o">)+</span><span class="m">1</span><span class="o">)</span> <span class="o">:</span> <span class="nx">name</span><span class="o">),</span>
+                <span class="nx">method</span><span class="o">,</span>
+                <span class="nx">prototype</span><span class="o">;</span>
+                
+            <span class="c">//if owner isn&#39;t an object, try to find it from the name</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(!</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">owner</span><span class="o">)){</span>
+                <span class="nx">owner</span> <span class="o">=</span> <span class="nb">eval</span><span class="o">(</span><span class="nx">name</span><span class="o">.</span><span class="nx">substring</span><span class="o">(</span><span class="m">0</span><span class="o">,</span> <span class="nx">name</span><span class="o">.</span><span class="nx">lastIndexOf</span><span class="o">(</span><span class="s2">&quot;.&quot;</span><span class="o">)));</span>
+            <span class="o">}</span>
+            
+            <span class="c">//get the method and prototype</span>
+<span class="c"></span>            <span class="nx">method</span> <span class="o">=</span> <span class="nx">owner</span><span class="o">[</span><span class="nx">funcName</span><span class="o">];</span>
+            <span class="nx">prototype</span> <span class="o">=</span> <span class="nx">method</span><span class="o">.</span><span class="nx">prototype</span><span class="o">;</span>
+            
+            <span class="c">//see if the method has already been registered</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">method</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">method</span><span class="o">.</span><span class="nx">__yuiProfiled</span><span class="o">){</span>
+                
+                <span class="c">//replace the function with the profiling one</span>
+<span class="c"></span>                <span class="nx">owner</span><span class="o">[</span><span class="nx">funcName</span><span class="o">]</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">instrument</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">method</span><span class="o">);</span>
+                        
+                <span class="c">/*</span>
+<span class="c">                 * Store original function information. We store the actual</span>
+<span class="c">                 * function as well as the owner and the name used to identify</span>
+<span class="c">                 * the function so it can be restored later.</span>
+<span class="c">                 */</span>
+                <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">__yuiOwner</span> <span class="o">=</span> <span class="nx">owner</span><span class="o">;</span>
+                <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">__yuiFuncName</span> <span class="o">=</span> <span class="nx">funcName</span><span class="o">;</span>  <span class="c">//overwrite with less-specific name</span>
+<span class="c"></span>                 
+                <span class="c">//register prototype if necessary</span>
+<span class="c"></span>                <span class="k">if</span> <span class="o">(</span><span class="nx">registerPrototype</span><span class="o">)</span> <span class="o">{</span>            
+                    <span class="k">this</span><span class="o">.</span><span class="nx">registerObject</span><span class="o">(</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;.prototype&quot;</span><span class="o">,</span> <span class="nx">prototype</span><span class="o">);</span>          
+                <span class="o">}</span>
+    
+            <span class="o">}</span>
+        
+        <span class="o">},</span>
+            
+        
+        <span class="c">/**</span>
+<span class="c">         * Sets up an object for profiling. It takes the object and looks for functions.</span>
+<span class="c">         * When a function is found, registerMethod() is called on it. If set to recrusive</span>
+<span class="c">         * mode, it will also setup objects found inside of this object for profiling, </span>
+<span class="c">         * using the same methodology.</span>
+<span class="c">         * @param {String} name The name of the object to profile (shows up in report).</span>
+<span class="c">         * @param {Object} owner (Optional) The object represented by the name.</span>
+<span class="c">         * @param {Boolean} recurse (Optional) Determines if subobject methods are also profiled.</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method registerObject</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">registerObject</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">object</span> <span class="c">/*:Object*/</span><span class="o">,</span> <span class="nx">recurse</span> <span class="c">/*:Boolean*/</span><span class="o">)</span> <span class="c">/*:Void*/</span><span class="o">{</span>
+        
+            <span class="c">//get the object</span>
+<span class="c"></span>            <span class="nx">object</span> <span class="o">=</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">object</span><span class="o">)</span> <span class="o">?</span> <span class="nx">object</span> <span class="o">:</span> <span class="nb">eval</span><span class="o">(</span><span class="nx">name</span><span class="o">));</span>
+        
+            <span class="c">//save the object</span>
+<span class="c"></span>            <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">]</span> <span class="o">=</span> <span class="nx">object</span><span class="o">;</span>
+        
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">prop</span> <span class="k">in</span> <span class="nx">object</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="k">typeof</span> <span class="nx">object</span><span class="o">[</span><span class="nx">prop</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="o">){</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">prop</span> <span class="o">!=</span> <span class="s2">&quot;constructor&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">prop</span> <span class="o">!=</span> <span class="s2">&quot;superclass&quot;</span><span class="o">){</span> <span class="c">//don&#39;t do constructor or superclass, it&#39;s recursive</span>
+<span class="c"></span>                        <span class="k">this</span><span class="o">.</span><span class="nx">registerFunction</span><span class="o">(</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nx">prop</span><span class="o">,</span> <span class="nx">object</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">typeof</span> <span class="nx">object</span><span class="o">[</span><span class="nx">prop</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">recurse</span><span class="o">){</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">registerObject</span><span class="o">(</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nx">prop</span><span class="o">,</span> <span class="nx">object</span><span class="o">[</span><span class="nx">prop</span><span class="o">],</span> <span class="nx">recurse</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        
+        <span class="o">},</span>    
+        
+        <span class="c">/**</span>
+<span class="c">         * Removes a constructor function from profiling. Reverses the registerConstructor() method.</span>
+<span class="c">         * @param {String} name The full name of the function including namespacing. This</span>
+<span class="c">         *      is the name of the function that is stored in the report.</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method unregisterFunction</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>     
+        <span class="nx">unregisterConstructor</span> <span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">)</span> <span class="c">/*:Void*/</span><span class="o">{</span>
+                
+            <span class="c">//see if the method has been registered</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">])){</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">unregisterFunction</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="o">}</span>    
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Removes function from profiling. Reverses the registerFunction() method.</span>
+<span class="c">         * @param {String} name The full name of the function including namespacing. This</span>
+<span class="c">         *      is the name of the function that is stored in the report.</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method unregisterFunction</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>     
+        <span class="nx">unregisterFunction</span> <span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">unregisterPrototype</span> <span class="c">/*:Boolean*/</span><span class="o">)</span> <span class="c">/*:Void*/</span><span class="o">{</span>
+                
+            <span class="c">//see if the method has been registered</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">])){</span>
+            
+                <span class="c">//check to see if you should unregister the prototype</span>
+<span class="c"></span>                <span class="k">if</span> <span class="o">(</span><span class="nx">unregisterPrototype</span><span class="o">){</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">unregisterObject</span><span class="o">(</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;.prototype&quot;</span><span class="o">,</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">prototype</span><span class="o">);</span>
+                <span class="o">}</span>
+                    
+                <span class="c">//get original data</span>
+<span class="c"></span>                <span class="k">var</span> <span class="nx">owner</span> <span class="c">/*:Object*/</span> <span class="o">=</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">__yuiOwner</span><span class="o">,</span>
+                    <span class="nx">funcName</span> <span class="c">/*:String*/</span> <span class="o">=</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">__yuiFuncName</span><span class="o">;</span>
+                    
+                <span class="c">//delete extra information</span>
+<span class="c"></span>                <span class="nx">delete</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">__yuiOwner</span><span class="o">;</span>
+                <span class="nx">delete</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">].</span><span class="nx">__yuiFuncName</span><span class="o">;</span>
+                
+                <span class="c">//replace instrumented function</span>
+<span class="c"></span>                <span class="nx">owner</span><span class="o">[</span><span class="nx">funcName</span><span class="o">]</span> <span class="o">=</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+                
+                <span class="c">//delete supporting information</span>
+<span class="c"></span>                <span class="nx">delete</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>          
+            <span class="o">}</span>
+                
+        
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Unregisters an object for profiling. It takes the object and looks for functions.</span>
+<span class="c">         * When a function is found, unregisterMethod() is called on it. If set to recrusive</span>
+<span class="c">         * mode, it will also unregister objects found inside of this object, </span>
+<span class="c">         * using the same methodology.</span>
+<span class="c">         * @param {String} name The name of the object to unregister.</span>
+<span class="c">         * @param {Boolean} recurse (Optional) Determines if subobject methods should also be</span>
+<span class="c">         *      unregistered.</span>
+<span class="c">         * @return {Void}</span>
+<span class="c">         * @method unregisterObject</span>
+<span class="c">         * @static</span>
+<span class="c">         */</span>
+        <span class="nx">unregisterObject</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">name</span> <span class="c">/*:String*/</span><span class="o">,</span> <span class="nx">recurse</span> <span class="c">/*:Boolean*/</span><span class="o">)</span> <span class="c">/*:Void*/</span><span class="o">{</span>
+        
+            <span class="c">//get the object</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">])){</span>            
+                <span class="k">var</span> <span class="nx">object</span> <span class="o">=</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>    
+            
+                <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">prop</span> <span class="k">in</span> <span class="nx">object</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="k">typeof</span> <span class="nx">object</span><span class="o">[</span><span class="nx">prop</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="o">){</span>
+                        <span class="k">this</span><span class="o">.</span><span class="nx">unregisterFunction</span><span class="o">(</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nx">prop</span><span class="o">);</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">typeof</span> <span class="nx">object</span><span class="o">[</span><span class="nx">prop</span><span class="o">]</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">recurse</span><span class="o">){</span>
+                        <span class="k">this</span><span class="o">.</span><span class="nx">unregisterObject</span><span class="o">(</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nx">prop</span><span class="o">,</span> <span class="nx">recurse</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+                
+                <span class="nx">delete</span> <span class="nx">container</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+            <span class="o">}</span>
+        
+        <span class="o">}</span>
+         
+
+    <span class="o">};</span>
+
+<span class="o">}();</span>  
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class="selected"><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.tool.Profiler.html" title="YAHOO.tool.Profiler">YAHOO.tool.Profiler</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="Profiler.js.html" title="Profiler.js">Profiler.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.tool.Profiler", "name": "clear", "url": "YAHOO.tool.Profiler.html#method_clear", "type": "method"}, {"access": "private", "host": "YAHOO.tool.Profiler", "name": "createReport", "url": "YAHOO.tool.Profiler.html#method_createReport", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "getAverage", "url": "YAHOO.tool.Profiler.html#method_getAverage", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "getCallCount", "url": "YAHOO.tool.Profiler.html#method_getCallCount", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "getFullReport", "url": "YAHOO.tool.Profiler.html#method_getFullReport", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "getFunctionReport", "url": "YAHOO.tool.Profiler.html#method_getFunctionReport", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "getMax", "url": "YAHOO.tool.Profiler.html#method_getMax", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "getMin", "url": "YAHOO.tool.Profiler.html#method_getMin", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "getOriginal", "url": "YAHOO.tool.Profiler.html#method_getOriginal", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "getReport", "url": "YAHOO.tool.Profiler.html#method_getReport", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "instrument", "url": "YAHOO.tool.Profiler.html#method_instrument", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "pause", "url": "YAHOO.tool.Profiler.html#method_pause", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "registerConstructor", "url": "YAHOO.tool.Profiler.html#method_registerConstructor", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "registerFunction", "url": "YAHOO.tool.Profiler.html#method_registerFunction", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "registerObject", "url": "YAHOO.tool.Profiler.html#method_registerObject", "type": "method"}, {"access": "private", "host": "YAHOO.tool.Profiler", "name": "saveDataPoint", "url": "YAHOO.tool.Profiler.html#method_saveDataPoint", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "start", "url": "YAHOO.tool.Profiler.html#method_start", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "stop", "url": "YAHOO.tool.Profiler.html#method_stop", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "unregisterFunction", "url": "YAHOO.tool.Profiler.html#method_unregisterFunction", "type": "method"}, {"access": "", "host": "YAHOO.tool.Profiler", "name": "unregisterObject", "url": "YAHOO.tool.Profiler.html#method_unregisterObject", "type": "method"}];
+</script>
+</body>
+</html>

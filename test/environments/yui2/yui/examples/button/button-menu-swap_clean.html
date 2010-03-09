@@ -1,0 +1,384 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Replacing the content of a Button's Menu</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+	/*	Style the <fieldset> since the Reset CSS removes the default style. */
+    #pizza-order-form fieldset {
+
+        border: 2px groove #ccc;
+        margin: .5em;
+        padding: .5em;
+
+    }
+
+	pre {
+		border: solid 1px #000;
+		background-color: #ccc;
+		padding: 10px;
+		margin: 10px;
+	}
+
+	li.yui-button-selectedmenuitem {
+		background: url(../button/assets/checkbox.png) left center no-repeat;
+	}
+
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Replacing the content of a Button's Menu</h1>
+
+<div class="exampleIntro">
+	<p>
+This example illustrates how to replace the content of a Button's Menu on 
+the fly.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+	YAHOO.util.Event.onContentReady("pizza-order-form", function () {
+		
+		//	Change the default node name for the ButtonGroup element 
+		//	so that the fieldset can be used.
+		
+		YAHOO.widget.ButtonGroup.prototype.NODE_NAME = "FIELDSET";
+	
+
+		//	Transform the existing radio buttons into a ButtonGroup control
+	
+		var oButtonGroup = new YAHOO.widget.ButtonGroup("pizza-types-fields"),
+
+			oType1Label = YAHOO.util.Dom.get("type1-label"),
+			oType2Label = YAHOO.util.Dom.get("type2-label"),
+
+			oButton1 = oButtonGroup.getButton(0),
+			oButton2 = oButtonGroup.getButton(1);
+
+
+		//	Set the "label" attribute of each Button to the text of 
+		//	its corresponding <label> element
+
+		oButton1.set("label", oType1Label.innerHTML);
+		oButton2.set("label", oType2Label.innerHTML);			
+
+
+		//	Remove the original labels, since Buttons of type "radio" 
+		//	are self labelling
+
+		oButtonGroup.removeChild(oType1Label);
+		oButtonGroup.removeChild(oType2Label);			
+	
+
+		//	Utility function to transform the data in HTML <option> 
+		//	elements into JavaScript arrays of MenuItem 
+		//	configuration properties
+	
+		var createMenuItemData = function (optiongroup) {
+		
+			var aOptions = YAHOO.util.Dom.get(optiongroup).getElementsByTagName("option"),
+				aMenuItemData = [],
+				nOptions = aOptions.length,
+				oOption;
+			
+			for (var i = 0; i < nOptions; i++) {
+				
+				oOption = aOptions[i];
+				aMenuItemData[i] = { text: oOption.text , value: oOption.value };
+
+			}
+
+			aMenuItemData.splice(0, 0, "Select Size");
+			
+			return aMenuItemData;
+			
+		};
+
+
+		//	Read the data out of the <select>'s <optgroup> elements so 
+		//	that it can be used to create MenuItems in a Button's Menu
+
+		var aThinCrustSizes = createMenuItemData("thin-crust-sizes"),
+			aDeepDishSizes = createMenuItemData("deep-dish-sizes");
+
+
+		var onCheckedChange = function (event, menuitems) {
+
+			var oMenu;
+
+			if (this.get("checked")) {
+
+				oMenu = oMenuButton.getMenu();
+
+				//	Use the "inDocument" method of the Dom utility to 
+				//	determine if the Button's Menu has been rendered.
+
+				if (YAHOO.util.Dom.inDocument(oMenuButton.getMenu().element)) {
+
+					//	If the Menu has been rendered, use Menu's "clearContent"
+					//	method to remove all existing MenuItems, then repopulate 
+					//	the Menu using the "addItems" method.
+
+					oMenu.clearContent();
+					oMenu.addItems(menuitems);
+					
+					//	Using the "clearContent" method removes all content
+					//	from a Menu instance, effectively restoring it to its 
+					//	pre-rendered state.  For this reason, it is necessary
+					//	to call the "render" method after using "clearContent"
+					//	so that the Menu's content is rendered into the Menu's 
+					//	body element (<div class="bd">).  However, since the 
+					//	Menu's root element is already in the page, it is not
+					//	necessary to pass an element reference when calling the 
+					//	"render" method.
+					
+					oMenu.render();
+
+				}
+				else {
+					
+					//	By default a Button's Menu is lazyloaded - meaning the 
+					//	creation and rendering of all MenuItems is 
+					//	deferred until the Menu is intially requested by the 
+					//	user.  If the "menu" attribute of a Button is set to 
+					//	an array of MenuItem configuration properties, as in 
+					//	this example, Button sets the "itemData" property of its 
+					//	Menu to the value of the "menu" attribute.  When the 
+					//	Button's Menu is first shown, Menu uses the value of 
+					//	the "itemData" to create and render all MenuItems.
+					
+					//	If the user clicks either the "Deep Dish" or 
+					//	"Thin Crust" Buttons before the content of the 
+					//	"Pizza Size" Menu has been rendered, simply set the 
+					//	Menu's "itemData" property to the to the array of 
+					//	MenuItem configuration properties that should be used 
+					//	to build the Menu when it is lazy loaded.
+					
+					oMenu.itemData = menuitems;
+				}					
+				
+			}
+
+		};
+
+		
+		//	Register a change event handler for each radio button's 
+		//	"checked" attribute that will rebuild the content of the 
+		//	menu button's Menu instance when the user toggles between 
+		//	the deep dish and thin crust pizzas
+
+		oButton1.on("checkedChange", onCheckedChange, aThinCrustSizes);
+		oButton2.on("checkedChange", onCheckedChange, aDeepDishSizes);			
+
+
+		//	Remove the existing <select> element from the <form>, and 
+		//	replace it with a menu button
+		
+
+		var oPizzaSizeSelect = YAHOO.util.Dom.get("pizza-size");
+		
+		oPizzaSizeSelect.parentNode.removeChild(oPizzaSizeSelect);
+
+
+		var oMenuButton = new YAHOO.widget.Button({	type: "menu", 
+														label: "Select Size", 
+														name: "pizza-size", 
+														menu: aThinCrustSizes, 
+														container: "pizza-size-fields" });
+
+
+		//	"selectedMenuItemChange" event handler for a Button that will set 
+		//	the Button's "label" attribute to the value of the "text" 
+		//	configuration property of the MenuItem that was clicked.
+
+		var onSelectedMenuItemChange = function (event) {
+
+			var oMenuItem = event.newValue;
+
+			this.set("label", oMenuItem.cfg.getProperty("text"));
+
+		};
+
+
+		//	Register a "selectedMenuItemChange" event handler that will sync the 
+		//	Button's "label" attribute to the MenuItem that was clicked.
+
+		oMenuButton.on("selectedMenuItemChange", onSelectedMenuItemChange);
+
+
+		//	"render" event handler for a Button's Menu - responsible for setting
+		//	 the default value for the Button's "selectedMenuItem" attribute.
+
+		var onMenuRender = function (type, args, button) {
+
+			button.set("selectedMenuItem", this.getItem(0));
+
+		};
+
+
+		//	"submit" event handler for a Button's parent form - repsonsible for 
+		//	rendering a Menu that was to be lazy loaded, but never clicked on, 
+		//	and therefore never rendered.
+
+		var onFormSubmit = function (event, button) {
+
+			var oMenuItem = button.get("selectedMenuItem"),
+				UA = YAHOO.env.ua,
+				oEvent,
+				oMenu;
+
+			if (!oMenuItem) {
+
+				//	Pause submission of the form until the Button's Menu 
+				//	is rendered
+				YAHOO.util.Event.preventDefault(event);
+
+				oMenu = button.getMenu();
+
+				oMenu.addItems(oMenu.itemData);
+
+				oMenu.subscribe("render", function () {
+
+					var bSubmitForm;
+
+					if (UA.ie) {
+						bSubmitForm = this.fireEvent("onsubmit");
+					}
+					else {  // Gecko, Opera, and Safari
+
+						oEvent = document.createEvent("HTMLEvents");
+						oEvent.initEvent("submit", true, true);
+						bSubmitForm = this.dispatchEvent(oEvent);
+
+					}
+
+					//	In IE and Safari, dispatching a "submit" event to a form 
+					//	WILL cause the form's "submit" event to fire, but WILL  
+					//	NOT submit the form.  Therefore, we need to call the 
+					//	"submit" method as well.
+
+					if ((UA.ie || UA.webkit) && bSubmitForm) {
+						this.submit();
+					}
+
+				}, this, true);
+
+				oMenu.render(oMenu.cfg.getProperty("container"));
+
+			}
+
+		};
+
+
+		oMenuButton.on("appendTo", function () {
+
+			var oMenu = this.getMenu();
+
+			//	If a Button's "selectedMenuItem" attribute is set, the selected 
+			//	MenuItem's name and value will be part of the form's data set 
+			//	when its parent form is submitted.  For Buttons with Menus built
+			//	entirely from script, the "selectedMenuItem" property is not 
+			//	set by default.  To set the "selectedMenuItem" to a default 
+			//	value, simply register a "render" event handler for the Button's
+			//	Menu that sets the Button's "selectedMenuItem" attribute to the
+			//	desired item in the Menu.
+
+			oMenu.subscribe("render", onMenuRender, this);
+
+
+			//	The items in a Button's Menu are lazy loaded by default: loaded 
+			//	when the Button is initially clicked.  If the user never clicks 
+			//	on the Button, its Menu will never be rendered, meaning the 
+			//	"render" event handler registered above will never be called, 
+			//	and the default value for the Button's "selectMenuItem"
+			//	attribute will never be set.  Therefore, add a "submit" event 
+			//	handler to the Button's parent form that will render the Menu 
+			//	if the Button's "selectedMenuItem" attribute is not set.
+
+			YAHOO.util.Event.on(this.getForm(), "submit", onFormSubmit, this);
+
+		});
+	
+
+		var oPlaceOrder = new YAHOO.widget.Button("place-order");
+		
+	});
+
+</script>
+
+
+<form id="pizza-order-form" method="post">
+
+	<fieldset>
+		<legend>Pizza Order Form</legend>
+
+		<fieldset id="pizza-types-fields">
+			<legend>Pizza Type</legend>
+			<label id="type1-label" for="type1">Thin Crust</label>
+			<input type="radio" name="pizza-type" id="type1" value="1" checked>
+			<label id="type2-label" for="type2">Deep Dish</label>
+			<input type="radio" name="pizza-type" id="type2" value="2">
+		</fieldset>
+
+ 		<div id="pizza-size-fields">
+			<label for="pizza-size">Size: </label>
+			<select name="pizza-size" id="pizza-size">
+				<option selected label="none" value="none">Select a size</option>
+				<optgroup label="Thin Crust" id="thin-crust-sizes">
+					<option value="1.1">Small</option>
+					<option value="1.2">Medium</option>
+					<option value="1.3">Large</option>
+					<option value="1.4">Extra Large</option>
+				</optgroup>
+				<optgroup label="Deep Dish" id="deep-dish-sizes">
+					<option value="2.1">Regular</option>
+					<option value="2.2">Large</option>
+				</optgroup>
+			</select>
+		</div>
+
+	</fieldset>
+	
+	<input type="submit" id="place-order" name="place-order" value="Place Order">
+
+</form>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

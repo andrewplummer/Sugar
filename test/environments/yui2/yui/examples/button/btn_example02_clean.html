@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Link Buttons</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    #button-examples div {
+
+        border: 2px groove #ccc;
+        margin: .5em;
+        padding: .5em;
+
+    }
+
+    #button-examples h2 {
+    
+        border: none;
+        margin: 0 0 .5em 0;
+        padding: 0;
+    
+    }
+
+    #linkbutton2 a,
+    #linkbutton5 a {
+    
+        background: url(../button/assets/yahoo.gif) center center no-repeat;
+        text-indent: -5em;
+        overflow: hidden;
+        padding: 0 1em;
+        *margin-left: 5em;   /* IE only */
+        _padding: 0 2.25em; /* IE 6 and IE 7 (Quirks Mode) */
+
+    }
+
+    #linkbutton3 a, 
+    #linkbutton6 a {
+
+        padding-left: 2.25em;
+        background: url(../button/assets/yahoo.gif) 10% 50% no-repeat;
+    
+    }
+
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Link Buttons</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates different ways to create a Button that functions like an HTML <code>&#60;a/&#62;</code> element.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+    YAHOO.example.init = function () {
+
+        // "contentready" event handler for the "linkbuttonsfrommarkup" <div>
+
+        YAHOO.util.Event.onContentReady("linkbuttonsfrommarkup", function() {
+
+            // Create Buttons from existing markup
+    
+            var oLinkButton1 = new YAHOO.widget.Button("linkbutton1");
+            var oLinkButton2 = new YAHOO.widget.Button("linkbutton2");
+            var oLinkButton3 = new YAHOO.widget.Button("linkbutton3");  
+        
+        });
+
+
+        // Create Buttons without using existing markup
+
+        var oLinkButton4 = new YAHOO.widget.Button({ type: "link", id: "linkbutton4", label: "Yahoo!", href: "http://www.yahoo.com", container: "linkbuttonsfromjavascript" });
+        var oLinkButton5 = new YAHOO.widget.Button({ type: "link", id: "linkbutton5", label: "Yahoo!", href: "http://www.yahoo.com", container: "linkbuttonsfromjavascript" });
+        var oLinkButton6 = new YAHOO.widget.Button({ type: "link", id: "linkbutton6", label: "Yahoo!", href: "http://www.yahoo.com", container: "linkbuttonsfromjavascript" });
+
+    } ();
+
+</script>
+
+<div id="button-examples">
+
+    <div id="linkbuttonsfrommarkup">
+        <h2>From Markup</h2>
+
+        <a id="linkbutton1" href="http://www.yahoo.com">Yahoo!</a>
+        <span id="linkbutton2" class="yui-button yui-link-button"><span class="first-child"><a href="http://www.yahoo.com">Yahoo!</a></span></span>
+        <span id="linkbutton3" class="yui-button yui-link-button"><em class="first-child"><a href="http://www.yahoo.com">Yahoo!</a></em></span>
+
+    </div>
+    
+    <div id="linkbuttonsfromjavascript">
+        <h2>From JavaScript</h2>
+    </div>
+
+</div>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

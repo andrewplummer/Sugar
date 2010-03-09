@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Editor Test Suite</title>
+
+<link rel="stylesheet" type="text/css" href="../../../build/reset-fonts-grids/reset-fonts-grids.css"> 
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">
+
+<link rel="stylesheet" type="text/css" href="../../../build/container/assets/skins/sam/container.css"> 
+<link rel="stylesheet" type="text/css" href="../../../build/menu/assets/skins/sam/menu.css"> 
+<link rel="stylesheet" type="text/css" href="../../../build/button/assets/skins/sam/button.css"> 
+<link rel="stylesheet" type="text/css" href="../../../build/resize/assets/skins/sam/resize.css"> 
+<link rel="stylesheet" type="text/css" href="../../../build/editor/assets/skins/sam/editor.css"> 
+
+<script type="text/javascript" src="../../../build/utilities/utilities.js"></script>
+<script type="text/javascript" src="../../../build/event-simulate/event-simulate-min.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../../build/resize/resize-min.js"></script>
+<script type="text/javascript" src="../../../build/editor/editor.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+
+<style>
+#testRegEx, #testRegEx2 {
+    display: none;
+}
+</style>
+<script type="text/javascript" src="tests.js"></script>
+
+<style type="text/css">
+
+</style>
+</head>
+<body class="yui-skin-sam">
+<div id="doc">
+<textarea id="editor" style="height: 300px; width: 522px">This is a test.</textarea>
+
+<div id="testRegEx">This is a test. <b>This</b> is a test. This is a <i>test</i>. This is a <u>test</u>. This is a test. This is a test. This is a test. <span style="font-size: 16px; font-family: Comic Sans MS;" tabindex="1" tag="span" class="yui-tag-span yui-tag">This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. </span>This is a test. This is a test. This is a test. This is a test. This is a test.<br><br>This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. <span style="font-size: 18px; font-family: Trebuchet MS; color: rgb(160, 64, 255);" tabindex="1" tag="span" class="yui-tag-span yui-tag">This is a test. This is a test. This is a test. This is a test. This is a test. This is a test.</span> This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. </div>
+<div id="testRegEx2">This is a test. <strong>This</strong> is a test. This is a <em>test</em>. This is a <span style="text-decoration: underline;">test</span>. This is a test. This is a test. This is a test. <span style="font-size: 16px; font-family: Comic Sans MS;" tabindex="1">This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. </span>This is a test. This is a test. This is a test. This is a test. This is a test.<br><br>This is a test. This is a test. This is a test. This is a test. This is a test. This is a test. <span style="font-size: 18px; font-family: Trebuchet MS; color: #a040ff;" tabindex="1">This is a test. This is a test. This is a test. This is a test. This is a test. This is a test.</span> This is a test. This is a test. This is a test. This is a test. This is a test. This is a test.</div>
+</div>
+</body>
+</html>

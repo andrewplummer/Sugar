@@ -1,0 +1,38 @@
+Carousel Release Notes
+
+*** version 2.8.0 ***
+
+* IMPORTANT CHANGE: Beginning with this release, the widget requires the
+  dimensions (both height and width) of a single Carousel item.
+
+  e.g.
+  
+  .yui-carousel-element li {
+      height: XXX;
+      width: XXX;
+  }
+  
+* Changed the implementation to use absolute positioning instead of float for
+  the Carousel list items.  This change makes the component set raw styles to
+  the Carousel items instead of just styling the element only through CSS.
+* Added multi-row support.
+* Added pagination template support.
+* Added support for reverse lazy loading of items.
+* Added new methods replaceItem(), replaceItems().
+* Fixed bug where carousel was stealing focus from form fields.
+* Added anchor support for pager/pagination buttons (for SEO).
+* Code cleanup.
+
+*** version 2.7.0 ***
+
+* Important change - nav elements should be BUTTONS for receiving focus
+        for accessibility.
+* Make the Carousel list element, and item element configurable.
+* Added helper methods like isAutoPlayOn(), isAnimating().
+* Fixed bugs related to computing the container width.
+* Changed the ambiguous "autoPlay" attribute name to "autoPlayInterval".
+* Code cleanup.
+
+*** version 2.6.0 ***
+
+* Initial release.

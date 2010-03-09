@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Container Family: The Module Control</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<script type="text/javascript">
+document.documentElement.className = "yui-pe";
+</script>
+
+<style type="text/css">
+	.yui-module { border:1px dotted black;padding:5px;margin:10px; display:none; }
+	.yui-module .hd { border:1px solid red;padding:5px; }
+	.yui-module .bd { border:1px solid green;padding:5px; }
+	.yui-module .ft { border:1px solid blue;padding:5px; }
+    
+    .yui-pe .yui-pe-content {
+        display:none;
+    }
+</style>
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Container Family: The Module Control</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Container Family: The Module Control</h1>
+	
+	<div class="exampleIntro">
+	<p>This example looks at the "standard module format" used by many components in YUI to represent modular content on the page.  The Module Control is a JavaScript representation of a standard module, one that provides some basic plumbing for interacting with the head, body and foot sections of a standard module.  Convenience methods for showing, hinding and rendering the module are also included in the Module Control.</p>
+
+<p>You're most likely to use the Module Control when building a custom widget; its importance in the YUI Library is as a foundation rather than as a UI control in its own right.</p>			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="module_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<script type="text/javascript">
+    YAHOO.namespace("example.container");
+
+    YAHOO.util.Event.onDOMReady(function () {
+
+        // Remove progressively enhanced content class, just before creating the module
+        YAHOO.util.Dom.removeClass("module1", "yui-pe-content");
+
+        YAHOO.example.container.module1 = new YAHOO.widget.Module("module1", { visible: false });
+        YAHOO.example.container.module1.render();
+
+        YAHOO.example.container.module2 = new YAHOO.widget.Module("module2", { visible: false });
+        YAHOO.example.container.module2.setHeader("Module #2 from Script");
+        YAHOO.example.container.module2.setBody("This is a dynamically generated Module.");
+        YAHOO.example.container.module2.setFooter("End of Module #2");
+        YAHOO.example.container.module2.render();
+
+        YAHOO.util.Event.addListener("show1", "click", YAHOO.example.container.module1.show, YAHOO.example.container.module1, true);
+        YAHOO.util.Event.addListener("hide1", "click", YAHOO.example.container.module1.hide, YAHOO.example.container.module1, true);
+
+        YAHOO.util.Event.addListener("show2", "click", YAHOO.example.container.module2.show, YAHOO.example.container.module2, true);
+        YAHOO.util.Event.addListener("hide2", "click", YAHOO.example.container.module2.hide, YAHOO.example.container.module2, true);
+    });
+</script>
+
+<div>
+	<button id="show1">Show module1</button> 
+	<button id="hide1">Hide module1</button>
+</div>
+
+<div id="module1" class="yui-pe-content">
+	<div class="hd">Module #1 from Markup</div>
+	<div class="bd">This is a Module that was marked up in the document.</div>
+	<div class="ft">End of Module #1</div>
+</div>
+
+<div id="module2"></div>
+
+<div>
+	<button id="show2">Show module2</button> 
+	<button id="hide2">Hide module2</button>
+</div>	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Using the Module Control</h2>
+
+<p>The Module control enables you to create a JavaScript object representation of a basic module of content. It can be used to manipulate existing content modules on your page or to create modules dynamically and append them to the DOM. All other components in the Container family have Module as their lowest-level base class.</p>
+
+<p>Module is fundamentally a building block for other UI controls. The concepts presented in this example will form the basis for the way that you interact with all of its subclasses.</p>
+
+<p>Module has three required dependencies: the <a href="http://developer.yahoo.com/yui/yahoo/">YAHOO Global object</a>, the <a href="http://developer.yahoo.com/yui/event/">Event Utility</a>, and the <a href="http://developer.yahoo.com/yui/dom/">DOM Collection</a>.</p>
+
+<p>In addition, the JavaScript file for Container must be included. If you will not be using any of the pre-packaged rich controls (<a href="http://developer.yahoo.com/yui/container/tooltip/">Tooltip</a>, <a href="http://developer.yahoo.com/yui/container/panel/">Panel</a>, <a href="http://developer.yahoo.com/yui/container/dialog/">Dialog</a>, or <a href="http://developer.yahoo.com/yui/container/simpledialog/">SimpleDialog</a>), you can include the core libary (<code>container_core.js</code>), which only contains <a href="http://developer.yahoo.com/yui/container/module/">Module</a>, <a href="http://developer.yahoo.com/yui/container/overlay/">Overlay</a>, and its supporting classes. Otherwise, the full library should be included (<code>container.js</code>). You can see what the full list of included files looks like below. Please note that your file paths may vary depending on the location in which you installed the YUI libraries.</p>
+
+<textarea name="code" class="HTML" cols="60" rows="1">
+<script type="text/javascript" src="yahoo.js"></script>
+<script type="text/javascript" src="event.js" ></script>
+<script type="text/javascript" src="dom.js" ></script>
+
+<script type="text/javascript" src="container_core.js"></script>
+</textarea>
+
+<p>Modules can be built using existing markup or dynamically at runtime using JavaScript. In this tutorial, we will construct two Modules: one from markup, and one from script only. 
+First, we'll add the Module from markup to the document. The markup is in Standard Module Format, which consists of an outer container div element and three possible child 
+div elements that represent the header, body, and/or footer:</p>
+
+<textarea name="code" class="HTML" cols="60" rows="1">
+
+<div id="module1" class="yui-pe-content">
+<div class="hd">Module #1 from Markup</div>
+<div class="bd">This is a Module that was marked up in the document.</div>
+<div class="ft">End of Module #1</div>
+</div>
+
+</textarea>
+
+<p>NOTE: The <code>yui-pe-content</code> class is not a Module requirement. It is used in this example to show how we can hide the markup from the users who have JavaScript enabled which we'll discuss later</p> 
+
+<p>Next, we'll build the JavaScript for our Modules and wrap it in a function to be executed when the window is finished loading. The Module called <code>module1</code> will be associated with our existing markup;  <code>module2</code> will be created dynamically from script. In this tutorial, we  pass to the Module constructor the one required argument: the id associated with that Module's container element.</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+<script>
+YAHOO.namespace("example.container");
+
+YAHOO.util.Event.onDOMReady(function () {
+    // Remove progressively enhanced content class, just before creating the module
+    YAHOO.util.Dom.removeClass("module1", "yui-pe-content");
+    
+    
+    YAHOO.example.container.module1 = new YAHOO.widget.Module("module1", { visible: false });
+    YAHOO.example.container.module1.render();
+    
+    YAHOO.example.container.module2 = new YAHOO.widget.Module("module2", { visible: false });
+    YAHOO.example.container.module2.setHeader("Module #2 from Script");
+    YAHOO.example.container.module2.setBody("This is a dynamically generated Module.");
+    YAHOO.example.container.module2.setFooter("End of Module #2");
+    YAHOO.example.container.module2.render("module2");
+});
+</script>
+</textarea>
+
+<p>Note that to avoid using the global variable space, we are placing our example Modules into the <code>YAHOO.example.container</code> namespace. For more information about namespacing, see the <a href="http://developer.yahoo.com/yui/yahoo/">YAHOO Global object</a>.</p>
+
+
+<p>Because <code>module1</code> is already in the document, the call to the <em>render</em> method requires no arguments. If that element wasn't present in the document, we would pass into the <code>render</code> method the element into which we wanted the module rendered.</p>
+
+<p>To see our newly created Modules more easily, we can add a style block that defines custom CSS for the <code>module</code> CSS class. By default, Module doesn't come with any predefined styles, so it is up to you as a developer to provide any applicable styles. Our style block will define the <code>module</code> CSS class such that Modules and each of their child elements will have distinct border colors:</p>
+
+<textarea name="code" class="CSS" cols="60" rows="1">
+<style>
+.module { border:1px dotted black;padding:5px;margin:10px; }
+.module .hd { border:1px solid red;padding:5px; }
+.module .bd { border:1px solid green;padding:5px; }
+.module .ft { border:1px solid blue;padding:5px; }
+</style>
+</textarea>
+
+<p>Finally, we will add some HTML buttons to the page and wire them (using the <a href="http://developer.yahoo.com/yui/event">YUI Event Utility</a>) to the Modules' <code>show</code> and <code>hide</code> methods:</p>
+
+<textarea name="code" class="HTML" cols="60" rows="1">
+<div>
+<button id="show1">Show module1</button> 
+<button id="hide1">Hide module1</button>
+</div>
+
+<div>
+<button id="show2">Show module2</button> 
+<button id="hide2">Hide module2</button>
+</div>
+</textarea>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+YAHOO.util.Event.addListener("show1", "click", YAHOO.example.container.module1.show, YAHOO.example.container.module1, true);
+YAHOO.util.Event.addListener("hide1", "click", YAHOO.example.container.module1.hide, YAHOO.example.container.module1, true);
+
+YAHOO.util.Event.addListener("show2", "click", YAHOO.example.container.module2.show, YAHOO.example.container.module2, true);
+YAHOO.util.Event.addListener("hide2", "click", YAHOO.example.container.module2.hide, YAHOO.example.container.module2, true);
+</textarea>
+
+<h2>Avoiding The Initial Flash Of Unstyled Content</h2>
+
+<p>When rendering a Module from markup (the progressively enhanced solution), it is usually desirable to hide the markup until the Module is actually instantiated to avoid it being displayed in its unstyled form.
+However we don't want to hide the markup for users who may not have JavaScript enabled, since it may contain informative content. To achieve these two goals, we use a nested class rule, and add and remove classes
+programmatically:</p>
+
+<textarea name="code" class="CSS" cols="60" rows="1">
+    .yui-pe .yui-pe-content {
+        display:none;
+    }
+</textarea>
+
+<p>The <code>yui-pe</code> is added to an ancestor of the Module markup programmatically as early as possible in the page. In this example the class is added to the documentElement, however it could also be added to the body element. It is essentially is used to mark the fact
+that the page will be progressively enhanced (JavaScript is enabled). Adding it to the body or documentElement allows it to be used by multiple sections of widget markup on the page:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+    <script>
+        document.documentElement.className = "yui-pe";
+    </script>
+</textarea>
+
+<p>Additionally, the Markup which we want to hide temporarily for JavaScript enabled clients is marked with a <code>yui-pe-content</code> class, as shown in the Module markup example above.</p>
+
+<p>Finally, just before we create a Module, we remove the temporary <code>yui-pe-content</code> so that the display:none does not impact the way the Module is rendered (NOTE: This is not really an issue
+for Module, but is required if using this technique for the other members of the container family, since they use <code>visiblity</code> instead of <code>display</code> to hide themselves:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+    // Remove progressively enhanced content class, just before creating the module
+    YAHOO.util.Dom.removeClass("module1", "yui-pe-content");
+    
+    YAHOO.example.container.module1 = new YAHOO.widget.Module("module1", { visible: false });
+    YAHOO.example.container.module1.render();
+    ...
+</textarea>
+
+<p>The net result is that for clients which don't have JavaScript enabled, the body or documentElement will not have the <code>yui-pe</code> class, and so the markup will not be hidden. However for clients which do have JavaScript enabled,
+the markup will be hidden, until the Module is instantiated, at which point the modules visibility handling will take over.</p>
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?container&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerGloss"><p><strong>Note:</strong> Logging and debugging is currently turned off for this example.</p> 
+							<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="module_log.html">Reload with logging<br />
+	 and debugging enabled.</a></span></span></p></div>
+	
+						</div>
+					
+				
+					<div id="examples">
+						<h3>Container Family Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li class='selected'><a href='../container/module.html'>The Module Control</a></li><li><a href='../container/overlay.html'>Creating and Positioning an Overlay</a></li><li><a href='../container/tooltip.html'>Simple Tooltip Example</a></li><li><a href='../container/tooltip-multi.html'>One Tooltip, Many Context Elements</a></li><li><a href='../container/panel.html'>Simple Panel Example</a></li><li><a href='../container/panelskin1.html'>Skinning a Panel with Custom CSS: Introduction</a></li><li><a href='../container/panelskin2.html'>Skinning a Panel with Custom CSS: Advanced</a></li><li><a href='../container/panel-loading.html'>Creating a Modal "Loading" Panel</a></li><li><a href='../container/panel-resize.html'>Creating a Resizable Panel</a></li><li><a href='../container/dialog-quickstart.html'>Dialog Quickstart Example</a></li><li><a href='../container/simpledialog-quickstart.html'>SimpleDialog Quickstart Example</a></li><li><a href='../container/container-effect.html'>Using ContainerEffect Transitions</a></li><li><a href='../container/overlaymanager.html'>Using the Overlay Manager to Manage Multiple Panels</a></li><li><a href='../container/keylistener.html'>Implementing Container Keyboard Shortcuts with KeyListener</a></li><li><a href='../button/button-ariaplugin.html'>Using the Button ARIA Plugin (included with examples for Button Control)</a></li><li><a href='../container/container-ariaplugin.html'>Using the Container ARIA Plugin</a></li><li><a href='../button/button-menu-select.html'>Using A Menu Button To Replace A &#60;select&#62; Element (included with examples for Button Control)</a></li><li><a href='../button/button-menu-swap.html'>Replacing the content of a Button's Menu (included with examples for Button Control)</a></li><li><a href='../colorpicker/colorpicker-dialog-from-script.html'>Example of Color Picker Built in a Dialog via JavaScript (included with examples for Color Picker Control)</a></li><li><a href='../layout/panel_layout.html'>Layout inside a resizable Panel (included with examples for Layout Manager)</a></li><li><a href='../editor/dialog_editor.html'>Editor in a Dialog Control (included with examples for Rich Text Editor)</a></li><li><a href='../button/btn_example07.html'>Menu Buttons (included with examples for Button Control)</a></li><li><a href='../calendar/calcontainer.html'>Popup Calendar - Advanced (included with examples for Calendar Control)</a></li><li><a href='../datatable/dt_colshowhide.html'>Showing, Hiding, and Reordering Columns. (included with examples for DataTable Control)</a></li><li><a href='../button/btn_example08.html'>Split Buttons (included with examples for Button Control)</a></li><li><a href='../button/btn_example09.html'>Simple Calendar Menu Button (included with examples for Button Control)</a></li><li><a href='../button/btn_example10.html'>Calendar Menu Button with Date on Button Face (included with examples for Button Control)</a></li><li><a href='../button/btn_example11.html'>Color Picker Button (included with examples for Button Control)</a></li><li><a href='../button/btn_example12.html'>Fixed Width Menu Button (included with examples for Button Control)</a></li><li><a href='../menu/programsmenu.html'>OS-Style Programs Menu (included with examples for Menu Family)</a></li><li><a href='../menu/applicationmenubar.html'>Application Menubar (included with examples for Menu Family)</a></li><li><a href='../button/btn_example14.html'>Slider Button (included with examples for Button Control)</a></li><li><a href='../layout/adv_layout.html'>Complex Application (included with examples for Layout Manager)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Container Family Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/container/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_container.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/container.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="selected "><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

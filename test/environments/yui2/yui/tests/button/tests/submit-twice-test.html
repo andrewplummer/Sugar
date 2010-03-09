@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>YUI Button + Connection Manager Test Page</title>
+
+	<link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts-min.css">
+	<link rel="stylesheet" type="text/css" href="../../../build/button/assets/skins/sam/button.css">
+	<link rel="stylesheet" type="text/css" href="../../../build/menu/assets/skins/sam/menu.css">
+
+	<style type="text/css">
+	
+		#logger {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+		}
+
+		#log {
+			width: 600px;
+			height: 200px;
+		}
+	
+	</style>
+
+	<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+	<script type="text/javascript" src="../../../build/container/container_core-min.js"></script>
+	<script type="text/javascript" src="../../../build/menu/menu-min.js"></script>
+	<script type="text/javascript" src="../../../build/button/button-min.js"></script>
+	<!-- <script type="text/javascript" src="../js/button.js"></script>
+	<script type="text/javascript" src="../js/buttongroup.js"></script> -->	
+	<script type="text/javascript" src="../../../build/connection/connection-min.js"></script>
+
+	<script type="text/javascript">
+
+		(function () {
+
+			var Event = YAHOO.util.Event,
+				Dom = YAHOO.util.Dom;
+
+
+			Event.onContentReady("form-1", function () {
+
+				var oButton1 = new YAHOO.widget.Button("menubutton1", { type: "menu", menu: "menubutton1select" });
+				var oButton2 = new YAHOO.widget.Button("menubutton2", { type: "menu", menu: "menubutton2select" });
+
+			});
+			
+
+			var logData = function () {
+
+				YAHOO.widget.Button.addHiddenFieldsToForm();
+
+				var sFormData = YAHOO.util.Connect.setForm("form-1");
+				
+				Dom.get("log").value = sFormData.split("&").join("\r");
+				
+			};
+
+
+			Event.on("button-1", "click", function () {
+
+				var oForm = Dom.get("form-1");
+				
+				console.log(oForm.elements.length);
+			
+				logData();
+
+				console.log(oForm.elements.length);
+				
+			});
+			
+
+			Event.on("form-1", "submit", function (event) {
+
+				//	Prevent the form from submitting since the data will be 
+				//	posted via Connection Manager
+				Event.preventDefault(event);
+
+				var oForm = Dom.get("form-1");
+				
+				console.log(oForm.elements.length);
+			
+				logData();
+
+				console.log(oForm.elements.length);
+
+			});
+			
+
+		}());
+
+	</script>
+
+</head>
+<body class="yui-skin-sam">
+
+	<form name="form-1" id="form-1" method="post">
+
+        <input type="submit" id="menubutton1" name="menubutton1_button" value="Menu Button 1">
+        <select id="menubutton1select" name="menubutton1select">
+            <option value="0">One</option>
+            <option value="1">Two</option>
+            <option value="2">Three</option>                
+        </select>
+
+        <input type="button" id="menubutton2" name="menubutton2_button" value="Menu Button 2">
+        <select id="menubutton2select" name="menubutton2select">
+            <option value="0">One</option>
+            <option value="1">Two</option>
+            <option value="2">Three</option>                
+        </select>		
+
+		<div>
+			<input id="button-2" type="submit" value="Log Data After Submit">
+		</div>
+
+	</form>
+
+	<button id="button-1" type="button">Log Data</button>
+
+	<div id="logger">
+		<h2>Form Data</h2>
+		<textarea id="log"></textarea>
+	</div>
+
+</body>
+</html>

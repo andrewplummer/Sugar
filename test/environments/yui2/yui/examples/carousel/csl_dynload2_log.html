@@ -1,0 +1,489 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Carousel Control: Using Ajax for deferred loading of items</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/carousel/assets/skins/sam/carousel.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/carousel/carousel-debug.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+    /* Style the spotlight container */
+    #spotlight {
+        border: 1px solid #ccc;
+        height: 240px;
+        margin: 10px auto;
+        padding: 1px;
+        text-align: center;
+        width: 240px;
+    }
+
+    #carousel {
+        margin: 0;
+    }
+
+    #container {
+        margin: 0 auto;
+    }
+
+    .yui-skin-sam .yui-carousel-nav ul,
+    .yui-skin-sam .yui-carousel-nav select {
+        display: none;
+    }
+    /* Always be sure to give your carousel items a width and a height */
+    .yui-carousel-element li {
+        height: 75px;
+        width: 75px;
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Carousel Control: Using Ajax for deferred loading of items</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Carousel Control: Using Ajax for deferred loading of items</h1>
+	
+	<div class="exampleIntro">
+	<p>
+    This example showcases the dynamic loading capabilities of the <a href="http://developer.yahoo.com/yui/carousel/">YUI Carousel Control</a>.  The YUI Carousel Control exposes an event called <code>loadItems</code>.  This
+    event is fired whenever the Carousel needs items to be loaded into it for
+    display.  Subscribing  to this event makes it easy to dynamically load
+    the next set of images.
+</p>
+			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="csl_dynload2_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<!-- The Carousel container -->
+<div id="container">
+    <ol id="carousel"></ol>
+</div>
+<!-- The spotlight container -->
+<div id="spotlight"></div>
+<script>
+    var curpos, items = [];
+
+    function getImageTag(img) {
+        return "<img src=\"" + img + "\" height=\"75\" width=\"75\">";
+    }
+
+    function getImages() {
+        var carousel = this;
+                
+        YAHOO.util.Connect.asyncRequest("GET", "assets/php/getimages.php?pos="+curpos,
+                {
+                    success: function (o) {
+                        var i = curpos,
+                            j = 0,
+                            r = eval('(' + o.responseText + ')');
+                            
+                        curpos += r.length;
+
+                        while (i < curpos) {
+                            if (r[j]) {
+                                carousel.addItem(getImageTag(r[j]));
+                            } else {
+                                break;
+                            }
+                            i++;
+                            j++;
+                        }
+
+                        carousel.set("selectedItem", carousel.get("firstVisible"));
+                    },
+
+                    failure: function (o) {
+                        alert("Ajax request failed!");
+                    }
+        });
+    }
+                
+    // Get the image link from within its (parent) container.
+    function getLargeImage(parent) {
+        var el = parent.firstChild;
+                
+        while (el) { // walk through till as long as there's an element
+            if (el.nodeName.toUpperCase() == "IMG") { // found an image
+                // flickr uses "_s" suffix for small, and "_m" for big
+                // images respectively
+                return el.src.replace(/_s\.jpg$/, "_m.jpg");
+            }
+            el = el.nextSibling;
+        }
+                
+        return "";
+    }
+
+    YAHOO.util.Event.onDOMReady(function (ev) {
+        var carousel, spotlight = YAHOO.util.Dom.get("spotlight");
+
+        carousel = new YAHOO.widget.Carousel("container", {
+
+             /* Setting numItems is required for dynamic loading. This property lets Carousel 
+                know how many total items it will ever be populated with (statically and/or dynamically).
+                Not to be confused with numVisible: the number of items shown to a 
+                user per page. In this example, we don't specify numVisible and Carousel 
+                defaults to 3 items visible per page. */
+                 
+                numItems: 17
+        });
+	
+        YAHOO.util.Connect.asyncRequest("GET", "assets/php/getimages.php", {
+                success: function (o) {
+                    var i, r = eval('(' + o.responseText + ')');
+                    
+                    curpos = r.length;
+
+                    for (i = 0; i < curpos; i++) {
+                        items.push(r[i]);
+                    }
+
+                    // check if the Carousel widget is available
+                    if (typeof carousel != "undefined") {
+                        for (i = 0; i < curpos; i++) {
+                            // if so, shove the elements into it
+                            carousel.addItem(getImageTag(items[i]));
+                        }
+                        carousel.set("selectedItem", 0);
+                        items = [];
+                    }
+                },
+
+                failure: function (o) {
+                    alert("Ajax request failed!");
+                }
+        });
+                
+        carousel.on("loadItems", function (o) {
+            // more items available?
+            getImages.call(this);
+        });
+                
+        carousel.on("itemSelected", function (index) {
+            // item has the reference to the Carousel's item
+            var item = carousel.getElementForItem(index);
+
+            if (item) {
+                spotlight.innerHTML = "<img src=\""+getLargeImage(item)+"\">";
+            }
+        });
+            
+        carousel.render();
+        carousel.show();
+    });
+
+</script>
+	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Making the Carousel Widget dynamically load images on the fly</h2>
+<p>
+    Here we will use the <a href="http://developer.yahoo.com/yui/carousel/">YUI Carousel Control</a>'s <code>loadItems</code> event to dynamically
+    load the images on the fly.</p>
+<p>
+    This example has the following dependencies:
+</p>
+
+<textarea name="code" class="HTML" cols="60" rows="1"><link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.8.0r4/build/carousel/assets/skins/sam/carousel.css">
+<script src="http://yui.yahooapis.com/2.8.0r4/build/yahoo/yahoo-dom-event.js"></script>
+<script src="http://yui.yahooapis.com/2.8.0r4/build/element/element-min.js"></script>
+<script src="http://yui.yahooapis.com/2.8.0r4/build/connection/connection-min.js"></script>
+<script src="http://yui.yahooapis.com/2.8.0r4/build/carousel/carousel-min.js"></script></textarea>
+
+<p>
+    Initially we use <a href="http://developer.yahoo.com/yui/connection/">YUI Connection Manager</a> to load the initial set of items as
+    soon as part of the DOM is visible.</p>
+
+<textarea name="code" class="HTML" cols="60" rows="1"><div id="container">
+  <ol id="carousel"></ol>
+</div>
+<!-- The spotlight container -->
+<div id="spotlight"></div></textarea>
+
+<p>
+    We have a few simple CSS rules to set the dimensions for the Carousel items.
+</p>
+
+<textarea name="code" class="CSS" cols="60" rows="1">
+/* Always be sure to give your carousel items a width and a height */
+.yui-carousel-element li {
+    height: 75px;
+    width: 75px;
+}</textarea>
+
+<p>
+    The YUI Carousel Control's constructor is passed <code>numItems</code> (the total number of items) so that it triggers the <code>loadItems</code> event if the items are not available.
+    We'll use Connection Manager to load a set of items into the
+    Carousel as early as possible.
+</p>
+
+
+<textarea name="code" class="JScript" cols="60" rows="1">YAHOO.util.Event.onDOMReady(function (ev) {
+  var carousel, spotlight = YAHOO.util.Dom.get("spotlight");
+
+  carousel = new YAHOO.widget.Carousel("container", {
+      
+  /* Setting numItems is required for dynamic loading. This property lets Carousel 
+     know how many total items it will ever be populated with (statically and/or dynamically).
+     Not to be confused with numVisible: the number of items to display
+     per page. In this example, we don't specify numVisible and Carousel 
+     defaults to 3 items visible per page. */
+     
+     numItems: 17
+  });
+  YAHOO.util.Connect.asyncRequest("GET", "php/getimages.php", {
+      success: function (o) {
+        var i, r = eval('(' + o.responseText + ')');
+        curpos = r.length;
+
+        for (i = 0; i < curpos; i++) {
+          items.push(r[i]);
+        }
+
+        // check if the Carousel widget is available
+        if (typeof carousel != "undefined") {
+          for (i = 0; i < curpos; i++) {
+            // if so, shove the elements into it
+            carousel.addItem(getImageTag(items[i]));
+          }
+          carousel.set("selectedItem", 0);
+          items = [];
+        }
+      },
+
+      failure: function (o) {
+        alert("Ajax request failed!");
+      }
+  });
+});</textarea>
+
+<p>
+    The YUI Carousel Control exposes a <code>loadItems</code> custom event that is fired
+    when the Carousel needs more items to be loaded.  This becomes very handy
+    for us since we can subscribe to it and add more items in to the Carousel
+    widget when required.
+</p>
+
+<p>
+    In our case, the server program returns an array (JSON) of images.  This is
+    parsed in the Ajax callback and then the Carousel's <code>addItem()</code> is called for
+    every image.
+     Apart from subscribing to this event, for displaying the selected image as a spotlight, we can subscribe to the <code>itemSelected</code> event that Carousel control exposes.
+    This event is triggered whenever an item is selected and it returns the
+    index of the selected item.  With the index of the item, we can use the
+    Carousel's <code>getElementForItem()</code> API to get the reference to the Carousel's item (an <code>li</code> element in
+    our case).
+</p>
+</p>
+
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+carousel.on("loadItems", function (o) {
+  // more items available?
+  getImages.call(this);
+});
+
+carousel.on("itemSelected", function (index) {
+  var item = carousel.getElementForItem(index);
+
+  if (item) {
+    spotlight.innerHTML = "<img src=\"" + getImage(item) + "\">";
+  }
+});
+
+carousel.render();
+carousel.show();
+
+function getImageTag(img) {
+    return "<img src=\"" + img + "\" height=\"75\" width=\"75\">";
+}
+
+function getImages() {
+    var carousel = this;
+                
+    YAHOO.util.Connect.asyncRequest("GET",
+				    "assets/php/getimages.php?pos="+curpos, {
+            success: function (o) {
+	        var i = curpos,
+		    j = 0,
+		    r = eval('(' + o.responseText + ')');
+		
+		curpos += r.length;
+		
+		while (i < curpos) {
+		    if (r[j]) {
+			carousel.addItem(getImageTag(r[j]));
+		    } else {
+			break;
+		    }
+		    i++;
+		    j++;
+		}
+		
+		carousel.set("selectedItem", carousel.get("firstVisible"));
+	    },
+					    
+	    failure: function (o) {
+	        alert("Ajax request failed!");
+	    }
+    });
+}</textarea>
+
+<p>
+    The getLargeImage() function is quite easy to implement.  Since we have the
+    reference to the Carousel's item, it is straightforward to implement a function that extracts the image within it.
+</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">// Get the image link from within its (parent) container.
+function getLargeImage(parent) {
+  var el = parent.firstChild;
+  
+  while (el) {  // walk through till as long as there's an element
+    if (el.nodeName.toUpperCase() == "IMG") { // found an image
+      // flickr uses "_s" suffix for small, and "_m" for big images respectively
+      return el.src.replace(/_s\.jpg$/, "_m.jpg");
+    }
+    el = el.nextSibling;
+  }
+  
+  return "";
+}</textarea>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?connection&carousel&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerDiv"></div>
+							<div id="loggerGloss">
+								<p><strong>Note:</strong> You are viewing this example in debug mode with logging enabled.  This can significantly slow performance.</p>
+	
+								<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="csl_dynload2.html">Reload with logging<br />and debugging disabled.</a></span></span></p>
+							</div>
+						</div>
+					
+				
+					<div id="examples">
+						<h3>Carousel Control Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../carousel/csl_selection.html'>Spotlight example</a></li><li><a href='../carousel/csl_circular.html'>Circular Carousel example</a></li><li><a href='../carousel/csl_reveal.html'>Partially revealing previous and next items</a></li><li><a href='../carousel/csl_imagentext.html'>Using both images and text within an item</a></li><li class='selected'><a href='../carousel/csl_dynload2.html'>Using Ajax for deferred loading of items</a></li><li><a href='../carousel/csl_dynloadandreplace.html'>Using deferred loading of items and Carousel's built-in paginator</a></li><li><a href='../carousel/csl_multirow.html'>Multi-row example</a></li><li><a href='../carousel/csl_paginationtemplate.html'>Pagination template example</a></li><li><a href='../carousel/csl_pagination.html'>Using Paginator with Carousel</a></li><li><a href='../carousel/carousel-ariaplugin.html'>Using the Carousel ARIA Plugin</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Carousel Control Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/carousel/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_carousel.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/carousel.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="selected "><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

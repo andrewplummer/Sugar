@@ -1,0 +1,103 @@
+<html>
+<head>
+
+    <title>YUI Library Master Test Page</title>
+    <link type="text/css" rel="stylesheet" href="../../../build/fonts/fonts.css" />
+    <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css" />
+    <link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />
+    
+    <script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+    <script type="text/javascript" src="../../../build/dom/dom.js"></script>
+    <script type="text/javascript" src="../../../build/event/event.js"></script>
+    <script type="text/javascript" src="../../../build/logger/logger.js"></script>
+    <script type="text/javascript" src="../../../build/json/json.js"></script>
+    <script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+    
+    <style>
+        #out {
+        }
+    </style>
+
+</head>
+<body class="yui-skin-sam">
+<h1>YUI Library Master Test Page</h1>
+<script type="text/javascript">
+
+(function() {
+
+    function log(msg) {
+        var d=document, b=d.getElementById("out"), n=d.createElement("div");
+        if (b) {
+            n.appendChild(d.createTextNode(msg));
+            b.appendChild(n);
+        }
+    }
+
+    var TM = YAHOO.tool.TestManager;
+
+    YAHOO.util.Event.onDOMReady(function (){
+
+        YAHOO.tool.TestManager.setPages([
+
+           "../../animation/tests/animation.html", 
+           "../../cookie/tests/cookie.html",
+           "../../container/tests/config.html",
+           "../../calendar/tests/datemath.html",
+           "../../dom/tests/dom.html",
+           "../../dragdrop/tests/index.html",
+           "../../element/tests/element.html",
+           "../../imageloader/tests/imageloader.html",
+           "../../container/tests/module.html",
+           "../../profiler/tests/profiler.html",
+           "../../tabview/tests/tabview.html",
+           "../../yahoo/tests/yahoo.html",
+           "../../yuitest/tests/yuitest.html"
+
+           // "../../autocomplete/tests/autocomplete.html", 
+           // "../../calendar/tests/calendar.html",
+           // "../../datasource/tests/datasource.html",
+           // "../../editor/tests/editor.html",
+           // "../../logger/tests/logger.html",
+           // "../../yuiloader/tests/yuiloader.html",
+           // "../../yuiloader/tests/yuiloader_config.html",
+           // "../../yuiloader/tests/yuiloader_rollup.html",
+        ]);
+
+        TM.subscribe(TM.TEST_MANAGER_COMPLETE_EVENT, function(o) {
+            log("# of pages passed: " + o.passedPages.length);
+            log("# of pages failed: " + o.failedPages.length + ": " + o.failedPages.join(", "));
+            log("# of tests passed: " + o.passed);
+            log("# of tests failed: " + o.failed);
+
+            if (location.search.length > 0){
+                var params = location.search.substring(1).split("&");
+                var url = null;
+                var format = YAHOO.tool.TestFormat.XML;
+
+                for (var i=0; i < params.length; i++){
+                    if (params[i].indexOf("report=") == 0){
+                        url = decodeURIComponent(params[i].substring(params[i].indexOf("=") + 1));
+                    } else if (params[i] == "format=json"){
+                        format = YAHOO.tool.TestFormat.JSON;
+                    }
+                }
+
+                if (url !== null){
+                    var reporter = new YAHOO.tool.TestReporter(url, format);
+                    reporter.report(o);
+                }
+            }
+
+        });
+
+        TM.start();
+    });
+    
+})();
+
+</script>
+
+<div id="out"></div>
+
+</body>
+</html>

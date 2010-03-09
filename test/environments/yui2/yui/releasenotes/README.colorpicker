@@ -1,0 +1,36 @@
+ColorPicker - Release Notes
+
+Development master
+
+2.8.0
+    * No change
+
+2.7.0
+    * Moved private functions to protected prototype methods
+    * Now allows paste into RGB, HSV, Hex input fields (YUILibrary bug 1907525)
+    * Hue field unaltered when choosing unsaturated values (YUILibrary bug 1893165)
+    * Saturation input field now updates swatches (YUILibrary bug 1893165)
+    * Can now set rgb config at construction for initial color
+    * initPicker logic broken up into methods _initElements, _initSliders,
+      _bindUI, and syncUI.
+    * Micro optimizations to color value conversions
+
+2.6.0
+    * Added colorpicker-core.css (empty) for completeness
+
+2.5.1
+   * No change
+
+2.5.0
+   * No change
+
+2.4.0
+   * Initialization values assigned to showcontrols, showrgbcontrols,
+     showwebsafe, showhexsummary, animate, red, green, and blue in the
+     constructor configuration are now honored. 
+
+2.3.1
+   * No change (bug fixes were inherited from slider)
+
+2.3.0
+   * Initial release

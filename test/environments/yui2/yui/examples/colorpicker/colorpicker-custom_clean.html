@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Example of Specifying Custom Labels and Element IDs for Color Picker</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/slider/assets/skins/sam/slider.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/colorpicker/assets/skins/sam/colorpicker.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/colorpicker/colorpicker-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+  #yui-picker-panel { position: relative; padding: 6px; background-color: #eeeeee; width: 450px; height: 240px; }
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Example of Specifying Custom Labels and Element IDs for Color Picker</h1>
+
+<div class="exampleIntro">
+	<p>The Color Picker below looks much like the pickers in other examples.  However, two changes have been made:</p>
+<ol>
+  <li><strong>Element IDs have been customized:</strong> Color Picker uses a default set of element IDs when it creates the DOM for your picker instance. If you want to control those IDs, you may need to change these defaults.  (In addition to the method described here, you can also pass in new IDs via the constructor; see the <a href="http://developer.yahoo.com/yui/colorpicker/#customIds">Customizing Element IDs section of the Color Picker User's Guide</a>.</li>
+  <li><strong>Form labels have been customized:</strong> Instead of R, G, and B, we're using here the strings &quot;Red&quot;, &quot;Green&quot;, and &quot;Blue&quot;. This illustrates the technique you might use to translate your Color Picker interface into multiple languages. </li>
+</ol>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="yui-picker-panel">
+  <div class="yui-picker" id="yui-picker"></div>
+</div>
+
+<script type="text/javascript">
+
+//dump the contents of the element IDs object to the Logger:
+YAHOO.log("The full contents of the YAHOO.widget.ColorPicker.prototype.ID object: " + YAHOO.lang.dump(YAHOO.widget.ColorPicker.prototype.ID), "info", "example");
+
+//dump the contents of the interface text strings object to the Logger:
+YAHOO.log("The full contents of the YAHOO.widget.ColorPicker.prototype.TXT object: " + YAHOO.lang.dump(YAHOO.widget.ColorPicker.prototype.TXT), "info", "example");
+
+//Using an anonymous function keeps our variables
+//out of the global namespace.
+(function() {
+    var Event = YAHOO.util.Event,
+        picker;
+
+    // this is how to override some or all of the
+    // element ids used by the control
+    var ids = YAHOO.lang.merge(
+        YAHOO.widget.ColorPicker.prototype.ID, {
+            R: "custom_R",
+            G: "custom_G",
+            B: "custom_B"
+        });
+
+    // this is how to change the text generated
+    // by the control
+    var txt = YAHOO.lang.merge(
+        YAHOO.widget.ColorPicker.prototype.TXT, {
+            R: "Red",
+            G: "Green",
+            B: "Blue"
+        });
+	
+	//Having changed the default element ids, you can
+	//instantiate your picker:
+    Event.onDOMReady(function() {
+            picker = new YAHOO.widget.ColorPicker("yui-picker-panel", {
+                    showhsvcontrols: true,
+                    showhexcontrols: true,
+                    ids: ids,
+                    txt: txt,
+                    animate: false
+                });
+        });
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

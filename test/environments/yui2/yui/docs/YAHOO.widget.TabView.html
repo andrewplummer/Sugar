@@ -1,0 +1,1460 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: tabview  YAHOO.widget.TabView   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>tabview&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_tabview.html" title="tabview">tabview</a>
+                 &gt; YAHOO.widget.TabView 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.TabView</b>
+                        <span class="extends">
+                           - extends <a href="YAHOO.util.Element.html" title="YAHOO.util.Element">YAHOO.util.Element</a>
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        A widget to control tabbed views.
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.widget.TabView</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                el(optional)
+
+                                                , 
+                                                attr
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">el(optional)</span>
+                                                    &lt;<span property="yui:type">HTMLElement | String | Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The html 
+element that represents the TabView, or the attribute object to use. 
+An element will be created if none provided.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">attr</span>
+                                                    &lt;<span property="yui:type">Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> (optional) A key map of the tabView's 
+initial attributes.  Ignored if first arg is attributes object.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__contentParent">
+                                    <h4><a name="property__contentParent" property="yui:name">_contentParent</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The container of the tabView's content elements.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__tabParent">
+                                    <h4><a name="property__tabParent" property="yui:name">_tabParent</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The container of the tabView's label elements.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_CLASSNAME">
+                                    <h4><a name="property_CLASSNAME" property="yui:name">CLASSNAME</a>
+                                        - <code><span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The className to add when building from scratch.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: "navset"
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_CONTENT_PARENT_CLASSNAME">
+                                    <h4><a name="property_CONTENT_PARENT_CLASSNAME" property="yui:name">CONTENT_PARENT_CLASSNAME</a>
+                                        - <code><span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The className of the HTMLElement containing the TabView's label elements
+to look for when building from existing markup, or to add when building
+from scratch. 
+All childNodes of the content container are treated as content elements when
+building from existing markup.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: "nav-content"
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TAB_PARENT_CLASSNAME">
+                                    <h4><a name="property_TAB_PARENT_CLASSNAME" property="yui:name">TAB_PARENT_CLASSNAME</a>
+                                        - <code><span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The className of the HTMLElement containing the TabView's tab elements
+to look for when building from existing markup, or to add when building
+from scratch. 
+All childNodes of the tab container are treated as Tabs when building
+from existing markup.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: "nav"
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Element.html#property_DOM_EVENTS">
+                                        <a class="" href="YAHOO.util.Element.html#property_DOM_EVENTS" property="yui:name" title="DOM_EVENTS">DOM_EVENTS</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.AttributeProvider.html#property__configs">
+                                        <a class="private" href="YAHOO.util.AttributeProvider.html#property__configs" property="yui:name" title="_configs">_configs</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method__initTabs">
+                                    <h4>
+                                        <a name="method__initTabs">_initTabs</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">_initTabs</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates Tab instances from a collection of HTMLElements.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_addTab">
+                                    <h4>
+                                        <a name="method_addTab">addTab</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">addTab</strong>
+                                           (
+                                                
+                                                        
+                                                         tab
+                                                    
+                                                
+                                                        , 
+                                                         index
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Adds a Tab to the TabView instance.  
+If no index is specified, the tab is added to the end of the tab list.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tab</span>
+                                                        &lt;<span property="yui:type">YAHOO.widget.Tab</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> A Tab instance to add.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">index</span>
+                                                        &lt;<span property="yui:type">Integer</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The position to add the tab.</span>
+                                                        </dd>
+                                                </dl>
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_contentTransition">
+                                    <h4>
+                                        <a name="method_contentTransition">contentTransition</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">contentTransition</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The transiton to use when switching between tabs.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_deselectTab">
+                                    <h4>
+                                        <a name="method_deselectTab">deselectTab</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">deselectTab</strong>
+                                           (
+                                                
+                                                        
+                                                         index
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes selected state from the given tab if it is the activeTab
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">index</span>
+                                                        &lt;<span property="yui:type">Int</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The tab index to deselect</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_DOMEventHandler">
+                                    <h4>
+                                        <a name="method_DOMEventHandler">DOMEventHandler</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">DOMEventHandler</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Routes childNode events.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">event</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The Dom event that is being handled.</span>
+                                                        </dd>
+                                                </dl>
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getTab">
+                                    <h4>
+                                        <a name="method_getTab">getTab</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">getTab</strong>
+                                           (
+                                                
+                                                        
+                                                         index
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the Tab instance at the specified index.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">index</span>
+                                                        &lt;<span property="yui:type">Integer</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The position of the Tab.</span>
+                                                        </dd>
+                                                </dl>
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getTabIndex">
+                                    <h4>
+                                        <a name="method_getTabIndex">getTabIndex</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">getTabIndex</strong>
+                                           (
+                                                
+                                                        
+                                                         tab
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the index of given tab.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tab</span>
+                                                        &lt;<span property="yui:type">YAHOO.widget.Tab</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The tab whose index will be returned.</span>
+                                                        </dd>
+                                                </dl>
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_initAttributes">
+                                    <h4>
+                                        <a name="method_initAttributes">initAttributes</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">initAttributes</strong>
+                                           (
+                                                
+                                                        
+                                                         attr
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            setAttributeConfigs TabView specific properties.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Hash of initial attributes</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_removeTab">
+                                    <h4>
+                                        <a name="method_removeTab">removeTab</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">removeTab</strong>
+                                           (
+                                                
+                                                        
+                                                         item
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes the specified Tab from the TabView.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">item</span>
+                                                        &lt;<span property="yui:type">YAHOO.widget.Tab</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The Tab instance to be removed.</span>
+                                                        </dd>
+                                                </dl>
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_selectTab">
+                                    <h4>
+                                        <a name="method_selectTab">selectTab</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">selectTab</strong>
+                                           (
+                                                
+                                                        
+                                                         index
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Makes the tab at the given index the active tab
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">index</span>
+                                                        &lt;<span property="yui:type">Int</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The tab index to be made active</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Provides a readable name for the TabView instance.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method__setHTMLAttrConfig">                                        
+                                            <a class="private" href="YAHOO.util.Element.html#method__setHTMLAttrConfig" property="yui:name" title="_setHTMLAttrConfig">_setHTMLAttrConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_addClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_addClass" property="yui:name" title="addClass">addClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_addListener">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_addListener" property="yui:name" title="addListener">addListener</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_appendChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_appendChild" property="yui:name" title="appendChild">appendChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_appendTo">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_appendTo" property="yui:name" title="appendTo">appendTo</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_delegate">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_delegate" property="yui:name" title="delegate">delegate</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_fireQueue">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_fireQueue" property="yui:name" title="fireQueue">fireQueue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getElementsByClassName">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getElementsByClassName" property="yui:name" title="getElementsByClassName">getElementsByClassName</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getElementsByTagName">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getElementsByTagName" property="yui:name" title="getElementsByTagName">getElementsByTagName</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getStyle">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getStyle" property="yui:name" title="getStyle">getStyle</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_hasChildNodes">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_hasChildNodes" property="yui:name" title="hasChildNodes">hasChildNodes</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_hasClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_hasClass" property="yui:name" title="hasClass">hasClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_initAttributes">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_initAttributes" property="yui:name" title="initAttributes">initAttributes</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_insertBefore">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_insertBefore" property="yui:name" title="insertBefore">insertBefore</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_on">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeChild" property="yui:name" title="removeChild">removeChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeClass" property="yui:name" title="removeClass">removeClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeDelegate">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeDelegate" property="yui:name" title="removeDelegate">removeDelegate</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeListener">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeListener" property="yui:name" title="removeListener">removeListener</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_replaceChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_replaceChild" property="yui:name" title="replaceChild">replaceChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_replaceClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_replaceClass" property="yui:name" title="replaceClass">replaceClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_setStyle">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_setStyle" property="yui:name" title="setStyle">setStyle</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_subscribe">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_subscribe" property="yui:name" title="subscribe">subscribe</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_configureAttribute">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_configureAttribute" property="yui:name" title="configureAttribute">configureAttribute</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent" property="yui:name" title="fireBeforeChangeEvent">fireBeforeChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireChangeEvent" property="yui:name" title="fireChangeEvent">fireChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_get">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_get" property="yui:name" title="get">get</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_getAttributeConfig" property="yui:name" title="getAttributeConfig">getAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeKeys">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_getAttributeKeys" property="yui:name" title="getAttributeKeys">getAttributeKeys</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_refresh">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_refresh" property="yui:name" title="refresh">refresh</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_register">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_register" property="yui:name" title="register">register</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig" property="yui:name" title="resetAttributeConfig">resetAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetValue">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_resetValue" property="yui:name" title="resetValue">resetValue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_set">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributeConfig">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributeConfig" property="yui:name" title="setAttributeConfig">setAttributeConfig</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributes">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributes" property="yui:name" title="setAttributes">setAttributes</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_activeIndexChange">
+                                    <h4>
+                                        <a name="event_activeIndexChange">activeIndexChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">activeIndexChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'activeIndex' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_activeTabChange">
+                                    <h4>
+                                        <a name="event_activeTabChange">activeTabChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">activeTabChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'activeTab' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeActiveIndexChange">
+                                    <h4>
+                                        <a name="event_beforeActiveIndexChange">beforeActiveIndexChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeActiveIndexChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'activeIndex' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeActiveTabChange">
+                                    <h4>
+                                        <a name="event_beforeActiveTabChange">beforeActiveTabChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeActiveTabChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'activeTab' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeOrientationChange">
+                                    <h4>
+                                        <a name="event_beforeOrientationChange">beforeOrientationChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeOrientationChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'orientation' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeTabsChange">
+                                    <h4>
+                                        <a name="event_beforeTabsChange">beforeTabsChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeTabsChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'tabs' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_orientationChange">
+                                    <h4>
+                                        <a name="event_orientationChange">orientationChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">orientationChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'orientation' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_tabsChange">
+                                    <h4>
+                                        <a name="event_tabsChange">tabsChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">tabsChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'tabs' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Events inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.util.Element.html#event_appendTo">
+                                        <a class="" href="YAHOO.util.Element.html#event_appendTo" property="yui:name" title="appendTo">appendTo</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_available">
+                                        <a class="" href="YAHOO.util.Element.html#event_available" property="yui:name" title="available">available</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_beforeAppendTo">
+                                        <a class="" href="YAHOO.util.Element.html#event_beforeAppendTo" property="yui:name" title="beforeAppendTo">beforeAppendTo</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_beforeElementChange">
+                                        <a class="" href="YAHOO.util.Element.html#event_beforeElementChange" property="yui:name" title="beforeElementChange">beforeElementChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_contentReady">
+                                        <a class="" href="YAHOO.util.Element.html#event_contentReady" property="yui:name" title="contentReady">contentReady</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_elementChange">
+                                        <a class="" href="YAHOO.util.Element.html#event_elementChange" property="yui:name" title="elementChange">elementChange</a><span class="">,</span>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+                        <div class="section field details">
+                            <h3 id="configattributes">Configuration Attributes</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:attribute" resource="#config_activeIndex">
+                                    <h4><a name="config_activeIndex">activeIndex</a>
+                                        <code>- <span property="yui:type">Int</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The index of the tab currently active.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_activeTab">
+                                    <h4><a name="config_activeTab">activeTab</a>
+                                        <code>- <span property="yui:type">YAHOO.widget.Tab</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The tab currently active.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_orientation">
+                                    <h4><a name="config_orientation">orientation</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            How the Tabs should be oriented relative to the TabView.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: "top"
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_tabs">
+                                    <h4><a name="config_tabs">tabs</a>
+                                        <code>- <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The Tabs belonging to the TabView instance.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Configuration attributes inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                        <span rel="yui:attribute" resource="YAHOO.util.Element.html#config_element">                                        
+                                        <a class="" href="YAHOO.util.Element.html#config_element" property="yui:name" title="element">element</a><span class="">,</span>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class="selected"><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Tab.html" title="YAHOO.widget.Tab">YAHOO.widget.Tab</a></li>
+                                <li class="selected"><a href="YAHOO.widget.TabView.html" title="YAHOO.widget.TabView">YAHOO.widget.TabView</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Tab.js.html" title="Tab.js">Tab.js</a></li>
+                                <li class=""><a href="TabView.js.html" title="TabView.js">TabView.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__contentParent" title="_contentParent">_contentParent</a></li>
+                                <li class="private"><a href="#property__tabParent" title="_tabParent">_tabParent</a></li>
+                                <li class=""><a href="#property_CLASSNAME" title="CLASSNAME">CLASSNAME</a></li>
+                                <li class=""><a href="#property_CONTENT_PARENT_CLASSNAME" title="CONTENT_PARENT_CLASSNAME">CONTENT_PARENT_CLASSNAME</a></li>
+                                <li class=""><a href="#property_TAB_PARENT_CLASSNAME" title="TAB_PARENT_CLASSNAME">TAB_PARENT_CLASSNAME</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method__initTabs" title="_initTabs">_initTabs</a></li>
+                                <li class=""><a href="#method_addTab" title="addTab">addTab</a></li>
+                                <li class=""><a href="#method_contentTransition" title="contentTransition">contentTransition</a></li>
+                                <li class=""><a href="#method_deselectTab" title="deselectTab">deselectTab</a></li>
+                                <li class=""><a href="#method_DOMEventHandler" title="DOMEventHandler">DOMEventHandler</a></li>
+                                <li class=""><a href="#method_getTab" title="getTab">getTab</a></li>
+                                <li class=""><a href="#method_getTabIndex" title="getTabIndex">getTabIndex</a></li>
+                                <li class=""><a href="#method_initAttributes" title="initAttributes">initAttributes</a></li>
+                                <li class=""><a href="#method_removeTab" title="removeTab">removeTab</a></li>
+                                <li class=""><a href="#method_selectTab" title="selectTab">selectTab</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_activeIndexChange" title="activeIndexChange">activeIndexChange</a></li>
+                                <li class=""><a href="#event_activeTabChange" title="activeTabChange">activeTabChange</a></li>
+                                <li class=""><a href="#event_beforeActiveIndexChange" title="beforeActiveIndexChange">beforeActiveIndexChange</a></li>
+                                <li class=""><a href="#event_beforeActiveTabChange" title="beforeActiveTabChange">beforeActiveTabChange</a></li>
+                                <li class=""><a href="#event_beforeOrientationChange" title="beforeOrientationChange">beforeOrientationChange</a></li>
+                                <li class=""><a href="#event_beforeTabsChange" title="beforeTabsChange">beforeTabsChange</a></li>
+                                <li class=""><a href="#event_orientationChange" title="orientationChange">orientationChange</a></li>
+                                <li class=""><a href="#event_tabsChange" title="tabsChange">tabsChange</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="configList" class="module">
+                        <h4>Configuration Attributes</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#config_activeIndex" title="activeIndex">activeIndex</a></li>
+                                <li class=""><a href="#config_activeTab" title="activeTab">activeTab</a></li>
+                                <li class=""><a href="#config_orientation" title="orientation">orientation</a></li>
+                                <li class=""><a href="#config_tabs" title="tabs">tabs</a></li>
+                        </ul>
+                    </div>
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.TabView", "name": "activeIndex", "url": "YAHOO.widget.TabView.html#config_activeIndex", "type": "config"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "activeIndexChange", "url": "YAHOO.widget.TabView.html#event_activeIndexChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "activeTab", "url": "YAHOO.widget.TabView.html#config_activeTab", "type": "config"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "activeTabChange", "url": "YAHOO.widget.TabView.html#event_activeTabChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "addTab", "url": "YAHOO.widget.TabView.html#method_addTab", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "beforeActiveIndexChange", "url": "YAHOO.widget.TabView.html#event_beforeActiveIndexChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "beforeActiveTabChange", "url": "YAHOO.widget.TabView.html#event_beforeActiveTabChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "beforeOrientationChange", "url": "YAHOO.widget.TabView.html#event_beforeOrientationChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "beforeTabsChange", "url": "YAHOO.widget.TabView.html#event_beforeTabsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "CLASSNAME", "url": "YAHOO.widget.TabView.html#property_CLASSNAME", "type": "property"}, {"access": "private", "host": "YAHOO.widget.TabView", "name": "_contentParent", "url": "YAHOO.widget.TabView.html#property__contentParent", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "CONTENT_PARENT_CLASSNAME", "url": "YAHOO.widget.TabView.html#property_CONTENT_PARENT_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "contentTransition", "url": "YAHOO.widget.TabView.html#method_contentTransition", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "deselectTab", "url": "YAHOO.widget.TabView.html#method_deselectTab", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "DOMEventHandler", "url": "YAHOO.widget.TabView.html#method_DOMEventHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "getTab", "url": "YAHOO.widget.TabView.html#method_getTab", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "getTabIndex", "url": "YAHOO.widget.TabView.html#method_getTabIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "initAttributes", "url": "YAHOO.widget.TabView.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.TabView", "name": "_initTabs", "url": "YAHOO.widget.TabView.html#method__initTabs", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "orientation", "url": "YAHOO.widget.TabView.html#config_orientation", "type": "config"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "orientationChange", "url": "YAHOO.widget.TabView.html#event_orientationChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "removeTab", "url": "YAHOO.widget.TabView.html#method_removeTab", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "selectTab", "url": "YAHOO.widget.TabView.html#method_selectTab", "type": "method"}, {"access": "private", "host": "YAHOO.widget.TabView", "name": "_tabParent", "url": "YAHOO.widget.TabView.html#property__tabParent", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "TAB_PARENT_CLASSNAME", "url": "YAHOO.widget.TabView.html#property_TAB_PARENT_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "tabs", "url": "YAHOO.widget.TabView.html#config_tabs", "type": "config"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "tabsChange", "url": "YAHOO.widget.TabView.html#event_tabsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "toString", "url": "YAHOO.widget.TabView.html#method_toString", "type": "method"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: AutoComplete Control: Custom Formatting, with a Proxyless Remote DataSource</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-debug.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-debug.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+label {
+    color:#E76300;
+    font-weight:bold;
+}
+#myAutoComplete {
+    width:30em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+/* styles for custom formatting */
+.yui-ac .result {position:relative;height:62px;}
+.yui-ac .name {position:absolute;bottom:0;left:64px;}
+.yui-ac .img {position:absolute;top:0;left:0;width:58px;height:58px;border:1px solid black;background-color:black;color:white;}
+.yui-ac .imgtext {position:absolute;width:58px;top:50%;text-align:center;}
+.yui-ac img {width:60px;height:60px;margin-right:4px;}
+</style>
+
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: AutoComplete Control: Custom Formatting, with a Proxyless Remote DataSource</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>AutoComplete Control: Custom Formatting, with a Proxyless Remote DataSource</h1>
+	
+	<div class="exampleIntro">
+	<p>This AutoComplete instance uses a ScriptNodeDataSource to to find images from the YQL webservice without a proxy. The generateRequest() method must be customized to comply with the open API. Please note that the ScriptNodeDataSource requires that the webservice support a callback mechanism.</p>
+
+<p>A custom formatter function is defined in order to show thumbnail images in the results container.</p>
+			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="ac_formatting_proxyless_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<label for="myInput">Yahoo! Image Search:</label>
+<div id="myAutoComplete">
+	<input id="myInput" type="text" name="p">
+	<div id="myContainer"></div>
+</div>
+
+
+<script type="text/javascript">
+YAHOO.example.CustomFormatting = (function(){
+    // Instantiate DataSource
+    var oDS = new YAHOO.util.ScriptNodeDataSource("http://query.yahooapis.com/v1/public/yql?");
+    oDS.responseSchema = {
+        resultsList: "query.results.result",
+        fields: ["url", "thumbnail_url", "clickurl"]
+    };
+    
+    // Setting to default value for demonstration purposes.
+    // The webservice needs to support execution of a callback function.
+    oDS.scriptCallbackParam = "callback";
+
+    // Instantiate AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("myInput","myContainer", oDS);
+
+    // Bump up the query delay to reduce server load
+    oAC.queryDelay = 1;
+    
+    // The webservice needs custom parameters
+    oAC.generateRequest = function(sQuery) {
+        return "q=select%20*%20from%20search.images%20where%20query%3D%22" +
+            sQuery +
+            "%22%20and%20mimetype%20like%20%22%25jpeg%25%22&format=json";
+    };
+    
+    // Result data passed as object for easy access from custom formatter.
+    oAC.resultTypeList = false;
+    // Customize formatter to show thumbnail images
+    oAC.formatResult = function(oResultData, sQuery, sResultMatch) {
+        if(oResultData.thumbnail_url) {
+            img = "<img src=\""+ oResultData.thumbnail_url + "\">";
+        }
+        else {
+            img = "<span class=\"img\"><span class=\"imgtext\">N/A</span></span>";
+        }
+        return "<div class=\"result\">" + img + "&nbsp;<span class=\"name\">" + sResultMatch + "</span></div>";
+    };
+    oAC.itemSelectEvent.subscribe(function(sType, aArgs) {
+        var oData = aArgs[2]; // object literal of selected item's result data
+        
+        // Redirect to the img
+        window.location.href = oData.clickurl;
+    });
+
+    // Stub for form validation
+    var validateForm = function() {
+        // Validation code goes here
+        return true;
+    };
+    
+    return {
+        oDS: oDS,
+        oAC: oAC,
+        validateForm: validateForm
+    }
+})();
+</script>
+	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Sample Code</h2>
+
+<p>Data:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+{
+ "query": {
+  "count": "10",
+  "created": "2009-04-03T09:49:28Z",
+  "lang": "en-US",
+  "updated": "2009-04-03T09:49:28Z",
+  "uri": "http://query.yahooapis.com/v1/yql?q=select+*+from+search.images+where+query%3D%22puppy%22+and+mimetype+like+%22%25jpeg%25%22",
+  "diagnostics": {
+   "publiclyCallable": "true",
+   "url": {
+    "execution-time": "47",
+    "content": "http://boss.yahooapis.com/ysearch/images/v1/puppy?format=xml&start=0&count=10"
+   },
+   "user-time": "50",
+   "service-time": "47",
+   "build-version": "911"
+  },
+  "results": {
+   "result": [
+    {
+     "abstract": null,
+     "clickurl": "http://lrd.yahooapis.com/_ylc=X3oDMTQ4djBydWlmBF9TAzIwMjMxNTI3MDIEYXBwaWQDb0pfTWdwbklrWW5CMWhTZnFUZEd5TkouTXNxZlNMQmkEY2xpZW50A2Jvc3MEc2VydmljZQNCT1NTBHNsawN0aXRsZQRzcmNwdmlkA0tPWDFWa2dlQXUxQ3I1Lm9zeG1zeWdUMDJKRTJEMG5XaEdnQUNGQUo-/SIG=12he0tu52/**http%3A//www.pc-wallpapers.co.uk/wallpapers/Animals/dogs/lonely_puppy_1024.jpg",
+     "date": "2005/04/18",
+     "filename": "lonely_puppy_1024.jpg",
+     "format": "jpeg",
+     "height": "768",
+     "mimetype": "image/jpeg",
+     "refererclickurl": "http://lrd.yahooapis.com/_ylc=X3oDMTQ4djBydWlmBF9TAzIwMjMxNTI3MDIEYXBwaWQDb0pfTWdwbklrWW5CMWhTZnFUZEd5TkouTXNxZlNMQmkEY2xpZW50A2Jvc3MEc2VydmljZQNCT1NTBHNsawN0aXRsZQRzcmNwdmlkA0tPWDFWa2dlQXUxQ3I1Lm9zeG1zeWdUMDJKRTJEMG5XaEdnQUNGQUo-/SIG=12c8c25vo/**http%3A//www.pc-wallpapers.co.uk/viewer.php%3Fcmax=4%26cat=DO%26id=000001",
+     "refererurl": "http://www.pc-wallpapers.co.uk/viewer.php?cmax=4&amp;cat=DO&amp;id=000001",
+     "size": "85300",
+     "thumbnail_height": "120",
+     "thumbnail_url": "http://thm-a01.yimg.com/image/21a5b2d2b9d3aa14",
+     "thumbnail_width": "160",
+     "title": "lonely_puppy_1024.jpg",
+     "url": "http://www.pc-wallpapers.co.uk/wallpapers/Animals/dogs/lonely_puppy_1024.jpg",
+     "width": "1024"
+    }
+    ...
+   ]
+  }
+ }
+}</textarea>
+
+<p>CSS:</p>
+
+<textarea name="code" class="CSS" cols="60" rows="1">
+label {
+    color:#E76300;
+    font-weight:bold;
+}
+#myAutoComplete {
+    width:30em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+/* styles for custom formatting */
+.yui-ac .result {position:relative;height:62px;}
+.yui-ac .name {position:absolute;bottom:0;left:64px;}
+.yui-ac .img {position:absolute;top:0;left:0;width:58px;height:58px;border:1px solid black;background-color:black;color:white;}
+.yui-ac .imgtext {position:absolute;width:58px;top:50%;text-align:center;}
+.yui-ac img {width:60px;height:60px;margin-right:4px;}
+</textarea>
+
+<p>Markup:</p>
+
+<textarea name="code" class="HTML" cols="60" rows="1">
+<label for="myInput">Yahoo! Image Search:</label>
+<div id="myAutoComplete">
+	<input id="myInput" type="text" name="p">
+	<div id="myContainer"></div>
+</div>
+</textarea>
+
+<p>JavaScript:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+YAHOO.example.CustomFormatting = (function(){
+    // Instantiate DataSource
+    var oDS = new YAHOO.util.ScriptNodeDataSource("http://query.yahooapis.com/v1/public/yql?");
+    oDS.responseSchema = {
+        resultsList: "query.results.result",
+        fields: ["url", "thumbnail_url", "clickurl"]
+    };
+
+    // Setting to default value for demonstration purposes.
+    // The webservice needs to support execution of a callback function.
+    oDS.scriptCallbackParam = "callback";
+
+    // Instantiate AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("myInput","myContainer", oDS);
+
+    // Bump up the query delay to reduce server load
+    oAC.queryDelay = 1;
+
+    // The webservice needs custom parameters
+    oAC.generateRequest = function(sQuery) {
+        return "q=select%20*%20from%20search.images%20where%20query%3D%22" +
+            sQuery +
+            "%22%20and%20mimetype%20like%20%22%25jpeg%25%22&format=json";
+    };
+
+    // Result data passed as object for easy access from custom formatter.
+    oAC.resultTypeList = false;
+    // Customize formatter to show thumbnail images
+    oAC.formatResult = function(oResultData, sQuery, sResultMatch) {
+        if(oResultData.thumbnail_url) {
+            img = "<img src=\""+ oResultData.thumbnail_url + "\">";
+        }
+        else {
+            img = "<span class=\"img\"><span class=\"imgtext\">N/A</span></span>";
+        }
+        return "<div class=\"result\">" + img + "&nbsp;<span class=\"name\">" + sResultMatch + "</span></div>";
+    };
+    oAC.itemSelectEvent.subscribe(function(sType, aArgs) {
+        var oData = aArgs[2]; // object literal of selected item's result data
+
+        // Redirect to the img
+        window.location.href = oData.clickurl;
+    });
+
+    // Stub for form validation
+    var validateForm = function() {
+        // Validation code goes here
+        return true;
+    };
+
+    return {
+        oDS: oDS,
+        oAC: oAC,
+        validateForm: validateForm
+    }
+})();
+</textarea>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?get&animation&datasource&autocomplete&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerDiv"></div>
+							<div id="loggerGloss">
+								<p><strong>Note:</strong> You are viewing this example in debug mode with logging enabled.  This can significantly slow performance.</p>
+	
+								<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="ac_formatting_proxyless.html">Reload with logging<br />and debugging disabled.</a></span></span></p>
+							</div>
+						</div>
+					
+				
+					<div id="examples">
+						<h3>AutoComplete Control Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../autocomplete/ac_basic_array.html'>Basic Local Data</a></li><li><a href='../autocomplete/ac_basic_xhr.html'>Basic Remote Data</a></li><li><a href='../autocomplete/ac_accessible.html'>Screenreader Accessibility</a></li><li><a href='../autocomplete/ac_xhr_customrequest.html'>Customizing Remote Requests</a></li><li class='selected'><a href='../autocomplete/ac_formatting_proxyless.html'>Custom Formatting, with a Proxyless Remote DataSource</a></li><li><a href='../autocomplete/ac_itemselect.html'>Searching Field A, Submitting Field B with itemSelectEvent</a></li><li><a href='../autocomplete/ac_combobox.html'>Combobox, with CSS for Multiple Stacked Instances</a></li><li><a href='../autocomplete/ac_tags_alwaysshow.html'>Tagging Example with alwaysShowContainer</a></li><li><a href='../autocomplete/ac_fn_multfields.html'>FunctionDataSource to Search Multiple Fields of an Address Book at Runtime</a></li><li><a href='../autocomplete/ac_ysearch_json.html'>Centering AutoComplete On a Page</a></li><li><a href='../autocomplete/ac_ysearch_flat.html'>Subset Matching</a></li><li><a href='../autocomplete/ac_flickr_xml.html'>Find Photos on Flickr</a></li><li><a href='../autocomplete/ac_customize.html'>Configurations Dashboard</a></li><li><a href='../autocomplete/ac_skinning.html'>Skinning Model</a></li><li><a href='../editor/flickr_editor.html'>Flickr Image Search (included with examples for Rich Text Editor)</a></li><li><a href='../logger/log_autocomplete.html'>Logger Integration with YUI Components (included with examples for Logger Control)</a></li><li><a href='../datatable/dt_autocomplete.html'>Datatable with Autocomplete (included with examples for DataTable Control)</a></li><li><a href='../layout/adv_layout.html'>Complex Application (included with examples for Layout Manager)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More AutoComplete Control Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/autocomplete/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_autocomplete.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/autocomplete.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="selected "><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

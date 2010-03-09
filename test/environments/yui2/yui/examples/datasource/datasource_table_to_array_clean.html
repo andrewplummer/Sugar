@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Extracting data from an HTML table</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css" class="highlight-ignore">
+    #demo table {
+        border: 1px solid #aaa;
+        border-collapse: collapse;
+        font-size: 80%;
+    }
+    #demo caption {
+        margin-top: 1em;
+        padding: .5ex 0;
+        font-size: 130%;
+        color: #369;
+    }
+    #demo td {
+        border: 1px solid #aaa;
+        padding: .5ex 1ex;
+    }
+    #demo th {
+        background: #ccc;
+        border: 1px solid #aaa;
+        padding: .5ex 1ex;
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Extracting data from an HTML table</h1>
+
+<div class="exampleIntro">
+	<p>DataSource supports using a table in markup as its source of truth.</p>
+<p>This example illustrates how to create a &quot;pass-thru&quot; DataSource instance to leverage the DOM walking and parsing routines inside in order to extract the table's data into a JavaScript array structure.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <button type="button" id="demo_load">Extract the table data</button>
+    <button type="button" id="demo_go" disabled="disabled">Get Total Amount Due</button>
+    <p>Total Amount Due: <em id="report">(click the Extract button)</em></p>
+
+    <table id="accounts">
+        <caption>Table in markup with data in it</caption>
+        <thead>
+            <tr>
+                <th>Due Date</th>
+                <th>Account Number</th>
+                <th>Quantity</th>
+                <th>Amount Due</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1/23/1999</td>
+                <td>29e8548592d8c82</td>
+                <td>12</td>
+                <td>$150.00</td>
+            </tr>
+            <tr>
+                <td>5/19/1999</td>
+                <td>83849</td>
+                <td>8</td>
+                <td>$60.00</td>
+            </tr>
+            <tr>
+                <td>8/9/1999</td>
+                <td>11348</td>
+                <td>1</td>
+                <td>-$34.99</td>
+            </tr>
+            <tr>
+                <td>1/23/2000</td>
+                <td>29e8548592d8c82</td>
+                <td>10</td>
+                <td>-$1.00</td>
+            </tr>
+            <tr>
+                <td>4/28/2000</td>
+                <td>37892857482836437378273</td>
+                <td>123</td>
+                <td>$33.32</td>
+            </tr>
+            <tr>
+                <td>1/23/2001</td>
+                <td>83849</td>
+                <td>5</td>
+                <td>-$15.00</td>
+            </tr>
+            <tr>
+                <td>9/30/2001</td>
+                <td>224747</td>
+                <td>14</td>
+                <td>$56.78</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+// Shortcuts
+var DataSource = YAHOO.util.DataSource,
+    Event = YAHOO.util.Event,
+    Dom   = YAHOO.util.Dom;
+
+YAHOO.example.data = null; // this is where the data will go
+
+// Add a new parser to DataSource to parse numbers that are prefixed with
+// currency symbols (or any other non-numeric characters)
+DataSource.Parser.currency = function (cur) {
+    if (YAHOO.lang.isString(cur)) {
+        var neg = !cur.indexOf('-');
+        cur = (neg?-1:1) * cur.slice(neg).replace(/^[^0-9.]+|,/g,'');
+    } else if (!YAHOO.lang.isNumber(cur)) {
+        return 0;
+    }
+
+    return cur;
+};
+
+Event.on('demo_load','click',function (e) {
+
+    // Here's the pass-thru DataSource.  Instantiate and immediately call
+    // sendRequest, passing a simple assignment function as the callback's
+    // success handler
+    new DataSource(Dom.get('accounts'), {
+        responseType : DataSource.TYPE_HTMLTABLE,
+        responseSchema : {
+            // Describe the object keys each record will have and what type
+            // of data to parse into the respective values
+            fields : [
+                { key: 'due',      parser: 'date' },
+                { key: 'account' },
+                { key: 'quantity', parser: 'number' },
+                { key: 'amount',   parser: 'currency' } // use our new parser
+            ]
+        }
+    }).sendRequest(null,{
+        success : function (req,res) {
+            YAHOO.example.data = res.results;
+        }
+    });
+    
+    YAHOO.log(YAHOO.lang.dump(YAHOO.example.data), "info", "example");
+
+    // The work is done and data is populated. Update the UI to allow for
+    // referencing the data structure.
+    Dom.get('demo_load').disabled = true;
+    Dom.get('demo_go').disabled   = false;
+
+    Dom.get('report').innerHTML = "Table data loaded. Click <em>Get Total Amount Due</em>.";
+});
+
+Event.on('demo_go','click', function (e) {
+    var data = YAHOO.example.data || [],
+        total = 0,
+        i;
+
+    // Proof that we have a populated data object
+    for (i = data.length - 1; i >= 0; --i) {
+        total += data[i].amount;
+    }
+
+    Dom.get('report').innerHTML = '$' + total.toFixed(2);
+});
+
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

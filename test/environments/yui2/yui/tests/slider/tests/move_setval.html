@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/slider/assets/skins/sam/slider.css">
+    <style type="text/css">
+        .markup {
+            position: relative;
+            padding: 100px;
+        }
+        #move {
+            height: 200px;
+            width: 300px;
+            padding: 20px;
+            position: relative;
+            top: 20px;
+            left: 20px;
+            border: 10px solid #ccc;
+        }
+        #t {
+            left: 100px;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<div id="log"></div>
+<div class="markup">
+    <div id="move">
+        <div id="bg" class="yui-h-slider" tabindex="-1">
+            <div id="t" class="yui-slider-thumb">
+                <img src="../../../build/slider/assets/thumb-n.gif" alt="slider thumb">
+            </div>
+        </div>
+        <input type="text" size="3" id="v" value="">
+    </div>
+    <input type="button" id="m" name="m" value="move">
+</div>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/dragdrop/dragdrop.js"></script>
+<script type="text/javascript" src="../../../build/slider/slider.js"></script>
+<script type="text/javascript" src="../../../build/animation/animation.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+var log = new YAHOO.widget.LogReader('log',{ newestOnTop: false }),
+    container = document.getElementById('move'),
+    s1,
+    startCount = 1,
+    endCount = 1;
+
+var s1 = YAHOO.widget.Slider.getHorizSlider('bg','t',100,100,20);
+
+s1.subscribe('slideStart', function () {
+    YAHOO.log('slideStart: ' + (startCount++) + ": VALUE: " + this.getValue());
+});
+
+s1.subscribe('slideEnd', function () {
+    YAHOO.log('slideEnd: ' + (endCount++) + ": VALUE: " + this.getValue());
+});
+
+YAHOO.util.Event.on('m','click',function () {
+    container.style.top =
+    container.style.left = "200px";
+});
+
+YAHOO.util.Event.on('v','keyup', function (e) {
+    if (e.keyCode === 13) {
+        var v = parseInt(this.value,10);
+        if (isFinite(v)) {
+            s1.setValue(v);
+        }
+    }
+});
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js" ></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

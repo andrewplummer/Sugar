@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Basic Drag and Drop</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+
+<style type="text/css">
+
+.dd-demo {
+    position:relative;
+    border:4px solid #666;
+    text-align:center;
+    color:#fff;
+    cursor:move;
+    height:60px;
+    width:60px;
+}
+
+.dd-demo-em {
+    border:4px solid purple;
+}
+
+#dd-demo-1 { 
+    background-color:#6D739A;top:0px; left:105px;
+}
+
+#dd-demo-2 { 
+    background-color:#566F4E;top:50px; left:245px;
+}
+
+#dd-demo-3 {
+    background-color:#7E5B60;top:-150px; left:385px;
+}
+
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Basic Drag and Drop</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates basic features of the <a href="http://developer.yahoo.com/yui/dragdrop/">Drag &amp; Drop Utility</a>.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="dd-demo-1" class="dd-demo"></div>
+<div id="dd-demo-2" class="dd-demo"></div>
+<div id="dd-demo-3" class="dd-demo"></div>
+
+<script type="text/javascript">
+    (function() {
+        var dd, dd2, dd3;
+        YAHOO.util.Event.onDOMReady(function() {
+            dd = new YAHOO.util.DD("dd-demo-1");
+            dd2 = new YAHOO.util.DD("dd-demo-2");
+            dd3 = new YAHOO.util.DD("dd-demo-3");
+        });
+    })();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>User Agent Detection</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+    #dd1,#dd2 {
+        position: relative;
+        margin: 1em 1em 0;
+        width: 175px;
+        float: left;
+        cursor: move;
+    }
+
+    #demo p {
+        position: relative;
+        padding: 1em;
+        height: 100%;
+        margin: 0;
+        font-weight: bold;
+        text-align: center;
+        z-index: 20;
+    }
+
+    #dd1 p {
+        border: 10px solid #ccc;
+        background-color: #eee;
+    }
+
+    #dd2 p {
+        border: 10px solid #e76300;
+        background-color: #fff5df;
+    }
+
+    #demo .shim {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        z-index: 10;
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>User Agent Detection</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates the use of <code>YAHOO.env.ua</code> to identify the user's browser and to branch JavaScript logic based on what browser is being used.  (<strong>Note:</strong> We strongly recommend using feature detection rather than user-agent sniffing to fork code; only use this technique where it is absolutely necessary to do so &mdash; for example, in cases where browsers do not report their own capabilities accurately.)</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+
+    <select name="foo">
+        <option value="NONE" selected="selected">This is a very long select element for the example</option>
+        <option value="1">Apple</option>
+        <option value="2">Rutabaga</option>
+        <option value="3">Motor oil</option>
+    </select>
+
+    <hr>
+    <div id="dd1">
+        <p>
+            NO IFRAME<br>
+            Drag over the select
+        </p>
+    </div>
+
+    <div id="dd2">
+        <p>
+            IFRAME<br>
+            Drag over the select
+        </p>
+    </div>
+
+</div>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+    var dd1 = new YAHOO.util.DD('dd1');
+    var dd2 = new YAHOO.util.DD('dd2');
+
+    dd1.startDrag = function (x,y) {
+        YAHOO.log("Drag started for element with no protection from the display bug", "info", "example");
+    }
+
+    if (YAHOO.env.ua.ie > 5 && YAHOO.env.ua.ie < 7) {
+
+        // Create an iframe shim
+        var shim = document.createElement('iframe');
+        shim.src = 'about:blank';
+        shim.className = 'shim';
+
+        // Add the shim to the dragging element on the first startDrag
+        dd2.startDrag = function (x,y) {
+            var d = this.getEl();
+
+            if (d.firstChild !== shim) {
+                YAHOO.util.Dom.setStyle(shim, 'height',d.offsetHeight);
+                d.insertBefore(shim, d.firstChild);
+
+                YAHOO.log("Your browser is IE " + YAHOO.env.ua.ie + ".  Shim added.", "info","example");
+
+            } else {
+                YAHOO.log("Your browser is IE " + YAHOO.env.ua.ie + ", but the shim was already added", "info","example");
+            }
+        }
+
+    } else { // Not shim worthy
+
+        dd2.startDrag = function (x,y) {
+            YAHOO.log("Your browser is NOT IE.  No shim added.", "info", "example");
+        }
+    }
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

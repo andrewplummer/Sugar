@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Advanced Test Options</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/yuitest/assets/skins/sam/yuitest.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/yuitest/yuitest-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Advanced Test Options</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to use advanced test options, which allow you to specify additional information about how a test should be run.
+  Each <a href="/yui/yuitest/#testcase"><code>TestCase</code></a> can specify up to three different options for tests,
+  including tests that should be ignored, tests that should throw an error, and tests that should fail.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="testLogger"></div>
+<script type="text/javascript">
+
+    YAHOO.namespace("example.yuitest");
+    
+    YAHOO.example.yuitest.AdvancedOptionsTestCase = new YAHOO.tool.TestCase({
+    
+        //the name of the test case - if not provided, one is automatically generated
+        name: "Advanced Options Tests",
+        
+        /*
+         * Specifies tests that "should" be doing something other than the expected.
+         */
+        _should: {
+        
+            /*
+             * Tests listed in here should fail, meaning that if they fail, the test
+             * has passed. This is used mostly for YuiTest to test itself, but may
+             * be helpful in other cases.
+             */
+            fail: {
+            
+                //the test named "testFail" should fail
+                testFail: true
+            
+            },
+            
+            /*
+             * Tests listed here should throw an error of some sort. If they throw an
+             * error, then they are considered to have passed.
+             */
+            error: {
+            
+                /*
+                 * You can specify "true" for each test, in which case any error will
+                 * cause the test to pass.
+                 */
+                testGenericError: true,
+                
+                /*
+                 * You can specify an error message, in which case the test passes only
+                 * if the error thrown matches the given message.
+                 */
+                testStringError: "I'm a specific error message.",
+                testStringError2: "I'm a specific error message.",
+                
+                /*
+                 * You can also specify an error object, in which case the test passes only
+                 * if the error thrown is on the same type and has the same message.
+                 */
+                testObjectError: new TypeError("Number expected."),            
+                testObjectError2: new TypeError("Number expected."),
+                testObjectError3: new TypeError("Number expected.")
+            
+            },
+            
+            /*
+             * Tests listed here should be ignored when the test case is run. For these tests,
+             * setUp() and tearDown() are not called.
+             */
+            ignore : {
+            
+                testIgnore: true
+                
+            }    
+        },
+        
+        //-------------------------------------------------------------------------
+        // Basic tests - all method names must begin with "test"
+        //-------------------------------------------------------------------------
+        
+        testFail : function() {
+        
+            //force a failure - but since this test "should" fail, it will pass
+            YAHOO.util.Assert.fail("Something bad happened.");
+            
+        },
+        
+        testGenericError : function() {    
+            throw new Error("Generic error");        
+        },
+        
+        testStringError : function() {
+            
+            //throw a specific error message - this will pass because it "should" happen
+            throw new Error("I'm a specific error message.");    
+        },
+        
+        testStringError2 : function() {
+            
+            //throw a specific error message - this will fail because the message isn't expected
+            throw new Error("I'm a specific error message, but a wrong one.");    
+        },
+        
+        testObjectError : function() {
+            
+            //throw a specific error and message - this will pass because it "should" happen
+            throw new TypeError("Number expected.");    
+        },
+        
+        testObjectError2 : function() {
+            
+            //throw a specific error and message - this will fail because the type doesn't match
+            throw new Error("Number expected."); 
+        },
+        
+        testObjectError3 : function() {
+            
+            //throw a specific error and message - this will fail because the message doesn't match
+            throw new TypeError("String expected.");    
+        },
+        
+        testIgnore : function () {
+            alert("You'll never see this.");
+        }
+        
+    });        
+     
+    YAHOO.util.Event.onDOMReady(function (){
+        //create the logger
+        var logger = new YAHOO.tool.TestLogger("testLogger");
+        YAHOO.tool.TestRunner.add(YAHOO.example.yuitest.AdvancedOptionsTestCase);
+
+        //run the tests
+        YAHOO.tool.TestRunner.run();
+    });
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Ghosting and Custom Proxy Resize</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/resize/assets/skins/sam/resize.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/resize/resize-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Ghosting and Custom Proxy Resize</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to use ghosting and manipulate the proxy element.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+    #yui_img {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+    }
+    #example-canvas {
+        height: 200px;
+    }
+    div.wrap {
+        position: relative;
+    }
+</style>
+
+<div class="wrap"><img src="assets/yui.jpg" id="yui_img" height="166" width="250"></div>
+
+<script>
+
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event;
+
+        var resize = new YAHOO.util.Resize('yui_img', {
+            handles: 'all',
+            knobHandles: true,
+            height: '166px',
+            width: '250px',
+            proxy: true,
+            ghost: true,
+            status: true,
+            draggable: true,
+            animate: true,
+            animateDuration: .75,
+            animateEasing: YAHOO.util.Easing.backBoth
+        });
+
+        resize.on('startResize', function() {
+            this.getProxyEl().innerHTML = '<img src="' + this.get('element').src + '" style="height: 100%; width: 100%;">';
+            Dom.setStyle(this.getProxyEl().firstChild, 'opacity', '.25');
+        }, resize, true);
+        
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

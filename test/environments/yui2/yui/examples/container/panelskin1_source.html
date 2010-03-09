@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Skinning a Panel with Custom CSS: Introduction</title>
+
+	<style type="text/css">
+	/*margin and padding on body element
+	  can introduce errors in determining
+	  element position and are not recommended;
+	  we turn them off as a foundation for YUI
+	  CSS treatments. */
+	body {
+		margin:0;
+		padding:0;
+	}
+	</style>
+
+	<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+
+	<!-- 
+		 Since we're completely re-doing the skin, start with container-core.css as the base, so we 
+		 don't need to reverse rules introduced by container-skin.css 
+	-->
+	<link rel="stylesheet" type="text/css" href="../../build/container/assets/container-core.css" />
+
+	<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+	<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+	<style tyle="text/css">
+	#example {height:20em;}
+
+	/* Aqua Panel Skin CSS */
+
+	/* Provide skin for default Panel elements, ontop of container-core.css */
+	#myPanel_c.yui-panel-container.shadow .underlay { 
+		position:absolute;
+				left:3px;
+		right:-3px;
+		top:3px;
+		bottom:-3px;
+		background-color:#000;
+		opacity:0.12;
+		filter:alpha(opacity=12);
+	}
+	#myPanel.yui-panel {
+		border:none;
+		overflow:visible;
+		background-color:transparent;
+	}
+	#myPanel.yui-panel .container-close {
+		position:absolute;
+		top:3px;
+		left:4px;
+		height:18px;
+		width:17px;
+		background:url(assets/img/aqua-hd-close.gif) no-repeat; 
+	}
+
+	/* span:hover not supported on IE6 */
+	#myPanel.yui-panel .container-close:hover {
+		background:url(assets/img/aqua-hd-close-over.gif) no-repeat; 
+	}
+	#myPanel.yui-panel .hd { 
+		padding:0;
+		border:none;
+		background:url(assets/img/aqua-hd-bg.gif) repeat-x;
+		color:#000;
+		height:22px;
+		margin-left:6px;
+		margin-right:6px;
+		text-align:center;
+		overflow:visible;
+	}
+	#myPanel.yui-panel .bd {
+		overflow:hidden;
+		padding:4px;
+		border:1px solid #aeaeae;
+		background-color:#FFF;
+	}
+	#myPanel.yui-panel .ft {
+		font-size:75%;
+		color:#666;
+		padding:2px;
+		overflow:hidden;
+		border:1px solid #aeaeae;
+		border-top:none;
+		background-color:#dfdfdf;
+	}
+
+	/* Provide skin for custom elements */
+	#myPanel.yui-panel .hd span {
+		vertical-align:middle;
+		line-height:22px;
+		font-weight:bold;
+	}
+	#myPanel.yui-panel .hd .tl {
+		width:7px;
+		height:22px;
+		top:0;
+		left:0px;
+		background:url(assets/img/aqua-hd-lt.gif) no-repeat;
+		position:absolute;
+	}
+	#myPanel.yui-panel .hd .tr {
+		width:7px;
+		height:22px;
+		top:0;
+		right:0px;
+		background:url(assets/img/aqua-hd-rt.gif) no-repeat;
+		position:absolute;
+	}
+	</style>
+
+	<script type="text/javascript">
+	YAHOO.namespace("example.container");
+
+	YAHOO.util.Event.onDOMReady(function () {
+		YAHOO.example.container.myPanel = new YAHOO.widget.Panel("myPanel", { 
+			width:"300px", 
+			visible:false, 
+			constraintoviewport:true, 
+			draggable:true 
+		});
+		YAHOO.example.container.myPanel.render();
+	});
+	</script>
+
+</head>
+<body>
+	<h1>Skinning a Panel with Custom CSS: Introduction</h1>
+
+	<div class="exampleIntro">
+		<p>In this example, custom CSS and images are applied to the appearance of a Panel instance to stylize it similar 
+				   to a Mac OS X document window.  Use the buttons below to show and hide the Panel.
+				</p>			
+	</div>
+
+	<div id="myPanel">
+		<div class="hd"><div class="tl"></div><span>Panel from Markup</span><div class="tr"></div></div>
+		<div class="bd">This is a Panel that was marked up in the document.</div>
+		<div class="ft">End of Panel</div>
+	</div>
+
+	<div>
+		<button onclick="YAHOO.example.container.myPanel.show()">Show panel</button>
+		<button onclick="YAHOO.example.container.myPanel.hide()">Hide panel</button>
+	</div>
+</body>
+</html>

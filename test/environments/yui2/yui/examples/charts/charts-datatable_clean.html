@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Chart and DataTable Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		width: 500px;
+		height: 350px;
+		margin-bottom: 10px;
+	}
+	.yui-dt-table {width: 500px;}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Chart and DataTable Example</h1>
+
+<div class="exampleIntro">
+	<p>A <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> and a <a href="http://developer.yahoo.com/yui/datatable/">DataTable Control</a> may share a <a href="http://developer.yahoo.com/yui/datasource/">DataSource</a> to display the same data.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">Widgets, Inc. Financial Summary 2003-2006</span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<div id="datatable"></div>
+
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+	//used to format x axis labels
+	YAHOO.example.numberToCurrency = function( value )
+	{
+		return YAHOO.util.Number.format(Number(value), {prefix: "$", thousandsSeparator: ","});
+	}
+
+	//manipulating the DOM causes problems in ie, so create after window fires "load"
+	YAHOO.util.Event.addListener(window, "load", function()
+	{
+
+	//--- data
+
+		YAHOO.example.annualIncome =
+		[
+			{ year: 2003, revenue: 1246852, expense: 1123359, income: 123493 },
+			{ year: 2004, revenue: 2451876, expense: 2084952, income: 366920 },
+			{ year: 2005, revenue: 2917246, expense: 2587151, income: 330095 },
+			{ year: 2006, revenue: 3318185, expense: 3087456, income: 230729 }
+		];
+
+		var incomeData = new YAHOO.util.DataSource( YAHOO.example.annualIncome );
+		incomeData.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+		incomeData.responseSchema = { fields: [ "year", "revenue", "expense", "income" ] };
+
+	//--- chart
+
+		var seriesDef =
+		[
+			{
+				xField: "revenue",
+				displayName: "Revenue"
+			},
+			{
+				xField: "expense",
+				displayName: "Expense"
+			},
+			{
+				type: "line",
+				xField: "income",
+				displayName: "Income"
+			}
+		];
+
+		var currencyAxis = new YAHOO.widget.NumericAxis();
+		currencyAxis.labelFunction = "YAHOO.example.numberToCurrency";
+
+		var mychart = new YAHOO.widget.BarChart( "chart", incomeData,
+		{
+			series: seriesDef,
+			yField: "year",
+			xAxis: currencyAxis,
+			//only needed for flash player express install
+			expressInstall: "assets/expressinstall.swf"
+		});
+
+	//--- data table
+
+		var columns =
+		[
+			{ key: "year", sortable: true, resizeable: true },
+			{ key: "revenue", formatter: "currency", sortable: true, resizeable: true },
+			{ key: "expense", formatter: "currency", sortable: true, resizeable: true },
+			{ key: "income", formatter: "currency", sortable: true, resizeable: true }
+		];
+		var mytable = new YAHOO.widget.DataTable( "datatable", columns, incomeData,
+			{ sortedBy: { key: "year", dir: "asc" }
+		});
+	});
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

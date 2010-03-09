@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Horizontal Slider with two thumbs</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/slider/assets/skins/sam/slider.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Horizontal Slider with two thumbs</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates a simple horizontal dual-thumb Slider implementation.  Some characteristics to note include the following:</p>
+<ul>
+    <li>The thumbs are set on a slide bar with a 200 pixel range.</li>
+    <li>A minimum distance is provided, preventing the thumbs from coming within 10 pixels of each other.</li>
+    <li>Initial min and max values are supplied as 100 and 130 respectively.</li>
+    <li>Clicking on the background will animate the nearest thumb.</li>
+    <li>Min and Max value offsets are calculated from the <strong>center</strong> of the thumbs and must be accounted for conversion calculations.</li>
+</ul>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo_bg" class="yui-h-slider" title="Range slider">
+    <div id="demo_min_thumb" class="yui-slider-thumb"><img src="assets/left-thumb.png"></div>
+    <div id="demo_max_thumb" class="yui-slider-thumb"><img src="assets/right-thumb.png"></div>
+</div>
+
+<p>Raw values: 
+<label>Min: <input type="text" id="demo_from" size="3" maxlength="3" value=""></label>
+
+<label>Max: <input type="text" id="demo_to" size="3" maxlength="3" value=""></label>
+
+<button id="demo_btn">Update Slider</button>
+
+<h3>Converted values:</h3>
+<p id="demo_info"></p>
+
+<script type="text/javascript">
+(function () {
+    YAHOO.namespace('example');
+
+    var Dom = YAHOO.util.Dom;
+
+    // Slider has a range of 200 pixels
+    var range = 200;
+
+    // No ticks for this example
+    var tickSize = 0;
+
+    // We'll set a minimum distance the thumbs can be from one another
+    var minThumbDistance = 10;
+
+    // Initial values for the thumbs
+    var initValues = [100,130];
+
+    // Conversion factor from 0-200 pixels to 100-1000
+    // Note 20 pixels are subtracted from the range to account for the
+    // thumb values calculated from their center point (10 pixels from
+    // the center of the left thumb + 10 pixels from the center of the
+    // right thumb)
+    var cf = 900/(range - 20);
+
+    // Set up a function to convert the min and max values into something useful
+    var convert = function (val) {
+        return Math.round(val * cf + 100);
+    };
+
+    // Slider set up is done when the DOM is ready
+    YAHOO.util.Event.onDOMReady(function () {
+        var demo_bg = Dom.get("demo_bg"),
+            info    = Dom.get("demo_info"),
+            from    = Dom.get("demo_from"),
+            to      = Dom.get("demo_to");
+
+        // Create the DualSlider
+        var slider = YAHOO.widget.Slider.getHorizDualSlider(demo_bg,
+            "demo_min_thumb", "demo_max_thumb",
+            range, tickSize, initValues);
+
+        slider.minRange = minThumbDistance;
+        
+        // Custom function to update the text fields, the converted value
+        // report and the slider's title attribute
+        var updateUI = function () {
+            from.value = slider.minVal;
+            to.value   = slider.maxVal;
+
+            // Update the converted values and the slider's title.
+            // Account for the thumb width offsetting the value range by
+            // subtracting the thumb width from the max value.
+            var min = convert(slider.minVal),
+                max = convert(slider.maxVal - 20);
+
+            info.innerHTML = "MIN: <strong>" + min + "</strong><br>" +
+                             "MAX: <strong>" + max + "</strong>";
+            demo_bg.title  = "Current range " + min + " - " + max;
+        };
+
+        // Subscribe to the dual thumb slider's change and ready events to
+        // report the state.
+        slider.subscribe('ready', updateUI);
+        slider.subscribe('change', updateUI);
+
+        // Wire up the button to update the slider
+        YAHOO.util.Event.on('demo_btn','click',function () {
+            // Get the int values from the inputs
+            var min = Math.abs(parseInt(from.value,10)|0),
+                max = Math.abs(parseInt(to.value,10)|0);
+
+            if (min > max) {
+                var hold = min;
+                min = max;
+                max = hold;
+            }
+
+            // Verify the values are in range
+            min = Math.min(min,range - 30);
+            max = Math.max(Math.min(max,range),min + 20 + minThumbDistance);
+
+            // Set the new values on the slider
+            slider.setValues(min,max);
+        });
+        // Attach the slider to the YAHOO.example namespace for public probing
+        YAHOO.example.slider = slider;
+    });
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

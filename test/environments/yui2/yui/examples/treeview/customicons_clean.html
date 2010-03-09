@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using TreeView with Custom Icons</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/treeview/assets/skins/sam/treeview.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/treeview/treeview-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<!--Bring in the folder-style TreeView CSS:-->
+<link rel="stylesheet" type="text/css" href="../treeview/assets/css/folders/tree.css"></link>
+
+<!--Additional custom style rules for this example:-->
+<style type="text/css">
+    #treewrapper {background: #fff; position:relative;}
+	#treediv {position:relative; width:250px; background: #fff; padding:1em;}
+    .icon-ppt { display:block; height: 22px; padding-left: 20px; background: transparent url(../treeview/assets/img/icons.png) 0 0px no-repeat; }
+    .icon-dmg { display:block; height: 22px; padding-left: 20px; background: transparent url(../treeview/assets/img/icons.png) 0 -36px no-repeat; }
+    .icon-prv { display:block; height: 22px; padding-left: 20px; background: transparent url(../treeview/assets/img/icons.png) 0 -72px no-repeat; }
+    .icon-gen { display:block; height: 22px; padding-left: 20px; background: transparent url(../treeview/assets/img/icons.png) 0 -108px no-repeat; }
+    .icon-doc { display:block; height: 22px; padding-left: 20px; background: transparent url(../treeview/assets/img/icons.png) 0 -144px no-repeat; }
+    .icon-jar { display:block; height: 22px; padding-left: 20px; background: transparent url(../treeview/assets/img/icons.png) 0 -180px no-repeat; }
+    .icon-zip { display:block; height: 22px; padding-left: 20px; background: transparent url(../treeview/assets/img/icons.png) 0 -216px no-repeat; }
+    .htmlnodelabel { margin-left: 20px; }
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using TreeView with Custom Icons</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates the use of custom icon styles on <a href="http://developer.yahoo.com/yui/treeview/">TreeView Control</a> nodes through the use of a image sprite.  Read the tutorial below the example for full details on how to achieve this effect.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="treewrapper">
+	<div id="treediv"> </div>
+</div>
+
+<script>
+//Wrap our initialization code in an anonymous function
+//to keep out of the global namespace:
+(function(){
+	var init = function() {
+		
+		//create the TreeView instance:
+		var tree = new YAHOO.widget.TreeView("treediv");
+		
+		//get a reusable reference to the root node:
+		var root = tree.getRoot();
+		
+		//for Ahmed's documents, we'll use TextNodes.
+		//First, create a parent node for his documents:
+		var ahmedDocs = new YAHOO.widget.TextNode("Ahmed's Documents", root, true);
+			//Create a child node for his Word document:
+			var ahmedMsWord = new YAHOO.widget.TextNode("Prospectus", ahmedDocs, false);
+			//Now, apply the "icon-doc" style to this node's
+			//label:
+			ahmedMsWord.labelStyle = "icon-doc";
+			var ahmedPpt = new YAHOO.widget.TextNode("Presentation", ahmedDocs, false);
+			ahmedPpt.labelStyle = "icon-ppt";
+			var ahmedPdf = new YAHOO.widget.TextNode("Prospectus-PDF version", ahmedDocs, false);
+			ahmedPdf.labelStyle = "icon-prv";
+	
+		//for Susheela's documents, we'll use HTMLNodes.
+		//First, create a parent node for her documents:
+		var sushDocs = new YAHOO.widget.TextNode("Susheela's Documents", root, true);
+			//Create a child node for her zipped files:
+			var sushZip = new YAHOO.widget.HTMLNode("<span class=\"htmlnodelabel\">Zipped Files</span>", sushDocs, false, true);
+			//Now, apply the "icon-zip" style to this HTML node's
+			//content:
+			sushZip.contentStyle = "icon-zip";
+			var sushDmg = new YAHOO.widget.HTMLNode("<span class=\"htmlnodelabel\">Files -- .dmg version</span>", sushDocs, false, true);
+			sushDmg.contentStyle = "icon-dmg";
+			var sushGen = new YAHOO.widget.HTMLNode("<span class=\"htmlnodelabel\">Script -- text version</span>", sushDocs, false, true);
+			sushGen.contentStyle = "icon-gen";
+			var sushJar = new YAHOO.widget.HTMLNode("<span class=\"htmlnodelabel\">JAR file</span>", sushDocs, false, true);
+			sushJar.contentStyle = "icon-jar";
+	
+		tree.draw();
+	}
+	//Add an onDOMReady handler to build the tree when the document is ready
+    YAHOO.util.Event.onDOMReady(init);
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

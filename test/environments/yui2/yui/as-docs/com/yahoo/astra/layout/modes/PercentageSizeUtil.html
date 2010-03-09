@@ -1,0 +1,344 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../../../print.css" type="text/css" media="print">
+<meta content="PercentageSizeUtil,com.yahoo.astra.layout.modes.PercentageSizeUtil,distributeExtraHeight,distributeExtraWidth,flexChildHeightsProportionally,flexChildWidthsProportionally,flexChildrenProportionally" name="keywords">
+<title>com.yahoo.astra.layout.modes.PercentageSizeUtil</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'PercentageSizeUtil - YUI Flash Component Documentation';
+				var baseRef = '../../../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">YUI Flash Component Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../../../all-classes.html')" href="../../../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../../all-classes.html')" href="../../../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../../index-list.html')" href="../../../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../../../index.html?com/yahoo/astra/layout/modes/PercentageSizeUtil.html&amp;com/yahoo/astra/layout/modes/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;PercentageSizeUtil</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#methodSummary">Methods</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class PercentageSizeUtil"); titleBar_setSubNav(false,false,false,false,false,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">com.yahoo.astra.layout.modes</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class PercentageSizeUtil</td>
+</tr>
+</table>
+<p></p>
+  Utility functions used for determining pixel-based sizes from percentage-based sizes.
+  
+  <p></p>
+<br>
+<hr>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#distributeExtraHeight()">distributeExtraHeight</a>(children:Array, configurations:Array, spaceForChildren:Number):void</div>
+<div class="summaryTableDescription">[static]
+    This function distributes excess space among the flexible children
+    because of rounding errors where we want to keep children's dimensions 
+    full pixel amounts.</div>
+</td><td class="summaryTableOwnerCol">PercentageSizeUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#distributeExtraWidth()">distributeExtraWidth</a>(children:Array, configurations:Array, spaceForChildren:Number):void</div>
+<div class="summaryTableDescription">[static]
+    This function distributes excess space among the flexible children
+    because of rounding errors where we want to keep children's dimensions 
+    full pixel amounts.</div>
+</td><td class="summaryTableOwnerCol">PercentageSizeUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#flexChildHeightsProportionally()">flexChildHeightsProportionally</a>(children:Array, configurations:Array, totalWidth:Number, totalHeight:Number):Number</div>
+<div class="summaryTableDescription">[static]
+    This function sets the height of each child
+    so that the heights add up to spaceForChildren.</div>
+</td><td class="summaryTableOwnerCol">PercentageSizeUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#flexChildrenProportionally()">flexChildrenProportionally</a>(spaceForChildren:Number, spaceToDistribute:Number, totalPercent:Number, childInfoArray:Array):Number</div>
+<div class="summaryTableDescription">[static]
+    This function distributes excess space among the flexible children.</div>
+</td><td class="summaryTableOwnerCol">PercentageSizeUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#flexChildWidthsProportionally()">flexChildWidthsProportionally</a>(children:Array, configurations:Array, totalWidth:Number, totalHeight:Number):Number</div>
+<div class="summaryTableDescription">[static]
+   This function sets the width of each child so that the widths add up
+   to spaceForChildren.</div>
+</td><td class="summaryTableOwnerCol">PercentageSizeUtil</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="distributeExtraHeight()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">distributeExtraHeight</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function distributeExtraHeight(children:Array, configurations:Array, spaceForChildren:Number):void</code><p>
+    This function distributes excess space among the flexible children
+    because of rounding errors where we want to keep children's dimensions 
+    full pixel amounts.  This only distributes the extra space 
+    if there was some rounding down and there are still 
+    flexible children.
+       </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">children</span>:Array</code> &mdash; The parent container of the children.
+   
+    </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">configurations</span>:Array</code> &mdash; The total space for all children
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">spaceForChildren</span>:Number</code></td>
+</tr>
+</table>
+</div>
+<a name="distributeExtraWidth()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">distributeExtraWidth</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function distributeExtraWidth(children:Array, configurations:Array, spaceForChildren:Number):void</code><p>
+    This function distributes excess space among the flexible children
+    because of rounding errors where we want to keep children's dimensions 
+    full pixel amounts.  This only distributes the extra space 
+    if there was some rounding down and there are still 
+    flexible children.
+       </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">children</span>:Array</code> &mdash; The parent container of the children.
+   
+    </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">configurations</span>:Array</code> &mdash; The total space for all children
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">spaceForChildren</span>:Number</code></td>
+</tr>
+</table>
+</div>
+<a name="flexChildHeightsProportionally()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">flexChildHeightsProportionally</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function flexChildHeightsProportionally(children:Array, configurations:Array, totalWidth:Number, totalHeight:Number):Number</code><p>
+    This function sets the height of each child
+    so that the heights add up to spaceForChildren. 
+    Each child is set to its preferred height
+    if its percentHeight is zero.
+    If its percentHeight is a positive number,
+    the child grows (or shrinks) to consume its share of extra space.
+    The width of each child is set to its preferred width.
+    The return value is any extra space that's left over
+    after growing all children to their maxHeight.
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">children</span>:Array</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">configurations</span>:Array</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">totalWidth</span>:Number</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">totalHeight</span>:Number</code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Number</code></td>
+</tr>
+</table>
+</div>
+<a name="flexChildrenProportionally()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">flexChildrenProportionally</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function flexChildrenProportionally(spaceForChildren:Number, spaceToDistribute:Number, totalPercent:Number, childInfoArray:Array):Number</code><p>
+    This function distributes excess space among the flexible children.
+    It does so with a view to keep the children's overall size
+    close the ratios specified by their percent.
+       </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">spaceForChildren</span>:Number</code> &mdash; The total space for all children
+       </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">spaceToDistribute</span>:Number</code> &mdash; The space that needs to be distributed
+    among the flexible children.
+       </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">totalPercent</span>:Number</code> &mdash; An array of Objects. When this function
+    is called, each object should define the following properties:
+    - percent: the percentWidth or percentHeight of the child (depending
+    on whether we're growing in a horizontal or vertical direction)
+    - min: the minimum width (or height) for that child
+    - max: the maximum width (or height) for that child
+       </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">childInfoArray</span>:Array</code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Number</code> &mdash; When this function finishes executing, a "size" property
+    will be defined for each child object. The size property contains
+    the portion of the spaceToDistribute to be distributed to the child.
+    Ideally, the sum of all size properties is spaceToDistribute.
+    If all the children hit their minWidth/maxWidth/minHeight/maxHeight
+    before the space was distributed, then the remaining unused space
+    is returned. Otherwise, the return value is zero.
+   </td>
+</tr>
+</table>
+</div>
+<a name="flexChildWidthsProportionally()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">flexChildWidthsProportionally</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function flexChildWidthsProportionally(children:Array, configurations:Array, totalWidth:Number, totalHeight:Number):Number</code><p>
+   This function sets the width of each child so that the widths add up
+   to spaceForChildren. Each child is set to its preferred width if its
+   percentWidth is zero. If it's percentWidth is a positive number the
+   child grows depending on the size of its parent. The height of each
+   child is set to its preferred height. The return value is any extra
+   space that's left over after growing all children to their maxWidth.
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">children</span>:Array</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">configurations</span>:Array</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">totalWidth</span>:Number</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">totalHeight</span>:Number</code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Number</code></td>
+</tr>
+</table>
+</div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright"> 
+</center>
+</div>
+</body>
+</html>
+<!-- -->

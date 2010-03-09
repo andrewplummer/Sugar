@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using StyleSheet to create a page theme</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/stylesheet/stylesheet-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using StyleSheet to create a page theme</h1>
+
+<div class="exampleIntro">
+	<p>In this example, we'll change some colors in this page's color theme.  Enter any valid CSS color value into the inputs and submit the changes to see them applied to the page.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <form id="demo_form" action="#" method="get">
+        <fieldset>
+            <p>Example values: #123456 or #123 or rgb(0,10,30) or red</p>
+            <label for="demo_headings">Headings and labels</label>
+                <input type="text" size="7" id="demo_headings" value="#e76300">
+            <pre><code>h1,h2,h3,h4,h5,h6,
+#demo label {
+    color: <em id="demo_heading_value">#e76300</em>;
+}</code></pre>
+
+            <label for="demo_bg">Demo background</label>
+                <input type="text" size="7" id="demo_bg" value="#89d">
+            <pre><code>.example .promo {
+    background-color: <em id="demo_background_value">#89d</em>;
+}</code></pre>
+            <label for="demo_highlight">Left nav highlight</label>
+                <input type="text" size="7" id="demo_highlight" value="#f82">
+            <pre><code>#toc ul li.active,
+#toc ul li a:hover {
+    background-color: <em id="demo_highlight_value">#f82</em>;
+}</code></pre>
+
+        </fieldset>
+        <p>
+            <input type="submit" id="update" value="Update theme">
+        </p>
+    </form>
+</div>
+
+<script type="text/javascript">
+(function () {
+
+// Some shortcuts
+var Dom        = YAHOO.util.Dom,
+    trim       = YAHOO.lang.trim,
+    Demo;
+
+Demo = YAHOO.namespace('demo').PageTheme = {
+    theme : null,
+    
+    headings   : null,
+    background : null,
+    highlight  : null,
+
+    isValidColor : function (v) {
+        return /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(v) ||
+               /^rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)$/.test(v) ||
+               /^[a-z]+$/i.test(v);
+    },
+
+    init : function () {
+        // Create a new StyleSheet instance for us to override some current
+        // page styles.  For illustration, seed it with the CSS to style the
+        // demo form
+        Demo.theme = YAHOO.util.StyleSheet("\
+            #demo form,\
+            #demo fieldset {\
+                border: none; padding: 0; margin: 0;\
+            }\
+            #demo fieldset p {\
+                background: #fff;\
+                border: 1px solid #ccc;\
+                padding: 1em 1ex;\
+            }\
+            #demo pre code {\
+                background: #fff;\
+                border: 1px solid #ccc;\
+                color: #555;\
+                display: block;\
+                font-weight: normal;\
+                margin: 1ex 0 1em;\
+                padding: 1ex;\
+            }\
+            #demo label {\
+                font-weight: bold;\
+                color: #e76300;\
+            }\
+            #demo pre code em {\
+                color: #000;\
+                font-weight: bold;\
+            }\
+        ");
+
+        // Store the input fields for value retrieval
+        Demo.headings   = Dom.get('demo_headings');
+        Demo.background = Dom.get('demo_bg');
+        Demo.highlight  = Dom.get('demo_highlight');
+
+        // Set up the submit handler to update the page styles
+        YAHOO.util.Event.on('demo_form','submit', function (e) {
+            YAHOO.util.Event.stopEvent(e);
+
+            Demo.update();
+        });
+    },
+
+    update : function () {
+        var v = trim(Demo.headings.value);
+        if (Demo.isValidColor(v)) {
+            // multiple selectors are delimited by commas
+            Demo.theme.set('h1,h2,h3,h4,h5,h6, #demo label', { color : v });
+
+            Dom.get('demo_heading_value').innerHTML = v;
+        }
+
+        v = trim(Demo.background.value);
+        if (Demo.isValidColor(v)) {
+            // use camelCase for style property names
+            Demo.theme.set('.example .promo', { backgroundColor : v });
+
+            Dom.get('demo_background_value').innerHTML = v;
+        }
+
+        v = trim(Demo.highlight.value);
+        if (Demo.isValidColor(v)) {
+            Demo.theme.set(
+                '#toc ul li.selected,'+
+                '#toc ul li a:hover', { backgroundColor : v });
+
+            Dom.get('demo_highlight_value').innerHTML = v;
+        }
+    }
+};
+
+// Initialize the interface when the DOM is ready
+YAHOO.util.Event.onDOMReady(Demo.init);
+
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

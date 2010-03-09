@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Animating multiple elements with StyleSheet</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/stylesheet/stylesheet-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style id="demo_style" type="text/css">
+    .shrinky_dink {
+        overflow: hidden;
+        width: 450px;
+    }
+    .shrinky_dink div {
+        display: inline;
+        float: left;
+        background: #000;
+        margin: 1em;
+        height: 150px;
+        width: 150px;
+        opacity: 1,
+        filter: alpha(opacity=100);
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Animating multiple elements with StyleSheet</h1>
+
+<div class="exampleIntro">
+	<p>In this example, we'll use the Animation Utility in concert with StyleSheet to apply style changes to a group of elements in concert over time.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <p>
+        <button type="button" id="demo_go">Start</button>
+    </p>
+    <div class="shrinky_dink">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+        // Default animation duration is 1 second
+    var anim  = new YAHOO.util.Anim(),
+
+        // Modify the existing style node's stylesheet
+        sheet = new YAHOO.util.StyleSheet('demo_style'),
+
+        floor = Math.floor,
+        go    = YAHOO.util.Dom.get('demo_go');
+
+
+    // Update the StyleSheet on each frame of the animation
+    anim.onTween.subscribe(function (type,data) {
+        var factor  = data[0].duration / 1000,
+            dim     = (150 - floor(100 * factor)) + 'px',
+            opacity = 1 - (0.8 * factor);
+
+        sheet.set('.shrinky_dink div', {
+            height : dim,
+            width  : dim,
+            opacity: opacity
+        });
+    });
+
+    anim.onComplete.subscribe(function () {
+        go.disabled = false;
+    });
+
+    YAHOO.util.Event.on(go, 'click', function () {
+        go.disabled = true;
+        anim.animate();
+    });
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

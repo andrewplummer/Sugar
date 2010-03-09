@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Inline Color Picker Control from Script</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/slider/assets/skins/sam/slider.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/colorpicker/assets/skins/sam/colorpicker.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/colorpicker/colorpicker-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+
+<style type="text/css">
+  #container { position: relative; padding: 6px; background-color: #eeeeee; width: 420px; height:220px; }
+</style>
+
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Inline Color Picker Control from Script</h1>
+
+<div class="exampleIntro">
+	<p>The simplest way to implement the <a href="http://developer.yahoo.com/yui/colorpicker/">Color Picker Control</a> is to do so entirely via script.  In this example, a Color Picker is placed on the page via script and allowed to create its own DOM structure.  In cases where you've provided other form controls on the page for color specification (ie, controls not dependent on JavaScript), this approach allows you to provide a richer visual experience for sighted users with JavaScript enabled.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="container">
+</div>
+
+<!--We'll use these to trigger interactions with the Color Picker
+API -->
+<button id="reset">Reset Color to White</button>
+<button id="gethex">Write current hex value to the Logger</button> 
+
+<script type="text/javascript">
+(function() {
+    var Event = YAHOO.util.Event,
+        picker;
+
+    Event.onDOMReady(function() {
+			YAHOO.log("Creating Color Picker.", "info", "example");
+            picker = new YAHOO.widget.ColorPicker("container", {
+                    showhsvcontrols: true,
+                    showhexcontrols: true,
+					images: {
+						PICKER_THUMB: "assets/picker_thumb.png",
+						HUE_THUMB: "assets/hue_thumb.png"
+    				}
+                });
+			YAHOO.log("Finished creating Color Picker.", "info", "example");
+			
+			//a listener for logging RGB color changes;
+			//this will only be visible if logger is enabled:
+			var onRgbChange = function(o) {
+				/*o is an object
+					{ newValue: (array of R, G, B values),
+					  prevValue: (array of R, G, B values),
+					  type: "rgbChange"
+					 }
+				*/
+				YAHOO.log("The new color value is " + o.newValue, "info", "example");
+			}
+			
+			//subscribe to the rgbChange event;
+			picker.on("rgbChange", onRgbChange);
+			
+			//use setValue to reset the value to white:
+			Event.on("reset", "click", function(e) {
+				picker.setValue([255, 255, 255], false); //false here means that rgbChange
+													     //wil fire; true would silence it
+			});
+			
+			//use the "get" method to get the current value
+			//of one of the Color Picker's properties; in 
+			//this case, we'll get the hex value and write it
+			//to the log:
+			Event.on("gethex", "click", function(e) {
+				YAHOO.log("Current hex value: " + picker.get("hex"), "info", "example"); 
+			});
+        });
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

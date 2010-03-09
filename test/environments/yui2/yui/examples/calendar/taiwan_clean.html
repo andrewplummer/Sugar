@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Localization - Taiwan (Year Offset)</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	.yui-skin-sam .yui-calendar .calweekdaycell { width:3.5em; }
+    .yui-skin-sam .yui-calendar td.calcell {
+        height:3em;
+        line-height:3em; /* set line height equal to cell height to center vertically */
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Localization - Taiwan (Year Offset)</h1>
+
+<div class="exampleIntro">
+	<p>Along with the locale customization parameters covered in the <a href="japan.html">Japanese</a> and <a href="germany.html">German</a> calendar examples, Calendar also supports the ability to set a year offset (from the Gregorian year), which can be used to support locales such as Taiwan (zh-TW), for which the year is 1911 years behind the Gregorian year. This example demonstrates how the year offset field can be used to create a Calendar for the zh-TW locale.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="cal1Container"></div>
+
+<script type="text/javascript">
+    YAHOO.namespace("example.calendar");
+
+    YAHOO.example.calendar.init = function() {
+        // We set the year_offset configuration field to -1911
+        YAHOO.example.calendar.cal1 = new YAHOO.widget.Calendar("cal1","cal1Container", { MULTI_SELECT:true, YEAR_OFFSET:-1911 } );
+
+        // Year/Month/Date formats for zh-TW: yyyy/mm/dd, mm/dd, yyyy/mm
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_YEAR_POSITION", 1);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_MONTH_POSITION", 2);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_DAY_POSITION", 3);
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("MY_YEAR_POSITION", 1);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MY_MONTH_POSITION", 2);
+
+        // Date labels for zh-TW
+        var months = ["\u4e00\u6708","\u4e8c\u6708", "\u4e09\u6708", "\u56db\u6708", "\u4e94\u6708", "\u516d\u6708", "\u4e03\u6708", "\u516b\u6708", "\u4e5d\u6708", "\u5341\u6708", "\u5341\u4e00\u6708", "\u5341\u4e8c\u6708"];
+        var weekdays = ["\u661f\u671f\u65e5", "\u661f\u671f\u4e00", "\u661f\u671f\u4e8c", "\u661f\u671f\u4e09", "\u661f\u671f\u56db", "\u661f\u671f\u4e94", "\u661f\u671f\u516d"];
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("MONTHS_SHORT", months);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MONTHS_LONG", months);
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_1CHAR", weekdays);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_SHORT", weekdays);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_MEDIUM", weekdays);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_LONG", weekdays);
+
+        // Month/Year label format for zh-TW
+        YAHOO.example.calendar.cal1.cfg.setProperty("MY_LABEL_YEAR_POSITION",  1);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MY_LABEL_MONTH_POSITION",  2);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MY_LABEL_YEAR_SUFFIX",  "\u5E74");
+        YAHOO.example.calendar.cal1.cfg.setProperty("MY_LABEL_MONTH_SUFFIX",  "");
+
+        // When working with strings, we use the offset year...
+        YAHOO.example.calendar.cal1.select("98/8/1-98/8/8");
+        YAHOO.example.calendar.cal1.cfg.setProperty("PAGEDATE", "98/8");
+
+        // When working with Date objects, we need to have it reflect the Gregorian date...
+        YAHOO.example.calendar.cal1.cfg.setProperty("MAXDATE", new Date(2009, 7, 20));
+        YAHOO.example.calendar.cal1.render();
+    }
+
+    YAHOO.util.Event.onDOMReady(YAHOO.example.calendar.init);
+</script>
+
+<div style="clear:both"></div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

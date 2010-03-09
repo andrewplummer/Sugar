@@ -1,0 +1,1701 @@
+<html>
+<head>
+<title>cookie tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css" />     
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />     
+
+<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../../build/cookie/cookie.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+
+</head>
+<body>
+<h1>cookie tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" /></p>
+<script type="text/javascript">
+
+YAHOO.namespace("test");
+
+YAHOO.test.cookie_test = (function(){
+
+    var Assert = YAHOO.util.Assert;
+    var ObjectAssert = YAHOO.util.ObjectAssert;
+    
+    //utility function
+    function deleteCookie(name, detail){
+        document.cookie = name + "=blah; " + (detail || "") + " expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    
+    function setCookie(name, value){
+        document.cookie = (name) + "=" + (value);
+    }
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YAHOO.tool.TestSuite("Cookie Tests");
+    
+    //-------------------------------------------------------------------------
+    // Test Case for parsing capabilities
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Cookie Parsing Tests",
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testParseCookieStringEmpty : function(){
+            var cookies = YAHOO.util.Cookie._parseCookieString("");
+        },
+        
+        testParseCookieStringNull : function(){
+            var cookies = YAHOO.util.Cookie._parseCookieString(null);
+        },
+        
+        testParseCookieStringBoolean : function(){
+            var cookies = YAHOO.util.Cookie._parseCookieString(true);
+        },
+        
+        testParseCookieStringBoolean : function(){
+            var cookies = YAHOO.util.Cookie._parseCookieString(true);
+        },
+        
+        testParseCookieStringUndefined : function(){
+            var cookies = YAHOO.util.Cookie._parseCookieString();
+        },
+        
+        testParseCookieStringInvalid : function(){
+            var cookies = YAHOO.util.Cookie._parseCookieString("a");
+        },
+        
+        testParseCookieStringSimple : function(){
+        
+            var cookieString = "a=b";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            ObjectAssert.hasProperty("a", cookies, "Cookie 'a' is missing.");
+            
+            Assert.areEqual("b", cookies.a, "Cookie 'a' should have value 'b'.");        
+        },
+        
+        testParseCookieStringNumber : function(){
+        
+            var cookieString = "12345=b";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            ObjectAssert.hasProperty("12345", cookies, "Cookie '12345' is missing.");
+            
+            Assert.areEqual("b", cookies["12345"], "Cookie '12345' should have value 'b'.");        
+        },
+        
+        testParseCookieStringSimpleMulti : function(){
+        
+            var cookieString = "a=b; c=d; e=f; g=h";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            ObjectAssert.hasProperty("a", cookies, "Cookie 'a' is missing.");
+            ObjectAssert.hasProperty("c", cookies, "Cookie 'c' is missing.");
+            ObjectAssert.hasProperty("e", cookies, "Cookie 'e' is missing.");
+            ObjectAssert.hasProperty("g", cookies, "Cookie 'g' is missing.");
+            
+            Assert.areEqual("b", cookies.a, "Cookie 'a' should have value 'b'.");
+            Assert.areEqual("d", cookies.c, "Cookie 'c' should have value 'd'.");
+            Assert.areEqual("f", cookies.e, "Cookie 'e' should have value 'f'.");
+            Assert.areEqual("h", cookies.g, "Cookie 'g' should have value 'h'.");
+        
+        },
+        
+        testParseCookieStringComplex : function(){
+        
+            var cookieString = "name=Nicholas%20Zakas; title=front%20end%20engineer";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            ObjectAssert.hasProperty("name", cookies, "Cookie 'name' is missing.");
+            ObjectAssert.hasProperty("title", cookies, "Cookie 'title' is missing.");
+            
+            Assert.areEqual("Nicholas Zakas", cookies.name, "Cookie 'name' should have value 'Nicholas Zakas'.");
+            Assert.areEqual("front end engineer", cookies.title, "Cookie 'title' should have value 'front end engineer'.");
+        },
+        
+        testParseCookieStringNetwork : function(){
+            var cookieString = "B=2nk0a3t3lj7cr&b=3&s=13; LYC=l_v=2&l_lv=10&l_l=94ddoa70d&l_s=qz54t4qwrsqquyv51w0z4xxwtx31x1t0&l_lid=146p1u6&l_r=4q&l_lc=0_0_0_0_0&l_mpr=50_0_0&l_um=0_0_1_0_0;YMRAD=1215072198*0_0_7318647_1_0_40123839_1; l%5FPD3=840";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            ObjectAssert.hasProperty("B", cookies, "Cookie 'B' is missing.");
+            ObjectAssert.hasProperty("LYC", cookies, "Cookie 'LYC' is missing.");
+            ObjectAssert.hasProperty("l_PD3", cookies, "Cookie 'l_PD3' is missing.");                       
+        },
+        
+        testParseCookieStringWithEscapedCharactersInCookieName: function(){
+            var cookieName = "something[1]";
+            var cookieValue = "123";
+            var cookieString = encodeURIComponent(cookieName) + "=" + encodeURIComponent(cookieValue);
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            ObjectAssert.hasProperty(cookieName, cookies, "Cookie '" + cookieName + "' is missing.");
+            Assert.areEqual(cookieValue, cookies[cookieName], "Cookie value for '" + cookieName + "' is wrong.");
+        },
+        
+        testParseCookieStringIncorrectFormat: function(){
+            var cookieString = "SESSION=27bedbdf3d35252d0db07f34d81dcca6; STATS=OK; SCREEN=1280x1024; undefined; ys-bottom-preview=o%3Aheight%3Dn%253A389";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            ObjectAssert.hasProperty("SCREEN", cookies, "Cookie 'SCREEN' is missing.");
+            ObjectAssert.hasProperty("STATS", cookies, "Cookie 'STATS' is missing.");
+            ObjectAssert.hasProperty("SESSION", cookies, "Cookie 'SESSION' is missing.");
+            ObjectAssert.hasProperty("ys-bottom-preview", cookies, "Cookie 'ys-bottom-preview' is missing.");
+            ObjectAssert.hasProperty("undefined", cookies, "Cookie 'undefined' is missing.");
+        },
+        
+        /*
+         * Tests that the cookie utility deals with cookies that contain
+         * an invalid encoding. It shouldn't error, but should treat the cookie
+         * as if it doesn't exist (return null).
+         */
+        testParseCookieStringInvalidEncoding: function(){
+            var cookieString = "DetailInfoList=CPN03022194=@|@=CPN03#|#%B4%EB%C3%B5%C7%D8%BC%F6%BF%E5%C0%E5#|#1016026000#|#%BD%C5%C8%E6%B5%BF#|##|#";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            Assert.isNull(cookies["DetailInfoList"], "Cookie 'DetailInfoList' should not have a value.");
+        },
+        
+        /*
+         * Tests that a Boolean cookie, one without an equals sign of value,
+         * is represented as an empty string.
+         */
+        testParseCookieStringBooleanCookie: function(){
+            var cookieString = "info";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            Assert.areEqual("", cookies["info"], "Cookie 'info' should be an empty string.");
+        },
+        
+        testParseCookieStringWithHash : function(){
+        
+            var cookieString = "name=Nicholas%20Zakas; hash=a=b&c=d&e=f&g=h; title=front%20end%20engineer";
+            var cookies = YAHOO.util.Cookie._parseCookieString(cookieString);
+            
+            ObjectAssert.hasProperty("name", cookies, "Cookie 'name' is missing.");
+            ObjectAssert.hasProperty("hash", cookies, "Cookie 'hash' is missing.");
+            ObjectAssert.hasProperty("title", cookies, "Cookie 'title' is missing.");
+            
+            Assert.areEqual("Nicholas Zakas", cookies.name, "Cookie 'name' should have value 'Nicholas Zakas'.");
+            Assert.areEqual("a=b&c=d&e=f&g=h", cookies.hash, "Cookie 'hash' should have value 'a=b&c=d&e=f&g=h'.");
+            Assert.areEqual("front end engineer", cookies.title, "Cookie 'title' should have value 'front end engineer'.");
+        },
+        
+        testParseCookieHash : function () {
+        
+            var cookieHash = "a=b&c=d&e=f&g=h";
+            var hash = YAHOO.util.Cookie._parseCookieHash(cookieHash);
+            
+            ObjectAssert.hasProperty("a", hash, "Hash 'a' is missing.");
+            ObjectAssert.hasProperty("c", hash, "Hash 'c' is missing.");
+            ObjectAssert.hasProperty("e", hash, "Hash 'e' is missing.");
+            ObjectAssert.hasProperty("g", hash, "Hash 'g' is missing.");
+            
+            Assert.areEqual("b", hash.a, "Hash 'a' should have value 'b'.");
+            Assert.areEqual("d", hash.c, "Hash 'c' should have value 'd'.");
+            Assert.areEqual("f", hash.e, "Hash 'e' should have value 'f'.");
+            Assert.areEqual("h", hash.g, "Hash 'g' should have value 'h'.");                    
+        },
+        
+        testParseCookieHashComplex : function () {
+            var cookieName = "something[1]";
+            var cookieValue = "123";        
+            var cookieHash = encodeURIComponent(cookieName) + "=" + encodeURIComponent(cookieValue);
+            var hash = YAHOO.util.Cookie._parseCookieHash(cookieHash);
+            
+            ObjectAssert.hasProperty(cookieName, hash, "Hash 'something[1]' is missing.");
+            
+            Assert.areEqual(cookieValue, hash[cookieName], "Hash 'a' should have value 'b'.");
+                    
+        },
+        
+        testParseCookieHashEmpty: function(){
+            var hash = YAHOO.util.Cookie._parseCookieHash("");
+            
+            Assert.isFalse("" in hash, "Hash shouldn't have an empty string property.");
+        
+        }
+        
+        
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for string formatting capabilities
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Cookie String Creation Tests",
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testCreateCookieStringSimple : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true);
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithPath : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { path: "/" });
+            Assert.areEqual("name=value; path=/", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithInvalidPath1 : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { path: 25 });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithInvalidPath2 : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { path: "" });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithDomain : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { domain: "yahoo.com" });
+            Assert.areEqual("name=value; domain=yahoo.com", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithInvalidDomain1 : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { domain: true });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithInvalidDomain2 : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { domain: "" });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithSecure : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { secure: true });
+            Assert.areEqual("name=value; secure", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithInvalidSecure1 : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { secure: false });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithInvalidSecure2 : function(){        
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { secure: "blah" });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringSimpleWithExpiry : function(){
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { expires: expires });
+            Assert.areEqual("name=value; expires=" + expires.toUTCString(), text, "Cookie string is incorrect.");
+        },
+
+        testCreateCookieStringSimpleWithInvalidExpiry : function(){
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { expires: "blah" });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+        },
+
+        testCreateCookieStringSimpleWithAll : function(){
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie._createCookieString("name", "value", true, { expires: expires, domain : "yahoo.com", path: "/", secure: true });
+            Assert.areEqual("name=value; expires=" + expires.toUTCString() + "; path=/; domain=yahoo.com; secure", text, "Cookie string is incorrect.");
+        },
+
+        testCreateCookieStringComplex : function(){            
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var text = YAHOO.util.Cookie._createCookieString(name, value, true);
+            Assert.areEqual(encodeURIComponent(name) + "=" + encodeURIComponent(value), text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringComplexWithPath : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var text = YAHOO.util.Cookie._createCookieString(name, value, true, { path : "/" });
+            Assert.areEqual(encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; path=/", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringComplexWithDomain : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var text = YAHOO.util.Cookie._createCookieString(name, value, true, { domain: "yahoo.com" });
+            Assert.areEqual(encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; domain=yahoo.com", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringComplexWithSecure : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var text = YAHOO.util.Cookie._createCookieString(name, value, true, { secure: true });
+            Assert.areEqual(encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; secure", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringComplexWithExpiry : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie._createCookieString(name, value, true, { expires : expires });
+            Assert.areEqual(encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; expires=" + expires.toUTCString(), text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieStringComplexWithAll : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie._createCookieString(name, value, true, { expires: expires, domain : "yahoo.com", path: "/", secure: true });
+            Assert.areEqual(encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; expires=" + expires.toUTCString() + "; path=/; domain=yahoo.com; secure", text, "Cookie string is incorrect.");
+        },
+        
+        testCreateCookieHashString1 : function (){
+        
+            var hash = {
+                name: "Nicholas Zakas",
+                title: "Front End Engineer",
+                "something else" : "hiya"
+            };
+            
+            var text = YAHOO.util.Cookie._createCookieHashString(hash);
+            Assert.areEqual("name=Nicholas%20Zakas&title=Front%20End%20Engineer&something%20else=hiya", text, "Cookie hash string is incorrect.");        
+        },
+        
+        testCreateCookieHashString2 : function (){
+        
+            var hash = {
+                name: "Nicholas Zakas"
+            };
+            
+            var text = YAHOO.util.Cookie._createCookieHashString(hash);
+            Assert.areEqual("name=Nicholas%20Zakas", text, "Cookie hash string is incorrect.");        
+        }
+        
+    }));
+        
+    //-------------------------------------------------------------------------
+    // Test Case for getting cookies
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Get Cookie Tests",
+        
+        _should : {
+        
+            error : {
+            
+                testGetInvalidName1 : new TypeError("Cookie.get(): Cookie name must be a non-empty string."),
+                testGetInvalidName2 : new TypeError("Cookie.get(): Cookie name must be a non-empty string."),
+                testGetInvalidName3 : new TypeError("Cookie.get(): Cookie name must be a non-empty string."),
+                testGetInvalidName4 : new TypeError("Cookie.get(): Cookie name must be a non-empty string."),
+                testGetInvalidName5 : new TypeError("Cookie.get(): Cookie name must be a non-empty string.")                            
+            }
+        
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testGetSimple : function(){
+        
+            setCookie("name", "Nicholas%20Zakas");
+            
+            var value = YAHOO.util.Cookie.get("name");
+            Assert.areEqual("Nicholas Zakas", value, "Retrieved cookie value is incorrect.");
+            
+            deleteCookie("name");
+        },
+        
+        testGetUnknown : function(){
+        
+            setCookie("name", "Nicholas%20Zakas");
+            
+            var value = YAHOO.util.Cookie.get("name2");
+            Assert.isNull(value, "Retrieved cookie value is should be null.");
+            
+            deleteCookie("name");
+        },
+        
+        testGetComplex : function(){
+        
+            setCookie("name", "Nicholas%20Zakas");
+            setCookie("title", "Front%20End%20Engineer");
+            setCookie("component", "Cookie%20Utility");
+            
+            var value1 = YAHOO.util.Cookie.get("name");
+            var value2 = YAHOO.util.Cookie.get("title");
+            var value3 = YAHOO.util.Cookie.get("component");
+            var value4 = YAHOO.util.Cookie.get("nonexistent");
+            
+            Assert.areEqual("Nicholas Zakas", value1, "Retrieved cookie value is incorrect.");
+            Assert.areEqual("Front End Engineer", value2, "Retrieved cookie value is incorrect.");
+            Assert.areEqual("Cookie Utility", value3, "Retrieved cookie value is incorrect.");
+            Assert.isNull(value4, "Retrieved cookie value should be null.");
+            
+            deleteCookie("name");
+            deleteCookie("title");
+            deleteCookie("component");
+        },
+        
+        testGetInvalidName1 : function(){        
+            YAHOO.util.Cookie.get(12);        
+        },
+        
+        testGetInvalidName2 : function(){        
+            YAHOO.util.Cookie.get(true);        
+        },
+        
+        testGetInvalidName3 : function(){        
+            YAHOO.util.Cookie.get("");        
+        },
+        
+        testGetInvalidName4 : function(){        
+            YAHOO.util.Cookie.get();        
+        },
+
+        testGetInvalidName5 : function(){        
+            YAHOO.util.Cookie.get(null);        
+        },
+        
+        testGetWithBooleanConverter : function(){
+            setCookie("found", "true");
+            
+            var value = YAHOO.util.Cookie.get("found", Boolean);
+            Assert.isBoolean(value, "Retrieved value should be a boolean.");
+            Assert.isTrue(value, "Retrieved cookie value should be true.");
+            
+            deleteCookie("found");
+        
+        },
+        
+        testGetWithNumberConverter : function(){
+            setCookie("count", "11");
+            
+            var value = YAHOO.util.Cookie.get("count", Number);
+            Assert.isNumber(value, "Retrieved value should be a number.");
+            Assert.areEqual(11, value, "Retrieved cookie value should be 11.");
+            
+            deleteCookie("number");
+        },
+        
+        testGetWithCustomConverter : function(){
+            setCookie("count", "11");
+            
+            var value = YAHOO.util.Cookie.get("count", function(value){
+                if (value === "11"){
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            Assert.isBoolean(value, "Retrieved value should be a boolean.");
+            Assert.isTrue(value, "Retrieved cookie value should be true.");
+            
+            deleteCookie("count");        
+        },
+                
+        testGetWithInvalidConverter : function(){
+            setCookie("count", "11");
+            
+            var value = YAHOO.util.Cookie.get("count", true);
+            Assert.isString(value, "Retrieved value should be a string.");
+            Assert.areEqual("11", value, "Retrieved cookie value should be 11.");
+            
+            deleteCookie("count");        
+        },
+                
+        testGetWithConverterAndUnknownCookie : function(){
+            setCookie("count", "11");
+            
+            var value = YAHOO.util.Cookie.get("count2", Number);
+            Assert.isNull(value, "Retrieved value should be null.");
+            
+            deleteCookie("count");        
+        },
+        
+        testGetWithBooleanConverterOption : function(){
+            setCookie("found", "true");
+            
+            var value = YAHOO.util.Cookie.get("found", { converter: Boolean });
+            Assert.isBoolean(value, "Retrieved value should be a boolean.");
+            Assert.isTrue(value, "Retrieved cookie value should be true.");
+            
+            deleteCookie("found");
+        
+        },
+        
+        testGetWithNumberConverterOption : function(){
+            setCookie("count", "11");
+            
+            var value = YAHOO.util.Cookie.get("count", { converter: Number });
+            Assert.isNumber(value, "Retrieved value should be a number.");
+            Assert.areEqual(11, value, "Retrieved cookie value should be 11.");
+            
+            deleteCookie("number");
+        },
+        
+        testGetWithCustomConverterOption : function(){
+            setCookie("count", "11");
+            
+            var value = YAHOO.util.Cookie.get("count", { converter: function(value){
+                if (value === "11"){
+                    return true;
+                } else {
+                    return false;
+                }
+            } });
+            Assert.isBoolean(value, "Retrieved value should be a boolean.");
+            Assert.isTrue(value, "Retrieved cookie value should be true.");
+            
+            deleteCookie("count");        
+        },
+                
+        testGetWithInvalidConverterOption : function(){
+            setCookie("count", "11");
+            
+            var value = YAHOO.util.Cookie.get("count", { converter: true });
+            Assert.isString(value, "Retrieved value should be a string.");
+            Assert.areEqual("11", value, "Retrieved cookie value should be 11.");
+            
+            deleteCookie("count");        
+        },
+                
+        testGetWithConverterOptionAndUnknownCookie : function(){
+            setCookie("count", "11");
+            
+            var value = YAHOO.util.Cookie.get("count2", { converter: Number });
+            Assert.isNull(value, "Retrieved value should be null.");
+            
+            deleteCookie("count");        
+        },
+        
+        testGetWithEmptyOptions : function(){
+            setCookie("name", "Nicholas%20Zakas");
+            
+            var value = YAHOO.util.Cookie.get("name", {});
+            Assert.areEqual("Nicholas Zakas", value, "Retrieved cookie value is incorrect.");
+            
+            deleteCookie("name");
+        },
+        
+        testGetSimpleWithFalseRaw : function(){
+            setCookie("name", "Nicholas%20Zakas");
+            
+            var value = YAHOO.util.Cookie.get("name", { raw: false });
+            Assert.areEqual("Nicholas Zakas", value, "Retrieved cookie value is incorrect.");
+            
+            deleteCookie("name");
+        },
+        
+        testGetSimpleWithTrueRaw : function(){
+            setCookie("name", "Nicholas%20Zakas");
+            
+            var value = YAHOO.util.Cookie.get("name", { raw: true });
+            Assert.areEqual("Nicholas%20Zakas", value, "Retrieved cookie value is incorrect.");
+            
+            deleteCookie("name");
+        },
+        
+        /* Decided to let this be truthy or falsy
+        testGetSimpleWithInvalidRaw : function(){
+            setCookie("name", "Nicholas%20Zakas");
+            
+            var value = YAHOO.util.Cookie.get("name", { raw: "blah" });
+            Assert.areEqual("Nicholas Zakas", value, "Retrieved cookie value is incorrect.");
+            
+            deleteCookie("name");
+        },*/
+        
+        testGetComplexWithFalseRaw : function(){
+            setCookie("name", encodeURIComponent("as.bd ed|ieh,~!!@#$%^*=098345|}{<>?"));
+            
+            var value = YAHOO.util.Cookie.get("name", { raw: false });
+            Assert.areEqual("as.bd ed|ieh,~!!@#$%^*=098345|}{<>?", value, "Retrieved cookie value is incorrect.");
+            
+            deleteCookie("name");
+        },
+        
+        testGetComplexWithTrueRaw : function(){
+            setCookie("name", "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?");
+            setCookie("name2", encodeURIComponent("as.bd ed|ieh,~!!@#$%^*=098345|}{<>?"));
+            
+            var value  = YAHOO.util.Cookie.get("name",  { raw: true }),
+                value2 = YAHOO.util.Cookie.get("name2", { raw: true });
+            Assert.areEqual("as.bd ed|ieh,~!!@#$%^*=098345|}{<>?", value, "Retrieved cookie value is incorrect.");
+            Assert.areEqual(encodeURIComponent("as.bd ed|ieh,~!!@#$%^*=098345|}{<>?"), value2, "Retrieved cookie value is incorrect.");
+            
+            deleteCookie("name");
+            deleteCookie("name2");
+        }
+        
+        /* Decided to let this be truthy or falsy
+        testGetComplexWithInvalidRaw : function(){
+            setCookie("name", encodeURIComponent("as.bd ed|ieh,~!!@#$%^*=098345|}{<>?"));
+            
+            var value = YAHOO.util.Cookie.get("name", { raw: "blah" });
+            Assert.areEqual("as.bd ed|ieh,~!!@#$%^*=098345|}{<>?", value, "Retrieved cookie value is incorrect.");
+            
+            deleteCookie("name");
+        }*/
+        
+    }));
+    
+    //-------------------------------------------------------------------------
+    // Test Case for testing cookie existence
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Cookie Exists Tests",   
+
+        tearDown: function(){
+            deleteCookie("name");
+            document.cookie = "name; expires=" + (new Date(0)).toUTCString();
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testExistsSimple : function(){
+        
+            setCookie("name", "Nicholas%20Zakas");
+            
+            var value = YAHOO.util.Cookie.exists("name");
+            Assert.isTrue(value, "Cookie 'name' should exist.");
+        },
+        
+        testExistsUnknown : function(){
+            var value = YAHOO.util.Cookie.exists("name3");
+            Assert.isFalse(value, "Cookie 'name3' should not exist.");
+        },
+        
+        testExistsBooleanCookie : function(){
+        
+            document.cookie = "info";            
+            var value = YAHOO.util.Cookie.exists("info");
+            Assert.isTrue(value, "Cookie 'info' should exist.");
+        }
+        
+    }));
+    
+
+    //-------------------------------------------------------------------------
+    // Test Case for getting cookie hashes
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Get Cookie Subs Tests",
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testGetSubsSimple : function(){
+        
+            setCookie("data", "a=b&c=d&e=f&g=h");
+            
+            var hash = YAHOO.util.Cookie.getSubs("data");
+            
+            ObjectAssert.hasProperty("a", hash, "Hash 'a' is missing.");
+            ObjectAssert.hasProperty("c", hash, "Hash 'c' is missing.");
+            ObjectAssert.hasProperty("e", hash, "Hash 'e' is missing.");
+            ObjectAssert.hasProperty("g", hash, "Hash 'g' is missing.");
+            
+            Assert.areEqual("b", hash.a, "Hash 'a' should have value 'b'.");
+            Assert.areEqual("d", hash.c, "Hash 'c' should have value 'd'.");
+            Assert.areEqual("f", hash.e, "Hash 'e' should have value 'f'.");
+            Assert.areEqual("h", hash.g, "Hash 'g' should have value 'h'."); 
+            
+            deleteCookie("data");
+        },
+        
+        testGetSubsUnknown : function(){
+        
+            setCookie("name", "Nicholas%20Zakas");
+            
+            var hash = YAHOO.util.Cookie.getSubs("name2");
+            Assert.isNull(hash, "Retrieved cookie value is should be null.");
+            
+            deleteCookie("name");
+        },
+        
+        testGetSubsComplex : function(){
+        
+            setCookie("name", "Nicholas%20Zakas");
+            setCookie("data", "age=29&title=f2e&stuff=no%20way");
+            setCookie("component", "Cookie%20Utility");
+            
+            var hash = YAHOO.util.Cookie.getSubs("data");
+            
+            ObjectAssert.hasProperty("age", hash, "Hash 'age' is missing.");
+            ObjectAssert.hasProperty("title", hash, "Hash 'title' is missing.");
+            ObjectAssert.hasProperty("stuff", hash, "Hash 'stuff' is missing.");
+
+            Assert.areEqual("29", hash.age, "Hash 'a' should have value 'b'.");
+            Assert.areEqual("f2e", hash.title, "Hash 'c' should have value 'd'.");
+            Assert.areEqual("no way", hash.stuff, "Hash 'e' should have value 'f'.");
+            
+            deleteCookie("name");
+            deleteCookie("data");
+            deleteCookie("component");
+        }
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for getting individual cookie sub.
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Get Cookie Sub Tests",       
+        
+        _should : {
+        
+            error : {
+                testGetSubInvalidName1 : new TypeError("Cookie.getSubs(): Cookie name must be a non-empty string."),
+                testGetSubInvalidName2 : new TypeError("Cookie.getSubs(): Cookie name must be a non-empty string."),
+                testGetSubInvalidName3 : new TypeError("Cookie.getSubs(): Cookie name must be a non-empty string."),
+                testGetSubInvalidName4 : new TypeError("Cookie.getSubs(): Cookie name must be a non-empty string."),
+                testGetSubInvalidName5 : new TypeError("Cookie.getSubs(): Cookie name must be a non-empty string."),
+            
+                testGetSubInvalidSubName1 : new TypeError("Cookie.getSub(): Subcookie name must be a non-empty string."),
+                testGetSubInvalidSubName2 : new TypeError("Cookie.getSub(): Subcookie name must be a non-empty string."),
+                testGetSubInvalidSubName3 : new TypeError("Cookie.getSub(): Subcookie name must be a non-empty string."),
+                testGetSubInvalidSubName4 : new TypeError("Cookie.getSub(): Subcookie name must be a non-empty string."),
+                testGetSubInvalidSubName5 : new TypeError("Cookie.getSub(): Subcookie name must be a non-empty string.")
+            
+            }
+        
+        
+        },
+        
+        setUp : function () {
+            setCookie("data", "a=b&c=d&e=f&g=h&found=true&count=11&age=29&title=f2e&stuff=no%20way&special=" + encodeURIComponent("Something with & and ="));            
+            setCookie("name", "Nicholas%20Zakas");
+            setCookie("component", "Cookie%20Utility");
+        },
+        
+        tearDown : function () {
+            deleteCookie("data");
+            deleteCookie("name");
+            deleteCookie("component");            
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testGetSubSimple : function(){
+            var value = YAHOO.util.Cookie.getSub("data", "c");          
+            Assert.areEqual("d", value, "Subcookie value is incorrect.");
+        },
+        
+        testGetSubUnknown : function(){
+            var hash = YAHOO.util.Cookie.getSub("data", "i");
+            Assert.isNull(hash, "Retrieved cookie value is should be null.");
+        },
+        
+        testGetSubComplex : function(){
+            var value = YAHOO.util.Cookie.getSub("data", "stuff");
+            Assert.areEqual("no way", value, "Subcookie value is wrong.");
+        },
+        
+        testGetSubInvalidName1 : function(){        
+            YAHOO.util.Cookie.getSub(12);        
+        },
+        
+        testGetSubInvalidName2 : function(){        
+            YAHOO.util.Cookie.getSub(true);        
+        },
+        
+        testGetSubInvalidName3 : function(){        
+            YAHOO.util.Cookie.getSub("");        
+        },
+        
+        testGetSubInvalidName4 : function(){        
+            YAHOO.util.Cookie.getSub();        
+        },
+
+        testGetSubInvalidName5 : function(){        
+            YAHOO.util.Cookie.getSub(null);        
+        },
+        
+        testGetSubInvalidSubName1 : function(){        
+            YAHOO.util.Cookie.getSub("data", 12);
+        },
+        
+        testGetSubInvalidSubName2 : function(){        
+            YAHOO.util.Cookie.getSub("data", true);
+        },
+        
+        testGetSubInvalidSubName3 : function(){        
+            YAHOO.util.Cookie.getSub("data", "");
+        },
+        
+        testGetSubInvalidSubName4 : function(){        
+            YAHOO.util.Cookie.getSub("data");
+        },
+
+        testGetSubInvalidSubName5 : function(){        
+            YAHOO.util.Cookie.getSub("data", null);
+        },
+        
+        testGetSubOnNonExistantCookie : function(){
+            var hash = YAHOO.util.Cookie.getSub("invalid", "i");
+            Assert.isNull(hash, "Retrieved cookie value is should be null.");
+        },
+                
+        testGetSubWithBooleanConverter : function(){
+            var value = YAHOO.util.Cookie.getSub("data", "found", Boolean);
+            Assert.isBoolean(value, "Retrieved subcookie value should be a boolean.");
+            Assert.isTrue(value, "Retrieved subcookie value should be true.");
+        },
+        
+        testGetSubWithNumberConverter : function(){
+            var value = YAHOO.util.Cookie.getSub("data", "count", Number);
+            Assert.isNumber(value, "Retrieved subcookie value should be a number.");
+            Assert.areEqual(11, value, "Retrieved subcookie value should be 11.");
+        },
+        
+        testGetSubWithCustomConverter : function(){
+            var value = YAHOO.util.Cookie.getSub("data", "count", function(value){
+                if (value === "11"){
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            Assert.isBoolean(value, "Retrieved subcookie value should be a boolean.");
+            Assert.isTrue(value, "Retrieved subcookie value should be true.");
+        },
+                
+        testGetSubWithInvalidConverter : function(){
+            var value = YAHOO.util.Cookie.getSub("data", "count", true);
+            Assert.isString(value, "Retrieved subcookie value should be a string.");
+            Assert.areEqual("11", value, "Retrieved subcookie value should be 11.");
+        },
+                
+        testSubGetWithConverterAndUnknownCookie : function(){
+            var value = YAHOO.util.Cookie.getSub("data", "count2", Number);
+            Assert.isNull(value, "Retrieved subcookie value should be null.");
+        },
+        
+        testSubGetSpecial : function(){
+            var value = YAHOO.util.Cookie.getSub("data", "special");
+            Assert.areEqual("Something with & and =", value, "Sub cookie string is incorrect.");        
+        }
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for removing individual cookie sub.
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Remove Cookie Sub Tests",
+        
+        _should : {
+        
+            error : {
+                testRemoveSubInvalidName1 : new TypeError("Cookie.removeSub(): Cookie name must be a non-empty string."),
+                testRemoveSubInvalidName2 : new TypeError("Cookie.removeSub(): Cookie name must be a non-empty string."),
+                testRemoveSubInvalidName3 : new TypeError("Cookie.removeSub(): Cookie name must be a non-empty string."),
+                testRemoveSubInvalidName4 : new TypeError("Cookie.removeSub(): Cookie name must be a non-empty string."),
+                testRemoveSubInvalidName5 : new TypeError("Cookie.removeSub(): Cookie name must be a non-empty string."),
+            
+                testRemoveSubInvalidSubName1 : new TypeError("Cookie.removeSub(): Subcookie name must be a non-empty string."),
+                testRemoveSubInvalidSubName2 : new TypeError("Cookie.removeSub(): Subcookie name must be a non-empty string."),
+                testRemoveSubInvalidSubName3 : new TypeError("Cookie.removeSub(): Subcookie name must be a non-empty string."),
+                testRemoveSubInvalidSubName4 : new TypeError("Cookie.removeSub(): Subcookie name must be a non-empty string."),
+                testRemoveSubInvalidSubName5 : new TypeError("Cookie.removeSub(): Subcookie name must be a non-empty string.")
+            
+            }
+        
+        
+        },
+        
+        setUp : function () {
+            setCookie("data", "a=b&c=d&e=f&g=h&found=true&count=11&age=29&title=f2e&stuff=no%20way&special=" + encodeURIComponent("Something with & and ="));
+            setCookie("info", "a=b");
+            setCookie("name", "Nicholas%20Zakas");
+            setCookie("component", "Cookie%20Utility");
+        },
+        
+        tearDown : function () {
+            deleteCookie("data");
+            deleteCookie("info");
+            deleteCookie("name");
+            deleteCookie("component");
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testRemoveSubSimple : function(){
+            var value = YAHOO.util.Cookie.removeSub("data", "c");          
+            Assert.areEqual("data=a=b&e=f&g=h&found=true&count=11&age=29&title=f2e&stuff=no%20way&special=" + encodeURIComponent("Something with & and ="), value, "Cookie string is incorrect.");
+        },
+        
+        testRemoveSubUnknown : function(){
+            var value = YAHOO.util.Cookie.removeSub("data", "i");
+            Assert.areEqual("", value, "Cookie string is incorrect.");
+        },
+        
+        testRemoveSubInvalidName1 : function(){        
+            YAHOO.util.Cookie.removeSub(12);        
+        },
+        
+        testRemoveSubInvalidName2 : function(){        
+            YAHOO.util.Cookie.removeSub(true);        
+        },
+        
+        testRemoveSubInvalidName3 : function(){        
+            YAHOO.util.Cookie.removeSub("");        
+        },
+        
+        testRemoveSubInvalidName4 : function(){        
+            YAHOO.util.Cookie.removeSub();        
+        },
+
+        testRemoveSubInvalidName5 : function(){        
+            YAHOO.util.Cookie.removeSub(null);        
+        },
+        
+        testRemoveSubInvalidSubName1 : function(){        
+            YAHOO.util.Cookie.removeSub("data", 12);
+        },
+        
+        testRemoveSubInvalidSubName2 : function(){        
+            YAHOO.util.Cookie.removeSub("data", true);
+        },
+        
+        testRemoveSubInvalidSubName3 : function(){        
+            YAHOO.util.Cookie.removeSub("data", "");
+        },
+        
+        testRemoveSubInvalidSubName4 : function(){        
+            YAHOO.util.Cookie.removeSub("data");
+        },
+
+        testRemoveSubInvalidSubName5 : function(){        
+            YAHOO.util.Cookie.removeSub("data", null);
+        },
+        
+        testRemoveSubOnNonExistantCookie : function(){
+            var value = YAHOO.util.Cookie.removeSub("invalid", "i");
+            Assert.areEqual("",value, "Cookie string is incorrect.");
+        },
+        
+        testRemoveLastSub : function(){
+            YAHOO.util.Cookie.removeSub("info", "a");
+            var value = YAHOO.util.Cookie.get("info");
+            Assert.areEqual("", value, "Cookie string is incorrect.");
+        },
+        
+        testRemoveLastSubWithTrueRemoveIfEmpty : function(){
+            YAHOO.util.Cookie.removeSub("info", "a", { removeIfEmpty: true });
+            var value = YAHOO.util.Cookie.get("info");
+            Assert.isNull(value, "Cookie value should be null.");
+        },
+        
+        testRemoveLastSubWithFalseRemoveIfEmpty : function() {
+            YAHOO.util.Cookie.removeSub("info", "a", { removeIfEmpty: false });
+            var value = YAHOO.util.Cookie.get("info");
+            Assert.areEqual("", value, "Cookie string is incorrect.");
+        },
+        
+        /* Decided to let this value be truthy or falsy
+        testRemoveLastSubWithInvalidRemoveIfEmpty : function() {
+            YAHOO.util.Cookie.removeSub("info", "a", { removeIfEmpty: "blah" });
+            var value = YAHOO.util.Cookie.get("info");
+            Assert.areEqual("", value, "Cookie string is incorrect.");
+        },*/
+        
+        testRemoveNotLastSubWithTrueRemoveIfEmpty : function(){
+            var value = YAHOO.util.Cookie.removeSub("data", "c", { removeIfEmpty: true });
+            Assert.areEqual("data=a=b&e=f&g=h&found=true&count=11&age=29&title=f2e&stuff=no%20way&special=" + encodeURIComponent("Something with & and ="), value, "Cookie string is incorrect.");
+        },
+        
+        testRemoveNotLastSubWithFalseRemoveIfEmpty : function() {
+            var value = YAHOO.util.Cookie.removeSub("data", "c", { removeIfEmpty: false });
+            Assert.areEqual("data=a=b&e=f&g=h&found=true&count=11&age=29&title=f2e&stuff=no%20way&special=" + encodeURIComponent("Something with & and ="), value, "Cookie string is incorrect.");
+        },
+        
+        testRemoveNotLastSubWithInvalidRemoveIfEmpty : function() {
+            var value = YAHOO.util.Cookie.removeSub("data", "c", { removeIfEmpty: "blah" });
+            Assert.areEqual("data=a=b&e=f&g=h&found=true&count=11&age=29&title=f2e&stuff=no%20way&special=" + encodeURIComponent("Something with & and ="), value, "Cookie string is incorrect.");
+        }
+
+    }));
+    
+    //-------------------------------------------------------------------------
+    // Test Case for removing cookies
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Remove Cookie Tests",
+        
+        _should : {
+        
+            error : {
+                testRemoveInvalidName1 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName2 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName3 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName4 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName5 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string.")                        
+            }
+        
+        
+        },
+        
+        setUp : function(){
+            setCookie("data", "1234");
+        },
+        
+        tearDown : function(){
+            deleteCookie("data");
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testRemoveSimple : function(){        
+            YAHOO.util.Cookie.remove("data");            
+            var value = YAHOO.util.Cookie.get("data");
+            Assert.isNull(value, "Cookie value should be null.");           
+        },
+        
+        /*
+         * These next five tests pass because they throw an error.
+         */
+        testRemoveInvalidName1 : function(){        
+            YAHOO.util.Cookie.remove();        
+        },
+        
+        testRemoveInvalidName2 : function(){
+            YAHOO.util.Cookie.remove("");        
+        },
+        
+        testRemoveInvalidName3 : function(){
+            YAHOO.util.Cookie.remove(25);        
+        },
+        
+        testRemoveInvalidName4 : function(){
+            YAHOO.util.Cookie.remove(true);        
+        },
+        
+        testRemoveInvalidName5 : function(){
+            YAHOO.util.Cookie.remove(null);        
+        },
+        
+        /*
+         * Tests that remove() doesn't change the options object that was passed in.
+         */
+        testRemoveWithOptionsIntact: function(){
+            var options = {};
+            YAHOO.util.Cookie.remove("name", options);
+            Assert.isUndefined(options.expires, "Options should not have an expires property.");
+        }
+        
+        
+        
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for setting cookies
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Set Cookie Tests",
+        
+        _should : {
+        
+            error : {
+                testRemoveInvalidName1 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName2 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName3 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName4 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName5 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string.")                        
+            }
+        
+        
+        },
+        
+        tearDown : function (){        
+            deleteCookie("data");
+            deleteCookie("name");
+            deleteCookie("name", "path=/;");
+            deleteCookie("name", "path=/; domain=yahoo.com;");
+            deleteCookie("name", "path=/; domain=yahoo.com; secure;");
+            deleteCookie(encodeURIComponent("c.f name"));
+            deleteCookie(encodeURIComponent("c.f name"), "path=/;");
+            deleteCookie(encodeURIComponent("c.f name"), "path=/; domain=yahoo.com;");
+            deleteCookie(encodeURIComponent("c.f name"), "path=/; domain=yahoo.com; secure;");
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testSetSimple : function(){
+            var output = YAHOO.util.Cookie.set("data", "1234");
+            Assert.areEqual("data=1234", output, "Cookie string format is wrong.");
+            Assert.areEqual("data=1234", document.cookie, "Cookie was not set onto document.");           
+        },
+
+        testSetMulti : function(){
+            var output = YAHOO.util.Cookie.set("data", "1234");
+            output += "; " + YAHOO.util.Cookie.set("name", "Nicholas C. Zakas");
+            Assert.areEqual("data=1234; name=Nicholas%20C.%20Zakas", document.cookie, "Cookies were not set to document.");
+        },
+        
+        testSetSimpleWithFalseRaw : function(){
+            var output = YAHOO.util.Cookie.set("data", "1234", { raw: false });
+            Assert.areEqual("data=1234", output, "Cookie string format is wrong.");
+            Assert.areEqual("data=1234", document.cookie, "Cookie was not set onto document.");
+        },
+        
+        testSetSimpleWithTrueRaw : function(){
+            var output = YAHOO.util.Cookie.set("data", "1234", { raw: true });
+            Assert.areEqual("data=1234", output, "Cookie string format is wrong.");
+            Assert.areEqual("data=1234", document.cookie, "Cookie was not set onto document.");
+        },
+        
+        testSetSimpleWithInvalidRaw : function(){
+            var output = YAHOO.util.Cookie.set("data", "1234", { raw: "blah" });
+            Assert.areEqual("data=1234", output, "Cookie string format is wrong.");
+            Assert.areEqual("data=1234", document.cookie, "Cookie was not set onto document.");
+        },
+        
+        testSetSimpleWithPath : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value", { path: "/" });
+            Assert.areEqual("name=value; path=/", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithInvalidPath1 : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value", { path: 25 });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithInvalidPath2 : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value", { path: "" });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithDomain : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value", { domain: "yahoo.com" });
+            Assert.areEqual("name=value; domain=yahoo.com", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithInvalidDomain1 : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value", { domain: true });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithInvalidDomain2 : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value",  { domain: "" });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithSecure : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value", { secure: true });
+            Assert.areEqual("name=value; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded over SSL
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithInvalidSecure1 : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value", { secure: false });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithInvalidSecure2 : function(){        
+            var text = YAHOO.util.Cookie.set("name", "value", { secure: "blah" });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSimpleWithExpiry : function(){
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.set("name", "value", { expires: expires });
+            Assert.areEqual("name=value; expires=" + expires.toUTCString(), text, "Cookie string is incorrect.");
+            Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+
+        testSetSimpleWithInvalidExpiry : function(){
+            var text = YAHOO.util.Cookie.set("name", "value", { expires: "blah" });
+            Assert.areEqual("name=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+
+        testSetSimpleWithAll : function(){
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.set("name", "value", { expires: expires, domain : "yahoo.com", path: "/", secure: true });
+            Assert.areEqual("name=value; expires=" + expires.toUTCString() + "; path=/; domain=yahoo.com; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+
+        testSetComplex : function(){            
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            var text = YAHOO.util.Cookie.set(name, value);
+            Assert.areEqual(result, text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetComplexWithFalseRaw : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            var text = YAHOO.util.Cookie.set(name, value, { raw: false });
+            Assert.areEqual(result, text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetComplexWithTrueRaw : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + value;
+            var text = YAHOO.util.Cookie.set(name, value, { raw: true });
+            Assert.areEqual(result, text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        /* Decided to let this option be truthy or falsy.
+        testSetComplexWithInvalidRaw : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            var text = YAHOO.util.Cookie.set(name, value, { raw: "blah" });
+            Assert.areEqual(result, text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },*/
+        
+        testSetComplexWithPath : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            var text = YAHOO.util.Cookie.set(name, value, { path : "/" });
+            Assert.areEqual(result + "; path=/", text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetComplexWithDomain : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            var text = YAHOO.util.Cookie.set(name, value, { domain: "yahoo.com" });
+            Assert.areEqual(result + "; domain=yahoo.com", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetComplexWithSecure : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var text = YAHOO.util.Cookie.set(name, value, { secure: true });
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            Assert.areEqual(result + "; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded over SSL
+            //Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetComplexWithExpiry : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.set(name, value, { expires : expires });
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            Assert.areEqual(result + "; expires=" + expires.toUTCString(), text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetComplexWithAll : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.set(name, value, { expires: expires, domain : "yahoo.com", path: "/", secure: true });
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            Assert.areEqual(result + "; expires=" + expires.toUTCString() + "; path=/; domain=yahoo.com; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        }
+
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for setting subcookies
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Set Subcookie Tests",
+        
+        _should : {
+        
+            error : {
+                testRemoveInvalidName1 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName2 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName3 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName4 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string."),
+                testRemoveInvalidName5 : new TypeError("Cookie.remove(): Cookie name must be a non-empty string.")                        
+            }
+        
+        
+        },
+        
+        tearDown : function (){        
+            deleteCookie("data");
+            deleteCookie("name");
+            deleteCookie("name", "path=/;");
+            deleteCookie("name", "path=/; domain=yahoo.com;");
+            deleteCookie("name", "path=/; domain=yahoo.com; secure;");
+            deleteCookie(encodeURIComponent("c.f name"));
+            deleteCookie(encodeURIComponent("c.f name"), "path=/;");
+            deleteCookie(encodeURIComponent("c.f name"), "path=/; domain=yahoo.com;");
+            deleteCookie(encodeURIComponent("c.f name"), "path=/; domain=yahoo.com; secure;");
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testSetSubSimple : function(){
+            var output = YAHOO.util.Cookie.setSub("data", "value", "1234");
+            Assert.areEqual("data=value=1234", output, "Cookie string format is wrong.");
+            Assert.areEqual("data=value=1234", document.cookie, "Cookie was not set onto document.");           
+        },       
+        
+        testSetSubMulti : function(){
+            var output = YAHOO.util.Cookie.setSub("data", "value", "1234");
+            output += "; " + YAHOO.util.Cookie.setSub("data", "name", "Nicholas C. Zakas");
+            Assert.areEqual("data=value=1234&name=Nicholas%20C.%20Zakas", document.cookie, "Cookies were not set to document.");
+        },
+        
+        testSetSubSimpleWithPath : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { path: "/" });
+            Assert.areEqual("name=sub=value; path=/", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=sub=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithInvalidPath1 : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { path: 25 });
+            Assert.areEqual("name=sub=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=sub=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithInvalidPath2 : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { path: "" });
+            Assert.areEqual("name=sub=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=sub=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithDomain : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { domain: "yahoo.com" });
+            Assert.areEqual("name=sub=value; domain=yahoo.com", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithInvalidDomain1 : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { domain: true });
+            Assert.areEqual("name=sub=value", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithInvalidDomain2 : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value",  { domain: "" });
+            Assert.areEqual("name=sub=value", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithSecure : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { secure: true });
+            Assert.areEqual("name=sub=value; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded over SSL
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithInvalidSecure1 : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { secure: false });
+            Assert.areEqual("name=sub=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=sub=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithInvalidSecure2 : function(){        
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { secure: "blah" });
+            Assert.areEqual("name=sub=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=sub=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSimpleWithExpiry : function(){
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { expires: expires });
+            Assert.areEqual("name=sub=value; expires=" + expires.toUTCString(), text, "Cookie string is incorrect.");
+            Assert.areEqual("name=sub=value", document.cookie, "Cookie was not set to document.");
+        },
+
+        testSetSubSimpleWithInvalidExpiry : function(){
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { expires: "blah" });
+            Assert.areEqual("name=sub=value", text, "Cookie string is incorrect.");
+            Assert.areEqual("name=sub=value", document.cookie, "Cookie was not set to document.");
+        },
+
+        testSetSubSimpleWithAll : function(){
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.setSub("name", "sub", "value", { expires: expires, domain : "yahoo.com", path: "/", secure: true });
+            Assert.areEqual("name=sub=value; expires=" + expires.toUTCString() + "; path=/; domain=yahoo.com; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubSpecial : function(){
+            var value = "Something with & and =";
+            var cookieText = YAHOO.util.Cookie.setSub("name", "sub", value);
+            Assert.areEqual("name=sub=" + encodeURIComponent(value), cookieText, "Sub cookie string is incorrect.");        
+        }
+
+        /*testSetSubComplex : function(){            
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            var text = YAHOO.util.Cookie.setSub(name, value);
+            Assert.areEqual(result, text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubComplexWithPath : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            var text = YAHOO.util.Cookie.setSub(name, value, { path : "/" });
+            Assert.areEqual(result + "; path=/", text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubComplexWithDomain : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            var text = YAHOO.util.Cookie.setSub(name, value, { domain: "yahoo.com" });
+            Assert.areEqual(result + "; domain=yahoo.com", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubComplexWithSecure : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var text = YAHOO.util.Cookie.setSub(name, value, { secure: true });
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            Assert.areEqual(result + "; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded over SSL
+            //Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubComplexWithExpiry : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.setSub(name, value, { expires : expires });
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            Assert.areEqual(result + "; expires=" + expires.toUTCString(), text, "Cookie string is incorrect.");
+            Assert.areEqual(result, document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubComplexWithAll : function(){
+            var name = "c.f name";
+            var value = "as.bd ed|ieh,~!!@#$%^*=098345|}{<>?";
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.setSub(name, value, { expires: expires, domain : "yahoo.com", path: "/", secure: true });
+            var result = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+            Assert.areEqual(result + "; expires=" + expires.toUTCString() + "; path=/; domain=yahoo.com; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        }*/
+
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for setting complete subcookies
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "Set Complete Subcookie Tests",
+        
+        _should : {
+        
+            error : {
+            }
+        
+        
+        },
+        
+        tearDown : function (){        
+            deleteCookie("data");
+            deleteCookie("data", "path=/;");
+            deleteCookie("data", "path=/; domain=yahoo.com;");
+            deleteCookie("data", "path=/; domain=yahoo.com; secure;");
+            deleteCookie(encodeURIComponent("c.f name"));
+            deleteCookie(encodeURIComponent("c.f name"), "path=/;");
+            deleteCookie(encodeURIComponent("c.f name"), "path=/; domain=yahoo.com;");
+            deleteCookie(encodeURIComponent("c.f name"), "path=/; domain=yahoo.com; secure;");
+        },
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        testSetSubsSimple : function(){
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"});
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", text, "Cookie string format is wrong.");
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set onto document.");           
+        },       
+        
+        testSetSubsSimpleWithPath : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { path : "/" });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h; path=/", text, "Cookie string is incorrect.");
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithInvalidPath1 : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { path : 25 });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", text, "Cookie string is incorrect.");
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithInvalidPath2 : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { path : "" });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", text, "Cookie string is incorrect.");
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithDomain : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { domain: "yahoo.com" });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h; domain=yahoo.com", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithInvalidDomain1 : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { domain: true });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithInvalidDomain2 : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { domain: "" });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithSecure : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { secure: true });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded over SSL
+            //Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithInvalidSecure1 : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { secure: false });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", text, "Cookie string is incorrect.");
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithInvalidSecure2 : function(){        
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { secure: "blah" });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", text, "Cookie string is incorrect.");
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsSimpleWithExpiry : function(){
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { expires: expires });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h; expires=" + expires.toUTCString(), text, "Cookie string is incorrect.");
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+
+        testSetSubsSimpleWithInvalidExpiry : function(){
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { expires: "blah" });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", text, "Cookie string is incorrect.");
+            Assert.areEqual("data=a=b&c=d&e=f&g=h", document.cookie, "Cookie was not set to document.");
+        },
+
+        testSetSubsSimpleWithAll : function(){
+            var expires = new Date("Wed, 01 Jan 2070 00:00:00 GMT");
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"}, { expires: expires, domain : "yahoo.com", path: "/", secure: true });
+            Assert.areEqual("data=a=b&c=d&e=f&g=h; expires=" + expires.toUTCString() + "; path=/; domain=yahoo.com; secure", text, "Cookie string is incorrect.");
+            //won't work unless the page is loaded from that domain
+            //Assert.areEqual("name=value", document.cookie, "Cookie was not set to document.");
+        },
+        
+        testSetSubsValues : function(){
+            var text = YAHOO.util.Cookie.setSubs("data", {a: "b",c: "d",e: "f",g: "h"});
+            
+            //try to get the values
+            var a = YAHOO.util.Cookie.getSub("data", "a");
+            var c = YAHOO.util.Cookie.getSub("data", "c");
+            var e = YAHOO.util.Cookie.getSub("data", "e");
+            var g = YAHOO.util.Cookie.getSub("data", "g");
+            
+            Assert.areEqual("b", a, "Value of 'a' subcookie is wrong.");
+            Assert.areEqual("d", c, "Value of 'c' subcookie is wrong.");
+            Assert.areEqual("f", e, "Value of 'e' subcookie is wrong.");
+            Assert.areEqual("h", g, "Value of 'g' subcookie is wrong.");
+        }
+
+    }));
+
+
+    //return it
+    return suite;
+
+})();
+
+(function (){
+    //create the logger
+    var logger = new YAHOO.tool.TestLogger();
+    
+    //add the tests
+    YAHOO.tool.TestRunner.add(YAHOO.test.cookie_test);
+    
+    //add event handler
+    YAHOO.util.Event.addListener("btnRun", "click", YAHOO.tool.TestRunner.run);
+
+    if (parent && parent != window) {
+        YAHOO.tool.TestManager.load();
+    } else {
+        YAHOO.tool.TestRunner.run();
+    }
+})();
+
+
+</script>
+</body>
+</html>

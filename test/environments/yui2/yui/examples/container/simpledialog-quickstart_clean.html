@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>SimpleDialog Quickstart Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>SimpleDialog Quickstart Example</h1>
+
+<div class="exampleIntro">
+	<p>Use the SimpleDialog Control when you want to solicit very simple (usually binary) information from your users &mdash; ok/cancel, yes/no are the classic examples of this sort of interaction.  Use the button below to show a SimpleDialog instance; if you click "yes", that choice will be echoed back to you by script.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+#container { height:12em; }
+</style>
+
+<script>
+YAHOO.namespace("example.container");
+
+function init() {
+	
+	// Define various event handlers for Dialog
+	var handleYes = function() {
+		alert("You clicked yes!");
+		this.hide();
+	};
+	var handleNo = function() {
+		this.hide();
+	};
+
+	// Instantiate the Dialog
+	YAHOO.example.container.simpledialog1 = new YAHOO.widget.SimpleDialog("simpledialog1", 
+																			 { width: "300px",
+																			   fixedcenter: true,
+																			   visible: false,
+																			   draggable: false,
+																			   close: true,
+																			   text: "Do you want to continue?",
+																			   icon: YAHOO.widget.SimpleDialog.ICON_HELP,
+																			   constraintoviewport: true,
+																			   buttons: [ { text:"Yes", handler:handleYes, isDefault:true },
+																						  { text:"No",  handler:handleNo } ]
+																			 } );
+	YAHOO.example.container.simpledialog1.setHeader("Are you sure?");
+	
+	// Render the Dialog
+	YAHOO.example.container.simpledialog1.render("container");
+
+	YAHOO.util.Event.addListener("show", "click", YAHOO.example.container.simpledialog1.show, YAHOO.example.container.simpledialog1, true);
+	YAHOO.util.Event.addListener("hide", "click", YAHOO.example.container.simpledialog1.hide, YAHOO.example.container.simpledialog1, true);
+
+}
+
+YAHOO.util.Event.addListener(window, "load", init);
+</script>
+
+
+<div id="container">
+<button id="show">Show simpledialog1</button> 
+<button id="hide">Hide simpledialog1</button>
+</div>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,2140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: container  YAHOO.widget.Tooltip   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Container&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_container.html" title="container">container</a>
+                 &gt; YAHOO.widget.Tooltip 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.Tooltip</b>
+                        <span class="extends">
+                           - extends <a href="YAHOO.widget.Overlay.html" title="YAHOO.widget.Overlay">YAHOO.widget.Overlay</a>
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Tooltip is an implementation of Overlay that behaves like an OS tooltip, 
+displaying when the user mouses over a particular element, and 
+disappearing on mouse out.
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.widget.Tooltip</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                el
+
+
+                                                , 
+                                                userConfig
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">el</span>
+                                                    &lt;<span property="yui:type">String</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The element ID representing the Tooltip <em>OR</em></span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">el</span>
+                                                    &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The element representing the Tooltip</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">userConfig</span>
+                                                    &lt;<span property="yui:type">Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The configuration object literal containing 
+the configuration that should be set for this Overlay. See configuration 
+documentation for more details.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property_DEFAULT_CONFIG">
+                                    <h4><a name="property_DEFAULT_CONFIG" property="yui:name">DEFAULT_CONFIG</a>
+                                        - <code>private final <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Constant representing the Tooltip's configuration properties
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_EVENT_TYPES">
+                                    <h4><a name="property_EVENT_TYPES" property="yui:name">EVENT_TYPES</a>
+                                        - <code>private final <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Constant representing the name of the Tooltip's events
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_showProcId">
+                                    <h4><a name="property_showProcId" property="yui:name">showProcId</a>
+                                        - <code><span property="yui:type">int</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The unique process ID associated with the thread responsible 
+for showing the Tooltip.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.Tooltip.CSS_TOOLTIP">
+                                    <h4><a name="property_YAHOO.widget.Tooltip.CSS_TOOLTIP" property="yui:name">YAHOO.widget.Tooltip.CSS_TOOLTIP</a>
+                                        - <code>static final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Constant representing the Tooltip CSS class
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Module.html">
+                            <h4>Properties inherited from <a href="YAHOO.widget.Module.html" property="yui:name" title="YAHOO.widget.Module">YAHOO.widget.Module</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_body">
+                                        <a class="" href="YAHOO.widget.Module.html#property_body" property="yui:name" title="body">body</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_browser">
+                                        <a class=" deprecated" href="YAHOO.widget.Module.html#property_browser" property="yui:name" title="browser">browser</a><span class=" deprecated">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_cfg">
+                                        <a class="" href="YAHOO.widget.Module.html#property_cfg" property="yui:name" title="cfg">cfg</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_contructor">
+                                        <a class="" href="YAHOO.widget.Module.html#property_contructor" property="yui:name" title="contructor">contructor</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_DEFAULT_CONFIG">
+                                        <a class="private" href="YAHOO.widget.Module.html#property_DEFAULT_CONFIG" property="yui:name" title="DEFAULT_CONFIG">DEFAULT_CONFIG</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_element">
+                                        <a class="" href="YAHOO.widget.Module.html#property_element" property="yui:name" title="element">element</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_EVENT_TYPES">
+                                        <a class="private" href="YAHOO.widget.Module.html#property_EVENT_TYPES" property="yui:name" title="EVENT_TYPES">EVENT_TYPES</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_footer">
+                                        <a class="" href="YAHOO.widget.Module.html#property_footer" property="yui:name" title="footer">footer</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_header">
+                                        <a class="" href="YAHOO.widget.Module.html#property_header" property="yui:name" title="header">header</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_id">
+                                        <a class="" href="YAHOO.widget.Module.html#property_id" property="yui:name" title="id">id</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_imageRoot">
+                                        <a class=" deprecated" href="YAHOO.widget.Module.html#property_imageRoot" property="yui:name" title="imageRoot">imageRoot</a><span class=" deprecated">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_isSecure">
+                                        <a class="" href="YAHOO.widget.Module.html#property_isSecure" property="yui:name" title="isSecure">isSecure</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Module.html#property_platform">
+                                        <a class="" href="YAHOO.widget.Module.html#property_platform" property="yui:name" title="platform">platform</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Overlay.html">
+                            <h4>Properties inherited from <a href="YAHOO.widget.Overlay.html" property="yui:name" title="YAHOO.widget.Overlay">YAHOO.widget.Overlay</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Overlay.html#property_CONTEXT_TRIGGERS">
+                                        <a class="" href="YAHOO.widget.Overlay.html#property_CONTEXT_TRIGGERS" property="yui:name" title="CONTEXT_TRIGGERS">CONTEXT_TRIGGERS</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Overlay.html#property_DEFAULT_CONFIG">
+                                        <a class="private" href="YAHOO.widget.Overlay.html#property_DEFAULT_CONFIG" property="yui:name" title="DEFAULT_CONFIG">DEFAULT_CONFIG</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Overlay.html#property_EVENT_TYPES">
+                                        <a class="private" href="YAHOO.widget.Overlay.html#property_EVENT_TYPES" property="yui:name" title="EVENT_TYPES">EVENT_TYPES</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay._initialized">
+                                        <a class="private" href="YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay._initialized" property="yui:name" title="YAHOO.widget.Overlay._initialized">YAHOO.widget.Overlay._initialized</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="protected" rel="yui:method" resource="#method__removeEventListeners">
+                                    <h4>
+                                        <a name="method__removeEventListeners">_removeEventListeners</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_removeEventListeners</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes all of the DOM event handlers from the HTML
+element(s) that trigger the display of the tooltip.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_configContainer">
+                                    <h4>
+                                        <a name="method_configContainer">configContainer</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">configContainer</strong>
+                                           (
+                                                
+                                                        
+                                                         type
+                                                    
+                                                
+                                                        , 
+                                                         args
+                                                    
+                                                
+                                                        , 
+                                                         obj
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The default event handler fired when the "container" property 
+is changed.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">type</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The CustomEvent type (usually the property name)</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">args</span>
+                                                        &lt;<span property="yui:type">Object[]</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The CustomEvent arguments. For 
+configuration handlers, args[0] will equal the newly applied value 
+for the property.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">obj</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The scope object. For configuration handlers,
+this will usually equal the owner.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_configContext">
+                                    <h4>
+                                        <a name="method_configContext">configContext</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">configContext</strong>
+                                           (
+                                                
+                                                        
+                                                         type
+                                                    
+                                                
+                                                        , 
+                                                         args
+                                                    
+                                                
+                                                        , 
+                                                         obj
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The default event handler fired when the "context" property 
+is changed.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">type</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The CustomEvent type (usually the property name)</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">args</span>
+                                                        &lt;<span property="yui:type">Object[]</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The CustomEvent arguments. For configuration 
+handlers, args[0] will equal the newly applied value for the property.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">obj</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The scope object. For configuration handlers,
+this will usually equal the owner.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_configText">
+                                    <h4>
+                                        <a name="method_configText">configText</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">configText</strong>
+                                           (
+                                                
+                                                        
+                                                         type
+                                                    
+                                                
+                                                        , 
+                                                         args
+                                                    
+                                                
+                                                        , 
+                                                         obj
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The default event handler fired when the "text" property is changed.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">type</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The CustomEvent type (usually the property name)</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">args</span>
+                                                        &lt;<span property="yui:type">Object[]</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The CustomEvent arguments. For configuration 
+handlers, args[0] will equal the newly applied value for the property.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">obj</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The scope object. For configuration handlers, 
+this will usually equal the owner.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_destroy">
+                                    <h4>
+                                        <a name="method_destroy">destroy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">destroy</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes the Tooltip element from the DOM and sets all child 
+elements to null.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_doHide">
+                                    <h4>
+                                        <a name="method_doHide">doHide</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">doHide</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the timeout for the auto-dismiss delay, which by default is 5 
+seconds, meaning that a tooltip will automatically dismiss itself 
+after 5 seconds of being displayed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_doShow">
+                                    <h4>
+                                        <a name="method_doShow">doShow</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">doShow</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                                        , 
+                                                         context
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Processes the showing of the Tooltip by setting the timeout delay 
+and offset of the Tooltip.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">DOMEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The current DOM event</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">context</span>
+                                                        &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The current context element</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The process ID of the timeout function associated 
+with doShow</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_forceUnderlayRedraw">
+                                    <h4>
+                                        <a name="method_forceUnderlayRedraw">forceUnderlayRedraw</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">forceUnderlayRedraw</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Forces the underlay element to be repainted, through the application/removal
+of a yui-force-redraw class to the underlay element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_init">
+                                    <h4>
+                                        <a name="method_init">init</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">init</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+
+                                                
+                                                        , 
+                                                         userConfig
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The Tooltip initialization method. This method is automatically 
+called by the constructor. A Tooltip is automatically rendered by 
+the init method, and it also is set to be invisible by default, 
+and constrained to viewport by default as well.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The element ID representing the Tooltip <em>OR</em></span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The element representing the Tooltip</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">userConfig</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The configuration object literal 
+containing the configuration that should be set for this Tooltip. 
+See configuration documentation for more details.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_initDefaultConfig">
+                                    <h4>
+                                        <a name="method_initDefaultConfig">initDefaultConfig</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">initDefaultConfig</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the class's configurable properties which can be 
+changed using the Overlay's Config object (cfg).
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_initEvents">
+                                    <h4>
+                                        <a name="method_initEvents">initEvents</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">initEvents</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the custom events for Tooltip
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_onContextMouseMove">
+                                    <h4>
+                                        <a name="method_onContextMouseMove">onContextMouseMove</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onContextMouseMove</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                                        , 
+                                                         obj
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The default event handler fired when the user moves the mouse while 
+over the context element.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">DOMEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The current DOM event</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">obj</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The object argument</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_onContextMouseOut">
+                                    <h4>
+                                        <a name="method_onContextMouseOut">onContextMouseOut</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onContextMouseOut</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                                        , 
+                                                         obj
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The default event handler fired when the user mouses out of 
+the context element.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">DOMEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The current DOM event</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">obj</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The object argument</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_onContextMouseOver">
+                                    <h4>
+                                        <a name="method_onContextMouseOver">onContextMouseOver</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onContextMouseOver</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                                        , 
+                                                         obj
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The default event handler fired when the user mouses over the 
+context element.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">DOMEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The current DOM event</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">obj</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The object argument</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_onRender">
+                                    <h4>
+                                        <a name="method_onRender">onRender</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onRender</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sType
+                                                    
+                                                
+                                                        , 
+                                                         p_aArgs
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            "render" event handler for the Tooltip.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String representing the name of the event  
+that was fired.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_aArgs</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Array of arguments sent when the event 
+was fired.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_preventOverlay">
+                                    <h4>
+                                        <a name="method_preventOverlay">preventOverlay</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">preventOverlay</strong>
+                                           (
+                                                
+                                                        
+                                                         pageX
+                                                    
+                                                
+                                                        , 
+                                                         pageY
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when the Tooltip is moved, this event handler is used to 
+prevent the Tooltip from overlapping with its context element.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">pageX</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The x coordinate position of the mouse pointer</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">pageY</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The y coordinate position of the mouse pointer</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a string representation of the object.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The string representation of the Tooltip</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Module.html">
+                                <h4>Methods inherited from <a href="YAHOO.widget.Module.html" property="yui:name" title="YAHOO.widget.Module">YAHOO.widget.Module</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method__addToParent">                                        
+                                            <a class="protected" href="YAHOO.widget.Module.html#method__addToParent" property="yui:name" title="_addToParent">_addToParent</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method__initResizeMonitor">                                        
+                                            <a class="protected" href="YAHOO.widget.Module.html#method__initResizeMonitor" property="yui:name" title="_initResizeMonitor">_initResizeMonitor</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method__renderBody">                                        
+                                            <a class="protected" href="YAHOO.widget.Module.html#method__renderBody" property="yui:name" title="_renderBody">_renderBody</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method__renderFooter">                                        
+                                            <a class="protected" href="YAHOO.widget.Module.html#method__renderFooter" property="yui:name" title="_renderFooter">_renderFooter</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method__renderHeader">                                        
+                                            <a class="protected" href="YAHOO.widget.Module.html#method__renderHeader" property="yui:name" title="_renderHeader">_renderHeader</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method__supportsCWResize">                                        
+                                            <a class="private" href="YAHOO.widget.Module.html#method__supportsCWResize" property="yui:name" title="_supportsCWResize">_supportsCWResize</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_appendToBody">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_appendToBody" property="yui:name" title="appendToBody">appendToBody</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_appendToFooter">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_appendToFooter" property="yui:name" title="appendToFooter">appendToFooter</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_appendToHeader">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_appendToHeader" property="yui:name" title="appendToHeader">appendToHeader</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_configMonitorResize">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_configMonitorResize" property="yui:name" title="configMonitorResize">configMonitorResize</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_configVisible">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_configVisible" property="yui:name" title="configVisible">configVisible</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_destroy">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_hide">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_hide" property="yui:name" title="hide">hide</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_init">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_init" property="yui:name" title="init">init</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_initDefaultConfig">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_initDefaultConfig" property="yui:name" title="initDefaultConfig">initDefaultConfig</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_initEvents">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_initEvents" property="yui:name" title="initEvents">initEvents</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_initResizeMonitor">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_initResizeMonitor" property="yui:name" title="initResizeMonitor">initResizeMonitor</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_onDomResize">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_onDomResize" property="yui:name" title="onDomResize">onDomResize</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_render">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_render" property="yui:name" title="render">render</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_setBody">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_setBody" property="yui:name" title="setBody">setBody</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_setFooter">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_setFooter" property="yui:name" title="setFooter">setFooter</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_setHeader">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_setHeader" property="yui:name" title="setHeader">setHeader</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_show">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_show" property="yui:name" title="show">show</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Module.html#method_toString">                                        
+                                            <a class="" href="YAHOO.widget.Module.html#method_toString" property="yui:name" title="toString">toString</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Overlay.html">
+                                <h4>Methods inherited from <a href="YAHOO.widget.Overlay.html" property="yui:name" title="YAHOO.widget.Overlay">YAHOO.widget.Overlay</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__alignOnTrigger">                                        
+                                            <a class="protected" href="YAHOO.widget.Overlay.html#method__alignOnTrigger" property="yui:name" title="_alignOnTrigger">_alignOnTrigger</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__autoFillOnHeightChange">                                        
+                                            <a class="protected" href="YAHOO.widget.Overlay.html#method__autoFillOnHeightChange" property="yui:name" title="_autoFillOnHeightChange">_autoFillOnHeightChange</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__findTriggerCE">                                        
+                                            <a class="private" href="YAHOO.widget.Overlay.html#method__findTriggerCE" property="yui:name" title="_findTriggerCE">_findTriggerCE</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__getComputedHeight">                                        
+                                            <a class="private" href="YAHOO.widget.Overlay.html#method__getComputedHeight" property="yui:name" title="_getComputedHeight">_getComputedHeight</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__getConstrainedPos">                                        
+                                            <a class="protected" href="YAHOO.widget.Overlay.html#method__getConstrainedPos" property="yui:name" title="_getConstrainedPos">_getConstrainedPos</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__getPreciseHeight">                                        
+                                            <a class="private" href="YAHOO.widget.Overlay.html#method__getPreciseHeight" property="yui:name" title="_getPreciseHeight">_getPreciseHeight</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__preventOverlap">                                        
+                                            <a class="protected" href="YAHOO.widget.Overlay.html#method__preventOverlap" property="yui:name" title="_preventOverlap">_preventOverlap</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__primeXYFromDOM">                                        
+                                            <a class="protected" href="YAHOO.widget.Overlay.html#method__primeXYFromDOM" property="yui:name" title="_primeXYFromDOM">_primeXYFromDOM</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__processTriggers">                                        
+                                            <a class="protected" href="YAHOO.widget.Overlay.html#method__processTriggers" property="yui:name" title="_processTriggers">_processTriggers</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__setDomVisibility">                                        
+                                            <a class="protected" href="YAHOO.widget.Overlay.html#method__setDomVisibility" property="yui:name" title="_setDomVisibility">_setDomVisibility</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method__validateAutoFillHeight">                                        
+                                            <a class="protected" href="YAHOO.widget.Overlay.html#method__validateAutoFillHeight" property="yui:name" title="_validateAutoFillHeight">_validateAutoFillHeight</a><span class="protected">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_align">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_align" property="yui:name" title="align">align</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_bringToTop">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_bringToTop" property="yui:name" title="bringToTop">bringToTop</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_center">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_center" property="yui:name" title="center">center</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configAutoFillHeight">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configAutoFillHeight" property="yui:name" title="configAutoFillHeight">configAutoFillHeight</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configConstrainToViewport">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configConstrainToViewport" property="yui:name" title="configConstrainToViewport">configConstrainToViewport</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configContext">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configContext" property="yui:name" title="configContext">configContext</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configFixedCenter">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configFixedCenter" property="yui:name" title="configFixedCenter">configFixedCenter</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configHeight">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configHeight" property="yui:name" title="configHeight">configHeight</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configIframe">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configIframe" property="yui:name" title="configIframe">configIframe</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configVisible">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configVisible" property="yui:name" title="configVisible">configVisible</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configWidth">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configWidth" property="yui:name" title="configWidth">configWidth</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configX">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configX" property="yui:name" title="configX">configX</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configXY">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configXY" property="yui:name" title="configXY">configXY</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configY">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configY" property="yui:name" title="configY">configY</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_configzIndex">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_configzIndex" property="yui:name" title="configzIndex">configzIndex</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_destroy">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_doCenterOnDOMEvent">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_doCenterOnDOMEvent" property="yui:name" title="doCenterOnDOMEvent">doCenterOnDOMEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_enforceConstraints">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_enforceConstraints" property="yui:name" title="enforceConstraints">enforceConstraints</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_fillHeight">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_fillHeight" property="yui:name" title="fillHeight">fillHeight</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_fitsInViewport">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_fitsInViewport" property="yui:name" title="fitsInViewport">fitsInViewport</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_forceContainerRedraw">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_forceContainerRedraw" property="yui:name" title="forceContainerRedraw">forceContainerRedraw</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_getConstrainedX">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_getConstrainedX" property="yui:name" title="getConstrainedX">getConstrainedX</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_getConstrainedXY">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_getConstrainedXY" property="yui:name" title="getConstrainedXY">getConstrainedXY</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_getConstrainedY">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_getConstrainedY" property="yui:name" title="getConstrainedY">getConstrainedY</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_hideIframe">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_hideIframe" property="yui:name" title="hideIframe">hideIframe</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_hideMacGeckoScrollbars">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_hideMacGeckoScrollbars" property="yui:name" title="hideMacGeckoScrollbars">hideMacGeckoScrollbars</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_init">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_init" property="yui:name" title="init">init</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_initDefaultConfig">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_initDefaultConfig" property="yui:name" title="initDefaultConfig">initDefaultConfig</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_initEvents">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_initEvents" property="yui:name" title="initEvents">initEvents</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_moveTo">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_moveTo" property="yui:name" title="moveTo">moveTo</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_onDomResize">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_onDomResize" property="yui:name" title="onDomResize">onDomResize</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_showIframe">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_showIframe" property="yui:name" title="showIframe">showIframe</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_showMacGeckoScrollbars">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_showMacGeckoScrollbars" property="yui:name" title="showMacGeckoScrollbars">showMacGeckoScrollbars</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_stackIframe">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_stackIframe" property="yui:name" title="stackIframe">stackIframe</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_syncIframe">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_syncIframe" property="yui:name" title="syncIframe">syncIframe</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_syncPosition">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_syncPosition" property="yui:name" title="syncPosition">syncPosition</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Overlay.html#method_toString">                                        
+                                            <a class="" href="YAHOO.widget.Overlay.html#method_toString" property="yui:name" title="toString">toString</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_contextMouseOutEvent">
+                                    <h4>
+                                        <a name="event_contextMouseOutEvent">contextMouseOutEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">contextMouseOutEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         context
+                                                    
+                                                
+                                                        , 
+                                                         e
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            CustomEvent fired when the user mouses out of a context element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">context</span>
+                                                                &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description"> The context element which the user just moused out of</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">e</span>
+                                                                &lt;<span property="yui:type">DOMEvent</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description"> The DOM event object, associated with the mouse out</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_contextMouseOverEvent">
+                                    <h4>
+                                        <a name="event_contextMouseOverEvent">contextMouseOverEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">contextMouseOverEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         context
+                                                    
+                                                
+                                                        , 
+                                                         e
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            CustomEvent fired when user mouses over a context element. Returning false from
+a subscriber to this event will prevent the tooltip from being displayed for
+the current context element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">context</span>
+                                                                &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description"> The context element which the user just moused over</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">e</span>
+                                                                &lt;<span property="yui:type">DOMEvent</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description"> The DOM event object, associated with the mouse over</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_contextTriggerEvent">
+                                    <h4>
+                                        <a name="event_contextTriggerEvent">contextTriggerEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">contextTriggerEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         context
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            CustomEvent fired just before the tooltip is displayed for the current context.
+<p>
+You can subscribe to this event if you need to set up the text for the 
+tooltip based on the context element for which it is about to be displayed.
+</p>
+<p>This event differs from the beforeShow event in following respects:</p>
+<ol>
+<li>
+When moving from one context element to another, if the tooltip is not
+hidden (the <code>hidedelay</code> is not reached), the beforeShow and Show events will not
+be fired when the tooltip is displayed for the new context since it is already visible.
+However the contextTrigger event is always fired before displaying the tooltip for
+a new context.
+</li>
+<li>
+The trigger event provides access to the context element, allowing you to 
+set the text of the tooltip based on context element for which the tooltip is
+triggered.
+</li>
+</ol>
+<p>
+It is not possible to prevent the tooltip from being displayed
+using this event. You can use the contextMouseOverEvent if you need to prevent
+the tooltip from being displayed.
+</p>
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">context</span>
+                                                                &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description"> The context element for which the tooltip is triggered</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Module.html">
+                            <h4>Events inherited from <a href="YAHOO.widget.Module.html" property="yui:name" title="YAHOO.widget.Module">YAHOO.widget.Module</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.widget.Module.html#event_appendEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_appendEvent" property="yui:name" title="appendEvent">appendEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_beforeHideEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_beforeHideEvent" property="yui:name" title="beforeHideEvent">beforeHideEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_beforeInitEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_beforeInitEvent" property="yui:name" title="beforeInitEvent">beforeInitEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_beforeRenderEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_beforeRenderEvent" property="yui:name" title="beforeRenderEvent">beforeRenderEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_beforeShowEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_beforeShowEvent" property="yui:name" title="beforeShowEvent">beforeShowEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_changeBodyEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_changeBodyEvent" property="yui:name" title="changeBodyEvent">changeBodyEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_changeContentEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_changeContentEvent" property="yui:name" title="changeContentEvent">changeContentEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_changeFooterEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_changeFooterEvent" property="yui:name" title="changeFooterEvent">changeFooterEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_changeHeaderEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_changeHeaderEvent" property="yui:name" title="changeHeaderEvent">changeHeaderEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_destroyEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_destroyEvent" property="yui:name" title="destroyEvent">destroyEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_hideEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_hideEvent" property="yui:name" title="hideEvent">hideEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_initEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_initEvent" property="yui:name" title="initEvent">initEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_renderEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_renderEvent" property="yui:name" title="renderEvent">renderEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_showEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_showEvent" property="yui:name" title="showEvent">showEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Module.html#event_YAHOO.widget.Module.textResizeEvent">
+                                        <a class="" href="YAHOO.widget.Module.html#event_YAHOO.widget.Module.textResizeEvent" property="yui:name" title="YAHOO.widget.Module.textResizeEvent">YAHOO.widget.Module.textResizeEvent</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Overlay.html">
+                            <h4>Events inherited from <a href="YAHOO.widget.Overlay.html" property="yui:name" title="YAHOO.widget.Overlay">YAHOO.widget.Overlay</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.widget.Overlay.html#event_beforeMoveEvent">
+                                        <a class="" href="YAHOO.widget.Overlay.html#event_beforeMoveEvent" property="yui:name" title="beforeMoveEvent">beforeMoveEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Overlay.html#event_moveEvent">
+                                        <a class="" href="YAHOO.widget.Overlay.html#event_moveEvent" property="yui:name" title="moveEvent">moveEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Overlay.html#event_YAHOO.widget.Overlay.windowResizeEvent">
+                                        <a class="" href="YAHOO.widget.Overlay.html#event_YAHOO.widget.Overlay.windowResizeEvent" property="yui:name" title="YAHOO.widget.Overlay.windowResizeEvent">YAHOO.widget.Overlay.windowResizeEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Overlay.html#event_YAHOO.widget.Overlay.windowScrollEvent">
+                                        <a class="" href="YAHOO.widget.Overlay.html#event_YAHOO.widget.Overlay.windowScrollEvent" property="yui:name" title="YAHOO.widget.Overlay.windowScrollEvent">YAHOO.widget.Overlay.windowScrollEvent</a><span class="">,</span>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+                        <div class="section field details">
+                            <h3 id="configattributes">Configuration Attributes</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:attribute" resource="#config_autodismissdelay">
+                                    <h4><a name="config_autodismissdelay">autodismissdelay</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The number of milliseconds to wait before automatically 
+dismissing a Tooltip after the mouse has been resting on the 
+context element.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: 5000
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_container">
+                                    <h4><a name="config_container">container</a>
+                                        <code>- <span property="yui:type">HTMLElement/String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Specifies the container element that the Tooltip's markup 
+should be rendered into.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: document.body
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_context">
+                                    <h4><a name="config_context">context</a>
+                                        <code>- <span property="yui:type">HTMLElement[]/String[]</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Specifies the element or elements that the Tooltip should be 
+anchored to on mouseover.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: null
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_disabled">
+                                    <h4><a name="config_disabled">disabled</a>
+                                        <code>- <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Specifies whether or not the tooltip is disabled. Disabled tooltips
+will not be displayed. If the tooltip is driven by the title attribute
+of the context element, the title attribute will still be removed for 
+disabled tooltips, to prevent default tooltip behavior.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: false
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_hidedelay">
+                                    <h4><a name="config_hidedelay">hidedelay</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The number of milliseconds to wait before hiding a Tooltip 
+after mouseout.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: 250
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_preventoverlap">
+                                    <h4><a name="config_preventoverlap">preventoverlap</a>
+                                        <code>- <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Specifies whether the Tooltip should be kept from overlapping 
+its context element.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: true
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_showdelay">
+                                    <h4><a name="config_showdelay">showdelay</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The number of milliseconds to wait before showing a Tooltip 
+on mouseover.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: 200
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_text">
+                                    <h4><a name="config_text">text</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Specifies the Tooltip's text.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: null
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_width">
+                                    <h4><a name="config_width">width</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            String representing the width of the Tooltip.  <em>Please note:
+</em> As of version 2.3 if either no value or a value of "auto" 
+is specified, and the Toolip's "container" configuration property
+is set to something other than <code>document.body</code> or 
+its "context" element resides outside the immediately visible 
+portion of the document, the width of the Tooltip will be 
+calculated based on the offsetWidth of its root HTML and set just 
+before it is made visible.  The original value will be 
+restored when the Tooltip is hidden. This ensures the Tooltip is 
+rendered at a usable width.  For more information see 
+YUILibrary bug #1685496 and YUILibrary 
+bug #1735423.
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: null
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_xyoffset">
+                                    <h4><a name="config_xyoffset">xyoffset</a>
+                                        <code>- <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Specifies the XY offset from the mouse position, where the tooltip should be displayed, specified
+as a 2 element array (e.g. [10, 20]);
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: [0, 25]
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Module.html">
+                            <h4>Configuration attributes inherited from <a href="YAHOO.widget.Module.html" property="yui:name" title="YAHOO.widget.Module">YAHOO.widget.Module</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                        <span rel="yui:attribute" resource="YAHOO.widget.Module.html#config_appendtodocumentbody">                                        
+                                        <a class="" href="YAHOO.widget.Module.html#config_appendtodocumentbody" property="yui:name" title="appendtodocumentbody">appendtodocumentbody</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Module.html#config_effect">                                        
+                                        <a class="" href="YAHOO.widget.Module.html#config_effect" property="yui:name" title="effect">effect</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Module.html#config_monitorresize">                                        
+                                        <a class="" href="YAHOO.widget.Module.html#config_monitorresize" property="yui:name" title="monitorresize">monitorresize</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Module.html#config_visible">                                        
+                                        <a class="" href="YAHOO.widget.Module.html#config_visible" property="yui:name" title="visible">visible</a><span class="">,</span>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Overlay.html">
+                            <h4>Configuration attributes inherited from <a href="YAHOO.widget.Overlay.html" property="yui:name" title="YAHOO.widget.Overlay">YAHOO.widget.Overlay</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                        <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_autofillheight">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_autofillheight" property="yui:name" title="autofillheight">autofillheight</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_constraintoviewport">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_constraintoviewport" property="yui:name" title="constraintoviewport">constraintoviewport</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_context">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_context" property="yui:name" title="context">context</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_fixedcenter">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_fixedcenter" property="yui:name" title="fixedcenter">fixedcenter</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_height">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_height" property="yui:name" title="height">height</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_iframe">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_iframe" property="yui:name" title="iframe">iframe</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_preventcontextoverlap">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_preventcontextoverlap" property="yui:name" title="preventcontextoverlap">preventcontextoverlap</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_width">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_width" property="yui:name" title="width">width</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_x">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_x" property="yui:name" title="x">x</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_xy">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_xy" property="yui:name" title="xy">xy</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_y">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_y" property="yui:name" title="y">y</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Overlay.html#config_zIndex">                                        
+                                        <a class="" href="YAHOO.widget.Overlay.html#config_zIndex" property="yui:name" title="zIndex">zIndex</a><span class="">,</span>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class="selected"><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.Config.html" title="YAHOO.util.Config">YAHOO.util.Config</a></li>
+                                <li class=""><a href="YAHOO.widget.ContainerEffect.html" title="YAHOO.widget.ContainerEffect">YAHOO.widget.ContainerEffect</a></li>
+                                <li class=""><a href="YAHOO.widget.Dialog.html" title="YAHOO.widget.Dialog">YAHOO.widget.Dialog</a></li>
+                                <li class=""><a href="YAHOO.widget.Module.html" title="YAHOO.widget.Module">YAHOO.widget.Module</a></li>
+                                <li class=""><a href="YAHOO.widget.Overlay.html" title="YAHOO.widget.Overlay">YAHOO.widget.Overlay</a></li>
+                                <li class=""><a href="YAHOO.widget.OverlayManager.html" title="YAHOO.widget.OverlayManager">YAHOO.widget.OverlayManager</a></li>
+                                <li class=""><a href="YAHOO.widget.Panel.html" title="YAHOO.widget.Panel">YAHOO.widget.Panel</a></li>
+                                <li class=""><a href="YAHOO.widget.SimpleDialog.html" title="YAHOO.widget.SimpleDialog">YAHOO.widget.SimpleDialog</a></li>
+                                <li class="selected"><a href="YAHOO.widget.Tooltip.html" title="YAHOO.widget.Tooltip">YAHOO.widget.Tooltip</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Config.js.html" title="Config.js">Config.js</a></li>
+                                <li class=""><a href="ContainerEffect.js.html" title="ContainerEffect.js">ContainerEffect.js</a></li>
+                                <li class=""><a href="Dialog.js.html" title="Dialog.js">Dialog.js</a></li>
+                                <li class=""><a href="Module.js.html" title="Module.js">Module.js</a></li>
+                                <li class=""><a href="Overlay.js.html" title="Overlay.js">Overlay.js</a></li>
+                                <li class=""><a href="OverlayManager.js.html" title="OverlayManager.js">OverlayManager.js</a></li>
+                                <li class=""><a href="Panel.js.html" title="Panel.js">Panel.js</a></li>
+                                <li class=""><a href="SimpleDialog.js.html" title="SimpleDialog.js">SimpleDialog.js</a></li>
+                                <li class=""><a href="Tooltip.js.html" title="Tooltip.js">Tooltip.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property_DEFAULT_CONFIG" title="DEFAULT_CONFIG">DEFAULT_CONFIG</a></li>
+                                <li class="private"><a href="#property_EVENT_TYPES" title="EVENT_TYPES">EVENT_TYPES</a></li>
+                                <li class=""><a href="#property_showProcId" title="showProcId">showProcId</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.Tooltip.CSS_TOOLTIP" title="YAHOO.widget.Tooltip.CSS_TOOLTIP">YAHOO.widget.Tooltip.CSS_TOOLTIP</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="protected"><a href="#method__removeEventListeners" title="_removeEventListeners">_removeEventListeners</a></li>
+                                <li class=""><a href="#method_configContainer" title="configContainer">configContainer</a></li>
+                                <li class=""><a href="#method_configContext" title="configContext">configContext</a></li>
+                                <li class=""><a href="#method_configText" title="configText">configText</a></li>
+                                <li class=""><a href="#method_destroy" title="destroy">destroy</a></li>
+                                <li class=""><a href="#method_doHide" title="doHide">doHide</a></li>
+                                <li class=""><a href="#method_doShow" title="doShow">doShow</a></li>
+                                <li class=""><a href="#method_forceUnderlayRedraw" title="forceUnderlayRedraw">forceUnderlayRedraw</a></li>
+                                <li class=""><a href="#method_init" title="init">init</a></li>
+                                <li class=""><a href="#method_initDefaultConfig" title="initDefaultConfig">initDefaultConfig</a></li>
+                                <li class=""><a href="#method_initEvents" title="initEvents">initEvents</a></li>
+                                <li class=""><a href="#method_onContextMouseMove" title="onContextMouseMove">onContextMouseMove</a></li>
+                                <li class=""><a href="#method_onContextMouseOut" title="onContextMouseOut">onContextMouseOut</a></li>
+                                <li class=""><a href="#method_onContextMouseOver" title="onContextMouseOver">onContextMouseOver</a></li>
+                                <li class=""><a href="#method_onRender" title="onRender">onRender</a></li>
+                                <li class=""><a href="#method_preventOverlay" title="preventOverlay">preventOverlay</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_contextMouseOutEvent" title="contextMouseOutEvent">contextMouseOutEvent</a></li>
+                                <li class=""><a href="#event_contextMouseOverEvent" title="contextMouseOverEvent">contextMouseOverEvent</a></li>
+                                <li class=""><a href="#event_contextTriggerEvent" title="contextTriggerEvent">contextTriggerEvent</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="configList" class="module">
+                        <h4>Configuration Attributes</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#config_autodismissdelay" title="autodismissdelay">autodismissdelay</a></li>
+                                <li class=""><a href="#config_container" title="container">container</a></li>
+                                <li class=""><a href="#config_context" title="context">context</a></li>
+                                <li class=""><a href="#config_disabled" title="disabled">disabled</a></li>
+                                <li class=""><a href="#config_hidedelay" title="hidedelay">hidedelay</a></li>
+                                <li class=""><a href="#config_preventoverlap" title="preventoverlap">preventoverlap</a></li>
+                                <li class=""><a href="#config_showdelay" title="showdelay">showdelay</a></li>
+                                <li class=""><a href="#config_text" title="text">text</a></li>
+                                <li class=""><a href="#config_width" title="width">width</a></li>
+                                <li class=""><a href="#config_xyoffset" title="xyoffset">xyoffset</a></li>
+                        </ul>
+                    </div>
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "protected", "host": "YAHOO.widget.Panel", "name": "_addFocusHandlers", "url": "YAHOO.widget.Panel.html#method__addFocusHandlers", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "align", "url": "YAHOO.widget.Overlay.html#method_align", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_alignOnTrigger", "url": "YAHOO.widget.Overlay.html#method__alignOnTrigger", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "animateIn", "url": "YAHOO.widget.ContainerEffect.html#method_animateIn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "animateOut", "url": "YAHOO.widget.ContainerEffect.html#method_animateOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "animClass", "url": "YAHOO.widget.ContainerEffect.html#property_animClass", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "asyncSubmitEvent", "url": "YAHOO.widget.Dialog.html#event_asyncSubmitEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "attrIn", "url": "YAHOO.widget.ContainerEffect.html#property_attrIn", "type": "property"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "attrOut", "url": "YAHOO.widget.ContainerEffect.html#property_attrOut", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "autodismissdelay", "url": "YAHOO.widget.Tooltip.html#config_autodismissdelay", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "autofillheight", "url": "YAHOO.widget.Overlay.html#config_autofillheight", "type": "config"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_autoFillOnHeightChange", "url": "YAHOO.widget.Overlay.html#method__autoFillOnHeightChange", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_autoFillOnHeightChange", "url": "YAHOO.widget.Panel.html#method__autoFillOnHeightChange", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "beforeMoveEvent", "url": "YAHOO.widget.Overlay.html#event_beforeMoveEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "beforeSubmitEvent", "url": "YAHOO.widget.Dialog.html#event_beforeSubmitEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "blurButtons", "url": "YAHOO.widget.Dialog.html#method_blurButtons", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "bringToTop", "url": "YAHOO.widget.Overlay.html#method_bringToTop", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "buildMask", "url": "YAHOO.widget.Panel.html#method_buildMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "buildWrapper", "url": "YAHOO.widget.Panel.html#method_buildWrapper", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "buttons", "url": "YAHOO.widget.Dialog.html#config_buttons", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback", "url": "YAHOO.widget.Dialog.html#property_callback", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback.argument", "url": "YAHOO.widget.Dialog.html#property_callback.argument", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback.failure", "url": "YAHOO.widget.Dialog.html#property_callback.failure", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback.success", "url": "YAHOO.widget.Dialog.html#property_callback.success", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback.upload", "url": "YAHOO.widget.Dialog.html#property_callback.upload", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "cancel", "url": "YAHOO.widget.Dialog.html#method_cancel", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "cancelEvent", "url": "YAHOO.widget.Dialog.html#event_cancelEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "center", "url": "YAHOO.widget.Overlay.html#method_center", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "close", "url": "YAHOO.widget.Panel.html#config_close", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configAutoFillHeight", "url": "YAHOO.widget.Overlay.html#method_configAutoFillHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "configButtons", "url": "YAHOO.widget.Dialog.html#method_configButtons", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configClose", "url": "YAHOO.widget.Panel.html#method_configClose", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "configClose", "url": "YAHOO.widget.Dialog.html#method_configClose", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configConstrainToViewport", "url": "YAHOO.widget.Overlay.html#method_configConstrainToViewport", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "configContainer", "url": "YAHOO.widget.Tooltip.html#method_configContainer", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configContext", "url": "YAHOO.widget.Overlay.html#method_configContext", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "configContext", "url": "YAHOO.widget.Tooltip.html#method_configContext", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configDraggable", "url": "YAHOO.widget.Panel.html#method_configDraggable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configFixedCenter", "url": "YAHOO.widget.Overlay.html#method_configFixedCenter", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configHeight", "url": "YAHOO.widget.Overlay.html#method_configHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configHeight", "url": "YAHOO.widget.Panel.html#method_configHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configIframe", "url": "YAHOO.widget.Overlay.html#method_configIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configKeyListeners", "url": "YAHOO.widget.Panel.html#method_configKeyListeners", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configModal", "url": "YAHOO.widget.Panel.html#method_configModal", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "configPostMethod", "url": "YAHOO.widget.Dialog.html#method_configPostMethod", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configStrings", "url": "YAHOO.widget.Panel.html#method_configStrings", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "configText", "url": "YAHOO.widget.Tooltip.html#method_configText", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configUnderlay", "url": "YAHOO.widget.Panel.html#method_configUnderlay", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configVisible", "url": "YAHOO.widget.Overlay.html#method_configVisible", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configWidth", "url": "YAHOO.widget.Overlay.html#method_configWidth", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configWidth", "url": "YAHOO.widget.Panel.html#method_configWidth", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configX", "url": "YAHOO.widget.Overlay.html#method_configX", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configXY", "url": "YAHOO.widget.Overlay.html#method_configXY", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configY", "url": "YAHOO.widget.Overlay.html#method_configY", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configzIndex", "url": "YAHOO.widget.Overlay.html#method_configzIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configzIndex", "url": "YAHOO.widget.Panel.html#method_configzIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "constraintoviewport", "url": "YAHOO.widget.Overlay.html#config_constraintoviewport", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "container", "url": "YAHOO.widget.Tooltip.html#config_container", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "context", "url": "YAHOO.widget.Overlay.html#config_context", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "context", "url": "YAHOO.widget.Tooltip.html#config_context", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "contextMouseOutEvent", "url": "YAHOO.widget.Tooltip.html#event_contextMouseOutEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "contextMouseOverEvent", "url": "YAHOO.widget.Tooltip.html#event_contextMouseOverEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "contextTriggerEvent", "url": "YAHOO.widget.Tooltip.html#event_contextTriggerEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "CONTEXT_TRIGGERS", "url": "YAHOO.widget.Overlay.html#property_CONTEXT_TRIGGERS", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Panel", "name": "_createHiddenFocusElement", "url": "YAHOO.widget.Panel.html#method__createHiddenFocusElement", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "dd", "url": "YAHOO.widget.Panel.html#property_dd", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Overlay.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Panel", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Panel.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Dialog", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Dialog.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Tooltip", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Tooltip.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "destroy", "url": "YAHOO.widget.Overlay.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "destroy", "url": "YAHOO.widget.Panel.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "destroy", "url": "YAHOO.widget.Dialog.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "destroy", "url": "YAHOO.widget.Tooltip.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "disabled", "url": "YAHOO.widget.Tooltip.html#config_disabled", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "doCenterOnDOMEvent", "url": "YAHOO.widget.Overlay.html#method_doCenterOnDOMEvent", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_doClose", "url": "YAHOO.widget.Panel.html#method__doClose", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Dialog", "name": "_doClose", "url": "YAHOO.widget.Dialog.html#method__doClose", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "doHide", "url": "YAHOO.widget.Tooltip.html#method_doHide", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "doShow", "url": "YAHOO.widget.Tooltip.html#method_doShow", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "doSubmit", "url": "YAHOO.widget.Dialog.html#method_doSubmit", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "dragEvent", "url": "YAHOO.widget.Panel.html#event_dragEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "draggable", "url": "YAHOO.widget.Panel.html#config_draggable", "type": "config"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "dragOnly", "url": "YAHOO.widget.Panel.html#config_dragOnly", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "enforceConstraints", "url": "YAHOO.widget.Overlay.html#method_enforceConstraints", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "EVENT_TYPES", "url": "YAHOO.widget.Overlay.html#property_EVENT_TYPES", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Panel", "name": "EVENT_TYPES", "url": "YAHOO.widget.Panel.html#property_EVENT_TYPES", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Dialog", "name": "EVENT_TYPES", "url": "YAHOO.widget.Dialog.html#property_EVENT_TYPES", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Tooltip", "name": "EVENT_TYPES", "url": "YAHOO.widget.Tooltip.html#property_EVENT_TYPES", "type": "property"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "FADE", "url": "YAHOO.widget.ContainerEffect.html#method_FADE", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "fillHeight", "url": "YAHOO.widget.Overlay.html#method_fillHeight", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "_findTriggerCE", "url": "YAHOO.widget.Overlay.html#method__findTriggerCE", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "fitsInViewport", "url": "YAHOO.widget.Overlay.html#method_fitsInViewport", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "fixedcenter", "url": "YAHOO.widget.Overlay.html#config_fixedcenter", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusDefaultButton", "url": "YAHOO.widget.Dialog.html#method_focusDefaultButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "focusFirst", "url": "YAHOO.widget.Panel.html#method_focusFirst", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusFirst", "url": "YAHOO.widget.Dialog.html#method_focusFirst", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusFirstButton", "url": "YAHOO.widget.Dialog.html#method_focusFirstButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "focusLast", "url": "YAHOO.widget.Panel.html#method_focusLast", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusLast", "url": "YAHOO.widget.Dialog.html#method_focusLast", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusLastButton", "url": "YAHOO.widget.Dialog.html#method_focusLastButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "forceContainerRedraw", "url": "YAHOO.widget.Overlay.html#method_forceContainerRedraw", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "forceUnderlayRedraw", "url": "YAHOO.widget.Panel.html#method_forceUnderlayRedraw", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "forceUnderlayRedraw", "url": "YAHOO.widget.Tooltip.html#method_forceUnderlayRedraw", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "form", "url": "YAHOO.widget.Dialog.html#property_form", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "formSubmitEvent", "url": "YAHOO.widget.Dialog.html#event_formSubmitEvent", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Dialog", "name": "_getButton", "url": "YAHOO.widget.Dialog.html#method__getButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "getButtons", "url": "YAHOO.widget.Dialog.html#method_getButtons", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "_getComputedHeight", "url": "YAHOO.widget.Overlay.html#method__getComputedHeight", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_getConstrainedPos", "url": "YAHOO.widget.Overlay.html#method__getConstrainedPos", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "getConstrainedX", "url": "YAHOO.widget.Overlay.html#method_getConstrainedX", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "getConstrainedXY", "url": "YAHOO.widget.Overlay.html#method_getConstrainedXY", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "getConstrainedY", "url": "YAHOO.widget.Overlay.html#method_getConstrainedY", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "getData", "url": "YAHOO.widget.Dialog.html#method_getData", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "getFocusableElements", "url": "YAHOO.widget.Panel.html#method_getFocusableElements", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Dialog", "name": "_getFormAttributes", "url": "YAHOO.widget.Dialog.html#method__getFormAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "_getPreciseHeight", "url": "YAHOO.widget.Overlay.html#method__getPreciseHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleCompleteAnimateIn", "url": "YAHOO.widget.ContainerEffect.html#method_handleCompleteAnimateIn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleCompleteAnimateOut", "url": "YAHOO.widget.ContainerEffect.html#method_handleCompleteAnimateOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleStartAnimateIn", "url": "YAHOO.widget.ContainerEffect.html#method_handleStartAnimateIn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleStartAnimateOut", "url": "YAHOO.widget.ContainerEffect.html#method_handleStartAnimateOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleTweenAnimateIn", "url": "YAHOO.widget.ContainerEffect.html#method_handleTweenAnimateIn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleTweenAnimateOut", "url": "YAHOO.widget.ContainerEffect.html#method_handleTweenAnimateOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "height", "url": "YAHOO.widget.Overlay.html#config_height", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "hideaftersubmit", "url": "YAHOO.widget.Dialog.html#config_hideaftersubmit", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "hidedelay", "url": "YAHOO.widget.Tooltip.html#config_hidedelay", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "hideIframe", "url": "YAHOO.widget.Overlay.html#method_hideIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "hideMacGeckoScrollbars", "url": "YAHOO.widget.Overlay.html#method_hideMacGeckoScrollbars", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "hideMask", "url": "YAHOO.widget.Panel.html#method_hideMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "hideMaskEvent", "url": "YAHOO.widget.Panel.html#event_hideMaskEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "iframe", "url": "YAHOO.widget.Overlay.html#config_iframe", "type": "config"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "init", "url": "YAHOO.widget.ContainerEffect.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "init", "url": "YAHOO.widget.Overlay.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "init", "url": "YAHOO.widget.Panel.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "init", "url": "YAHOO.widget.Dialog.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "init", "url": "YAHOO.widget.Tooltip.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "initDefaultConfig", "url": "YAHOO.widget.Overlay.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "initDefaultConfig", "url": "YAHOO.widget.Panel.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "initDefaultConfig", "url": "YAHOO.widget.Dialog.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "initDefaultConfig", "url": "YAHOO.widget.Tooltip.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "initEvents", "url": "YAHOO.widget.Overlay.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "initEvents", "url": "YAHOO.widget.Panel.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "initEvents", "url": "YAHOO.widget.Dialog.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "initEvents", "url": "YAHOO.widget.Tooltip.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "keylisteners", "url": "YAHOO.widget.Panel.html#config_keylisteners", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "manualSubmitEvent", "url": "YAHOO.widget.Dialog.html#event_manualSubmitEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "modal", "url": "YAHOO.widget.Panel.html#config_modal", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "moveEvent", "url": "YAHOO.widget.Overlay.html#event_moveEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "moveTo", "url": "YAHOO.widget.Overlay.html#method_moveTo", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "onContextMouseMove", "url": "YAHOO.widget.Tooltip.html#method_onContextMouseMove", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "onContextMouseOut", "url": "YAHOO.widget.Tooltip.html#method_onContextMouseOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "onContextMouseOver", "url": "YAHOO.widget.Tooltip.html#method_onContextMouseOver", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "onDomResize", "url": "YAHOO.widget.Overlay.html#method_onDomResize", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Panel", "name": "_onElementFocus", "url": "YAHOO.widget.Panel.html#method__onElementFocus", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "onRender", "url": "YAHOO.widget.Tooltip.html#method_onRender", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "overlay", "url": "YAHOO.widget.ContainerEffect.html#property_overlay", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "postdata", "url": "YAHOO.widget.Dialog.html#config_postdata", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "postmethod", "url": "YAHOO.widget.Dialog.html#config_postmethod", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "preventcontextoverlap", "url": "YAHOO.widget.Overlay.html#config_preventcontextoverlap", "type": "config"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_preventOverlap", "url": "YAHOO.widget.Overlay.html#method__preventOverlap", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "preventoverlap", "url": "YAHOO.widget.Tooltip.html#config_preventoverlap", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "preventOverlay", "url": "YAHOO.widget.Tooltip.html#method_preventOverlay", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_primeXYFromDOM", "url": "YAHOO.widget.Overlay.html#method__primeXYFromDOM", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_processTriggers", "url": "YAHOO.widget.Overlay.html#method__processTriggers", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "registerDragDrop", "url": "YAHOO.widget.Panel.html#method_registerDragDrop", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "registerForm", "url": "YAHOO.widget.Dialog.html#method_registerForm", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Tooltip", "name": "_removeEventListeners", "url": "YAHOO.widget.Tooltip.html#method__removeEventListeners", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_removeFocusHandlers", "url": "YAHOO.widget.Panel.html#method__removeFocusHandlers", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "removeMask", "url": "YAHOO.widget.Panel.html#method_removeMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "render", "url": "YAHOO.widget.Panel.html#method_render", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_renderBody", "url": "YAHOO.widget.Panel.html#method__renderBody", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_renderFooter", "url": "YAHOO.widget.Panel.html#method__renderFooter", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_renderHeader", "url": "YAHOO.widget.Panel.html#method__renderHeader", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_setDomVisibility", "url": "YAHOO.widget.Overlay.html#method__setDomVisibility", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "setFirstLastFocusable", "url": "YAHOO.widget.Panel.html#method_setFirstLastFocusable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "setFirstLastFocusable", "url": "YAHOO.widget.Dialog.html#method_setFirstLastFocusable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "setTabLoop", "url": "YAHOO.widget.Panel.html#method_setTabLoop", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "setTabLoop", "url": "YAHOO.widget.Dialog.html#method_setTabLoop", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "showdelay", "url": "YAHOO.widget.Tooltip.html#config_showdelay", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "showIframe", "url": "YAHOO.widget.Overlay.html#method_showIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "showMacGeckoScrollbars", "url": "YAHOO.widget.Overlay.html#method_showMacGeckoScrollbars", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "showMask", "url": "YAHOO.widget.Panel.html#method_showMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "showMaskEvent", "url": "YAHOO.widget.Panel.html#event_showMaskEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "showProcId", "url": "YAHOO.widget.Tooltip.html#property_showProcId", "type": "property"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "sizeMask", "url": "YAHOO.widget.Panel.html#method_sizeMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "sizeUnderlay", "url": "YAHOO.widget.Panel.html#method_sizeUnderlay", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "SLIDE", "url": "YAHOO.widget.ContainerEffect.html#method_SLIDE", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "stackIframe", "url": "YAHOO.widget.Overlay.html#method_stackIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "stackMask", "url": "YAHOO.widget.Panel.html#method_stackMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "strings", "url": "YAHOO.widget.Panel.html#config_strings", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "submit", "url": "YAHOO.widget.Dialog.html#method_submit", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "submitEvent", "url": "YAHOO.widget.Dialog.html#event_submitEvent", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Dialog", "name": "_submitHandler", "url": "YAHOO.widget.Dialog.html#method__submitHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "syncIframe", "url": "YAHOO.widget.Overlay.html#method_syncIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "syncPosition", "url": "YAHOO.widget.Overlay.html#method_syncPosition", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "targetElement", "url": "YAHOO.widget.ContainerEffect.html#property_targetElement", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "text", "url": "YAHOO.widget.Tooltip.html#config_text", "type": "config"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "toString", "url": "YAHOO.widget.ContainerEffect.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "toString", "url": "YAHOO.widget.Overlay.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "toString", "url": "YAHOO.widget.Panel.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "toString", "url": "YAHOO.widget.Dialog.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "toString", "url": "YAHOO.widget.Tooltip.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "underlay", "url": "YAHOO.widget.Panel.html#config_underlay", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "validate", "url": "YAHOO.widget.Dialog.html#method_validate", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_validateAutoFillHeight", "url": "YAHOO.widget.Overlay.html#method__validateAutoFillHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "width", "url": "YAHOO.widget.Overlay.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "width", "url": "YAHOO.widget.Tooltip.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "x", "url": "YAHOO.widget.Overlay.html#config_x", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "xy", "url": "YAHOO.widget.Overlay.html#config_xy", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "xyoffset", "url": "YAHOO.widget.Tooltip.html#config_xyoffset", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "y", "url": "YAHOO.widget.Overlay.html#config_y", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "YAHOO.widget.Dialog.CSS_DIALOG", "url": "YAHOO.widget.Dialog.html#property_YAHOO.widget.Dialog.CSS_DIALOG", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.BOTTOM_LEFT", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.BOTTOM_LEFT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.BOTTOM_RIGHT", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.BOTTOM_RIGHT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.CSS_HIDDEN", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.CSS_HIDDEN", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.CSS_IFRAME", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.CSS_IFRAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.CSS_OVERLAY", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.CSS_OVERLAY", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.IFRAME_SRC", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.IFRAME_SRC", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay._initialized", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay._initialized", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.STD_MOD_RE", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.STD_MOD_RE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.TOP_LEFT", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.TOP_LEFT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.TOP_RIGHT", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.TOP_RIGHT", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay._TRIGGER_MAP", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay._TRIGGER_MAP", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.VIEWPORT_OFFSET", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.VIEWPORT_OFFSET", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.windowResizeEvent", "url": "YAHOO.widget.Overlay.html#event_YAHOO.widget.Overlay.windowResizeEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.windowResizeHandler", "url": "YAHOO.widget.Overlay.html#method_YAHOO.widget.Overlay.windowResizeHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.windowScrollEvent", "url": "YAHOO.widget.Overlay.html#event_YAHOO.widget.Overlay.windowScrollEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.windowScrollHandler", "url": "YAHOO.widget.Overlay.html#method_YAHOO.widget.Overlay.windowScrollHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "YAHOO.widget.Panel.CSS_PANEL", "url": "YAHOO.widget.Panel.html#property_YAHOO.widget.Panel.CSS_PANEL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "YAHOO.widget.Panel.CSS_PANEL_CONTAINER", "url": "YAHOO.widget.Panel.html#property_YAHOO.widget.Panel.CSS_PANEL_CONTAINER", "type": "property"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "YAHOO.widget.Panel.FOCUSABLE", "url": "YAHOO.widget.Panel.html#property_YAHOO.widget.Panel.FOCUSABLE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "YAHOO.widget.Tooltip.CSS_TOOLTIP", "url": "YAHOO.widget.Tooltip.html#property_YAHOO.widget.Tooltip.CSS_TOOLTIP", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "zIndex", "url": "YAHOO.widget.Overlay.html#config_zIndex", "type": "config"}];
+</script>
+</body>
+</html>

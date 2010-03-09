@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Creating a Modal "Loading" Panel</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Creating a Modal "Loading" Panel</h1>
+
+<div class="exampleIntro">
+	<p>A common use case for the Panel Control involves using it to display "please wait" text and images to indicate that the application is busy doing something.  As this page loads, a modal "please wait"-style Panel Control instance appears and the remainder of the page dims.  When the content for the container is loaded (consisting of lorem ipsum text), the panel and its modaliy mask fade away and the page returns to a normal interactive state.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="content"></div>
+
+<script type="text/javascript">
+
+    YAHOO.namespace("example.container");
+
+    function init() {
+
+        var content = document.getElementById("content");
+        
+        content.innerHTML = "";
+
+        if (!YAHOO.example.container.wait) {
+
+            // Initialize the temporary Panel to display while waiting for external content to load
+
+            YAHOO.example.container.wait = 
+                    new YAHOO.widget.Panel("wait",  
+                                                    { width: "240px", 
+                                                      fixedcenter: true, 
+                                                      close: false, 
+                                                      draggable: false, 
+                                                      zindex:4,
+                                                      modal: true,
+                                                      visible: false
+                                                    } 
+                                                );
+    
+            YAHOO.example.container.wait.setHeader("Loading, please wait...");
+            YAHOO.example.container.wait.setBody("<img src=\"http://l.yimg.com/a/i/us/per/gr/gp/rel_interstitial_loading.gif\"/>");
+            YAHOO.example.container.wait.render(document.body);
+
+        }
+
+        // Define the callback object for Connection Manager that will set the body of our content area when the content has loaded
+
+
+
+        var callback = {
+            success : function(o) {
+                content.innerHTML = o.responseText;
+                content.style.visibility = "visible";
+                YAHOO.example.container.wait.hide();
+            },
+            failure : function(o) {
+                content.innerHTML = o.responseText;
+                content.style.visibility = "visible";
+                content.innerHTML = "CONNECTION FAILED!";
+                YAHOO.example.container.wait.hide();
+            }
+        }
+    
+        // Show the Panel
+        YAHOO.example.container.wait.show();
+        
+        // Connect to our data source and load the data
+        var conn = YAHOO.util.Connect.asyncRequest("GET", "assets/somedata.php?r=" + new Date().getTime(), callback);
+    }
+    
+    YAHOO.util.Event.on("panelbutton", "click", init);
+		
+</script>
+<button id="panelbutton">Show Panel</button>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

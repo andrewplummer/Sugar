@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using addModule to Add Custom (Non-YUI) Content with YUILoader</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#mapContainer { 
+	height: 400px;
+	width: 500px;
+	background-color:#666;
+	margin-top:1em;
+	color:#FFF;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using addModule to Add Custom (Non-YUI) Content with YUILoader</h1>
+
+<div class="exampleIntro">
+	<p><a href="http://developer.yahoo.com/yui/yuiloader/">The YUILoader Utility</a> is designed, of course, to help you put YUI components on the page.  But your applications will frequently consist of a YUI-component foundation with your own application logic built on top.  In other words, when you're loading YUI components you'll often want to load your own components as well.</p>
+
+<p>This example shows you how to create a custom (non-YUI) module and load it via YUILoader.  Click the "Load Yahoo! Maps" button below to load the Yahoo! Maps widget using the <a href="http://developer.yahoo.com/maps/ajax/">Yahoo! Maps AJAX API</a>.  The Maps widget requires specific YUI functionality to be loaded before its own JavaScript files are loaded.  YUI Loader accepts our definition of a new <code>yahoomaps</code> module and, when we request it, the required files are brought into the page in the correct order.</p>
+
+<p><strong>Note 1:</strong> As of YUI 2.4.1, defining custom modules that override existing YUI skins requires a specific syntax.  See the <a href="#overrideskins">example code</a> below for details.  <strong>Note 2:</strong>  Opera is not fully supported by the Yahoo! Maps AJAX API.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<!--Container for our call-to-action button-->
+<div id="buttonContainer"></div>
+
+<!--Container for our Maps instance-->
+<div id="mapContainer">Click the button above; Yahoo! Maps will load here.</div>
+
+<script type="text/javascript">
+//create our Button Instance which will trigger Loader to
+//load the JSON utility from json.org.
+YAHOO.example.buttoninit = function() {
+
+	//Create the button instance:
+	var oButton = new YAHOO.widget.Button({ 
+		id: "mapInsertButton",  
+		type: "button",  
+		label: "Click here to load Yahoo! Maps",  
+		container: "buttonContainer"  
+	});
+	YAHOO.log("Button created; click button to begin loading Yahoo! Maps.", "info", "example");
+
+	//Create a handler that handles the button click;
+	//it logs the click, hides the button, then fires 
+	//the function (loaderinit) that brings in the Maps module:
+	var onButtonClick = function() {
+		YAHOO.log("Button clicked; hiding button now and loading Yahoo! Maps", "info", "example");
+		this.set("disabled", true); //disable the button
+		YAHOO.example.loaderinit(); //initialize loader
+	}
+	
+	//attach the handler to the Button's click event:
+	oButton.on("click", onButtonClick);
+};
+
+//Once the buttonContainer element is on the page, we can create
+//our button instance; in this case, the onContentReady deferral is unnecessary,
+//because we're writing the element to the page before this script,
+//but in many cases the onContentReady wrapper gives you added
+//flexibility and it comes at low expense:
+YAHOO.util.Event.onAvailable("buttonContainer", 
+							  YAHOO.example.buttoninit);
+
+//Once Yahoo! Maps is loaded, we want to initialize the Maps display:
+YAHOO.example.onMapsLoaded = function(){
+	YAHOO.log("onMapsLoaded firing.");
+
+	//The following lines employ the Yahoo! Maps
+	//Ajax API: http://developer.yahoo.com/maps/ajax/
+	
+	// Create a lat/lon object
+	var myPoint = new YGeoPoint(37.754164,-122.454464);
+	// Create a map object
+	var map = new YMap(document.getElementById('mapContainer'));
+	// Add a pan control
+	map.addPanControl();
+	// Add a slider zoom control
+	map.addZoomLong();
+	// Add map type control
+	map.addTypeControl();
+	// Display the map centered on a latitude and longitude
+	map.drawZoomAndCenter(myPoint, 6);
+
+	//Log the completion of the process:
+	YAHOO.log("Yahoo! Maps was successfully loaded into the page, and the Maps display was initialized.  The process is complete.", "info", "example");
+
+};
+
+YAHOO.example.loaderinit = function() {
+	YAHOO.log("YAHOO.example.loaderinit firing; we'll define our custom Maps module and load it now.", "info", "example");
+	
+	//Begin by creating a new Loader instance:
+	var loader = new YAHOO.util.YUILoader({
+		onSuccess: YAHOO.example.onMapsLoaded,
+		base: "../../build/"
+	});
+	
+	//Here we define the Yahoo! Maps API module 
+	//in YUI Loader:
+	loader.addModule({		
+		name: 'yahoomaps', //module name; must be unique
+		type: 'js', //can be "js" or "css"
+		// a variable that will be available when the script is loaded.  Needed
+        // in order to act on the script immediately in Safari 2.x and below:
+		varName: "YahooMapsAPIAjax", 
+		//can use a path instead, extending base path:
+		fullpath: 'http://l.yimg.com/d/lib/map/js/api/ymapapi_3_8_2_3.js',
+		//the list of modules that this new module requires:
+		requires: ['yahoo','dom','event','json','animation','dragdrop']
+	});
+	
+	//This appid, available from 
+	//http://developer.yahoo.com/maps/ajax/ , must come before 
+	//the insert method is called.  And yes, this must be a global variable:
+	YMAPPID = "YUIBlogger";
+
+    loader.require("yahoomaps"); //include the new  module
+
+	//Insert JSON utility on the page, passing in our callback:
+    loader.insert();
+	
+
+};
+</script>
+
+
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

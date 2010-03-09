@@ -1,0 +1,1014 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: button   buttongroup.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Button&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_button.html" title="button">button</a>
+                
+                 &gt; buttongroup.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="o">(</span><span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+
+    <span class="c">// Shorthard for utilities</span>
+<span class="c"></span>    
+    <span class="k">var</span> <span class="nx">Dom</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">,</span>
+        <span class="nx">Event</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">,</span>
+        <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">,</span>
+        <span class="nx">Button</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Button</span><span class="o">,</span>  
+    
+        <span class="c">// Private collection of radio buttons</span>
+<span class="c"></span>    
+        <span class="nx">m_oButtons</span> <span class="o">=</span> <span class="o">{};</span>
+
+
+
+    <span class="c">/**</span>
+<span class="c">    * The ButtonGroup class creates a set of buttons that are mutually </span>
+<span class="c">    * exclusive; checking one button in the set will uncheck all others in the </span>
+<span class="c">    * button group.</span>
+<span class="c">    * @param {String} p_oElement String specifying the id attribute of the </span>
+<span class="c">    * &lt;code&gt;&amp;#60;div&amp;#62;&lt;/code&gt; element of the button group.</span>
+<span class="c">    * @param {&lt;a href=&quot;http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/</span>
+<span class="c">    * level-one-html.html#ID-22445964&quot;&gt;HTMLDivElement&lt;/a&gt;} p_oElement Object </span>
+<span class="c">    * specifying the &lt;code&gt;&amp;#60;div&amp;#62;&lt;/code&gt; element of the button group.</span>
+<span class="c">    * @param {Object} p_oElement Object literal specifying a set of </span>
+<span class="c">    * configuration attributes used to create the button group.</span>
+<span class="c">    * @param {Object} p_oAttributes Optional. Object literal specifying a set </span>
+<span class="c">    * of configuration attributes used to create the button group.</span>
+<span class="c">    * @namespace YAHOO.widget</span>
+<span class="c">    * @class ButtonGroup</span>
+<span class="c">    * @constructor</span>
+<span class="c">    * @extends YAHOO.util.Element</span>
+<span class="c">    */</span>
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ButtonGroup</span> <span class="o">=</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_oElement</span><span class="o">,</span> <span class="nx">p_oAttributes</span><span class="o">)</span> <span class="o">{</span>
+    
+        <span class="k">var</span> <span class="nx">fnSuperClass</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ButtonGroup</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">,</span>
+            <span class="nx">sNodeName</span><span class="o">,</span>
+            <span class="nx">oElement</span><span class="o">,</span>
+            <span class="nx">sId</span><span class="o">;</span>
+    
+        <span class="k">if</span> <span class="o">(</span><span class="nx">arguments</span><span class="o">.</span><span class="nx">length</span> <span class="o">==</span> <span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">p_oElement</span><span class="o">)</span> <span class="o">&amp;&amp;</span> 
+            <span class="o">!</span><span class="nx">p_oElement</span><span class="o">.</span><span class="nx">nodeName</span><span class="o">)</span> <span class="o">{</span>
+    
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">p_oElement</span><span class="o">.</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+    
+                <span class="nx">sId</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">generateId</span><span class="o">();</span>
+    
+                <span class="nx">p_oElement</span><span class="o">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">sId</span><span class="o">;</span>
+    
+                <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;No value specified for the button group&#39;s \&quot;id\&quot;&quot;</span> <span class="o">+</span>
+                    <span class="s2">&quot; attribute. Setting button group id to \&quot;&quot;</span> <span class="o">+</span> <span class="nx">sId</span> <span class="o">+</span> <span class="s2">&quot;\&quot;.&quot;</span><span class="o">,</span>
+                    <span class="s2">&quot;info&quot;</span><span class="o">);</span>
+    
+            <span class="o">}</span>
+    
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">LogWriter</span><span class="o">(</span><span class="s2">&quot;ButtonGroup &quot;</span> <span class="o">+</span> <span class="nx">sId</span><span class="o">);</span>
+    
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;No source HTML element.  Building the button &quot;</span> <span class="o">+</span>
+                    <span class="s2">&quot;group using the set of configuration attributes.&quot;</span><span class="o">);</span>
+    
+            <span class="nx">fnSuperClass</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_createGroupElement</span><span class="o">()),</span> <span class="nx">p_oElement</span><span class="o">);</span>
+    
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">p_oElement</span><span class="o">))</span> <span class="o">{</span>
+    
+            <span class="nx">oElement</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">p_oElement</span><span class="o">);</span>
+    
+            <span class="k">if</span> <span class="o">(</span><span class="nx">oElement</span><span class="o">)</span> <span class="o">{</span>
+            
+                <span class="k">if</span> <span class="o">(</span><span class="nx">oElement</span><span class="o">.</span><span class="nx">nodeName</span><span class="o">.</span><span class="nx">toUpperCase</span><span class="o">()</span> <span class="o">==</span> <span class="k">this</span><span class="o">.</span><span class="nx">NODE_NAME</span><span class="o">)</span> <span class="o">{</span>
+    
+                    <span class="k">this</span><span class="o">.</span><span class="nx">logger</span> <span class="o">=</span> 
+                        <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">LogWriter</span><span class="o">(</span><span class="s2">&quot;ButtonGroup &quot;</span> <span class="o">+</span> <span class="nx">p_oElement</span><span class="o">);</span>
+            
+                    <span class="nx">fnSuperClass</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">oElement</span><span class="o">,</span> <span class="nx">p_oAttributes</span><span class="o">);</span>
+    
+                <span class="o">}</span>
+    
+            <span class="o">}</span>
+        
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+    
+            <span class="nx">sNodeName</span> <span class="o">=</span> <span class="nx">p_oElement</span><span class="o">.</span><span class="nx">nodeName</span><span class="o">.</span><span class="nx">toUpperCase</span><span class="o">();</span>
+    
+            <span class="k">if</span> <span class="o">(</span><span class="nx">sNodeName</span> <span class="o">&amp;&amp;</span> <span class="nx">sNodeName</span> <span class="o">==</span> <span class="k">this</span><span class="o">.</span><span class="nx">NODE_NAME</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="k">if</span> <span class="o">(!</span><span class="nx">p_oElement</span><span class="o">.</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+        
+                    <span class="nx">p_oElement</span><span class="o">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">generateId</span><span class="o">();</span>
+        
+                    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;No value specified for the button group&#39;s&quot;</span> <span class="o">+</span>
+                        <span class="s2">&quot; \&quot;id\&quot; attribute. Setting button group id &quot;</span> <span class="o">+</span>
+                        <span class="s2">&quot;to \&quot;&quot;</span> <span class="o">+</span> <span class="nx">p_oElement</span><span class="o">.</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;\&quot;.&quot;</span><span class="o">,</span> <span class="s2">&quot;warn&quot;</span><span class="o">);</span>
+        
+                <span class="o">}</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">logger</span> <span class="o">=</span> 
+                    <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">LogWriter</span><span class="o">(</span><span class="s2">&quot;ButtonGroup &quot;</span> <span class="o">+</span> <span class="nx">p_oElement</span><span class="o">.</span><span class="nx">id</span><span class="o">);</span>
+        
+                <span class="nx">fnSuperClass</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">p_oElement</span><span class="o">,</span> <span class="nx">p_oAttributes</span><span class="o">);</span>
+    
+            <span class="o">}</span>
+    
+        <span class="o">}</span>
+    
+    <span class="o">};</span>
+    
+    
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ButtonGroup</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Element</span><span class="o">,</span> <span class="o">{</span>
+    
+    
+        <span class="c">// Protected properties</span>
+<span class="c"></span>        
+        
+        <span class="c">/** </span>
+<span class="c">        * @property _buttons</span>
+<span class="c">        * @description Array of buttons in the button group.</span>
+<span class="c">        * @default null</span>
+<span class="c">        * @protected</span>
+<span class="c">        * @type Array</span>
+<span class="c">        */</span>
+        <span class="nx">_buttons</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        
+        
+        
+        <span class="c">// Constants</span>
+<span class="c"></span>        
+        
+        <span class="c">/**</span>
+<span class="c">        * @property NODE_NAME</span>
+<span class="c">        * @description The name of the tag to be used for the button </span>
+<span class="c">        * group&#39;s element. </span>
+<span class="c">        * @default &quot;DIV&quot;</span>
+<span class="c">        * @final</span>
+<span class="c">        * @type String</span>
+<span class="c">        */</span>
+        <span class="nx">NODE_NAME</span><span class="o">:</span> <span class="s2">&quot;DIV&quot;</span><span class="o">,</span>
+
+
+        <span class="c">/**</span>
+<span class="c">        * @property CLASS_NAME_PREFIX</span>
+<span class="c">        * @description Prefix used for all class names applied to a ButtonGroup.</span>
+<span class="c">        * @default &quot;yui-&quot;</span>
+<span class="c">        * @final</span>
+<span class="c">        * @type String</span>
+<span class="c">        */</span>
+        <span class="nx">CLASS_NAME_PREFIX</span><span class="o">:</span> <span class="s2">&quot;yui-&quot;</span><span class="o">,</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @property CSS_CLASS_NAME</span>
+<span class="c">        * @description String representing the CSS class(es) to be applied  </span>
+<span class="c">        * to the button group&#39;s element.</span>
+<span class="c">        * @default &quot;buttongroup&quot;</span>
+<span class="c">        * @final</span>
+<span class="c">        * @type String</span>
+<span class="c">        */</span>
+        <span class="nx">CSS_CLASS_NAME</span><span class="o">:</span> <span class="s2">&quot;buttongroup&quot;</span><span class="o">,</span>
+    
+    
+    
+        <span class="c">// Protected methods</span>
+<span class="c"></span>        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method _createGroupElement</span>
+<span class="c">        * @description Creates the button group&#39;s element.</span>
+<span class="c">        * @protected</span>
+<span class="c">        * @return {&lt;a href=&quot;http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/</span>
+<span class="c">        * level-one-html.html#ID-22445964&quot;&gt;HTMLDivElement&lt;/a&gt;}</span>
+<span class="c">        */</span>
+        <span class="nx">_createGroupElement</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">oElement</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">NODE_NAME</span><span class="o">);</span>
+        
+            <span class="k">return</span> <span class="nx">oElement</span><span class="o">;</span>
+        
+        <span class="o">},</span>
+        
+        
+        
+        <span class="c">// Protected attribute setter methods</span>
+<span class="c"></span>        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method _setDisabled</span>
+<span class="c">        * @description Sets the value of the button groups&#39;s </span>
+<span class="c">        * &quot;disabled&quot; attribute.</span>
+<span class="c">        * @protected</span>
+<span class="c">        * @param {Boolean} p_bDisabled Boolean indicating the value for</span>
+<span class="c">        * the button group&#39;s &quot;disabled&quot; attribute.</span>
+<span class="c">        */</span>
+        <span class="nx">_setDisabled</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_bDisabled</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">nButtons</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getCount</span><span class="o">(),</span>
+                <span class="nx">i</span><span class="o">;</span>
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">nButtons</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="nx">i</span> <span class="o">=</span> <span class="nx">nButtons</span> <span class="o">-</span> <span class="m">1</span><span class="o">;</span>
+                
+                <span class="k">do</span> <span class="o">{</span>
+        
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;disabled&quot;</span><span class="o">,</span> <span class="nx">p_bDisabled</span><span class="o">);</span>
+                
+                <span class="o">}</span>
+                <span class="k">while</span> <span class="o">(</span><span class="nx">i</span><span class="o">--);</span>
+        
+            <span class="o">}</span>
+        
+        <span class="o">},</span>
+        
+        
+        
+        <span class="c">// Protected event handlers</span>
+<span class="c"></span>        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method _onKeyDown</span>
+<span class="c">        * @description &quot;keydown&quot; event handler for the button group.</span>
+<span class="c">        * @protected</span>
+<span class="c">        * @param {Event} p_oEvent Object representing the DOM event object  </span>
+<span class="c">        * passed back by the event utility (YAHOO.util.Event).</span>
+<span class="c">        */</span>
+        <span class="nx">_onKeyDown</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_oEvent</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">oTarget</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">getTarget</span><span class="o">(</span><span class="nx">p_oEvent</span><span class="o">),</span>
+                <span class="nx">nCharCode</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">getCharCode</span><span class="o">(</span><span class="nx">p_oEvent</span><span class="o">),</span>
+                <span class="nx">sId</span> <span class="o">=</span> <span class="nx">oTarget</span><span class="o">.</span><span class="nx">parentNode</span><span class="o">.</span><span class="nx">parentNode</span><span class="o">.</span><span class="nx">id</span><span class="o">,</span>
+                <span class="nx">oButton</span> <span class="o">=</span> <span class="nx">m_oButtons</span><span class="o">[</span><span class="nx">sId</span><span class="o">],</span>
+                <span class="nx">nIndex</span> <span class="o">=</span> <span class="o">-</span><span class="m">1</span><span class="o">;</span>
+        
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">nCharCode</span> <span class="o">==</span> <span class="m">37</span> <span class="o">||</span> <span class="nx">nCharCode</span> <span class="o">==</span> <span class="m">38</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="nx">nIndex</span> <span class="o">=</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">.</span><span class="nx">index</span> <span class="o">===</span> <span class="m">0</span><span class="o">)</span> <span class="o">?</span> 
+                            <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">length</span> <span class="o">-</span> <span class="m">1</span><span class="o">)</span> <span class="o">:</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">.</span><span class="nx">index</span> <span class="o">-</span> <span class="m">1</span><span class="o">);</span>
+            
+            <span class="o">}</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">nCharCode</span> <span class="o">==</span> <span class="m">39</span> <span class="o">||</span> <span class="nx">nCharCode</span> <span class="o">==</span> <span class="m">40</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="nx">nIndex</span> <span class="o">=</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">.</span><span class="nx">index</span> <span class="o">===</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">length</span> <span class="o">-</span> <span class="m">1</span><span class="o">))</span> <span class="o">?</span> 
+                            <span class="m">0</span> <span class="o">:</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">.</span><span class="nx">index</span> <span class="o">+</span> <span class="m">1</span><span class="o">);</span>
+        
+            <span class="o">}</span>
+        
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">nIndex</span> <span class="o">&gt;</span> <span class="o">-</span><span class="m">1</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">check</span><span class="o">(</span><span class="nx">nIndex</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">getButton</span><span class="o">(</span><span class="nx">nIndex</span><span class="o">).</span><span class="nx">focus</span><span class="o">();</span>
+            
+            <span class="o">}</span>        
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method _onAppendTo</span>
+<span class="c">        * @description &quot;appendTo&quot; event handler for the button group.</span>
+<span class="c">        * @protected</span>
+<span class="c">        * @param {Event} p_oEvent Object representing the event that was fired.</span>
+<span class="c">        */</span>
+        <span class="nx">_onAppendTo</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_oEvent</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">aButtons</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">,</span>
+                <span class="nx">nButtons</span> <span class="o">=</span> <span class="nx">aButtons</span><span class="o">.</span><span class="nx">length</span><span class="o">,</span>
+                <span class="nx">i</span><span class="o">;</span>
+        
+            <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">nButtons</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+        
+                <span class="nx">aButtons</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">appendTo</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">));</span>
+        
+            <span class="o">}</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method _onButtonCheckedChange</span>
+<span class="c">        * @description &quot;checkedChange&quot; event handler for each button in the </span>
+<span class="c">        * button group.</span>
+<span class="c">        * @protected</span>
+<span class="c">        * @param {Event} p_oEvent Object representing the event that was fired.</span>
+<span class="c">        * @param {&lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;YAHOO.widget.Button&lt;/a&gt;}  </span>
+<span class="c">        * p_oButton Object representing the button that fired the event.</span>
+<span class="c">        */</span>
+        <span class="nx">_onButtonCheckedChange</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_oEvent</span><span class="o">,</span> <span class="nx">p_oButton</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">bChecked</span> <span class="o">=</span> <span class="nx">p_oEvent</span><span class="o">.</span><span class="nx">newValue</span><span class="o">,</span>
+                <span class="nx">oCheckedButton</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;checkedButton&quot;</span><span class="o">);</span>
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">bChecked</span> <span class="o">&amp;&amp;</span> <span class="nx">oCheckedButton</span> <span class="o">!=</span> <span class="nx">p_oButton</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="k">if</span> <span class="o">(</span><span class="nx">oCheckedButton</span><span class="o">)</span> <span class="o">{</span>
+        
+                    <span class="nx">oCheckedButton</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;checked&quot;</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        
+                <span class="o">}</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;checkedButton&quot;</span><span class="o">,</span> <span class="nx">p_oButton</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;value&quot;</span><span class="o">,</span> <span class="nx">p_oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;value&quot;</span><span class="o">));</span>
+        
+            <span class="o">}</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">oCheckedButton</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">oCheckedButton</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;checked&quot;</span><span class="o">))</span> <span class="o">{</span>
+        
+                <span class="nx">oCheckedButton</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;checked&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        
+            <span class="o">}</span>
+           
+        <span class="o">},</span>
+        
+        
+        
+        <span class="c">// Public methods</span>
+<span class="c"></span>        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method init</span>
+<span class="c">        * @description The ButtonGroup class&#39;s initialization method.</span>
+<span class="c">        * @param {String} p_oElement String specifying the id attribute of the </span>
+<span class="c">        * &lt;code&gt;&amp;#60;div&amp;#62;&lt;/code&gt; element of the button group.</span>
+<span class="c">        * @param {&lt;a href=&quot;http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/</span>
+<span class="c">        * level-one-html.html#ID-22445964&quot;&gt;HTMLDivElement&lt;/a&gt;} p_oElement Object </span>
+<span class="c">        * specifying the &lt;code&gt;&amp;#60;div&amp;#62;&lt;/code&gt; element of the button group.</span>
+<span class="c">        * @param {Object} p_oElement Object literal specifying a set of  </span>
+<span class="c">        * configuration attributes used to create the button group.</span>
+<span class="c">        * @param {Object} p_oAttributes Optional. Object literal specifying a</span>
+<span class="c">        * set of configuration attributes used to create the button group.</span>
+<span class="c">        */</span>
+        <span class="nx">init</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_oElement</span><span class="o">,</span> <span class="nx">p_oAttributes</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span> <span class="o">=</span> <span class="o">[];</span>
+        
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ButtonGroup</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">init</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">p_oElement</span><span class="o">,</span> 
+                    <span class="nx">p_oAttributes</span><span class="o">);</span>
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">CLASS_NAME_PREFIX</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">CSS_CLASS_NAME</span><span class="o">);</span>
+
+        
+            <span class="k">var</span> <span class="nx">sClass</span> <span class="o">=</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Button</span><span class="o">.</span><span class="nx">prototype</span><span class="o">.</span><span class="nx">CLASS_NAME_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;radio-button&quot;</span><span class="o">),</span>
+				<span class="nx">aButtons</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getElementsByClassName</span><span class="o">(</span><span class="nx">sClass</span><span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Searching for child nodes with the class name &quot;</span> <span class="o">+</span>
+                <span class="nx">sClass</span> <span class="o">+</span> <span class="s2">&quot; to add to the button group.&quot;</span><span class="o">);</span>
+        
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">aButtons</span><span class="o">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Found &quot;</span> <span class="o">+</span> <span class="nx">aButtons</span><span class="o">.</span><span class="nx">length</span> <span class="o">+</span> 
+                    <span class="s2">&quot; child nodes with the class name &quot;</span> <span class="o">+</span> <span class="nx">sClass</span> <span class="o">+</span> 
+                    <span class="s2">&quot;  Attempting to add to button group.&quot;</span><span class="o">);</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">addButtons</span><span class="o">(</span><span class="nx">aButtons</span><span class="o">);</span>
+        
+            <span class="o">}</span>
+        
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Searching for child nodes with the type of &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot; \&quot;radio\&quot; to add to the button group.&quot;</span><span class="o">);</span>
+        
+            <span class="k">function</span> <span class="nx">isRadioButton</span><span class="o">(</span><span class="nx">p_oElement</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="k">return</span> <span class="o">(</span><span class="nx">p_oElement</span><span class="o">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;radio&quot;</span><span class="o">);</span>
+        
+            <span class="o">}</span>
+        
+            <span class="nx">aButtons</span> <span class="o">=</span> 
+                <span class="nx">Dom</span><span class="o">.</span><span class="nx">getElementsBy</span><span class="o">(</span><span class="nx">isRadioButton</span><span class="o">,</span> <span class="s2">&quot;input&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">));</span>
+        
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">aButtons</span><span class="o">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Found &quot;</span> <span class="o">+</span> <span class="nx">aButtons</span><span class="o">.</span><span class="nx">length</span> <span class="o">+</span> <span class="s2">&quot; child nodes&quot;</span> <span class="o">+</span>
+                    <span class="s2">&quot; with the type of \&quot;radio.\&quot;  Attempting to add to&quot;</span> <span class="o">+</span>
+                    <span class="s2">&quot; button group.&quot;</span><span class="o">);</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">addButtons</span><span class="o">(</span><span class="nx">aButtons</span><span class="o">);</span>
+        
+            <span class="o">}</span>
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s2">&quot;keydown&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_onKeyDown</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s2">&quot;appendTo&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_onAppendTo</span><span class="o">);</span>
+        
+
+            <span class="k">var</span> <span class="nx">oContainer</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;container&quot;</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">oContainer</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">oContainer</span><span class="o">))</span> <span class="o">{</span>
+        
+                    <span class="nx">Event</span><span class="o">.</span><span class="nx">onContentReady</span><span class="o">(</span><span class="nx">oContainer</span><span class="o">,</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        
+                        <span class="k">this</span><span class="o">.</span><span class="nx">appendTo</span><span class="o">(</span><span class="nx">oContainer</span><span class="o">);</span>            
+                    
+                    <span class="o">},</span> <span class="kc">null</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        
+                <span class="o">}</span>
+                <span class="k">else</span> <span class="o">{</span>
+        
+                    <span class="k">this</span><span class="o">.</span><span class="nx">appendTo</span><span class="o">(</span><span class="nx">oContainer</span><span class="o">);</span>
+        
+                <span class="o">}</span>
+        
+            <span class="o">}</span>
+        
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Initialization completed.&quot;</span><span class="o">);</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method initAttributes</span>
+<span class="c">        * @description Initializes all of the configuration attributes used to  </span>
+<span class="c">        * create the button group.</span>
+<span class="c">        * @param {Object} p_oAttributes Object literal specifying a set of </span>
+<span class="c">        * configuration attributes used to create the button group.</span>
+<span class="c">        */</span>
+        <span class="nx">initAttributes</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_oAttributes</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">oAttributes</span> <span class="o">=</span> <span class="nx">p_oAttributes</span> <span class="o">||</span> <span class="o">{};</span>
+        
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ButtonGroup</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">initAttributes</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span>
+                <span class="k">this</span><span class="o">,</span> <span class="nx">oAttributes</span><span class="o">);</span>
+        
+        
+            <span class="c">/**</span>
+<span class="c">            * @attribute name</span>
+<span class="c">            * @description String specifying the name for the button group.  </span>
+<span class="c">            * This name will be applied to each button in the button group.</span>
+<span class="c">            * @default null</span>
+<span class="c">            * @type String</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;name&quot;</span><span class="o">,</span> <span class="o">{</span>
+        
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">oAttributes</span><span class="o">.</span><span class="nx">name</span><span class="o">,</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span>
+        
+            <span class="o">});</span>
+        
+        
+            <span class="c">/**</span>
+<span class="c">            * @attribute disabled</span>
+<span class="c">            * @description Boolean indicating if the button group should be </span>
+<span class="c">            * disabled.  Disabling the button group will disable each button </span>
+<span class="c">            * in the button group.  Disabled buttons are dimmed and will not </span>
+<span class="c">            * respond to user input or fire events.</span>
+<span class="c">            * @default false</span>
+<span class="c">            * @type Boolean</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;disabled&quot;</span><span class="o">,</span> <span class="o">{</span>
+        
+                <span class="nx">value</span><span class="o">:</span> <span class="o">(</span><span class="nx">oAttributes</span><span class="o">.</span><span class="nx">disabled</span> <span class="o">||</span> <span class="kc">false</span><span class="o">),</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="o">.</span><span class="nx">isBoolean</span><span class="o">,</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setDisabled</span>
+        
+            <span class="o">});</span>
+        
+        
+            <span class="c">/**</span>
+<span class="c">            * @attribute value</span>
+<span class="c">            * @description Object specifying the value for the button group.</span>
+<span class="c">            * @default null</span>
+<span class="c">            * @type Object</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;value&quot;</span><span class="o">,</span> <span class="o">{</span>
+        
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">oAttributes</span><span class="o">.</span><span class="nx">value</span>
+        
+            <span class="o">});</span>
+        
+        
+            <span class="c">/**</span>
+<span class="c">            * @attribute container</span>
+<span class="c">            * @description HTML element reference or string specifying the id </span>
+<span class="c">            * attribute of the HTML element that the button group&#39;s markup</span>
+<span class="c">            * should be rendered into.</span>
+<span class="c">            * @type &lt;a href=&quot;http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/</span>
+<span class="c">            * level-one-html.html#ID-58190037&quot;&gt;HTMLElement&lt;/a&gt;|String</span>
+<span class="c">            * @default null</span>
+<span class="c">			* @writeonce</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;container&quot;</span><span class="o">,</span> <span class="o">{</span>
+        
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">oAttributes</span><span class="o">.</span><span class="nx">container</span><span class="o">,</span>
+                <span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+        
+            <span class="o">});</span>
+        
+        
+            <span class="c">/**</span>
+<span class="c">            * @attribute checkedButton</span>
+<span class="c">            * @description Reference for the button in the button group that </span>
+<span class="c">            * is checked.</span>
+<span class="c">            * @type {&lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;YAHOO.widget.Button&lt;/a&gt;}</span>
+<span class="c">            * @default null</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;checkedButton&quot;</span><span class="o">,</span> <span class="o">{</span>
+        
+                <span class="nx">value</span><span class="o">:</span> <span class="kc">null</span>
+        
+            <span class="o">});</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method addButton</span>
+<span class="c">        * @description Adds the button to the button group.</span>
+<span class="c">        * @param {&lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;YAHOO.widget.Button&lt;/a&gt;}  </span>
+<span class="c">        * p_oButton Object reference for the &lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;</span>
+<span class="c">        * YAHOO.widget.Button&lt;/a&gt; instance to be added to the button group.</span>
+<span class="c">        * @param {String} p_oButton String specifying the id attribute of the </span>
+<span class="c">        * &lt;code&gt;&amp;#60;input&amp;#62;&lt;/code&gt; or &lt;code&gt;&amp;#60;span&amp;#62;&lt;/code&gt; element </span>
+<span class="c">        * to be used to create the button to be added to the button group.</span>
+<span class="c">        * @param {&lt;a href=&quot;http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/</span>
+<span class="c">        * level-one-html.html#ID-6043025&quot;&gt;HTMLInputElement&lt;/a&gt;|&lt;a href=&quot;</span>
+<span class="c">        * http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/level-one-html.html#</span>
+<span class="c">        * ID-33759296&quot;&gt;HTMLElement&lt;/a&gt;} p_oButton Object reference for the </span>
+<span class="c">        * &lt;code&gt;&amp;#60;input&amp;#62;&lt;/code&gt; or &lt;code&gt;&amp;#60;span&amp;#62;&lt;/code&gt; element </span>
+<span class="c">        * to be used to create the button to be added to the button group.</span>
+<span class="c">        * @param {Object} p_oButton Object literal specifying a set of </span>
+<span class="c">        * &lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;YAHOO.widget.Button&lt;/a&gt; </span>
+<span class="c">        * configuration attributes used to configure the button to be added to </span>
+<span class="c">        * the button group.</span>
+<span class="c">        * @return {&lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;YAHOO.widget.Button&lt;/a&gt;} </span>
+<span class="c">        */</span>
+        <span class="nx">addButton</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_oButton</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">oButton</span><span class="o">,</span>
+                <span class="nx">oButtonElement</span><span class="o">,</span>
+                <span class="nx">oGroupElement</span><span class="o">,</span>
+                <span class="nx">nIndex</span><span class="o">,</span>
+                <span class="nx">sButtonName</span><span class="o">,</span>
+                <span class="nx">sGroupName</span><span class="o">;</span>
+        
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">p_oButton</span> <span class="k">instanceof</span> <span class="nx">Button</span> <span class="o">&amp;&amp;</span> 
+                <span class="nx">p_oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;type&quot;</span><span class="o">)</span> <span class="o">==</span> <span class="s2">&quot;radio&quot;</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="nx">oButton</span> <span class="o">=</span> <span class="nx">p_oButton</span><span class="o">;</span>
+        
+            <span class="o">}</span>
+            <span class="k">else</span> <span class="k">if</span> <span class="o">(!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">p_oButton</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">p_oButton</span><span class="o">.</span><span class="nx">nodeName</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="nx">p_oButton</span><span class="o">.</span><span class="nx">type</span> <span class="o">=</span> <span class="s2">&quot;radio&quot;</span><span class="o">;</span>
+        
+                <span class="nx">oButton</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Button</span><span class="o">(</span><span class="nx">p_oButton</span><span class="o">);</span>
+
+            <span class="o">}</span>
+            <span class="k">else</span> <span class="o">{</span>
+        
+                <span class="nx">oButton</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Button</span><span class="o">(</span><span class="nx">p_oButton</span><span class="o">,</span> <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;radio&quot;</span> <span class="o">});</span>
+        
+            <span class="o">}</span>
+        
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="nx">nIndex</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+                <span class="nx">sButtonName</span> <span class="o">=</span> <span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;name&quot;</span><span class="o">);</span>
+                <span class="nx">sGroupName</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;name&quot;</span><span class="o">);</span>
+        
+                <span class="nx">oButton</span><span class="o">.</span><span class="nx">index</span> <span class="o">=</span> <span class="nx">nIndex</span><span class="o">;</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">[</span><span class="nx">nIndex</span><span class="o">]</span> <span class="o">=</span> <span class="nx">oButton</span><span class="o">;</span>
+                <span class="nx">m_oButtons</span><span class="o">[</span><span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;id&quot;</span><span class="o">)]</span> <span class="o">=</span> <span class="nx">oButton</span><span class="o">;</span>
+        
+        
+                <span class="k">if</span> <span class="o">(</span><span class="nx">sButtonName</span> <span class="o">!=</span> <span class="nx">sGroupName</span><span class="o">)</span> <span class="o">{</span>
+        
+                    <span class="nx">oButton</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;name&quot;</span><span class="o">,</span> <span class="nx">sGroupName</span><span class="o">);</span>
+                
+                <span class="o">}</span>
+        
+        
+                <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;disabled&quot;</span><span class="o">))</span> <span class="o">{</span>
+        
+                    <span class="nx">oButton</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;disabled&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        
+                <span class="o">}</span>
+        
+        
+                <span class="k">if</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;checked&quot;</span><span class="o">))</span> <span class="o">{</span>
+        
+                    <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;checkedButton&quot;</span><span class="o">,</span> <span class="nx">oButton</span><span class="o">);</span>
+        
+                <span class="o">}</span>
+
+                
+                <span class="nx">oButtonElement</span> <span class="o">=</span> <span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">);</span>
+                <span class="nx">oGroupElement</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">);</span>
+                
+                <span class="k">if</span> <span class="o">(</span><span class="nx">oButtonElement</span><span class="o">.</span><span class="nx">parentNode</span> <span class="o">!=</span> <span class="nx">oGroupElement</span><span class="o">)</span> <span class="o">{</span>
+                
+                    <span class="nx">oGroupElement</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">oButtonElement</span><span class="o">);</span>
+                
+                <span class="o">}</span>
+        
+                
+                <span class="nx">oButton</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s2">&quot;checkedChange&quot;</span><span class="o">,</span> 
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_onButtonCheckedChange</span><span class="o">,</span> <span class="nx">oButton</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Button &quot;</span> <span class="o">+</span> <span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;id&quot;</span><span class="o">)</span> <span class="o">+</span> <span class="s2">&quot; added.&quot;</span><span class="o">);</span>
+        
+            <span class="o">}</span>
+
+			<span class="k">return</span> <span class="nx">oButton</span><span class="o">;</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method addButtons</span>
+<span class="c">        * @description Adds the array of buttons to the button group.</span>
+<span class="c">        * @param {Array} p_aButtons Array of &lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;</span>
+<span class="c">        * YAHOO.widget.Button&lt;/a&gt; instances to be added </span>
+<span class="c">        * to the button group.</span>
+<span class="c">        * @param {Array} p_aButtons Array of strings specifying the id </span>
+<span class="c">        * attribute of the &lt;code&gt;&amp;#60;input&amp;#62;&lt;/code&gt; or &lt;code&gt;&amp;#60;span&amp;#62;</span>
+<span class="c">        * &lt;/code&gt; elements to be used to create the buttons to be added to the </span>
+<span class="c">        * button group.</span>
+<span class="c">        * @param {Array} p_aButtons Array of object references for the </span>
+<span class="c">        * &lt;code&gt;&amp;#60;input&amp;#62;&lt;/code&gt; or &lt;code&gt;&amp;#60;span&amp;#62;&lt;/code&gt; elements </span>
+<span class="c">        * to be used to create the buttons to be added to the button group.</span>
+<span class="c">        * @param {Array} p_aButtons Array of object literals, each containing</span>
+<span class="c">        * a set of &lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;YAHOO.widget.Button&lt;/a&gt;  </span>
+<span class="c">        * configuration attributes used to configure each button to be added </span>
+<span class="c">        * to the button group.</span>
+<span class="c">        * @return {Array}</span>
+<span class="c">        */</span>
+        <span class="nx">addButtons</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_aButtons</span><span class="o">)</span> <span class="o">{</span>
+    
+            <span class="k">var</span> <span class="nx">nButtons</span><span class="o">,</span>
+                <span class="nx">oButton</span><span class="o">,</span>
+                <span class="nx">aButtons</span><span class="o">,</span>
+                <span class="nx">i</span><span class="o">;</span>
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isArray</span><span class="o">(</span><span class="nx">p_aButtons</span><span class="o">))</span> <span class="o">{</span>
+            
+                <span class="nx">nButtons</span> <span class="o">=</span> <span class="nx">p_aButtons</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+                <span class="nx">aButtons</span> <span class="o">=</span> <span class="o">[];</span>
+        
+                <span class="k">if</span> <span class="o">(</span><span class="nx">nButtons</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+        
+                    <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">nButtons</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+        
+                        <span class="nx">oButton</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">addButton</span><span class="o">(</span><span class="nx">p_aButtons</span><span class="o">[</span><span class="nx">i</span><span class="o">]);</span>
+                        
+                        <span class="k">if</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">)</span> <span class="o">{</span>
+        
+                            <span class="nx">aButtons</span><span class="o">[</span><span class="nx">aButtons</span><span class="o">.</span><span class="nx">length</span><span class="o">]</span> <span class="o">=</span> <span class="nx">oButton</span><span class="o">;</span>
+        
+                        <span class="o">}</span>
+                    
+                    <span class="o">}</span>
+                
+                <span class="o">}</span>
+        
+            <span class="o">}</span>
+
+			<span class="k">return</span> <span class="nx">aButtons</span><span class="o">;</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method removeButton</span>
+<span class="c">        * @description Removes the button at the specified index from the </span>
+<span class="c">        * button group.</span>
+<span class="c">        * @param {Number} p_nIndex Number specifying the index of the button </span>
+<span class="c">        * to be removed from the button group.</span>
+<span class="c">        */</span>
+        <span class="nx">removeButton</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_nIndex</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">oButton</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getButton</span><span class="o">(</span><span class="nx">p_nIndex</span><span class="o">),</span>
+                <span class="nx">nButtons</span><span class="o">,</span>
+                <span class="nx">i</span><span class="o">;</span>
+            
+            <span class="k">if</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Removing button &quot;</span> <span class="o">+</span> <span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;id&quot;</span><span class="o">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="o">);</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">splice</span><span class="o">(</span><span class="nx">p_nIndex</span><span class="o">,</span> <span class="m">1</span><span class="o">);</span>
+                <span class="nx">delete</span> <span class="nx">m_oButtons</span><span class="o">[</span><span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;id&quot;</span><span class="o">)];</span>
+        
+                <span class="nx">oButton</span><span class="o">.</span><span class="nx">removeListener</span><span class="o">(</span><span class="s2">&quot;checkedChange&quot;</span><span class="o">,</span> 
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_onButtonCheckedChange</span><span class="o">);</span>
+
+                <span class="nx">oButton</span><span class="o">.</span><span class="nx">destroy</span><span class="o">();</span>
+        
+        
+                <span class="nx">nButtons</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+                
+                <span class="k">if</span> <span class="o">(</span><span class="nx">nButtons</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+        
+                    <span class="nx">i</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">length</span> <span class="o">-</span> <span class="m">1</span><span class="o">;</span>
+                    
+                    <span class="k">do</span> <span class="o">{</span>
+        
+                        <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">index</span> <span class="o">=</span> <span class="nx">i</span><span class="o">;</span>
+        
+                    <span class="o">}</span>
+                    <span class="k">while</span> <span class="o">(</span><span class="nx">i</span><span class="o">--);</span>
+                
+                <span class="o">}</span>
+        
+                <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Button &quot;</span> <span class="o">+</span> <span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;id&quot;</span><span class="o">)</span> <span class="o">+</span> <span class="s2">&quot; removed.&quot;</span><span class="o">);</span>
+        
+            <span class="o">}</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method getButton</span>
+<span class="c">        * @description Returns the button at the specified index.</span>
+<span class="c">        * @param {Number} p_nIndex The index of the button to retrieve from the </span>
+<span class="c">        * button group.</span>
+<span class="c">        * @return {&lt;a href=&quot;YAHOO.widget.Button.html&quot;&gt;YAHOO.widget.Button&lt;/a&gt;}</span>
+<span class="c">        */</span>
+        <span class="nx">getButton</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_nIndex</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">[</span><span class="nx">p_nIndex</span><span class="o">];</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method getButtons</span>
+<span class="c">        * @description Returns an array of the buttons in the button group.</span>
+<span class="c">        * @return {Array}</span>
+<span class="c">        */</span>
+        <span class="nx">getButtons</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        
+            <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">;</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method getCount</span>
+<span class="c">        * @description Returns the number of buttons in the button group.</span>
+<span class="c">        * @return {Number}</span>
+<span class="c">        */</span>
+        <span class="nx">getCount</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        
+            <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method focus</span>
+<span class="c">        * @description Sets focus to the button at the specified index.</span>
+<span class="c">        * @param {Number} p_nIndex Number indicating the index of the button </span>
+<span class="c">        * to focus. </span>
+<span class="c">        */</span>
+        <span class="nx">focus</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_nIndex</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">oButton</span><span class="o">,</span>
+                <span class="nx">nButtons</span><span class="o">,</span>
+                <span class="nx">i</span><span class="o">;</span>
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isNumber</span><span class="o">(</span><span class="nx">p_nIndex</span><span class="o">))</span> <span class="o">{</span>
+        
+                <span class="nx">oButton</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">[</span><span class="nx">p_nIndex</span><span class="o">];</span>
+                
+                <span class="k">if</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">)</span> <span class="o">{</span>
+        
+                    <span class="nx">oButton</span><span class="o">.</span><span class="nx">focus</span><span class="o">();</span>
+        
+                <span class="o">}</span>
+            
+            <span class="o">}</span>
+            <span class="k">else</span> <span class="o">{</span>
+        
+                <span class="nx">nButtons</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getCount</span><span class="o">();</span>
+        
+                <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">nButtons</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+        
+                    <span class="nx">oButton</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+        
+                    <span class="k">if</span> <span class="o">(!</span><span class="nx">oButton</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;disabled&quot;</span><span class="o">))</span> <span class="o">{</span>
+        
+                        <span class="nx">oButton</span><span class="o">.</span><span class="nx">focus</span><span class="o">();</span>
+                        <span class="k">break</span><span class="o">;</span>
+        
+                    <span class="o">}</span>
+        
+                <span class="o">}</span>
+        
+            <span class="o">}</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method check</span>
+<span class="c">        * @description Checks the button at the specified index.</span>
+<span class="c">        * @param {Number} p_nIndex Number indicating the index of the button </span>
+<span class="c">        * to check. </span>
+<span class="c">        */</span>
+        <span class="nx">check</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">p_nIndex</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">oButton</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getButton</span><span class="o">(</span><span class="nx">p_nIndex</span><span class="o">);</span>
+            
+            <span class="k">if</span> <span class="o">(</span><span class="nx">oButton</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="nx">oButton</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;checked&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            
+            <span class="o">}</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method destroy</span>
+<span class="c">        * @description Removes the button group&#39;s element from its parent </span>
+<span class="c">        * element and removes all event handlers.</span>
+<span class="c">        */</span>
+        <span class="nx">destroy</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Destroying...&quot;</span><span class="o">);</span>
+        
+            <span class="k">var</span> <span class="nx">nButtons</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">length</span><span class="o">,</span>
+                <span class="nx">oElement</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">),</span>
+                <span class="nx">oParentNode</span> <span class="o">=</span> <span class="nx">oElement</span><span class="o">.</span><span class="nx">parentNode</span><span class="o">,</span>
+                <span class="nx">i</span><span class="o">;</span>
+            
+            <span class="k">if</span> <span class="o">(</span><span class="nx">nButtons</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+        
+                <span class="nx">i</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">.</span><span class="nx">length</span> <span class="o">-</span> <span class="m">1</span><span class="o">;</span>
+        
+                <span class="k">do</span> <span class="o">{</span>
+        
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_buttons</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">destroy</span><span class="o">();</span>
+        
+                <span class="o">}</span>
+                <span class="k">while</span> <span class="o">(</span><span class="nx">i</span><span class="o">--);</span>
+            
+            <span class="o">}</span>
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Removing DOM event handlers.&quot;</span><span class="o">);</span>
+        
+            <span class="nx">Event</span><span class="o">.</span><span class="nx">purgeElement</span><span class="o">(</span><span class="nx">oElement</span><span class="o">);</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Removing from document.&quot;</span><span class="o">);</span>
+        
+            <span class="nx">oParentNode</span><span class="o">.</span><span class="nx">removeChild</span><span class="o">(</span><span class="nx">oElement</span><span class="o">);</span>
+        
+        <span class="o">},</span>
+        
+        
+        <span class="c">/**</span>
+<span class="c">        * @method toString</span>
+<span class="c">        * @description Returns a string representing the button group.</span>
+<span class="c">        * @return {String}</span>
+<span class="c">        */</span>
+        <span class="nx">toString</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        
+            <span class="k">return</span> <span class="o">(</span><span class="s2">&quot;ButtonGroup &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;id&quot;</span><span class="o">));</span>
+        
+        <span class="o">}</span>
+    
+    <span class="o">});</span>
+
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class="selected"><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Button.html" title="YAHOO.widget.Button">YAHOO.widget.Button</a></li>
+                                <li class=""><a href="YAHOO.widget.ButtonGroup.html" title="YAHOO.widget.ButtonGroup">YAHOO.widget.ButtonGroup</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="button.js.html" title="button.js">button.js</a></li>
+                                <li class="selected"><a href="buttongroup.js.html" title="buttongroup.js">buttongroup.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "protected", "host": "YAHOO.widget.Button", "name": "_activationButtonPressed", "url": "YAHOO.widget.Button.html#property__activationButtonPressed", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_activationKeyPressed", "url": "YAHOO.widget.Button.html#property__activationKeyPressed", "type": "property"}, {"access": "", "host": "YAHOO.widget.Button", "name": "ACTIVATION_KEYS", "url": "YAHOO.widget.Button.html#property_ACTIVATION_KEYS", "type": "property"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "addButton", "url": "YAHOO.widget.ButtonGroup.html#method_addButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "addButtons", "url": "YAHOO.widget.ButtonGroup.html#method_addButtons", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_addListenersToForm", "url": "YAHOO.widget.Button.html#method__addListenersToForm", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "addStateCSSClasses", "url": "YAHOO.widget.Button.html#method_addStateCSSClasses", "type": "method"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "beforeCheckedButtonChange", "url": "YAHOO.widget.ButtonGroup.html#event_beforeCheckedButtonChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeCheckedChange", "url": "YAHOO.widget.Button.html#event_beforeCheckedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "beforeContainerChange", "url": "YAHOO.widget.ButtonGroup.html#event_beforeContainerChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeContainerChange", "url": "YAHOO.widget.Button.html#event_beforeContainerChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "beforeDisabledChange", "url": "YAHOO.widget.ButtonGroup.html#event_beforeDisabledChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeDisabledChange", "url": "YAHOO.widget.Button.html#event_beforeDisabledChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeFocusmenuChange", "url": "YAHOO.widget.Button.html#event_beforeFocusmenuChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeHrefChange", "url": "YAHOO.widget.Button.html#event_beforeHrefChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeLabelChange", "url": "YAHOO.widget.Button.html#event_beforeLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeLazyloadmenuChange", "url": "YAHOO.widget.Button.html#event_beforeLazyloadmenuChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeMenualignmentChange", "url": "YAHOO.widget.Button.html#event_beforeMenualignmentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeMenuChange", "url": "YAHOO.widget.Button.html#event_beforeMenuChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeMenuclassnameChange", "url": "YAHOO.widget.Button.html#event_beforeMenuclassnameChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeMenumaxheightChange", "url": "YAHOO.widget.Button.html#event_beforeMenumaxheightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeMenuminscrollheightChange", "url": "YAHOO.widget.Button.html#event_beforeMenuminscrollheightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "beforeNameChange", "url": "YAHOO.widget.ButtonGroup.html#event_beforeNameChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeNameChange", "url": "YAHOO.widget.Button.html#event_beforeNameChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeOnclickChange", "url": "YAHOO.widget.Button.html#event_beforeOnclickChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeReplaceLabelChange", "url": "YAHOO.widget.Button.html#event_beforeReplaceLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeSelectedMenuItemChange", "url": "YAHOO.widget.Button.html#event_beforeSelectedMenuItemChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeSrcelementChange", "url": "YAHOO.widget.Button.html#event_beforeSrcelementChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeTabindexChange", "url": "YAHOO.widget.Button.html#event_beforeTabindexChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeTargetChange", "url": "YAHOO.widget.Button.html#event_beforeTargetChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeTitleChange", "url": "YAHOO.widget.Button.html#event_beforeTitleChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeTypeChange", "url": "YAHOO.widget.Button.html#event_beforeTypeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "beforeValueChange", "url": "YAHOO.widget.ButtonGroup.html#event_beforeValueChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "beforeValueChange", "url": "YAHOO.widget.Button.html#event_beforeValueChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "blur", "url": "YAHOO.widget.Button.html#method_blur", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "blur", "url": "YAHOO.widget.Button.html#event_blur", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_button", "url": "YAHOO.widget.Button.html#property__button", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.ButtonGroup", "name": "_buttons", "url": "YAHOO.widget.ButtonGroup.html#property__buttons", "type": "property"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "check", "url": "YAHOO.widget.ButtonGroup.html#method_check", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "CHECK_ACTIVATION_KEYS", "url": "YAHOO.widget.Button.html#property_CHECK_ACTIVATION_KEYS", "type": "property"}, {"access": "", "host": "YAHOO.widget.Button", "name": "checked", "url": "YAHOO.widget.Button.html#config_checked", "type": "config"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "checkedButton", "url": "YAHOO.widget.ButtonGroup.html#config_checkedButton", "type": "config"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "checkedButtonChange", "url": "YAHOO.widget.ButtonGroup.html#event_checkedButtonChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "checkedChange", "url": "YAHOO.widget.Button.html#event_checkedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "CLASS_NAME_PREFIX", "url": "YAHOO.widget.ButtonGroup.html#property_CLASS_NAME_PREFIX", "type": "property"}, {"access": "", "host": "YAHOO.widget.Button", "name": "CLASS_NAME_PREFIX", "url": "YAHOO.widget.Button.html#property_CLASS_NAME_PREFIX", "type": "property"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "container", "url": "YAHOO.widget.ButtonGroup.html#config_container", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "container", "url": "YAHOO.widget.Button.html#config_container", "type": "config"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "containerChange", "url": "YAHOO.widget.ButtonGroup.html#event_containerChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "containerChange", "url": "YAHOO.widget.Button.html#event_containerChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "createButtonElement", "url": "YAHOO.widget.Button.html#method_createButtonElement", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.ButtonGroup", "name": "_createGroupElement", "url": "YAHOO.widget.ButtonGroup.html#method__createGroupElement", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "createHiddenFields", "url": "YAHOO.widget.Button.html#method_createHiddenFields", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "createInputElement", "url": "YAHOO.widget.Button.html#method_createInputElement", "type": "method"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "CSS_CLASS_NAME", "url": "YAHOO.widget.ButtonGroup.html#property_CSS_CLASS_NAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.Button", "name": "CSS_CLASS_NAME", "url": "YAHOO.widget.Button.html#property_CSS_CLASS_NAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "destroy", "url": "YAHOO.widget.ButtonGroup.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "destroy", "url": "YAHOO.widget.Button.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "disabled", "url": "YAHOO.widget.ButtonGroup.html#config_disabled", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "disabled", "url": "YAHOO.widget.Button.html#config_disabled", "type": "config"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "disabledChange", "url": "YAHOO.widget.ButtonGroup.html#event_disabledChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "disabledChange", "url": "YAHOO.widget.Button.html#event_disabledChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "focus", "url": "YAHOO.widget.ButtonGroup.html#method_focus", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "focus", "url": "YAHOO.widget.Button.html#method_focus", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "focus", "url": "YAHOO.widget.Button.html#event_focus", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "focusmenu", "url": "YAHOO.widget.Button.html#config_focusmenu", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "focusmenuChange", "url": "YAHOO.widget.Button.html#event_focusmenuChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "getButton", "url": "YAHOO.widget.ButtonGroup.html#method_getButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "getButtons", "url": "YAHOO.widget.ButtonGroup.html#method_getButtons", "type": "method"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "getCount", "url": "YAHOO.widget.ButtonGroup.html#method_getCount", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "getForm", "url": "YAHOO.widget.Button.html#method_getForm", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "getHiddenFields", "url": "YAHOO.widget.Button.html#method_getHiddenFields", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "getMenu", "url": "YAHOO.widget.Button.html#method_getMenu", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "hasFocus", "url": "YAHOO.widget.Button.html#method_hasFocus", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_hasKeyEventHandlers", "url": "YAHOO.widget.Button.html#property__hasKeyEventHandlers", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_hasMouseEventHandlers", "url": "YAHOO.widget.Button.html#property__hasMouseEventHandlers", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_hiddenFields", "url": "YAHOO.widget.Button.html#property__hiddenFields", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_hideMenu", "url": "YAHOO.widget.Button.html#method__hideMenu", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "href", "url": "YAHOO.widget.Button.html#config_href", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "hrefChange", "url": "YAHOO.widget.Button.html#event_hrefChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "init", "url": "YAHOO.widget.ButtonGroup.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "init", "url": "YAHOO.widget.Button.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "initAttributes", "url": "YAHOO.widget.ButtonGroup.html#method_initAttributes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "initAttributes", "url": "YAHOO.widget.Button.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "initConfig", "url": "YAHOO.widget.Button.html#method_initConfig", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_isActivationKey", "url": "YAHOO.widget.Button.html#method__isActivationKey", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "isActive", "url": "YAHOO.widget.Button.html#method_isActive", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_isSplitButtonOptionKey", "url": "YAHOO.widget.Button.html#method__isSplitButtonOptionKey", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "label", "url": "YAHOO.widget.Button.html#config_label", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "labelChange", "url": "YAHOO.widget.Button.html#event_labelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "lazyloadmenu", "url": "YAHOO.widget.Button.html#config_lazyloadmenu", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "lazyloadmenuChange", "url": "YAHOO.widget.Button.html#event_lazyloadmenuChange", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_menu", "url": "YAHOO.widget.Button.html#property__menu", "type": "property"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menu", "url": "YAHOO.widget.Button.html#config_menu", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menualignment", "url": "YAHOO.widget.Button.html#config_menualignment", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menualignmentChange", "url": "YAHOO.widget.Button.html#event_menualignmentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menuChange", "url": "YAHOO.widget.Button.html#event_menuChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menuclassname", "url": "YAHOO.widget.Button.html#config_menuclassname", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menuclassnameChange", "url": "YAHOO.widget.Button.html#event_menuclassnameChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menumaxheight", "url": "YAHOO.widget.Button.html#config_menumaxheight", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menumaxheightChange", "url": "YAHOO.widget.Button.html#event_menumaxheightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menuminscrollheight", "url": "YAHOO.widget.Button.html#config_menuminscrollheight", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "menuminscrollheightChange", "url": "YAHOO.widget.Button.html#event_menuminscrollheightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "name", "url": "YAHOO.widget.ButtonGroup.html#config_name", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "name", "url": "YAHOO.widget.Button.html#config_name", "type": "config"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "nameChange", "url": "YAHOO.widget.ButtonGroup.html#event_nameChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "nameChange", "url": "YAHOO.widget.Button.html#event_nameChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "NODE_NAME", "url": "YAHOO.widget.ButtonGroup.html#property_NODE_NAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.Button", "name": "NODE_NAME", "url": "YAHOO.widget.Button.html#property_NODE_NAME", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_nOptionRegionX", "url": "YAHOO.widget.Button.html#property__nOptionRegionX", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.ButtonGroup", "name": "_onAppendTo", "url": "YAHOO.widget.ButtonGroup.html#method__onAppendTo", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onAppendTo", "url": "YAHOO.widget.Button.html#method__onAppendTo", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onBlur", "url": "YAHOO.widget.Button.html#method__onBlur", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.ButtonGroup", "name": "_onButtonCheckedChange", "url": "YAHOO.widget.ButtonGroup.html#method__onButtonCheckedChange", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onClick", "url": "YAHOO.widget.Button.html#method__onClick", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "onclick", "url": "YAHOO.widget.Button.html#config_onclick", "type": "config"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onclickAttributeValue", "url": "YAHOO.widget.Button.html#property__onclickAttributeValue", "type": "property"}, {"access": "", "host": "YAHOO.widget.Button", "name": "onclickChange", "url": "YAHOO.widget.Button.html#event_onclickChange", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onDblClick", "url": "YAHOO.widget.Button.html#method__onDblClick", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onDocumentKeyUp", "url": "YAHOO.widget.Button.html#method__onDocumentKeyUp", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onDocumentMouseDown", "url": "YAHOO.widget.Button.html#method__onDocumentMouseDown", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onDocumentMouseUp", "url": "YAHOO.widget.Button.html#method__onDocumentMouseUp", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onFocus", "url": "YAHOO.widget.Button.html#method__onFocus", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onFormReset", "url": "YAHOO.widget.Button.html#method__onFormReset", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onFormSubmit", "url": "YAHOO.widget.Button.html#method__onFormSubmit", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.ButtonGroup", "name": "_onKeyDown", "url": "YAHOO.widget.ButtonGroup.html#method__onKeyDown", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onKeyDown", "url": "YAHOO.widget.Button.html#method__onKeyDown", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onKeyUp", "url": "YAHOO.widget.Button.html#method__onKeyUp", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "_onLabelClick", "url": "YAHOO.widget.Button.html#method__onLabelClick", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "_onMenuClick", "url": "YAHOO.widget.Button.html#method__onMenuClick", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "_onMenuHide", "url": "YAHOO.widget.Button.html#method__onMenuHide", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "_onMenuKeyDown", "url": "YAHOO.widget.Button.html#method__onMenuKeyDown", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "_onMenuRender", "url": "YAHOO.widget.Button.html#method__onMenuRender", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "_onMenuShow", "url": "YAHOO.widget.Button.html#method__onMenuShow", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onMouseDown", "url": "YAHOO.widget.Button.html#method__onMouseDown", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onMouseMove", "url": "YAHOO.widget.Button.html#method__onMouseMove", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onMouseOut", "url": "YAHOO.widget.Button.html#method__onMouseOut", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onMouseOver", "url": "YAHOO.widget.Button.html#method__onMouseOver", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onMouseUp", "url": "YAHOO.widget.Button.html#method__onMouseUp", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_onOption", "url": "YAHOO.widget.Button.html#method__onOption", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "_onSelectedMenuItemChange", "url": "YAHOO.widget.Button.html#method__onSelectedMenuItemChange", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "option", "url": "YAHOO.widget.Button.html#event_option", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "OPTION_AREA_WIDTH", "url": "YAHOO.widget.Button.html#property_OPTION_AREA_WIDTH", "type": "property"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "removeButton", "url": "YAHOO.widget.ButtonGroup.html#method_removeButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "removeHiddenFields", "url": "YAHOO.widget.Button.html#method_removeHiddenFields", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "removeStateCSSClasses", "url": "YAHOO.widget.Button.html#method_removeStateCSSClasses", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "replaceLabel", "url": "YAHOO.widget.Button.html#config_replaceLabel", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "replaceLabelChange", "url": "YAHOO.widget.Button.html#event_replaceLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "selectedMenuItem", "url": "YAHOO.widget.Button.html#config_selectedMenuItem", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "selectedMenuItemChange", "url": "YAHOO.widget.Button.html#event_selectedMenuItemChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "setAttributeFromDOMAttribute", "url": "YAHOO.widget.Button.html#method_setAttributeFromDOMAttribute", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "setAttributesFromSrcElement", "url": "YAHOO.widget.Button.html#method_setAttributesFromSrcElement", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setChecked", "url": "YAHOO.widget.Button.html#method__setChecked", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.ButtonGroup", "name": "_setDisabled", "url": "YAHOO.widget.ButtonGroup.html#method__setDisabled", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setDisabled", "url": "YAHOO.widget.Button.html#method__setDisabled", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Button", "name": "setFormElementProperties", "url": "YAHOO.widget.Button.html#method_setFormElementProperties", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setHref", "url": "YAHOO.widget.Button.html#method__setHref", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setLabel", "url": "YAHOO.widget.Button.html#method__setLabel", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setMenu", "url": "YAHOO.widget.Button.html#method__setMenu", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setOnClick", "url": "YAHOO.widget.Button.html#method__setOnClick", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setTabIndex", "url": "YAHOO.widget.Button.html#method__setTabIndex", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setTarget", "url": "YAHOO.widget.Button.html#method__setTarget", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setTitle", "url": "YAHOO.widget.Button.html#method__setTitle", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_setType", "url": "YAHOO.widget.Button.html#method__setType", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "_showMenu", "url": "YAHOO.widget.Button.html#method__showMenu", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "srcelement", "url": "YAHOO.widget.Button.html#config_srcelement", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "srcelementChange", "url": "YAHOO.widget.Button.html#event_srcelementChange", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Button", "name": "submitForm", "url": "YAHOO.widget.Button.html#method_submitForm", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "tabindex", "url": "YAHOO.widget.Button.html#config_tabindex", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "tabindexChange", "url": "YAHOO.widget.Button.html#event_tabindexChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "target", "url": "YAHOO.widget.Button.html#config_target", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "targetChange", "url": "YAHOO.widget.Button.html#event_targetChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "title", "url": "YAHOO.widget.Button.html#config_title", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "titleChange", "url": "YAHOO.widget.Button.html#event_titleChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "toString", "url": "YAHOO.widget.ButtonGroup.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "toString", "url": "YAHOO.widget.Button.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "type", "url": "YAHOO.widget.Button.html#config_type", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "typeChange", "url": "YAHOO.widget.Button.html#event_typeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "value", "url": "YAHOO.widget.ButtonGroup.html#config_value", "type": "config"}, {"access": "", "host": "YAHOO.widget.Button", "name": "value", "url": "YAHOO.widget.Button.html#config_value", "type": "config"}, {"access": "", "host": "YAHOO.widget.ButtonGroup", "name": "valueChange", "url": "YAHOO.widget.ButtonGroup.html#event_valueChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "valueChange", "url": "YAHOO.widget.Button.html#event_valueChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Button", "name": "YAHOO.widget.Button.addHiddenFieldsToForm", "url": "YAHOO.widget.Button.html#method_YAHOO.widget.Button.addHiddenFieldsToForm", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "YAHOO.widget.Button.getButton", "url": "YAHOO.widget.Button.html#method_YAHOO.widget.Button.getButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Button", "name": "YAHOO.widget.Button.onFormKeyPress", "url": "YAHOO.widget.Button.html#method_YAHOO.widget.Button.onFormKeyPress", "type": "method"}];
+</script>
+</body>
+</html>

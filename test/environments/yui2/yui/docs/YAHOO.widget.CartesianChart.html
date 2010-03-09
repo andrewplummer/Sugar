@@ -1,0 +1,1967 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: charts  YAHOO.widget.CartesianChart   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Charts Widget&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_charts.html" title="charts">charts</a>
+                 &gt; YAHOO.widget.CartesianChart 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.CartesianChart</b>
+                        <span class="extends">
+                        </span>
+
+                            <span class="extends" rel="yui:extends">
+                          - uses 
+                            
+                                <span rel="extend" resource="YAHOO.widget.Chart.html">
+                                <a href="YAHOO.widget.Chart.html" property="yui:name" title="YAHOO.widget.Chart">YAHOO.widget.Chart</a>
+                                </span>
+                            
+                            
+                        </span>
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        CartesianChart class for the YUI Charts widget.
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.widget.CartesianChart</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                type
+
+                                                , 
+                                                containerId
+
+                                                , 
+                                                dataSource
+
+                                                , 
+                                                attributes
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">type</span>
+                                                    &lt;<span property="yui:type">String</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  The char type. May be "line", "column", or "bar"</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">containerId</span>
+                                                    &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  Container element for the Flash Player instance.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">dataSource</span>
+                                                    &lt;<span property="yui:type">YAHOO.util.DataSource</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  DataSource instance.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">attributes</span>
+                                                    &lt;<span property="yui:type">object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  (optional) Object literal of configuration values.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__xAxisLabelFunctions">
+                                    <h4><a name="property__xAxisLabelFunctions" property="yui:name">_xAxisLabelFunctions</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Stores a reference to the xAxis labelFunction created by
+YAHOO.widget.Chart.createProxyFunction()
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__yAxisLabelFunctions">
+                                    <h4><a name="property__yAxisLabelFunctions" property="yui:name">_yAxisLabelFunctions</a>
+                                        - <code>private <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Stores a reference to the yAxis labelFunctions created by
+YAHOO.widget.Chart.createProxyFunction()
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Chart.html">
+                            <h4>Properties inherited from <a href="YAHOO.widget.Chart.html" property="yui:name" title="YAHOO.widget.Chart">YAHOO.widget.Chart</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__attributes">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__attributes" property="yui:name" title="_attributes">_attributes</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__containerID">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__containerID" property="yui:name" title="_containerID">_containerID</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__dataSource">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__dataSource" property="yui:name" title="_dataSource">_dataSource</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__dataTipFunction">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__dataTipFunction" property="yui:name" title="_dataTipFunction">_dataTipFunction</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__id">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__id" property="yui:name" title="_id">_id</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__initialized">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__initialized" property="yui:name" title="_initialized">_initialized</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__legendLabelFunction">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__legendLabelFunction" property="yui:name" title="_legendLabelFunction">_legendLabelFunction</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__pollingID">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__pollingID" property="yui:name" title="_pollingID">_pollingID</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__pollingInterval">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__pollingInterval" property="yui:name" title="_pollingInterval">_pollingInterval</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__request">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__request" property="yui:name" title="_request">_request</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__seriesDefs">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__seriesDefs" property="yui:name" title="_seriesDefs">_seriesDefs</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__seriesFunctions">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__seriesFunctions" property="yui:name" title="_seriesFunctions">_seriesFunctions</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__swf">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__swf" property="yui:name" title="_swf">_swf</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__swfEmbed">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__swfEmbed" property="yui:name" title="_swfEmbed">_swfEmbed</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__swfURL">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__swfURL" property="yui:name" title="_swfURL">_swfURL</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.Chart.html#property__type">
+                                        <a class="private" href="YAHOO.widget.Chart.html#property__type" property="yui:name" title="_type">_type</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.AttributeProvider.html#property__configs">
+                                        <a class="private" href="YAHOO.util.AttributeProvider.html#property__configs" property="yui:name" title="_configs">_configs</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method__getClonedAxis">
+                                    <h4>
+                                        <a name="method__getClonedAxis">_getClonedAxis</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_getClonedAxis</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Receives an axis object, creates a proxy function for 
+the labelFunction and returns the updated object.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__getXField">
+                                    <h4>
+                                        <a name="method__getXField">_getXField</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_getXField</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Getter for the xField attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__getYField">
+                                    <h4>
+                                        <a name="method__getYField">_getYField</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_getYField</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Getter for the yField attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initAttributes">
+                                    <h4>
+                                        <a name="method__initAttributes">_initAttributes</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initAttributes</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the attributes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__removeAxisFunctions">
+                                    <h4>
+                                        <a name="method__removeAxisFunctions">_removeAxisFunctions</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_removeAxisFunctions</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes axis functions contained in an array
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setConstrainViewport">
+                                    <h4>
+                                        <a name="method__setConstrainViewport">_setConstrainViewport</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setConstrainViewport</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Setter for the constrainViewport attribute
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setXAxes">
+                                    <h4>
+                                        <a name="method__setXAxes">_setXAxes</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setXAxes</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Setter for the xAxes attribute
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setXAxis">
+                                    <h4>
+                                        <a name="method__setXAxis">_setXAxis</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setXAxis</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Setter for the xAxis attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setXField">
+                                    <h4>
+                                        <a name="method__setXField">_setXField</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setXField</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Setter for the xField attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setYAxes">
+                                    <h4>
+                                        <a name="method__setYAxes">_setYAxes</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setYAxes</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Setter for the yAxes attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setYAxis">
+                                    <h4>
+                                        <a name="method__setYAxis">_setYAxis</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setYAxis</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Setter for the yAxis attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setYField">
+                                    <h4>
+                                        <a name="method__setYField">_setYField</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setYField</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Setter for the yField attribute.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setSeriesStylesByIndex">
+                                    <h4>
+                                        <a name="method_setSeriesStylesByIndex">setSeriesStylesByIndex</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setSeriesStylesByIndex</strong>
+                                           (
+                                                
+                                                        
+                                                         index
+                                                    
+                                                
+                                                        , 
+                                                         style
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the style object for a single series based on its index
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">index</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The position within the series definition to apply the style</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">style</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Style object to be applied to the selected series</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Chart.html">
+                                <h4>Methods inherited from <a href="YAHOO.widget.Chart.html" property="yui:name" title="YAHOO.widget.Chart">YAHOO.widget.Chart</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__eventHandler">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__eventHandler" property="yui:name" title="_eventHandler">_eventHandler</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__getAltText">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__getAltText" property="yui:name" title="_getAltText">_getAltText</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__getCategoryNames">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__getCategoryNames" property="yui:name" title="_getCategoryNames">_getCategoryNames</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__getDataSource">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__getDataSource" property="yui:name" title="_getDataSource">_getDataSource</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__getPolling">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__getPolling" property="yui:name" title="_getPolling">_getPolling</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__getRequest">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__getRequest" property="yui:name" title="_getRequest">_getRequest</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__getSeriesDefs">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__getSeriesDefs" property="yui:name" title="_getSeriesDefs">_getSeriesDefs</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__getSWFURL">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__getSWFURL" property="yui:name" title="_getSWFURL">_getSWFURL</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__initAttributes">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__initAttributes" property="yui:name" title="_initAttributes">_initAttributes</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__loadDataHandler">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__loadDataHandler" property="yui:name" title="_loadDataHandler">_loadDataHandler</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__loadHandler">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__loadHandler" property="yui:name" title="_loadHandler">_loadHandler</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__setAltText">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__setAltText" property="yui:name" title="_setAltText">_setAltText</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__setCategoryNames">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__setCategoryNames" property="yui:name" title="_setCategoryNames">_setCategoryNames</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__setDataSource">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__setDataSource" property="yui:name" title="_setDataSource">_setDataSource</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__setDataTipFunction">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__setDataTipFunction" property="yui:name" title="_setDataTipFunction">_setDataTipFunction</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__setLegendLabelFunction">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__setLegendLabelFunction" property="yui:name" title="_setLegendLabelFunction">_setLegendLabelFunction</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__setPolling">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__setPolling" property="yui:name" title="_setPolling">_setPolling</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__setRequest">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__setRequest" property="yui:name" title="_setRequest">_setRequest</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method__setSeriesDefs">                                        
+                                            <a class="private" href="YAHOO.widget.Chart.html#method__setSeriesDefs" property="yui:name" title="_setSeriesDefs">_setSeriesDefs</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method_refreshData">                                        
+                                            <a class="" href="YAHOO.widget.Chart.html#method_refreshData" property="yui:name" title="refreshData">refreshData</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method_setSeriesStyles">                                        
+                                            <a class="" href="YAHOO.widget.Chart.html#method_setSeriesStyles" property="yui:name" title="setSeriesStyles">setSeriesStyles</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method_setStyle">                                        
+                                            <a class="" href="YAHOO.widget.Chart.html#method_setStyle" property="yui:name" title="setStyle">setStyle</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method_setStyles">                                        
+                                            <a class="" href="YAHOO.widget.Chart.html#method_setStyles" property="yui:name" title="setStyles">setStyles</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.Chart.html#method_toString">                                        
+                                            <a class="" href="YAHOO.widget.Chart.html#method_toString" property="yui:name" title="toString">toString</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_configureAttribute">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_configureAttribute" property="yui:name" title="configureAttribute">configureAttribute</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent" property="yui:name" title="fireBeforeChangeEvent">fireBeforeChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireChangeEvent" property="yui:name" title="fireChangeEvent">fireChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_get">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_get" property="yui:name" title="get">get</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_getAttributeConfig" property="yui:name" title="getAttributeConfig">getAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeKeys">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_getAttributeKeys" property="yui:name" title="getAttributeKeys">getAttributeKeys</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_refresh">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_refresh" property="yui:name" title="refresh">refresh</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_register">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_register" property="yui:name" title="register">register</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig" property="yui:name" title="resetAttributeConfig">resetAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetValue">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_resetValue" property="yui:name" title="resetValue">resetValue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_set">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributeConfig">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributeConfig" property="yui:name" title="setAttributeConfig">setAttributeConfig</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributes">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributes" property="yui:name" title="setAttributes">setAttributes</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_beforeConstrainViewportChange">
+                                    <h4>
+                                        <a name="event_beforeConstrainViewportChange">beforeConstrainViewportChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeConstrainViewportChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'constrainViewport' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeXAxesChange">
+                                    <h4>
+                                        <a name="event_beforeXAxesChange">beforeXAxesChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeXAxesChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'xAxes' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeXAxisChange">
+                                    <h4>
+                                        <a name="event_beforeXAxisChange">beforeXAxisChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeXAxisChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'xAxis' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeXFieldChange">
+                                    <h4>
+                                        <a name="event_beforeXFieldChange">beforeXFieldChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeXFieldChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'xField' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeYAxesChange">
+                                    <h4>
+                                        <a name="event_beforeYAxesChange">beforeYAxesChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeYAxesChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'yAxes' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeYAxisChange">
+                                    <h4>
+                                        <a name="event_beforeYAxisChange">beforeYAxisChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeYAxisChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'yAxis' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeYFieldChange">
+                                    <h4>
+                                        <a name="event_beforeYFieldChange">beforeYFieldChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeYFieldChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'yField' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_constrainViewportChange">
+                                    <h4>
+                                        <a name="event_constrainViewportChange">constrainViewportChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">constrainViewportChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'constrainViewport' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_xAxesChange">
+                                    <h4>
+                                        <a name="event_xAxesChange">xAxesChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">xAxesChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'xAxes' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_xAxisChange">
+                                    <h4>
+                                        <a name="event_xAxisChange">xAxisChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">xAxisChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'xAxis' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_xFieldChange">
+                                    <h4>
+                                        <a name="event_xFieldChange">xFieldChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">xFieldChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'xField' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_yAxesChange">
+                                    <h4>
+                                        <a name="event_yAxesChange">yAxesChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">yAxesChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'yAxes' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_yAxisChange">
+                                    <h4>
+                                        <a name="event_yAxisChange">yAxisChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">yAxisChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'yAxis' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_yFieldChange">
+                                    <h4>
+                                        <a name="event_yFieldChange">yFieldChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">yFieldChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'yField' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Chart.html">
+                            <h4>Events inherited from <a href="YAHOO.widget.Chart.html" property="yui:name" title="YAHOO.widget.Chart">YAHOO.widget.Chart</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_altTextChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_altTextChange" property="yui:name" title="altTextChange">altTextChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_backgroundColorChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_backgroundColorChange" property="yui:name" title="backgroundColorChange">backgroundColorChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeAltTextChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeAltTextChange" property="yui:name" title="beforeAltTextChange">beforeAltTextChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeBackgroundColorChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeBackgroundColorChange" property="yui:name" title="beforeBackgroundColorChange">beforeBackgroundColorChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeCategoryNamesChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeCategoryNamesChange" property="yui:name" title="beforeCategoryNamesChange">beforeCategoryNamesChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeDataSourceChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeDataSourceChange" property="yui:name" title="beforeDataSourceChange">beforeDataSourceChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeDataTipFunctionChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeDataTipFunctionChange" property="yui:name" title="beforeDataTipFunctionChange">beforeDataTipFunctionChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeExpressInstallChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeExpressInstallChange" property="yui:name" title="beforeExpressInstallChange">beforeExpressInstallChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeLegendLabelFunctionChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeLegendLabelFunctionChange" property="yui:name" title="beforeLegendLabelFunctionChange">beforeLegendLabelFunctionChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforePollingChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforePollingChange" property="yui:name" title="beforePollingChange">beforePollingChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeRequestChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeRequestChange" property="yui:name" title="beforeRequestChange">beforeRequestChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeSeriesChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeSeriesChange" property="yui:name" title="beforeSeriesChange">beforeSeriesChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeSwfURLChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeSwfURLChange" property="yui:name" title="beforeSwfURLChange">beforeSwfURLChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeVersionChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeVersionChange" property="yui:name" title="beforeVersionChange">beforeVersionChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_beforeWmodeChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_beforeWmodeChange" property="yui:name" title="beforeWmodeChange">beforeWmodeChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_categoryNamesChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_categoryNamesChange" property="yui:name" title="categoryNamesChange">categoryNamesChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_contentReady">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_contentReady" property="yui:name" title="contentReady">contentReady</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_dataSourceChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_dataSourceChange" property="yui:name" title="dataSourceChange">dataSourceChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_dataTipFunctionChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_dataTipFunctionChange" property="yui:name" title="dataTipFunctionChange">dataTipFunctionChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_expressInstallChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_expressInstallChange" property="yui:name" title="expressInstallChange">expressInstallChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_itemClickEvent">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_itemClickEvent" property="yui:name" title="itemClickEvent">itemClickEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_itemDoubleClickEvent">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_itemDoubleClickEvent" property="yui:name" title="itemDoubleClickEvent">itemDoubleClickEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_itemDragEndEvent">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_itemDragEndEvent" property="yui:name" title="itemDragEndEvent">itemDragEndEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_itemDragEvent">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_itemDragEvent" property="yui:name" title="itemDragEvent">itemDragEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_itemDragStartEvent">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_itemDragStartEvent" property="yui:name" title="itemDragStartEvent">itemDragStartEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_itemMouseOutEvent">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_itemMouseOutEvent" property="yui:name" title="itemMouseOutEvent">itemMouseOutEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_itemMouseOverEvent">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_itemMouseOverEvent" property="yui:name" title="itemMouseOverEvent">itemMouseOverEvent</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_legendLabelFunctionChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_legendLabelFunctionChange" property="yui:name" title="legendLabelFunctionChange">legendLabelFunctionChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_pollingChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_pollingChange" property="yui:name" title="pollingChange">pollingChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_requestChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_requestChange" property="yui:name" title="requestChange">requestChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_seriesChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_seriesChange" property="yui:name" title="seriesChange">seriesChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_swfURLChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_swfURLChange" property="yui:name" title="swfURLChange">swfURLChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_versionChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_versionChange" property="yui:name" title="versionChange">versionChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.Chart.html#event_wmodeChange">
+                                        <a class="" href="YAHOO.widget.Chart.html#event_wmodeChange" property="yui:name" title="wmodeChange">wmodeChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+                        <div class="section field details">
+                            <h3 id="configattributes">Configuration Attributes</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:attribute" resource="#config_constrainViewport">
+                                    <h4><a name="config_constrainViewport">constrainViewport</a>
+                                        <code>- <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Determines whether the viewport is constrained to prevent series data from overflow.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_xAxes">
+                                    <h4><a name="config_xAxes">xAxes</a>
+                                        <code>- <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Custom configurations for the horizontal x axes.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_xAxis">
+                                    <h4><a name="config_xAxis">xAxis</a>
+                                        <code>- <span property="yui:type">Axis</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A custom configuration for the horizontal x axis.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_xField">
+                                    <h4><a name="config_xField">xField</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The field in each item that corresponds to a value on the x axis.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_yAxes">
+                                    <h4><a name="config_yAxes">yAxes</a>
+                                        <code>- <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Custom configurations for the vertical y axes.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_yAxis">
+                                    <h4><a name="config_yAxis">yAxis</a>
+                                        <code>- <span property="yui:type">Axis</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A custom configuration for the vertical y axis.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_yField">
+                                    <h4><a name="config_yField">yField</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The field in each item that corresponds to a value on the x axis.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.Chart.html">
+                            <h4>Configuration attributes inherited from <a href="YAHOO.widget.Chart.html" property="yui:name" title="YAHOO.widget.Chart">YAHOO.widget.Chart</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                        <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_altText">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_altText" property="yui:name" title="altText">altText</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_backgroundColor">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_backgroundColor" property="yui:name" title="backgroundColor">backgroundColor</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_categoryNames">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_categoryNames" property="yui:name" title="categoryNames">categoryNames</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_dataSource">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_dataSource" property="yui:name" title="dataSource">dataSource</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_dataTipFunction">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_dataTipFunction" property="yui:name" title="dataTipFunction">dataTipFunction</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_expressInstall">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_expressInstall" property="yui:name" title="expressInstall">expressInstall</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_legendLabelFunction">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_legendLabelFunction" property="yui:name" title="legendLabelFunction">legendLabelFunction</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_polling">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_polling" property="yui:name" title="polling">polling</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_request">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_request" property="yui:name" title="request">request</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_series">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_series" property="yui:name" title="series">series</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_swfURL">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_swfURL" property="yui:name" title="swfURL">swfURL</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_version">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_version" property="yui:name" title="version">version</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.Chart.html#config_wmode">                                        
+                                        <a class="" href="YAHOO.widget.Chart.html#config_wmode" property="yui:name" title="wmode">wmode</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class="selected"><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Axis.html" title="YAHOO.widget.Axis">YAHOO.widget.Axis</a></li>
+                                <li class=""><a href="YAHOO.widget.BarChart.html" title="YAHOO.widget.BarChart">YAHOO.widget.BarChart</a></li>
+                                <li class=""><a href="YAHOO.widget.BarSeries.html" title="YAHOO.widget.BarSeries">YAHOO.widget.BarSeries</a></li>
+                                <li class="selected"><a href="YAHOO.widget.CartesianChart.html" title="YAHOO.widget.CartesianChart">YAHOO.widget.CartesianChart</a></li>
+                                <li class=""><a href="YAHOO.widget.CartesianSeries.html" title="YAHOO.widget.CartesianSeries">YAHOO.widget.CartesianSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.CategoryAxis.html" title="YAHOO.widget.CategoryAxis">YAHOO.widget.CategoryAxis</a></li>
+                                <li class=""><a href="YAHOO.widget.Chart.html" title="YAHOO.widget.Chart">YAHOO.widget.Chart</a></li>
+                                <li class=""><a href="YAHOO.widget.ColumnChart.html" title="YAHOO.widget.ColumnChart">YAHOO.widget.ColumnChart</a></li>
+                                <li class=""><a href="YAHOO.widget.ColumnSeries.html" title="YAHOO.widget.ColumnSeries">YAHOO.widget.ColumnSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.LineChart.html" title="YAHOO.widget.LineChart">YAHOO.widget.LineChart</a></li>
+                                <li class=""><a href="YAHOO.widget.LineSeries.html" title="YAHOO.widget.LineSeries">YAHOO.widget.LineSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.NumericAxis.html" title="YAHOO.widget.NumericAxis">YAHOO.widget.NumericAxis</a></li>
+                                <li class=""><a href="YAHOO.widget.PieChart.html" title="YAHOO.widget.PieChart">YAHOO.widget.PieChart</a></li>
+                                <li class=""><a href="YAHOO.widget.PieSeries.html" title="YAHOO.widget.PieSeries">YAHOO.widget.PieSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.Series.html" title="YAHOO.widget.Series">YAHOO.widget.Series</a></li>
+                                <li class=""><a href="YAHOO.widget.StackedBarChart.html" title="YAHOO.widget.StackedBarChart">YAHOO.widget.StackedBarChart</a></li>
+                                <li class=""><a href="YAHOO.widget.StackedBarSeries.html" title="YAHOO.widget.StackedBarSeries">YAHOO.widget.StackedBarSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.StackedColumnChart.html" title="YAHOO.widget.StackedColumnChart">YAHOO.widget.StackedColumnChart</a></li>
+                                <li class=""><a href="YAHOO.widget.StackedColumnSeries.html" title="YAHOO.widget.StackedColumnSeries">YAHOO.widget.StackedColumnSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.TimeAxis.html" title="YAHOO.widget.TimeAxis">YAHOO.widget.TimeAxis</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Axis.js.html" title="Axis.js">Axis.js</a></li>
+                                <li class=""><a href="CartesianChart.js.html" title="CartesianChart.js">CartesianChart.js</a></li>
+                                <li class=""><a href="CategoryAxis.js.html" title="CategoryAxis.js">CategoryAxis.js</a></li>
+                                <li class=""><a href="Chart.js.html" title="Chart.js">Chart.js</a></li>
+                                <li class=""><a href="ChartTypes.js.html" title="ChartTypes.js">ChartTypes.js</a></li>
+                                <li class=""><a href="NumericAxis.js.html" title="NumericAxis.js">NumericAxis.js</a></li>
+                                <li class=""><a href="PieChart.js.html" title="PieChart.js">PieChart.js</a></li>
+                                <li class=""><a href="Series.js.html" title="Series.js">Series.js</a></li>
+                                <li class=""><a href="TimeAxis.js.html" title="TimeAxis.js">TimeAxis.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__xAxisLabelFunctions" title="_xAxisLabelFunctions">_xAxisLabelFunctions</a></li>
+                                <li class="private"><a href="#property__yAxisLabelFunctions" title="_yAxisLabelFunctions">_yAxisLabelFunctions</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method__getClonedAxis" title="_getClonedAxis">_getClonedAxis</a></li>
+                                <li class="private"><a href="#method__getXField" title="_getXField">_getXField</a></li>
+                                <li class="private"><a href="#method__getYField" title="_getYField">_getYField</a></li>
+                                <li class="private"><a href="#method__initAttributes" title="_initAttributes">_initAttributes</a></li>
+                                <li class="private"><a href="#method__removeAxisFunctions" title="_removeAxisFunctions">_removeAxisFunctions</a></li>
+                                <li class="private"><a href="#method__setConstrainViewport" title="_setConstrainViewport">_setConstrainViewport</a></li>
+                                <li class="private"><a href="#method__setXAxes" title="_setXAxes">_setXAxes</a></li>
+                                <li class="private"><a href="#method__setXAxis" title="_setXAxis">_setXAxis</a></li>
+                                <li class="private"><a href="#method__setXField" title="_setXField">_setXField</a></li>
+                                <li class="private"><a href="#method__setYAxes" title="_setYAxes">_setYAxes</a></li>
+                                <li class="private"><a href="#method__setYAxis" title="_setYAxis">_setYAxis</a></li>
+                                <li class="private"><a href="#method__setYField" title="_setYField">_setYField</a></li>
+                                <li class=""><a href="#method_setSeriesStylesByIndex" title="setSeriesStylesByIndex">setSeriesStylesByIndex</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_beforeConstrainViewportChange" title="beforeConstrainViewportChange">beforeConstrainViewportChange</a></li>
+                                <li class=""><a href="#event_beforeXAxesChange" title="beforeXAxesChange">beforeXAxesChange</a></li>
+                                <li class=""><a href="#event_beforeXAxisChange" title="beforeXAxisChange">beforeXAxisChange</a></li>
+                                <li class=""><a href="#event_beforeXFieldChange" title="beforeXFieldChange">beforeXFieldChange</a></li>
+                                <li class=""><a href="#event_beforeYAxesChange" title="beforeYAxesChange">beforeYAxesChange</a></li>
+                                <li class=""><a href="#event_beforeYAxisChange" title="beforeYAxisChange">beforeYAxisChange</a></li>
+                                <li class=""><a href="#event_beforeYFieldChange" title="beforeYFieldChange">beforeYFieldChange</a></li>
+                                <li class=""><a href="#event_constrainViewportChange" title="constrainViewportChange">constrainViewportChange</a></li>
+                                <li class=""><a href="#event_xAxesChange" title="xAxesChange">xAxesChange</a></li>
+                                <li class=""><a href="#event_xAxisChange" title="xAxisChange">xAxisChange</a></li>
+                                <li class=""><a href="#event_xFieldChange" title="xFieldChange">xFieldChange</a></li>
+                                <li class=""><a href="#event_yAxesChange" title="yAxesChange">yAxesChange</a></li>
+                                <li class=""><a href="#event_yAxisChange" title="yAxisChange">yAxisChange</a></li>
+                                <li class=""><a href="#event_yFieldChange" title="yFieldChange">yFieldChange</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="configList" class="module">
+                        <h4>Configuration Attributes</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#config_constrainViewport" title="constrainViewport">constrainViewport</a></li>
+                                <li class=""><a href="#config_xAxes" title="xAxes">xAxes</a></li>
+                                <li class=""><a href="#config_xAxis" title="xAxis">xAxis</a></li>
+                                <li class=""><a href="#config_xField" title="xField">xField</a></li>
+                                <li class=""><a href="#config_yAxes" title="yAxes">yAxes</a></li>
+                                <li class=""><a href="#config_yAxis" title="yAxis">yAxis</a></li>
+                                <li class=""><a href="#config_yField" title="yField">yField</a></li>
+                        </ul>
+                    </div>
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.NumericAxis", "name": "adjustMaximumByMajorUnit", "url": "YAHOO.widget.NumericAxis.html#property_adjustMaximumByMajorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "adjustMinimumByMajorUnit", "url": "YAHOO.widget.NumericAxis.html#property_adjustMinimumByMajorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "alwaysShowZero", "url": "YAHOO.widget.NumericAxis.html#property_alwaysShowZero", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianSeries", "name": "axis", "url": "YAHOO.widget.CartesianSeries.html#property_axis", "type": "property"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "beforeCategoryFieldChange", "url": "YAHOO.widget.PieChart.html#event_beforeCategoryFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeConstrainViewportChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeConstrainViewportChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "beforeDataFieldChange", "url": "YAHOO.widget.PieChart.html#event_beforeDataFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeXAxesChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeXAxesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeXAxisChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeXAxisChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeXFieldChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeXFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeYAxesChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeYAxesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeYAxisChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeYAxisChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeYFieldChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeYFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "calculateByLabelSize", "url": "YAHOO.widget.TimeAxis.html#property_calculateByLabelSize", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "calculateByLabelSize", "url": "YAHOO.widget.NumericAxis.html#property_calculateByLabelSize", "type": "property"}, {"access": "", "host": "YAHOO.widget.CategoryAxis", "name": "calculateCategoryCount", "url": "YAHOO.widget.CategoryAxis.html#property_calculateCategoryCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "categoryField", "url": "YAHOO.widget.PieChart.html#config_categoryField", "type": "config"}, {"access": "", "host": "YAHOO.widget.PieSeries", "name": "categoryField", "url": "YAHOO.widget.PieSeries.html#property_categoryField", "type": "property"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "categoryFieldChange", "url": "YAHOO.widget.PieChart.html#event_categoryFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CategoryAxis", "name": "categoryNames", "url": "YAHOO.widget.CategoryAxis.html#property_categoryNames", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "constrainViewport", "url": "YAHOO.widget.CartesianChart.html#config_constrainViewport", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "constrainViewportChange", "url": "YAHOO.widget.CartesianChart.html#event_constrainViewportChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "dataField", "url": "YAHOO.widget.PieChart.html#config_dataField", "type": "config"}, {"access": "", "host": "YAHOO.widget.PieSeries", "name": "dataField", "url": "YAHOO.widget.PieSeries.html#property_dataField", "type": "property"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "dataFieldChange", "url": "YAHOO.widget.PieChart.html#event_dataFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Series", "name": "displayName", "url": "YAHOO.widget.Series.html#property_displayName", "type": "property"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_getCategoryField", "url": "YAHOO.widget.PieChart.html#method__getCategoryField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_getClonedAxis", "url": "YAHOO.widget.CartesianChart.html#method__getClonedAxis", "type": "method"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_getDataField", "url": "YAHOO.widget.PieChart.html#method__getDataField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_getXField", "url": "YAHOO.widget.CartesianChart.html#method__getXField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_getYField", "url": "YAHOO.widget.CartesianChart.html#method__getYField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_initAttributes", "url": "YAHOO.widget.PieChart.html#method__initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_initAttributes", "url": "YAHOO.widget.CartesianChart.html#method__initAttributes", "type": "method"}, {"access": "", "host": "YAHOO.widget.PieSeries", "name": "labelFunction", "url": "YAHOO.widget.PieSeries.html#property_labelFunction", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "majorTimeUnit", "url": "YAHOO.widget.TimeAxis.html#property_majorTimeUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "majorUnit", "url": "YAHOO.widget.TimeAxis.html#property_majorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "majorUnit", "url": "YAHOO.widget.NumericAxis.html#property_majorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "maximum", "url": "YAHOO.widget.TimeAxis.html#property_maximum", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "maximum", "url": "YAHOO.widget.NumericAxis.html#property_maximum", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "minimum", "url": "YAHOO.widget.TimeAxis.html#property_minimum", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "minimum", "url": "YAHOO.widget.NumericAxis.html#property_minimum", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "minorUnit", "url": "YAHOO.widget.NumericAxis.html#property_minorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "position", "url": "YAHOO.widget.NumericAxis.html#property_position", "type": "property"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_removeAxisFunctions", "url": "YAHOO.widget.CartesianChart.html#method__removeAxisFunctions", "type": "method"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "roundMajorUnit", "url": "YAHOO.widget.NumericAxis.html#property_roundMajorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "scale", "url": "YAHOO.widget.NumericAxis.html#property_scale", "type": "property"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_setCategoryField", "url": "YAHOO.widget.PieChart.html#method__setCategoryField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setConstrainViewport", "url": "YAHOO.widget.CartesianChart.html#method__setConstrainViewport", "type": "method"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_setDataField", "url": "YAHOO.widget.PieChart.html#method__setDataField", "type": "method"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "setSeriesStylesByIndex", "url": "YAHOO.widget.CartesianChart.html#method_setSeriesStylesByIndex", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setXAxes", "url": "YAHOO.widget.CartesianChart.html#method__setXAxes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setXAxis", "url": "YAHOO.widget.CartesianChart.html#method__setXAxis", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setXField", "url": "YAHOO.widget.CartesianChart.html#method__setXField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setYAxes", "url": "YAHOO.widget.CartesianChart.html#method__setYAxes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setYAxis", "url": "YAHOO.widget.CartesianChart.html#method__setYAxis", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setYField", "url": "YAHOO.widget.CartesianChart.html#method__setYField", "type": "method"}, {"access": "", "host": "YAHOO.widget.CartesianSeries", "name": "showInLegend", "url": "YAHOO.widget.CartesianSeries.html#property_showInLegend", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "snapToUnits", "url": "YAHOO.widget.TimeAxis.html#property_snapToUnits", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "snapToUnits", "url": "YAHOO.widget.NumericAxis.html#property_snapToUnits", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "stackingEnabled", "url": "YAHOO.widget.TimeAxis.html#property_stackingEnabled", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "stackingEnabled", "url": "YAHOO.widget.NumericAxis.html#property_stackingEnabled", "type": "property"}, {"access": "", "host": "YAHOO.widget.Series", "name": "type", "url": "YAHOO.widget.Series.html#property_type", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xAxes", "url": "YAHOO.widget.CartesianChart.html#config_xAxes", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xAxesChange", "url": "YAHOO.widget.CartesianChart.html#event_xAxesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xAxis", "url": "YAHOO.widget.CartesianChart.html#config_xAxis", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xAxisChange", "url": "YAHOO.widget.CartesianChart.html#event_xAxisChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_xAxisLabelFunctions", "url": "YAHOO.widget.CartesianChart.html#property__xAxisLabelFunctions", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianSeries", "name": "xField", "url": "YAHOO.widget.CartesianSeries.html#property_xField", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xField", "url": "YAHOO.widget.CartesianChart.html#config_xField", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xFieldChange", "url": "YAHOO.widget.CartesianChart.html#event_xFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yAxes", "url": "YAHOO.widget.CartesianChart.html#config_yAxes", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yAxesChange", "url": "YAHOO.widget.CartesianChart.html#event_yAxesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yAxis", "url": "YAHOO.widget.CartesianChart.html#config_yAxis", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yAxisChange", "url": "YAHOO.widget.CartesianChart.html#event_yAxisChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_yAxisLabelFunctions", "url": "YAHOO.widget.CartesianChart.html#property__yAxisLabelFunctions", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianSeries", "name": "yField", "url": "YAHOO.widget.CartesianSeries.html#property_yField", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yField", "url": "YAHOO.widget.CartesianChart.html#config_yField", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yFieldChange", "url": "YAHOO.widget.CartesianChart.html#event_yFieldChange", "type": "event"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: event   KeyListener.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Event Utility&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_event.html" title="event">event</a>
+                
+                 &gt; KeyListener.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="o">(</span><span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="k">var</span> <span class="nx">Event</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">,</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+
+<span class="c">/**</span>
+<span class="c">* KeyListener is a utility that provides an easy interface for listening for</span>
+<span class="c">* keydown/keyup events fired against DOM elements.</span>
+<span class="c">* @namespace YAHOO.util</span>
+<span class="c">* @class KeyListener</span>
+<span class="c">* @constructor</span>
+<span class="c">* @param {HTMLElement} attachTo The element or element ID to which the key </span>
+<span class="c">*                               event should be attached</span>
+<span class="c">* @param {String}      attachTo The element or element ID to which the key</span>
+<span class="c">*                               event should be attached</span>
+<span class="c">* @param {Object}      keyData  The object literal representing the key(s) </span>
+<span class="c">*                               to detect. Possible attributes are </span>
+<span class="c">*                               shift(boolean), alt(boolean), ctrl(boolean) </span>
+<span class="c">*                               and keys(either an int or an array of ints </span>
+<span class="c">*                               representing keycodes).</span>
+<span class="c">* @param {Function}    handler  The CustomEvent handler to fire when the </span>
+<span class="c">*                               key event is detected</span>
+<span class="c">* @param {Object}      handler  An object literal representing the handler. </span>
+<span class="c">* @param {String}      event    Optional. The event (keydown or keyup) to </span>
+<span class="c">*                               listen for. Defaults automatically to keydown.</span>
+<span class="c">*</span>
+<span class="c">* @knownissue the &quot;keypress&quot; event is completely broken in Safari 2.x and below.</span>
+<span class="c">*             the workaround is use &quot;keydown&quot; for key listening.  However, if</span>
+<span class="c">*             it is desired to prevent the default behavior of the keystroke,</span>
+<span class="c">*             that can only be done on the keypress event.  This makes key</span>
+<span class="c">*             handling quite ugly.</span>
+<span class="c">* @knownissue keydown is also broken in Safari 2.x and below for the ESC key.</span>
+<span class="c">*             There currently is no workaround other than choosing another</span>
+<span class="c">*             key to listen for.</span>
+<span class="c">*/</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">KeyListener</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">attachTo</span><span class="o">,</span> <span class="nx">keyData</span><span class="o">,</span> <span class="nx">handler</span><span class="o">,</span> <span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="nx">attachTo</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;No attachTo element specified&quot;</span><span class="o">,</span> <span class="s2">&quot;error&quot;</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(!</span><span class="nx">keyData</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;No keyData specified&quot;</span><span class="o">,</span> <span class="s2">&quot;error&quot;</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(!</span><span class="nx">handler</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;No handler specified&quot;</span><span class="o">,</span> <span class="s2">&quot;error&quot;</span><span class="o">);</span>
+    <span class="o">}</span> 
+    
+    <span class="k">if</span> <span class="o">(!</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">event</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">KeyListener</span><span class="o">.</span><span class="nx">KEYDOWN</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c">/**</span>
+<span class="c">    * The CustomEvent fired internally when a key is pressed</span>
+<span class="c">    * @event keyEvent</span>
+<span class="c">    * @private</span>
+<span class="c">    * @param {Object} keyData The object literal representing the key(s) to </span>
+<span class="c">    *                         detect. Possible attributes are shift(boolean), </span>
+<span class="c">    *                         alt(boolean), ctrl(boolean) and keys(either an </span>
+<span class="c">    *                         int or an array of ints representing keycodes).</span>
+<span class="c">    */</span>
+    <span class="k">var</span> <span class="nx">keyEvent</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s2">&quot;keyPressed&quot;</span><span class="o">);</span>
+    
+    <span class="c">/**</span>
+<span class="c">    * The CustomEvent fired when the KeyListener is enabled via the enable() </span>
+<span class="c">    * function</span>
+<span class="c">    * @event enabledEvent</span>
+<span class="c">    * @param {Object} keyData The object literal representing the key(s) to </span>
+<span class="c">    *                         detect. Possible attributes are shift(boolean), </span>
+<span class="c">    *                         alt(boolean), ctrl(boolean) and keys(either an </span>
+<span class="c">    *                         int or an array of ints representing keycodes).</span>
+<span class="c">    */</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">enabledEvent</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s2">&quot;enabled&quot;</span><span class="o">);</span>
+
+    <span class="c">/**</span>
+<span class="c">    * The CustomEvent fired when the KeyListener is disabled via the </span>
+<span class="c">    * disable() function</span>
+<span class="c">    * @event disabledEvent</span>
+<span class="c">    * @param {Object} keyData The object literal representing the key(s) to </span>
+<span class="c">    *                         detect. Possible attributes are shift(boolean), </span>
+<span class="c">    *                         alt(boolean), ctrl(boolean) and keys(either an </span>
+<span class="c">    *                         int or an array of ints representing keycodes).</span>
+<span class="c">    */</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">disabledEvent</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s2">&quot;disabled&quot;</span><span class="o">);</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">attachTo</span><span class="o">))</span> <span class="o">{</span>
+        <span class="nx">attachTo</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">getElementById</span><span class="o">(</span><span class="nx">attachTo</span><span class="o">);</span> <span class="c">// No Dom util</span>
+<span class="c"></span>    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isFunction</span><span class="o">(</span><span class="nx">handler</span><span class="o">))</span> <span class="o">{</span>
+        <span class="nx">keyEvent</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="nx">handler</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="nx">keyEvent</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="nx">handler</span><span class="o">.</span><span class="nx">fn</span><span class="o">,</span> <span class="nx">handler</span><span class="o">.</span><span class="nx">scope</span><span class="o">,</span> <span class="nx">handler</span><span class="o">.</span><span class="nx">correctScope</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c">/**</span>
+<span class="c">    * Handles the key event when a key is pressed.</span>
+<span class="c">    * @method handleKeyPress</span>
+<span class="c">    * @param {DOMEvent} e   The keypress DOM event</span>
+<span class="c">    * @param {Object}   obj The DOM event scope object</span>
+<span class="c">    * @private</span>
+<span class="c">    */</span>
+    <span class="k">function</span> <span class="nx">handleKeyPress</span><span class="o">(</span><span class="nx">e</span><span class="o">,</span> <span class="nx">obj</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span> <span class="nx">keyData</span><span class="o">.</span><span class="nx">shift</span><span class="o">)</span> <span class="o">{</span>  
+            <span class="nx">keyData</span><span class="o">.</span><span class="nx">shift</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> 
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(!</span> <span class="nx">keyData</span><span class="o">.</span><span class="nx">alt</span><span class="o">)</span> <span class="o">{</span>    
+            <span class="nx">keyData</span><span class="o">.</span><span class="nx">alt</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(!</span> <span class="nx">keyData</span><span class="o">.</span><span class="nx">ctrl</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">keyData</span><span class="o">.</span><span class="nx">ctrl</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c">// check held down modifying keys first</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="nx">e</span><span class="o">.</span><span class="nx">shiftKey</span> <span class="o">==</span> <span class="nx">keyData</span><span class="o">.</span><span class="nx">shift</span> <span class="o">&amp;&amp;</span> 
+            <span class="nx">e</span><span class="o">.</span><span class="nx">altKey</span>   <span class="o">==</span> <span class="nx">keyData</span><span class="o">.</span><span class="nx">alt</span> <span class="o">&amp;&amp;</span>
+            <span class="nx">e</span><span class="o">.</span><span class="nx">ctrlKey</span>  <span class="o">==</span> <span class="nx">keyData</span><span class="o">.</span><span class="nx">ctrl</span><span class="o">)</span> <span class="o">{</span> <span class="c">// if we pass this, all modifiers match</span>
+<span class="c"></span>            
+            <span class="k">var</span> <span class="nx">dataItem</span><span class="o">,</span> <span class="nx">keys</span> <span class="o">=</span> <span class="nx">keyData</span><span class="o">.</span><span class="nx">keys</span><span class="o">,</span> <span class="nx">key</span><span class="o">;</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isArray</span><span class="o">(</span><span class="nx">keys</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span><span class="o">=</span><span class="m">0</span><span class="o">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">keys</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span><span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+                    <span class="nx">dataItem</span> <span class="o">=</span> <span class="nx">keys</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+                    <span class="nx">key</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">getCharCode</span><span class="o">(</span><span class="nx">e</span><span class="o">);</span>
+
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">dataItem</span> <span class="o">==</span> <span class="nx">key</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">keyEvent</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">e</span><span class="o">);</span>
+                        <span class="k">break</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nx">key</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">getCharCode</span><span class="o">(</span><span class="nx">e</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">keys</span> <span class="o">==</span> <span class="nx">key</span> <span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">keyEvent</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">e</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c">/**</span>
+<span class="c">    * Enables the KeyListener by attaching the DOM event listeners to the </span>
+<span class="c">    * target DOM element</span>
+<span class="c">    * @method enable</span>
+<span class="c">    */</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">enable</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span> <span class="k">this</span><span class="o">.</span><span class="nx">enabled</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">Event</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="nx">attachTo</span><span class="o">,</span> <span class="nx">event</span><span class="o">,</span> <span class="nx">handleKeyPress</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">enabledEvent</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">keyData</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="c">/**</span>
+<span class="c">        * Boolean indicating the enabled/disabled state of the Tooltip</span>
+<span class="c">        * @property enabled</span>
+<span class="c">        * @type Boolean</span>
+<span class="c">        */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">enabled</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">    * Disables the KeyListener by removing the DOM event listeners from the </span>
+<span class="c">    * target DOM element</span>
+<span class="c">    * @method disable</span>
+<span class="c">    */</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">disable</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">enabled</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">Event</span><span class="o">.</span><span class="nx">removeListener</span><span class="o">(</span><span class="nx">attachTo</span><span class="o">,</span> <span class="nx">event</span><span class="o">,</span> <span class="nx">handleKeyPress</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">disabledEvent</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">keyData</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">enabled</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">    * Returns a String representation of the object.</span>
+<span class="c">    * @method toString</span>
+<span class="c">    * @return {String}  The string representation of the KeyListener</span>
+<span class="c">    */</span> 
+    <span class="k">this</span><span class="o">.</span><span class="nx">toString</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s2">&quot;KeyListener [&quot;</span> <span class="o">+</span> <span class="nx">keyData</span><span class="o">.</span><span class="nx">keys</span> <span class="o">+</span> <span class="s2">&quot;] &quot;</span> <span class="o">+</span> <span class="nx">attachTo</span><span class="o">.</span><span class="nx">tagName</span> <span class="o">+</span> 
+                <span class="o">(</span><span class="nx">attachTo</span><span class="o">.</span><span class="nx">id</span> <span class="o">?</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="nx">attachTo</span><span class="o">.</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="o">);</span>
+    <span class="o">};</span>
+
+<span class="o">};</span>
+
+<span class="k">var</span> <span class="nx">KeyListener</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">KeyListener</span><span class="o">;</span>
+
+<span class="c">/**</span>
+<span class="c"> * Constant representing the DOM &quot;keydown&quot; event.</span>
+<span class="c"> * @property YAHOO.util.KeyListener.KEYDOWN</span>
+<span class="c"> * @static</span>
+<span class="c"> * @final</span>
+<span class="c"> * @type String</span>
+<span class="c"> */</span>
+<span class="nx">KeyListener</span><span class="o">.</span><span class="nx">KEYDOWN</span> <span class="o">=</span> <span class="s2">&quot;keydown&quot;</span><span class="o">;</span>
+
+<span class="c">/**</span>
+<span class="c"> * Constant representing the DOM &quot;keyup&quot; event.</span>
+<span class="c"> * @property YAHOO.util.KeyListener.KEYUP</span>
+<span class="c"> * @static</span>
+<span class="c"> * @final</span>
+<span class="c"> * @type String</span>
+<span class="c"> */</span>
+<span class="nx">KeyListener</span><span class="o">.</span><span class="nx">KEYUP</span> <span class="o">=</span> <span class="s2">&quot;keyup&quot;</span><span class="o">;</span>
+
+<span class="c">/**</span>
+<span class="c"> * keycode constants for a subset of the special keys</span>
+<span class="c"> * @property KEY</span>
+<span class="c"> * @static</span>
+<span class="c"> * @final</span>
+<span class="c"> */</span>
+<span class="nx">KeyListener</span><span class="o">.</span><span class="nx">KEY</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="nx">ALT</span>          <span class="o">:</span> <span class="m">18</span><span class="o">,</span>
+    <span class="nx">BACK_SPACE</span>   <span class="o">:</span> <span class="m">8</span><span class="o">,</span>
+    <span class="nx">CAPS_LOCK</span>    <span class="o">:</span> <span class="m">20</span><span class="o">,</span>
+    <span class="nx">CONTROL</span>      <span class="o">:</span> <span class="m">17</span><span class="o">,</span>
+    <span class="nx">DELETE</span>       <span class="o">:</span> <span class="m">46</span><span class="o">,</span>
+    <span class="nx">DOWN</span>         <span class="o">:</span> <span class="m">40</span><span class="o">,</span>
+    <span class="nx">END</span>          <span class="o">:</span> <span class="m">35</span><span class="o">,</span>
+    <span class="nx">ENTER</span>        <span class="o">:</span> <span class="m">13</span><span class="o">,</span>
+    <span class="nx">ESCAPE</span>       <span class="o">:</span> <span class="m">27</span><span class="o">,</span>
+    <span class="nx">HOME</span>         <span class="o">:</span> <span class="m">36</span><span class="o">,</span>
+    <span class="nx">LEFT</span>         <span class="o">:</span> <span class="m">37</span><span class="o">,</span>
+    <span class="nx">META</span>         <span class="o">:</span> <span class="m">224</span><span class="o">,</span>
+    <span class="nx">NUM_LOCK</span>     <span class="o">:</span> <span class="m">144</span><span class="o">,</span>
+    <span class="nx">PAGE_DOWN</span>    <span class="o">:</span> <span class="m">34</span><span class="o">,</span>
+    <span class="nx">PAGE_UP</span>      <span class="o">:</span> <span class="m">33</span><span class="o">,</span> 
+    <span class="nx">PAUSE</span>        <span class="o">:</span> <span class="m">19</span><span class="o">,</span>
+    <span class="nx">PRINTSCREEN</span>  <span class="o">:</span> <span class="m">44</span><span class="o">,</span>
+    <span class="nx">RIGHT</span>        <span class="o">:</span> <span class="m">39</span><span class="o">,</span>
+    <span class="nx">SCROLL_LOCK</span>  <span class="o">:</span> <span class="m">145</span><span class="o">,</span>
+    <span class="nx">SHIFT</span>        <span class="o">:</span> <span class="m">16</span><span class="o">,</span>
+    <span class="nx">SPACE</span>        <span class="o">:</span> <span class="m">32</span><span class="o">,</span>
+    <span class="nx">TAB</span>          <span class="o">:</span> <span class="m">9</span><span class="o">,</span>
+    <span class="nx">UP</span>           <span class="o">:</span> <span class="m">38</span>
+<span class="o">};</span>
+
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class="selected"><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="EventProvider.html" title="EventProvider">EventProvider</a></li>
+                                <li class=""><a href="YAHOO.util.CustomEvent.html" title="YAHOO.util.CustomEvent">YAHOO.util.CustomEvent</a></li>
+                                <li class=""><a href="YAHOO.util.Event.html" title="YAHOO.util.Event">YAHOO.util.Event</a></li>
+                                <li class=""><a href="YAHOO.util.KeyListener.html" title="YAHOO.util.KeyListener">YAHOO.util.KeyListener</a></li>
+                                <li class=""><a href="YAHOO.util.Subscriber.html" title="YAHOO.util.Subscriber">YAHOO.util.Subscriber</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="CustomEvent.js.html" title="CustomEvent.js">CustomEvent.js</a></li>
+                                <li class=""><a href="Event.js.html" title="Event.js">Event.js</a></li>
+                                <li class=""><a href="EventProvider.js.html" title="EventProvider.js">EventProvider.js</a></li>
+                                <li class="selected"><a href="KeyListener.js.html" title="KeyListener.js">KeyListener.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.util.Event", "name": "addBlurListener", "url": "YAHOO.util.Event.html#method_addBlurListener", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "addFocusListener", "url": "YAHOO.util.Event.html#method_addFocusListener", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_addListener", "url": "YAHOO.util.Event.html#method__addListener", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "addListener", "url": "YAHOO.util.Event.html#method_addListener", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "ADJ_SCOPE", "url": "YAHOO.util.Event.html#property_ADJ_SCOPE", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "CAPTURE", "url": "YAHOO.util.Event.html#property_CAPTURE", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "clearCache", "url": "YAHOO.util.Event.html#method_clearCache", "type": "method"}, {"access": "", "host": "YAHOO.util.Subscriber", "name": "contains", "url": "YAHOO.util.Subscriber.html#method_contains", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "counter", "url": "YAHOO.util.Event.html#property_counter", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_createDelegate", "url": "YAHOO.util.Event.html#method__createDelegate", "type": "method"}, {"access": "", "host": "EventProvider", "name": "createEvent", "url": "EventProvider.html#method_createEvent", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_createMouseDelegate", "url": "YAHOO.util.Event.html#method__createMouseDelegate", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "delegate", "url": "YAHOO.util.Event.html#method_delegate", "type": "method"}, {"access": "private", "host": "YAHOO.util.CustomEvent", "name": "_delete", "url": "YAHOO.util.CustomEvent.html#method__delete", "type": "method"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "disable", "url": "YAHOO.util.KeyListener.html#method_disable", "type": "method"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "disabledEvent", "url": "YAHOO.util.KeyListener.html#event_disabledEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.Event", "name": "DOMReady", "url": "YAHOO.util.Event.html#property_DOMReady", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "DOMReadyEvent", "url": "YAHOO.util.Event.html#event_DOMReadyEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_dri", "url": "YAHOO.util.Event.html#property__dri", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "EL", "url": "YAHOO.util.Event.html#property_EL", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "elCache\nDOM element cache", "url": "YAHOO.util.Event.html#property_elCache\nDOM element cache", "type": "property"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "enable", "url": "YAHOO.util.KeyListener.html#method_enable", "type": "method"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "enabled", "url": "YAHOO.util.KeyListener.html#property_enabled", "type": "property"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "enabledEvent", "url": "YAHOO.util.KeyListener.html#event_enabledEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "fire", "url": "YAHOO.util.CustomEvent.html#method_fire", "type": "method"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "fired", "url": "YAHOO.util.CustomEvent.html#property_fired", "type": "property"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "firedWith", "url": "YAHOO.util.CustomEvent.html#property_firedWith", "type": "property"}, {"access": "", "host": "EventProvider", "name": "fireEvent", "url": "EventProvider.html#method_fireEvent", "type": "method"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "fireOnce", "url": "YAHOO.util.CustomEvent.html#property_fireOnce", "type": "property"}, {"access": "", "host": "YAHOO.util.Subscriber", "name": "fn", "url": "YAHOO.util.Subscriber.html#property_fn", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "FN", "url": "YAHOO.util.Event.html#property_FN", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "generateId", "url": "YAHOO.util.Event.html#method_generateId", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_getCacheIndex", "url": "YAHOO.util.Event.html#method__getCacheIndex", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getCharCode", "url": "YAHOO.util.Event.html#method_getCharCode", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "getEl", "url": "YAHOO.util.Event.html#method_getEl", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getEvent", "url": "YAHOO.util.Event.html#method_getEvent", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getListeners", "url": "YAHOO.util.Event.html#method_getListeners", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getPageX", "url": "YAHOO.util.Event.html#method_getPageX", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getPageY", "url": "YAHOO.util.Event.html#method_getPageY", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getRelatedTarget", "url": "YAHOO.util.Event.html#method_getRelatedTarget", "type": "method"}, {"access": "", "host": "YAHOO.util.Subscriber", "name": "getScope", "url": "YAHOO.util.Subscriber.html#method_getScope", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_getScroll", "url": "YAHOO.util.Event.html#method__getScroll", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_getScrollLeft", "url": "YAHOO.util.Event.html#method__getScrollLeft", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_getScrollTop", "url": "YAHOO.util.Event.html#method__getScrollTop", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getTarget", "url": "YAHOO.util.Event.html#method_getTarget", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getTime", "url": "YAHOO.util.Event.html#method_getTime", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_getType", "url": "YAHOO.util.Event.html#method__getType", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "getXY", "url": "YAHOO.util.Event.html#method_getXY", "type": "method"}, {"access": "private", "host": "YAHOO.util.KeyListener", "name": "handleKeyPress", "url": "YAHOO.util.KeyListener.html#method_handleKeyPress", "type": "method"}, {"access": "", "host": "EventProvider", "name": "hasEvent", "url": "EventProvider.html#method_hasEvent", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_interval", "url": "YAHOO.util.Event.html#property__interval", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "isIE", "url": "YAHOO.util.Event.html#property_isIE", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "isSafari", "url": "YAHOO.util.Event.html#property_isSafari", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_isValidCollection", "url": "YAHOO.util.Event.html#method__isValidCollection", "type": "method"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "KEY", "url": "YAHOO.util.KeyListener.html#property_KEY", "type": "property"}, {"access": "private", "host": "YAHOO.util.KeyListener", "name": "keyEvent", "url": "YAHOO.util.KeyListener.html#event_keyEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "lastError", "url": "YAHOO.util.CustomEvent.html#property_lastError", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "lastError", "url": "YAHOO.util.Event.html#property_lastError", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "listeners", "url": "YAHOO.util.Event.html#property_listeners", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_load", "url": "YAHOO.util.Event.html#method__load", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "loadComplete", "url": "YAHOO.util.Event.html#property_loadComplete", "type": "property"}, {"access": "", "host": "YAHOO.util.Subscriber", "name": "obj", "url": "YAHOO.util.Subscriber.html#property_obj", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "OBJ", "url": "YAHOO.util.Event.html#property_OBJ", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "on", "url": "YAHOO.util.Event.html#method_on", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "onAvailable", "url": "YAHOO.util.Event.html#method_onAvailable", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "onAvailStack", "url": "YAHOO.util.Event.html#property_onAvailStack", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "onBlur", "url": "YAHOO.util.Event.html#method_onBlur", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "onContentReady", "url": "YAHOO.util.Event.html#method_onContentReady", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "onDOMReady", "url": "YAHOO.util.Event.html#method_onDOMReady", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "onFocus", "url": "YAHOO.util.Event.html#method_onFocus", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "OVERRIDE", "url": "YAHOO.util.Event.html#property_OVERRIDE", "type": "property"}, {"access": "", "host": "YAHOO.util.Subscriber", "name": "overrideContext", "url": "YAHOO.util.Subscriber.html#property_overrideContext", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "POLL_INTERVAL", "url": "YAHOO.util.Event.html#property_POLL_INTERVAL", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "POLL_RETRYS", "url": "YAHOO.util.Event.html#property_POLL_RETRYS", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "preventDefault", "url": "YAHOO.util.Event.html#method_preventDefault", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "purgeElement", "url": "YAHOO.util.Event.html#method_purgeElement", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_ready", "url": "YAHOO.util.Event.html#method__ready", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "regCE", "url": "YAHOO.util.Event.html#method_regCE", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "removeBlurListener", "url": "YAHOO.util.Event.html#method_removeBlurListener", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "removeDelegate", "url": "YAHOO.util.Event.html#method_removeDelegate", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "removeFocusListener", "url": "YAHOO.util.Event.html#method_removeFocusListener", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "removeListener", "url": "YAHOO.util.Event.html#method_removeListener", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "resolveTextNode", "url": "YAHOO.util.Event.html#method_resolveTextNode", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "retryCount", "url": "YAHOO.util.Event.html#property_retryCount", "type": "property"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "scope", "url": "YAHOO.util.CustomEvent.html#property_scope", "type": "property"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "signature", "url": "YAHOO.util.CustomEvent.html#property_signature", "type": "property"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "silent", "url": "YAHOO.util.CustomEvent.html#property_silent", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_simpleAdd", "url": "YAHOO.util.Event.html#method__simpleAdd", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_simpleRemove", "url": "YAHOO.util.Event.html#method__simpleRemove", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_specialTypes", "url": "YAHOO.util.Event.html#property__specialTypes", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "startInterval", "url": "YAHOO.util.Event.html#method_startInterval", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "stopEvent", "url": "YAHOO.util.Event.html#method_stopEvent", "type": "method"}, {"access": "", "host": "YAHOO.util.Event", "name": "stopPropagation", "url": "YAHOO.util.Event.html#method_stopPropagation", "type": "method"}, {"access": "", "host": "EventProvider", "name": "subscribe", "url": "EventProvider.html#method_subscribe", "type": "method"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "subscribe", "url": "YAHOO.util.CustomEvent.html#method_subscribe", "type": "method"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "subscribeEvent", "url": "YAHOO.util.CustomEvent.html#event_subscribeEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "subscribers", "url": "YAHOO.util.CustomEvent.html#property_subscribers", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "throwErrors", "url": "YAHOO.util.Event.html#property_throwErrors", "type": "property"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "toString", "url": "YAHOO.util.KeyListener.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "toString", "url": "YAHOO.util.CustomEvent.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.Subscriber", "name": "toString", "url": "YAHOO.util.Subscriber.html#method_toString", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_tryPreloadAttach", "url": "YAHOO.util.Event.html#method__tryPreloadAttach", "type": "method"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "type", "url": "YAHOO.util.CustomEvent.html#property_type", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "TYPE", "url": "YAHOO.util.Event.html#property_TYPE", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "_unload", "url": "YAHOO.util.Event.html#method__unload", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "unloadListeners", "url": "YAHOO.util.Event.html#property_unloadListeners", "type": "property"}, {"access": "", "host": "EventProvider", "name": "unsubscribe", "url": "EventProvider.html#method_unsubscribe", "type": "method"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "unsubscribe", "url": "YAHOO.util.CustomEvent.html#method_unsubscribe", "type": "method"}, {"access": "", "host": "EventProvider", "name": "unsubscribeAll", "url": "EventProvider.html#method_unsubscribeAll", "type": "method"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "unsubscribeAll", "url": "YAHOO.util.CustomEvent.html#method_unsubscribeAll", "type": "method"}, {"access": "private", "host": "YAHOO.util.Event", "name": "webkit", "url": "YAHOO.util.Event.html#property_webkit", "type": "property"}, {"access": "private", "host": "YAHOO.util.Event", "name": "webkitKeymap", "url": "YAHOO.util.Event.html#property_webkitKeymap", "type": "property"}, {"access": "", "host": "YAHOO.util.Event", "name": "WFN", "url": "YAHOO.util.Event.html#property_WFN", "type": "property"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "YAHOO.util.CustomEvent.FLAT", "url": "YAHOO.util.CustomEvent.html#property_YAHOO.util.CustomEvent.FLAT", "type": "property"}, {"access": "", "host": "YAHOO.util.CustomEvent", "name": "YAHOO.util.CustomEvent.LIST", "url": "YAHOO.util.CustomEvent.html#property_YAHOO.util.CustomEvent.LIST", "type": "property"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "YAHOO.util.KeyListener.KEYDOWN", "url": "YAHOO.util.KeyListener.html#property_YAHOO.util.KeyListener.KEYDOWN", "type": "property"}, {"access": "", "host": "YAHOO.util.KeyListener", "name": "YAHOO.util.KeyListener.KEYUP", "url": "YAHOO.util.KeyListener.html#property_YAHOO.util.KeyListener.KEYUP", "type": "property"}, {"access": "private", "host": "EventProvider", "name": "__yui_events", "url": "EventProvider.html#property___yui_events", "type": "property"}, {"access": "private", "host": "EventProvider", "name": "__yui_subscribers", "url": "EventProvider.html#property___yui_subscribers", "type": "property"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Fixed Width Menu Button</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    /*
+        Set the "zoom" property to "normal" since it is set to "1" by the 
+        ".example-container .bd" rule in yui.css and this causes a Menu
+        instance's width to expand to 100% of the browser viewport.
+    */
+    
+    div.yuimenu .bd {
+    
+        zoom: normal;
+    
+    }
+
+    #categorybutton button {
+    
+        /* 
+            Suppress the focus outline since Safari will outline even the 
+            text that is clipped by the application of the "overflow" property
+            in the follow style rule.
+        */
+
+        outline: none;
+    
+    }
+
+    #categorybutton button em {
+
+        font-style: normal;
+        display: block;
+        text-align: left;
+        white-space: nowrap;
+
+        /*  Restrict the width of the label to 10em. */
+
+        width: 10em;
+
+        /* Hide the overflow if the text label exceeds 10em in width. */
+
+        overflow: hidden;
+
+        /* 
+            IE, Safari and Opera support the ability to add ellipsis when the text 
+            label exceeds 10em in width.
+        */
+
+        text-overflow: ellipsis;
+		-o-text-overflow: ellipsis;
+
+    }
+
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Fixed Width Menu Button</h1>
+
+<div class="exampleIntro">
+	<p>
+This example demonstrates how to create a Menu Button whose text label has a 
+fixed width.  The behavior of this widget is similar to an HTML  
+<code>&#60;select&#62;</code> element in that its label hides any overflow 
+when updated to represent the selected menu item.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+	YAHOO.util.Event.onAvailable("buttoncontainer", function () {
+		
+		//	Create an array of name and value pairs that serve as the data 
+		//	source for the Button instance's menu.
+        
+        var aCategories = [
+        
+            { text: "Category 1", value: "one" },
+            { text: "Category 2", value: "two" },
+            { text: "Category 3", value: "three" },
+            { text: "A Really, Really Long Category 4", value: "four" }
+        
+        ];
+        
+
+		//	Create a Button instance, wrapping the text label in an <EM>
+		//	tag that will be given a fixed width of 10em.
+
+        var oButton = new YAHOO.widget.Button({ 
+                                        type: "menu", 
+                                        id:"categorybutton", 
+                                        label: "<em>Select a Category</em>", 
+                                        menu: aCategories, 
+                                        container: "buttoncontainer" }); 
+
+
+		//	"selectedMenuItemChange" event handler for a Button that will set 
+		//	the Button's "label" attribute to the value of the "text" 
+		//	configuration property of the MenuItem that was clicked.
+
+		var onSelectedMenuItemChange = function (event) {
+
+			var oMenuItem = event.newValue;
+
+			this.set("label", ("<em class=\"yui-button-label\">" + 
+						oMenuItem.cfg.getProperty("text") + "</em>"));
+
+		};
+
+
+		//	Register a "selectedMenuItemChange" event handler that will sync the 
+		//	Button's "label" attribute to the MenuItem that was clicked.
+
+		oButton.on("selectedMenuItemChange", onSelectedMenuItemChange);
+		
+	});
+        
+</script>
+
+<div id="buttoncontainer"></div>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Popup Calendar - Basic</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#examplecontainer {height:450px;  position:relative}
+
+	#show2up { position:absolute; left:5px; top:10px; clear:both}
+	#show1up { position:absolute; left:5px; top:300px; clear:both}
+
+	#cal1Container { display:none; position:absolute; left:5px; top:10px; z-index:2}
+	#cal2Container { display:none; position:absolute; left:5px; top:300px; z-index:1}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Popup Calendar - Basic</h1>
+
+<div class="exampleIntro">
+	<p>Calendar can be positioned absolutely to make it float above the document. This example shows how to setup a "Popup" Calendar and uses a couple of configuration properties specifically provided for use when the Calendar is floated above other content.</p>
+<p>If you're familiar with the YUI Container family, it's worth noting that the Calendar does not extend the Overlay control, but provides a couple of similar configuration properties.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="examplecontainer">
+    <button id="show2up" type="button">Show CalendarGroup</button>
+    <div id="cal1Container"></div>
+
+    <button id="show1up" type="button">Show Calendar</button>
+    <div id="cal2Container"></div>
+</div>
+
+<script type="text/javascript">
+	YAHOO.namespace("example.calendar");
+
+	YAHOO.example.calendar.init = function() {
+
+		YAHOO.example.calendar.cal1 = new YAHOO.widget.CalendarGroup("cal1","cal1Container", { pages:2, title:"Please make a selection:", close:true } );
+		YAHOO.example.calendar.cal1.render();
+
+		// Listener to show the 2 page Calendar when the button is clicked
+		YAHOO.util.Event.addListener("show2up", "click", YAHOO.example.calendar.cal1.show, YAHOO.example.calendar.cal1, true);
+
+		YAHOO.example.calendar.cal2 = new YAHOO.widget.Calendar("cal2","cal2Container", { title:"Choose a date:", close:true } );
+		YAHOO.example.calendar.cal2.render();
+
+		// Listener to show the 1-up Calendar when the button is clicked
+		YAHOO.util.Event.addListener("show1up", "click", YAHOO.example.calendar.cal2.show, YAHOO.example.calendar.cal2, true);
+	}
+
+	YAHOO.util.Event.onDOMReady(YAHOO.example.calendar.init);
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

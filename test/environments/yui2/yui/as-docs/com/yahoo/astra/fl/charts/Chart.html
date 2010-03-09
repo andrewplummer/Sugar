@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../../../print.css" type="text/css" media="print">
+<meta content="Chart,com.yahoo.astra.fl.charts.Chart,dataProvider,dataTipFunction,defaultSeriesType,legend,legendLabelFunction,indexToSeries,refreshSeries,seriesToIndex" name="keywords">
+<title>com.yahoo.astra.fl.charts.Chart</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'Chart - YUI Flash Component Documentation';
+				var baseRef = '../../../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">YUI Flash Component Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../../../all-classes.html')" href="../../../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../../all-classes.html')" href="../../../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../../index-list.html')" href="../../../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../../../index.html?com/yahoo/astra/fl/charts/Chart.html&amp;com/yahoo/astra/fl/charts/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;Chart</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#propertySummary">Properties</a>&nbsp;| <a href="#methodSummary">Methods</a>&nbsp;| <a href="#styleSummary">Styles</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class Chart"); titleBar_setSubNav(false,true,true,false,false,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">com.yahoo.astra.fl.charts</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class Chart</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Inheritance</td><td class="inheritanceList">Chart <img class="inheritArrow" alt="Inheritance" title="Inheritance" src="../../../../../images/inherit-arrow.gif"> fl.core.UIComponent</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Subclasses</td><td><a href="../charts/CartesianChart.html">CartesianChart</a>, <a href="../charts/PieChart.html">PieChart</a></td>
+</tr>
+</table>
+<p></p>
+  Functionality common to most charts. Generally, a <code>Chart</code> object
+  shouldn't be instantiated directly. Instead, a subclass with a concrete
+  implementation should be used. That subclass generally should implement the
+  <code>IPlotArea</code> interface.
+  
+  <p></p>
+<br>
+<hr>
+</div>
+<a name="propertySummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Properties</div>
+<table id="summaryTableProperty" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Property</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#dataProvider">dataProvider</a> : Object<div class="summaryTableDescription">
+   The data to be displayed by the chart.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#dataTipFunction">dataTipFunction</a> : Function<div class="summaryTableDescription">
+   If defined, the chart will call the input function to determine the
+   text displayed in the chart's data tip.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#defaultSeriesType">defaultSeriesType</a> : Object<div class="summaryTableDescription">
+   When raw data (like an Array of Numbers) is encountered where an
+   ISeries instance is expected, it will be converted to this default
+   type.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#legend">legend</a> : <a href="legend/ILegend.html">ILegend</a>
+<div class="summaryTableDescription">
+   The component that will display a human-readable legend for the chart.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#legendLabelFunction">legendLabelFunction</a> : Function<div class="summaryTableDescription">
+   If defined, the chart will call the input function to determine the text displayed in 
+   in the chart's legend.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+</table>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#Chart()">Chart</a>()</div>
+<div class="summaryTableDescription">
+   Constructor.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#indexToSeries()">indexToSeries</a>(index:int):<a href="series/ISeries.html">ISeries</a>
+</div>
+<div class="summaryTableDescription">
+   Returns the ISeries object at the specified index.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#seriesToIndex()">seriesToIndex</a>(series:<a href="series/ISeries.html">ISeries</a>):int</div>
+<div class="summaryTableDescription">
+   Returns the index within this plot area of the input ISeries object.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+</table>
+</div>
+<a name="protectedMethodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Protected Methods</div>
+<table id="summaryTableProtectedMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#refreshSeries()">refreshSeries</a>():void</div>
+<div class="summaryTableDescription">
+   Analyzes the input data and smartly converts it to the correct ISeries type
+   required for drawing.</div>
+</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+</table>
+</div>
+<a name="styleSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Styles</div>
+<table id="summaryTableStyle" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Style</th><th>Description</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:animationEnabled"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">animationEnabled</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br>
+  Determines if data changes should be displayed with animation.
+           The default value is <code>true</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:backgroundSkin"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">backgroundSkin</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Class<br>
+     Name of the class to use as the skin for the background and border of the
+     component.
+           The default value is <code>ChartBackgroundSkin</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:contentPadding"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">contentPadding</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+     The padding that separates the border of the component from its contents,
+     in pixels.
+           The default value is <code>10</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:dataTipBackgroundSkin"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">dataTipBackgroundSkin</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Class<br>
+     Name of the class to use as the skin for the background and border of the
+     chart's data tip.
+           The default value is <code>ChartDataTipBackground</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:dataTipContentPadding"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">dataTipContentPadding</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+  If the datatip's content padding is customizable, it will use this value.
+  The padding that separates the border of the component from its contents,
+     in pixels.
+           The default value is <code>6</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:dataTipTextFormat"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">dataTipTextFormat</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>TextFormat<br>
+  The TextFormat object to use to render data tips.
+           The default value is <code>TextFormat("_sans", 11, 0x000000, false, false, false, '', '', TextFormatAlign.LEFT, 0, 0, 0, 0)</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:embedFonts"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">embedFonts</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br>
+  Indicates whether embedded font outlines are used to render the text
+  field. If this value is true, Flash Player renders the text field by
+  using embedded font outlines. If this value is false, Flash Player
+  renders the text field by using device fonts.
+  
+  If you set the embedFonts property to true for a text field, you must
+  specify a font for that text by using the font property of a TextFormat
+  object that is applied to the text field. If the specified font is not
+  embedded in the SWF file, the text is not displayed.
+  
+   The default value is <code>false</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:seriesColors"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">seriesColors</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Array<br>
+     The default colors for each series. These colors are used for markers,
+     in most cases, but they may apply to lines, fills, or other graphical
+     items.
+     
+     <p>An Array of values that correspond to series indices in the data
+     provider. If the number of values in the Array is less than the number
+     of series, then the next series will restart at index zero in the style
+     Array. If the value of this style is an empty Array, then each individual series
+     will use the default or modified value set on the series itself.</p> 
+          <p>Example: If the seriesColors style is equal to [0xffffff, 0x000000] and there
+     are three series in the chart's data provider, then the series at index 0
+     will have a color of 0xffffff, index 1 will have a color of 0x000000, and
+     index 2 will have a color of 0xffffff (starting over from the beginning).</p>
+     
+      The default value is <code>[0x00b8bf, 0x8dd5e7, 0xedff9f, 0xffa928, 0xc0fff6, 0xd00050, 0xc6c6c6, 0xc3eafb, 0xfcffad, 0xcfff83, 0x444444, 0x4d95dd, 0xb8ebff, 0x60558f, 0x737d7e, 0xa64d9a, 0x8e9a9b, 0x803e77]</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:seriesMarkerSizes"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">seriesMarkerSizes</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Array<br>
+     The default size of the markers in pixels. The actual drawn size of the
+     markers could end up being different in some cases. For example, bar charts
+     and column charts display markers side-by-side, and a chart may need to make
+     the bars or columns smaller to fit within the required region.
+          <p>An Array of values that correspond to series indices in the data
+     provider. If the number of values in the Array is less than the number
+     of series, then the next series will restart at index zero in the style
+     Array. If the value of this style is an empty Array, then each individual series
+     will use the default or modified value set on the series itself.</p>
+     
+     <p>Example: If the seriesMarkerSizes style is equal to [10, 15] and there
+     are three series in the chart's data provider, then the series at index 0
+     will have a marker size of 10, index 1 will have a marker size of 15, and
+     index 2 will have a marker size of 10 (starting over from the beginning).</p>
+     
+      The default value is <code>[]</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:seriesMarkerSkins"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">seriesMarkerSkins</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Array<br>
+     An Array containing the default skin classes for each series. These classes
+     are used to instantiate the marker skins. The values may be fully-qualified
+     package and class strings or a reference to the classes themselves.
+          <p>An Array of values that correspond to series indices in the data
+     provider. If the number of values in the Array is less than the number
+     of series, then the next series will restart at index zero in the style
+     Array. If the value of this style is an empty Array, then each individual series
+     will use the default or modified value set on the series itself.</p> 
+     
+     <p>Example: If the seriesMarkerSkins style is equal to [CircleSkin, DiamondSkin] and there
+     are three series in the chart's data provider, then the series at index 0
+     will have a marker skin of CircleSkin, index 1 will have a marker skin of DiamondSkin, and
+     index 2 will have a marker skin of CircleSkin (starting over from the beginning).</p>
+     
+      The default value is <code>[]</code>.</td><td class="summaryTableOwnerCol">Chart</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="propertyDetail"></a>
+<div class="detailSectionHeader">Property detail</div>
+<a name="dataProvider"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">dataProvider</td><td class="detailHeaderType">property</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>dataProvider:Object</code>&nbsp;&nbsp;[read-write]<p>
+   The data to be displayed by the chart. Accepted data types include
+   all of the following:
+   
+   <ul>
+    <li>An ISeries instance with its own data provider.</li>
+    <li>An Array containing ISeries instances</li>
+    <li>An Array containing Numbers.</li>
+    <li>An Array containing complex objects.</li>
+    <li>An XMLList</li>
+    <li>An Array containing Arrays of Numbers or complex objects.</li>
+   </ul>
+   
+   </p><p>Note: When complex objects or XML is used in the data provider,
+   developers must define "fields" used to access data used by the chart.
+   For instance, CartesianChart exposes <code>horizontalField</code> and
+   <code>verticalField</code> properties. PieChart exposes <code>dataField</code>
+   and <code>categoryField</code> properties.
+   
+   <p>The chart will automatically convert the input data to an Array of
+   ISeries objects. Don't access <code>dataProvider</code> if you intend
+   to retreive the data in its original form.
+   
+   <span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get dataProvider():Object</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set dataProvider(value:Object):void</code>
+<br>
+</div>
+<a name="dataTipFunction"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">dataTipFunction</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>dataTipFunction:Function</code>&nbsp;&nbsp;[read-write]<p>
+   If defined, the chart will call the input function to determine the
+   text displayed in the chart's data tip. The function uses the following
+   signature:
+   
+   </p><p><code>function dataTipFunction(item:Object, index:int, series:ISeries):String</code></p>
+   <span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get dataTipFunction():Function</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set dataTipFunction(value:Function):void</code>
+<br>
+</div>
+<a name="defaultSeriesType"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">defaultSeriesType</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>defaultSeriesType:Object</code>&nbsp;&nbsp;[read-write]<p>
+   When raw data (like an Array of Numbers) is encountered where an
+   ISeries instance is expected, it will be converted to this default
+   type. Accepts either a Class instance or a String referencing a
+   fully-qualified class name.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get defaultSeriesType():Object</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set defaultSeriesType(value:Object):void</code>
+<br>
+</div>
+<a name="legend"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">legend</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>legend:<a href="legend/ILegend.html">ILegend</a></code>&nbsp;&nbsp;[read-write]<p>
+   The component that will display a human-readable legend for the chart. 
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get legend():<a href="legend/ILegend.html">ILegend</a></code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set legend(value:<a href="legend/ILegend.html">ILegend</a>):void</code>
+<br>
+</div>
+<a name="legendLabelFunction"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">legendLabelFunction</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>legendLabelFunction:Function</code>&nbsp;&nbsp;[read-write]<p>
+   If defined, the chart will call the input function to determine the text displayed in 
+   in the chart's legend.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get legendLabelFunction():Function</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set legendLabelFunction(value:Function):void</code>
+<br>
+</div>
+<a name="constructorDetail"></a>
+<div class="detailSectionHeader">Constructor detail</div>
+<a name="Chart()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">Chart</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">constructor</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function Chart()</code><p>
+   Constructor.
+   </p></div>
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="indexToSeries()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">indexToSeries</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function indexToSeries(index:int):<a href="series/ISeries.html">ISeries</a></code><p>
+   Returns the ISeries object at the specified index.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">index</span>:int</code> &mdash;  the index of the series to return
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code><a href="series/ISeries.html">ISeries</a></code> &mdash; 
+                          the series that appears at the input index or null if out of bounds 
+   
+                        
+                     </td>
+</tr>
+</table>
+</div>
+<a name="refreshSeries()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">refreshSeries</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>protected function refreshSeries():void</code><p>
+   Analyzes the input data and smartly converts it to the correct ISeries type
+   required for drawing. Adds new ISeries objects to the display list and removes
+   unused series objects that no longer need to be drawn.
+   </p></div>
+<a name="seriesToIndex()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">seriesToIndex</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function seriesToIndex(series:<a href="series/ISeries.html">ISeries</a>):int</code><p>
+   Returns the index within this plot area of the input ISeries object.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">series</span>:<a href="series/ISeries.html">ISeries</a></code> &mdash; a series that is displayed in this plot area.
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>int</code> &mdash;   the index of the input series
+   </td>
+</tr>
+</table>
+</div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright"> 
+</center>
+</div>
+</body>
+</html>
+<!-- -->

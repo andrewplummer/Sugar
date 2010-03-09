@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/slider/assets/skins/sam/slider.css">
+    <style type="text/css">
+        .markup {
+            width: 20em;
+            margin: 1em auto;
+        }
+        #bg {
+            background-image: url('../../../build/slider/assets/bg-fader.gif');
+        }
+        .hide-ex .highlight-example {
+            display: none;
+        }
+        #grow {
+            height: 0;
+            width: 10em;
+            background: #f00;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam hide-ex">
+<div id="log"></div>
+<div class="markup">
+    <div id="bg" class="yui-h-slider" tabindex="-1">
+        <div id="t" class="yui-slider-thumb">
+            <img src="../../../build/slider/assets/thumb-n.gif" alt="slider thumb">
+        </div>
+    </div>
+    <div id="grow"></div>
+</div>
+<input type="button" id="show" value="show code">
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/dragdrop/dragdrop.js"></script>
+<script type="text/javascript" src="../../../build/slider/slider.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.throwErrors = true;
+YAHOO.util.Event.onDOMReady(function () {
+
+var log = new YAHOO.widget.LogReader('log',{ newestOnTop: false }),
+    grow = document.getElementById('grow'),
+    s;
+
+s = YAHOO.widget.Slider.getHorizSlider('bg','t',0,200,20);
+s.animate = true;
+
+s.subscribe('change',function (val) {
+    grow.style.height = (val * 10) + 'px';
+});
+
+YAHOO.util.Event.on('show','click', function (e) {
+    var show = /show/i.test(this.value);
+
+    YAHOO.util.Dom[show ? 'removeClass' : 'addClass'](document.body,'hide-ex');
+    this.value = show ? "hide code" : "show code";
+});
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js" ></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

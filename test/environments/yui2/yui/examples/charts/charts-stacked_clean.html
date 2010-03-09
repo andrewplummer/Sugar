@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Stacked Bar Chart</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		width: 500px;
+		height: 350px;
+	}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Stacked Bar Chart</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates how to use <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> to create a Stacked Bar Chart.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">Media Conglomerate Ad Sales Summary 2004-2007</span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+//--- data
+
+	YAHOO.example.annualSales =
+	[
+		{ year: 2004, internetsales: 246852, printsales: 2523359, tvsales: 3123493 },
+		{ year: 2005, internetsales: 851876, printsales: 1084952, tvsales: 3166920 },
+		{ year: 2006, internetsales: 3917246, printsales: 587151, tvsales: 2330095 },
+		{ year: 2007, internetsales: 5318185, printsales: 307456, tvsales: 1830729 }
+	];
+
+	var salesData = new YAHOO.util.DataSource( YAHOO.example.annualSales );
+	salesData.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	salesData.responseSchema = { fields: [ "year", "internetsales", "printsales", "tvsales" ] };
+
+//--- chart
+
+	var seriesDef =
+	[
+		{
+			xField: "internetsales",
+			displayName: "Internet Sales"
+		},
+		{
+			xField: "printsales",
+			displayName: "Print Sales"
+		},
+		{
+			xField: "tvsales",
+			displayName: "Television Sales"
+		}
+	];
+
+	//used to format x axis
+	YAHOO.example.numberToCurrency = function( value )
+	{
+		return YAHOO.util.Number.format(Number(value), {prefix: "$", thousandsSeparator: ","});
+	}
+
+	//Numeric Axis for our currency
+	var currencyAxis = new YAHOO.widget.NumericAxis();
+	currencyAxis.stackingEnabled = true;
+	currencyAxis.labelFunction = YAHOO.example.numberToCurrency;
+
+	var mychart = new YAHOO.widget.StackedBarChart( "chart", salesData,
+	{
+		series: seriesDef,
+		yField: "year",
+		xAxis: currencyAxis,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

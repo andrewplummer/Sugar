@@ -1,0 +1,494 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: datatable  YAHOO.util.Chain   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>DataTable Widget&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_datatable.html" title="datatable">datatable</a>
+                 &gt; YAHOO.util.Chain 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.util.Chain</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Mechanism to execute a series of callbacks in a non-blocking queue.  Each callback is executed via setTimout unless configured with a negative timeout, in which case it is run in blocking mode in the same execution thread as the previous callback.  Callbacks can be function references or object literals with the following keys:
+<ul>
+<li><code>method</code> - {Function} REQUIRED the callback function.</li>
+<li><code>scope</code> - {Object} the scope from which to execute the callback.  Default is the global window scope.</li>
+<li><code>argument</code> - {Array} parameters to be passed to method as individual arguments.</li>
+<li><code>timeout</code> - {number} millisecond delay to wait after previous callback completion before executing this callback.  Negative values cause immediate blocking execution.  Default 0.</li>
+<li><code>until</code> - {Function} boolean function executed before each iteration.  Return true to indicate completion and proceed to the next callback.</li>
+<li><code>iterations</code> - {Number} number of times to execute the callback before proceeding to the next callback in the chain. Incompatible with <code>until</code>.</li>
+</ul>
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.util.Chain</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                callback*
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">callback*</span>
+                                                    &lt;<span property="yui:type">Function|Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  Any number of callbacks to initialize the queue</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property_id">
+                                    <h4><a name="property_id" property="yui:name">id</a>
+                                        - <code>private <span property="yui:type">{number}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Timeout id used to pause or stop execution and indicate the execution state of the Chain.  0 indicates paused or stopped, -1 indicates blocking execution, and any positive number indicates non-blocking execution.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_q">
+                                    <h4><a name="property_q" property="yui:name">q</a>
+                                        - <code>private <span property="yui:type">{Array}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The callback queue
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:method" resource="#method_add">
+                                    <h4>
+                                        <a name="method_add">add</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Chain
+                                            <strong property="yui:name">add</strong>
+                                           (
+                                                
+                                                        
+                                                         c
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Add a callback to the end of the queue
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">c</span>
+                                                        &lt;<span property="yui:type">Function|Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  the callback function ref or object literal</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Chain
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">the Chain instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_pause">
+                                    <h4>
+                                        <a name="method_pause">pause</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Chain
+                                            <strong property="yui:name">pause</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Pause the execution of the Chain after the current execution of the
+current callback completes.  If called interstitially, clears the
+timeout for the pending callback. Paused Chains can be restarted with
+chain.run()
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Chain
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">the Chain instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_run">
+                                    <h4>
+                                        <a name="method_run">run</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Chain
+                                            <strong property="yui:name">run</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Begin executing the chain, or resume execution from the last paused position.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Chain
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">the Chain instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_stop">
+                                    <h4>
+                                        <a name="method_stop">stop</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Chain
+                                            <strong property="yui:name">stop</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Stop and clear the Chain's queue after the current execution of the
+current callback completes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Chain
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">the Chain instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_end">
+                                    <h4>
+                                        <a name="event_end">end</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">end</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Event fired when the callback queue is emptied via execution (not via
+a call to chain.stop().
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class="selected"><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="YAHOO.util.Chain.html" title="YAHOO.util.Chain">YAHOO.util.Chain</a></li>
+                                <li class=""><a href="YAHOO.util.ColumnDD.html" title="YAHOO.util.ColumnDD">YAHOO.util.ColumnDD</a></li>
+                                <li class=""><a href="YAHOO.util.ColumnResizer.html" title="YAHOO.util.ColumnResizer">YAHOO.util.ColumnResizer</a></li>
+                                <li class=""><a href="YAHOO.util.Sort.html" title="YAHOO.util.Sort">YAHOO.util.Sort</a></li>
+                                <li class=""><a href="YAHOO.widget.BaseCellEditor.html" title="YAHOO.widget.BaseCellEditor">YAHOO.widget.BaseCellEditor</a></li>
+                                <li class=""><a href="YAHOO.widget.CellEditor.html" title="YAHOO.widget.CellEditor">YAHOO.widget.CellEditor</a></li>
+                                <li class=""><a href="YAHOO.widget.CheckboxCellEditor.html" title="YAHOO.widget.CheckboxCellEditor">YAHOO.widget.CheckboxCellEditor</a></li>
+                                <li class=""><a href="YAHOO.widget.Column.html" title="YAHOO.widget.Column">YAHOO.widget.Column</a></li>
+                                <li class=""><a href="YAHOO.widget.ColumnSet.html" title="YAHOO.widget.ColumnSet">YAHOO.widget.ColumnSet</a></li>
+                                <li class=""><a href="YAHOO.widget.DataTable.html" title="YAHOO.widget.DataTable">YAHOO.widget.DataTable</a></li>
+                                <li class=""><a href="YAHOO.widget.DateCellEditor.html" title="YAHOO.widget.DateCellEditor">YAHOO.widget.DateCellEditor</a></li>
+                                <li class=""><a href="YAHOO.widget.DropdownCellEditor.html" title="YAHOO.widget.DropdownCellEditor">YAHOO.widget.DropdownCellEditor</a></li>
+                                <li class=""><a href="YAHOO.widget.RadioCellEditor.html" title="YAHOO.widget.RadioCellEditor">YAHOO.widget.RadioCellEditor</a></li>
+                                <li class=""><a href="YAHOO.widget.Record.html" title="YAHOO.widget.Record">YAHOO.widget.Record</a></li>
+                                <li class=""><a href="YAHOO.widget.RecordSet.html" title="YAHOO.widget.RecordSet">YAHOO.widget.RecordSet</a></li>
+                                <li class=""><a href="YAHOO.widget.ScrollingDataTable.html" title="YAHOO.widget.ScrollingDataTable">YAHOO.widget.ScrollingDataTable</a></li>
+                                <li class=""><a href="YAHOO.widget.TextareaCellEditor.html" title="YAHOO.widget.TextareaCellEditor">YAHOO.widget.TextareaCellEditor</a></li>
+                                <li class=""><a href="YAHOO.widget.TextboxCellEditor.html" title="YAHOO.widget.TextboxCellEditor">YAHOO.widget.TextboxCellEditor</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="CellEditor.js.html" title="CellEditor.js">CellEditor.js</a></li>
+                                <li class=""><a href="Chain.js.html" title="Chain.js">Chain.js</a></li>
+                                <li class=""><a href="ColumnSet.js.html" title="ColumnSet.js">ColumnSet.js</a></li>
+                                <li class=""><a href="DataTable.js.html" title="DataTable.js">DataTable.js</a></li>
+                                <li class=""><a href="RecordSet.js.html" title="RecordSet.js">RecordSet.js</a></li>
+                                <li class=""><a href="ScrollingDataTable.js.html" title="ScrollingDataTable.js">ScrollingDataTable.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property_id" title="id">id</a></li>
+                                <li class="private"><a href="#property_q" title="q">q</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#method_add" title="add">add</a></li>
+                                <li class=""><a href="#method_pause" title="pause">pause</a></li>
+                                <li class=""><a href="#method_run" title="run">run</a></li>
+                                <li class=""><a href="#method_stop" title="stop">stop</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_end" title="end">end</a></li>
+                        </ul>
+                    </div>
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.util.Chain", "name": "add", "url": "YAHOO.util.Chain.html#method_add", "type": "method"}, {"access": "private", "host": "YAHOO.widget.RecordSet", "name": "_addRecord", "url": "YAHOO.widget.RecordSet.html#method__addRecord", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "addRecord", "url": "YAHOO.widget.RecordSet.html#method_addRecord", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "addRecords", "url": "YAHOO.widget.RecordSet.html#method_addRecords", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "beforeCOLOR_COLUMNFILLERChange", "url": "YAHOO.widget.ScrollingDataTable.html#event_beforeCOLOR_COLUMNFILLERChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "beforeHeightChange", "url": "YAHOO.widget.ScrollingDataTable.html#event_beforeHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "beforeWidthChange", "url": "YAHOO.widget.ScrollingDataTable.html#event_beforeWidthChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_bScrollbarX", "url": "YAHOO.widget.ScrollingDataTable.html#property__bScrollbarX", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "clearScrollPositions", "url": "YAHOO.widget.ScrollingDataTable.html#method_clearScrollPositions", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "COLOR_COLUMNFILLER", "url": "YAHOO.widget.ScrollingDataTable.html#config_COLOR_COLUMNFILLER", "type": "config"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "COLOR_COLUMNFILLERChange", "url": "YAHOO.widget.ScrollingDataTable.html#event_COLOR_COLUMNFILLERChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "DataTable.CLASS_BODY", "url": "YAHOO.widget.ScrollingDataTable.html#property_DataTable.CLASS_BODY", "type": "property"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "DataTable.CLASS_HEADER", "url": "YAHOO.widget.ScrollingDataTable.html#property_DataTable.CLASS_HEADER", "type": "property"}, {"access": "private", "host": "YAHOO.widget.RecordSet", "name": "_deleteRecord", "url": "YAHOO.widget.RecordSet.html#method__deleteRecord", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "deleteRecord", "url": "YAHOO.widget.RecordSet.html#method_deleteRecord", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "deleteRecords", "url": "YAHOO.widget.RecordSet.html#method_deleteRecords", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_destroyBdTheadEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__destroyBdTheadEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_destroyContainerEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__destroyContainerEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_destroyHdTableEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__destroyHdTableEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "disable", "url": "YAHOO.widget.ScrollingDataTable.html#method_disable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_elBdContainer", "url": "YAHOO.widget.ScrollingDataTable.html#property__elBdContainer", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_elBdThead", "url": "YAHOO.widget.ScrollingDataTable.html#property__elBdThead", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_elHdContainer", "url": "YAHOO.widget.ScrollingDataTable.html#property__elHdContainer", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_elHdTable", "url": "YAHOO.widget.ScrollingDataTable.html#property__elHdTable", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_elTmpContainer", "url": "YAHOO.widget.ScrollingDataTable.html#property__elTmpContainer", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_elTmpTable", "url": "YAHOO.widget.ScrollingDataTable.html#property__elTmpTable", "type": "property"}, {"access": "", "host": "YAHOO.util.Chain", "name": "end", "url": "YAHOO.util.Chain.html#event_end", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_focusEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__focusEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "getBdContainerEl", "url": "YAHOO.widget.ScrollingDataTable.html#method_getBdContainerEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "getBdTableEl", "url": "YAHOO.widget.ScrollingDataTable.html#method_getBdTableEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.Record", "name": "getCount", "url": "YAHOO.widget.Record.html#method_getCount", "type": "method"}, {"access": "", "host": "YAHOO.widget.Record", "name": "getData", "url": "YAHOO.widget.Record.html#method_getData", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "getHdContainerEl", "url": "YAHOO.widget.ScrollingDataTable.html#method_getHdContainerEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "getHdTableEl", "url": "YAHOO.widget.ScrollingDataTable.html#method_getHdTableEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "getId", "url": "YAHOO.widget.RecordSet.html#method_getId", "type": "method"}, {"access": "", "host": "YAHOO.widget.Record", "name": "getId", "url": "YAHOO.widget.Record.html#method_getId", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "getLength", "url": "YAHOO.widget.RecordSet.html#method_getLength", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "getRecord", "url": "YAHOO.widget.RecordSet.html#method_getRecord", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "getRecordIndex", "url": "YAHOO.widget.RecordSet.html#method_getRecordIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "getRecords", "url": "YAHOO.widget.RecordSet.html#method_getRecords", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "hasRecords", "url": "YAHOO.widget.RecordSet.html#method_hasRecords", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "height", "url": "YAHOO.widget.ScrollingDataTable.html#config_height", "type": "config"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "heightChange", "url": "YAHOO.widget.ScrollingDataTable.html#event_heightChange", "type": "event"}, {"access": "private", "host": "YAHOO.util.Chain", "name": "id", "url": "YAHOO.util.Chain.html#property_id", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "initAttributes", "url": "YAHOO.widget.ScrollingDataTable.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initBdTheadEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__initBdTheadEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initBdThEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__initBdThEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initCaptionEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__initCaptionEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initContainerEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__initContainerEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initDomElements", "url": "YAHOO.widget.ScrollingDataTable.html#method__initDomElements", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initTableEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__initTableEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initTbodyEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__initTbodyEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initTheadEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__initTheadEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_initThEl", "url": "YAHOO.widget.ScrollingDataTable.html#method__initThEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "insertColumn", "url": "YAHOO.widget.ScrollingDataTable.html#method_insertColumn", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "keyUpdateEvent", "url": "YAHOO.widget.RecordSet.html#event_keyUpdateEvent", "type": "event"}, {"access": "private", "host": "YAHOO.widget.RecordSet", "name": "_length", "url": "YAHOO.widget.RecordSet.html#property__length", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Record", "name": "_nCount", "url": "YAHOO.widget.Record.html#property__nCount", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Record", "name": "_oData", "url": "YAHOO.widget.Record.html#property__oData", "type": "property"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "onColumnChange", "url": "YAHOO.widget.ScrollingDataTable.html#method_onColumnChange", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_onScroll", "url": "YAHOO.widget.ScrollingDataTable.html#method__onScroll", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_onTheadKeydown", "url": "YAHOO.widget.ScrollingDataTable.html#method__onTheadKeydown", "type": "method"}, {"access": "", "host": "YAHOO.util.Chain", "name": "pause", "url": "YAHOO.util.Chain.html#method_pause", "type": "method"}, {"access": "private", "host": "YAHOO.util.Chain", "name": "q", "url": "YAHOO.util.Chain.html#property_q", "type": "property"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "recordAddEvent", "url": "YAHOO.widget.RecordSet.html#event_recordAddEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "recordDeleteEvent", "url": "YAHOO.widget.RecordSet.html#event_recordDeleteEvent", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Record", "name": "Record._nCount", "url": "YAHOO.widget.Record.html#property_Record._nCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "recordsAddEvent", "url": "YAHOO.widget.RecordSet.html#event_recordsAddEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "recordsDeleteEvent", "url": "YAHOO.widget.RecordSet.html#event_recordsDeleteEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "recordSetEvent", "url": "YAHOO.widget.RecordSet.html#event_recordSetEvent", "type": "event"}, {"access": "private", "host": "YAHOO.widget.RecordSet", "name": "RecordSet._nCount", "url": "YAHOO.widget.RecordSet.html#property_RecordSet._nCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "recordsSetEvent", "url": "YAHOO.widget.RecordSet.html#event_recordsSetEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "recordUpdateEvent", "url": "YAHOO.widget.RecordSet.html#event_recordUpdateEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "recordValueUpdateEvent", "url": "YAHOO.widget.RecordSet.html#event_recordValueUpdateEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "removeColumn", "url": "YAHOO.widget.ScrollingDataTable.html#method_removeColumn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "reorderColumn", "url": "YAHOO.widget.ScrollingDataTable.html#method_reorderColumn", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "replaceRecords", "url": "YAHOO.widget.RecordSet.html#method_replaceRecords", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "reset", "url": "YAHOO.widget.RecordSet.html#method_reset", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "resetEvent", "url": "YAHOO.widget.RecordSet.html#event_resetEvent", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_retoreScrollPositions", "url": "YAHOO.widget.ScrollingDataTable.html#method__retoreScrollPositions", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "reverseRecords", "url": "YAHOO.widget.RecordSet.html#method_reverseRecords", "type": "method"}, {"access": "", "host": "YAHOO.util.Chain", "name": "run", "url": "YAHOO.util.Chain.html#method_run", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_runRenderChain", "url": "YAHOO.widget.ScrollingDataTable.html#method__runRenderChain", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "scrollTo", "url": "YAHOO.widget.ScrollingDataTable.html#method_scrollTo", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "setColumnWidth", "url": "YAHOO.widget.ScrollingDataTable.html#method_setColumnWidth", "type": "method"}, {"access": "", "host": "YAHOO.widget.Record", "name": "setData", "url": "YAHOO.widget.Record.html#method_setData", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_setOverhangValue", "url": "YAHOO.widget.ScrollingDataTable.html#method__setOverhangValue", "type": "method"}, {"access": "private", "host": "YAHOO.widget.RecordSet", "name": "_setRecord", "url": "YAHOO.widget.RecordSet.html#method__setRecord", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "setRecord", "url": "YAHOO.widget.RecordSet.html#method_setRecord", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "setRecords", "url": "YAHOO.widget.RecordSet.html#method_setRecords", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "showTableMessage", "url": "YAHOO.widget.ScrollingDataTable.html#method_showTableMessage", "type": "method"}, {"access": "private", "host": "YAHOO.widget.RecordSet", "name": "_sId", "url": "YAHOO.widget.RecordSet.html#property__sId", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Record", "name": "_sId", "url": "YAHOO.widget.Record.html#property__sId", "type": "property"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "sortRecords", "url": "YAHOO.widget.RecordSet.html#method_sortRecords", "type": "method"}, {"access": "", "host": "YAHOO.util.Chain", "name": "stop", "url": "YAHOO.util.Chain.html#method_stop", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_storeScrollPositions", "url": "YAHOO.widget.ScrollingDataTable.html#method__storeScrollPositions", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_syncScroll", "url": "YAHOO.widget.ScrollingDataTable.html#method__syncScroll", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_syncScrollOverhang", "url": "YAHOO.widget.ScrollingDataTable.html#method__syncScrollOverhang", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_syncScrollX", "url": "YAHOO.widget.ScrollingDataTable.html#method__syncScrollX", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_syncScrollY", "url": "YAHOO.widget.ScrollingDataTable.html#method__syncScrollY", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "tableScrollEvent", "url": "YAHOO.widget.ScrollingDataTable.html#event_tableScrollEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "toString", "url": "YAHOO.widget.RecordSet.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "updateKey", "url": "YAHOO.widget.RecordSet.html#method_updateKey", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "updateRecord", "url": "YAHOO.widget.RecordSet.html#method_updateRecord", "type": "method"}, {"access": "", "host": "YAHOO.widget.RecordSet", "name": "updateRecordValue", "url": "YAHOO.widget.RecordSet.html#method_updateRecordValue", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ScrollingDataTable", "name": "_validateColumnWidth", "url": "YAHOO.widget.ScrollingDataTable.html#method__validateColumnWidth", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "validateColumnWidths", "url": "YAHOO.widget.ScrollingDataTable.html#method_validateColumnWidths", "type": "method"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "width", "url": "YAHOO.widget.ScrollingDataTable.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.ScrollingDataTable", "name": "widthChange", "url": "YAHOO.widget.ScrollingDataTable.html#event_widthChange", "type": "event"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>XY-scrolling, Y-scrolling, and X-scrolling</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>XY-scrolling, Y-scrolling, and X-scrolling</h1>
+
+<div class="exampleIntro">
+	<p>Scrolling can be enabled along the x, y, or xy-axes. Call the
+YAHOO.widget.ScrollingDataTable constructor and pass in width and/and or height
+string values as configurations. Since scrolling functionality has been moved to
+the ScrollingDataTable subclass, please note that you cannot start with a
+YAHOO.widget.DataTable instance and add scrolling to it dynamically at runtime.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<h2 class="first">XY Scrolling</h2>
+<div id="xyscrolling"></div>
+
+<h2>Y Scrolling</h2>
+<div id="yscrolling"></div>
+
+<h2>X Scrolling</h2>
+<div id="xscrolling"></div>
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    YAHOO.example.Scrolling = function() {
+        var myColumnDefs = [
+                {key:"field1", width:50},
+                {key:"field2", width:100, formatter:"date"},
+                {key:"field3", width:50},
+                {key:"field4", width:50},
+                {key:"field5", width:50},
+                {key:"field6", width:150}
+            ];
+            
+        var myColumnDefsY = [
+                {key:"field1", width:50},
+                {key:"field2", width:100, formatter:"date"},
+                {key:"field3", width:50},
+                {key:"field4", width:50},
+                {key:"field5", width:50},
+                {key:"field6", width:150}
+            ];
+
+        var myColumnDefsX = [
+                {key:"field1", width:50},
+                {key:"field2", width:100, formatter:"date"},
+                {key:"field3", width:50},
+                {key:"field4", width:50},
+                {key:"field5", width:50},
+                {key:"field6", width:150}
+            ];
+
+        var myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.multitypes);
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+        myDataSource.responseSchema = {
+            resultsList: "items",
+            fields: [
+                {key:"field1"},
+                {key:"field2", formatter:"date"},
+                {key:"field3"},
+                {key:"field4"},
+                {key:"field5"},
+                {key:"field6"}
+            ]
+        };
+
+        // Set width and height as string values
+        var myDataTableXY = new YAHOO.widget.ScrollingDataTable("xyscrolling", myColumnDefs,
+                myDataSource, {width:"30em", height:"10em"});
+
+        // Set height as a string value
+        var myDataTableY = new YAHOO.widget.ScrollingDataTable("yscrolling", myColumnDefsY,
+                myDataSource, {height:"10em"});
+
+        // Set width as a string value
+        var myDataTableX = new YAHOO.widget.ScrollingDataTable("xscrolling", myColumnDefsX,
+                myDataSource, {width:"30em"});
+                
+        return {
+            oDS: myDataSource,
+            oDTXY: myDataTableXY,
+            oDTY: myDataTableY,
+            oDTX: myDataTableX
+        };
+    }();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

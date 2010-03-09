@@ -1,0 +1,735 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Rich Text Editor: Flickr Image Search</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+<script type="text/javascript" src="../../build/editor/editor-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Rich Text Editor: Flickr Image Search</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Rich Text Editor: Flickr Image Search</h1>
+	
+	<div class="exampleIntro">
+	<p>This example provides a new button (<img src="assets/flickr_default.gif">) in the toolbar that opens a custom panel.</p>
+<p>This custom panel contains an <a href="http://developer.yahoo.com/yui/autocomplete/">AutoComplete Control</a> that queries Flickr for tags and displays the images.</p>
+<p>A selected image will be inserted into the Editor for ease of use.</p>
+			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="flickr_editor_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<style>
+    .yui-skin-sam .yui-toolbar-container .yui-toolbar-flickr span.yui-toolbar-icon {
+        background-image: url( assets/flickr_default.gif );
+        background-position: 1px 0px;
+        left: 5px;
+    }
+    .yui-skin-sam .yui-toolbar-container .yui-toolbar-flickr-selected span.yui-toolbar-icon {
+        background-image: url( assets/flickr_active.gif );
+        background-position: 1px 0px;
+        left: 5px;
+    }
+
+        #gutter1 {
+            overflow: hidden;
+            visibility: hidden;
+            text-align: left;
+        }
+
+        #gutter1 .bd {
+            border:1px solid #808080;
+            border-left: none;
+            background-color: #F2F2F2;
+            height: 95%;
+            overflow: hidden;
+            width: 249px;
+            margin-top: 10px;
+            padding-left: .25em;
+        }
+
+        #gutter1 ul {
+            list-style-type: none;
+        }
+        #gutter1 ul li {
+            margin: 0;
+            padding: 0;
+            float:left;
+            display:inline;
+        }
+
+        #gutter1 .bd h2 {
+            font-size: 120%;
+            font-weight: bold;
+            margin: 0.5em 0;
+            color: #000;
+            border: none;
+        }
+
+        #gutter1 img {
+            margin: 0 .5em;
+            border:1px solid #808080;
+            height: 50px;
+            width: 50px;
+        }
+
+        #flickr_results {
+            height: 75%;
+            overflow: auto;
+            position:static;
+        }
+
+        #flickr_results p {
+            padding: .5em;
+            margin-bottom: 1em;
+        }
+
+        #flickr_results div.yui-ac-content {
+            width: 225px;
+        }
+
+        .yui-skin-sam .yui-ac-input {
+            position: static;
+            width: 12em;
+        }
+
+        #gutter1 .tip {
+            display:block;
+            font-size:85%;
+            margin:0.5em;
+            padding-left:23px;
+            position:relative;
+            text-align:left;
+        }
+
+        #gutter1 .tip span.icon-info {
+            background-position:-106px -32px;
+            background-image:url(css/sprite.png);
+            background-position:-84px -32px;
+            display:block;
+            height:20px;
+            left:0pt;
+            position:absolute;
+            top:0pt;
+            width:20px;
+        }
+</style>
+<style>
+.yui-toolbar-group-insertitem {
+    *width: auto;
+}
+</style>
+
+<form method="post" action="#" id="form1">
+<textarea id="editor" name="editor" rows="20" cols="75">
+This is some more test text. <font face="Times New Roman">This is some more test text. This is some more <b>test <i>text</i></b></font>. This is some more test text. This is some more test text. This is some more test text. This is some more test text. This is some more test text. This is some more test text. 
+</textarea>
+</form>
+
+<script>
+
+/* Gutter Plugin */
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event;
+
+    YAHOO.gutter = function() {
+        return {
+            status: false,
+            gutter: null,
+            createGutter: function() {
+                YAHOO.log('Creating gutter (#gutter1)', 'info', 'example');
+                this.gutter = new YAHOO.widget.Overlay('gutter1', {
+                    height: '425px',
+                    width: '300px',
+                    context: [myEditor.get('element_cont').get('element'), 'tl', 'tr'],
+                    position: 'absolute',
+                    visible: false
+                });
+                this.gutter.hideEvent.subscribe(function() {
+                    myEditor.toolbar.deselectButton('flickr');
+                    Dom.setStyle('gutter1', 'visibility', 'visible');                
+                    var anim = new YAHOO.util.Anim('gutter1', {
+                        width: {
+                            from: 300,
+                            to: 0
+                        },
+                        opacity: {
+                            from: 1,
+                            to: 0
+                        }
+                    }, 1);
+                    anim.onComplete.subscribe(function() {  
+                        Dom.setStyle('gutter1', 'visibility', 'hidden');
+                    });
+                    anim.animate();
+                }, this, true);
+                this.gutter.showEvent.subscribe(function() {
+                    myEditor.toolbar.selectButton('flickr');
+                    this.gutter.cfg.setProperty('context', [myEditor.get('element_cont').get('element'), 'tl', 'tr']);
+                    Dom.setStyle(this.gutter.element, 'width', '0px');
+                    var anim = new YAHOO.util.Anim('gutter1', {
+                        width: {
+                            from: 0,
+                            to: 300
+                        },
+                        opacity: {
+                            from: 0,
+                            to: 1
+                        }
+                    }, 1);
+                    anim.animate();
+                }, this, true);
+                var warn = '';
+                if (myEditor.browser.webkit || myEditor.browser.opera) {
+                    warn = myEditor.STR_IMAGE_COPY;
+                }
+                this.gutter.setBody('<h2>Flickr Image Search</h2><label for="flikr_search">Tag:</label><input type="text" value="" id="flickr_search"><div id="flickr_results"><p>Enter flickr tags into the box above, separated by commas. Be patient, this example my take a few seconds to get the images..</p></div>' + warn);
+                this.gutter.render(document.body);
+            },
+            open: function() {
+                Dom.get('flickr_search').value = '';
+                YAHOO.log('Show Gutter', 'info', 'example');
+                this.gutter.show();
+                this.status = true;
+            },
+            close: function() {
+                YAHOO.log('Close Gutter', 'info', 'example');
+                this.gutter.hide();
+                this.status = false;
+            },
+            toggle: function() {
+                if (this.status) {
+                    this.close();
+                } else {
+                    this.open();
+                }
+            }
+        }
+    }
+    
+})();
+
+
+YAHOO.util.Event.onAvailable('flickr_search', function() {
+    YAHOO.log('onAvailable: #flickr_search', 'info', 'example');
+    YAHOO.util.Event.on('flickr_results', 'mousedown', function(ev) {
+        YAHOO.util.Event.stopEvent(ev);
+        var tar = YAHOO.util.Event.getTarget(ev);
+        if (tar.tagName.toLowerCase() == 'img') {
+            if (tar.getAttribute('fullimage', 2)) {
+                YAHOO.log('Found an image, insert it..', 'info', 'example');
+                var img = tar.getAttribute('fullimage', 2),
+                    title = tar.getAttribute('fulltitle'),
+                    owner = tar.getAttribute('fullowner'),
+                    url = tar.getAttribute('fullurl');
+                this.toolbar.fireEvent('flickrClick', { type: 'flickrClick', img: img, title: title, owner: owner, url: url });
+            }
+        }
+    }, myEditor, true);
+    YAHOO.log('Create the Auto Complete Control', 'info', 'example');
+    oACDS = new YAHOO.widget.DS_XHR("assets/flickr_proxy.php",
+        ["photo", "title", "id", "owner", "secret", "server"]);
+    oACDS.scriptQueryParam = "tags";
+    oACDS.responseType = YAHOO.widget.DS_XHR.TYPE_XML;
+    oACDS.maxCacheEntries = 0;
+    oACDS.scriptQueryAppend = "method=flickr.photos.search";
+
+    // Instantiate AutoComplete
+    oAutoComp = new YAHOO.widget.AutoComplete('flickr_search','flickr_results', oACDS);
+    oAutoComp.autoHighlight = false;
+    oAutoComp.alwaysShowContainer = true; 
+    oAutoComp.formatResult = function(oResultItem, sQuery) {
+        // This was defined by the schema array of the data source
+        var sTitle = oResultItem[0];
+        var sId = oResultItem[1];
+        var sOwner = oResultItem[2];
+        var sSecret = oResultItem[3];
+        var sServer = oResultItem[4];
+        var urlPart = 'http:/'+'/static.flickr.com/' + sServer + '/' + sId + '_' + sSecret;
+        var sUrl = urlPart + '_s.jpg';
+        var lUrl = urlPart + '_m.jpg';
+        var fUrl = 'http:/'+'/www.flickr.com/photos/' + sOwner + '/' + sId;
+        var sMarkup = '<img src="' + sUrl + '" fullimage="' + lUrl + '" fulltitle="' + sTitle + '" fullid="' + sOwner + '" fullurl="' + fUrl + '" class="yui-ac-flickrImg" title="Click to add this image to the editor"><br>';
+        return (sMarkup);
+    };
+});
+
+var gutter = null;
+
+var myConfig = {
+    height: '300px',
+    width: '600px',
+    animate: true,
+    dompath: true,
+    focusAtStart: true
+};
+
+YAHOO.log('Editor loaded..', 'info', 'example');
+var myEditor = new YAHOO.widget.Editor('editor', myConfig);
+
+myEditor.on('toolbarLoaded', function() { 
+    YAHOO.log('Toolbar loaded, add button and create gutter', 'info', 'example');
+    gutter = new YAHOO.gutter();
+
+    var flickrConfig = {
+            type: 'push',
+            label: 'Insert Flickr Image',
+            value: 'flickr'
+    }
+   
+    myEditor.toolbar.addButtonToGroup(flickrConfig, 'insertitem');
+
+    myEditor.toolbar.on('flickrClick', function(ev) {
+        YAHOO.log('flickrClick: ' + YAHOO.lang.dump(ev), 'info', 'example');
+        this._focusWindow();
+        if (ev && ev.img) {
+            YAHOO.log('We have an image, insert it', 'info', 'example');
+            //To abide by the Flickr TOS, we need to link back to the image that we just inserted
+            var html = '<a href="' + ev.url + '"><img src="' + ev.img + '" title="' + ev.title + '"></a>';
+            this.execCommand('inserthtml', html);
+        }
+        gutter.toggle();
+    }, myEditor, true);
+    gutter.createGutter();
+});
+myEditor.render();
+
+</script>
+
+	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Setting up the Editor's HTML</h2>
+
+<p>Setting up the Editor's HTML is done by creating a <code>textarea</code> control on the page.</p>
+
+<textarea name="code" class="HTML">
+&lt;form method="post" action="#" id="form1"&gt;
+&lt;textarea id="editor" name="editor" rows="20" cols="75"&gt;
+This is some more test text. <font face="Times New Roman">This is some more test text.
+This is some more <b>test <i>text</i></b></font>.
+This is some more test text. This is some more test text.
+This is some more test text. This is some more test text. This is some more test text.
+This is some more test text. 
+&lt;/textarea&gt;
+&lt;/form&gt;
+</textarea>
+
+<h2>Setting up the Editor's Javascript</h2>
+
+<p>Once the <code>textarea</code> is on the page, then initialize the Editor like this:</p>
+
+<textarea name="code" class="JScript">
+//The Editor config
+var myConfig = {
+    height: '300px',
+    width: '600px',
+    animate: true,
+    dompath: true,
+    focusAtStart: true
+};
+
+//Now let's load the Editor.
+var myEditor = new YAHOO.widget.Editor('editor', myConfig);
+</textarea>
+
+<h2>Adding and Controlling the New Button</h2>
+<p>Here we subscribe to the <code>toolbarLoaded</code> Custom Event and create the new Button (<code>flickr</code>). After adding it to the group called <code>insertitem</code>, we subscribe to it's <code>flickrClick</code> Custom Event.</p>
+<p>Inside this Custom Event, we set the <code>STOP_EXEC_COMMAND</code> var to <code>true</code>, which will keep the Editor from trying to run <code>execCommand('flickr', '')</code></p>
+<p>Then we call <code>gutter.toggle()</code> which will either hide or show our custom panel.</p>
+<textarea class="JScript" name="code">
+var myEditor = new YAHOO.widget.Editor('editor', myConfig);
+
+//Wait for the editor's toolbar to load
+myEditor.on('toolbarLoaded', function() {
+    //create the new gutter object
+    gutter = new YAHOO.gutter();
+
+    //The Toolbar buttons config
+    var flickrConfig = {
+            type: 'push',
+            label: 'Insert Flickr Image',
+            value: 'flickr'
+    }
+    
+    //Add the button to the "insertitem" group
+    myEditor.toolbar.addButtonToGroup(flickrConfig, 'insertitem');
+
+    //Handle the button's click
+    myEditor.toolbar.on('flickrClick', function(ev) {
+        this._focusWindow();
+        if (ev && ev.img) {
+            //To abide by the Flickr TOS, we need to link back to the image that we just inserted
+            var html = '<a href="' + ev.url + '"><img src="' + ev.img + '" title="' + ev.title + '"></a>';
+            this.execCommand('inserthtml', html);
+        }
+        //Toggle the gutter, so that it opens and closes based on this click.
+        gutter.toggle();
+    });
+    //Create the gutter control
+    gutter.createGutter();
+});
+myEditor.render();
+</textarea>
+
+<h2>Styling the New Button</h2>
+
+<p>There are 2 important states to style a button in the toolbar.</p>
+<p>First is the default state, that can be accessed via this CSS rule: <code>.yui-toolbar-container .yui-toolbar-flickr span.yui-toolbar-icon</code></p>
+<p>Second is the selected state, that can be accessed via this CSS rule: <code>.yui-toolbar-container .yui-toolbar-flickr-selected span.yui-toolbar-icon</code></p>
+
+<p><code>.yui-toolbar-container</code> is the class applied to the top-most container of the toolbar.</p>
+<p><code>.yui-toolbar-icon</code> is an extra <code>SPAN</code> injected into the button for spriting an image.</p>
+<p><code>.yui-toolbar-VALUE</code> is a dynamic class added to the button based on the <code>value</code> passed into the button's config. It is used for specific styling of a button that may appear in several places on the page.</p>
+
+<h2>The Style Rules to Create the Flickr Button in This Example</h2>
+<textarea name="code" class="CSS">
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-flickr span.yui-toolbar-icon {
+    background-image: url( assets/flickr_default.gif );
+    background-position: 1px 0px;
+}
+.yui-skin-sam .yui-toolbar-container .yui-toolbar-flickr-selected span.yui-toolbar-icon {
+    background-image: url( assets/flickr_active.gif );
+    background-position: 1px 0px;
+}
+</textarea>
+
+
+<h2>The Gutter Panel Full Javascript Source</h2>
+
+<p>The gutter in this example is not part of the Editor, but could easily be modified to do other things.</p>
+
+<textarea class="JScript" name="code">
+(function() {
+    //Some private vars
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event;
+
+    YAHOO.gutter = function() {
+        return {
+            //The current status of the gutter (true is open)
+            status: false,
+            //Placeholder for the Overlay control
+            gutter: null,
+            /*
+            * This method will create the Overlay and
+            * attach some animations to the show and hide events
+            */
+            createGutter: function() {
+                //Creating the Overlay
+                this.gutter = new YAHOO.widget.Overlay('gutter1', {
+                    height: '425px',
+                    width: '300px',
+                    //Setting it the context of the Editor's container
+                    context: [
+                        myEditor.get('element'),
+                        'tl',
+                        'tr'
+                    ],
+                    //Set the position
+                    position: 'absolute',
+                    //Hide by default
+                    visible: false
+                });
+                /*
+                * The hideEvent will control the status of the toolbar button as well
+                * as fire the animation off to close the gutter
+                */
+                this.gutter.hideEvent.subscribe(function() {
+                    //Deselect the flickr button in the toolbar
+                    myEditor.toolbar.deselectButton('flickr');
+                    Dom.setStyle('gutter1', 'visibility', 'visible');                
+                    var anim = new YAHOO.util.Anim('gutter1', {
+                        width: {
+                            from: 300,
+                            to: 0
+                        },
+                        opacity: {
+                            from: 1,
+                            to: 0
+                        }
+                    }, 1);
+                    //When the animation is done, hide the element.
+                    anim.onComplete.subscribe(function() {  
+                        Dom.setStyle('gutter1', 'visibility', 'hidden');
+                    });
+                    //Animate it
+                    anim.animate();
+                }, this, true);
+                /*
+                * The showEvent will control the status of the toolbar button as well
+                * as fire the animation off to open the gutter
+                */
+                this.gutter.showEvent.subscribe(function() {
+                    //Select the flickr button in the toolbar
+                    myEditor.toolbar.selectButton('flickr');
+                    //Set the context of the panel (in case it was lost in the animation)
+                    this.gutter.cfg.setProperty('context',[
+                        myEditor.get('element'),
+                        'tl',
+                        'tr'
+                    ]);
+                    //Set the width to 0 pixels.
+                    Dom.setStyle(this.gutter.element, 'width', '0px');
+                    var anim = new YAHOO.util.Anim('gutter1', {
+                        width: {
+                            from: 0,
+                            to: 300
+                        },
+                        opacity: {
+                            from: 0,
+                            to: 1
+                        }
+                    }, 1);
+                    //Animate it
+                    anim.animate();
+                }, this, true);
+
+                var warn = '';
+                //Check if we are using Safari or Opera, if we are show the warning that you can't drag and drop images
+                if (myEditor.browser.webkit || myEditor.browser.opera) {
+                    warn = myEditor.STR_IMAGE_COPY;
+                }
+                //Set the body of the gutter to hold the HTML needed to render the autocomplete
+                this.gutter.setBody('<h2>Flickr Image Search</h2><label for="flikr_search">Tag:</label>' +
+                    '<input type="text" value="" id="flickr_search"><div id="flickr_results">' + 
+                    '<p>Enter flickr tags into the box above, separated by commas. Be patient, ' + 
+                    'this example may take a few seconds to get the images.<p></div>' + warn);
+                this.gutter.render(document.body);
+            },
+            /*
+            * Open the gutter using Overlay's show method
+            */
+            open: function() {
+                Dom.get('flickr_search').value = '';
+                this.gutter.show();
+                this.status = true;
+            },
+            /*
+            * Close the gutter using Overlay's close method
+            */
+            close: function() {
+                this.gutter.hide();
+                this.status = false;
+            },
+            /*
+            * Check the state of the gutter and close it if it's open
+            * or open it if it's closed.
+            */
+            toggle: function() {
+                if (this.status) {
+                    this.close();
+                } else {
+                    this.open();
+                }
+            }
+        }
+    }
+    
+})();
+</textarea>
+
+
+<h2>Setting Up the Autocomplete Control</h2>
+<p>First we wait until <code>flickr_search</code> is available on the page. Then we set up a click handler on <code>flickr_results</code> to see if the user clicked an image.</p>
+<p>If an image is clicked, we will call <code>myEditor.execCommand('insertimage', IMG)</code> to insert the image into the Editor.</p>
+<p>This Autocomplete control uses a DataSource that points to Flickr Web Services; Flickr returns XML data via a simple PHP proxy. In order to return valid data from the Flickr application, scriptQueryParameter has been customized to be tags, and scriptQueryAppend is used to pass in additional required arguments. The cache has been disabled so that each query is forced to make a trip to the live application.</p>
+<p>This instance of AutoComplete defines a robust custom formatResult function that parses result data into custom HTML markup that displays an actual image from the Flickr server. Automatic highlighting of the first result item in the container has been disabled by setting autoHighlight to false.</p>
+<textarea name="code" class="JScript">
+YAHOO.util.Event.onAvailable('flickr_search', function() {
+    YAHOO.util.Event.on('flickr_results', 'click', function(ev) {
+        var tar = YAHOO.util.Event.getTarget(ev);
+        if (tar.tagName.toLowerCase() == 'img') {
+            if (tar.getAttribute('fullimage', 2)) {
+                var img = tar.getAttribute('fullimage', 2),
+                    title = tar.getAttribute('fulltitle'),
+                    owner = tar.getAttribute('fullowner'),
+                    url = tar.getAttribute('fullurl');
+                this.toolbar.fireEvent('flickrClick', {
+                    type: 'flickrClick',
+                    img: img,
+                    title: title,
+                    owner: owner, 
+                    url: url
+                });
+            }
+        }
+    });
+    oACDS = new YAHOO.widget.DS_XHR("assets/flickr_proxy.php",
+        ["photo", "title", "id", "owner", "secret", "server"]);
+    oACDS.scriptQueryParam = "tags";
+    oACDS.responseType = YAHOO.widget.DS_XHR.TYPE_XML;
+    oACDS.maxCacheEntries = 0;
+    oACDS.scriptQueryAppend = "method=flickr.photos.search";
+
+    // Instantiate AutoComplete
+    oAutoComp = new YAHOO.widget.AutoComplete('flickr_search','flickr_results', oACDS);
+    oAutoComp.autoHighlight = false;
+    oAutoComp.alwaysShowContainer = true;     
+    oAutoComp.formatResult = function(oResultItem, sQuery) {
+        // This was defined by the schema array of the data source
+        var sTitle = oResultItem[0];
+        var sId = oResultItem[1];
+        var sOwner = oResultItem[2];
+        var sSecret = oResultItem[3];
+        var sServer = oResultItem[4];
+        var urlPart = 'http:/'+'/static.flickr.com/' + sServer + '/' + sId + '_' + sSecret;
+        var sUrl = urlPart + '_s.jpg';
+        var lUrl = urlPart + '_m.jpg';
+        var fUrl = 'http:/'+'/www.flickr.com/photos/' + sOwner + '/' + sId;
+        var sMarkup = '<img src="' + sUrl + '" fullimage="' + lUrl + '" fulltitle="' + sTitle + '" fullid="' +
+            sOwner + '" fullurl="' + fUrl + '" class="yui-ac-flickrImg" title="Click to add this image to the editor"><br>';
+        return (sMarkup);
+    };
+});
+</textarea>
+
+
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?event&dom&animation&connection&element&container&menu&button&autocomplete&editor&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerDiv"></div>
+							<div id="loggerGloss">
+								<p><strong>Note:</strong> You are viewing this example in debug mode with logging enabled.  This can significantly slow performance.</p>
+	
+								<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="flickr_editor.html">Reload with logging<br />and debugging disabled.</a></span></span></p>
+							</div>
+						</div>
+					
+				
+					<div id="examples">
+						<h3>Rich Text Editor Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li class='selected'><a href='../editor/flickr_editor.html'>Flickr Image Search</a></li><li><a href='../editor/cal_editor.html'>Calendar Plugin</a></li><li><a href='../editor/icon_editor.html'>Icon Insertion</a></li><li><a href='../editor/switch_editor.html'>Plain Text Switcher</a></li><li><a href='../editor/post_editor.html'>Editor Data Post with Connection Manager</a></li><li><a href='../editor/skinning_editor.html'>Skinning the Editor</a></li><li><a href='../editor/toolbar_editor.html'>Default Toolbar Config</a></li><li><a href='../editor/code_editor.html'>Code Editor</a></li><li><a href='../editor/tabview_editor.html'>Editor inside a Tabview Control</a></li><li><a href='../editor/multi_editor.html'>One Editor, Multiple Edit Areas</a></li><li><a href='../editor/imagebrowser_editor.html'>Editor with Custom Image Browser</a></li><li><a href='../editor/simple_editor.html'>Simple Editor &mdash; Basic Buttons</a></li><li><a href='../editor/simple_adv_editor.html'>Simple Editor &mdash; Advanced Buttons</a></li><li><a href='../editor/editor_adv_editor.html'>Editor &mdash; Basic Buttons</a></li><li><a href='../editor/autoheight_editor.html'>Editor Auto Adjusting Height</a></li><li><a href='../editor/dialog_editor.html'>Editor in a Dialog Control</a></li><li><a href='../resize/rte_resize.html'>Custom resizing for the Rich Text Editor (included with examples for Resize Utility)</a></li><li><a href='../layout/calrte_layout.html'>Simple Application (included with examples for Layout Manager)</a></li><li><a href='../layout/adv_layout.html'>Complex Application (included with examples for Layout Manager)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Rich Text Editor Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/editor/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_editor.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/editor.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="selected "><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

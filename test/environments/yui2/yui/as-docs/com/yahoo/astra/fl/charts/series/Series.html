@@ -1,0 +1,569 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../../../../print.css" type="text/css" media="print">
+<meta content="Series,com.yahoo.astra.fl.charts.series.Series,chart,dataProvider,dataTipFunction,displayName,itemRenderer,legendLabelFunction,length,clone,invalidateMarker,isMarkerInvalid,itemRendererToIndex,itemToItemRenderer,validateMarker" name="keywords">
+<title>com.yahoo.astra.fl.charts.series.Series</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'Series - YUI Flash Component Documentation';
+				var baseRef = '../../../../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">YUI Flash Component Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../../../../all-classes.html')" href="../../../../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../../../all-classes.html')" href="../../../../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../../../index-list.html')" href="../../../../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../../../../index.html?com/yahoo/astra/fl/charts/series/Series.html&amp;com/yahoo/astra/fl/charts/series/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;Series</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#propertySummary">Properties</a>&nbsp;| <a href="#methodSummary">Methods</a>&nbsp;| <a href="#styleSummary">Styles</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class Series"); titleBar_setSubNav(false,true,true,false,false,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">com.yahoo.astra.fl.charts.series</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class Series</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Inheritance</td><td class="inheritanceList">Series <img class="inheritArrow" alt="Inheritance" title="Inheritance" src="../../../../../../images/inherit-arrow.gif"> fl.core.UIComponent</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Implements</td><td><a href="ISeries.html">ISeries</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Subclasses</td><td><a href="../series/CartesianSeries.html">CartesianSeries</a>, <a href="../series/PieSeries.html">PieSeries</a></td>
+</tr>
+</table>
+<p></p>
+  Functionality common to most series. Generally, a <code>Series</code> object
+  shouldn't be instantiated directly. Instead, a subclass with a concrete
+  implementation should be used.
+  
+  <p></p>
+<br>
+<hr>
+</div>
+<a name="propertySummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Properties</div>
+<table id="summaryTableProperty" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Property</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#chart">chart</a> : Object<div class="summaryTableDescription">
+   The chart in which this series appears.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#dataProvider">dataProvider</a> : Object<div class="summaryTableDescription">
+   The data provider for this series.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#dataTipFunction">dataTipFunction</a> : Function<div class="summaryTableDescription">
+   DataTip Function for series
+   </div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#displayName">displayName</a> : String<div class="summaryTableDescription">
+   The name of the series as it appears to the user.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#itemRenderer">itemRenderer</a> : Object<div class="summaryTableDescription">
+   The class used to instantiate item renderers.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#legendLabelFunction">legendLabelFunction</a> : Function<div class="summaryTableDescription">
+   If defined, the chart will call the input function to determine the text displayed in 
+   in the chart's legend.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#length">length</a> : int<div class="summaryTableDescription">[read-only]
+   The number of items in the series.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+</table>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#Series()">Series</a>(dataProvider:Object = null)</div>
+<div class="summaryTableDescription">
+   Constructor.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#clone()">clone</a>():<a href="ISeries.html">ISeries</a>
+</div>
+<div class="summaryTableDescription">
+   Creates a copy of the ISeries object.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#itemRendererToIndex()">itemRendererToIndex</a>(renderer:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>):int</div>
+<div class="summaryTableDescription">
+   Returns the index of an item renderer.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#itemToItemRenderer()">itemToItemRenderer</a>(item:<a href="">Object</a>):<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>
+</div>
+<div class="summaryTableDescription">
+   Converts an item to its corresponding item renderer.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+</table>
+</div>
+<a name="protectedMethodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Protected Methods</div>
+<table id="summaryTableProtectedMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#invalidateMarker()">invalidateMarker</a>(marker:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>):void</div>
+<div class="summaryTableDescription">
+   Invalidates a marker (considered new).</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#isMarkerInvalid()">isMarkerInvalid</a>(marker:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>):Boolean</div>
+<div class="summaryTableDescription">
+   Indicates whether special considerations should be taken for a newly created marker.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#validateMarker()">validateMarker</a>(marker:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>):void</div>
+<div class="summaryTableDescription">
+   Makes a marker valid.</div>
+</td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+</table>
+</div>
+<a name="styleSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Styles</div>
+<table id="summaryTableStyle" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Style</th><th>Description</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:animationDuration"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">animationDuration</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>int<br>
+  The duration for animations that occur on data changes.
+  </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:animationEasingFunction"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">animationEasingFunction</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Function<br>
+  The easing function for animations that occur on data changes.
+  </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:animationEnabled"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">animationEnabled</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br>
+  If true, data changes will be displayed with animations. If false, changes will happen instantly.
+  </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:borderAlpha"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">borderAlpha</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+     The alpha value from 0.0 to 1.0 to use for drawing the border of markers.
+     </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:borderColor"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">borderColor</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>uint<br> 
+     The border color used by programatic skins in this series.
+     </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:color"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">color</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>uint<br>
+  The base color used by objects displayed in this series.
+  </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:fillAlpha"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">fillAlpha</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+     The alpha value from 0.0 to 1.0 to use for drawing the fills of markers.
+     </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:fillColor"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">fillColor</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>uint<br>
+  The fill color used by programatic skins in this series.
+  </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:markerAlpha"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">markerAlpha</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+  The alpha value from 0.0 to 1.0 to use for drawing the markers.
+  </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:markerSize"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">markerSize</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+  The size, in pixels, of each marker.
+  </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:markerSkin"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">markerSkin</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Class<br>
+  The Class used to instantiate each marker's skin.
+  </td><td class="summaryTableOwnerCol">Series</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="propertyDetail"></a>
+<div class="detailSectionHeader">Property detail</div>
+<a name="chart"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">chart</td><td class="detailHeaderType">property</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>chart:Object</code>&nbsp;&nbsp;[read-write]<p>
+   The chart in which this series appears.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get chart():Object</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set chart(value:Object):void</code>
+<br>
+</div>
+<a name="dataProvider"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">dataProvider</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>dataProvider:Object</code>&nbsp;&nbsp;[read-write]<p>
+   The data provider for this series. Accepts <code>Array</code> or <code>XMLList</code> objects.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get dataProvider():Object</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set dataProvider(value:Object):void</code>
+<br>
+</div>
+<a name="dataTipFunction"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">dataTipFunction</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>dataTipFunction:Function</code>&nbsp;&nbsp;[read-write]<p>
+   DataTip Function for series
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get dataTipFunction():Function</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set dataTipFunction(value:Function):void</code>
+<br>
+</div>
+<a name="displayName"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">displayName</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>displayName:String</code>&nbsp;&nbsp;[read-write]<p>
+   The name of the series as it appears to the user.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get displayName():String</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set displayName(value:String):void</code>
+<br>
+</div>
+<a name="itemRenderer"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">itemRenderer</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>itemRenderer:Object</code>&nbsp;&nbsp;[read-write]<p>
+   The class used to instantiate item renderers.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get itemRenderer():Object</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set itemRenderer(value:Object):void</code>
+<br>
+</div>
+<a name="legendLabelFunction"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">legendLabelFunction</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>legendLabelFunction:Function</code>&nbsp;&nbsp;[read-write]<p>
+   If defined, the chart will call the input function to determine the text displayed in 
+   in the chart's legend.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get legendLabelFunction():Function</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set legendLabelFunction(value:Function):void</code>
+<br>
+</div>
+<a name="length"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">length</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>length:int</code>&nbsp;&nbsp;[read-only]<p>
+   The number of items in the series.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get length():int</code>
+<br>
+</div>
+<a name="constructorDetail"></a>
+<div class="detailSectionHeader">Constructor detail</div>
+<a name="Series()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">Series</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">constructor</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function Series(dataProvider:Object = null)</code><p>
+   Constructor.
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">dataProvider</span>:Object</code> (default = <code>null</code>)<code></code></td>
+</tr>
+</table>
+</div>
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="clone()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">clone</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function clone():<a href="ISeries.html">ISeries</a></code><p>
+   Creates a copy of the ISeries object.
+   
+   </p><p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code><a href="ISeries.html">ISeries</a></code> &mdash; 
+                        a new ISeries object
+   
+                        
+                     </td>
+</tr>
+</table>
+</div>
+<a name="invalidateMarker()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">invalidateMarker</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>protected function invalidateMarker(marker:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>):void</code><p>
+   Invalidates a marker (considered new).
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">marker</span>:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a></code></td>
+</tr>
+</table>
+</div>
+<a name="isMarkerInvalid()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">isMarkerInvalid</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>protected function isMarkerInvalid(marker:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>):Boolean</code><p>
+   Indicates whether special considerations should be taken for a newly created marker.
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">marker</span>:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a></code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Boolean</code></td>
+</tr>
+</table>
+</div>
+<a name="itemRendererToIndex()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">itemRendererToIndex</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function itemRendererToIndex(renderer:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>):int</code><p>
+   Returns the index of an item renderer.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">renderer</span>:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a></code> &mdash; The renderer whose index is to be returned.
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>int</code> &mdash; The index of the renderer.
+   </td>
+</tr>
+</table>
+</div>
+<a name="itemToItemRenderer()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">itemToItemRenderer</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function itemToItemRenderer(item:<a href="">Object</a>):<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a></code><p>
+   Converts an item to its corresponding item renderer.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">item</span>:<a href="">Object</a></code> &mdash; The item from the dataProvider to be converted to a renderer.
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code><a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a></code> &mdash; 
+                        The renderer that corresponds to the item.
+   
+                        
+                     </td>
+</tr>
+</table>
+</div>
+<a name="validateMarker()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">validateMarker</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>protected function validateMarker(marker:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a>):void</code><p>
+   Makes a marker valid. To be used by subclasses.
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">marker</span>:<a href="ISeriesItemRenderer.html">ISeriesItemRenderer</a></code></td>
+</tr>
+</table>
+</div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright"> 
+</center>
+</div>
+</body>
+</html>
+<!-- -->

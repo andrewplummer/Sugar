@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Tagging Example with alwaysShowContainer</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#myAutoComplete {
+    width:20em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:20em; /* allow enough real estate for the container */
+}
+.yui-skin-sam .yui-ac-content { /* set scrolling */
+    max-height:18em;overflow:auto;overflow-x:hidden; /* set scrolling */
+    _height:18em; /* ie6 */
+}
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Tagging Example with alwaysShowContainer</h1>
+
+<div class="exampleIntro">
+	<p>This AutoComplete interaction uses the <code>alwaysShowContainer</code> feature to allow users to find and select tags. Showing the set of previously used tags as a visual enhancement discourages unneccessary duplication of similar tags. As is common for tagging, comma- and semi-colon delimiters have also been enabled. Note that an initial query is needed on page load to get the container to display the first time with the full set of data. Since the container is meant to stay open, CSS is used to give it proper real estate on the page, including scrolling to show a potentially long list of tags.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<label for="myInput">Assign tags:</label>
+<div id="myAutoComplete">
+	<input id="myInput" type="text">
+	<div id="myContainer"></div>
+</div>
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+YAHOO.example.TagsAlwaysShow = function() {
+    // Use a LocalDataSource
+    var oDS = new YAHOO.util.LocalDataSource(YAHOO.example.Data.tags);
+    // Optional to define fields for single-dimensional array
+    oDS.responseSchema = {fields : ["tag"]};
+
+    // Instantiate the AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("myInput", "myContainer", oDS);
+    oAC.alwaysShowContainer = true;
+    oAC.minQueryLength = 0; // Can be 0, which will return all results
+    oAC.maxResultsDisplayed = 100; // Show more results, scrolling is enabled via CSS
+    oAC.delimChar = [",",";"]; // Enable comma and semi-colon delimiters
+    oAC.autoHighlight = false; // Auto-highlighting interferes with adding new tags
+    oAC.sendQuery("");
+    
+    // Populate list to start a new interaction
+    oAC.itemSelectEvent.subscribe(function(sType, aArgs) {
+        oAC.sendQuery("");
+    });
+    
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+}();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

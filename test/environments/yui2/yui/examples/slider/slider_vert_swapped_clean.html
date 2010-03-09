@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Bottom to top Vertical Slider</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/slider/assets/skins/sam/slider.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+    #slide_bg {
+        position: relative;
+        background: url(../slider/assets/bg-v.gif) 12px 0 no-repeat;
+        height: 228px;
+        width: 48px; 
+    }
+    #slide_thumb {
+        cursor: default;
+        position: absolute;
+        top: 200px;
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Bottom to top Vertical Slider</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates a vertical implementation of the <a href="http://developer.yahoo.com/yui/slider/">YUI Slider Control</a>.  Some characteristics of this implementation include the following:</p>
+<ul>
+    <li>The slider range is 200 pixels.</li>
+    <li>CSS is used to place the slide thumb at the bottom of the slider.</li>
+    <li>Custom logic is added to the slider instance to convert the offset value to a "real" value calculated from a provided min/max range.</li>
+    <li>The custom min value is set to 10; the max 110.</li>
+    <li>Once the slider has focus, the up and down keys will move
+the thumb 20 pixels (changing the "real" value by 10).</li>
+    <li>When the slider value changes, the pixel offset and calculated value are reported below the slider.</li>
+</ul>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <div id="slide_bg" tabindex="-1">
+        <div id="slide_thumb"><img src="assets/thumb-bar.gif"></div>
+    </div>
+    <p>Pixel offset from start: <span id="d_offset">0</span></p>
+    <p>Calculated Value: <span id="d_val">0</span></p>
+</div>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+    // the slider can move up 200 pixels
+    var upLimit   = 200;
+
+    // and down 0 pixels
+    var downLimit = 0;
+
+    // Create the Slider instance
+    var slider = YAHOO.widget.Slider.getVertSlider(
+                'slide_bg', 'slide_thumb', upLimit, downLimit);
+
+    // Add a little functionality to the instance
+    YAHOO.lang.augmentObject(slider, {
+
+        // A custom value range for the slider
+        minValue : 10,
+        maxValue : 110,
+
+        // A method to retrieve the calculated value, per the value range
+        getCalculatedValue : function () {
+            // invert the offset value so "real" values increase as the
+            // slider moves up
+            var offset = -1 * this.getValue();
+
+            // Convert the offset to a value in our configured range
+            var conversionFactor =
+                    (this.maxValue - this.minValue) /
+                    (this.thumb.topConstraint + this.thumb.bottomConstraint);
+
+            return Math.round(offset * conversionFactor) + this.minValue;
+        }
+    });
+
+    // display the native offset and the calculated while sliding
+    var offset_span = YAHOO.util.Dom.get('d_offset');
+    var calc_span   = YAHOO.util.Dom.get('d_val');
+
+    slider.subscribe('change', function (offsetFromStart) {
+        offset_span.innerHTML = offsetFromStart;
+        calc_span.innerHTML   = this.getCalculatedValue();
+    });
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

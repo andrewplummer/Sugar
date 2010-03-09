@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: uploader   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Uploader&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_uploader.html" title="uploader">uploader</a>
+                
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                   
+                    <h3>Module: uploader
+                    
+
+
+                    </h3>
+                    <div class="description summary">
+                        The YUI Uploader Control
+                    </div>
+
+
+
+                <div class="yui-gc">
+                    <div class="yui-u first">
+
+                            <p>This module contains the following classes:</p>
+                            <script>
+                            //var YUI_CLASS_LIST = [{"extends": {"superclass": {"YAHOO.util.AttributeProvider": "YAHOO.util.AttributeProvider"}, "events": {}, "configs": {}, "properties": {"YAHOO.util.AttributeProvider": [{"access": "private", "deprecated": false, "name": "_configs"}]}, "methods": {"YAHOO.util.AttributeProvider": [{"access": "", "deprecated": true, "name": "configureAttribute"}, {"access": "", "deprecated": false, "name": "fireBeforeChangeEvent"}, {"access": "", "deprecated": false, "name": "fireChangeEvent"}, {"access": "", "deprecated": false, "name": "get"}, {"access": "private", "deprecated": false, "name": "getAttributeConfig"}, {"access": "", "deprecated": false, "name": "getAttributeKeys"}, {"access": "", "deprecated": false, "name": "refresh"}, {"access": "", "deprecated": true, "name": "register"}, {"access": "private", "deprecated": false, "name": "resetAttributeConfig"}, {"access": "", "deprecated": false, "name": "resetValue"}, {"access": "", "deprecated": false, "name": "set"}, {"access": "", "deprecated": false, "name": "setAttributeConfig"}, {"access": "", "deprecated": false, "name": "setAttributes"}]}}, "description": "Wraps Flash embedding functionality and allows communication with SWF through\nattributes.", "guessedname": "FlashAdapter", "name": "YAHOO.widget.FlashAdapter"}, {"extends": {"superclass": {"YAHOO.widget.FlashAdapter": "YAHOO.widget.FlashAdapter", "YAHOO.util.AttributeProvider": "YAHOO.util.AttributeProvider"}, "events": {"YAHOO.widget.FlashAdapter": [{"access": "", "deprecated": false, "name": "altTextChange"}, {"access": "", "deprecated": false, "name": "backgroundColorChange"}, {"access": "", "deprecated": false, "name": "beforeAltTextChange"}, {"access": "", "deprecated": false, "name": "beforeBackgroundColorChange"}, {"access": "", "deprecated": false, "name": "beforeExpressInstallChange"}, {"access": "", "deprecated": false, "name": "beforeSwfURLChange"}, {"access": "", "deprecated": false, "name": "beforeVersionChange"}, {"access": "", "deprecated": false, "name": "beforeWmodeChange"}, {"access": "", "deprecated": false, "name": "contentReady"}, {"access": "", "deprecated": false, "name": "expressInstallChange"}, {"access": "", "deprecated": false, "name": "swfURLChange"}, {"access": "", "deprecated": false, "name": "versionChange"}, {"access": "", "deprecated": false, "name": "wmodeChange"}]}, "configs": {"YAHOO.widget.FlashAdapter": [{"access": "", "deprecated": false, "name": "altText"}, {"access": "", "deprecated": false, "name": "backgroundColor"}, {"access": "", "deprecated": false, "name": "expressInstall"}, {"access": "", "deprecated": false, "name": "swfURL"}, {"access": "", "deprecated": false, "name": "version"}, {"access": "", "deprecated": false, "name": "wmode"}]}, "properties": {"YAHOO.widget.FlashAdapter": [{"access": "private", "deprecated": false, "name": "_attributes"}, {"access": "private", "deprecated": false, "name": "_containerID"}, {"access": "private", "deprecated": false, "name": "_id"}, {"access": "private", "deprecated": false, "name": "_initialized"}, {"access": "private", "deprecated": false, "name": "_swf"}, {"access": "private", "deprecated": false, "name": "_swfURL"}], "YAHOO.util.AttributeProvider": [{"access": "private", "deprecated": false, "name": "_configs"}]}, "methods": {"YAHOO.widget.FlashAdapter": [{"access": "private", "deprecated": false, "name": "_embedSWF"}, {"access": "private", "deprecated": false, "name": "_eventHandler"}, {"access": "private", "deprecated": false, "name": "_getAltText"}, {"access": "private", "deprecated": false, "name": "_getSWFURL"}, {"access": "private", "deprecated": false, "name": "_initAttributes"}, {"access": "private", "deprecated": false, "name": "_loadHandler"}, {"access": "private", "deprecated": false, "name": "_setAltText"}, {"access": "", "deprecated": false, "name": "destroy"}, {"access": "", "deprecated": false, "name": "toString"}], "YAHOO.util.AttributeProvider": [{"access": "", "deprecated": true, "name": "configureAttribute"}, {"access": "", "deprecated": false, "name": "fireBeforeChangeEvent"}, {"access": "", "deprecated": false, "name": "fireChangeEvent"}, {"access": "", "deprecated": false, "name": "get"}, {"access": "private", "deprecated": false, "name": "getAttributeConfig"}, {"access": "", "deprecated": false, "name": "getAttributeKeys"}, {"access": "", "deprecated": false, "name": "refresh"}, {"access": "", "deprecated": true, "name": "register"}, {"access": "private", "deprecated": false, "name": "resetAttributeConfig"}, {"access": "", "deprecated": false, "name": "resetValue"}, {"access": "", "deprecated": false, "name": "set"}, {"access": "", "deprecated": false, "name": "setAttributeConfig"}, {"access": "", "deprecated": false, "name": "setAttributes"}]}}, "description": "Uploader class for the YUI Uploader component.", "guessedname": "Uploader", "name": "YAHOO.widget.Uploader"}];
+                            </script>
+                            <div id="splash_classList">
+                                <ul>
+                                    <li><a href="YAHOO.widget.FlashAdapter.html" title="YAHOO.widget.FlashAdapter" id="class_0">FlashAdapter</a></li>
+                                    <li><a href="YAHOO.widget.Uploader.html" title="YAHOO.widget.Uploader" id="class_1">Uploader</a></li>
+                                </ul>
+                            </div>
+                    </div>
+                    <div class="yui-u">
+
+                        </div>
+                </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class="selected"><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.FlashAdapter.html" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a></li>
+                                <li class=""><a href="YAHOO.widget.Uploader.html" title="YAHOO.widget.Uploader">YAHOO.widget.Uploader</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="FlashAdapter.js.html" title="FlashAdapter.js">FlashAdapter.js</a></li>
+                                <li class=""><a href="swfobject.js.html" title="swfobject.js">swfobject.js</a></li>
+                                <li class=""><a href="Uploader.js.html" title="Uploader.js">Uploader.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "altText", "url": "YAHOO.widget.FlashAdapter.html#config_altText", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "altTextChange", "url": "YAHOO.widget.FlashAdapter.html#event_altTextChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_attributes", "url": "YAHOO.widget.FlashAdapter.html#property__attributes", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "backgroundColor", "url": "YAHOO.widget.FlashAdapter.html#config_backgroundColor", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "backgroundColorChange", "url": "YAHOO.widget.FlashAdapter.html#event_backgroundColorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeAltTextChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeAltTextChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeBackgroundColorChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeBackgroundColorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeExpressInstallChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeExpressInstallChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeSwfURLChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeSwfURLChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeVersionChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeVersionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeWmodeChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeWmodeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "cancel", "url": "YAHOO.widget.Uploader.html#method_cancel", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Uploader", "name": "Chart.SWFURL", "url": "YAHOO.widget.Uploader.html#property_Chart.SWFURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "clearFileList", "url": "YAHOO.widget.Uploader.html#method_clearFileList", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "click", "url": "YAHOO.widget.Uploader.html#event_click", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_containerID", "url": "YAHOO.widget.FlashAdapter.html#property__containerID", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "contentReady", "url": "YAHOO.widget.FlashAdapter.html#event_contentReady", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "destroy", "url": "YAHOO.widget.FlashAdapter.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "disable", "url": "YAHOO.widget.Uploader.html#method_disable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_embedSWF", "url": "YAHOO.widget.FlashAdapter.html#method__embedSWF", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "enable", "url": "YAHOO.widget.Uploader.html#method_enable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_eventHandler", "url": "YAHOO.widget.FlashAdapter.html#method__eventHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "expressInstall", "url": "YAHOO.widget.FlashAdapter.html#config_expressInstall", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "expressInstallChange", "url": "YAHOO.widget.FlashAdapter.html#event_expressInstallChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "fileSelect", "url": "YAHOO.widget.Uploader.html#event_fileSelect", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_getAltText", "url": "YAHOO.widget.FlashAdapter.html#method__getAltText", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_getSWFURL", "url": "YAHOO.widget.FlashAdapter.html#method__getSWFURL", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_id", "url": "YAHOO.widget.FlashAdapter.html#property__id", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_initAttributes", "url": "YAHOO.widget.FlashAdapter.html#method__initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_initialized", "url": "YAHOO.widget.FlashAdapter.html#property__initialized", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_loadHandler", "url": "YAHOO.widget.FlashAdapter.html#method__loadHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "mouseDown", "url": "YAHOO.widget.Uploader.html#event_mouseDown", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "mouseUp", "url": "YAHOO.widget.Uploader.html#event_mouseUp", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "proxyFunctionCount", "url": "YAHOO.widget.FlashAdapter.html#property_proxyFunctionCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "removeFile", "url": "YAHOO.widget.Uploader.html#method_removeFile", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "rollOut", "url": "YAHOO.widget.Uploader.html#event_rollOut", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "rollOver", "url": "YAHOO.widget.Uploader.html#event_rollOver", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setAllowLogging", "url": "YAHOO.widget.Uploader.html#method_setAllowLogging", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setAllowMultipleFiles", "url": "YAHOO.widget.Uploader.html#method_setAllowMultipleFiles", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_setAltText", "url": "YAHOO.widget.FlashAdapter.html#method__setAltText", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setFileFilters", "url": "YAHOO.widget.Uploader.html#method_setFileFilters", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setSimUploadLimit", "url": "YAHOO.widget.Uploader.html#method_setSimUploadLimit", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_swf", "url": "YAHOO.widget.FlashAdapter.html#property__swf", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_swfURL", "url": "YAHOO.widget.FlashAdapter.html#property__swfURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "swfURL", "url": "YAHOO.widget.FlashAdapter.html#config_swfURL", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "swfURLChange", "url": "YAHOO.widget.FlashAdapter.html#event_swfURLChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "toString", "url": "YAHOO.widget.FlashAdapter.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "upload", "url": "YAHOO.widget.Uploader.html#method_upload", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadAll", "url": "YAHOO.widget.Uploader.html#method_uploadAll", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadCancel", "url": "YAHOO.widget.Uploader.html#event_uploadCancel", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadComplete", "url": "YAHOO.widget.Uploader.html#event_uploadComplete", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadCompleteData", "url": "YAHOO.widget.Uploader.html#event_uploadCompleteData", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadError", "url": "YAHOO.widget.Uploader.html#event_uploadError", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadProgress", "url": "YAHOO.widget.Uploader.html#event_uploadProgress", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadStart", "url": "YAHOO.widget.Uploader.html#event_uploadStart", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadThese", "url": "YAHOO.widget.Uploader.html#method_uploadThese", "type": "method"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "version", "url": "YAHOO.widget.FlashAdapter.html#config_version", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "versionChange", "url": "YAHOO.widget.FlashAdapter.html#event_versionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "wmode", "url": "YAHOO.widget.FlashAdapter.html#config_wmode", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "wmodeChange", "url": "YAHOO.widget.FlashAdapter.html#event_wmodeChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.createProxyFunction", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.createProxyFunction", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.eventHandler", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.eventHandler", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.removeProxyFunction", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.removeProxyFunction", "type": "method"}];
+</script>
+</body>
+</html>

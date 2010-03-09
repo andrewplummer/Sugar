@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Using a Layout with Grids CSS</title>
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+#hd, .yui-layout-unit-top {
+    background-color: blue;
+    color: white;
+}
+#bd, .yui-layout-unit-center {
+    background-color: #f2f2f2;
+}
+#ft, .yui-layout-unit-bottom {
+    background-color: red;
+    color: #fff;
+}
+#nav, .yui-layout-unit-left {
+    background-color: #808080;
+}
+
+</style>
+<link rel="stylesheet" type="text/css" href="../../build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="../../build/layout/assets/layout-core.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/selector/selector-min.js"></script>
+<script type="text/javascript" src="../../build/layout/layout-min.js"></script>
+</head>
+<body class="yui-skin-sam">
+<div id="doc1" class="yui-t1">
+   <div id="hd"><h1>YUI: CSS Grid Builder</h1></div>
+   <div id="bd">
+        <div id="yui-main">
+	        <div class="yui-b">
+                <div class="yui-g">
+                    <div class="yui-u first">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas sit amet metus. Nunc quam elit, posuere nec, auctor in, rhoncus quis, dui. Aliquam erat volutpat. Ut dignissim, massa sit amet dignissim cursus, quam lacus feugiat.    </div>
+                    <div class="yui-u">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas sit amet metus. Nunc quam elit, posuere nec, auctor in, rhoncus quis, dui. Aliquam erat volutpat. Ut dignissim, massa sit amet dignissim cursus, quam lacus feugiat.    </div>
+                </div>
+            </div>
+	    </div>
+	    <div id="nav" class="yui-b">Navigation Pane</div>
+	</div>
+   <div id="ft">Footer is here.</div>
+</div>
+
+<script>
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event;
+
+    Event.onDOMReady(function() {
+        var layout = new YAHOO.widget.Layout('doc1', {
+            height: Dom.getClientHeight(), //Height of the viewport
+            width: Dom.get('doc1').offsetWidth, //Width of the outer element
+            minHeight: 150, //So it doesn't get too small
+            units: [
+                { position: 'top', height: 45, body: 'hd' },
+                { position: 'left', width: 160, body: 'nav', grids: true },
+                { position: 'bottom', height: 25, body: 'ft' },
+                { position: 'center', body: 'bd', grids: true }
+            ]
+        });
+        layout.on('beforeResize', function() {
+            Dom.setStyle('doc1', 'height', Dom.getClientHeight() + 'px');
+        });
+
+        layout.render();
+
+        //Handle the resizing of the window
+        Event.on(window, 'resize', layout.resize, layout, true);
+    });
+})();
+</script>
+</body>
+</html>

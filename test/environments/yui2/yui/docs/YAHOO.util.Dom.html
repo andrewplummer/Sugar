@@ -1,0 +1,3000 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: dom  YAHOO.util.Dom   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>dom&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_dom.html" title="dom">dom</a>
+                 &gt; YAHOO.util.Dom 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.util.Dom</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Provides helper methods for DOM elements.
+                    </div>
+
+                    
+                    <div rel="yui:properties" resource="#properties">
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:method" resource="#method_addClass">
+                                    <h4>
+                                        <a name="method_addClass">addClass</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean | Array
+                                            <strong property="yui:name">addClass</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         className
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Adds a class name to a given element or collection of elements.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The element or collection to add the class to</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">className</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> the class name to add to the class attribute</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A pass/fail boolean or array of booleans</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_batch">
+                                    <h4>
+                                        <a name="method_batch">batch</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Any | Array
+                                            <strong property="yui:name">batch</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                                        , 
+                                                         o
+                                                    
+                                                
+                                                        , 
+                                                         overrides
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Runs the supplied method against each item in the Collection/Array.
+The method is called with the element(s) as the first arg, and the optional param as the second ( method(el, o) ).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) An element or array of elements to apply the method to</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The method to apply to the element(s)</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">o</span>
+                                                        &lt;<span property="yui:type">Any</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) An optional arg that is passed to the supplied method</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">overrides</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) Whether or not to override the scope of "method" with "o"</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Any | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The return value(s) from the supplied method</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_generateId">
+                                    <h4>
+                                        <a name="method_generateId">generateId</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String | Array
+                                            <strong property="yui:name">generateId</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         prefix
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns an ID and applies it to the element "el", if provided.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) An optional element array of elements to add an ID to (no ID is added if one is already present).</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">prefix</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) an optional prefix to use (defaults to "yui-gen").</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The generated ID, or array of generated IDs (or original ID if already present on an element)</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_get">
+                                    <h4>
+                                        <a name="method_get">get</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement | Array
+                                            <strong property="yui:name">get</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns an HTMLElement reference.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement |Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID for getting a DOM reference, an actual DOM reference, or an Array of IDs and/or HTMLElements.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A DOM reference to an HTML element or an array of HTMLElements.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getAncestorBy">
+                                    <h4>
+                                        <a name="method_getAncestorBy">getAncestorBy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getAncestorBy</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the nearest ancestor that passes the test applied by supplied boolean method.
+For performance reasons, IDs are not accepted and argument validation omitted.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement to use as the starting point</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> - A boolean method for testing elements which receives the element as its only argument.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getAncestorByClassName">
+                                    <h4>
+                                        <a name="method_getAncestorByClassName">getAncestorByClassName</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getAncestorByClassName</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                                        , 
+                                                         className
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the nearest ancestor with the given className.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">className</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getAncestorByTagName">
+                                    <h4>
+                                        <a name="method_getAncestorByTagName">getAncestorByTagName</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getAncestorByTagName</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                                        , 
+                                                         tagName
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the nearest ancestor with the given tagName.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tagName</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getAttribute">
+                                    <h4>
+                                        <a name="method_getAttribute">getAttribute</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">getAttribute</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         attr
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Provides a normalized attribute interface.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The target element for the attribute.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The attribute to get.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The current value of the attribute.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getChildren">
+                                    <h4>
+                                        <a name="method_getChildren">getChildren</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">getChildren</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns an array of HTMLElement childNodes.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A static array of HTMLElements</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getChildrenBy">
+                                    <h4>
+                                        <a name="method_getChildrenBy">getChildrenBy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">getChildrenBy</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns an array of HTMLElement childNodes that pass the test method.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement to start from</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> A boolean function used to test children
+that receives the node being tested as its only argument</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A static array of HTMLElements</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class=" deprecated" rel="yui:method" resource="#method_getClientHeight">
+                                    <h4>
+                                        <a name="method_getClientHeight">getClientHeight</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Int
+                                            <strong property="yui:name">getClientHeight</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the height of the client (viewport).
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Int
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The height of the viewable area of the page.</dd>
+                                                </dl>
+
+
+             
+                                            <div class="deprecated">
+                                                <strong>Deprecated</strong> Now using getViewportHeight.  This interface left intact for back compat.
+                                            </div>        
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getClientRegion">
+                                    <h4>
+                                        <a name="method_getClientRegion">getClientRegion</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Region
+                                            <strong property="yui:name">getClientRegion</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates a Region based on the viewport relative to the document.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Region
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A Region object representing the viewport which accounts for document scroll</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class=" deprecated" rel="yui:method" resource="#method_getClientWidth">
+                                    <h4>
+                                        <a name="method_getClientWidth">getClientWidth</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Int
+                                            <strong property="yui:name">getClientWidth</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the width of the client (viewport).
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Int
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The width of the viewable area of the page.</dd>
+                                                </dl>
+
+
+             
+                                            <div class="deprecated">
+                                                <strong>Deprecated</strong> Now using getViewportWidth.  This interface left intact for back compat.
+                                            </div>        
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getDocumentHeight">
+                                    <h4>
+                                        <a name="method_getDocumentHeight">getDocumentHeight</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Int
+                                            <strong property="yui:name">getDocumentHeight</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the height of the document.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Int
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The height of the actual document (which includes the body and its margin).</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getDocumentScrollLeft">
+                                    <h4>
+                                        <a name="method_getDocumentScrollLeft">getDocumentScrollLeft</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Int
+                                            <strong property="yui:name">getDocumentScrollLeft</strong>
+                                           (
+                                                
+                                                        
+                                                         document
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the left scroll value of the document
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">document</span>
+                                                        &lt;<span property="yui:type">HTMLDocument</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) The document to get the scroll value of</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Int
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The amount that the document is scrolled to the left</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getDocumentScrollTop">
+                                    <h4>
+                                        <a name="method_getDocumentScrollTop">getDocumentScrollTop</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Int
+                                            <strong property="yui:name">getDocumentScrollTop</strong>
+                                           (
+                                                
+                                                        
+                                                         document
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the top scroll value of the document
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">document</span>
+                                                        &lt;<span property="yui:type">HTMLDocument</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) The document to get the scroll value of</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Int
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The amount that the document is scrolled to the top</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getDocumentWidth">
+                                    <h4>
+                                        <a name="method_getDocumentWidth">getDocumentWidth</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Int
+                                            <strong property="yui:name">getDocumentWidth</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the width of the document.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Int
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The width of the actual document (which includes the body and its margin).</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getElementBy">
+                                    <h4>
+                                        <a name="method_getElementBy">getElementBy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">getElementBy</strong>
+                                           (
+                                                
+                                                        
+                                                         method
+                                                    
+                                                
+                                                        , 
+                                                         tag
+                                                    
+                                                
+                                                        , 
+                                                         root
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the first HTMLElement that passes the test applied by the supplied boolean method.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> - A boolean method for testing elements which receives the element as its only argument.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tag</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) The tag name of the elements being collected</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">root</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getElementsBy">
+                                    <h4>
+                                        <a name="method_getElementsBy">getElementsBy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">getElementsBy</strong>
+                                           (
+                                                
+                                                        
+                                                         method
+                                                    
+                                                
+                                                        , 
+                                                         tag
+                                                    
+                                                
+                                                        , 
+                                                         root
+                                                    
+                                                
+                                                        , 
+                                                         apply
+                                                    
+                                                
+                                                        , 
+                                                         o
+                                                    
+                                                
+                                                        , 
+                                                         overrides
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns an array of HTMLElements that pass the test applied by supplied boolean method.
+For optimized performance, include a tag and/or root node when possible.
+Note: This method operates against a live collection, so modifying the 
+collection in the callback (removing/appending nodes, etc.) will have
+side effects.  Instead you should iterate the returned nodes array,
+as you would with the native "getElementsByTagName" method.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> - A boolean method for testing elements which receives the element as its only argument.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tag</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) The tag name of the elements being collected</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">root</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">apply</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) A function to apply to each element when found</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">o</span>
+                                                        &lt;<span property="yui:type">Any</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) An optional arg that is passed to the supplied method</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">overrides</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) Whether or not to override the scope of "method" with "o"</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Array of HTMLElements</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getElementsByClassName">
+                                    <h4>
+                                        <a name="method_getElementsByClassName">getElementsByClassName</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">getElementsByClassName</strong>
+                                           (
+                                                
+                                                        
+                                                         className
+                                                    
+                                                
+                                                        , 
+                                                         tag
+                                                    
+                                                
+                                                        , 
+                                                         root
+                                                    
+                                                
+                                                        , 
+                                                         apply
+                                                    
+                                                
+                                                        , 
+                                                         o
+                                                    
+                                                
+                                                        , 
+                                                         overrides
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns an array of HTMLElements with the given class.
+For optimized performance, include a tag and/or root node when possible.
+Note: This method operates against a live collection, so modifying the 
+collection in the callback (removing/appending nodes, etc.) will have
+side effects.  Instead you should iterate the returned nodes array,
+as you would with the native "getElementsByTagName" method.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">className</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The class name to match against</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tag</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) The tag name of the elements being collected</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">root</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) The HTMLElement or an ID to use as the starting point.
+This element is not included in the className scan.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">apply</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) A function to apply to each element when found</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">o</span>
+                                                        &lt;<span property="yui:type">Any</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) An optional arg that is passed to the supplied method</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">overrides</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> (optional) Whether or not to override the scope of "method" with "o"</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">An array of elements that have the given class name</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getFirstChild">
+                                    <h4>
+                                        <a name="method_getFirstChild">getFirstChild</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getFirstChild</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the first HTMLElement child.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getFirstChildBy">
+                                    <h4>
+                                        <a name="method_getFirstChildBy">getFirstChildBy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getFirstChildBy</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the first HTMLElement child that passes the test method.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement to use as the starting point</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> A boolean function used to test children
+that receives the node being tested as its only argument</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getLastChild">
+                                    <h4>
+                                        <a name="method_getLastChild">getLastChild</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getLastChild</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the last HTMLElement child.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getLastChildBy">
+                                    <h4>
+                                        <a name="method_getLastChildBy">getLastChildBy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getLastChildBy</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the last HTMLElement child that passes the test method.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement to use as the starting point</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> A boolean function used to test children
+that receives the node being tested as its only argument</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getNextSibling">
+                                    <h4>
+                                        <a name="method_getNextSibling">getNextSibling</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getNextSibling</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the next sibling that is an HTMLElement
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getNextSiblingBy">
+                                    <h4>
+                                        <a name="method_getNextSiblingBy">getNextSiblingBy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getNextSiblingBy</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the next HTMLElement sibling that passes the boolean method. 
+For performance reasons, IDs are not accepted and argument validation omitted.
+Returns the nearest HTMLElement sibling if no method provided.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement to use as the starting point</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> A boolean function used to test siblings
+that receives the sibling node being tested as its only argument</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getPreviousSibling">
+                                    <h4>
+                                        <a name="method_getPreviousSibling">getPreviousSibling</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getPreviousSibling</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the previous sibling that is an HTMLElement
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement or an ID to use as the starting point</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getPreviousSiblingBy">
+                                    <h4>
+                                        <a name="method_getPreviousSiblingBy">getPreviousSiblingBy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getPreviousSiblingBy</strong>
+                                           (
+                                                
+                                                        
+                                                         node
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the previous sibling that is an HTMLElement. 
+For performance reasons, IDs are not accepted and argument validation omitted.
+Returns the nearest HTMLElement sibling if no method provided.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">node</span>
+                                                        &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTMLElement to use as the starting point</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> A boolean function used to test siblings
+that receives the sibling node being tested as its only argument</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">HTMLElement or null if not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getRegion">
+                                    <h4>
+                                        <a name="method_getRegion">getRegion</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Region | Array
+                                            <strong property="yui:name">getRegion</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the region position of the given element.
+The element must be part of the DOM tree to have a region (display:none or elements not appended return false).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM reference, or an Array of IDs and/or HTMLElements.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Region | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A Region or array of Region instances containing "top, left, bottom, right" member data.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getStyle">
+                                    <h4>
+                                        <a name="method_getStyle">getStyle</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String | Array
+                                            <strong property="yui:name">getStyle</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         property
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Normalizes currentStyle and ComputedStyle.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement |Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM reference, or an Array of IDs and/or HTMLElements.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">property</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The style property whose value is returned.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The current value of the style property for the element(s).</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getViewportHeight">
+                                    <h4>
+                                        <a name="method_getViewportHeight">getViewportHeight</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Int
+                                            <strong property="yui:name">getViewportHeight</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the current height of the viewport.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Int
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The height of the viewable area of the page (excludes scrollbars).</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getViewportWidth">
+                                    <h4>
+                                        <a name="method_getViewportWidth">getViewportWidth</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Int
+                                            <strong property="yui:name">getViewportWidth</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the current width of the viewport.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Int
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The width of the viewable area of the page (excludes scrollbars).</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getX">
+                                    <h4>
+                                        <a name="method_getX">getX</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number | Array
+                                            <strong property="yui:name">getX</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Gets the current X position of an element based on page coordinates.  The element must be part of the DOM tree to have page coordinates (display:none or elements not appended return false).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM reference, or an Array of IDs and/or HTMLElements</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The X position of the element(s)</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getXY">
+                                    <h4>
+                                        <a name="method_getXY">getXY</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">getXY</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Gets the current position of an element based on page coordinates. 
+Element must be part of the DOM tree to have page coordinates (display:none or elements not appended return false).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM
+reference, or an Array of IDs and/or HTMLElements</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The XY position of the element(s)</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getY">
+                                    <h4>
+                                        <a name="method_getY">getY</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number | Array
+                                            <strong property="yui:name">getY</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Gets the current Y position of an element based on page coordinates.  Element must be part of the DOM tree to have page coordinates (display:none or elements not appended return false).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM reference, or an Array of IDs and/or HTMLElements</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The Y position of the element(s)</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_hasClass">
+                                    <h4>
+                                        <a name="method_hasClass">hasClass</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean | Array
+                                            <strong property="yui:name">hasClass</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         className
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Determines whether an HTMLElement has the given className.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The element or collection to test</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">className</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> the class name to search for</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A boolean value or array of boolean values</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_inDocument">
+                                    <h4>
+                                        <a name="method_inDocument">inDocument</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">inDocument</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         doc
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Determines whether an HTMLElement is present in the current document.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The element to search for</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">doc</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> An optional document to search, defaults to element's owner document</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Whether or not the element is present in the current document</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_insertAfter">
+                                    <h4>
+                                        <a name="method_insertAfter">insertAfter</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">insertAfter</strong>
+                                           (
+                                                
+                                                        
+                                                         newNode
+                                                    
+                                                
+                                                        , 
+                                                         referenceNode
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Inserts the new node as the next sibling of the reference node
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">newNode</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The node to be inserted</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">referenceNode</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The node to insert the new node after</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The node that was inserted (or null if insert fails)</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_insertBefore">
+                                    <h4>
+                                        <a name="method_insertBefore">insertBefore</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">insertBefore</strong>
+                                           (
+                                                
+                                                        
+                                                         newNode
+                                                    
+                                                
+                                                        , 
+                                                         referenceNode
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Inserts the new node as the previous sibling of the reference node
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">newNode</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The node to be inserted</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">referenceNode</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The node to insert the new node before</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The node that was inserted (or null if insert fails)</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_isAncestor">
+                                    <h4>
+                                        <a name="method_isAncestor">isAncestor</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">isAncestor</strong>
+                                           (
+                                                
+                                                        
+                                                         haystack
+                                                    
+                                                
+                                                        , 
+                                                         needle
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Determines whether an HTMLElement is an ancestor of another HTML element in the DOM hierarchy.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">haystack</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The possible ancestor</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">needle</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The possible descendent</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Whether or not the haystack is an ancestor of needle</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_removeClass">
+                                    <h4>
+                                        <a name="method_removeClass">removeClass</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean | Array
+                                            <strong property="yui:name">removeClass</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         className
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes a class name from a given element or collection of elements.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The element or collection to remove the class from</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">className</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> the class name to remove from the class attribute</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A pass/fail boolean or array of booleans</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_replaceClass">
+                                    <h4>
+                                        <a name="method_replaceClass">replaceClass</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean | Array
+                                            <strong property="yui:name">replaceClass</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         oldClassName
+                                                    
+                                                
+                                                        , 
+                                                         newClassName
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Replace a class with another class for a given element or collection of elements.
+If no oldClassName is present, the newClassName is simply added.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The element or collection to remove the class from</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oldClassName</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> the class name to be replaced</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">newClassName</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> the class name that will be replacing the old class name</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean | Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A pass/fail boolean or array of booleans</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setAttribute">
+                                    <h4>
+                                        <a name="method_setAttribute">setAttribute</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setAttribute</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         attr
+                                                    
+                                                
+                                                        , 
+                                                         val
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Provides a normalized attribute interface.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The target element for the attribute.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The attribute to set.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">val</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The value of the attribute.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setStyle">
+                                    <h4>
+                                        <a name="method_setStyle">setStyle</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setStyle</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         property
+                                                    
+                                                
+                                                        , 
+                                                         val
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Wrapper for setting style properties of HTMLElements.  Normalizes "opacity" across modern browsers.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM reference, or an Array of IDs and/or HTMLElements.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">property</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The style property to be set.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">val</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The value to apply to the given property.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setX">
+                                    <h4>
+                                        <a name="method_setX">setX</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setX</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         x
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Set the X position of an html element in page coordinates, regardless of how the element is positioned.
+The element must be part of the DOM tree to have page coordinates (display:none or elements not appended return false).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM reference, or an Array of IDs and/or HTMLElements.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">x</span>
+                                                        &lt;<span property="yui:type">Int</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The value to use as the X coordinate for the element(s).</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setXY">
+                                    <h4>
+                                        <a name="method_setXY">setXY</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setXY</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         pos
+                                                    
+                                                
+                                                        , 
+                                                         noRetry
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Set the position of an html element in page coordinates, regardless of how the element is positioned.
+The element(s) must be part of the DOM tree to have page coordinates (display:none or elements not appended return false).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM reference, or an Array of IDs and/or HTMLElements</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">pos</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Contains X & Y values for new position (coordinates are page-based)</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">noRetry</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> By default we try and set the position a second time if the first fails</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setY">
+                                    <h4>
+                                        <a name="method_setY">setY</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setY</strong>
+                                           (
+                                                
+                                                        
+                                                         el
+                                                    
+                                                
+                                                        , 
+                                                         x
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Set the Y position of an html element in page coordinates, regardless of how the element is positioned.
+The element must be part of the DOM tree to have page coordinates (display:none or elements not appended return false).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">el</span>
+                                                        &lt;<span property="yui:type">String | HTMLElement | Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Accepts a string to use as an ID, an actual DOM reference, or an Array of IDs and/or HTMLElements.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">x</span>
+                                                        &lt;<span property="yui:type">Int</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> To use as the Y coordinate for the element(s).</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class="selected"><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="YAHOO.util.Dom.html" title="YAHOO.util.Dom">YAHOO.util.Dom</a></li>
+                                <li class=""><a href="YAHOO.util.Dom.Color.html" title="YAHOO.util.Dom.Color">YAHOO.util.Dom.Color</a></li>
+                                <li class=""><a href="YAHOO.util.Dom.IEStyle.html" title="YAHOO.util.Dom.IEStyle">YAHOO.util.Dom.IEStyle</a></li>
+                                <li class=""><a href="YAHOO.util.Point.html" title="YAHOO.util.Point">YAHOO.util.Point</a></li>
+                                <li class=""><a href="YAHOO.util.Region.html" title="YAHOO.util.Region">YAHOO.util.Region</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Color.js.html" title="Color.js">Color.js</a></li>
+                                <li class=""><a href="Dom.js.html" title="Dom.js">Dom.js</a></li>
+                                <li class=""><a href="IEStyle.js.html" title="IEStyle.js">IEStyle.js</a></li>
+                                <li class=""><a href="Region.js.html" title="Region.js">Region.js</a></li>
+                        </ul>
+                    </div>
+
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#method_addClass" title="addClass">addClass</a></li>
+                                <li class=""><a href="#method_batch" title="batch">batch</a></li>
+                                <li class=""><a href="#method_generateId" title="generateId">generateId</a></li>
+                                <li class=""><a href="#method_get" title="get">get</a></li>
+                                <li class=""><a href="#method_getAncestorBy" title="getAncestorBy">getAncestorBy</a></li>
+                                <li class=""><a href="#method_getAncestorByClassName" title="getAncestorByClassName">getAncestorByClassName</a></li>
+                                <li class=""><a href="#method_getAncestorByTagName" title="getAncestorByTagName">getAncestorByTagName</a></li>
+                                <li class=""><a href="#method_getAttribute" title="getAttribute">getAttribute</a></li>
+                                <li class=""><a href="#method_getChildren" title="getChildren">getChildren</a></li>
+                                <li class=""><a href="#method_getChildrenBy" title="getChildrenBy">getChildrenBy</a></li>
+                                <li class=" deprecated"><a href="#method_getClientHeight" title="getClientHeight">getClientHeight</a></li>
+                                <li class=""><a href="#method_getClientRegion" title="getClientRegion">getClientRegion</a></li>
+                                <li class=" deprecated"><a href="#method_getClientWidth" title="getClientWidth">getClientWidth</a></li>
+                                <li class=""><a href="#method_getDocumentHeight" title="getDocumentHeight">getDocumentHeight</a></li>
+                                <li class=""><a href="#method_getDocumentScrollLeft" title="getDocumentScrollLeft">getDocumentScrollLeft</a></li>
+                                <li class=""><a href="#method_getDocumentScrollTop" title="getDocumentScrollTop">getDocumentScrollTop</a></li>
+                                <li class=""><a href="#method_getDocumentWidth" title="getDocumentWidth">getDocumentWidth</a></li>
+                                <li class=""><a href="#method_getElementBy" title="getElementBy">getElementBy</a></li>
+                                <li class=""><a href="#method_getElementsBy" title="getElementsBy">getElementsBy</a></li>
+                                <li class=""><a href="#method_getElementsByClassName" title="getElementsByClassName">getElementsByClassName</a></li>
+                                <li class=""><a href="#method_getFirstChild" title="getFirstChild">getFirstChild</a></li>
+                                <li class=""><a href="#method_getFirstChildBy" title="getFirstChildBy">getFirstChildBy</a></li>
+                                <li class=""><a href="#method_getLastChild" title="getLastChild">getLastChild</a></li>
+                                <li class=""><a href="#method_getLastChildBy" title="getLastChildBy">getLastChildBy</a></li>
+                                <li class=""><a href="#method_getNextSibling" title="getNextSibling">getNextSibling</a></li>
+                                <li class=""><a href="#method_getNextSiblingBy" title="getNextSiblingBy">getNextSiblingBy</a></li>
+                                <li class=""><a href="#method_getPreviousSibling" title="getPreviousSibling">getPreviousSibling</a></li>
+                                <li class=""><a href="#method_getPreviousSiblingBy" title="getPreviousSiblingBy">getPreviousSiblingBy</a></li>
+                                <li class=""><a href="#method_getRegion" title="getRegion">getRegion</a></li>
+                                <li class=""><a href="#method_getStyle" title="getStyle">getStyle</a></li>
+                                <li class=""><a href="#method_getViewportHeight" title="getViewportHeight">getViewportHeight</a></li>
+                                <li class=""><a href="#method_getViewportWidth" title="getViewportWidth">getViewportWidth</a></li>
+                                <li class=""><a href="#method_getX" title="getX">getX</a></li>
+                                <li class=""><a href="#method_getXY" title="getXY">getXY</a></li>
+                                <li class=""><a href="#method_getY" title="getY">getY</a></li>
+                                <li class=""><a href="#method_hasClass" title="hasClass">hasClass</a></li>
+                                <li class=""><a href="#method_inDocument" title="inDocument">inDocument</a></li>
+                                <li class=""><a href="#method_insertAfter" title="insertAfter">insertAfter</a></li>
+                                <li class=""><a href="#method_insertBefore" title="insertBefore">insertBefore</a></li>
+                                <li class=""><a href="#method_isAncestor" title="isAncestor">isAncestor</a></li>
+                                <li class=""><a href="#method_removeClass" title="removeClass">removeClass</a></li>
+                                <li class=""><a href="#method_replaceClass" title="replaceClass">replaceClass</a></li>
+                                <li class=""><a href="#method_setAttribute" title="setAttribute">setAttribute</a></li>
+                                <li class=""><a href="#method_setStyle" title="setStyle">setStyle</a></li>
+                                <li class=""><a href="#method_setX" title="setX">setX</a></li>
+                                <li class=""><a href="#method_setXY" title="setXY">setXY</a></li>
+                                <li class=""><a href="#method_setY" title="setY">setY</a></li>
+                        </ul>
+                    </div>
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.util.Region", "name": "0", "url": "YAHOO.util.Region.html#property_0", "type": "property"}, {"access": "", "host": "YAHOO.util.Region", "name": "1", "url": "YAHOO.util.Region.html#property_1", "type": "property"}, {"access": "", "host": "YAHOO.util.Dom", "name": "addClass", "url": "YAHOO.util.Dom.html#method_addClass", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "batch", "url": "YAHOO.util.Dom.html#method_batch", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "bottom", "url": "YAHOO.util.Region.html#property_bottom", "type": "property"}, {"access": "", "host": "YAHOO.util.Region", "name": "contains", "url": "YAHOO.util.Region.html#method_contains", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "generateId", "url": "YAHOO.util.Dom.html#method_generateId", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.IEStyle", "name": "get", "url": "YAHOO.util.Dom.IEStyle.html#method_get", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "get", "url": "YAHOO.util.Dom.html#method_get", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getAncestorBy", "url": "YAHOO.util.Dom.html#method_getAncestorBy", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getAncestorByClassName", "url": "YAHOO.util.Dom.html#method_getAncestorByClassName", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getAncestorByTagName", "url": "YAHOO.util.Dom.html#method_getAncestorByTagName", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "getArea", "url": "YAHOO.util.Region.html#method_getArea", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getAttribute", "url": "YAHOO.util.Dom.html#method_getAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.IEStyle", "name": "getBorderColor", "url": "YAHOO.util.Dom.IEStyle.html#method_getBorderColor", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.IEStyle", "name": "getBorderWidth", "url": "YAHOO.util.Dom.IEStyle.html#method_getBorderWidth", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getChildren", "url": "YAHOO.util.Dom.html#method_getChildren", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getChildrenBy", "url": "YAHOO.util.Dom.html#method_getChildrenBy", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getClientHeight", "url": "YAHOO.util.Dom.html#method_getClientHeight", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getClientRegion", "url": "YAHOO.util.Dom.html#method_getClientRegion", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getClientWidth", "url": "YAHOO.util.Dom.html#method_getClientWidth", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.IEStyle", "name": "getColor", "url": "YAHOO.util.Dom.IEStyle.html#method_getColor", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getDocumentHeight", "url": "YAHOO.util.Dom.html#method_getDocumentHeight", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getDocumentScrollLeft", "url": "YAHOO.util.Dom.html#method_getDocumentScrollLeft", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getDocumentScrollTop", "url": "YAHOO.util.Dom.html#method_getDocumentScrollTop", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getDocumentWidth", "url": "YAHOO.util.Dom.html#method_getDocumentWidth", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getElementBy", "url": "YAHOO.util.Dom.html#method_getElementBy", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getElementsBy", "url": "YAHOO.util.Dom.html#method_getElementsBy", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getElementsByClassName", "url": "YAHOO.util.Dom.html#method_getElementsByClassName", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getFirstChild", "url": "YAHOO.util.Dom.html#method_getFirstChild", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getFirstChildBy", "url": "YAHOO.util.Dom.html#method_getFirstChildBy", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getLastChild", "url": "YAHOO.util.Dom.html#method_getLastChild", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getLastChildBy", "url": "YAHOO.util.Dom.html#method_getLastChildBy", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.IEStyle", "name": "getMargin", "url": "YAHOO.util.Dom.IEStyle.html#method_getMargin", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getNextSibling", "url": "YAHOO.util.Dom.html#method_getNextSibling", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getNextSiblingBy", "url": "YAHOO.util.Dom.html#method_getNextSiblingBy", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.IEStyle", "name": "getOffset", "url": "YAHOO.util.Dom.IEStyle.html#method_getOffset", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.IEStyle", "name": "getPixel", "url": "YAHOO.util.Dom.IEStyle.html#method_getPixel", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getPreviousSibling", "url": "YAHOO.util.Dom.html#method_getPreviousSibling", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getPreviousSiblingBy", "url": "YAHOO.util.Dom.html#method_getPreviousSiblingBy", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "getRegion", "url": "YAHOO.util.Region.html#method_getRegion", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getRegion", "url": "YAHOO.util.Dom.html#method_getRegion", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getStyle", "url": "YAHOO.util.Dom.html#method_getStyle", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getViewportHeight", "url": "YAHOO.util.Dom.html#method_getViewportHeight", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getViewportWidth", "url": "YAHOO.util.Dom.html#method_getViewportWidth", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.IEStyle", "name": "getVisibility", "url": "YAHOO.util.Dom.IEStyle.html#method_getVisibility", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getX", "url": "YAHOO.util.Dom.html#method_getX", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getXY", "url": "YAHOO.util.Dom.html#method_getXY", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "getY", "url": "YAHOO.util.Dom.html#method_getY", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "hasClass", "url": "YAHOO.util.Dom.html#method_hasClass", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "height", "url": "YAHOO.util.Region.html#property_height", "type": "property"}, {"access": "", "host": "YAHOO.util.Dom", "name": "inDocument", "url": "YAHOO.util.Dom.html#method_inDocument", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "insertAfter", "url": "YAHOO.util.Dom.html#method_insertAfter", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "insertBefore", "url": "YAHOO.util.Dom.html#method_insertBefore", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "intersect", "url": "YAHOO.util.Region.html#method_intersect", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "isAncestor", "url": "YAHOO.util.Dom.html#method_isAncestor", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.Color", "name": "KEYWORDS", "url": "YAHOO.util.Dom.Color.html#property_KEYWORDS", "type": "property"}, {"access": "", "host": "YAHOO.util.Region", "name": "left", "url": "YAHOO.util.Region.html#property_left", "type": "property"}, {"access": "private", "host": "YAHOO.util.Dom.Color", "name": "re_hex", "url": "YAHOO.util.Dom.Color.html#property_re_hex", "type": "property"}, {"access": "private", "host": "YAHOO.util.Dom.Color", "name": "re_hex3", "url": "YAHOO.util.Dom.Color.html#property_re_hex3", "type": "property"}, {"access": "", "host": "YAHOO.util.Dom", "name": "removeClass", "url": "YAHOO.util.Dom.html#method_removeClass", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "replaceClass", "url": "YAHOO.util.Dom.html#method_replaceClass", "type": "method"}, {"access": "private", "host": "YAHOO.util.Dom.Color", "name": "re_RGB", "url": "YAHOO.util.Dom.Color.html#property_re_RGB", "type": "property"}, {"access": "", "host": "YAHOO.util.Region", "name": "right", "url": "YAHOO.util.Region.html#property_right", "type": "property"}, {"access": "", "host": "YAHOO.util.Dom", "name": "setAttribute", "url": "YAHOO.util.Dom.html#method_setAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "setStyle", "url": "YAHOO.util.Dom.html#method_setStyle", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "setX", "url": "YAHOO.util.Dom.html#method_setX", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "setXY", "url": "YAHOO.util.Dom.html#method_setXY", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom", "name": "setY", "url": "YAHOO.util.Dom.html#method_setY", "type": "method"}, {"access": "", "host": "YAHOO.util.Dom.Color", "name": "toHex", "url": "YAHOO.util.Dom.Color.html#method_toHex", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "top", "url": "YAHOO.util.Region.html#property_top", "type": "property"}, {"access": "", "host": "YAHOO.util.Dom.Color", "name": "toRGB", "url": "YAHOO.util.Dom.Color.html#method_toRGB", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "toString", "url": "YAHOO.util.Region.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "union", "url": "YAHOO.util.Region.html#method_union", "type": "method"}, {"access": "", "host": "YAHOO.util.Region", "name": "width", "url": "YAHOO.util.Region.html#property_width", "type": "property"}, {"access": "", "host": "YAHOO.util.Region", "name": "x", "url": "YAHOO.util.Region.html#property_x", "type": "property"}, {"access": "", "host": "YAHOO.util.Region", "name": "y", "url": "YAHOO.util.Region.html#property_y", "type": "property"}];
+</script>
+</body>
+</html>

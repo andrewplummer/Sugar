@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Rebuilding class instances from JSON data</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#demo textarea {
+    background: #fff;
+    border: 1px solid #ccc;
+    display: block;
+    margin: 1em;
+    padding: 1em;
+    width: 80%;
+    height: 50px;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Rebuilding class instances from JSON data</h1>
+
+<div class="exampleIntro">
+	<p>This example illustrates one method of serializing and recreating class instances by using the <code>replacer</code> and <code>reviver</code> parameters to <code>JSON.stringify</code> and <code>JSON.parse</code> respectively.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <button type="button" id="demo_freeze">Freeze</button>
+    <button type="button" id="demo_thaw" disabled="disabled">Thaw</button>
+    <textarea id="demo_frozen">(stringify results here)</textarea>
+    <div id="demo_thawed"></div>
+</div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+var Event = YAHOO.util.Event,
+    Dom   = YAHOO.util.Dom,
+    JSON  = YAHOO.lang.JSON,
+    Demo;
+    
+Demo = YAHOO.namespace('demo').FreezeThaw = {
+    data       : null,
+    jsonString : null,
+
+    cryo : function (k,o) {
+        return (o instanceof CaveMan) ? CaveMan.freeze(o) : o;
+    },
+    revive : function (k,v) {
+        // Turn anything that looks like a UTC date string into a Date instance
+        if (typeof v === 'string') {
+            return JSON.stringToDate(v);;
+        }
+        // Check for cavemen by the _class key
+        if (v instanceof Object && v._class == 'CaveMan') {
+            return CaveMan.thaw(v);
+        }
+        // default to returning the value unaltered
+        return v;
+    }
+};
+
+function CaveMan(name,discovered) {
+    this.name       = name;
+    this.discovered = discovered;
+};
+CaveMan.prototype.getName = function () {
+    return this.name + ", the cave man";
+}
+
+// Static methods to convert to and from a basic object structure
+CaveMan.thaw = function (o) {
+    return new CaveMan(o.n, o.d);
+};
+// Convert to a basic object structure including a class identifier
+CaveMan.freeze = function (cm) {
+    return {
+        _class : 'CaveMan',
+        n : cm.name,
+        d : cm.discovered // remains a Date for standard JSON serialization
+    };
+};
+
+Demo.data    = {
+    count : 1,
+    type  : 'Hominid',
+    specimen : [
+        new CaveMan('Ed',new Date(1946,6,6))
+    ]
+};
+
+Event.on('demo_freeze','click',function (e) {
+    Demo.jsonString = JSON.stringify(Demo.data, Demo.cryo);
+
+    Dom.get('demo_frozen').value = Demo.jsonString;
+    Dom.get('demo_thaw').disabled = false;
+});
+
+Event.on('demo_thaw','click',function (e) {
+    var parsedData = JSON.parse(Demo.jsonString, Demo.revive);
+        cm = parsedData.specimen[0];
+
+    Dom.get('demo_thawed').innerHTML =
+        "<p>Specimen count: " + parsedData.count + "</p>"+
+        "<p>Specimen type: " + parsedData.type + "</p>"+
+        "<p>Instanceof CaveMan: " + (cm instanceof CaveMan) + "</p>"+
+        "<p>Name: " + cm.getName() + "</p>"+
+        "<p>Discovered: " + cm.discovered + "</p>";
+});
+
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

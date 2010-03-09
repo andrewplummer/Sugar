@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Glowing Button</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    .yui-button {
+    
+        border-width: 1px 0;
+        border-style: solid;
+        border-color: #004d89;
+        margin: auto .25em;
+
+        /*
+            Give the Button instance a transparent background image that 
+            provides a glossy, glass-like look.  Since the background image is
+            transparent, it can apply the glass effect the Button instance
+            regardless of its background color.
+        */
+        background: url(../button/assets/gloss.png) repeat-x left center;
+        
+    }
+
+    .ie6 {
+    
+        /* Make background image transparent IE 6 using the AlphaImageLoader. */
+        background-image: none;
+        filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../button/assets/gloss.png', sizingMethod = 'scale');
+    
+    }
+
+    .yui-button .first-child {
+    
+        border-width: 0 1px;
+        border-style: solid;
+        border-color: #004d89;
+        margin: 0 -1px;
+
+		/*
+			Using negative margins for rounded corners won't work in IE 6 and 
+			IE 7 (Quirks Mode Only), so set the "margin" property to "0" for 
+			those browsers.
+		*/
+	 	_margin: 0;
+    
+    }
+    
+    .yui-button button,
+    .yui-button a {
+    
+        padding: 0 10px;
+        font-size: 93%;  /* 12px */
+        line-height: 2;  /* ~24px */
+        *line-height: 1.7; /* For IE */
+        min-height: 2em; /* For Gecko */
+        *min-height: auto; /* For IE */
+        color: #fff;
+        border: solid 1px #599acd;
+    
+    }
+
+    .yui-button#ok-button {
+        
+        background-color: #004d89;
+    
+    }
+
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class=" ">
+
+
+<h1>Glowing Button</h1>
+
+<div class="exampleIntro">
+	<p>
+This example demonstrates how to skin a Button instance to create a glossy, 
+glass-like effect with a glowing background reminiscent of Aqua buttons 
+found in Mac OS X.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+    YAHOO.util.Event.onContentReady("buttoncontainer", function () {
+
+        // Create a new Button instance
+
+        var oButton = new YAHOO.widget.Button({ 
+                                            id: "ok-button", 
+                                            label: "OK", 
+                                            container: "buttoncontainer" });
+
+
+        /*
+            Begin animating the Button instance's background color once it is 
+            appended to its containing element.
+        */
+
+        oButton.on("appendTo", function () {
+
+            /*
+                Apply a special CSS class to be able to target IE 6 
+                specifically in the CSS.
+            */
+
+            if (YAHOO.env.ua.ie == 6) {
+            
+                oButton.addClass("ie6");
+            
+            }
+    
+
+            // Create a new ColorAnim instance
+
+            var oButtonAnim = new YAHOO.util.ColorAnim("ok-button", { backgroundColor: { to: "#b1ddff" } });
+    
+
+            /*
+                Restart the color animation each time the target color has 
+                been applied.
+            */ 
+
+            oButtonAnim.onComplete.subscribe(function () {
+    
+                this.attributes.backgroundColor.to = (this.attributes.backgroundColor.to == "#b1ddff") ? "#016bbd" : "#b1ddff";
+            
+                this.animate();
+            
+            });
+            
+            oButtonAnim.animate();
+        
+        });
+    
+    });
+
+</script>
+
+<div id="buttoncontainer"></div>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Uploader Control (beta): Advanced Uploader Example With Additional POST Variables and Server Data Return</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/uploader/uploader-debug.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Uploader Control (beta): Advanced Uploader Example With Additional POST Variables and Server Data Return</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Uploader Control (beta): Advanced Uploader Example With Additional POST Variables and Server Data Return</h1>
+	
+	<div class="exampleIntro">
+	<p>This example demonstrates how the <a href="http://developer.yahoo.com/yui/uploader/">YUI Uploader Control</a> can be rendered as a transparent layer on top of your own UI and how custom variables can be added to the upload's POST request. In this example, the server-side script also echoes the POST variables accompanying the upload; we retrieve the data returned by the server and display it to the user.</p>
+
+<p><strong>Note:</strong> The YUI Uploader Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>
+
+<p><strong>Note:</strong> The YUI Uploader Control requires the <code>uploader.swf</code> Flash file that is distributed as part of the YUI package, in the <code>uploader/assets</code> folder. Copy <code>uploader.swf</code> to your server and set the <code>YAHOO.Uploader.SWFURL</code> variable to its full path.</p>
+
+<p><strong>Note:</strong> This example uses a server-side script to accept file uploads. The script used does not open or store the file data sent to it. It also does not store the accompanying POST variables, but it does echo them in the response relayed back to the sender of the request. When trying out the example, do not send any sensitive or private data. Do not exceed a file size of 10 MB.</p>
+			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="uploader-advanced-postvars_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<style>
+#selectFilesLink a, #uploadFilesLink a, #clearFilesLink a {
+	color: #0000CC;
+	background-color: #FFFFFF;
+}
+
+#selectFilesLink a:visited, #uploadFilesLink a:visited, #clearFilesLink a:visited {
+	color: #0000CC;
+	background-color: #FFFFFF;
+}
+
+#uploadFilesLink a:hover, #clearFilesLink a:hover {	
+	color: #FFFFFF;
+	background-color: #000000;
+}
+</style>
+
+<div id="uiElements" style="display:inline;">
+		<div id="postVars">
+		Set custom values for a couple POST vars:<br/>
+		var1: <input type="text" id="var1Value" value="var1 default value" /><br/>
+		var2: <input type="text" id="var2Value" value="var2 default value" /><br/><br/>
+		</div>
+		<div id="uploaderContainer">
+			<div id="uploaderOverlay" style="position:absolute; z-index:2"></div>
+			<div id="selectFilesLink" style="z-index:1"><a id="selectLink" href="#">Select File</a></div>
+		</div>
+		<div id="uploadFilesLink"><a id="uploadLink" onClick="upload(); return false;" href="#">Upload File</a></div><br/>
+		<div id="selectedFileDisplay">
+		Progress: <input type="text" cols="50" id="progressReport" value="" readonly /><br/><br/>
+		</div>
+		<div id="returnedDataDisplay">
+		Data returned by the server:<br/>
+		<textarea id="serverData" rows="5" cols="50"></textarea>
+		</div>
+</div>
+
+
+<script type="text/javascript">
+
+YAHOO.util.Event.onDOMReady(function () { 
+var uiLayer = YAHOO.util.Dom.getRegion('selectLink');
+var overlay = YAHOO.util.Dom.get('uploaderOverlay');
+YAHOO.util.Dom.setStyle(overlay, 'width', uiLayer.right-uiLayer.left + "px");
+YAHOO.util.Dom.setStyle(overlay, 'height', uiLayer.bottom-uiLayer.top + "px");
+});
+
+	// Custom URL for the uploader swf file (same folder).
+	YAHOO.widget.Uploader.SWFURL = "assets/uploader.swf";
+
+    // Instantiate the uploader and write it to its placeholder div.
+	var uploader = new YAHOO.widget.Uploader( "uploaderOverlay" );
+	
+	// Add event listeners to various events on the uploader.
+	// Methods on the uploader should only be called once the 
+	// contentReady event has fired.
+	
+	uploader.addListener('contentReady', handleContentReady);
+	uploader.addListener('fileSelect', onFileSelect)
+	uploader.addListener('uploadStart', onUploadStart);
+	uploader.addListener('uploadProgress', onUploadProgress);
+	uploader.addListener('uploadCancel', onUploadCancel);
+	uploader.addListener('uploadComplete', onUploadComplete);
+	uploader.addListener('uploadCompleteData', onUploadResponse);
+	uploader.addListener('uploadError', onUploadError);
+    uploader.addListener('rollOver', handleRollOver);
+    uploader.addListener('rollOut', handleRollOut);
+    uploader.addListener('click', handleClick);
+    	
+    // Variable for holding the selected file id.
+	var fileID;
+	
+	// When the mouse rolls over the uploader, this function
+	// is called in response to the rollOver event.
+	// It changes the appearance of the UI element below the Flash overlay.
+	function handleRollOver () {
+		YAHOO.util.Dom.setStyle(YAHOO.util.Dom.get('selectLink'), 'color', "#FFFFFF");
+		YAHOO.util.Dom.setStyle(YAHOO.util.Dom.get('selectLink'), 'background-color', "#000000");
+	}
+	
+	// On rollOut event, this function is called, which changes the appearance of the
+	// UI element below the Flash layer back to its original state.
+	function handleRollOut () {
+		YAHOO.util.Dom.setStyle(YAHOO.util.Dom.get('selectLink'), 'color', "#0000CC");
+		YAHOO.util.Dom.setStyle(YAHOO.util.Dom.get('selectLink'), 'background-color', "#FFFFFF");
+	}
+	
+	// When the Flash layer is clicked, the "Browse" dialog is invoked.
+	// The click event handler allows you to do something else if you need to.
+	function handleClick () {
+	}
+	
+	// When contentReady event is fired, you can call methods on the uploader.
+	function handleContentReady () {
+	    // Allows the uploader to send log messages to trace, as well as to YAHOO.log
+		uploader.setAllowLogging(true);
+		
+		// Disallows multiple file selection in "Browse" dialog.
+		uploader.setAllowMultipleFiles(false);
+		
+		// New set of file filters.
+		var ff = new Array({description:"Images", extensions:"*.jpg;*.png;*.gif"},
+		                   {description:"Videos", extensions:"*.avi;*.mov;*.mpg"});
+		                   
+		// Apply new set of file filters to the uploader.
+		uploader.setFileFilters(ff);
+	}
+
+	// Actually uploads the files. Since we are only allowing one file
+	// to be selected, we use the upload function, in conjunction with the id 
+	// of the selected file (returned by the fileSelect event). We are also including
+	// the text of the variables specified by the user in the input UI.
+
+	function upload() {
+	if (fileID != null) {
+		uploader.upload(fileID, "http://www.yswfblog.com/upload/upload.php", 
+		                "POST", 
+		                {var1:document.getElementById("var1Value").value,
+						 var2:document.getElementById("var2Value").value});
+	}	
+	}
+	
+	// Fired when the user selects files in the "Browse" dialog
+	// and clicks "Ok". Here, we set the value of the progress
+	// report textfield to reflect the fact that a file has been
+	// selected.
+	
+	function onFileSelect(event) {
+		for (var file in event.fileList) {
+		    if(YAHOO.lang.hasOwnProperty(event.fileList, file)) {
+				fileID = event.fileList[file].id;
+			}
+		}
+		
+		this.progressReport = document.getElementById("progressReport");
+		this.progressReport.value = "Selected " + event.fileList[fileID].name;
+	}
+
+
+    // When the upload starts, we inform the user about it via
+	// the progress report textfield. 
+	function onUploadStart(event) {
+		this.progressReport.value = "Starting upload...";
+	}
+	
+	// As upload progresses, we report back to the user via the
+	// progress report textfield.
+	function onUploadProgress(event) {
+		prog = Math.round(100*(event["bytesLoaded"]/event["bytesTotal"]));
+		this.progressReport.value = prog + "% uploaded...";
+	}
+	
+	// Report back to the user that the upload has completed.
+	function onUploadComplete(event) {
+		this.progressReport.value = "Upload complete.";
+	}
+	
+	// Report back to the user if there has been an error.
+	function onUploadError(event) {
+		this.progressReport.value = "Upload error.";
+	}
+	
+	// Do something if an upload is canceled.
+	function onUploadCancel(event) {
+
+	}
+	
+	// When the data is received back from the server, display it to the user
+	// in the server data text area.
+	function onUploadResponse(event) {
+		this.serverData = document.getElementById("serverData");
+		this.serverData.value = event.data;
+	}
+</script>
+
+
+	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Advanced Uploader Example With Additional POST Variables and Server Data Return</h2>
+
+<p>In this example, we allow the user to select a single image or video, and upload it to the server, while tracking progress on the upload. The user can specify custom values for a couple POST vars sent along with the upload, and also get the response from the server (in this case, a simple echo of POSTed variables). 
+	
+Because of security changes in Flash Player 10, the UI for invoking the "Browse" dialog has to be contained within the Flash player. In this example, the Flash player is rendered as a transparent overlay on top of a custom HTML-based UI. The Uploader running in the Flash player dispatches necessary mouse events to the DOM to make visual changes to the overlaid UI.</p>
+
+<p>For starters, let's define the necessary UI styles. We will use regular text links as the UI, and switch their background color when the mouse hovers over them.</p>
+
+<textarea name="code" class="html" cols="60" rows="5">
+	<style>
+	#selectFilesLink a, #uploadFilesLink a, #clearFilesLink a {
+		color: #0000CC;
+		background-color: #FFFFFF;
+	}
+
+	#selectFilesLink a:visited, #uploadFilesLink a:visited, #clearFilesLink a:visited {
+		color: #0000CC;
+		background-color: #FFFFFF;
+	}
+
+	#uploadFilesLink a:hover, #clearFilesLink a:hover {	
+		color: #FFFFFF;
+		background-color: #000000;
+	}
+	</style>
+</textarea>
+<p>Next, we'll place the UI elements on the page. Notice that the <code>selectFilesLink</code> div is overlaid by the <code>uploaderOverlay</code> div. <code>uploaderOverlay</code> is where we'll place the transparent Flash UI layer, that will dispatch various mouse events, based on which we will be able to change the appearance of the UI below.</p>
+<p>We are also placing a few input fields for the user to specify two custom POST variables that will be sent along with the file upload, as well as a text field to report back on the upload progress, and a text area to display the response received from the server:</p>
+<textarea name="code" class="html" cols="60" rows="5">
+	<div id="uiElements" style="display:inline;">
+			<div id="postVars">
+			Set custom values for a couple POST vars:<br/>
+			var1: <input type="text" id="var1Value" value="var1 default value" /><br/>
+			var2: <input type="text" id="var2Value" value="var2 default value" /><br/><br/>
+			</div>
+			<div id="uploaderContainer">
+				<div id="uploaderOverlay" style="position:absolute; z-index:2"></div>
+				<div id="selectFilesLink" style="z-index:1"><a id="selectLink" href="#">Select File</a></div>
+			</div>
+			<div id="uploadFilesLink"><a id="uploadLink" onClick="upload(); return false;" href="#">Upload File</a></div><br/>
+			<div id="selectedFileDisplay">
+			Progress: <input type="text" cols="50" id="progressReport" value="" readonly /><br/><br/>
+			</div>
+			<div id="returnedDataDisplay">
+			Data returned by the server:<br/>
+			<textarea id="serverData" rows="5" cols="50">&lt;/textarea&gt;
+			</div>
+	</div>
+</textarea>
+
+<p>Once the DOM is ready, we can size our container for the transparent UI to the link below it. The following code accomplishes that:</p>
+<textarea name="code" class="js" cols="60" rows="5">
+	<script type="text/javascript">
+	YAHOO.util.Event.onDOMReady(function () { 
+	var uiLayer = YAHOO.util.Dom.getRegion('selectLink');
+	var overlay = YAHOO.util.Dom.get('uploaderOverlay');
+	YAHOO.util.Dom.setStyle(overlay, 'width', uiLayer.right-uiLayer.left + "px");
+	YAHOO.util.Dom.setStyle(overlay, 'height', uiLayer.bottom-uiLayer.top + "px");
+	});
+</textarea>
+
+<p>Now we can instantiate the uploader and place it in the container div.</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		YAHOO.widget.Uploader.SWFURL = "assets/uploader.swf";
+		var uploader = new YAHOO.widget.Uploader( "uploaderOverlay" );
+</textarea>
+
+<p>We add handler functions to the uploader events. Note that methods on the uploader should not be called until the "contentReady" event has fired:</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		uploader.addListener('contentReady', handleContentReady);
+		uploader.addListener('fileSelect', onFileSelect)
+		uploader.addListener('uploadStart', onUploadStart);
+		uploader.addListener('uploadProgress', onUploadProgress);
+		uploader.addListener('uploadCancel', onUploadCancel);
+		uploader.addListener('uploadComplete', onUploadComplete);
+		uploader.addListener('uploadCompleteData', onUploadResponse);
+		uploader.addListener('uploadError', onUploadError);
+		uploader.addListener('rollOver', handleRollOver);
+		uploader.addListener('rollOut', handleRollOut);
+		uploader.addListener('click', handleClick);
+</textarea>
+<p>These handlers are called when the mouse rolls over and out of the uploader, respectively. They modify the appearance of the UI layer under the transparent Flash layer to match the behavior of the rest of the UI.</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		function handleRollOver () {
+			YAHOO.util.Dom.setStyle(YAHOO.util.Dom.get('selectLink'), 'color', "#FFFFFF");
+			YAHOO.util.Dom.setStyle(YAHOO.util.Dom.get('selectLink'), 'background-color', "#000000");
+		}
+
+		function handleRollOut () {
+			YAHOO.util.Dom.setStyle(YAHOO.util.Dom.get('selectLink'), 'color', "#0000CC");
+			YAHOO.util.Dom.setStyle(YAHOO.util.Dom.get('selectLink'), 'background-color', "#FFFFFF");
+		}
+
+		function handleClick () {
+		}
+</textarea>
+
+<p>Once the contentReady event has fired, we can configure the uploader. In this case, we call a function that turns on logging (so that everything we do is reflected in the YUI logger, as well as in the Flash trace file), disallow multiple file selection, and define a set of filters on the file extensions that the user can choose.</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		function handleContentReady () {
+			uploader.setAllowLogging(true);
+			uploader.setAllowMultipleFiles(false);
+
+			var ff = new Array({description:"Images", extensions:"*.jpg;*.png;*.gif"},
+			                   {description:"Videos", extensions:"*.avi;*.mov;*.mpg"});
+
+			uploader.setFileFilters(ff);
+		}
+</textarea>
+
+<p>The upload function is called when "Upload Files" link is clicked. It checks whether the fileID
+variable has been populated, and if so, instructs the upload to send that file to the specified 
+location. Note that we are overriding the default value for the variable submission method (default
+is "GET", we are making it "POST"). We are also passing an object with two POST variables to
+submit along with the upload; in this case, their values come from input fields that were presented
+to the user.</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		function upload() {
+		if (fileID != null) {
+			uploader.upload(fileID, "http://www.yswfblog.com/upload/upload.php", 
+			                "POST", 
+			                {var1:document.getElementById("var1Value").value,
+							 var2:document.getElementById("var2Value").value});
+		}	
+		}
+</textarea>
+
+<p>The fileID variable that the upload() function checked for needs to be defined and populated.
+This happens in the fileSelect event handler, that looks at the list of files passed in the event
+(they are indexed by the file id, rather than by numerical index, and so an iterator is necessary).
+Since we know the list will contain only one file, we can simply assign that file id to the fileID
+variable.</p>
+<p>We also update the progress report text field with the information on the selected file</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		var fileID;
+
+		function onFileSelect(event) {
+    		for (var file in event.fileList) {
+    		    if(YAHOO.lang.hasOwnProperty(event.fileList, file)) {
+    				fileID = event.fileList[file].id;
+    			}
+    		}
+
+			this.progressReport = document.getElementById("progressReport");
+			this.progressReport.value = "Selected " + event.fileList[fileID].name;
+		}
+</textarea>
+
+<p>Update the progress report when the upload starts:</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		function onUploadStart(event) {
+			this.progressReport.value = "Starting upload...";
+		}
+</textarea>
+
+<p>Update the progress report on upload progress events:</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		function onUploadProgress(event) {
+			prog = Math.round(100*(event["bytesLoaded"]/event["bytesTotal"]));
+			this.progressReport.value = prog + "% uploaded...";
+		}
+</textarea>
+
+<p>Update the progress report on upload complete event:</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		function onUploadComplete(event) {
+			this.progressReport.value = "Upload complete.";
+		}
+</textarea>
+
+<p>Update the progress report in case of an upload error:</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		function onUploadError(event) {
+			this.progressReport.value = "Upload error.";
+		}
+</textarea>
+
+<p>When a response is received from the server, display it in the
+provided text area:</p>
+<textarea name="code" class="js" cols="60" rows="5">
+		function onUploadResponse(event) {
+			this.serverData = document.getElementById("serverData");
+			this.serverData.value = event.data;
+		}
+	</script>
+</textarea>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?uploader&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerDiv"></div>
+						</div>
+					
+				
+					<div id="examples">
+						<h3>Uploader Control (beta) Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../uploader/uploader-simple-button.html'>Simple Uploader Example With Button UI</a></li><li class='selected'><a href='../uploader/uploader-advanced-postvars.html'>Advanced Uploader Example With Additional POST Variables and Server Data Return</a></li><li><a href='../uploader/uploader-advanced-cookie.html'>Advanced Uploader Example With Cookie Submission as a POST variable</a></li><li><a href='../uploader/uploader-advanced-queue.html'>Advanced Uploader Example With Transparent UI and Automatic Queue Management</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Uploader Control (beta) Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/uploader/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_uploader.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/uploader.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="selected "><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

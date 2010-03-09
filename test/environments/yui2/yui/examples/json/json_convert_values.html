@@ -1,0 +1,582 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: JSON Utility: Adding new object members during parsing</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#demo table {
+    border: 3px solid #89d;
+    border-collapse: collapse;
+}
+#demo caption {
+    margin: 3px 0;
+    font-weight: bold;
+    color: #333;
+    margin: 1em 0 1ex;
+}
+#demo table th {
+    background: #89d;
+    color: #fff;
+    padding: 1ex 1em;
+}
+#demo table td {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: .5ex 1ex;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: JSON Utility: Adding new object members during parsing</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>JSON Utility: Adding new object members during parsing</h1>
+	
+	<div class="exampleIntro">
+	<p>This example shows how to use the <code>reviver</code> parameter in <code>JSON.parse</code> to add new object members and format existing members during the parsing phase.</p>
+			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="json_convert_values_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<div id="demo">
+    <p>Choose a currency, then get the data</p>
+    <select id="currencies">
+        <option value="ARS">Argentine Peso</option>
+        <option value="AUD">Australian Dollar</option>
+        <option value="BRL">Brazilian Real</option>
+        <option value="GBP">British Pound</option>
+        <option value="CAD">Canadian Dollar</option>
+        <option value="CNY">Chinese Yuan</option>
+        <option value="COP">Colombian Peso</option>
+        <option value="HRK">Croatian Kuna</option>
+        <option value="CZK">Czech Koruna</option>
+        <option value="DKK">Danish Krone</option>
+        <option value="EEK">Estonian Kroon</option>
+        <option value="EUR">Euro</option>
+        <option value="HKD">Hong Kong Dollar</option>
+        <option value="HUF">Hungarian Forint</option>
+        <option value="ISK">Iceland Krona</option>
+        <option value="INR">Indian Rupee</option>
+        <option value="JPY">Japanese Yen</option>
+        <option value="KRW">Korean Won</option>
+        <option value="LVL">Latvian Lat</option>
+        <option value="LTL">Lithuanian Lita</option>
+        <option value="MYR">Malaysian Ringgit</option>
+        <option value="MXN">Mexican Peso</option>
+        <option value="NZD">New Zealand Dollar</option>
+        <option value="NOK">Norwegian Krone</option>
+        <option value="PHP">Philippine Peso</option>
+        <option value="PLN">Polish Zloty</option>
+        <option value="RUB">Russian Rouble</option>
+        <option value="SGD">Singapore Dollar</option>
+        <option value="SKK">Slovak Koruna</option>
+        <option value="ZAR">South African Rand</option>
+        <option value="LKR">Sri Lanka Rupee</option>
+        <option value="SEK">Swedish Krona</option>
+        <option value="TRY">Turkey Lira</option>
+        <option value="USD" selected="selected">U.S. Dollar</option>
+        <option value="CHF">Swiss Franc</option>
+        <option value="TWD">Taiwan Dollar</option>
+        <option value="THB">Thai Baht</option>
+    </select>
+    <input type="button" id="demo_go" value="Get Data">
+
+    <table cellspacing="0">
+    <caption>Inventory</caption>
+    <thead>
+        <tr>
+            <th>SKU</th>
+            <th>Item</th>
+            <th>Price (USD)</th>
+            <th>Price (<span>USD</span>)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td colspan="4">Click <em>Get Data</em></td></tr>
+    </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+// Set up some shortcuts
+var JSON  = YAHOO.lang.JSON,
+    Dom   = YAHOO.util.Dom,
+    Event = YAHOO.util.Event,
+    Demo;
+
+// To avoid a Safari issue with JSON reviver adding properties
+JSON.useNativeParse = false;
+
+Demo = YAHOO.namespace('demo').JSONReviver = {
+    rates : {"USD":1,"EUR":0.6661,"GBP":0.5207,"AUD":1.1225,"BRL":1.609,"NZD":1.4198,"CAD":1.0667,"CHF":1.0792,"CNY":6.8587 ,"DKK":4.9702,"HKD":7.8064,"INR":42.0168,"JPY":109.8901,"KRW":1000,"LKR":107.5269,"MXN":10.1317,"MYR" :3.3167,"NOK":5.3277,"SEK":6.2617,"SGD":1.4073,"THB":33.7838,"TWD":31.1526,"VEF":2.1445,"ZAR":7.6923 ,"BGN":1.3028,"CZK":16.0514,"EEK":10.4275,"HUF":158.7302,"LTL":2.2999,"LVL":0.4692,"PLN":2.1758,"RON" :2.3804,"SKK":20.2429,"ISK":4.8008,"HRK":81.3008,"RUB":24.3309,"TRY":1.1811,"PHP":44.2478,"COP":2000 ,"ARS":3.1289},
+
+    currency : 'USD',
+
+    formatCurrency : function (amt) {
+        amt += amt % 1 ? "0" : ".00";
+        return amt.substr(0,amt.indexOf('.')+3);
+    },
+
+    convert : function (k,v) {
+        // 'this' will refer to the object containing the key:value pair,
+        // so this will add a new object member while leaving the original
+        // in tact (but formatted to two decimal places).  If the original
+        // is not needed, just return the converted value.
+        if (k === 'Price') {
+            var x = Math.round(v * Demo.rates[Demo.currency] * 100) / 100;
+            this.convertedPrice = Demo.formatCurrency(x); // added to item
+            return Demo.formatCurrency(v); // assigned to item.Price
+        }
+        return v;
+    },
+
+    updateTable : function (inventory) {
+        var demo       = Dom.get('demo'),
+            tbl        = demo.getElementsByTagName('table')[0],
+            tbody      = tbl.getElementsByTagName('tbody')[0],
+            col_header = tbl.getElementsByTagName('span')[0],
+            tmp        = document.createElement('div'),
+            html       = ["<table><tbody>"],i,j = 1,l,item;
+
+        // Update the column header
+        col_header.innerHTML = Demo.currency;
+
+        if (inventory) {
+            for (i = 0, l = inventory.length; i < l; ++i) {
+                item = inventory[i];
+                html[j++] = '<tr><td>';
+                html[j++] = item.SKU;
+                html[j++] = '</td><td>';
+                html[j++] = item.Item;
+                html[j++] = '</td><td>';
+                html[j++] = item.Price;
+                html[j++] = '</td><td>';
+                html[j++] = item.convertedPrice;
+                html[j++] = '</td></tr>';
+            }
+        } else {
+            html[j++] = '<tr><td colspan="4">No Inventory data</td></tr>';
+        }
+        html[j] = "</tbody></table>";
+
+        tmp.innerHTML = html.join('');
+
+        tbl.replaceChild(tmp.getElementsByTagName('tbody')[0], tbody);
+    }
+};
+
+Event.on('demo_go','click', function (e) {
+
+    var self = this,     // Cache this for the async callback closure
+        sel  = Dom.get('currencies'); // Store the requested currency
+
+    // Disable the button temporarily
+    this.disabled = true;
+
+    // Store the requested currency
+    Demo.currency = sel.value;
+
+    YAHOO.util.Connect.asyncRequest('GET','assets/data.php',{
+        timeout : 3000,
+        success : function (res) {
+            var inventory;
+            try {
+                inventory = JSON.parse(res.responseText,Demo.convert);
+
+                Demo.updateTable(inventory);
+            }
+            catch(e) {
+                alert("Error getting inventory data");
+            }
+            finally {
+                self.disabled = false;
+            }
+        },
+        failure : function () {
+            alert("Error getting inventory data");
+        }
+    });
+});
+
+});
+</script>
+</script>
+	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h3>The data</h3>
+<p>The data returned from the server will be a JSON string containing this object structure:</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+[
+    {"SKU":"23-23874", "Price":23.99,  "Item":"Helmet"},
+    {"SKU":"48-38835", "Price":14.97,  "Item":"Football"},
+    {"SKU":"84-84848", "Price":3.49,   "Item":"Goggles"},
+    {"SKU":"84-84843", "Price":183,    "Item":"Badminton Set"},
+    {"SKU":"84-39321", "Price":6.79,   "Item":"Tennis Balls"},
+    {"SKU":"39-48949", "Price":618,    "Item":"Snowboard"},
+    {"SKU":"99-28128", "Price":78.99,  "Item":"Cleats"},
+    {"SKU":"83-48281", "Price":4.69,   "Item":"Volleyball"},
+    {"SKU":"89-32811", "Price":0.59,   "Item":"Sweatband"},
+    {"SKU":"28-22847", "Price":779.98, "Item":"Golf Set"},
+    {"SKU":"38-38281", "Price":8.25,   "Item":"Basketball Shorts"},
+    {"SKU":"82-38333", "Price":1.39,   "Item":"Lip balm"},
+    {"SKU":"21-38485", "Price":0.07,   "Item":"Ping Pong ball"},
+    {"SKU":"83-38285", "Price":3.99,   "Item":"Hockey Puck"}
+]
+</textarea>
+
+<h3>Create a reviver function</h3>
+<p>We'll contain all the moving parts in the <code>YAHOO.demo.JSONReviver</code> namespace.  In it, we'll include the currency exchange rates and a function to reference the rates to add a new member to the JSON response as it is being parsed.</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+YAHOO.util.Event.onDOMReady(function () {
+
+// Set up some shortcuts
+var JSON  = YAHOO.lang.JSON,
+    Dom   = YAHOO.util.Dom,
+    Event = YAHOO.util.Event,
+    Demo;
+
+Demo = YAHOO.namespace('demo').JSONReviver = {
+
+    rates : {"USD":1,"EUR":0.6661,...,"COP":2000 ,"ARS":3.1289},
+
+    currency : 'USD', // updated by the select element
+
+    convert : function (k,v) {
+        // 'this' will refer to the object containing the key:value pair,
+        // so this will add a new object member while leaving the original
+        // in tact (but formatted to two decimal places).  If the original
+        // is not needed, just return the converted value.
+        if (k === 'Price') {
+            var x = Math.round(v * Demo.rates[Demo.currency] * 100) / 100;
+
+            this.convertedPrice = Demo.formatCurrency(x); // added to item
+
+            return Demo.formatCurrency(v); // assigned to item.Price
+        }
+        return v;
+    },
+    ...
+};
+
+...
+</textarea>
+
+<h3>Sending the request and parsing the JSON response</h3>
+<p>When the Get Data button is clicked, we send an <code>asyncRequest</code> for the JSON data from YUI's <a href="http://developer.yahoo.com/yui/connection">Connection Manager</a>.  In our success handler, we pass our conversion function to <code>JSON.parse</code> with the response text.  The resulting inventory records will have an additional member, <code>convertedPrice</code>.  This data is then passed to a UI method to update the inventory table.</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+Event.on('demo_go','click',function (e) {
+
+    var self = this,     // Cache this for the async callback closure
+        sel  = Dom.get('currencies');
+
+    // Disable the button temporarily
+    this.disabled = true;
+ 
+    // Store the requested currency
+    Demo.currency = sel.value;
+
+    // Send the request for the JSON data
+    YAHOO.util.Connect.asyncRequest('GET','assets/data.php',{
+        timeout : 3000,
+        success : function (res) {
+            var inventory;
+            try {
+                inventory = JSON.parse(res.responseText, Demo.convert);
+
+                Demo.updateTable(inventory);
+            }
+            catch(e) {
+                alert("Error getting inventory data");
+            }
+            finally {
+                self.disabled = false;
+            }
+        },
+        failure : function () {
+            alert("Error getting inventory data");
+        }
+    });
+});
+
+});
+</textarea>
+
+<h3>Example markup</h3>
+<textarea name="code" class="HTML" cols="60" rows="1">
+<div id="demo">
+    <p>Choose a currency, then get the data</p>
+    <select id="currencies">
+        <option value="ARS">Argentine Peso</option>
+        <option value="AUD">Australian Dollar</option>
+        ...
+        <option value="TWD">Taiwan Dollar</option>
+        <option value="THB">Thai Baht</option>
+    </select>
+    <input type="button" id="demo_go" value="Get Data">
+
+    <table cellspacing="0">
+    <caption>Inventory</caption>
+    <thead>
+        <tr>
+            <th>SKU</th>
+            <th>Item</th>
+            <th>Price (USD)</th>
+            <th>Price (<span>USD</span>)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td colspan="4">Click <em>Get Data</em></td></tr>
+    </tbody>
+    </table>
+</div>
+</textarea>
+
+<h3>Full Code Listing</h3>
+<p>Below is the full source for the example, including the functions responsible for formatting the price and updating the UI.</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+YAHOO.util.Event.onDOMReady(function () {
+
+// Set up some shortcuts
+var JSON  = YAHOO.lang.JSON,
+    Dom   = YAHOO.util.Dom,
+    Event = YAHOO.util.Event,
+    Demo;
+
+// To avoid a Safari issue with JSON reviver adding properties
+JSON.useNativeParse = false;
+
+Demo = YAHOO.namespace('demo').JSONReviver = {
+    rates : {"USD":1,"EUR":0.6661,"GBP":0.5207,"AUD":1.1225,"BRL":1.609,"NZD":1.4198,"CAD":1.0667,"CHF":1.0792,"CNY":6.8587 ,"DKK":4.9702,"HKD":7.8064,"INR":42.0168,"JPY":109.8901,"KRW":1000,"LKR":107.5269,"MXN":10.1317,"MYR" :3.3167,"NOK":5.3277,"SEK":6.2617,"SGD":1.4073,"THB":33.7838,"TWD":31.1526,"VEF":2.1445,"ZAR":7.6923 ,"BGN":1.3028,"CZK":16.0514,"EEK":10.4275,"HUF":158.7302,"LTL":2.2999,"LVL":0.4692,"PLN":2.1758,"RON" :2.3804,"SKK":20.2429,"ISK":4.8008,"HRK":81.3008,"RUB":24.3309,"TRY":1.1811,"PHP":44.2478,"COP":2000 ,"ARS":3.1289},
+
+    currency : 'USD',
+
+    formatCurrency : function (amt) {
+        amt += amt % 1 ? "0" : ".00";
+        return amt.substr(0,amt.indexOf('.')+3);
+    },
+
+    convert : function (k,v) {
+        // 'this' will refer to the object containing the key:value pair,
+        // so this will add a new object member while leaving the original
+        // in tact (but formatted to two decimal places).  If the original
+        // is not needed, just return the converted value.
+        if (k === 'Price') {
+            var x = Math.round(v * Demo.rates[Demo.currency] * 100) / 100;
+            this.convertedPrice = Demo.formatCurrency(x); // added to item
+            return Demo.formatCurrency(v); // assigned to item.Price
+        }
+        return v;
+    },
+
+    updateTable : function (inventory) {
+        var demo       = Dom.get('demo'),
+            tbl        = demo.getElementsByTagName('table')[0],
+            tbody      = tbl.getElementsByTagName('tbody')[0],
+            col_header = tbl.getElementsByTagName('span')[0],
+            tmp        = document.createElement('div'),
+            html       = ["<table><tbody>"],i,j = 1,l,item;
+
+        // Update the column header
+        col_header.innerHTML = Demo.currency;
+
+        if (inventory) {
+            for (i = 0, l = inventory.length; i < l; ++i) {
+                item = inventory[i];
+                html[j++] = '<tr><td>';
+                html[j++] = item.SKU;
+                html[j++] = '</td><td>';
+                html[j++] = item.Item;
+                html[j++] = '</td><td>';
+                html[j++] = item.Price;
+                html[j++] = '</td><td>';
+                html[j++] = item.convertedPrice;
+                html[j++] = '</td></tr>';
+            }
+        } else {
+            html[j++] = '<tr><td colspan="4">No Inventory data</td></tr>';
+        }
+        html[j] = "</tbody></table>";
+
+        tmp.innerHTML = html.join('');
+
+        tbl.replaceChild(tmp.getElementsByTagName('tbody')[0], tbody);
+    }
+};
+
+Event.on('demo_go','click', function (e) {
+
+    var self = this,     // Cache this for the async callback closure
+        sel  = Dom.get('currencies'); // Store the requested currency
+
+    // Disable the button temporarily
+    this.disabled = true;
+
+    // Store the requested currency
+    Demo.currency = sel.value;
+
+    YAHOO.util.Connect.asyncRequest('GET','assets/data.php',{
+        timeout : 3000,
+        success : function (res) {
+            var inventory;
+            try {
+                inventory = JSON.parse(res.responseText,Demo.convert);
+
+                Demo.updateTable(inventory);
+            }
+            catch(e) {
+                alert("Error getting inventory data");
+            }
+            finally {
+                self.disabled = false;
+            }
+        },
+        failure : function () {
+            alert("Error getting inventory data");
+        }
+    });
+});
+
+});
+</textarea>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?dom&event&connection&json&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerGloss"><p><strong>Note:</strong> Logging and debugging is currently turned off for this example.</p> 
+							<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="json_convert_values_log.html">Reload with logging<br />
+	 and debugging enabled.</a></span></span></p></div>
+	
+						</div>
+					
+				
+					<div id="examples">
+						<h3>JSON Utility Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../json/json_connect.html'>JSON with Connection Manager</a></li><li><a href='../json/json_freeze_thaw.html'>Rebuilding class instances from JSON data</a></li><li class='selected'><a href='../json/json_convert_values.html'>Adding new object members during parsing</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More JSON Utility Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/json/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_json.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/json.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="selected "><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

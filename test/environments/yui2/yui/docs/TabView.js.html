@@ -1,0 +1,649 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: tabview   TabView.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>tabview&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_tabview.html" title="tabview">tabview</a>
+                
+                 &gt; TabView.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="o">(</span><span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="c">/**</span>
+<span class="c">     * The tabview module provides a widget for managing content bound to tabs.</span>
+<span class="c">     * @module tabview</span>
+<span class="c">     * @requires yahoo, dom, event, element</span>
+<span class="c">     *</span>
+<span class="c">     */</span>
+
+    <span class="k">var</span> <span class="nx">Y</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">,</span>
+        <span class="nx">Dom</span> <span class="o">=</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">Dom</span><span class="o">,</span>
+        <span class="nx">Event</span> <span class="o">=</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">Event</span><span class="o">,</span>
+        <span class="nb">document</span> <span class="o">=</span> <span class="nb">window</span><span class="o">.</span><span class="nb">document</span><span class="o">,</span>
+    
+        <span class="c">// STRING CONSTANTS</span>
+<span class="c"></span>        <span class="nx">ACTIVE</span> <span class="o">=</span> <span class="s1">&#39;active&#39;</span><span class="o">,</span>
+        <span class="nx">ACTIVE_INDEX</span> <span class="o">=</span> <span class="s1">&#39;activeIndex&#39;</span><span class="o">,</span>
+        <span class="nx">ACTIVE_TAB</span> <span class="o">=</span> <span class="s1">&#39;activeTab&#39;</span><span class="o">,</span>
+        <span class="nx">CONTENT_EL</span> <span class="o">=</span> <span class="s1">&#39;contentEl&#39;</span><span class="o">,</span>
+        <span class="nx">ELEMENT</span> <span class="o">=</span> <span class="s1">&#39;element&#39;</span><span class="o">,</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * A widget to control tabbed views.</span>
+<span class="c">     * @namespace YAHOO.widget</span>
+<span class="c">     * @class TabView</span>
+<span class="c">     * @extends YAHOO.util.Element</span>
+<span class="c">     * @constructor</span>
+<span class="c">     * @param {HTMLElement | String | Object} el(optional) The html </span>
+<span class="c">     * element that represents the TabView, or the attribute object to use. </span>
+<span class="c">     * An element will be created if none provided.</span>
+<span class="c">     * @param {Object} attr (optional) A key map of the tabView&#39;s </span>
+<span class="c">     * initial attributes.  Ignored if first arg is attributes object.</span>
+<span class="c">     */</span>
+    <span class="nx">TabView</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">attr</span> <span class="o">=</span> <span class="nx">attr</span> <span class="o">||</span> <span class="o">{};</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">arguments</span><span class="o">.</span><span class="nx">length</span> <span class="o">==</span> <span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">el</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">el</span><span class="o">.</span><span class="nx">nodeName</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">attr</span> <span class="o">=</span> <span class="nx">el</span><span class="o">;</span> <span class="c">// treat first arg as attr object</span>
+<span class="c"></span>            <span class="nx">el</span> <span class="o">=</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">element</span> <span class="o">||</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">el</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">attr</span><span class="o">.</span><span class="nx">element</span><span class="o">)</span> <span class="o">{</span> <span class="c">// create if we dont have one</span>
+<span class="c"></span>            <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_createTabViewElement</span><span class="o">(</span><span class="nx">attr</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nx">TabView</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">el</span><span class="o">,</span> <span class="nx">attr</span><span class="o">);</span> 
+    <span class="o">};</span>
+
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">TabView</span><span class="o">,</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">Element</span><span class="o">,</span> <span class="o">{</span>
+        <span class="c">/**</span>
+<span class="c">         * The className to add when building from scratch. </span>
+<span class="c">         * @property CLASSNAME</span>
+<span class="c">         * @default &quot;navset&quot;</span>
+<span class="c">         */</span>
+        <span class="nx">CLASSNAME</span><span class="o">:</span> <span class="s1">&#39;yui-navset&#39;</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * The className of the HTMLElement containing the TabView&#39;s tab elements</span>
+<span class="c">         * to look for when building from existing markup, or to add when building</span>
+<span class="c">         * from scratch. </span>
+<span class="c">         * All childNodes of the tab container are treated as Tabs when building</span>
+<span class="c">         * from existing markup.</span>
+<span class="c">         * @property TAB_PARENT_CLASSNAME</span>
+<span class="c">         * @default &quot;nav&quot;</span>
+<span class="c">         */</span>
+        <span class="nx">TAB_PARENT_CLASSNAME</span><span class="o">:</span> <span class="s1">&#39;yui-nav&#39;</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * The className of the HTMLElement containing the TabView&#39;s label elements</span>
+<span class="c">         * to look for when building from existing markup, or to add when building</span>
+<span class="c">         * from scratch. </span>
+<span class="c">         * All childNodes of the content container are treated as content elements when</span>
+<span class="c">         * building from existing markup.</span>
+<span class="c">         * @property CONTENT_PARENT_CLASSNAME</span>
+<span class="c">         * @default &quot;nav-content&quot;</span>
+<span class="c">         */</span>
+        <span class="nx">CONTENT_PARENT_CLASSNAME</span><span class="o">:</span> <span class="s1">&#39;yui-content&#39;</span><span class="o">,</span>
+        
+        <span class="nx">_tabParent</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        <span class="nx">_contentParent</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Adds a Tab to the TabView instance.  </span>
+<span class="c">         * If no index is specified, the tab is added to the end of the tab list.</span>
+<span class="c">         * @method addTab</span>
+<span class="c">         * @param {YAHOO.widget.Tab} tab A Tab instance to add.</span>
+<span class="c">         * @param {Integer} index The position to add the tab. </span>
+<span class="c">         * @return void</span>
+<span class="c">         */</span>
+        <span class="nx">addTab</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">tab</span><span class="o">,</span> <span class="nx">index</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">tabs</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;tabs&#39;</span><span class="o">),</span>
+                <span class="nx">before</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTab</span><span class="o">(</span><span class="nx">index</span><span class="o">),</span>
+                <span class="nx">tabParent</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_tabParent</span><span class="o">,</span>
+                <span class="nx">contentParent</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_contentParent</span><span class="o">,</span>
+                <span class="nx">tabElement</span> <span class="o">=</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ELEMENT</span><span class="o">),</span>
+                <span class="nx">contentEl</span> <span class="o">=</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">CONTENT_EL</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">tabs</span><span class="o">)</span> <span class="o">{</span> <span class="c">// not ready yet</span>
+<span class="c"></span>                <span class="k">this</span><span class="o">.</span><span class="nx">_queue</span><span class="o">[</span><span class="k">this</span><span class="o">.</span><span class="nx">_queue</span><span class="o">.</span><span class="nx">length</span><span class="o">]</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;addTab&#39;</span><span class="o">,</span> <span class="nx">arguments</span><span class="o">];</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="nx">index</span> <span class="o">=</span> <span class="o">(</span><span class="nx">index</span> <span class="o">===</span> <span class="kc">undefined</span><span class="o">)</span> <span class="o">?</span> <span class="nx">tabs</span><span class="o">.</span><span class="nx">length</span> <span class="o">:</span> <span class="nx">index</span><span class="o">;</span>
+            
+            <span class="nx">tabs</span><span class="o">.</span><span class="nx">splice</span><span class="o">(</span><span class="nx">index</span><span class="o">,</span> <span class="m">0</span><span class="o">,</span> <span class="nx">tab</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span> <span class="nx">before</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="nx">tabParent</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">(</span><span class="nx">tabElement</span><span class="o">,</span> <span class="nx">before</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ELEMENT</span><span class="o">));</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nx">tabParent</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">tabElement</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span> <span class="nx">contentEl</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">isAncestor</span><span class="o">(</span><span class="nx">contentParent</span><span class="o">,</span> <span class="nx">contentEl</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="nx">contentParent</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">contentEl</span><span class="o">);</span>
+            <span class="o">}</span>
+            
+            <span class="k">if</span> <span class="o">(</span> <span class="o">!</span><span class="nx">tab</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ACTIVE</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="nx">tab</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;contentVisible&#39;</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span> <span class="c">/* hide if not active */</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">,</span> <span class="nx">tab</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;activeIndex&#39;</span><span class="o">,</span> <span class="nx">index</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">_initTabEvents</span><span class="o">(</span><span class="nx">tab</span><span class="o">);</span>
+        <span class="o">},</span>
+
+        <span class="nx">_initTabEvents</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">tab</span><span class="o">.</span><span class="nx">addListener</span><span class="o">(</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;activationEvent&#39;</span><span class="o">),</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">_onActivate</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="nx">tab</span><span class="o">);</span>
+            <span class="nx">tab</span><span class="o">.</span><span class="nx">addListener</span><span class="o">(</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;activationEventChange&#39;</span><span class="o">),</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">_onActivationEventChange</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="nx">tab</span><span class="o">);</span>
+        <span class="o">},</span>
+
+        <span class="nx">_removeTabEvents</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">tab</span><span class="o">.</span><span class="nx">removeListener</span><span class="o">(</span><span class="nx">tab</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;activationEvent&#39;</span><span class="o">),</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">_onActivate</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="nx">tab</span><span class="o">);</span>
+            <span class="nx">tab</span><span class="o">.</span><span class="nx">removeListener</span><span class="o">(</span><span class="s1">&#39;activationEventChange&#39;</span><span class="o">,</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">_onActivationEventChange</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="nx">tab</span><span class="o">);</span>
+        <span class="o">},</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Routes childNode events.</span>
+<span class="c">         * @method DOMEventHandler</span>
+<span class="c">         * @param {event} e The Dom event that is being handled.</span>
+<span class="c">         * @return void</span>
+<span class="c">         */</span>
+        <span class="nx">DOMEventHandler</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">target</span> <span class="o">=</span> <span class="nx">Event</span><span class="o">.</span><span class="nx">getTarget</span><span class="o">(</span><span class="nx">e</span><span class="o">),</span>
+                <span class="nx">tabParent</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_tabParent</span><span class="o">,</span>
+                <span class="nx">tabs</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;tabs&#39;</span><span class="o">),</span>
+                <span class="nx">tab</span><span class="o">,</span>
+                <span class="nx">tabEl</span><span class="o">,</span>
+                <span class="nx">contentEl</span><span class="o">;</span>
+
+            
+            <span class="k">if</span> <span class="o">(</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">isAncestor</span><span class="o">(</span><span class="nx">tabParent</span><span class="o">,</span> <span class="nx">target</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">tabs</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+                    <span class="nx">tabEl</span> <span class="o">=</span> <span class="nx">tabs</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">get</span><span class="o">(</span><span class="nx">ELEMENT</span><span class="o">);</span>
+                    <span class="nx">contentEl</span> <span class="o">=</span> <span class="nx">tabs</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">get</span><span class="o">(</span><span class="nx">CONTENT_EL</span><span class="o">);</span>
+
+                    <span class="k">if</span> <span class="o">(</span> <span class="nx">target</span> <span class="o">==</span> <span class="nx">tabEl</span> <span class="o">||</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">isAncestor</span><span class="o">(</span><span class="nx">tabEl</span><span class="o">,</span> <span class="nx">target</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">tab</span> <span class="o">=</span> <span class="nx">tabs</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+                        <span class="k">break</span><span class="o">;</span> <span class="c">// note break</span>
+<span class="c"></span>                    <span class="o">}</span>
+                <span class="o">}</span> 
+                
+                <span class="k">if</span> <span class="o">(</span><span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">tab</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="nx">e</span><span class="o">.</span><span class="nx">type</span><span class="o">,</span> <span class="nx">e</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Returns the Tab instance at the specified index.</span>
+<span class="c">         * @method getTab</span>
+<span class="c">         * @param {Integer} index The position of the Tab.</span>
+<span class="c">         * @return YAHOO.widget.Tab</span>
+<span class="c">         */</span>
+        <span class="nx">getTab</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">index</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;tabs&#39;</span><span class="o">)[</span><span class="nx">index</span><span class="o">];</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Returns the index of given tab.</span>
+<span class="c">         * @method getTabIndex</span>
+<span class="c">         * @param {YAHOO.widget.Tab} tab The tab whose index will be returned.</span>
+<span class="c">         * @return int</span>
+<span class="c">         */</span>
+        <span class="nx">getTabIndex</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="kc">null</span><span class="o">,</span>
+                <span class="nx">tabs</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;tabs&#39;</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">tabs</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">tab</span> <span class="o">==</span> <span class="nx">tabs</span><span class="o">[</span><span class="nx">i</span><span class="o">])</span> <span class="o">{</span>
+                    <span class="nx">index</span> <span class="o">=</span> <span class="nx">i</span><span class="o">;</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            
+            <span class="k">return</span> <span class="nx">index</span><span class="o">;</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Removes the specified Tab from the TabView.</span>
+<span class="c">         * @method removeTab</span>
+<span class="c">         * @param {YAHOO.widget.Tab} item The Tab instance to be removed.</span>
+<span class="c">         * @return void</span>
+<span class="c">         */</span>
+        <span class="nx">removeTab</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">tabCount</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;tabs&#39;</span><span class="o">).</span><span class="nx">length</span><span class="o">,</span>
+                <span class="nx">index</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTabIndex</span><span class="o">(</span><span class="nx">tab</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span> <span class="nx">tab</span> <span class="o">===</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span> 
+                <span class="k">if</span> <span class="o">(</span><span class="nx">tabCount</span> <span class="o">&gt;</span> <span class="m">1</span><span class="o">)</span> <span class="o">{</span> <span class="c">// select another tab</span>
+<span class="c"></span>                    <span class="k">if</span> <span class="o">(</span><span class="nx">index</span> <span class="o">+</span> <span class="m">1</span> <span class="o">===</span> <span class="nx">tabCount</span><span class="o">)</span> <span class="o">{</span> <span class="c">// if last, activate previous</span>
+<span class="c"></span>                        <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_INDEX</span><span class="o">,</span> <span class="nx">index</span> <span class="o">-</span> <span class="m">1</span><span class="o">);</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span> <span class="c">// activate next tab</span>
+<span class="c"></span>                        <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_INDEX</span><span class="o">,</span> <span class="nx">index</span> <span class="o">+</span> <span class="m">1</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span> <span class="c">// no more tabs</span>
+<span class="c"></span>                    <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">_removeTabEvents</span><span class="o">(</span><span class="nx">tab</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_tabParent</span><span class="o">.</span><span class="nx">removeChild</span><span class="o">(</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ELEMENT</span><span class="o">)</span> <span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_contentParent</span><span class="o">.</span><span class="nx">removeChild</span><span class="o">(</span> <span class="nx">tab</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">CONTENT_EL</span><span class="o">)</span> <span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_configs</span><span class="o">.</span><span class="nx">tabs</span><span class="o">.</span><span class="nx">value</span><span class="o">.</span><span class="nx">splice</span><span class="o">(</span><span class="nx">index</span><span class="o">,</span> <span class="m">1</span><span class="o">);</span>
+
+            <span class="nx">tab</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;remove&#39;</span><span class="o">,</span> <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;remove&#39;</span><span class="o">,</span> <span class="nx">tabview</span><span class="o">:</span> <span class="k">this</span> <span class="o">});</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Provides a readable name for the TabView instance.</span>
+<span class="c">         * @method toString</span>
+<span class="c">         * @return String</span>
+<span class="c">         */</span>
+        <span class="nx">toString</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;id&#39;</span><span class="o">)</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;tagName&#39;</span><span class="o">);</span>
+            <span class="k">return</span> <span class="s2">&quot;TabView &quot;</span> <span class="o">+</span> <span class="nx">name</span><span class="o">;</span> 
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * The transiton to use when switching between tabs.</span>
+<span class="c">         * @method contentTransition</span>
+<span class="c">         */</span>
+        <span class="nx">contentTransition</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">newTab</span><span class="o">,</span> <span class="nx">oldTab</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">newTab</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">newTab</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;contentVisible&#39;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">oldTab</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">oldTab</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;contentVisible&#39;</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * setAttributeConfigs TabView specific properties.</span>
+<span class="c">         * @method initAttributes</span>
+<span class="c">         * @param {Object} attr Hash of initial attributes</span>
+<span class="c">         */</span>
+        <span class="nx">initAttributes</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">TabView</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">initAttributes</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">attr</span><span class="o">);</span>
+            
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">attr</span><span class="o">.</span><span class="nx">orientation</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">attr</span><span class="o">.</span><span class="nx">orientation</span> <span class="o">=</span> <span class="s1">&#39;top&#39;</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ELEMENT</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">hasClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">CLASSNAME</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">CLASSNAME</span><span class="o">);</span>        
+            <span class="o">}</span>
+            
+            <span class="c">/**</span>
+<span class="c">             * The Tabs belonging to the TabView instance.</span>
+<span class="c">             * @attribute tabs</span>
+<span class="c">             * @type Array</span>
+<span class="c">             */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;tabs&#39;</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="o">[],</span>
+                <span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span>
+            <span class="o">});</span>
+
+            <span class="c">/**</span>
+<span class="c">             * The container of the tabView&#39;s label elements.</span>
+<span class="c">             * @property _tabParent</span>
+<span class="c">             * @private</span>
+<span class="c">             * @type HTMLElement</span>
+<span class="c">             */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_tabParent</span> <span class="o">=</span> 
+                    <span class="k">this</span><span class="o">.</span><span class="nx">getElementsByClassName</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">TAB_PARENT_CLASSNAME</span><span class="o">,</span>
+                            <span class="s1">&#39;ul&#39;</span> <span class="o">)[</span><span class="m">0</span><span class="o">]</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">_createTabParent</span><span class="o">();</span>
+                
+            <span class="c">/**</span>
+<span class="c">             * The container of the tabView&#39;s content elements.</span>
+<span class="c">             * @property _contentParent</span>
+<span class="c">             * @type HTMLElement</span>
+<span class="c">             * @private</span>
+<span class="c">             */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_contentParent</span> <span class="o">=</span> 
+                    <span class="k">this</span><span class="o">.</span><span class="nx">getElementsByClassName</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">CONTENT_PARENT_CLASSNAME</span><span class="o">,</span>
+                            <span class="s1">&#39;div&#39;</span><span class="o">)[</span><span class="m">0</span><span class="o">]</span> <span class="o">||</span>  <span class="k">this</span><span class="o">.</span><span class="nx">_createContentParent</span><span class="o">();</span>
+            
+            <span class="c">/**</span>
+<span class="c">             * How the Tabs should be oriented relative to the TabView.</span>
+<span class="c">             * @attribute orientation</span>
+<span class="c">             * @type String</span>
+<span class="c">             * @default &quot;top&quot;</span>
+<span class="c">             */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;orientation&#39;</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">orientation</span><span class="o">,</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">var</span> <span class="nx">current</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;orientation&#39;</span><span class="o">);</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="s1">&#39;yui-navset-&#39;</span> <span class="o">+</span> <span class="nx">value</span><span class="o">);</span>
+                    
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">current</span> <span class="o">!=</span> <span class="nx">value</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">this</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="s1">&#39;yui-navset-&#39;</span> <span class="o">+</span> <span class="nx">current</span><span class="o">);</span>
+                    <span class="o">}</span>
+                    
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">value</span> <span class="o">===</span> <span class="s1">&#39;bottom&#39;</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">this</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_tabParent</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+            
+            <span class="c">/**</span>
+<span class="c">             * The index of the tab currently active.</span>
+<span class="c">             * @attribute activeIndex</span>
+<span class="c">             * @type Int</span>
+<span class="c">             */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="nx">ACTIVE_INDEX</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">activeIndex</span><span class="o">,</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTab</span><span class="o">(</span><span class="nx">value</span><span class="o">).</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;disabled&#39;</span><span class="o">))</span> <span class="o">{</span> <span class="c">// cannot activate if disabled</span>
+<span class="c"></span>                        <span class="nx">ret</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                    <span class="o">}</span>
+                    <span class="k">return</span> <span class="nx">ret</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+            
+            <span class="c">/**</span>
+<span class="c">             * The tab currently active.</span>
+<span class="c">             * @attribute activeTab</span>
+<span class="c">             * @type YAHOO.widget.Tab</span>
+<span class="c">             */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">activeTab</span><span class="o">,</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">var</span> <span class="nx">activeTab</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">);</span>
+                    
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">tab</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                    <span class="o">}</span>
+                    
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">activeTab</span> <span class="o">&amp;&amp;</span> <span class="nx">activeTab</span> <span class="o">!==</span> <span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">activeTab</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+                    <span class="o">}</span>
+                    
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">activeTab</span> <span class="o">&amp;&amp;</span> <span class="nx">tab</span> <span class="o">!==</span> <span class="nx">activeTab</span><span class="o">)</span> <span class="o">{</span> <span class="c">// no transition if only 1</span>
+<span class="c"></span>                        <span class="k">this</span><span class="o">.</span><span class="nx">contentTransition</span><span class="o">(</span><span class="nx">tab</span><span class="o">,</span> <span class="nx">activeTab</span><span class="o">);</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">tab</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">tab</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;contentVisible&#39;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">},</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="nx">value</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;disabled&#39;</span><span class="o">))</span> <span class="o">{</span> <span class="c">// cannot activate if disabled</span>
+<span class="c"></span>                        <span class="nx">ret</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                    <span class="o">}</span>
+                    <span class="k">return</span> <span class="nx">ret</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s1">&#39;activeTabChange&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_onActiveTabChange</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s1">&#39;activeIndexChange&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_onActiveIndexChange</span><span class="o">);</span>
+
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;attributes initialized&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;TabView&#39;</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">_tabParent</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_initTabs</span><span class="o">();</span>
+            <span class="o">}</span>
+            
+            <span class="c">// Due to delegation we add all DOM_EVENTS to the TabView container</span>
+<span class="c"></span>            <span class="c">// but IE will leak when unsupported events are added, so remove these</span>
+<span class="c"></span>            <span class="k">this</span><span class="o">.</span><span class="nx">DOM_EVENTS</span><span class="o">.</span><span class="nx">submit</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">DOM_EVENTS</span><span class="o">.</span><span class="nx">focus</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">DOM_EVENTS</span><span class="o">.</span><span class="nx">blur</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">type</span> <span class="k">in</span> <span class="k">this</span><span class="o">.</span><span class="nx">DOM_EVENTS</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">DOM_EVENTS</span><span class="o">,</span> <span class="nx">type</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">addListener</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">type</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">DOMEventHandler</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Removes selected state from the given tab if it is the activeTab</span>
+<span class="c">         * @method deselectTab</span>
+<span class="c">         * @param {Int} index The tab index to deselect </span>
+<span class="c">         */</span>
+        <span class="nx">deselectTab</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">index</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">getTab</span><span class="o">(</span><span class="nx">index</span><span class="o">)</span> <span class="o">===</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;activeTab&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;activeTab&#39;</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Makes the tab at the given index the active tab</span>
+<span class="c">         * @method selectTab</span>
+<span class="c">         * @param {Int} index The tab index to be made active</span>
+<span class="c">         */</span>
+        <span class="nx">selectTab</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">index</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;activeTab&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTab</span><span class="o">(</span><span class="nx">index</span><span class="o">));</span>
+        <span class="o">},</span>
+
+        <span class="nx">_onActiveTabChange</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">activeIndex</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ACTIVE_INDEX</span><span class="o">),</span>
+                <span class="nx">newIndex</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTabIndex</span><span class="o">(</span><span class="nx">e</span><span class="o">.</span><span class="nx">newValue</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">activeIndex</span> <span class="o">!==</span> <span class="nx">newIndex</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(!(</span><span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_INDEX</span><span class="o">,</span> <span class="nx">newIndex</span><span class="o">))</span> <span class="o">)</span> <span class="o">{</span> <span class="c">// NOTE: setting</span>
+<span class="c"></span>                     <span class="c">// revert if activeIndex update fails (cancelled via beforeChange) </span>
+<span class="c"></span>                    <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">,</span> <span class="nx">e</span><span class="o">.</span><span class="nx">prevValue</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="nx">_onActiveIndexChange</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c">// no set if called from ActiveTabChange event</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">e</span><span class="o">.</span><span class="nx">newValue</span> <span class="o">!==</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTabIndex</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">)))</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(!(</span><span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTab</span><span class="o">(</span><span class="nx">e</span><span class="o">.</span><span class="nx">newValue</span><span class="o">)))</span> <span class="o">)</span> <span class="o">{</span> <span class="c">// NOTE: setting</span>
+<span class="c"></span>                     <span class="c">// revert if activeTab update fails (cancelled via beforeChange) </span>
+<span class="c"></span>                    <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_INDEX</span><span class="o">,</span> <span class="nx">e</span><span class="o">.</span><span class="nx">prevValue</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Creates Tab instances from a collection of HTMLElements.</span>
+<span class="c">         * @method _initTabs</span>
+<span class="c">         * @private</span>
+<span class="c">         * @return void</span>
+<span class="c">         */</span>
+        <span class="nx">_initTabs</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">tabs</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">getChildren</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_tabParent</span><span class="o">),</span>
+                <span class="nx">contentElements</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">getChildren</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_contentParent</span><span class="o">),</span>
+                <span class="nx">activeIndex</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ACTIVE_INDEX</span><span class="o">),</span>
+                <span class="nx">tab</span><span class="o">,</span>
+                <span class="nx">attr</span><span class="o">,</span>
+                <span class="nx">active</span><span class="o">;</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">tabs</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">attr</span> <span class="o">=</span> <span class="o">{};</span>
+                
+                <span class="k">if</span> <span class="o">(</span><span class="nx">contentElements</span><span class="o">[</span><span class="nx">i</span><span class="o">])</span> <span class="o">{</span>
+                    <span class="nx">attr</span><span class="o">.</span><span class="nx">contentEl</span> <span class="o">=</span> <span class="nx">contentElements</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+                <span class="o">}</span>
+
+                <span class="nx">tab</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Tab</span><span class="o">(</span><span class="nx">tabs</span><span class="o">[</span><span class="nx">i</span><span class="o">],</span> <span class="nx">attr</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">addTab</span><span class="o">(</span><span class="nx">tab</span><span class="o">);</span>
+                
+                <span class="k">if</span> <span class="o">(</span><span class="nx">tab</span><span class="o">.</span><span class="nx">hasClass</span><span class="o">(</span><span class="nx">tab</span><span class="o">.</span><span class="nx">ACTIVE_CLASSNAME</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">active</span> <span class="o">=</span> <span class="nx">tab</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">activeIndex</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="nx">ACTIVE_TAB</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTab</span><span class="o">(</span><span class="nx">activeIndex</span><span class="o">));</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_configs</span><span class="o">.</span><span class="nx">activeTab</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">active</span><span class="o">;</span> <span class="c">// dont invoke method</span>
+<span class="c"></span>                <span class="k">this</span><span class="o">.</span><span class="nx">_configs</span><span class="o">.</span><span class="nx">activeIndex</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getTabIndex</span><span class="o">(</span><span class="nx">active</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+
+        <span class="nx">_createTabViewElement</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s1">&#39;div&#39;</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">CLASSNAME</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="nx">el</span><span class="o">.</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">CLASSNAME</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;TabView Dom created&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;TabView&#39;</span><span class="o">);</span>
+            <span class="k">return</span> <span class="nx">el</span><span class="o">;</span>
+        <span class="o">},</span>
+
+        <span class="nx">_createTabParent</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s1">&#39;ul&#39;</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">TAB_PARENT_CLASSNAME</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="nx">el</span><span class="o">.</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">TAB_PARENT_CLASSNAME</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ELEMENT</span><span class="o">).</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">el</span><span class="o">);</span>
+            
+            <span class="k">return</span> <span class="nx">el</span><span class="o">;</span>
+        <span class="o">},</span>
+        
+        <span class="nx">_createContentParent</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s1">&#39;div&#39;</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">CONTENT_PARENT_CLASSNAME</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="nx">el</span><span class="o">.</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">CONTENT_PARENT_CLASSNAME</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">ELEMENT</span><span class="o">).</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">el</span><span class="o">);</span>
+            
+            <span class="k">return</span> <span class="nx">el</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+    
+    
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">TabView</span> <span class="o">=</span> <span class="nx">TabView</span><span class="o">;</span>
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class="selected"><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Tab.html" title="YAHOO.widget.Tab">YAHOO.widget.Tab</a></li>
+                                <li class=""><a href="YAHOO.widget.TabView.html" title="YAHOO.widget.TabView">YAHOO.widget.TabView</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Tab.js.html" title="Tab.js">Tab.js</a></li>
+                                <li class="selected"><a href="TabView.js.html" title="TabView.js">TabView.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.Tab", "name": "activationEvent", "url": "YAHOO.widget.Tab.html#config_activationEvent", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "activationEventChange", "url": "YAHOO.widget.Tab.html#event_activationEventChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "active", "url": "YAHOO.widget.Tab.html#config_active", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "activeChange", "url": "YAHOO.widget.Tab.html#event_activeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "ACTIVE_CLASSNAME", "url": "YAHOO.widget.Tab.html#property_ACTIVE_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "activeIndex", "url": "YAHOO.widget.TabView.html#config_activeIndex", "type": "config"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "activeIndexChange", "url": "YAHOO.widget.TabView.html#event_activeIndexChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "activeTab", "url": "YAHOO.widget.TabView.html#config_activeTab", "type": "config"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "activeTabChange", "url": "YAHOO.widget.TabView.html#event_activeTabChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "ACTIVE_TITLE", "url": "YAHOO.widget.Tab.html#property_ACTIVE_TITLE", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "addTab", "url": "YAHOO.widget.TabView.html#method_addTab", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeActivationEventChange", "url": "YAHOO.widget.Tab.html#event_beforeActivationEventChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeActiveChange", "url": "YAHOO.widget.Tab.html#event_beforeActiveChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "beforeActiveIndexChange", "url": "YAHOO.widget.TabView.html#event_beforeActiveIndexChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "beforeActiveTabChange", "url": "YAHOO.widget.TabView.html#event_beforeActiveTabChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeCacheDataChange", "url": "YAHOO.widget.Tab.html#event_beforeCacheDataChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeContentChange", "url": "YAHOO.widget.Tab.html#event_beforeContentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeContentElChange", "url": "YAHOO.widget.Tab.html#event_beforeContentElChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeContentVisibleChange", "url": "YAHOO.widget.Tab.html#event_beforeContentVisibleChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeDataLoadedChange", "url": "YAHOO.widget.Tab.html#event_beforeDataLoadedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeDataSrcChange", "url": "YAHOO.widget.Tab.html#event_beforeDataSrcChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeDataTimeoutChange", "url": "YAHOO.widget.Tab.html#event_beforeDataTimeoutChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeDisabledChange", "url": "YAHOO.widget.Tab.html#event_beforeDisabledChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeHrefChange", "url": "YAHOO.widget.Tab.html#event_beforeHrefChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeLabelChange", "url": "YAHOO.widget.Tab.html#event_beforeLabelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeLabelElChange", "url": "YAHOO.widget.Tab.html#event_beforeLabelElChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforeLoadMethodChange", "url": "YAHOO.widget.Tab.html#event_beforeLoadMethodChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "beforeOrientationChange", "url": "YAHOO.widget.TabView.html#event_beforeOrientationChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "beforePostDataChange", "url": "YAHOO.widget.Tab.html#event_beforePostDataChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "beforeTabsChange", "url": "YAHOO.widget.TabView.html#event_beforeTabsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "cacheData", "url": "YAHOO.widget.Tab.html#config_cacheData", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "cacheDataChange", "url": "YAHOO.widget.Tab.html#event_cacheDataChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "CLASSNAME", "url": "YAHOO.widget.TabView.html#property_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "content", "url": "YAHOO.widget.Tab.html#config_content", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "contentChange", "url": "YAHOO.widget.Tab.html#event_contentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "contentEl", "url": "YAHOO.widget.Tab.html#config_contentEl", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "contentElChange", "url": "YAHOO.widget.Tab.html#event_contentElChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.TabView", "name": "_contentParent", "url": "YAHOO.widget.TabView.html#property__contentParent", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "CONTENT_PARENT_CLASSNAME", "url": "YAHOO.widget.TabView.html#property_CONTENT_PARENT_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "contentTransition", "url": "YAHOO.widget.TabView.html#method_contentTransition", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "contentVisible", "url": "YAHOO.widget.Tab.html#config_contentVisible", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "contentVisibleChange", "url": "YAHOO.widget.Tab.html#event_contentVisibleChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "dataConnection", "url": "YAHOO.widget.Tab.html#property_dataConnection", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "dataLoaded", "url": "YAHOO.widget.Tab.html#config_dataLoaded", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "dataLoadedChange", "url": "YAHOO.widget.Tab.html#event_dataLoadedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "dataSrc", "url": "YAHOO.widget.Tab.html#config_dataSrc", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "dataSrcChange", "url": "YAHOO.widget.Tab.html#event_dataSrcChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "dataTimeout", "url": "YAHOO.widget.Tab.html#config_dataTimeout", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "dataTimeoutChange", "url": "YAHOO.widget.Tab.html#event_dataTimeoutChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "deselectTab", "url": "YAHOO.widget.TabView.html#method_deselectTab", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "disabled", "url": "YAHOO.widget.Tab.html#config_disabled", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "disabledChange", "url": "YAHOO.widget.Tab.html#event_disabledChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "DISABLED_CLASSNAME", "url": "YAHOO.widget.Tab.html#property_DISABLED_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "DOMEventHandler", "url": "YAHOO.widget.TabView.html#method_DOMEventHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "getTab", "url": "YAHOO.widget.TabView.html#method_getTab", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "getTabIndex", "url": "YAHOO.widget.TabView.html#method_getTabIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "HIDDEN_CLASSNAME", "url": "YAHOO.widget.Tab.html#property_HIDDEN_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "href", "url": "YAHOO.widget.Tab.html#config_href", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "hrefChange", "url": "YAHOO.widget.Tab.html#event_hrefChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "initAttributes", "url": "YAHOO.widget.TabView.html#method_initAttributes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "initAttributes", "url": "YAHOO.widget.Tab.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.TabView", "name": "_initTabs", "url": "YAHOO.widget.TabView.html#method__initTabs", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "label", "url": "YAHOO.widget.Tab.html#config_label", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "labelChange", "url": "YAHOO.widget.Tab.html#event_labelChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "labelEl", "url": "YAHOO.widget.Tab.html#config_labelEl", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "labelElChange", "url": "YAHOO.widget.Tab.html#event_labelElChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "LABEL_INNER_TAGNAME", "url": "YAHOO.widget.Tab.html#property_LABEL_INNER_TAGNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "loadHandler", "url": "YAHOO.widget.Tab.html#property_loadHandler", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "LOADING_CLASSNAME", "url": "YAHOO.widget.Tab.html#property_LOADING_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "loadMethod", "url": "YAHOO.widget.Tab.html#config_loadMethod", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "loadMethodChange", "url": "YAHOO.widget.Tab.html#event_loadMethodChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "orientation", "url": "YAHOO.widget.TabView.html#config_orientation", "type": "config"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "orientationChange", "url": "YAHOO.widget.TabView.html#event_orientationChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "postData", "url": "YAHOO.widget.Tab.html#config_postData", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "postDataChange", "url": "YAHOO.widget.Tab.html#event_postDataChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "remove", "url": "YAHOO.widget.Tab.html#event_remove", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "removeTab", "url": "YAHOO.widget.TabView.html#method_removeTab", "type": "method"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "selectTab", "url": "YAHOO.widget.TabView.html#method_selectTab", "type": "method"}, {"access": "private", "host": "YAHOO.widget.TabView", "name": "_tabParent", "url": "YAHOO.widget.TabView.html#property__tabParent", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "TAB_PARENT_CLASSNAME", "url": "YAHOO.widget.TabView.html#property_TAB_PARENT_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "tabs", "url": "YAHOO.widget.TabView.html#config_tabs", "type": "config"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "tabsChange", "url": "YAHOO.widget.TabView.html#event_tabsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TabView", "name": "toString", "url": "YAHOO.widget.TabView.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tab", "name": "toString", "url": "YAHOO.widget.Tab.html#method_toString", "type": "method"}];
+</script>
+</body>
+</html>

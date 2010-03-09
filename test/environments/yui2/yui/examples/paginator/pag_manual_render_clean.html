@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Manually rendering Paginator UI Components</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/paginator/assets/skins/sam/paginator.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/paginator/paginator-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+.yui-skin-sam .yui-pg-container { margin: 0; }
+.yui-skin-sam .yui-pg-current   { margin-right: 15px; }
+
+.yui-skin-sam .yui-pg-previous {
+    float: left;
+    padding: 3px 5px;
+}
+.yui-skin-sam .yui-pg-next {
+    float: right;
+    padding: 3px 5px;
+}
+.yui-skin-sam span.yui-pg-next,
+.yui-skin-sam span.yui-pg-previous {
+    display: none;
+}
+
+#tbl,
+#report,
+#paging {
+    width: 400px;
+    margin: 0 auto;
+}
+#report {
+    color: #fff;
+    background: #ccc;
+    font-size: 200%;
+    margin-bottom: 1em;
+    text-align: right;
+}
+#demo table {
+    border-collapse: collapse;
+    color: #333;
+    width: 100%;
+}
+#demo th {
+    border-bottom: 4px solid #999;
+    color: #444;
+    font: normal 125%/100% Trebuchet MS, Arial, sans-serif;
+    padding: 0 6px;
+}
+#demo tbody {
+    background: #fff;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+#demo tbody td {
+    border-bottom: 1px solid #eee;
+    padding: 5px;
+}
+#demo tfoot td {
+    overflow: hidden;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Manually rendering Paginator UI Components</h1>
+
+<div class="exampleIntro">
+	<p>If you have a UI where it doesn't make sense to place all controls in a single container (or set of containers), you can place individual UI Components manually outside Paginator's configured container(s).</p>
+<p>For this example, we'll create a table from a data array and render a few controls into the generated <code>&lt;tfoot&gt;</code> using the Paginator's <code>template</code>.  We'll also subscribe to the Paginator's <code>render</code> event with a callback that renders a CurrentPageReport UI Component into a <code>&lt;div&gt;</code> above the table.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <div id="report"></div>
+    <div id="tbl"></div>
+</div>
+<script type="text/javascript" src="assets/inventory.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+var Ex = YAHOO.namespace('example'),
+    d  = document;
+
+/* Convenience functions for building the DOM structure */
+Ex.DOM = {
+    create : function (el,innerHTML) {
+        el = el && el.nodeName ? el : d.createElement(el);
+
+        if (el && innerHTML !== undefined) {
+            el.innerHTML = innerHTML;
+        }
+
+        return el;
+    },
+    add : function (par, child, innerHTML) {
+        par = par && YAHOO.util.Dom.get(par);
+        if (par && par.appendChild) {
+            child = Ex.DOM.create(child,innerHTML);
+            if (child) {
+                par.appendChild(child);
+            }
+        }
+
+        return child;
+    }
+};
+
+/* Table generation/maintenance API */
+Ex.table = {
+    table   : null,
+    columns : ['Item','Quantity','Description'],
+    pageSize: 5,
+    data    : null,
+    tbody   : [],
+    tfoot   : null,
+
+    load : function (data) {
+        if (YAHOO.lang.isArray(data)) {
+            this.data = data;
+            this.tbody = [];
+        }
+        return this;
+    },
+    render : function (container) {
+        if (!this.table) {
+            container = (container && YAHOO.util.Dom.get(container)) || d.body;
+
+            var thead, tbody, row, cell, i, len;
+
+            this.table = Ex.DOM.create('table');
+            thead = Ex.DOM.add(this.table,'thead');
+            row   = Ex.DOM.add(thead,'tr');
+
+            for (i=0,len=this.columns.length; i<len; ++i) {
+                Ex.DOM.add(row,'th',this.columns[i]);
+            }
+
+            this.tfoot = Ex.DOM.add(this.table,'tfoot');
+            cell = Ex.DOM.add(Ex.DOM.add(this.tfoot,'tr'),'td');
+            cell.colSpan = this.columns.length;
+
+            if (this.data) {
+                this.showPage(1);
+            } else {
+                row  = Ex.DOM.create('tr');
+                cell = Ex.DOM.add(row,'td','No Data');
+                cell.colSpan = this.columns.length;
+
+                Ex.DOM.add(Ex.DOM.add(this.table,'tbody'),row);
+            }
+
+            container.innerHTML = '';
+            Ex.DOM.add(container,this.table);
+        }
+        return this;
+    },
+    showPage : function (page) {
+        var cur, tbody, row, i, j, len, limit;
+
+        if (this.table) {
+            cur = this.table.getElementsByTagName('tbody')[0];
+
+            if (YAHOO.lang.isNumber(page)) {
+                tbody = this.tbody[page];
+                if (!cur || cur !== tbody) {
+                    if (!tbody) {
+                        tbody = this.tbody[page] = Ex.DOM.create('tbody');
+
+                        i = (page - 1) * this.pageSize;
+                        limit  = Math.min(Ex.data.inventory.length,
+                                          i + this.pageSize);
+                        for (; i < limit; ++i) {
+                            row = Ex.DOM.add(tbody,'tr');
+                            for (j=0,len=this.columns.length; j<len; ++j) {
+                                Ex.DOM.add(row,'td',
+                                    this.data[i][this.columns[j]]);
+                            }
+                        }
+                    }
+
+                    if (cur) {
+                        this.table.replaceChild(tbody,cur);
+                    } else {
+                        Ex.DOM.add(this.table,tbody);
+                    }
+                }
+            }
+        }
+        return this;
+    }
+};
+    
+Ex.handlePagination = function (state) {
+    Ex.table.showPage(state.page);
+
+    Ex.paginator.setState(state);
+};
+
+Ex.paginator = new YAHOO.widget.Paginator({
+    rowsPerPage  : Ex.table.pageSize,
+    totalRecords : Ex.data.inventory.length,
+    containers   : d.createElement('div'),
+
+    template              : "{PreviousPageLink}{NextPageLink}",
+    pageReportTemplate    : "Page {currentPage} of {totalPages}",
+    previousPageLinkLabel : "previous",
+    nextPageLinkLabel     : "next"
+});
+
+Ex.paginator.subscribe('changeRequest', Ex.handlePagination);
+Ex.paginator.subscribe('render', function () {
+    var pageReport, pageReportNode, report;
+
+    report = YAHOO.util.Dom.get('report');
+
+    // Instantiate the UI Component
+    pageReport = new YAHOO.widget.Paginator.ui.CurrentPageReport(Ex.paginator);
+
+    // render the UI Component, passing an arbitrary string (the ID of the
+    // destination container by convention)
+    pageReportNode = pageReport.render('report');
+
+    // Append the generated node into the container
+    report.appendChild(pageReportNode);
+});
+
+
+// Render the UI
+Ex.table.load(Ex.data.inventory).render('tbl');
+
+// Render the Paginator controls into the off DOM div passed as a container
+// just to illustrate that it is possible to do so.
+Ex.paginator.render();
+
+// Add the Paginator's configured container to the table's tfoot.
+Ex.DOM.add(Ex.table.tfoot.rows[0].cells[0],Ex.paginator.getContainerNodes()[0]);
+
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

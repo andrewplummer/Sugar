@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Code Editor</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/editor/editor-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Code Editor</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates how to create a Code Editor using the Rich Text Editor.  As you begin typing, you're in a standard Editor space.  But if you click on the "code icon" &mdash the rightmost icon on the second row &mdash; you can begin using HTML markup.  When you toggle the code editing mode back off, you'll see rich text formatted with your HTML.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+    .yui-skin-sam .yui-toolbar-container .yui-toolbar-editcode span.yui-toolbar-icon {
+        background-image: url( assets/html_editor.gif );
+        background-position: 0 1px;
+        left: 5px;
+    }
+    .yui-skin-sam .yui-toolbar-container .yui-button-editcode-selected span.yui-toolbar-icon {
+        background-image: url( assets/html_editor.gif );
+        background-position: 0 1px;
+        left: 5px;
+    }
+    .editor-hidden {
+        visibility: hidden;
+        top: -9999px;
+        left: -9999px;
+        position: absolute;
+    }
+    textarea {
+        border: 0;
+        margin: 0;
+        padding: 0;
+    }
+</style>
+<style>
+.yui-toolbar-group-insertitem {
+    *width: auto;
+}
+</style>
+
+<form method="post" action="#" id="form1">
+<textarea id="editor" name="editor" rows="20" cols="75">
+This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>
+</textarea>
+</form>
+
+<script>
+
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event;
+    
+    var myConfig = {
+        height: '300px',
+        width: '600px',
+        animate: true,
+        dompath: true,
+        focusAtStart: true
+    };
+
+    var state = 'off';
+    YAHOO.log('Set state to off..', 'info', 'example');
+
+    YAHOO.log('Create the Editor..', 'info', 'example');
+    var myEditor = new YAHOO.widget.Editor('editor', myConfig);
+    myEditor.on('toolbarLoaded', function() {
+        var codeConfig = {
+            type: 'push', label: 'Edit HTML Code', value: 'editcode'
+        };
+        YAHOO.log('Create the (editcode) Button', 'info', 'example');
+        this.toolbar.addButtonToGroup(codeConfig, 'insertitem');
+        
+        this.toolbar.on('editcodeClick', function() {
+            var ta = this.get('element'),
+                iframe = this.get('iframe').get('element');
+
+            if (state == 'on') {
+                state = 'off';
+                this.toolbar.set('disabled', false);
+                YAHOO.log('Show the Editor', 'info', 'example');
+                YAHOO.log('Inject the HTML from the textarea into the editor', 'info', 'example');
+                this.setEditorHTML(ta.value);
+                if (!this.browser.ie) {
+                    this._setDesignMode('on');
+                }
+
+                Dom.removeClass(iframe, 'editor-hidden');
+                Dom.addClass(ta, 'editor-hidden');
+                this.show();
+                this._focusWindow();
+            } else {
+                state = 'on';
+                YAHOO.log('Show the Code Editor', 'info', 'example');
+                this.cleanHTML();
+                YAHOO.log('Save the Editors HTML', 'info', 'example');
+                Dom.addClass(iframe, 'editor-hidden');
+                Dom.removeClass(ta, 'editor-hidden');
+                this.toolbar.set('disabled', true);
+                this.toolbar.getButtonByValue('editcode').set('disabled', false);
+                this.toolbar.selectButton('editcode');
+                this.dompath.innerHTML = 'Editing HTML Code';
+                this.hide();
+            }
+            return false;
+        }, this, true);
+
+        this.on('cleanHTML', function(ev) {
+            YAHOO.log('cleanHTML callback fired..', 'info', 'example');
+            this.get('element').value = ev.html;
+        }, this, true);
+        
+        this.on('afterRender', function() {
+            var wrapper = this.get('editor_wrapper');
+            wrapper.appendChild(this.get('element'));
+            this.setStyle('width', '100%');
+            this.setStyle('height', '100%');
+            this.setStyle('visibility', '');
+            this.setStyle('top', '');
+            this.setStyle('left', '');
+            this.setStyle('position', '');
+
+            this.addClass('editor-hidden');
+        }, this, true);
+    }, myEditor, true);
+    myEditor.render();
+
+})();
+</script>
+
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

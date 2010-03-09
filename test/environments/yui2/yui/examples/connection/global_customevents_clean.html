@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Subscribing to Connection Manager Global Events</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo/yahoo-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style>
+#container {margin-left:2em;}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Subscribing to Connection Manager Global Events</h1>
+
+<div class="exampleIntro">
+	<p>
+<a href="http://developer.yahoo.com/yui/connection/">Connection Manager</a> exposes <a href="http://developer.yahoo.com/yui/event/#customevent">Custom Events</a> that track the progress of a transaction through its lifecycle.  These Custom Events are raised at the global level and at the transaction level.  The following code example provides a step-by-step approach to subscribing to global custom events raised by Connection Manager.  In this scenario, an event handler object is created to handle all Custom Events.  Each Custom Event is explicitly subscribed with a reference to it's event handler.
+</p>
+
+<p>Click "Send a Request" below to try it out, then read the description below to learn how to subscribe to global Custom Events in Connection Manager.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<form>
+<input type="button" onclick="makeRequest();" value="Send a Request">
+</form>
+<div id="container"></div>
+
+<script>
+var div = document.getElementById('container');
+
+var globalEvents = {
+	start:function(type, args){
+		YAHOO.log("Custom Event *start* fired for transaction" + args[0].tId + ".", "info", "example");
+		div.innerHTML = "<li>Transaction " + args[0].tId + " " + type + " fired.</li>";
+	},
+
+	complete:function(type, args){
+		YAHOO.log("Custom Event *complete* fired for transaction" + args[0].tId + ".", "info", "example");
+		div.innerHTML += "<li>Transaction " + args[0].tId + " " + type + " fired.</li>";
+	},
+
+	success:function(type, args){
+		YAHOO.log("Custom Event *success* fired for transaction" + args[0].tId + ".", "info", "example");
+		div.innerHTML += "<li>Transaction " + args[0].tId + " " + type + " fired.</li>";
+		if(args[0].responseText !== undefined){
+			div.innerHTML += "<li>Transaction id: " + args[0].tId + "</li>";
+			div.innerHTML += "<li>HTTP status: " + args[0].status + "</li>";
+			div.innerHTML += "<li>Status code message: " + args[0].statusText + "</li>";
+			div.innerHTML += "<li>HTTP headers: " + args[0].getAllResponseHeaders + "</li>";
+			div.innerHTML += "<li>Server response: " + args[0].responseText + "</li>";
+			div.innerHTML += "<li>Argument object: Array ( [foo] =&gt; " + args[0].argument[0] +" [bar] =&gt; " + args[0].argument[1] +" )</li>";
+			}
+	},
+
+	failure:function(type, args){
+		YAHOO.log("Custom Event *failure* fired for transaction" + args[0].tId + ".", "info", "example");
+		div.innerHTML += "<li>Transaction " + args[0].tId + " " + type + " fired.</li>";
+		if(args[0].responseText !== undefined){
+			div.innerHTML += "<li>Transaction id: " + args[0].tId + "</li>";
+			div.innerHTML += "<li>HTTP status: " + args[0].status + "</li>";
+			div.innerHTML += "<li>Status code message: " + args[0].statusText + "</li>";
+		}
+	},
+
+	abort:function(type, args){
+		YAHOO.log("Custom Event *abort* fired for transaction" + args[0].tId + ".", "info", "example");
+		div.innerHTML += "<li>Transaction " + args[0].tId + " " + type + " fired.</li>";
+	}
+};
+
+YAHOO.util.Connect.startEvent.subscribe(globalEvents.start);
+YAHOO.util.Connect.completeEvent.subscribe(globalEvents.complete);
+YAHOO.util.Connect.successEvent.subscribe(globalEvents.success);
+YAHOO.util.Connect.failureEvent.subscribe(globalEvents.failure);
+YAHOO.util.Connect.abortEvent.subscribe(globalEvents.abort);
+
+var callback = { argument:["foo","bar"] };
+
+function makeRequest(){
+	var sUrl = "assets/get.php?s=hello%20world";
+	var request = YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
+}
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,2157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: layout  YAHOO.widget.Layout   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>layout&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_layout.html" title="layout">layout</a>
+                 &gt; YAHOO.widget.Layout 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.Layout</b>
+                        <span class="extends">
+                           - extends <a href="YAHOO.util.Element.html" title="YAHOO.util.Element">YAHOO.util.Element</a>
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        <p>Provides a fixed layout containing, top, bottom, left, right and center layout units. It can be applied to either the body or an element.</p>
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.widget.Layout</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                el
+
+                                                , 
+                                                attrs
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">el</span>
+                                                    &lt;<span property="yui:type">String/HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The element to make contain a layout.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">attrs</span>
+                                                    &lt;<span property="yui:type">Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> Object liternal containing configuration parameters.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__doc">
+                                    <h4><a name="property__doc" property="yui:name">_doc</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the root element
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__instances">
+                                    <h4><a name="property__instances" property="yui:name">_instances</a>
+                                        - <code>private static <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Internal hash table for all layout instances
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__isBody">
+                                    <h4><a name="property__isBody" property="yui:name">_isBody</a>
+                                        - <code>private <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Flag to determine if we are using the body as the root element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__rendered">
+                                    <h4><a name="property__rendered" property="yui:name">_rendered</a>
+                                        - <code>private <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Set to true when the layout is rendered
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__sizes">
+                                    <h4><a name="property__sizes" property="yui:name">_sizes</a>
+                                        - <code>private <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A collection of the current sizes of all usable LayoutUnits to be used for calculations
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__units">
+                                    <h4><a name="property__units" property="yui:name">_units</a>
+                                        - <code>private <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            An object literal that contains a list of units in the layout
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__zIndex">
+                                    <h4><a name="property__zIndex" property="yui:name">_zIndex</a>
+                                        - <code>private <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The zIndex to set all LayoutUnits to
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_browser">
+                                    <h4><a name="property_browser" property="yui:name">browser</a>
+                                        - <code><span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A modified version of the YAHOO.env.ua object
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Element.html#property_DOM_EVENTS">
+                                        <a class="" href="YAHOO.util.Element.html#property_DOM_EVENTS" property="yui:name" title="DOM_EVENTS">DOM_EVENTS</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.AttributeProvider.html#property__configs">
+                                        <a class="private" href="YAHOO.util.AttributeProvider.html#property__configs" property="yui:name" title="_configs">_configs</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method__createUnits">
+                                    <h4>
+                                        <a name="method__createUnits">_createUnits</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createUnits</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Private method to create units from the config that was passed in.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setBodySize">
+                                    <h4>
+                                        <a name="method__setBodySize">_setBodySize</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setBodySize</strong>
+                                           (
+                                                
+                                                        
+                                                         set
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Used to set the body size of the layout, sets the height and width of the parent container
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">set</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> If set to false, it will NOT set the size, just perform the calculations (used for collapsing units)</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setCenter">
+                                    <h4>
+                                        <a name="method__setCenter">_setCenter</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setCenter</strong>
+                                           (
+                                                
+                                                        
+                                                         set
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Used to set the size and position of the center unit
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">set</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> If set to false, it will NOT set the size, just perform the calculations (used for collapsing units)</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setSides">
+                                    <h4>
+                                        <a name="method__setSides">_setSides</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setSides</strong>
+                                           (
+                                                
+                                                        
+                                                         set
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Used to set the size and position of the left, right, top and bottom units
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">set</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> If set to false, it will NOT set the size, just perform the calculations (used for collapsing units)</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setupBodyElements">
+                                    <h4>
+                                        <a name="method__setupBodyElements">_setupBodyElements</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setupBodyElements</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets up the main doc element when using the body as the main element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setupElements">
+                                    <h4>
+                                        <a name="method__setupElements">_setupElements</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setupElements</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets up the main doc element when not using the body as the main element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__stamp">
+                                    <h4>
+                                        <a name="method__stamp">_stamp</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_stamp</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Stamps the root node with a secure classname for ease of use. Also sets the this.browser.standardsMode variable.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_addUnit">
+                                    <h4>
+                                        <a name="method_addUnit">addUnit</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        <a href="YAHOO.widget.LayoutUnit.html">YAHOO.widget.LayoutUnit</a>
+                                            <strong property="yui:name">addUnit</strong>
+                                           (
+                                                
+                                                        
+                                                         cfg
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Add a unit to this layout and if the layout is rendered, resize the layout.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">cfg</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The config for the LayoutUnit that you want to add</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        <a href="YAHOO.widget.LayoutUnit.html">YAHOO.widget.LayoutUnit</a>
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The LayoutUnit instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_destroy">
+                                    <h4>
+                                        <a name="method_destroy">destroy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">destroy</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes this layout from the page and destroys all units that it contains. This will destroy all data inside the layout and it's children.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getLayoutById">
+                                    <h4>
+                                        <a name="method_getLayoutById">getLayoutById</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                         static 
+                                        
+                                        Object
+                                            <strong property="yui:name">getLayoutById</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get's a layout object by the HTML id of the element associated with the Layout object.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The Layout Object</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getSizes">
+                                    <h4>
+                                        <a name="method_getSizes">getSizes</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getSizes</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get a reference to the internal Layout Unit sizes object used to build the layout wireframe
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">An object of the layout unit sizes</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getUnitById">
+                                    <h4>
+                                        <a name="method_getUnitById">getUnitById</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        <a href="YAHOO.widget.LayoutUnit.html">YAHOO.widget.LayoutUnit</a>
+                                            <strong property="yui:name">getUnitById</strong>
+                                           (
+                                                
+                                                        
+                                                         id
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get the LayoutUnit by it's HTML id
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">id</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTML element id of the unit</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        <a href="YAHOO.widget.LayoutUnit.html">YAHOO.widget.LayoutUnit</a>
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The LayoutUnit instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getUnitByPosition">
+                                    <h4>
+                                        <a name="method_getUnitByPosition">getUnitByPosition</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        <a href="YAHOO.widget.LayoutUnit.html">YAHOO.widget.LayoutUnit</a>
+                                            <strong property="yui:name">getUnitByPosition</strong>
+                                           (
+                                                
+                                                        
+                                                         pos
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get the LayoutUnit by it's position in this layout
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">pos</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The position of the unit in this layout</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        <a href="YAHOO.widget.LayoutUnit.html">YAHOO.widget.LayoutUnit</a>
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The LayoutUnit instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_init">
+                                    <h4>
+                                        <a name="method_init">init</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">init</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The Layout class' initialization method
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_initAttributes">
+                                    <h4>
+                                        <a name="method_initAttributes">initAttributes</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">initAttributes</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Processes the config
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_removeUnit">
+                                    <h4>
+                                        <a name="method_removeUnit">removeUnit</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">removeUnit</strong>
+                                           (
+                                                
+                                                        
+                                                         unit
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Remove the unit from this layout and resize the layout.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">unit</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The LayoutUnit that you want to remove</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_render">
+                                    <h4>
+                                        <a name="method_render">render</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        <a href="YAHOO.widget.Layout.html">YAHOO.widget.Layout</a>
+                                            <strong property="yui:name">render</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            This method starts the render process, applying classnames and creating elements
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        <a href="YAHOO.widget.Layout.html">YAHOO.widget.Layout</a>
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The Layout instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_resize">
+                                    <h4>
+                                        <a name="method_resize">resize</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        <a href="YAHOO.widget.Layout.html">YAHOO.widget.Layout</a>
+                                            <strong property="yui:name">resize</strong>
+                                           (
+                                                
+                                                        
+                                                         Boolean/Event
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Starts the chain of resize routines that will resize all the units.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Boolean/Event</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> set If set to false, it will NOT set the size, just perform the calculations (used for collapsing units). This can also have an attribute event passed to it.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        <a href="YAHOO.widget.Layout.html">YAHOO.widget.Layout</a>
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The Layout instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a string representing the Layout.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method__setHTMLAttrConfig">                                        
+                                            <a class="private" href="YAHOO.util.Element.html#method__setHTMLAttrConfig" property="yui:name" title="_setHTMLAttrConfig">_setHTMLAttrConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_addClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_addClass" property="yui:name" title="addClass">addClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_addListener">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_addListener" property="yui:name" title="addListener">addListener</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_appendChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_appendChild" property="yui:name" title="appendChild">appendChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_appendTo">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_appendTo" property="yui:name" title="appendTo">appendTo</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_delegate">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_delegate" property="yui:name" title="delegate">delegate</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_fireQueue">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_fireQueue" property="yui:name" title="fireQueue">fireQueue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getElementsByClassName">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getElementsByClassName" property="yui:name" title="getElementsByClassName">getElementsByClassName</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getElementsByTagName">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getElementsByTagName" property="yui:name" title="getElementsByTagName">getElementsByTagName</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getStyle">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getStyle" property="yui:name" title="getStyle">getStyle</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_hasChildNodes">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_hasChildNodes" property="yui:name" title="hasChildNodes">hasChildNodes</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_hasClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_hasClass" property="yui:name" title="hasClass">hasClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_initAttributes">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_initAttributes" property="yui:name" title="initAttributes">initAttributes</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_insertBefore">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_insertBefore" property="yui:name" title="insertBefore">insertBefore</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_on">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeChild" property="yui:name" title="removeChild">removeChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeClass" property="yui:name" title="removeClass">removeClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeDelegate">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeDelegate" property="yui:name" title="removeDelegate">removeDelegate</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeListener">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeListener" property="yui:name" title="removeListener">removeListener</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_replaceChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_replaceChild" property="yui:name" title="replaceChild">replaceChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_replaceClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_replaceClass" property="yui:name" title="replaceClass">replaceClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_setStyle">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_setStyle" property="yui:name" title="setStyle">setStyle</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_subscribe">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_subscribe" property="yui:name" title="subscribe">subscribe</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_configureAttribute">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_configureAttribute" property="yui:name" title="configureAttribute">configureAttribute</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent" property="yui:name" title="fireBeforeChangeEvent">fireBeforeChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireChangeEvent" property="yui:name" title="fireChangeEvent">fireChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_get">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_get" property="yui:name" title="get">get</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_getAttributeConfig" property="yui:name" title="getAttributeConfig">getAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeKeys">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_getAttributeKeys" property="yui:name" title="getAttributeKeys">getAttributeKeys</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_refresh">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_refresh" property="yui:name" title="refresh">refresh</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_register">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_register" property="yui:name" title="register">register</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig" property="yui:name" title="resetAttributeConfig">resetAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetValue">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_resetValue" property="yui:name" title="resetValue">resetValue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_set">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributeConfig">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributeConfig" property="yui:name" title="setAttributeConfig">setAttributeConfig</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributes">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributes" property="yui:name" title="setAttributes">setAttributes</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_beforeHeightChange">
+                                    <h4>
+                                        <a name="event_beforeHeightChange">beforeHeightChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeHeightChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'height' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeMinHeightChange">
+                                    <h4>
+                                        <a name="event_beforeMinHeightChange">beforeMinHeightChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeMinHeightChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'minHeight' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeMinWidthChange">
+                                    <h4>
+                                        <a name="event_beforeMinWidthChange">beforeMinWidthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeMinWidthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'minWidth' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeParentChange">
+                                    <h4>
+                                        <a name="event_beforeParentChange">beforeParentChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeParentChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'parent' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeResize">
+                                    <h4>
+                                        <a name="event_beforeResize">beforeResize</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeResize</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires at the beginning of the resize method. If you return false, the resize is cancelled.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeUnitsChange">
+                                    <h4>
+                                        <a name="event_beforeUnitsChange">beforeUnitsChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeUnitsChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'units' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeWidthChange">
+                                    <h4>
+                                        <a name="event_beforeWidthChange">beforeWidthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeWidthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'width' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_heightChange">
+                                    <h4>
+                                        <a name="event_heightChange">heightChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">heightChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'height' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_minHeightChange">
+                                    <h4>
+                                        <a name="event_minHeightChange">minHeightChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">minHeightChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'minHeight' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_minWidthChange">
+                                    <h4>
+                                        <a name="event_minWidthChange">minWidthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">minWidthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'minWidth' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_parentChange">
+                                    <h4>
+                                        <a name="event_parentChange">parentChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">parentChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'parent' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_render">
+                                    <h4>
+                                        <a name="event_render">render</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">render</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired after the render method completes.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_resize">
+                                    <h4>
+                                        <a name="event_resize">resize</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">resize</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when this.resize is called
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_startResize">
+                                    <h4>
+                                        <a name="event_startResize">startResize</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">startResize</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when the Resize Utility for a Unit fires it's startResize Event.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_unitsChange">
+                                    <h4>
+                                        <a name="event_unitsChange">unitsChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">unitsChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'units' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_widthChange">
+                                    <h4>
+                                        <a name="event_widthChange">widthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">widthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'width' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Events inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.util.Element.html#event_appendTo">
+                                        <a class="" href="YAHOO.util.Element.html#event_appendTo" property="yui:name" title="appendTo">appendTo</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_available">
+                                        <a class="" href="YAHOO.util.Element.html#event_available" property="yui:name" title="available">available</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_beforeAppendTo">
+                                        <a class="" href="YAHOO.util.Element.html#event_beforeAppendTo" property="yui:name" title="beforeAppendTo">beforeAppendTo</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_beforeElementChange">
+                                        <a class="" href="YAHOO.util.Element.html#event_beforeElementChange" property="yui:name" title="beforeElementChange">beforeElementChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_contentReady">
+                                        <a class="" href="YAHOO.util.Element.html#event_contentReady" property="yui:name" title="contentReady">contentReady</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_elementChange">
+                                        <a class="" href="YAHOO.util.Element.html#event_elementChange" property="yui:name" title="elementChange">elementChange</a><span class="">,</span>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+                        <div class="section field details">
+                            <h3 id="configattributes">Configuration Attributes</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:attribute" resource="#config_height">
+                                    <h4><a name="config_height">height</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The height in pixels
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_minHeight">
+                                    <h4><a name="config_minHeight">minHeight</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The minimum height in pixels
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_minWidth">
+                                    <h4><a name="config_minWidth">minWidth</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The minimum width in pixels
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_parent">
+                                    <h4><a name="config_parent">parent</a>
+                                        <code>- <span property="yui:type">Object YAHOO.widget.Layout</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            If this layout is to be used as a child of another Layout instance, this config will bind the resize events together.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_units">
+                                    <h4><a name="config_units">units</a>
+                                        <code>- <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            An array of config definitions for the LayoutUnits to add to this layout
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_width">
+                                    <h4><a name="config_width">width</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The width in pixels
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Configuration attributes inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                        <span rel="yui:attribute" resource="YAHOO.util.Element.html#config_element">                                        
+                                        <a class="" href="YAHOO.util.Element.html#config_element" property="yui:name" title="element">element</a><span class="">,</span>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class="selected"><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="YAHOO.widget.Layout.html" title="YAHOO.widget.Layout">YAHOO.widget.Layout</a></li>
+                                <li class=""><a href="YAHOO.widget.LayoutUnit.html" title="YAHOO.widget.LayoutUnit">YAHOO.widget.LayoutUnit</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="layout.js.html" title="layout.js">layout.js</a></li>
+                                <li class=""><a href="layoutunit.js.html" title="layoutunit.js">layoutunit.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__doc" title="_doc">_doc</a></li>
+                                <li class="private"><a href="#property__instances" title="_instances">_instances</a></li>
+                                <li class="private"><a href="#property__isBody" title="_isBody">_isBody</a></li>
+                                <li class="private"><a href="#property__rendered" title="_rendered">_rendered</a></li>
+                                <li class="private"><a href="#property__sizes" title="_sizes">_sizes</a></li>
+                                <li class="private"><a href="#property__units" title="_units">_units</a></li>
+                                <li class="private"><a href="#property__zIndex" title="_zIndex">_zIndex</a></li>
+                                <li class=""><a href="#property_browser" title="browser">browser</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method__createUnits" title="_createUnits">_createUnits</a></li>
+                                <li class="private"><a href="#method__setBodySize" title="_setBodySize">_setBodySize</a></li>
+                                <li class="private"><a href="#method__setCenter" title="_setCenter">_setCenter</a></li>
+                                <li class="private"><a href="#method__setSides" title="_setSides">_setSides</a></li>
+                                <li class="private"><a href="#method__setupBodyElements" title="_setupBodyElements">_setupBodyElements</a></li>
+                                <li class="private"><a href="#method__setupElements" title="_setupElements">_setupElements</a></li>
+                                <li class="private"><a href="#method__stamp" title="_stamp">_stamp</a></li>
+                                <li class=""><a href="#method_addUnit" title="addUnit">addUnit</a></li>
+                                <li class=""><a href="#method_destroy" title="destroy">destroy</a></li>
+                                <li class=""><a href="#method_getLayoutById" title="getLayoutById">getLayoutById</a></li>
+                                <li class=""><a href="#method_getSizes" title="getSizes">getSizes</a></li>
+                                <li class=""><a href="#method_getUnitById" title="getUnitById">getUnitById</a></li>
+                                <li class=""><a href="#method_getUnitByPosition" title="getUnitByPosition">getUnitByPosition</a></li>
+                                <li class="private"><a href="#method_init" title="init">init</a></li>
+                                <li class="private"><a href="#method_initAttributes" title="initAttributes">initAttributes</a></li>
+                                <li class=""><a href="#method_removeUnit" title="removeUnit">removeUnit</a></li>
+                                <li class=""><a href="#method_render" title="render">render</a></li>
+                                <li class=""><a href="#method_resize" title="resize">resize</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_beforeHeightChange" title="beforeHeightChange">beforeHeightChange</a></li>
+                                <li class=""><a href="#event_beforeMinHeightChange" title="beforeMinHeightChange">beforeMinHeightChange</a></li>
+                                <li class=""><a href="#event_beforeMinWidthChange" title="beforeMinWidthChange">beforeMinWidthChange</a></li>
+                                <li class=""><a href="#event_beforeParentChange" title="beforeParentChange">beforeParentChange</a></li>
+                                <li class=""><a href="#event_beforeResize" title="beforeResize">beforeResize</a></li>
+                                <li class=""><a href="#event_beforeUnitsChange" title="beforeUnitsChange">beforeUnitsChange</a></li>
+                                <li class=""><a href="#event_beforeWidthChange" title="beforeWidthChange">beforeWidthChange</a></li>
+                                <li class=""><a href="#event_heightChange" title="heightChange">heightChange</a></li>
+                                <li class=""><a href="#event_minHeightChange" title="minHeightChange">minHeightChange</a></li>
+                                <li class=""><a href="#event_minWidthChange" title="minWidthChange">minWidthChange</a></li>
+                                <li class=""><a href="#event_parentChange" title="parentChange">parentChange</a></li>
+                                <li class=""><a href="#event_render" title="render">render</a></li>
+                                <li class=""><a href="#event_resize" title="resize">resize</a></li>
+                                <li class=""><a href="#event_startResize" title="startResize">startResize</a></li>
+                                <li class=""><a href="#event_unitsChange" title="unitsChange">unitsChange</a></li>
+                                <li class=""><a href="#event_widthChange" title="widthChange">widthChange</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="configList" class="module">
+                        <h4>Configuration Attributes</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#config_height" title="height">height</a></li>
+                                <li class=""><a href="#config_minHeight" title="minHeight">minHeight</a></li>
+                                <li class=""><a href="#config_minWidth" title="minWidth">minWidth</a></li>
+                                <li class=""><a href="#config_parent" title="parent">parent</a></li>
+                                <li class=""><a href="#config_units" title="units">units</a></li>
+                                <li class=""><a href="#config_width" title="width">width</a></li>
+                        </ul>
+                    </div>
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.Layout", "name": "addUnit", "url": "YAHOO.widget.Layout.html#method_addUnit", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_anim", "url": "YAHOO.widget.LayoutUnit.html#property__anim", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "animate", "url": "YAHOO.widget.LayoutUnit.html#config_animate", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "animateChange", "url": "YAHOO.widget.LayoutUnit.html#event_animateChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeAnimateChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeAnimateChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeBodyChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeBodyChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeCloseChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeCloseChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeCollapse", "url": "YAHOO.widget.LayoutUnit.html#event_beforeCollapse", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeCollapseChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeCollapseChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeCollapseSizeChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeCollapseSizeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeDataLoadedChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeDataLoadedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeDataSrcChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeDataSrcChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeDataTimeoutChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeDataTimeoutChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeDurationChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeDurationChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeEasingChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeEasingChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeExpand", "url": "YAHOO.widget.LayoutUnit.html#event_beforeExpand", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeFooterChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeFooterChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeGridsChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeGridsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeGutterChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeGutterChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeHeaderChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeHeaderChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeHeightChange", "url": "YAHOO.widget.Layout.html#event_beforeHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeHoverChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeHoverChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeLeftChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeLeftChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeLoadMethodChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeLoadMethodChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeMaxHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeMaxHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeMaxWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeMaxWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeMinHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeMinHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeMinHeightChange", "url": "YAHOO.widget.Layout.html#event_beforeMinHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeMinWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeMinWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeMinWidthChange", "url": "YAHOO.widget.Layout.html#event_beforeMinWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeParentChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeParentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeParentChange", "url": "YAHOO.widget.Layout.html#event_beforeParentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforePositionChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforePositionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeProxyChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeProxyChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeResize", "url": "YAHOO.widget.LayoutUnit.html#event_beforeResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeResize", "url": "YAHOO.widget.Layout.html#event_beforeResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeResizeChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeResizeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeScrollChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeScrollChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeTopChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeTopChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeUnitsChange", "url": "YAHOO.widget.Layout.html#event_beforeUnitsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeUseShimChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeUseShimChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeWidthChange", "url": "YAHOO.widget.Layout.html#event_beforeWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeWrapChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeWrapChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeZIndexChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeZIndexChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "body", "url": "YAHOO.widget.LayoutUnit.html#property_body", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "body", "url": "YAHOO.widget.LayoutUnit.html#config_body", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "bodyChange", "url": "YAHOO.widget.LayoutUnit.html#event_bodyChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "browser", "url": "YAHOO.widget.LayoutUnit.html#property_browser", "type": "property"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "browser", "url": "YAHOO.widget.Layout.html#property_browser", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_cleanGrids", "url": "YAHOO.widget.LayoutUnit.html#method__cleanGrids", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_clip", "url": "YAHOO.widget.LayoutUnit.html#property__clip", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "close", "url": "YAHOO.widget.LayoutUnit.html#method_close", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "close", "url": "YAHOO.widget.LayoutUnit.html#event_close", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "close", "url": "YAHOO.widget.LayoutUnit.html#config_close", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "closeChange", "url": "YAHOO.widget.LayoutUnit.html#event_closeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapse", "url": "YAHOO.widget.LayoutUnit.html#method_collapse", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapse", "url": "YAHOO.widget.LayoutUnit.html#event_collapse", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapse", "url": "YAHOO.widget.LayoutUnit.html#config_collapse", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapseChange", "url": "YAHOO.widget.LayoutUnit.html#event_collapseChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_collapsed", "url": "YAHOO.widget.LayoutUnit.html#property__collapsed", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapseSize", "url": "YAHOO.widget.LayoutUnit.html#config_collapseSize", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapseSizeChange", "url": "YAHOO.widget.LayoutUnit.html#event_collapseSizeChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_collapsing", "url": "YAHOO.widget.LayoutUnit.html#property__collapsing", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "contentChange", "url": "YAHOO.widget.LayoutUnit.html#event_contentChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_createClip", "url": "YAHOO.widget.LayoutUnit.html#method__createClip", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_createHeader", "url": "YAHOO.widget.LayoutUnit.html#method__createHeader", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_createUnits", "url": "YAHOO.widget.Layout.html#method__createUnits", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataConnection", "url": "YAHOO.widget.LayoutUnit.html#property_dataConnection", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataLoaded", "url": "YAHOO.widget.LayoutUnit.html#config_dataLoaded", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataLoadedChange", "url": "YAHOO.widget.LayoutUnit.html#event_dataLoadedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataSrc", "url": "YAHOO.widget.LayoutUnit.html#config_dataSrc", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataSrcChange", "url": "YAHOO.widget.LayoutUnit.html#event_dataSrcChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataTimeout", "url": "YAHOO.widget.LayoutUnit.html#config_dataTimeout", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataTimeoutChange", "url": "YAHOO.widget.LayoutUnit.html#event_dataTimeoutChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "destroy", "url": "YAHOO.widget.LayoutUnit.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "destroy", "url": "YAHOO.widget.Layout.html#method_destroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_doc", "url": "YAHOO.widget.Layout.html#property__doc", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "duration", "url": "YAHOO.widget.LayoutUnit.html#config_duration", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "durationChange", "url": "YAHOO.widget.LayoutUnit.html#event_durationChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "easing", "url": "YAHOO.widget.LayoutUnit.html#config_easing", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "easingChange", "url": "YAHOO.widget.LayoutUnit.html#event_easingChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "endResize", "url": "YAHOO.widget.LayoutUnit.html#event_endResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "expand", "url": "YAHOO.widget.LayoutUnit.html#method_expand", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "expand", "url": "YAHOO.widget.LayoutUnit.html#event_expand", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_fixQuirks", "url": "YAHOO.widget.LayoutUnit.html#method__fixQuirks", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "footer", "url": "YAHOO.widget.LayoutUnit.html#property_footer", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "footer", "url": "YAHOO.widget.LayoutUnit.html#config_footer", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "footerChange", "url": "YAHOO.widget.LayoutUnit.html#event_footerChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_getBorderSizes", "url": "YAHOO.widget.LayoutUnit.html#method__getBorderSizes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_getBoxSize", "url": "YAHOO.widget.LayoutUnit.html#method__getBoxSize", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "getLayoutById", "url": "YAHOO.widget.Layout.html#method_getLayoutById", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "getLayoutUnitById", "url": "YAHOO.widget.LayoutUnit.html#method_getLayoutUnitById", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "getSizes", "url": "YAHOO.widget.LayoutUnit.html#method_getSizes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "getSizes", "url": "YAHOO.widget.Layout.html#method_getSizes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "getUnitById", "url": "YAHOO.widget.Layout.html#method_getUnitById", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "getUnitByPosition", "url": "YAHOO.widget.Layout.html#method_getUnitByPosition", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "grids", "url": "YAHOO.widget.LayoutUnit.html#config_grids", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "gridsChange", "url": "YAHOO.widget.LayoutUnit.html#event_gridsChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_gutter", "url": "YAHOO.widget.LayoutUnit.html#property__gutter", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "gutter", "url": "YAHOO.widget.LayoutUnit.html#config_gutter", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "gutterChange", "url": "YAHOO.widget.LayoutUnit.html#event_gutterChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "header", "url": "YAHOO.widget.LayoutUnit.html#property_header", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "header", "url": "YAHOO.widget.LayoutUnit.html#config_header", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "headerChange", "url": "YAHOO.widget.LayoutUnit.html#event_headerChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "height", "url": "YAHOO.widget.LayoutUnit.html#config_height", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "height", "url": "YAHOO.widget.Layout.html#config_height", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "heightChange", "url": "YAHOO.widget.LayoutUnit.html#event_heightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "heightChange", "url": "YAHOO.widget.Layout.html#event_heightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "hover", "url": "YAHOO.widget.LayoutUnit.html#config_hover", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "hoverChange", "url": "YAHOO.widget.LayoutUnit.html#event_hoverChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "init", "url": "YAHOO.widget.LayoutUnit.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "init", "url": "YAHOO.widget.Layout.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "initAttributes", "url": "YAHOO.widget.LayoutUnit.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "initAttributes", "url": "YAHOO.widget.Layout.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_instances", "url": "YAHOO.widget.LayoutUnit.html#property__instances", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_instances", "url": "YAHOO.widget.Layout.html#property__instances", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_isBody", "url": "YAHOO.widget.Layout.html#property__isBody", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastCenetrScroll", "url": "YAHOO.widget.LayoutUnit.html#property__lastCenetrScroll", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastHeight", "url": "YAHOO.widget.LayoutUnit.html#property__lastHeight", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastLeft", "url": "YAHOO.widget.LayoutUnit.html#property__lastLeft", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastScroll", "url": "YAHOO.widget.LayoutUnit.html#property__lastScroll", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastScrollTop", "url": "YAHOO.widget.LayoutUnit.html#property__lastScrollTop", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastTop", "url": "YAHOO.widget.LayoutUnit.html#property__lastTop", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastWidth", "url": "YAHOO.widget.LayoutUnit.html#property__lastWidth", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "left", "url": "YAHOO.widget.LayoutUnit.html#config_left", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "leftChange", "url": "YAHOO.widget.LayoutUnit.html#event_leftChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "load", "url": "YAHOO.widget.LayoutUnit.html#event_load", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadContent", "url": "YAHOO.widget.LayoutUnit.html#method_loadContent", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadError", "url": "YAHOO.widget.LayoutUnit.html#event_loadError", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadHandler", "url": "YAHOO.widget.LayoutUnit.html#property_loadHandler", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_loading", "url": "YAHOO.widget.LayoutUnit.html#property__loading", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "LOADING_CLASSNAME", "url": "YAHOO.widget.LayoutUnit.html#property_LOADING_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadMethod", "url": "YAHOO.widget.LayoutUnit.html#config_loadMethod", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadMethodChange", "url": "YAHOO.widget.LayoutUnit.html#event_loadMethodChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "maxHeight", "url": "YAHOO.widget.LayoutUnit.html#config_maxHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "maxHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_maxHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "maxWidth", "url": "YAHOO.widget.LayoutUnit.html#config_maxWidth", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "maxWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_maxWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "minHeight", "url": "YAHOO.widget.LayoutUnit.html#config_minHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "minHeight", "url": "YAHOO.widget.Layout.html#config_minHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "minHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_minHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "minHeightChange", "url": "YAHOO.widget.Layout.html#event_minHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "minWidth", "url": "YAHOO.widget.LayoutUnit.html#config_minWidth", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "minWidth", "url": "YAHOO.widget.Layout.html#config_minWidth", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "minWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_minWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "minWidthChange", "url": "YAHOO.widget.Layout.html#event_minWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "parent", "url": "YAHOO.widget.LayoutUnit.html#config_parent", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "parent", "url": "YAHOO.widget.Layout.html#config_parent", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "parentChange", "url": "YAHOO.widget.LayoutUnit.html#event_parentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "parentChange", "url": "YAHOO.widget.Layout.html#event_parentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "position", "url": "YAHOO.widget.LayoutUnit.html#config_position", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "positionChange", "url": "YAHOO.widget.LayoutUnit.html#event_positionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "proxy", "url": "YAHOO.widget.LayoutUnit.html#config_proxy", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "proxyChange", "url": "YAHOO.widget.LayoutUnit.html#event_proxyChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "removeUnit", "url": "YAHOO.widget.Layout.html#method_removeUnit", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "render", "url": "YAHOO.widget.Layout.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "render", "url": "YAHOO.widget.Layout.html#event_render", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_rendered", "url": "YAHOO.widget.Layout.html#property__rendered", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_resize", "url": "YAHOO.widget.LayoutUnit.html#property__resize", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "resize", "url": "YAHOO.widget.LayoutUnit.html#method_resize", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "resize", "url": "YAHOO.widget.LayoutUnit.html#event_resize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "resize", "url": "YAHOO.widget.LayoutUnit.html#config_resize", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "resize", "url": "YAHOO.widget.Layout.html#method_resize", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "resize", "url": "YAHOO.widget.Layout.html#event_resize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "resizeChange", "url": "YAHOO.widget.LayoutUnit.html#event_resizeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "scroll", "url": "YAHOO.widget.LayoutUnit.html#config_scroll", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "scrollChange", "url": "YAHOO.widget.LayoutUnit.html#event_scrollChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setBodySize", "url": "YAHOO.widget.Layout.html#method__setBodySize", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setCenter", "url": "YAHOO.widget.Layout.html#method__setCenter", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_setHeight", "url": "YAHOO.widget.LayoutUnit.html#method__setHeight", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setSides", "url": "YAHOO.widget.Layout.html#method__setSides", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setupBodyElements", "url": "YAHOO.widget.Layout.html#method__setupBodyElements", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setupElements", "url": "YAHOO.widget.Layout.html#method__setupElements", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_setWidth", "url": "YAHOO.widget.LayoutUnit.html#method__setWidth", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_sizes", "url": "YAHOO.widget.LayoutUnit.html#property__sizes", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_sizes", "url": "YAHOO.widget.Layout.html#property__sizes", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_stamp", "url": "YAHOO.widget.Layout.html#method__stamp", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "startResize", "url": "YAHOO.widget.LayoutUnit.html#event_startResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "startResize", "url": "YAHOO.widget.Layout.html#event_startResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "STR_CLOSE", "url": "YAHOO.widget.LayoutUnit.html#property_STR_CLOSE", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "STR_COLLAPSE", "url": "YAHOO.widget.LayoutUnit.html#property_STR_COLLAPSE", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "STR_EXPAND", "url": "YAHOO.widget.LayoutUnit.html#property_STR_EXPAND", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "toggle", "url": "YAHOO.widget.LayoutUnit.html#method_toggle", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_toggleClip", "url": "YAHOO.widget.LayoutUnit.html#method__toggleClip", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "top", "url": "YAHOO.widget.LayoutUnit.html#config_top", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "topChange", "url": "YAHOO.widget.LayoutUnit.html#event_topChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "toString", "url": "YAHOO.widget.LayoutUnit.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "toString", "url": "YAHOO.widget.Layout.html#method_toString", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_units", "url": "YAHOO.widget.Layout.html#property__units", "type": "property"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "units", "url": "YAHOO.widget.Layout.html#config_units", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "unitsChange", "url": "YAHOO.widget.Layout.html#event_unitsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "useShim", "url": "YAHOO.widget.LayoutUnit.html#config_useShim", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "useShimChange", "url": "YAHOO.widget.LayoutUnit.html#event_useShimChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "width", "url": "YAHOO.widget.LayoutUnit.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "width", "url": "YAHOO.widget.Layout.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "widthChange", "url": "YAHOO.widget.LayoutUnit.html#event_widthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "widthChange", "url": "YAHOO.widget.Layout.html#event_widthChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "wrap", "url": "YAHOO.widget.LayoutUnit.html#config_wrap", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "wrapChange", "url": "YAHOO.widget.LayoutUnit.html#event_wrapChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "zIndex", "url": "YAHOO.widget.LayoutUnit.html#config_zIndex", "type": "config"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_zIndex", "url": "YAHOO.widget.Layout.html#property__zIndex", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "zIndexChange", "url": "YAHOO.widget.LayoutUnit.html#event_zIndexChange", "type": "event"}];
+</script>
+</body>
+</html>

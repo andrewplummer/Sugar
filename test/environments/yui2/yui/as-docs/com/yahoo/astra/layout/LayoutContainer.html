@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../../print.css" type="text/css" media="print">
+<meta content="LayoutContainer,com.yahoo.astra.layout.LayoutContainer,autoMask,contentHeight,contentWidth,layoutMode,invalidateLayout,validateLayout" name="keywords">
+<title>com.yahoo.astra.layout.LayoutContainer</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'LayoutContainer - YUI Flash Component Documentation';
+				var baseRef = '../../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">YUI Flash Component Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../../all-classes.html')" href="../../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../all-classes.html')" href="../../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../index-list.html')" href="../../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../../index.html?com/yahoo/astra/layout/LayoutContainer.html&amp;com/yahoo/astra/layout/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;LayoutContainer</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#propertySummary">Properties</a>&nbsp;| <a href="#methodSummary">Methods</a>&nbsp;| <a href="#eventSummary">Events</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class LayoutContainer"); titleBar_setSubNav(false,true,false,false,true,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">com.yahoo.astra.layout</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class LayoutContainer</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Inheritance</td><td class="inheritanceList">LayoutContainer <img class="inheritArrow" alt="Inheritance" title="Inheritance" src="../../../../images/inherit-arrow.gif"> flash.display.Sprite</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Implements</td><td><a href="ILayoutContainer.html">ILayoutContainer</a></td>
+</tr>
+</table>
+<p></p>
+  Children of this display object are subject to being positioned, and
+  possibly resized, based on a specified layout algorithm. LayoutContainer
+  integrates with LayoutManager to refresh its the layout of its children
+  when properties on the container itself change or when one of its
+  children dispatches a registered invalidating event. This is the default
+  implementation of ILayoutContainer.
+  
+  <p></p>
+<br>
+<span class="label">Example</span>
+<br>The following code demonstrates the usage of LayoutContainer:
+  <div class='listing'><pre>
+  // create an instance of a layout mode
+  var mode:ILayoutMode = new BoxLayout();
+  mode.direction = "horizontal";
+  mode.horizontalGap = 10;
+  
+  // one may pass the mode to the constructor or the layoutMode property.
+  // note: by default, a LayoutContainer will automatically determine
+  // its size based on its content.
+  var container:LayoutContainer = new LayoutContainer( mode );
+  this.addChild(container);
+  
+  for( var i:int = 0; i < 5; i++ )
+  {
+      var square:Shape = new Shape();
+      square.graphics.beginFill(0xcccccc);
+      square.graphics.drawRect(0, 0, 25, 25);
+      square.graphics.endFill();
+      container.addChild(square);
+  }
+  </pre></div>
+  
+  <p><strong>Important Note:</strong> LayoutContainer leaves certain
+  functionality to the implementor to complete. No scrollbars or other user
+  interface controls will appear when the contents are larger than the
+  LayoutContainer's dimensions.</p>
+  
+  <p>This limitation is deliberate and by design. The philosophy behind
+  this choice centers on allowing an ActionScript developer to use these
+  classes as a basis for implementing layout controls for nearly any user
+  interface library available for Flash Player.</p>
+  
+  <p>For a reference implementation of full-featured UI controls that
+  implement masking and scrolling, please take a look at the Layout
+  Containers available in the <a href="http://developer.yahoo.com/flash/astra-flash/">Yahoo! Astra Components for Flash CS3</a>.</p> 
+  
+  <p></p>
+<p>
+<span class="classHeaderTableLabel">See also</span>
+</p>
+<div class="seeAlso">
+<a href="LayoutManager.html" target="">LayoutManager</a>
+<br>
+<a href="ILayoutContainer.html" target="">ILayoutContainer</a>
+<br>
+<a href="modes/package-detail.html" target="">Available Layout Modes (com.yahoo.astra.layout.modes)</a>
+</div>
+<br>
+<hr>
+</div>
+<a name="propertySummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Properties</div>
+<table id="summaryTableProperty" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Property</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#autoMask">autoMask</a> : Boolean<div class="summaryTableDescription">
+   If true, the conent will automatically update the scrollRect to fit
+   the dimensions.</div>
+</td><td class="summaryTableOwnerCol">LayoutContainer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#contentHeight">contentHeight</a> : Number<div class="summaryTableDescription">[read-only]
+   
+   The height of the content displayed by the layout container.</div>
+</td><td class="summaryTableOwnerCol">LayoutContainer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#contentWidth">contentWidth</a> : Number<div class="summaryTableDescription">[read-only]
+   
+   The width of the content displayed by the layout container.</div>
+</td><td class="summaryTableOwnerCol">LayoutContainer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#layoutMode">layoutMode</a> : <a href="modes/ILayoutMode.html">ILayoutMode</a>
+<div class="summaryTableDescription">
+   
+   The layout algorithm used to display children of the layout container.</div>
+</td><td class="summaryTableOwnerCol">LayoutContainer</td>
+</tr>
+</table>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#LayoutContainer()">LayoutContainer</a>(mode:<a href="modes/ILayoutMode.html">ILayoutMode</a> = null)</div>
+<div class="summaryTableDescription">
+   Constructor.</div>
+</td><td class="summaryTableOwnerCol">LayoutContainer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#invalidateLayout()">invalidateLayout</a>():void</div>
+<div class="summaryTableDescription">
+   
+   Informs the layout container that it should update the layout of its
+   children.</div>
+</td><td class="summaryTableOwnerCol">LayoutContainer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#validateLayout()">validateLayout</a>():void</div>
+<div class="summaryTableDescription">
+   
+   Immediately updates the layout of the container's children.</div>
+</td><td class="summaryTableOwnerCol">LayoutContainer</td>
+</tr>
+</table>
+</div>
+<a name="eventSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Events</div>
+<table id="summaryTableEvent" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Event</th><th>Summary</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#event:layoutChange">layoutChange</a>
+</div>
+</td><td class="summaryTableDescription summaryTableCol">
+   Dispatched when this container's layout changes.</td><td class="summaryTableOwnerCol">LayoutContainer</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="propertyDetail"></a>
+<div class="detailSectionHeader">Property detail</div>
+<a name="autoMask"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">autoMask</td><td class="detailHeaderType">property</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>autoMask:Boolean</code>&nbsp;&nbsp;[read-write]<p>
+   If true, the conent will automatically update the scrollRect to fit
+   the dimensions. Uses explicit dimensions if width or height is set by
+   the developer. Otherwise, uses the content dimensions. If false, it
+   is up to the implementor to set the mask or scrollRect.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get autoMask():Boolean</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set autoMask(value:Boolean):void</code>
+<br>
+</div>
+<a name="contentHeight"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">contentHeight</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>contentHeight:Number</code>&nbsp;&nbsp;[read-only]<p>
+   
+   The height of the content displayed by the layout container.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get contentHeight():Number</code>
+<br>
+</div>
+<a name="contentWidth"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">contentWidth</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>contentWidth:Number</code>&nbsp;&nbsp;[read-only]<p>
+   
+   The width of the content displayed by the layout container.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get contentWidth():Number</code>
+<br>
+</div>
+<a name="layoutMode"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">layoutMode</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>layoutMode:<a href="modes/ILayoutMode.html">ILayoutMode</a></code>&nbsp;&nbsp;[read-write]<p>
+   
+   The layout algorithm used to display children of the layout container.
+   
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get layoutMode():<a href="modes/ILayoutMode.html">ILayoutMode</a></code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set layoutMode(value:<a href="modes/ILayoutMode.html">ILayoutMode</a>):void</code>
+<br>
+</div>
+<a name="constructorDetail"></a>
+<div class="detailSectionHeader">Constructor detail</div>
+<a name="LayoutContainer()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">LayoutContainer</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">constructor</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function LayoutContainer(mode:<a href="modes/ILayoutMode.html">ILayoutMode</a> = null)</code><p>
+   Constructor.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">mode</span>:<a href="modes/ILayoutMode.html">ILayoutMode</a></code> (default = <code>null</code>)<code></code> &mdash;  The ILayoutMode implementation to use.
+   </td>
+</tr>
+</table>
+</div>
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="invalidateLayout()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">invalidateLayout</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function invalidateLayout():void</code><p>
+   
+   Informs the layout container that it should update the layout of its
+   children.
+   </p></div>
+<a name="validateLayout()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">validateLayout</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function validateLayout():void</code><p>
+   
+   Immediately updates the layout of the container's children.
+   </p></div>
+<div class="detailSectionHeader">Event detail</div>
+<a name="event:layoutChange"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">layoutChange</td><td class="detailHeaderType">event&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<span class="label">Event object type: </span><a href="events/LayoutEvent.html"><code>com.yahoo.astra.layout.events.LayoutEvent</code></a>
+<br>
+<span class="label">LayoutEvent.type property = </span><a href="events/LayoutEvent.html#LAYOUT_CHANGE"><code>com.yahoo.astra.layout.events.LayoutEvent.LAYOUT_CHANGE</code></a>
+<br><p>
+   Dispatched when this container's layout changes.
+     </p><p>
+   The <code>LayoutEvent.LAYOUT_CHANGE</code> event type constant indicates that
+   the layout of an ILayoutContainer needs to be redrawn.
+   
+   </p></div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright"> 
+</center>
+</div>
+</body>
+</html>
+<!-- -->

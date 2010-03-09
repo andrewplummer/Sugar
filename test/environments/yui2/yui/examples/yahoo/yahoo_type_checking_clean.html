@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Type-Checking Your Data</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+    #demo {
+        border-collapse: collapse;
+    }
+    #demo th {
+        background: #E76300;
+        color: #fff;
+        padding: .2em 1em;
+        border: 1px solid #ccc;
+    }
+    #demo td {
+        padding: .2em 1ex;
+        border: 1px solid #ccc;
+        text-align: center;
+    }
+    #demo code {
+        background: #eee;
+        display: block;
+        text-align: left;
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Type-Checking Your Data</h1>
+
+<div class="exampleIntro">
+	<p>The <a href="http://developer.yahoo.com/yui/yahoo/">Yahoo Global Object</a> includes several useful type-checking methods in the <code>YAHOO.lang</code> object.  Click the Check button in each row to evaluate the data.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<table id="demo">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>isObject</th>
+            <th>isArray</th>
+            <th>isFunction</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>null<code></td>
+            <td colspan="3"><input type="button" name="demo-1" id="demo-1" value="check"/></td>
+        </tr>
+        <tr>
+            <td><code>[] or new Array()</code></td>
+            <td colspan="3"><input type="button" name="demo-2" id="demo-2" value="check"/></td>
+        </tr>
+        <tr>
+            <td><code>{} or new Object()</code></td>
+            <td colspan="3"><input type="button" name="demo-3" id="demo-3" value="check"/></td>
+        </tr>
+        <tr>
+            <td><code>function Foo() {}</code></td>
+            <td colspan="3"><input type="button" name="demo-4" id="demo-4" value="check"/></td>
+        </tr>
+        <tr>
+            <td><code>new Foo()</code></td>
+            <td colspan="3"><input type="button" name="demo-5" id="demo-5" value="check"/></td>
+        </tr>
+        <tr>
+            <td><code>elem.getElementsByTagName('p')</code></td>
+            <td colspan="3"><input type="button" name="demo-6" id="demo-6" value="check"/></td>
+        </tr>
+        <tr>
+            <td><code>YAHOO.util.Dom.
+                        getElementsByClassName(<br/>
+                        'foo','p',elem)</code></td>
+            <td colspan="3"><input type="button" name="demo-7" id="demo-7" value="check"/></td>
+        </tr>
+    <tbody>
+</table>
+<script type="text/javascript">
+    YAHOO.namespace('example');
+
+    YAHOO.example.checkType = function (val) {
+        return {
+            'object'  : YAHOO.lang.isObject(val),
+            'array'   : YAHOO.lang.isArray(val),
+            'function': YAHOO.lang.isFunction(val)
+        };
+    }
+
+    YAHOO.example.populateRow = function (e, data) {
+        var cell = this.parentNode,
+            row  = cell.parentNode;
+
+        row.removeChild(cell);
+
+        var td0 = document.createElement('td'),
+            td1 = td0.cloneNode(false),
+            td2 = td0.cloneNode(false);
+
+        var results = YAHOO.example.checkType(data);
+
+        td0.appendChild(document.createTextNode(
+            results['object'] ?   'Y' : 'N'));
+        td1.appendChild(document.createTextNode(
+            results['array'] ?    'Y' : 'N'));
+        td2.appendChild(document.createTextNode(
+            results['function'] ? 'Y' : 'N'));
+
+        row.appendChild(td0);
+        row.appendChild(td1);
+        row.appendChild(td2);
+    }
+
+    var foo = function () {};
+    var f = document.getElementById('demo');
+
+    YAHOO.util.Event.on('demo-1','click',YAHOO.example.populateRow, null);
+    YAHOO.util.Event.on('demo-2','click',YAHOO.example.populateRow, []);
+    YAHOO.util.Event.on('demo-3','click',YAHOO.example.populateRow, {});
+    YAHOO.util.Event.on('demo-4','click',YAHOO.example.populateRow, foo);
+    YAHOO.util.Event.on('demo-5','click',YAHOO.example.populateRow, new foo());
+    YAHOO.util.Event.on('demo-6','click',YAHOO.example.populateRow,
+        f.getElementsByTagName('tr'));
+    YAHOO.util.Event.on('demo-7','click',YAHOO.example.populateRow,
+        YAHOO.util.Dom.getElementsByClassName('foo','td',f));
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

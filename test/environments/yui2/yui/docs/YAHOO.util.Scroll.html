@@ -1,0 +1,388 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: animation  YAHOO.util.Scroll   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>animation&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_animation.html" title="animation">animation</a>
+                 &gt; YAHOO.util.Scroll 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.util.Scroll</b>
+                        <span class="extends">
+                           - extends <a href="YAHOO.util.ColorAnim.html" title="YAHOO.util.ColorAnim">YAHOO.util.ColorAnim</a>
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Anim subclass for scrolling elements to a position defined by the "scroll"
+member of "attributes".  All "scroll" members are arrays with x, y scroll positions.
+<p>Usage: <code>var myAnim = new YAHOO.util.Scroll(el, { scroll: { to: [0, 800] } }, 1, YAHOO.util.Easing.easeOut);</code></p>
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.util.Scroll</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                el
+
+                                                , 
+                                                attributes
+
+                                                , 
+                                                duration
+
+                                                , 
+                                                method
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">el</span>
+                                                    &lt;<span property="yui:type">String or HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> Reference to the element that will be animated</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">attributes</span>
+                                                    &lt;<span property="yui:type">Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The attribute(s) to be animated.  
+Each attribute is an object with at minimum a "to" or "by" member defined.  
+Additional optional members are "from" (defaults to current value), "units" (defaults to "px").  
+All attribute names use camelCase.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">duration</span>
+                                                    &lt;<span property="yui:type">Number</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> (optional, defaults to 1 second) Length of animation (frames or seconds), defaults to time-based</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">method</span>
+                                                    &lt;<span property="yui:type">Function</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> (optional, defaults to YAHOO.util.Easing.easeNone) Computes the values that are applied to the attributes per frame (generally a YAHOO.util.Easing method)</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Anim.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.Anim.html" property="yui:name" title="YAHOO.util.Anim">YAHOO.util.Anim</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property__onComplete">
+                                        <a class="private" href="YAHOO.util.Anim.html#property__onComplete" property="yui:name" title="_onComplete">_onComplete</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property__onStart">
+                                        <a class="private" href="YAHOO.util.Anim.html#property__onStart" property="yui:name" title="_onStart">_onStart</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property__onTween">
+                                        <a class="private" href="YAHOO.util.Anim.html#property__onTween" property="yui:name" title="_onTween">_onTween</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_actualFrames">
+                                        <a class="private" href="YAHOO.util.Anim.html#property_actualFrames" property="yui:name" title="actualFrames">actualFrames</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_attributes">
+                                        <a class="" href="YAHOO.util.Anim.html#property_attributes" property="yui:name" title="attributes">attributes</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_currentFrame">
+                                        <a class="" href="YAHOO.util.Anim.html#property_currentFrame" property="yui:name" title="currentFrame">currentFrame</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_duration">
+                                        <a class="" href="YAHOO.util.Anim.html#property_duration" property="yui:name" title="duration">duration</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_el">
+                                        <a class="private" href="YAHOO.util.Anim.html#property_el" property="yui:name" title="el">el</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_isAnimated">
+                                        <a class="private" href="YAHOO.util.Anim.html#property_isAnimated" property="yui:name" title="isAnimated">isAnimated</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_method">
+                                        <a class="" href="YAHOO.util.Anim.html#property_method" property="yui:name" title="method">method</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_startTime">
+                                        <a class="private" href="YAHOO.util.Anim.html#property_startTime" property="yui:name" title="startTime">startTime</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_totalFrames">
+                                        <a class="" href="YAHOO.util.Anim.html#property_totalFrames" property="yui:name" title="totalFrames">totalFrames</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Anim.html#property_useSeconds">
+                                        <a class="" href="YAHOO.util.Anim.html#property_useSeconds" property="yui:name" title="useSeconds">useSeconds</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Anim.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.Anim.html" property="yui:name" title="YAHOO.util.Anim">YAHOO.util.Anim</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_animate">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_animate" property="yui:name" title="animate">animate</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_doMethod">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_doMethod" property="yui:name" title="doMethod">doMethod</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_getAttribute">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_getAttribute" property="yui:name" title="getAttribute">getAttribute</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_getDefaultUnit">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_getDefaultUnit" property="yui:name" title="getDefaultUnit">getDefaultUnit</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_getEl">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_getEl" property="yui:name" title="getEl">getEl</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_getStartTime">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_getStartTime" property="yui:name" title="getStartTime">getStartTime</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_init">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_init" property="yui:name" title="init">init</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_isAnimated">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_isAnimated" property="yui:name" title="isAnimated">isAnimated</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_onTween">                                        
+                                            <a class="private" href="YAHOO.util.Anim.html#method_onTween" property="yui:name" title="onTween">onTween</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_setAttribute">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_setAttribute" property="yui:name" title="setAttribute">setAttribute</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_setEl">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_setEl" property="yui:name" title="setEl">setEl</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_setRuntimeAttribute">                                        
+                                            <a class="private" href="YAHOO.util.Anim.html#method_setRuntimeAttribute" property="yui:name" title="setRuntimeAttribute">setRuntimeAttribute</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_stop">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_stop" property="yui:name" title="stop">stop</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Anim.html#method_toString">                                        
+                                            <a class="" href="YAHOO.util.Anim.html#method_toString" property="yui:name" title="toString">toString</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.ColorAnim.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.ColorAnim.html" property="yui:name" title="YAHOO.util.ColorAnim">YAHOO.util.ColorAnim</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.ColorAnim.html#method_parseColor">                                        
+                                            <a class="" href="YAHOO.util.ColorAnim.html#method_parseColor" property="yui:name" title="parseColor">parseColor</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Anim.html">
+                            <h4>Events inherited from <a href="YAHOO.util.Anim.html" property="yui:name" title="YAHOO.util.Anim">YAHOO.util.Anim</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.util.Anim.html#event_onComplete">
+                                        <a class="" href="YAHOO.util.Anim.html#event_onComplete" property="yui:name" title="onComplete">onComplete</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Anim.html#event_onStart">
+                                        <a class="" href="YAHOO.util.Anim.html#event_onStart" property="yui:name" title="onStart">onStart</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Anim.html#event_onTween">
+                                        <a class="" href="YAHOO.util.Anim.html#event_onTween" property="yui:name" title="onTween">onTween</a><span class="">,</span>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.Anim.html" title="YAHOO.util.Anim">YAHOO.util.Anim</a></li>
+                                <li class=""><a href="YAHOO.util.AnimMgr.html" title="YAHOO.util.AnimMgr">YAHOO.util.AnimMgr</a></li>
+                                <li class=""><a href="YAHOO.util.Bezier.html" title="YAHOO.util.Bezier">YAHOO.util.Bezier</a></li>
+                                <li class=""><a href="YAHOO.util.ColorAnim.html" title="YAHOO.util.ColorAnim">YAHOO.util.ColorAnim</a></li>
+                                <li class=""><a href="YAHOO.util.Easing.html" title="YAHOO.util.Easing">YAHOO.util.Easing</a></li>
+                                <li class=""><a href="YAHOO.util.Motion.html" title="YAHOO.util.Motion">YAHOO.util.Motion</a></li>
+                                <li class="selected"><a href="YAHOO.util.Scroll.html" title="YAHOO.util.Scroll">YAHOO.util.Scroll</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Anim.js.html" title="Anim.js">Anim.js</a></li>
+                                <li class=""><a href="AnimMgr.js.html" title="AnimMgr.js">AnimMgr.js</a></li>
+                                <li class=""><a href="Bezier.js.html" title="Bezier.js">Bezier.js</a></li>
+                                <li class=""><a href="ColorAnim.js.html" title="ColorAnim.js">ColorAnim.js</a></li>
+                                <li class=""><a href="Easing.js.html" title="Easing.js">Easing.js</a></li>
+                                <li class=""><a href="Motion.js.html" title="Motion.js">Motion.js</a></li>
+                                <li class=""><a href="Scroll.js.html" title="Scroll.js">Scroll.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.util.Anim", "name": "actualFrames", "url": "YAHOO.util.Anim.html#property_actualFrames", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "animate", "url": "YAHOO.util.Anim.html#method_animate", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "attributes", "url": "YAHOO.util.Anim.html#property_attributes", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "currentFrame", "url": "YAHOO.util.Anim.html#property_currentFrame", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "doMethod", "url": "YAHOO.util.Anim.html#method_doMethod", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "duration", "url": "YAHOO.util.Anim.html#property_duration", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "el", "url": "YAHOO.util.Anim.html#property_el", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getAttribute", "url": "YAHOO.util.Anim.html#method_getAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getDefaultUnit", "url": "YAHOO.util.Anim.html#method_getDefaultUnit", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getEl", "url": "YAHOO.util.Anim.html#method_getEl", "type": "method"}, {"access": "", "host": "YAHOO.util.Bezier", "name": "getPosition", "url": "YAHOO.util.Bezier.html#method_getPosition", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getStartTime", "url": "YAHOO.util.Anim.html#method_getStartTime", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "init", "url": "YAHOO.util.Anim.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "isAnimated", "url": "YAHOO.util.Anim.html#property_isAnimated", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "isAnimated", "url": "YAHOO.util.Anim.html#method_isAnimated", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "method", "url": "YAHOO.util.Anim.html#property_method", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onComplete", "url": "YAHOO.util.Anim.html#property__onComplete", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onComplete", "url": "YAHOO.util.Anim.html#event_onComplete", "type": "event"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onStart", "url": "YAHOO.util.Anim.html#property__onStart", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onStart", "url": "YAHOO.util.Anim.html#event_onStart", "type": "event"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onTween", "url": "YAHOO.util.Anim.html#property__onTween", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "onTween", "url": "YAHOO.util.Anim.html#method_onTween", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onTween", "url": "YAHOO.util.Anim.html#event_onTween", "type": "event"}, {"access": "", "host": "YAHOO.util.Anim", "name": "setAttribute", "url": "YAHOO.util.Anim.html#method_setAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "setEl", "url": "YAHOO.util.Anim.html#method_setEl", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "setRuntimeAttribute", "url": "YAHOO.util.Anim.html#method_setRuntimeAttribute", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "startTime", "url": "YAHOO.util.Anim.html#property_startTime", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "stop", "url": "YAHOO.util.Anim.html#method_stop", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "toString", "url": "YAHOO.util.Anim.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "totalFrames", "url": "YAHOO.util.Anim.html#property_totalFrames", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "useSeconds", "url": "YAHOO.util.Anim.html#property_useSeconds", "type": "property"}];
+</script>
+</body>
+</html>

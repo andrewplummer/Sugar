@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Treeview Node Selection and Checkbox Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/treeview/assets/skins/sam/treeview.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/treeview/treeview-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<!--Additional custom style rules for this example:-->
+<style type="text/css">
+
+.ygtvcheck0 { background: url(../treeview/assets/img/check/check0.gif) 0 0 no-repeat; width:16px; height:20px; float:left; cursor:pointer; }
+.ygtvcheck1 { background: url(../treeview/assets/img/check/check1.gif) 0 0 no-repeat; width:16px; height:20px; float:left; cursor:pointer; }
+.ygtvcheck2 { background: url(../treeview/assets/img/check/check2.gif) 0 0 no-repeat; width:16px; height:20px; float:left; cursor:pointer; }
+
+.ygtv-edit-TaskNode  {	width: 190px;}
+.ygtv-edit-TaskNode .ygtvcancel, .ygtv-edit-TextNode .ygtvok  {	border:none;}
+.ygtv-edit-TaskNode .ygtv-button-container { float: right;}
+.ygtv-edit-TaskNode .ygtv-input  input{	width: 140px;}
+.whitebg {
+	background-color:white;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Treeview Node Selection and Checkbox Example</h1>
+
+<div class="exampleIntro">
+	<p>In this simple example you can see how to do node selection in the
+<a href="http://developer.yahoo.com/yui/treeview/">TreeView Control</a>.</p>
+
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+
+    <h3>Tree with highlight propagation and 'checkbox' skin</h3>
+    <div id="treeDiv1"  class="whitebg ygtv-checkbox"></div>
+    <button id="logHilit">Log selected</button>
+
+    <hr/>
+    <h3>Tree with single node highlighting and simple skin</h3>
+    <div id="treeDiv2" class="whitebg ygtv-highlight"></div>
+
+
+<script type="text/javascript">
+
+//global variable to allow console inspection of tree:
+var tree1, tree2;
+
+//anonymous function wraps the remainder of the logic:
+(function() {
+
+	var makeBranch = function (parent,label) {
+		label = label || '';
+		var n = Math.random() * (6 - (label.length || 0));
+		for (var i = 0;i < n;i++) {
+			var tmpNode = new YAHOO.widget.TextNode('label' + label + '-' + i, parent, Math.random() > .5);
+			makeBranch(tmpNode,label + '-' + i);
+		}
+	}
+
+
+	var treeInit = function() {
+		tree1 = new YAHOO.widget.TreeView("treeDiv1");
+		makeBranch(tree1.getRoot());
+		tree1.setNodesProperty('propagateHighlightUp',true);
+		tree1.setNodesProperty('propagateHighlightDown',true);
+		tree1.subscribe('clickEvent',tree1.onEventToggleHighlight);		
+		tree1.render();
+
+		YAHOO.util.Event.on('logHilit','click',function() {
+			var hiLit = tree1.getNodesByProperty('highlightState',1);
+			if (YAHOO.lang.isNull(hiLit)) { 
+				YAHOO.log("None selected");
+			} else {
+				var labels = [];
+				for (var i = 0; i < hiLit.length; i++) {
+					labels.push(hiLit[i].label);
+				}
+				YAHOO.log("Highlighted nodes:\n" + labels.join("\n"), "info", "example");
+			}
+		});
+
+
+		tree2 = new YAHOO.widget.TreeView("treeDiv2");
+		makeBranch(tree2.getRoot());
+		tree2.singleNodeHighlight = true;
+		tree2.subscribe('clickEvent',tree2.onEventToggleHighlight);		
+		tree2.render();
+		
+		
+	};
+
+	//Add an onDOMReady handler to build the tree when the document is ready
+    YAHOO.util.Event.onDOMReady(treeInit);
+
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

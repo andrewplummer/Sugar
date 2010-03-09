@@ -1,0 +1,2985 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: datasource  YAHOO.util.DataSourceBase   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>DataSource Utility&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_datasource.html" title="datasource">datasource</a>
+                 &gt; YAHOO.util.DataSourceBase 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.util.DataSourceBase</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                        <dl class="subclasses" rel="yui:subclasses">
+                            <dt>Known Subclasses:</dt>
+                            <dd>
+                                    <span rel="yui:subclass" resource="YAHOO.util.LocalDataSource.html">
+                                    <a href="YAHOO.util.LocalDataSource.html" property="yui:name" title="YAHOO.util.LocalDataSource">YAHOO.util.LocalDataSource</a>
+                                    </span>
+                                    <span rel="yui:subclass" resource="YAHOO.util.XHRDataSource.html">
+                                    <a href="YAHOO.util.XHRDataSource.html" property="yui:name" title="YAHOO.util.XHRDataSource">YAHOO.util.XHRDataSource</a>
+                                    </span>
+                                    <span rel="yui:subclass" resource="YAHOO.util.FunctionDataSource.html">
+                                    <a href="YAHOO.util.FunctionDataSource.html" property="yui:name" title="YAHOO.util.FunctionDataSource">YAHOO.util.FunctionDataSource</a>
+                                    </span>
+                                    <span rel="yui:subclass" resource="YAHOO.util.ScriptNodeDataSource.html">
+                                    <a href="YAHOO.util.ScriptNodeDataSource.html" property="yui:name" title="YAHOO.util.ScriptNodeDataSource">YAHOO.util.ScriptNodeDataSource</a>
+                                    </span>
+                            </dd>
+                       </dl>
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Base class for the YUI DataSource utility.
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.util.DataSourceBase</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                oLiveData
+
+                                                , 
+                                                oConfigs
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">oLiveData</span>
+                                                    &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">   Pointer to live data.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">oConfigs</span>
+                                                    &lt;<span property="yui:type">object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  (optional) Object literal of configuration values.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__aCache">
+                                    <h4><a name="property__aCache" property="yui:name">_aCache</a>
+                                        - <code>private <span property="yui:type">Object[]</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Local cache of data result object literals indexed chronologically.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__aIntervals">
+                                    <h4><a name="property__aIntervals" property="yui:name">_aIntervals</a>
+                                        - <code>private <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Array of polling interval IDs that have been enabled, needed to clear all intervals.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__oQueue">
+                                    <h4><a name="property__oQueue" property="yui:name">_oQueue</a>
+                                        - <code>private <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Local queue of request connections, enabled if queue needs to be managed.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__sName">
+                                    <h4><a name="property__sName" property="yui:name">_sName</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Name of DataSource instance.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_DataSource.Parser">
+                                    <h4><a name="property_DataSource.Parser" property="yui:name">DataSource.Parser</a>
+                                        - <code>static <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Data parsing functions.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_DataSourceBase._nIndex">
+                                    <h4><a name="property_DataSourceBase._nIndex" property="yui:name">DataSourceBase._nIndex</a>
+                                        - <code>private static <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Internal class variable to index multiple DataSource instances.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_DataSourceBase._nTransactionId">
+                                    <h4><a name="property_DataSourceBase._nTransactionId" property="yui:name">DataSourceBase._nTransactionId</a>
+                                        - <code>private static <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Internal class variable to assign unique transaction IDs.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_dataType">
+                                    <h4><a name="property_dataType" property="yui:name">dataType</a>
+                                        - <code><span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Where the live data is held:
+<dl>  
+<dt>TYPE_UNKNOWN</dt>
+<dt>TYPE_LOCAL</dt>
+<dt>TYPE_XHR</dt>
+<dt>TYPE_SCRIPTNODE</dt>
+<dt>TYPE_JSFUNCTION</dt>
+</dl>
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: YAHOO.util.DataSourceBase.TYPE_UNKNOWN
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_ERROR_DATAINVALID">
+                                    <h4><a name="property_ERROR_DATAINVALID" property="yui:name">ERROR_DATAINVALID</a>
+                                        - <code>final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Error message for invalid dataresponses.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: "Invalid data"
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_ERROR_DATANULL">
+                                    <h4><a name="property_ERROR_DATANULL" property="yui:name">ERROR_DATANULL</a>
+                                        - <code>final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Error message for null data responses.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: "Null data"
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_liveData">
+                                    <h4><a name="property_liveData" property="yui:name">liveData</a>
+                                        - <code><span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Pointer to live database.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_maxCacheEntries">
+                                    <h4><a name="property_maxCacheEntries" property="yui:name">maxCacheEntries</a>
+                                        - <code><span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Max size of the local cache.  Set to 0 to turn off caching.  Caching is
+useful to reduce the number of server connections.  Recommended only for data
+sources that return comprehensive results for queries or when stale data is
+not an issue.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 0
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_parseJSONArgs">
+                                    <h4><a name="property_parseJSONArgs" property="yui:name">parseJSONArgs</a>
+                                        - <code><span property="yui:type">{MIXED|Array} If an Array, contents are used as individual arguments.
+Otherwise, value is used as an additional argument.</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Additional arguments passed to the JSON parse routine.  The JSON string
+is the assumed first argument (where applicable).  This property is not
+set by default, but the parse methods will use it if present.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_responseSchema">
+                                    <h4><a name="property_responseSchema" property="yui:name">responseSchema</a>
+                                        - <code><span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Response schema object literal takes a combination of the following properties:
+<dl>
+<dt>resultsList</dt> <dd>Pointer to array of tabular data</dd>
+<dt>resultNode</dt> <dd>Pointer to node name of row data (XML data only)</dd>
+<dt>recordDelim</dt> <dd>Record delimiter (text data only)</dd>
+<dt>fieldDelim</dt> <dd>Field delimiter (text data only)</dd>
+<dt>fields</dt> <dd>Array of field names (aka keys), or array of object literals
+such as: {key:"fieldname",parser:YAHOO.util.DataSourceBase.parseDate}</dd>
+<dt>metaFields</dt> <dd>Object literal of keys to include in the oParsedResponse.meta collection</dd>
+<dt>metaNode</dt> <dd>Name of the node under which to search for meta information in XML response data</dd>
+</dl>
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_responseType">
+                                    <h4><a name="property_responseType" property="yui:name">responseType</a>
+                                        - <code><span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Format of response:
+<dl>  
+<dt>TYPE_UNKNOWN</dt>
+<dt>TYPE_JSARRAY</dt>
+<dt>TYPE_JSON</dt>
+<dt>TYPE_XML</dt>
+<dt>TYPE_TEXT</dt>
+<dt>TYPE_HTMLTABLE</dt> 
+</dl>
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: YAHOO.util.DataSourceBase.TYPE_UNKNOWN
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_HTMLTABLE">
+                                    <h4><a name="property_TYPE_HTMLTABLE" property="yui:name">TYPE_HTMLTABLE</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is an HTML TABLE element. Data is parsed out of TR elements from all TBODY elements.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 6
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_JSARRAY">
+                                    <h4><a name="property_TYPE_JSARRAY" property="yui:name">TYPE_JSARRAY</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is a JavaScript Array.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 0
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_JSFUNCTION">
+                                    <h4><a name="property_TYPE_JSFUNCTION" property="yui:name">TYPE_JSFUNCTION</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is a JavaScript Function.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 1
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_JSON">
+                                    <h4><a name="property_TYPE_JSON" property="yui:name">TYPE_JSON</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is JSON.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 3
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_LOCAL">
+                                    <h4><a name="property_TYPE_LOCAL" property="yui:name">TYPE_LOCAL</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is local.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 8
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_SCRIPTNODE">
+                                    <h4><a name="property_TYPE_SCRIPTNODE" property="yui:name">TYPE_SCRIPTNODE</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is hosted on a server via a dynamic script node.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 7
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_TEXT">
+                                    <h4><a name="property_TYPE_TEXT" property="yui:name">TYPE_TEXT</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is plain text.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 5
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_UNKNOWN">
+                                    <h4><a name="property_TYPE_UNKNOWN" property="yui:name">TYPE_UNKNOWN</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is unknown.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: -1
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_XHR">
+                                    <h4><a name="property_TYPE_XHR" property="yui:name">TYPE_XHR</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is hosted on a server via an XHR connection.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 2
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_TYPE_XML">
+                                    <h4><a name="property_TYPE_XML" property="yui:name">TYPE_XML</a>
+                                        - <code>final <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Type is XML.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 4
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_useXPath">
+                                    <h4><a name="property_useXPath" property="yui:name">useXPath</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            When working with XML data, setting this property to true enables support for
+XPath-syntaxed locators in schema definitions.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: false
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method__getLocationValue">
+                                    <h4>
+                                        <a name="method__getLocationValue">_getLocationValue</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                         static 
+                                        
+                                        Object
+                                            <strong property="yui:name">_getLocationValue</strong>
+                                           (
+                                                
+                                                        
+                                                         field
+                                                    
+                                                
+                                                        , 
+                                                         context
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get an XPath-specified value for a given field from an XML node or document.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">field</span>
+                                                        &lt;<span property="yui:type">String | Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Field definition.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">context</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  XML node or document to search within.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Data value or null.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_addToCache">
+                                    <h4>
+                                        <a name="method_addToCache">addToCache</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">addToCache</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oResponse
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Adds a new item to the cache. If cache is full, evicts the stalest item
+before adding the new item.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Response object to cache.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_clearAllIntervals">
+                                    <h4>
+                                        <a name="method_clearAllIntervals">clearAllIntervals</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">clearAllIntervals</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Disables all known polling intervals.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_clearInterval">
+                                    <h4>
+                                        <a name="method_clearInterval">clearInterval</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">clearInterval</strong>
+                                           (
+                                                
+                                                        
+                                                         nId
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Disables polling mechanism associated with the given interval ID.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">nId</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Interval ID.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_DataSourceBase.parseDate">
+                                    <h4>
+                                        <a name="method_DataSourceBase.parseDate">DataSourceBase.parseDate</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                         static 
+                                        
+                                        Date
+                                            <strong property="yui:name">DataSourceBase.parseDate</strong>
+                                           (
+                                                
+                                                        
+                                                         oData
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Converts data to type Date.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oData</span>
+                                                        &lt;<span property="yui:type">Date | String | Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Data to convert.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Date
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A Date instance.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_DataSourceBase.parseNumber">
+                                    <h4>
+                                        <a name="method_DataSourceBase.parseNumber">DataSourceBase.parseNumber</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                         static 
+                                        
+                                        Number
+                                            <strong property="yui:name">DataSourceBase.parseNumber</strong>
+                                           (
+                                                
+                                                        
+                                                         oData
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Converts data to type Number.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oData</span>
+                                                        &lt;<span property="yui:type">String | Number | Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Data to convert. Note, the following
+values return as null: null, undefined, NaN, "".</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A number, or null.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_DataSourceBase.parseString">
+                                    <h4>
+                                        <a name="method_DataSourceBase.parseString">DataSourceBase.parseString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                         static 
+                                        
+                                        String
+                                            <strong property="yui:name">DataSourceBase.parseString</strong>
+                                           (
+                                                
+                                                        
+                                                         oData
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Converts data to type String.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oData</span>
+                                                        &lt;<span property="yui:type">String | Number | Boolean | Date | Array | Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Data to parse.
+The special values null and undefined will return null.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A string, or null.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_doBeforeCallback">
+                                    <h4>
+                                        <a name="method_doBeforeCallback">doBeforeCallback</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">doBeforeCallback</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oFullResponse
+                                                    
+                                                
+                                                        , 
+                                                         oParsedResponse
+                                                    
+                                                
+                                                        , 
+                                                         oCallback
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method gives implementers access to the original full response and
+the parsed response (parsed against the given schema) before the data
+is added to the cache (if applicable) and then sent back to callback function.
+This is your chance to access the raw response and/or populate the parsed
+response with any custom data.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oFullResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The full response from the live database.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oParsedResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The parsed response to return to calling object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCallback</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Parsed response object.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_doBeforeParseData">
+                                    <h4>
+                                        <a name="method_doBeforeParseData">doBeforeParseData</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">doBeforeParseData</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oFullResponse
+                                                    
+                                                
+                                                        , 
+                                                         oCallback
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method gives implementers access to the original full response
+before the data gets parsed. Implementers should take care not to return an
+unparsable or otherwise invalid response.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oFullResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The full response from the live database.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCallback</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Full response for parsing.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_flushCache">
+                                    <h4>
+                                        <a name="method_flushCache">flushCache</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">flushCache</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Flushes cache.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getCachedResponse">
+                                    <h4>
+                                        <a name="method_getCachedResponse">getCachedResponse</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getCachedResponse</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oCallback
+                                                    
+                                                
+                                                        , 
+                                                         oCaller
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method passes request to cache and returns cached response if any,
+refreshing the hit in the cache as the newest item. Returns null if there is
+no cache hit.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCallback</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Callback object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCaller</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  (deprecated) Use callback object.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Cached response object or null.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_handleResponse">
+                                    <h4>
+                                        <a name="method_handleResponse">handleResponse</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">handleResponse</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oRawResponse
+                                                    
+                                                
+                                                        , 
+                                                         oCallback
+                                                    
+                                                
+                                                        , 
+                                                         oCaller
+                                                    
+                                                
+                                                        , 
+                                                         tId
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Receives raw data response and type converts to XML, JSON, etc as necessary.
+Forwards oFullResponse to appropriate parsing function to get turned into
+oParsedResponse. Calls doBeforeCallback() and adds oParsedResponse to 
+the cache when appropriate before calling issueCallback().
+The oParsedResponse object literal has the following properties:
+<dl>
+<dd><dt>tId {Number}</dt> Unique transaction ID</dd>
+<dd><dt>results {Array}</dt> Array of parsed data results</dd>
+<dd><dt>meta {Object}</dt> Object literal of meta values</dd> 
+<dd><dt>error {Boolean}</dt> (optional) True if there was an error</dd>
+<dd><dt>cached {Boolean}</dt> (optional) True if response was cached</dd>
+</dl>
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRawResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The raw response from the live database.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCallback</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Callback object literal.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCaller</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  (deprecated) Use oCallback.scope.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tId</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Transaction ID.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_isCacheHit">
+                                    <h4>
+                                        <a name="method_isCacheHit">isCacheHit</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">isCacheHit</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oCachedRequest
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Default overridable method matches given request to given cached request.
+Returns true if is a hit, returns false otherwise.  Implementers should
+override this method to customize the cache-matching algorithm.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCachedRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Cached request object.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">True if given request matches cached request, false otherwise.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_issueCallback">
+                                    <h4>
+                                        <a name="method_issueCallback">issueCallback</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                         static 
+                                        
+                                        void
+                                            <strong property="yui:name">issueCallback</strong>
+                                           (
+                                                
+                                                        
+                                                         callback
+                                                    
+                                                
+                                                        , 
+                                                         params
+                                                    
+                                                
+                                                        , 
+                                                         error
+                                                    
+                                                
+                                                        , 
+                                                         scope
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Executes a configured callback.  For object literal callbacks, the third
+param determines whether to execute the success handler or failure handler.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">callback</span>
+                                                        &lt;<span property="yui:type">Function|Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  the callback to execute</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">params</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  params to be passed to the callback method</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">error</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  whether an error occurred</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">scope</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  the scope from which to execute the callback
+(deprecated - use an object literal callback)</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_makeConnection">
+                                    <h4>
+                                        <a name="method_makeConnection">makeConnection</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">makeConnection</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oCallback
+                                                    
+                                                
+                                                        , 
+                                                         oCaller
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable default method generates a unique transaction ID and passes 
+the live data reference directly to the  handleResponse function. This
+method should be implemented by subclasses to achieve more complex behavior
+or to access remote data.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCallback</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Callback object literal.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCaller</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  (deprecated) Use oCallback.scope.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Transaction ID.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_parseArrayData">
+                                    <h4>
+                                        <a name="method_parseArrayData">parseArrayData</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">parseArrayData</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oFullResponse
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method parses Array data into a response object.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oFullResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The full Array from the live database.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Parsed response object with the following properties:<br>
+- results (Array) Array of parsed data results<br>
+- error (Boolean) True if there was an error</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_parseData">
+                                    <h4>
+                                        <a name="method_parseData">parseData</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object} Parsed response object with the following properties:<br>
+- results {Array} Array of parsed data results<br>
+- meta {Object} Object literal of meta values<br>
+- error {Boolean
+                                            <strong property="yui:name">parseData</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oFullResponse
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method parses data of generic RESPONSE_TYPE into a response object.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oFullResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The full Array from the live database.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object} Parsed response object with the following properties:<br>
+- results {Array} Array of parsed data results<br>
+- meta {Object} Object literal of meta values<br>
+- error {Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">(optional) True if there was an error<br></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_parseHTMLTableData">
+                                    <h4>
+                                        <a name="method_parseHTMLTableData">parseHTMLTableData</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">parseHTMLTableData</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oFullResponse
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method parses an HTML TABLE element reference into a response object.
+Data is parsed out of TR elements from all TBODY elements.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oFullResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The full HTML element reference from the live database.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Parsed response object with the following properties<br>
+- results (Array) Array of parsed data results<br>
+- error (Boolean) True if there was an error</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_parseJSONData">
+                                    <h4>
+                                        <a name="method_parseJSONData">parseJSONData</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">parseJSONData</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oFullResponse
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method parses JSON data into a response object.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oFullResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The full JSON from the live database.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Parsed response object with the following properties<br>
+- results (Array) Array of parsed data results<br>
+- error (Boolean) True if there was an error</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_parseTextData">
+                                    <h4>
+                                        <a name="method_parseTextData">parseTextData</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">parseTextData</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oFullResponse
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method parses plain text data into a response object.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oFullResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The full text response from the live database.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Parsed response object with the following properties:<br>
+- results (Array) Array of parsed data results<br>
+- error (Boolean) True if there was an error</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_parseXMLData">
+                                    <h4>
+                                        <a name="method_parseXMLData">parseXMLData</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">parseXMLData</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oFullResponse
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method parses XML data into a response object.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oFullResponse</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The full XML response from the live database.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Parsed response object with the following properties<br>
+- results (Array) Array of parsed data results<br>
+- error (Boolean) True if there was an error</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_parseXMLResult">
+                                    <h4>
+                                        <a name="method_parseXMLResult">parseXMLResult</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">parseXMLResult</strong>
+                                           (
+                                                
+                                                        
+                                                         result
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Overridable method parses XML data for one result into an object literal.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">result</span>
+                                                        &lt;<span property="yui:type">XML</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  XML for one result.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Object literal of data for one result.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_sendRequest">
+                                    <h4>
+                                        <a name="method_sendRequest">sendRequest</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">sendRequest</strong>
+                                           (
+                                                
+                                                        
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oCallback
+                                                    
+                                                
+                                                        , 
+                                                         oCaller
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            First looks for cached response, then sends request to live data. The
+following arguments are passed to the callback function:
+<dl>
+<dt><code>oRequest</code></dt>
+<dd>The same value that was passed in as the first argument to sendRequest.</dd>
+<dt><code>oParsedResponse</code></dt>
+<dd>An object literal containing the following properties:
+<dl>
+<dt><code>tId</code></dt>
+<dd>Unique transaction ID number.</dd>
+<dt><code>results</code></dt>
+<dd>Schema-parsed data results.</dd>
+<dt><code>error</code></dt>
+<dd>True in cases of data error.</dd>
+<dt><code>cached</code></dt>
+<dd>True when response is returned from DataSource cache.</dd> 
+<dt><code>meta</code></dt>
+<dd>Schema-parsed meta data.</dd>
+</dl>
+<dt><code>oPayload</code></dt>
+<dd>The same value as was passed in as <code>argument</code> in the oCallback object literal.</dd>
+</dl>
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCallback</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  An object literal with the following properties:
+<dl>
+<dt><code>success</code></dt>
+<dd>The function to call when the data is ready.</dd>
+<dt><code>failure</code></dt>
+<dd>The function to call upon a response failure condition.</dd>
+<dt><code>scope</code></dt>
+<dd>The object to serve as the scope for the success and failure handlers.</dd>
+<dt><code>argument</code></dt>
+<dd>Arbitrary data that will be passed back to the success and failure handlers.</dd>
+</dl></span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCaller</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  (deprecated) Use oCallback.scope.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Transaction ID, or null if response found in cache.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setInterval">
+                                    <h4>
+                                        <a name="method_setInterval">setInterval</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">setInterval</strong>
+                                           (
+                                                
+                                                        
+                                                         nMsec
+                                                    
+                                                
+                                                        , 
+                                                         oRequest
+                                                    
+                                                
+                                                        , 
+                                                         oCallback
+                                                    
+                                                
+                                                        , 
+                                                         oCaller
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets up a polling mechanism to send requests at set intervals and forward
+responses to given callback.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">nMsec</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Length of interval in milliseconds.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oRequest</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Request object.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCallback</span>
+                                                        &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Handler function to receive the response.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oCaller</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  (deprecated) Use oCallback.scope.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Interval ID.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Public accessor to the unique name of the DataSource instance.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Unique name of the DataSource instance.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_cacheFlushEvent">
+                                    <h4>
+                                        <a name="event_cacheFlushEvent">cacheFlushEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">cacheFlushEvent</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when the local cache is flushed.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_cacheRequestEvent">
+                                    <h4>
+                                        <a name="event_cacheRequestEvent">cacheRequestEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">cacheRequestEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         oArgs.request
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.callback
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.caller
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when a request is made to the local cache.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.request</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The request object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.callback</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.caller</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  (deprecated) Use callback.scope.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_cacheResponseEvent">
+                                    <h4>
+                                        <a name="event_cacheResponseEvent">cacheResponseEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">cacheResponseEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         oArgs.request
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.response
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.callback
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.caller
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when data is retrieved from the local cache.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.request</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The request object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.response</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The response object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.callback</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.caller</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  (deprecated) Use callback.scope.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_dataErrorEvent">
+                                    <h4>
+                                        <a name="event_dataErrorEvent">dataErrorEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">dataErrorEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         oArgs.request
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.response
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.callback
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.caller
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.message
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when an error is encountered with the live data source.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.request</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The request object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.response</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The response object (if available).</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.callback</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.caller</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  (deprecated) Use callback.scope.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.message</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The error message.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_requestEvent">
+                                    <h4>
+                                        <a name="event_requestEvent">requestEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">requestEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         oArgs.request
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.callback
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.tId
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.caller
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when a request is sent to the live data source.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.request</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The request object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.callback</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.tId</span>
+                                                                &lt;<span property="yui:type">Number</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  Transaction ID.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.caller</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  (deprecated) Use callback.scope.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_responseCacheEvent">
+                                    <h4>
+                                        <a name="event_responseCacheEvent">responseCacheEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">responseCacheEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         oArgs.request
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.response
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.callback
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.caller
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when response is cached.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.request</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The request object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.response</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The parsed response object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.callback</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.caller</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  (deprecated) Use callback.scope.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_responseEvent">
+                                    <h4>
+                                        <a name="event_responseEvent">responseEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">responseEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         oArgs.request
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.response
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.callback
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.tId
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.caller
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when live data source sends response.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.request</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The request object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.response</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The raw response object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.callback</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.tId</span>
+                                                                &lt;<span property="yui:type">Number</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  Transaction ID.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.caller</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  (deprecated) Use callback.scope.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_responseParseEvent">
+                                    <h4>
+                                        <a name="event_responseParseEvent">responseParseEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">responseParseEvent</strong>
+
+                                            (
+                                                
+                                                        
+                                                         oArgs.request
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.response
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.callback
+                                                    
+                                                
+                                                        , 
+                                                         oArgs.caller
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fired when response is parsed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.request</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The request object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.response</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The parsed response object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.callback</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The callback object.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">oArgs.caller</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  (deprecated) Use callback.scope.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class="selected"><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.DataSource.html" title="YAHOO.util.DataSource">YAHOO.util.DataSource</a></li>
+                                <li class="selected"><a href="YAHOO.util.DataSourceBase.html" title="YAHOO.util.DataSourceBase">YAHOO.util.DataSourceBase</a></li>
+                                <li class=""><a href="YAHOO.util.Date.html" title="YAHOO.util.Date">YAHOO.util.Date</a></li>
+                                <li class=""><a href="YAHOO.util.DateLocale.html" title="YAHOO.util.DateLocale">YAHOO.util.DateLocale</a></li>
+                                <li class=""><a href="YAHOO.util.FunctionDataSource.html" title="YAHOO.util.FunctionDataSource">YAHOO.util.FunctionDataSource</a></li>
+                                <li class=""><a href="YAHOO.util.LocalDataSource.html" title="YAHOO.util.LocalDataSource">YAHOO.util.LocalDataSource</a></li>
+                                <li class=""><a href="YAHOO.util.Number.html" title="YAHOO.util.Number">YAHOO.util.Number</a></li>
+                                <li class=""><a href="YAHOO.util.ScriptNodeDataSource.html" title="YAHOO.util.ScriptNodeDataSource">YAHOO.util.ScriptNodeDataSource</a></li>
+                                <li class=""><a href="YAHOO.util.XHRDataSource.html" title="YAHOO.util.XHRDataSource">YAHOO.util.XHRDataSource</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="DataSource.js.html" title="DataSource.js">DataSource.js</a></li>
+                                <li class=""><a href="Type.js.html" title="Type.js">Type.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__aCache" title="_aCache">_aCache</a></li>
+                                <li class="private"><a href="#property__aIntervals" title="_aIntervals">_aIntervals</a></li>
+                                <li class="private"><a href="#property__oQueue" title="_oQueue">_oQueue</a></li>
+                                <li class="private"><a href="#property__sName" title="_sName">_sName</a></li>
+                                <li class=""><a href="#property_DataSource.Parser" title="DataSource.Parser">DataSource.Parser</a></li>
+                                <li class="private"><a href="#property_DataSourceBase._nIndex" title="DataSourceBase._nIndex">DataSourceBase._nIndex</a></li>
+                                <li class="private"><a href="#property_DataSourceBase._nTransactionId" title="DataSourceBase._nTransactionId">DataSourceBase._nTransactionId</a></li>
+                                <li class=""><a href="#property_dataType" title="dataType">dataType</a></li>
+                                <li class=""><a href="#property_ERROR_DATAINVALID" title="ERROR_DATAINVALID">ERROR_DATAINVALID</a></li>
+                                <li class=""><a href="#property_ERROR_DATANULL" title="ERROR_DATANULL">ERROR_DATANULL</a></li>
+                                <li class=""><a href="#property_liveData" title="liveData">liveData</a></li>
+                                <li class=""><a href="#property_maxCacheEntries" title="maxCacheEntries">maxCacheEntries</a></li>
+                                <li class=""><a href="#property_parseJSONArgs" title="parseJSONArgs">parseJSONArgs</a></li>
+                                <li class=""><a href="#property_responseSchema" title="responseSchema">responseSchema</a></li>
+                                <li class=""><a href="#property_responseType" title="responseType">responseType</a></li>
+                                <li class=""><a href="#property_TYPE_HTMLTABLE" title="TYPE_HTMLTABLE">TYPE_HTMLTABLE</a></li>
+                                <li class=""><a href="#property_TYPE_JSARRAY" title="TYPE_JSARRAY">TYPE_JSARRAY</a></li>
+                                <li class=""><a href="#property_TYPE_JSFUNCTION" title="TYPE_JSFUNCTION">TYPE_JSFUNCTION</a></li>
+                                <li class=""><a href="#property_TYPE_JSON" title="TYPE_JSON">TYPE_JSON</a></li>
+                                <li class=""><a href="#property_TYPE_LOCAL" title="TYPE_LOCAL">TYPE_LOCAL</a></li>
+                                <li class=""><a href="#property_TYPE_SCRIPTNODE" title="TYPE_SCRIPTNODE">TYPE_SCRIPTNODE</a></li>
+                                <li class=""><a href="#property_TYPE_TEXT" title="TYPE_TEXT">TYPE_TEXT</a></li>
+                                <li class=""><a href="#property_TYPE_UNKNOWN" title="TYPE_UNKNOWN">TYPE_UNKNOWN</a></li>
+                                <li class=""><a href="#property_TYPE_XHR" title="TYPE_XHR">TYPE_XHR</a></li>
+                                <li class=""><a href="#property_TYPE_XML" title="TYPE_XML">TYPE_XML</a></li>
+                                <li class=""><a href="#property_useXPath" title="useXPath">useXPath</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method__getLocationValue" title="_getLocationValue">_getLocationValue</a></li>
+                                <li class=""><a href="#method_addToCache" title="addToCache">addToCache</a></li>
+                                <li class=""><a href="#method_clearAllIntervals" title="clearAllIntervals">clearAllIntervals</a></li>
+                                <li class=""><a href="#method_clearInterval" title="clearInterval">clearInterval</a></li>
+                                <li class=""><a href="#method_DataSourceBase.parseDate" title="DataSourceBase.parseDate">DataSourceBase.parseDate</a></li>
+                                <li class=""><a href="#method_DataSourceBase.parseNumber" title="DataSourceBase.parseNumber">DataSourceBase.parseNumber</a></li>
+                                <li class=""><a href="#method_DataSourceBase.parseString" title="DataSourceBase.parseString">DataSourceBase.parseString</a></li>
+                                <li class=""><a href="#method_doBeforeCallback" title="doBeforeCallback">doBeforeCallback</a></li>
+                                <li class=""><a href="#method_doBeforeParseData" title="doBeforeParseData">doBeforeParseData</a></li>
+                                <li class=""><a href="#method_flushCache" title="flushCache">flushCache</a></li>
+                                <li class=""><a href="#method_getCachedResponse" title="getCachedResponse">getCachedResponse</a></li>
+                                <li class=""><a href="#method_handleResponse" title="handleResponse">handleResponse</a></li>
+                                <li class=""><a href="#method_isCacheHit" title="isCacheHit">isCacheHit</a></li>
+                                <li class=""><a href="#method_issueCallback" title="issueCallback">issueCallback</a></li>
+                                <li class=""><a href="#method_makeConnection" title="makeConnection">makeConnection</a></li>
+                                <li class=""><a href="#method_parseArrayData" title="parseArrayData">parseArrayData</a></li>
+                                <li class=""><a href="#method_parseData" title="parseData">parseData</a></li>
+                                <li class=""><a href="#method_parseHTMLTableData" title="parseHTMLTableData">parseHTMLTableData</a></li>
+                                <li class=""><a href="#method_parseJSONData" title="parseJSONData">parseJSONData</a></li>
+                                <li class=""><a href="#method_parseTextData" title="parseTextData">parseTextData</a></li>
+                                <li class=""><a href="#method_parseXMLData" title="parseXMLData">parseXMLData</a></li>
+                                <li class=""><a href="#method_parseXMLResult" title="parseXMLResult">parseXMLResult</a></li>
+                                <li class=""><a href="#method_sendRequest" title="sendRequest">sendRequest</a></li>
+                                <li class=""><a href="#method_setInterval" title="setInterval">setInterval</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_cacheFlushEvent" title="cacheFlushEvent">cacheFlushEvent</a></li>
+                                <li class=""><a href="#event_cacheRequestEvent" title="cacheRequestEvent">cacheRequestEvent</a></li>
+                                <li class=""><a href="#event_cacheResponseEvent" title="cacheResponseEvent">cacheResponseEvent</a></li>
+                                <li class=""><a href="#event_dataErrorEvent" title="dataErrorEvent">dataErrorEvent</a></li>
+                                <li class=""><a href="#event_requestEvent" title="requestEvent">requestEvent</a></li>
+                                <li class=""><a href="#event_responseCacheEvent" title="responseCacheEvent">responseCacheEvent</a></li>
+                                <li class=""><a href="#event_responseEvent" title="responseEvent">responseEvent</a></li>
+                                <li class=""><a href="#event_responseParseEvent" title="responseParseEvent">responseParseEvent</a></li>
+                        </ul>
+                    </div>
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_aCache", "url": "YAHOO.util.DataSourceBase.html#property__aCache", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "addToCache", "url": "YAHOO.util.DataSourceBase.html#method_addToCache", "type": "method"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_aIntervals", "url": "YAHOO.util.DataSourceBase.html#property__aIntervals", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "cacheFlushEvent", "url": "YAHOO.util.DataSourceBase.html#event_cacheFlushEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "cacheRequestEvent", "url": "YAHOO.util.DataSourceBase.html#event_cacheRequestEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "cacheResponseEvent", "url": "YAHOO.util.DataSourceBase.html#event_cacheResponseEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "clearAllIntervals", "url": "YAHOO.util.DataSourceBase.html#method_clearAllIntervals", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "clearInterval", "url": "YAHOO.util.DataSourceBase.html#method_clearInterval", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "dataErrorEvent", "url": "YAHOO.util.DataSourceBase.html#event_dataErrorEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase._nIndex", "url": "YAHOO.util.DataSourceBase.html#property_DataSourceBase._nIndex", "type": "property"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase._nTransactionId", "url": "YAHOO.util.DataSourceBase.html#property_DataSourceBase._nTransactionId", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase.parseDate", "url": "YAHOO.util.DataSourceBase.html#method_DataSourceBase.parseDate", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase.parseNumber", "url": "YAHOO.util.DataSourceBase.html#method_DataSourceBase.parseNumber", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase.parseString", "url": "YAHOO.util.DataSourceBase.html#method_DataSourceBase.parseString", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "DataSource.Parser", "url": "YAHOO.util.DataSourceBase.html#property_DataSource.Parser", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "dataType", "url": "YAHOO.util.DataSourceBase.html#property_dataType", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "doBeforeCallback", "url": "YAHOO.util.DataSourceBase.html#method_doBeforeCallback", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "doBeforeParseData", "url": "YAHOO.util.DataSourceBase.html#method_doBeforeParseData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "ERROR_DATAINVALID", "url": "YAHOO.util.DataSourceBase.html#property_ERROR_DATAINVALID", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "ERROR_DATANULL", "url": "YAHOO.util.DataSourceBase.html#property_ERROR_DATANULL", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "flushCache", "url": "YAHOO.util.DataSourceBase.html#method_flushCache", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "getCachedResponse", "url": "YAHOO.util.DataSourceBase.html#method_getCachedResponse", "type": "method"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_getLocationValue", "url": "YAHOO.util.DataSourceBase.html#method__getLocationValue", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "handleResponse", "url": "YAHOO.util.DataSourceBase.html#method_handleResponse", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "isCacheHit", "url": "YAHOO.util.DataSourceBase.html#method_isCacheHit", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "issueCallback", "url": "YAHOO.util.DataSourceBase.html#method_issueCallback", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "liveData", "url": "YAHOO.util.DataSourceBase.html#property_liveData", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "makeConnection", "url": "YAHOO.util.DataSourceBase.html#method_makeConnection", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "maxCacheEntries", "url": "YAHOO.util.DataSourceBase.html#property_maxCacheEntries", "type": "property"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_oQueue", "url": "YAHOO.util.DataSourceBase.html#property__oQueue", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseArrayData", "url": "YAHOO.util.DataSourceBase.html#method_parseArrayData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseData", "url": "YAHOO.util.DataSourceBase.html#method_parseData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseHTMLTableData", "url": "YAHOO.util.DataSourceBase.html#method_parseHTMLTableData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseJSONArgs", "url": "YAHOO.util.DataSourceBase.html#property_parseJSONArgs", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseJSONData", "url": "YAHOO.util.DataSourceBase.html#method_parseJSONData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseTextData", "url": "YAHOO.util.DataSourceBase.html#method_parseTextData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseXMLData", "url": "YAHOO.util.DataSourceBase.html#method_parseXMLData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseXMLResult", "url": "YAHOO.util.DataSourceBase.html#method_parseXMLResult", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "requestEvent", "url": "YAHOO.util.DataSourceBase.html#event_requestEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseCacheEvent", "url": "YAHOO.util.DataSourceBase.html#event_responseCacheEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseEvent", "url": "YAHOO.util.DataSourceBase.html#event_responseEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseParseEvent", "url": "YAHOO.util.DataSourceBase.html#event_responseParseEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseSchema", "url": "YAHOO.util.DataSourceBase.html#property_responseSchema", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseType", "url": "YAHOO.util.DataSourceBase.html#property_responseType", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "sendRequest", "url": "YAHOO.util.DataSourceBase.html#method_sendRequest", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "setInterval", "url": "YAHOO.util.DataSourceBase.html#method_setInterval", "type": "method"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_sName", "url": "YAHOO.util.DataSourceBase.html#property__sName", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "toString", "url": "YAHOO.util.DataSourceBase.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_HTMLTABLE", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_HTMLTABLE", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_JSARRAY", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_JSARRAY", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_JSFUNCTION", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_JSFUNCTION", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_JSON", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_JSON", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_LOCAL", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_LOCAL", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_SCRIPTNODE", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_SCRIPTNODE", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_TEXT", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_TEXT", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_UNKNOWN", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_UNKNOWN", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_XHR", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_XHR", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_XML", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_XML", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "useXPath", "url": "YAHOO.util.DataSourceBase.html#property_useXPath", "type": "property"}];
+</script>
+</body>
+</html>

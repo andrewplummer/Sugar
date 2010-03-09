@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Layout Manager: Full Page Layout</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/resize/assets/skins/sam/resize.css" />
+<link rel="stylesheet" type="text/css" href="../../build/layout/assets/skins/sam/layout.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/resize/resize-min.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/layout/layout-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Layout Manager: Full Page Layout</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Layout Manager: Full Page Layout</h1>
+	
+	<div class="exampleIntro">
+	<p>This example shows how to build a full page layout.</p>
+
+			
+	</div>	
+					
+	<div class="example-container module  newWindow">
+			<div id="example-canvas" class="bd">
+	
+		<p class="newWindowButton yui-skin-sam"><span id="newWindowLink"><span class="first-child"><a href="page_layout_source.html" target="_blank">View example in new window.</a></span></span>		
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Using the Layout Manager for a full page layout</h2>
+
+<p>We can make a full page layout by omitting the first parameter to the Layout Manager's constructor.</p>
+
+<textarea name="code" class="JScript">
+var layout = new YAHOO.widget.Layout({
+});
+layout.render();
+</textarea>
+
+<h2>Setting up the Layout Units</h2>
+
+<p>Each area of the layout (top, right, bottom, left and center) is made up of a <code>LayoutUnit</code>.</p>
+<p>The only <strong>required</strong> unit is the center unit. It will be the one that is fluid when styled.</p>
+<p>We can setup these units by passing them into the unit array configuration option.</p>
+
+<textarea name="code" class="JScript">
+var layout = new YAHOO.widget.Layout({
+    units: [
+        { position: 'top' },
+        { position: 'right' },
+        { position: 'bottom' },
+        { position: 'left' },
+        { position: 'center' }
+    ]
+});
+layout.render();
+</textarea>
+
+<h2>Configuring a unit</h2>
+
+<p>Each <code>LayoutUnit</code> has its own configuration settings. In the example below we, will show the following options:
+<ul>
+    <li><code>position</code>: The position that this unit will take in the Layout.</li>
+    <li><code>header</code>: The string to use for the Header of the unit.</li>
+    <li><code>width</code>: The width (in pixels) that the unit will take up in the layout.</li>
+    <li><code>resize</code>: Should the unit be resizable.</li>
+    <li><code>gutter</code>: The gutter applied to the unit's wrapper, before the content.</li>
+    <li><code>footer</code>: An id or string to use as the footer of the unit.</li>
+    <li><code>collapse</code>: Should the unit be collapable. (places an icon in the header)</li>
+    <li><code>scroll</code>: Should the unit's body have scroll bars if the body content is larger than the display area.</li>
+    <li><code>body</code>: An id or string to be used as the unit's body</li>
+    <li><code>animate</code>: Should be animate the expand and collapse moments.</li>
+</ul>
+</p>
+<p>See the <a href="../../docs/module_layout.html">API docs</a> for more info on LayoutUnit options.</p>
+
+<h3>The HTML for the body</h3>
+<textarea name="code" class="HTML">
+<div id="right1">
+    <b>Right 1</b>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+    Suspendisse justo nibh, pharetra at, adipiscing ullamcorper.</p>
+    <!-- SNIPPED -->
+</div>
+</textarea>
+<h3>The configuration for the Right unit</h3>
+<textarea name="code" class="JScript">
+{
+    position: 'right',
+    header: 'Right',
+    width: 300,
+    resize: true,
+    gutter: '5px',
+    footer: 'Footer',
+    collapse: true,
+    scroll: true,
+    body: 'right1',
+    animate: true
+}
+</textarea>
+
+
+<h2>Full Example Source</h2>
+<textarea name="code" class="HTML">
+<div id="top1">
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse justo nibh, pharetra at, adipiscing ullamcorper.</p>
+</div>
+<div id="bottom1">
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse justo nibh, pharetra at, adipiscing ullamcorper.</p>
+</div>
+<div id="right1">
+    <b>Right 1</b>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse justo nibh, pharetra at, adipiscing ullamcorper.</p>
+    <!-- SNIPPED -->
+</div>
+<div id="left1">
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse justo nibh, pharetra at, adipiscing ullamcorper.</p>
+    <!-- SNIPPED -->
+</div>
+<div id="center1">
+    <p id="toggle"><a href="#" id="tRight">Toggle Right</a><a href="#" id="tLeft">Toggle Left</a>
+    <a href="#" id="closeLeft">Close Left</a><a href="#" id="padRight">Add Gutter to Right</a></p>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse justo nibh, pharetra at, .</p>
+    <!-- SNIPPED -->
+</div>
+</textarea>
+<textarea name="code" class="JScript">
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event;
+
+    Event.onDOMReady(function() {
+        var layout = new YAHOO.widget.Layout({
+            units: [
+                { position: 'top', height: 50, body: 'top1', header: 'Top', gutter: '5px', collapse: true, resize: true },
+                { position: 'right', header: 'Right', width: 300, resize: true, gutter: '5px', footer: 'Footer', collapse: true, scroll: true, body: 'right1', animate: true },
+                { position: 'bottom', header: 'Bottom', height: 100, resize: true, body: 'bottom1', gutter: '5px', collapse: true },
+                { position: 'left', header: 'Left', width: 200, resize: true, body: 'left1', gutter: '5px', collapse: true, close: true, collapseSize: 50, scroll: true, animate: true },
+                { position: 'center', body: 'center1' }
+            ]
+        });
+        layout.on('render', function() {
+            layout.getUnitByPosition('left').on('close', function() {
+                closeLeft();
+            });
+        });
+        layout.render();
+        Event.on('tLeft', 'click', function(ev) {
+            Event.stopEvent(ev);
+            layout.getUnitByPosition('left').toggle();
+        });
+        Event.on('tRight', 'click', function(ev) {
+            Event.stopEvent(ev);
+            layout.getUnitByPosition('right').toggle();
+        });
+        Event.on('padRight', 'click', function(ev) {
+            Event.stopEvent(ev);
+            var pad = prompt('CSS gutter to apply: ("2px" or "2px 4px" or any combination of the 4 sides)', layout.getUnitByPosition('right').get('gutter'));
+            layout.getUnitByPosition('right').set('gutter', pad);
+        });
+        var closeLeft = function() {
+            var a = document.createElement('a');
+            a.href = '#';
+            a.innerHTML = 'Add Left Unit';
+            Dom.get('closeLeft').parentNode.appendChild(a);
+
+            Dom.setStyle('tLeft', 'display', 'none');
+            Dom.setStyle('closeLeft', 'display', 'none');
+            Event.on(a, 'click', function(ev) {
+                Event.stopEvent(ev);
+                Dom.setStyle('tLeft', 'display', 'inline');
+                Dom.setStyle('closeLeft', 'display', 'inline');
+                a.parentNode.removeChild(a);
+                layout.addUnit(layout.get('units')[3]);
+                layout.getUnitByPosition('left').on('close', function() {
+                    closeLeft();
+                });
+            });
+        };
+        Event.on('closeLeft', 'click', function(ev) {
+            Event.stopEvent(ev);
+            layout.getUnitByPosition('left').close();
+        });
+    });
+
+
+})();
+</textarea>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?reset&fonts&grids&event&dragdrop&dom&element&resize&animation&layout&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+					
+				
+					<div id="examples">
+						<h3 class='firstContent'>Layout Manager Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li class='selected'><a href='../layout/page_layout.html'>Full Page Layout</a></li><li><a href='../layout/panel_layout.html'>Layout inside a resizable Panel</a></li><li><a href='../layout/grids_layout.html'>Using a Layout with Grids CSS</a></li><li><a href='../layout/nested_layout.html'>Nesting a layout</a></li><li><a href='../layout/menu_layout.html'>Layout with Menu Controls</a></li><li><a href='../layout/calrte_layout.html'>Simple Application</a></li><li><a href='../layout/adv_layout.html'>Complex Application</a></li><li><a href='../layout/skinning_layout.html'>Skinning a Layout</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Layout Manager Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/layout/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_layout.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/layout.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="selected "><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

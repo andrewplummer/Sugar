@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using the TabView ARIA Plugin</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/tabview/assets/skins/sam/tabview.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/tabview/tabview-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+	/*
+		The TabView ARIA Plugin removes the "href" attribute from the <A> element of each 
+		Tab, resulting in the focus outline no longer be rendered in Gecko-based browsers when the 
+		<A> element is focused.  For this reason, it is necessary to restore the focus outline 
+		for the <A>. 
+	*/
+	.yui-skin-sam .yui-navset .yui-nav a[role=tab]:focus {
+		outline: dotted 1px #000;
+	}
+
+	/*
+		Hide the instructional text in the H1 and the content of the LiveRegion outside the 
+		viewport boundaries so it is only readable by users of screen readers.
+	*/
+	#tabview-title em,
+	.yui-navset div[role=log] {
+		position: absolute;
+		left: -999em;
+	}
+
+</style>
+<script type="text/javascript" src="../tabview/assets/tabviewariaplugin.js"></script>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using the TabView ARIA Plugin</h1>
+
+<div class="exampleIntro">
+	<p>
+The TabView ARIA Plugin makes it easy to use the 
+<a href="http://www.w3.org/TR/wai-aria/">WAI-ARIA Roles and States</a> with the TabView control.
+Using the ARIA plugin, a TabView is more interoperable with assistive technologies (AT),
+such as screen readers, making it more accessible to users with disabilities.
+</p>
+<p>
+<a href="http://video.yahoo.com/watch/3199866/9051193">Watch a screen cast of this example 
+running in Firefox 3 with the NVDA screen reader</a>, to see immediately the benefits that 
+ARIA provides, or 
+<a href="http://www.nvda-project.org/wiki/Snapshots">download the latest development snapshot of 
+NVDA</a> to test this example for yourself.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="container">
+	<h2 class="first" id="tabview-title">Browser News</h2>
+</div>
+<script type="text/javascript">
+(function() {
+
+	var Dom = YAHOO.util.Dom,
+		UA = YAHOO.env.ua,
+
+		oTitle,
+		oTabViewEl,
+		oLog,
+		sInstructionalText;
+
+    var oTabView = new YAHOO.widget.TabView();
+    
+    oTabView.addTab( new YAHOO.widget.Tab({
+        label: 'Opera',
+        dataSrc: 'assets/news.php?query=opera+browser',
+        cacheData: true,
+        active: true
+    }));
+
+    oTabView.addTab( new YAHOO.widget.Tab({
+        label: 'Firefox',
+        dataSrc: 'assets/news.php?query=firefox+browser',
+        cacheData: true
+    }));
+
+    oTabView.addTab( new YAHOO.widget.Tab({
+        label: 'Explorer',
+        dataSrc: 'assets/news.php?query=microsoft+explorer+browser',
+        cacheData: true
+    }));
+
+    oTabView.addTab( new YAHOO.widget.Tab({
+        label: 'Safari',
+        dataSrc: 'assets/news.php?query=apple+safari+browser',
+        cacheData: true
+    }));
+
+    oTabView.appendTo('container');
+    
+
+	//	Make use of some additional ARIA Roles and States to further enhance the TabView if the 
+	//	browser supports ARIA.
+	
+	if ((UA.gecko && UA.gecko >= 1.9) || (UA.ie && UA.ie >= 8)) {
+
+		//	Use the "labelledby" attribute provided by the ARIA plugin for TabView to label the 
+		//	TabView with the <h2>, and append some instructional text to the <H2> that tells users 
+		//	of screen readers how to use TabView.  This text will be read when the first Tab is 
+		//	focused.  Since this text is specifically for users of screen readers, it will be 
+		//	hidden off screen via CSS.
+
+		oTitle = Dom.get("tabview-title");
+
+		sInstructionalText = oTitle.innerHTML;
+
+		oTitle.innerHTML = (sInstructionalText + "<em>Press the space bar or enter key to load the content of each tab.</em>");
+
+		oTabView.set("labelledby", "tabview-title");
+
+
+		//	Since the content of each Tab is loaded via XHR, append a Live Region to the TabView's 
+		//	root element that will be used to message users about the status of each Tab's content.  
+
+		oTabViewEl = oTabView.get("element");
+		oLog = oTabViewEl.ownerDocument.createElement("div");
+
+		oLog.setAttribute("role", "log");
+		oLog.setAttribute("aria-live", "polite");
+
+		oTabViewEl.appendChild(oLog);
+
+
+		//	"activeTabChange" event handler used to notify the screen reader that 
+		//	the content of the Tab is loading by updaing the content of the Live Region.
+
+		oTabView.on("activeTabChange", function (event) {
+
+			var oTabEl = this.get("activeTab").get("element"),
+				sTabLabel = oTabEl.textContent || oTabEl.innerText,
+				oCurrentMessage = Dom.getFirstChild(oLog),
+				oMessage = oLog.ownerDocument.createElement("p");
+
+			oMessage.innerHTML = "Please wait.  Content loading for " + sTabLabel + " property page.";
+
+			if (oCurrentMessage) {
+				oLog.replaceChild(oMessage, oCurrentMessage);
+			}
+			else {
+				oLog.appendChild(oMessage);						
+			}
+
+		});	
+	
+
+		//	"dataLoadedChange" event handler used to notify the screen reader that 
+		//	the content of the Tab has finished loading by updating the content of the Live Region.
+		
+		var onDataLoadedChange = function (event) {
+
+			var oTabEl = this.get("element"),
+				sTabLabel = oTabEl.textContent || oTabEl.innerText,
+				oCurrentMessage = Dom.getFirstChild(oLog),
+				oMessage = oLog.ownerDocument.createElement("p");
+
+			oMessage.innerHTML = "Content loaded for " + sTabLabel + " property page.";
+
+			if (oCurrentMessage) {
+				oLog.replaceChild(oMessage, oCurrentMessage);
+			}
+			else {
+				oLog.appendChild(oMessage);						
+			}
+		
+		};
+	
+		oTabView.getTab(0).on("dataLoadedChange", onDataLoadedChange);
+		oTabView.getTab(1).on("dataLoadedChange", onDataLoadedChange);
+		oTabView.getTab(2).on("dataLoadedChange", onDataLoadedChange);
+		oTabView.getTab(3).on("dataLoadedChange", onDataLoadedChange);
+
+	}
+    
+})();
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

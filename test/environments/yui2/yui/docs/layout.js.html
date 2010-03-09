@@ -1,0 +1,837 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: layout   layout.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>layout&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_layout.html" title="layout">layout</a>
+                
+                 &gt; layout.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * @description &lt;p&gt;Provides a fixed layout containing, top, bottom, left, right and center layout units. It can be applied to either the body or an element.&lt;/p&gt;</span>
+<span class="c"> * @namespace YAHOO.widget</span>
+<span class="c"> * @requires yahoo, dom, element, event</span>
+<span class="c"> * @module layout</span>
+<span class="c"> */</span>
+<span class="o">(</span><span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">var</span> <span class="nx">Dom</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">,</span>
+        <span class="nx">Event</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">,</span>
+        <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+
+    <span class="c">/**</span>
+<span class="c">     * @constructor</span>
+<span class="c">     * @class Layout</span>
+<span class="c">     * @extends YAHOO.util.Element</span>
+<span class="c">     * @description &lt;p&gt;Provides a fixed layout containing, top, bottom, left, right and center layout units. It can be applied to either the body or an element.&lt;/p&gt;</span>
+<span class="c">     * @param {String/HTMLElement} el The element to make contain a layout.</span>
+<span class="c">     * @param {Object} attrs Object liternal containing configuration parameters.</span>
+<span class="c">    */</span>
+
+    <span class="k">var</span> <span class="nx">Layout</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">config</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Creating the Layout Object&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isObject</span><span class="o">(</span><span class="nx">el</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">el</span><span class="o">.</span><span class="nx">tagName</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">config</span> <span class="o">=</span> <span class="nx">el</span><span class="o">;</span>
+            <span class="nx">el</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">el</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">el</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nx">el</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">el</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">el</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">var</span> <span class="nx">oConfig</span> <span class="o">=</span> <span class="o">{</span>
+            <span class="nx">element</span><span class="o">:</span> <span class="nx">el</span><span class="o">,</span>
+            <span class="nx">attributes</span><span class="o">:</span> <span class="nx">config</span> <span class="o">||</span> <span class="o">{}</span>
+        <span class="o">};</span>
+
+        <span class="nx">Layout</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">oConfig</span><span class="o">.</span><span class="nx">element</span><span class="o">,</span> <span class="nx">oConfig</span><span class="o">.</span><span class="nx">attributes</span><span class="o">);</span>    
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">    * @private</span>
+<span class="c">    * @static</span>
+<span class="c">    * @property _instances</span>
+<span class="c">    * @description Internal hash table for all layout instances</span>
+<span class="c">    * @type Object</span>
+<span class="c">    */</span> 
+    <span class="nx">Layout</span><span class="o">.</span><span class="nx">_instances</span> <span class="o">=</span> <span class="o">{};</span>
+    <span class="c">/**</span>
+<span class="c">    * @static</span>
+<span class="c">    * @method getLayoutById </span>
+<span class="c">    * @description Get&#39;s a layout object by the HTML id of the element associated with the Layout object.</span>
+<span class="c">    * @return {Object} The Layout Object</span>
+<span class="c">    */</span> 
+    <span class="nx">Layout</span><span class="o">.</span><span class="nx">getLayoutById</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">Layout</span><span class="o">.</span><span class="nx">_instances</span><span class="o">[</span><span class="nx">id</span><span class="o">])</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">Layout</span><span class="o">.</span><span class="nx">_instances</span><span class="o">[</span><span class="nx">id</span><span class="o">];</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">Layout</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Element</span><span class="o">,</span> <span class="o">{</span>
+        <span class="c">/**</span>
+<span class="c">        * @property browser</span>
+<span class="c">        * @description A modified version of the YAHOO.env.ua object</span>
+<span class="c">        * @type Object</span>
+<span class="c">        */</span>
+        <span class="nx">browser</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">env</span><span class="o">.</span><span class="nx">ua</span><span class="o">;</span>
+            <span class="nx">b</span><span class="o">.</span><span class="nx">standardsMode</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">b</span><span class="o">.</span><span class="nx">secure</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="k">return</span> <span class="nx">b</span><span class="o">;</span>
+        <span class="o">}(),</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @property _units</span>
+<span class="c">        * @description An object literal that contains a list of units in the layout</span>
+<span class="c">        * @type Object</span>
+<span class="c">        */</span>
+        <span class="nx">_units</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @property _rendered</span>
+<span class="c">        * @description Set to true when the layout is rendered</span>
+<span class="c">        * @type Boolean</span>
+<span class="c">        */</span>
+        <span class="nx">_rendered</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @property _zIndex</span>
+<span class="c">        * @description The zIndex to set all LayoutUnits to</span>
+<span class="c">        * @type Number</span>
+<span class="c">        */</span>
+        <span class="nx">_zIndex</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @property _sizes</span>
+<span class="c">        * @description A collection of the current sizes of all usable LayoutUnits to be used for calculations</span>
+<span class="c">        * @type Object</span>
+<span class="c">        */</span>
+        <span class="nx">_sizes</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method _setBodySize</span>
+<span class="c">        * @param {Boolean} set If set to false, it will NOT set the size, just perform the calculations (used for collapsing units)</span>
+<span class="c">        * @description Used to set the body size of the layout, sets the height and width of the parent container</span>
+<span class="c">        */</span>
+        <span class="nx">_setBodySize</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">h</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">w</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+            <span class="nx">set</span> <span class="o">=</span> <span class="o">((</span><span class="nx">set</span> <span class="o">===</span> <span class="kc">false</span><span class="o">)</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span><span class="o">);</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_isBody</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">h</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">getClientHeight</span><span class="o">();</span>
+                <span class="nx">w</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">getClientWidth</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nx">h</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">),</span> <span class="m">10</span><span class="o">);</span>
+                <span class="nx">w</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">),</span> <span class="m">10</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nb">isNaN</span><span class="o">(</span><span class="nx">w</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">w</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;element&#39;</span><span class="o">).</span><span class="nx">clientWidth</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nb">isNaN</span><span class="o">(</span><span class="nx">h</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">h</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;element&#39;</span><span class="o">).</span><span class="nx">clientHeight</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;minWidth&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">w</span> <span class="o">&lt;</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;minWidth&#39;</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">w</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;minWidth&#39;</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;minHeight&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">h</span> <span class="o">&lt;</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;minHeight&#39;</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">h</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;minHeight&#39;</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">h</span> <span class="o">&lt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">h</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">w</span> <span class="o">&lt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">w</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">,</span> <span class="s1">&#39;height&#39;</span><span class="o">,</span> <span class="nx">h</span> <span class="o">+</span> <span class="s1">&#39;px&#39;</span><span class="o">);</span>
+                <span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">,</span> <span class="s1">&#39;width&#39;</span><span class="o">,</span> <span class="nx">w</span> <span class="o">+</span> <span class="s1">&#39;px&#39;</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">doc</span> <span class="o">=</span> <span class="o">{</span> <span class="nx">h</span><span class="o">:</span> <span class="nx">h</span><span class="o">,</span> <span class="nx">w</span><span class="o">:</span> <span class="nx">w</span> <span class="o">};</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Setting Body height and width: (&#39;</span> <span class="o">+</span> <span class="nx">h</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span> <span class="nx">w</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_setSides</span><span class="o">(</span><span class="nx">set</span><span class="o">);</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method _setSides</span>
+<span class="c">        * @param {Boolean} set If set to false, it will NOT set the size, just perform the calculations (used for collapsing units)</span>
+<span class="c">        * @description Used to set the size and position of the left, right, top and bottom units</span>
+<span class="c">        */</span>
+        <span class="nx">_setSides</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Setting side units&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+            <span class="k">var</span> <span class="nx">h1</span> <span class="o">=</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">top</span><span class="o">)</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">top</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">)</span> <span class="o">:</span> <span class="m">0</span><span class="o">),</span>
+                <span class="nx">h2</span> <span class="o">=</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">bottom</span><span class="o">)</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">bottom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">)</span> <span class="o">:</span> <span class="m">0</span><span class="o">),</span>
+                <span class="nx">h</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">doc</span><span class="o">.</span><span class="nx">h</span><span class="o">,</span>
+                <span class="nx">w</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">doc</span><span class="o">.</span><span class="nx">w</span><span class="o">;</span>
+            <span class="nx">set</span> <span class="o">=</span> <span class="o">((</span><span class="nx">set</span> <span class="o">===</span> <span class="kc">false</span><span class="o">)</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span><span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">top</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="nx">h</span><span class="o">:</span> <span class="nx">h1</span><span class="o">,</span> <span class="nx">w</span><span class="o">:</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">top</span><span class="o">)</span> <span class="o">?</span> <span class="nx">w</span> <span class="o">:</span> <span class="m">0</span><span class="o">),</span>
+                <span class="nx">t</span><span class="o">:</span> <span class="m">0</span>
+            <span class="o">};</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">bottom</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="nx">h</span><span class="o">:</span> <span class="nx">h2</span><span class="o">,</span> <span class="nx">w</span><span class="o">:</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">bottom</span><span class="o">)</span> <span class="o">?</span> <span class="nx">w</span> <span class="o">:</span> <span class="m">0</span><span class="o">)</span>
+            <span class="o">};</span>
+            
+            <span class="k">var</span> <span class="nx">newH</span> <span class="o">=</span> <span class="o">(</span><span class="nx">h</span> <span class="o">-</span> <span class="o">(</span><span class="nx">h1</span> <span class="o">+</span> <span class="nx">h2</span><span class="o">));</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="nx">h</span><span class="o">:</span> <span class="nx">newH</span><span class="o">,</span> <span class="nx">w</span><span class="o">:</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">left</span><span class="o">)</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">)</span> <span class="o">:</span> <span class="m">0</span><span class="o">)</span>
+            <span class="o">};</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">right</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="nx">h</span><span class="o">:</span> <span class="nx">newH</span><span class="o">,</span> <span class="nx">w</span><span class="o">:</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span><span class="o">)</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">)</span> <span class="o">:</span> <span class="m">0</span><span class="o">),</span>
+                <span class="nx">l</span><span class="o">:</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span><span class="o">)</span> <span class="o">?</span> <span class="o">(</span><span class="nx">w</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">))</span> <span class="o">:</span> <span class="m">0</span><span class="o">),</span>
+                <span class="nx">t</span><span class="o">:</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">top</span><span class="o">)</span> <span class="o">?</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">top</span><span class="o">.</span><span class="nx">h</span> <span class="o">:</span> <span class="m">0</span><span class="o">)</span>
+            <span class="o">};</span>
+            
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span> <span class="o">&amp;&amp;</span> <span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;top&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">t</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">_collapsing</span><span class="o">)</span> <span class="o">{</span> 
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;left&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">l</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">h</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">left</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">l</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">top</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">t</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">top</span><span class="o">.</span><span class="nx">h</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">t</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;top&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">t</span><span class="o">);</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">h</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;left&#39;</span><span class="o">,</span> <span class="m">0</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">bottom</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">bottom</span><span class="o">.</span><span class="nx">t</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">top</span><span class="o">.</span><span class="nx">h</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">h</span><span class="o">;</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">bottom</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;top&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">bottom</span><span class="o">.</span><span class="nx">t</span><span class="o">);</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">bottom</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">bottom</span><span class="o">.</span><span class="nx">w</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">top</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">top</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">top</span><span class="o">.</span><span class="nx">w</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Setting sizes: (&#39;</span> <span class="o">+</span> <span class="nx">Lang</span><span class="o">.</span><span class="nx">dump</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_setCenter</span><span class="o">(</span><span class="nx">set</span><span class="o">);</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method _setCenter</span>
+<span class="c">        * @param {Boolean} set If set to false, it will NOT set the size, just perform the calculations (used for collapsing units)</span>
+<span class="c">        * @description Used to set the size and position of the center unit</span>
+<span class="c">        */</span>
+        <span class="nx">_setCenter</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">set</span> <span class="o">=</span> <span class="o">((</span><span class="nx">set</span> <span class="o">===</span> <span class="kc">false</span><span class="o">)</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="k">var</span> <span class="nx">h</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">h</span><span class="o">;</span>
+            <span class="k">var</span> <span class="nx">w</span> <span class="o">=</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">doc</span><span class="o">.</span><span class="nx">w</span> <span class="o">-</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">w</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">right</span><span class="o">.</span><span class="nx">w</span><span class="o">));</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">center</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">,</span> <span class="nx">h</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">center</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">,</span> <span class="nx">w</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">center</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;top&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">top</span><span class="o">.</span><span class="nx">h</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">.</span><span class="nx">center</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s1">&#39;left&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">w</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">center</span> <span class="o">=</span> <span class="o">{</span> <span class="nx">h</span><span class="o">:</span> <span class="nx">h</span><span class="o">,</span> <span class="nx">w</span><span class="o">:</span> <span class="nx">w</span><span class="o">,</span> <span class="nx">t</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">top</span><span class="o">.</span><span class="nx">h</span><span class="o">,</span> <span class="nx">l</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">.</span><span class="nx">left</span><span class="o">.</span><span class="nx">w</span> <span class="o">};</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Setting Center size to: (&#39;</span> <span class="o">+</span> <span class="nx">h</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="nx">w</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method getSizes</span>
+<span class="c">        * @description Get a reference to the internal Layout Unit sizes object used to build the layout wireframe</span>
+<span class="c">        * @return {Object} An object of the layout unit sizes</span>
+<span class="c">        */</span>
+        <span class="nx">getSizes</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">;</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method getUnitById</span>
+<span class="c">        * @param {String} id The HTML element id of the unit</span>
+<span class="c">        * @description Get the LayoutUnit by it&#39;s HTML id</span>
+<span class="c">        * @return {&lt;a href=&quot;YAHOO.widget.LayoutUnit.html&quot;&gt;YAHOO.widget.LayoutUnit&lt;/a&gt;} The LayoutUnit instance</span>
+<span class="c">        */</span>
+        <span class="nx">getUnitById</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">LayoutUnit</span><span class="o">.</span><span class="nx">getLayoutUnitById</span><span class="o">(</span><span class="nx">id</span><span class="o">);</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method getUnitByPosition</span>
+<span class="c">        * @param {String} pos The position of the unit in this layout</span>
+<span class="c">        * @description Get the LayoutUnit by it&#39;s position in this layout</span>
+<span class="c">        * @return {&lt;a href=&quot;YAHOO.widget.LayoutUnit.html&quot;&gt;YAHOO.widget.LayoutUnit&lt;/a&gt;} The LayoutUnit instance</span>
+<span class="c">        */</span>
+        <span class="nx">getUnitByPosition</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">pos</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">pos</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">pos</span> <span class="o">=</span> <span class="nx">pos</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">[</span><span class="nx">pos</span><span class="o">])</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">[</span><span class="nx">pos</span><span class="o">];</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method removeUnit</span>
+<span class="c">        * @param {Object} unit The LayoutUnit that you want to remove</span>
+<span class="c">        * @description Remove the unit from this layout and resize the layout.</span>
+<span class="c">        */</span>
+        <span class="nx">removeUnit</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">unit</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">delete</span> <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">[</span><span class="nx">unit</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;position&#39;</span><span class="o">)];</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">();</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method addUnit</span>
+<span class="c">        * @param {Object} cfg The config for the LayoutUnit that you want to add</span>
+<span class="c">        * @description Add a unit to this layout and if the layout is rendered, resize the layout. </span>
+<span class="c">        * @return {&lt;a href=&quot;YAHOO.widget.LayoutUnit.html&quot;&gt;YAHOO.widget.LayoutUnit&lt;/a&gt;} The LayoutUnit instance</span>
+<span class="c">        */</span>
+        <span class="nx">addUnit</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">cfg</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">position</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;No position property passed&#39;</span><span class="o">,</span> <span class="s1">&#39;error&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">[</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">position</span><span class="o">])</span> <span class="o">{</span>
+                <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Position already exists&#39;</span><span class="o">,</span> <span class="s1">&#39;error&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Adding Unit at position: &#39;</span> <span class="o">+</span> <span class="nx">cfg</span><span class="o">.</span><span class="nx">position</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+            <span class="k">var</span> <span class="nx">element</span> <span class="o">=</span> <span class="kc">null</span><span class="o">,</span>
+                <span class="nx">el</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">id</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">element</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">id</span><span class="o">);</span>
+                    <span class="nx">delete</span> <span class="nx">cfg</span><span class="o">.</span><span class="nx">id</span><span class="o">;</span>
+
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">element</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">element</span> <span class="o">=</span> <span class="nx">cfg</span><span class="o">.</span><span class="nx">element</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">el</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s1">&#39;div&#39;</span><span class="o">);</span>
+                <span class="k">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">generateId</span><span class="o">();</span>
+                <span class="nx">el</span><span class="o">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">id</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">element</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">element</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s1">&#39;div&#39;</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">element</span><span class="o">,</span> <span class="s1">&#39;yui-layout-wrap&#39;</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">standardsMode</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">el</span><span class="o">.</span><span class="nx">style</span><span class="o">.</span><span class="nx">zoom</span> <span class="o">=</span> <span class="m">1</span><span class="o">;</span>
+                <span class="nx">element</span><span class="o">.</span><span class="nx">style</span><span class="o">.</span><span class="nx">zoom</span> <span class="o">=</span> <span class="m">1</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">el</span><span class="o">.</span><span class="nx">firstChild</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">el</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">(</span><span class="nx">element</span><span class="o">,</span> <span class="nx">el</span><span class="o">.</span><span class="nx">firstChild</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nx">el</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">element</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">el</span><span class="o">);</span>
+
+            <span class="k">var</span> <span class="nx">h</span> <span class="o">=</span> <span class="kc">false</span><span class="o">,</span> <span class="nx">w</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">height</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">h</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">height</span><span class="o">,</span> <span class="m">10</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">width</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">w</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">width</span><span class="o">,</span> <span class="m">10</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">var</span> <span class="nx">unitConfig</span> <span class="o">=</span> <span class="o">{};</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">augmentObject</span><span class="o">(</span><span class="nx">unitConfig</span><span class="o">,</span> <span class="nx">cfg</span><span class="o">);</span> <span class="c">// break obj ref</span>
+<span class="c"></span>
+            <span class="nx">unitConfig</span><span class="o">.</span><span class="nx">parent</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+            <span class="nx">unitConfig</span><span class="o">.</span><span class="nx">wrap</span> <span class="o">=</span> <span class="nx">element</span><span class="o">;</span>
+            <span class="nx">unitConfig</span><span class="o">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">h</span><span class="o">;</span>
+            <span class="nx">unitConfig</span><span class="o">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">w</span><span class="o">;</span>
+
+            <span class="k">var</span> <span class="nx">unit</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">LayoutUnit</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">unitConfig</span><span class="o">);</span>
+
+            <span class="nx">unit</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s1">&#39;heightChange&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">,</span> <span class="o">{</span> <span class="nx">unit</span><span class="o">:</span> <span class="nx">unit</span> <span class="o">},</span> <span class="k">this</span><span class="o">);</span>
+            <span class="nx">unit</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s1">&#39;widthChange&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">,</span> <span class="o">{</span> <span class="nx">unit</span><span class="o">:</span> <span class="nx">unit</span> <span class="o">},</span> <span class="k">this</span><span class="o">);</span>
+            <span class="nx">unit</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s1">&#39;gutterChange&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">,</span> <span class="o">{</span> <span class="nx">unit</span><span class="o">:</span> <span class="nx">unit</span> <span class="o">},</span> <span class="k">this</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">[</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">position</span><span class="o">]</span> <span class="o">=</span> <span class="nx">unit</span><span class="o">;</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_rendered</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">();</span>
+            <span class="o">}</span>
+
+            <span class="k">return</span> <span class="nx">unit</span><span class="o">;</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method _createUnits</span>
+<span class="c">        * @description Private method to create units from the config that was passed in.</span>
+<span class="c">        */</span>
+        <span class="nx">_createUnits</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">units</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;units&#39;</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">units</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">units</span><span class="o">,</span> <span class="nx">i</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">addUnit</span><span class="o">(</span><span class="nx">units</span><span class="o">[</span><span class="nx">i</span><span class="o">]);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method resize</span>
+<span class="c">        * @param Boolean/Event set If set to false, it will NOT set the size, just perform the calculations (used for collapsing units). This can also have an attribute event passed to it.</span>
+<span class="c">        * @description Starts the chain of resize routines that will resize all the units.</span>
+<span class="c">        * @return {&lt;a href=&quot;YAHOO.widget.Layout.html&quot;&gt;YAHOO.widget.Layout&lt;/a&gt;} The Layout instance</span>
+<span class="c">        */</span>
+        <span class="nx">resize</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">set</span><span class="o">,</span> <span class="nx">info</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c">/*</span>
+<span class="c">            * Fixes bug #2528175</span>
+<span class="c">            * If the event comes from an attribute and the value hasn&#39;t changed, don&#39;t process it.</span>
+<span class="c">            */</span>
+            <span class="k">var</span> <span class="nx">ev</span> <span class="o">=</span> <span class="nx">set</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">ev</span> <span class="o">&amp;&amp;</span> <span class="nx">ev</span><span class="o">.</span><span class="nx">prevValue</span> <span class="o">&amp;&amp;</span> <span class="nx">ev</span><span class="o">.</span><span class="nx">newValue</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">ev</span><span class="o">.</span><span class="nx">prevValue</span> <span class="o">==</span> <span class="nx">ev</span><span class="o">.</span><span class="nx">newValue</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">info</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="nx">info</span><span class="o">.</span><span class="nx">unit</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="k">if</span> <span class="o">(!</span><span class="nx">info</span><span class="o">.</span><span class="nx">unit</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;animate&#39;</span><span class="o">))</span> <span class="o">{</span>
+                                <span class="nx">set</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                            <span class="o">}</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="nx">set</span> <span class="o">=</span> <span class="o">((</span><span class="nx">set</span> <span class="o">===</span> <span class="kc">false</span><span class="o">)</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">var</span> <span class="nx">retVal</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;beforeResize&#39;</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">retVal</span> <span class="o">===</span> <span class="kc">false</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">set</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">ie</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_isBody</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">Dom</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">documentElement</span><span class="o">,</span> <span class="s1">&#39;yui-layout&#39;</span><span class="o">);</span>
+                        <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">documentElement</span><span class="o">,</span> <span class="s1">&#39;yui-layout&#39;</span><span class="o">);</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="k">this</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="s1">&#39;yui-layout&#39;</span><span class="o">);</span>
+                        <span class="k">this</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="s1">&#39;yui-layout&#39;</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_setBodySize</span><span class="o">(</span><span class="nx">set</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">set</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;resize&#39;</span><span class="o">,</span> <span class="o">{</span> <span class="nx">target</span><span class="o">:</span> <span class="k">this</span><span class="o">,</span> <span class="nx">sizes</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span><span class="o">,</span> <span class="nx">event</span><span class="o">:</span> <span class="nx">ev</span> <span class="o">});</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method _setupBodyElements</span>
+<span class="c">        * @description Sets up the main doc element when using the body as the main element.</span>
+<span class="c">        */</span>
+        <span class="nx">_setupBodyElements</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_doc</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;layout-doc&#39;</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_doc</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s1">&#39;div&#39;</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s1">&#39;layout-doc&#39;</span><span class="o">;</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">.</span><span class="nx">firstChild</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">,</span> <span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">.</span><span class="nx">firstChild</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_createUnits</span><span class="o">();</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_setBodySize</span><span class="o">();</span>
+            <span class="nx">Event</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="nb">window</span><span class="o">,</span> <span class="s1">&#39;resize&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">,</span> <span class="s1">&#39;yui-layout-doc&#39;</span><span class="o">);</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method _setupElements</span>
+<span class="c">        * @description Sets up the main doc element when not using the body as the main element.</span>
+<span class="c">        */</span>
+        <span class="nx">_setupElements</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_doc</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getElementsByClassName</span><span class="o">(</span><span class="s1">&#39;yui-layout-doc&#39;</span><span class="o">)[</span><span class="m">0</span><span class="o">];</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_doc</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s1">&#39;div&#39;</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;element&#39;</span><span class="o">).</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_createUnits</span><span class="o">();</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_setBodySize</span><span class="o">();</span>
+            <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_doc</span><span class="o">,</span> <span class="s1">&#39;yui-layout-doc&#39;</span><span class="o">);</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @property _isBody</span>
+<span class="c">        * @description Flag to determine if we are using the body as the root element.</span>
+<span class="c">        * @type Boolean</span>
+<span class="c">        */</span>
+        <span class="nx">_isBody</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @property _doc</span>
+<span class="c">        * @description Reference to the root element</span>
+<span class="c">        * @type HTMLElement</span>
+<span class="c">        */</span>
+        <span class="nx">_doc</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method init</span>
+<span class="c">        * @description The Layout class&#39; initialization method</span>
+<span class="c">        */</span>        
+        <span class="nx">init</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">p_oElement</span><span class="o">,</span> <span class="nx">p_oAttributes</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;init&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">_zIndex</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+
+            <span class="nx">Layout</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">init</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">p_oElement</span><span class="o">,</span> <span class="nx">p_oAttributes</span><span class="o">);</span>
+            
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;parent&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_zIndex</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;parent&#39;</span><span class="o">).</span><span class="nx">_zIndex</span> <span class="o">+</span> <span class="m">10</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">_sizes</span> <span class="o">=</span> <span class="o">{};</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_units</span> <span class="o">=</span> <span class="o">{};</span>
+
+            <span class="k">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">p_oElement</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">id</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nx">id</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">generateId</span><span class="o">(</span><span class="nx">id</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="nx">Layout</span><span class="o">.</span><span class="nx">_instances</span><span class="o">[</span><span class="nx">id</span><span class="o">]</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method render</span>
+<span class="c">        * @description This method starts the render process, applying classnames and creating elements</span>
+<span class="c">        * @return {&lt;a href=&quot;YAHOO.widget.Layout.html&quot;&gt;YAHOO.widget.Layout&lt;/a&gt;} The Layout instance</span>
+<span class="c">        */</span>        
+        <span class="nx">render</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Render&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Layout&#39;</span><span class="o">);</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_stamp</span><span class="o">();</span>
+            <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;element&#39;</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">el</span> <span class="o">&amp;&amp;</span> <span class="nx">el</span><span class="o">.</span><span class="nx">tagName</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="nx">el</span><span class="o">.</span><span class="nx">tagName</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">()</span> <span class="o">==</span> <span class="s1">&#39;body&#39;</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_isBody</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">,</span> <span class="s1">&#39;yui-layout&#39;</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">hasClass</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">,</span> <span class="s1">&#39;yui-skin-sam&#39;</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="c">//Move the class up so we can have a css chain</span>
+<span class="c"></span>                    <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">documentElement</span><span class="o">,</span> <span class="s1">&#39;yui-skin-sam&#39;</span><span class="o">);</span>
+                    <span class="nx">Dom</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">,</span> <span class="s1">&#39;yui-skin-sam&#39;</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_setupBodyElements</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_isBody</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="s1">&#39;yui-layout&#39;</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">_setupElements</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">();</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">_rendered</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s1">&#39;render&#39;</span><span class="o">);</span>
+
+            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method _stamp</span>
+<span class="c">        * @description Stamps the root node with a secure classname for ease of use. Also sets the this.browser.standardsMode variable.</span>
+<span class="c">        */</span>        
+        <span class="nx">_stamp</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">compatMode</span> <span class="o">==</span> <span class="s1">&#39;CSS1Compat&#39;</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">standardsMode</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nb">window</span><span class="o">.</span><span class="nx">location</span><span class="o">.</span><span class="nx">href</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">().</span><span class="nx">indexOf</span><span class="o">(</span><span class="s2">&quot;https&quot;</span><span class="o">)</span> <span class="o">===</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nb">document</span><span class="o">.</span><span class="nx">documentElement</span><span class="o">,</span> <span class="s1">&#39;secure&#39;</span><span class="o">);</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">secure</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @private</span>
+<span class="c">        * @method initAttributes</span>
+<span class="c">        * @description Processes the config</span>
+<span class="c">        */</span>        
+        <span class="nx">initAttributes</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">Layout</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">initAttributes</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">attr</span><span class="o">);</span>
+            <span class="c">/**</span>
+<span class="c">            * @attribute units</span>
+<span class="c">            * @description An array of config definitions for the LayoutUnits to add to this layout</span>
+<span class="c">            * @type Array</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;units&#39;</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isArray</span><span class="o">,</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">units</span> <span class="o">||</span> <span class="o">[]</span>
+            <span class="o">});</span>
+
+            <span class="c">/**</span>
+<span class="c">            * @attribute minHeight</span>
+<span class="c">            * @description The minimum height in pixels</span>
+<span class="c">            * @type Number</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;minHeight&#39;</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">minHeight</span> <span class="o">||</span> <span class="kc">false</span><span class="o">,</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span>
+            <span class="o">});</span>
+
+            <span class="c">/**</span>
+<span class="c">            * @attribute minWidth</span>
+<span class="c">            * @description The minimum width in pixels</span>
+<span class="c">            * @type Number</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;minWidth&#39;</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">minWidth</span> <span class="o">||</span> <span class="kc">false</span><span class="o">,</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span>
+            <span class="o">});</span>
+
+            <span class="c">/**</span>
+<span class="c">            * @attribute height</span>
+<span class="c">            * @description The height in pixels</span>
+<span class="c">            * @type Number</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">height</span> <span class="o">||</span> <span class="kc">false</span><span class="o">,</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span><span class="o">,</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">h</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">h</span> <span class="o">&lt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">h</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                    <span class="o">}</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">,</span> <span class="nx">h</span> <span class="o">+</span> <span class="s1">&#39;px&#39;</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+
+            <span class="c">/**</span>
+<span class="c">            * @attribute width</span>
+<span class="c">            * @description The width in pixels</span>
+<span class="c">            * @type Number</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">width</span> <span class="o">||</span> <span class="kc">false</span><span class="o">,</span>
+                <span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span><span class="o">,</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">w</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">w</span> <span class="o">&lt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">w</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                    <span class="o">}</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">,</span> <span class="nx">w</span> <span class="o">+</span> <span class="s1">&#39;px&#39;</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+
+            <span class="c">/**</span>
+<span class="c">            * @attribute parent</span>
+<span class="c">            * @description If this layout is to be used as a child of another Layout instance, this config will bind the resize events together.</span>
+<span class="c">            * @type Object YAHOO.widget.Layout</span>
+<span class="c">            */</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;parent&#39;</span><span class="o">,</span> <span class="o">{</span>
+                <span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+                <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">parent</span> <span class="o">||</span> <span class="kc">false</span><span class="o">,</span>
+                <span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">p</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">p</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">p</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s1">&#39;resize&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method destroy</span>
+<span class="c">        * @description Removes this layout from the page and destroys all units that it contains. This will destroy all data inside the layout and it&#39;s children.</span>
+<span class="c">        */</span>
+        <span class="nx">destroy</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">par</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;parent&#39;</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">par</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">par</span><span class="o">.</span><span class="nx">removeListener</span><span class="o">(</span><span class="s1">&#39;resize&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="nx">Event</span><span class="o">.</span><span class="nx">removeListener</span><span class="o">(</span><span class="nb">window</span><span class="o">,</span> <span class="s1">&#39;resize&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">resize</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">unsubscribeAll</span><span class="o">();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">u</span> <span class="k">in</span> <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">,</span> <span class="nx">u</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">[</span><span class="nx">u</span><span class="o">])</span> <span class="o">{</span>
+                        <span class="k">this</span><span class="o">.</span><span class="nx">_units</span><span class="o">[</span><span class="nx">u</span><span class="o">].</span><span class="nx">destroy</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+
+            <span class="nx">Event</span><span class="o">.</span><span class="nx">purgeElement</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;element&#39;</span><span class="o">));</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;parentNode&#39;</span><span class="o">).</span><span class="nx">removeChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;element&#39;</span><span class="o">));</span>
+            
+            <span class="nx">delete</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Layout</span><span class="o">.</span><span class="nx">_instances</span><span class="o">[</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;id&#39;</span><span class="o">)];</span>
+            <span class="c">//Brutal Object Destroy</span>
+<span class="c"></span>            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="k">this</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">i</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                    <span class="nx">delete</span> <span class="k">this</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            
+            <span class="k">if</span> <span class="o">(</span><span class="nx">par</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">par</span><span class="o">.</span><span class="nx">resize</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        <span class="c">/**</span>
+<span class="c">        * @method toString</span>
+<span class="c">        * @description Returns a string representing the Layout.</span>
+<span class="c">        * @return {String}</span>
+<span class="c">        */</span>        
+        <span class="nx">toString</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="s1">&#39;Layout #&#39;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;id&#39;</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="s1">&#39;Layout&#39;</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+    <span class="c">/**</span>
+<span class="c">    * @event resize</span>
+<span class="c">    * @description Fired when this.resize is called</span>
+<span class="c">    * @type YAHOO.util.CustomEvent</span>
+<span class="c">    */</span>
+    <span class="c">/**</span>
+<span class="c">    * @event startResize</span>
+<span class="c">    * @description Fired when the Resize Utility for a Unit fires it&#39;s startResize Event.</span>
+<span class="c">    * @type YAHOO.util.CustomEvent</span>
+<span class="c">    */</span>
+    <span class="c">/**</span>
+<span class="c">    * @event beforeResize</span>
+<span class="c">    * @description Fires at the beginning of the resize method. If you return false, the resize is cancelled.</span>
+<span class="c">    * @type YAHOO.util.CustomEvent</span>
+<span class="c">    */</span>
+    <span class="c">/**</span>
+<span class="c">    * @event render</span>
+<span class="c">    * @description Fired after the render method completes.</span>
+<span class="c">    * @type YAHOO.util.CustomEvent</span>
+<span class="c">    */</span>
+
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Layout</span> <span class="o">=</span> <span class="nx">Layout</span><span class="o">;</span>
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class="selected"><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Layout.html" title="YAHOO.widget.Layout">YAHOO.widget.Layout</a></li>
+                                <li class=""><a href="YAHOO.widget.LayoutUnit.html" title="YAHOO.widget.LayoutUnit">YAHOO.widget.LayoutUnit</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="layout.js.html" title="layout.js">layout.js</a></li>
+                                <li class=""><a href="layoutunit.js.html" title="layoutunit.js">layoutunit.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.Layout", "name": "addUnit", "url": "YAHOO.widget.Layout.html#method_addUnit", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_anim", "url": "YAHOO.widget.LayoutUnit.html#property__anim", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "animate", "url": "YAHOO.widget.LayoutUnit.html#config_animate", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "animateChange", "url": "YAHOO.widget.LayoutUnit.html#event_animateChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeAnimateChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeAnimateChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeBodyChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeBodyChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeCloseChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeCloseChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeCollapse", "url": "YAHOO.widget.LayoutUnit.html#event_beforeCollapse", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeCollapseChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeCollapseChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeCollapseSizeChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeCollapseSizeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeDataLoadedChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeDataLoadedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeDataSrcChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeDataSrcChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeDataTimeoutChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeDataTimeoutChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeDurationChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeDurationChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeEasingChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeEasingChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeExpand", "url": "YAHOO.widget.LayoutUnit.html#event_beforeExpand", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeFooterChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeFooterChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeGridsChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeGridsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeGutterChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeGutterChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeHeaderChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeHeaderChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeHeightChange", "url": "YAHOO.widget.Layout.html#event_beforeHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeHoverChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeHoverChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeLeftChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeLeftChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeLoadMethodChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeLoadMethodChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeMaxHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeMaxHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeMaxWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeMaxWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeMinHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeMinHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeMinHeightChange", "url": "YAHOO.widget.Layout.html#event_beforeMinHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeMinWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeMinWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeMinWidthChange", "url": "YAHOO.widget.Layout.html#event_beforeMinWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeParentChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeParentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeParentChange", "url": "YAHOO.widget.Layout.html#event_beforeParentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforePositionChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforePositionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeProxyChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeProxyChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeResize", "url": "YAHOO.widget.LayoutUnit.html#event_beforeResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeResize", "url": "YAHOO.widget.Layout.html#event_beforeResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeResizeChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeResizeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeScrollChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeScrollChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeTopChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeTopChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeUnitsChange", "url": "YAHOO.widget.Layout.html#event_beforeUnitsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeUseShimChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeUseShimChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "beforeWidthChange", "url": "YAHOO.widget.Layout.html#event_beforeWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeWrapChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeWrapChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "beforeZIndexChange", "url": "YAHOO.widget.LayoutUnit.html#event_beforeZIndexChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "body", "url": "YAHOO.widget.LayoutUnit.html#property_body", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "body", "url": "YAHOO.widget.LayoutUnit.html#config_body", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "bodyChange", "url": "YAHOO.widget.LayoutUnit.html#event_bodyChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "browser", "url": "YAHOO.widget.LayoutUnit.html#property_browser", "type": "property"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "browser", "url": "YAHOO.widget.Layout.html#property_browser", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_cleanGrids", "url": "YAHOO.widget.LayoutUnit.html#method__cleanGrids", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_clip", "url": "YAHOO.widget.LayoutUnit.html#property__clip", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "close", "url": "YAHOO.widget.LayoutUnit.html#method_close", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "close", "url": "YAHOO.widget.LayoutUnit.html#event_close", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "close", "url": "YAHOO.widget.LayoutUnit.html#config_close", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "closeChange", "url": "YAHOO.widget.LayoutUnit.html#event_closeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapse", "url": "YAHOO.widget.LayoutUnit.html#method_collapse", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapse", "url": "YAHOO.widget.LayoutUnit.html#event_collapse", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapse", "url": "YAHOO.widget.LayoutUnit.html#config_collapse", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapseChange", "url": "YAHOO.widget.LayoutUnit.html#event_collapseChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_collapsed", "url": "YAHOO.widget.LayoutUnit.html#property__collapsed", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapseSize", "url": "YAHOO.widget.LayoutUnit.html#config_collapseSize", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "collapseSizeChange", "url": "YAHOO.widget.LayoutUnit.html#event_collapseSizeChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_collapsing", "url": "YAHOO.widget.LayoutUnit.html#property__collapsing", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "contentChange", "url": "YAHOO.widget.LayoutUnit.html#event_contentChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_createClip", "url": "YAHOO.widget.LayoutUnit.html#method__createClip", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_createHeader", "url": "YAHOO.widget.LayoutUnit.html#method__createHeader", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_createUnits", "url": "YAHOO.widget.Layout.html#method__createUnits", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataConnection", "url": "YAHOO.widget.LayoutUnit.html#property_dataConnection", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataLoaded", "url": "YAHOO.widget.LayoutUnit.html#config_dataLoaded", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataLoadedChange", "url": "YAHOO.widget.LayoutUnit.html#event_dataLoadedChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataSrc", "url": "YAHOO.widget.LayoutUnit.html#config_dataSrc", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataSrcChange", "url": "YAHOO.widget.LayoutUnit.html#event_dataSrcChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataTimeout", "url": "YAHOO.widget.LayoutUnit.html#config_dataTimeout", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "dataTimeoutChange", "url": "YAHOO.widget.LayoutUnit.html#event_dataTimeoutChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "destroy", "url": "YAHOO.widget.LayoutUnit.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "destroy", "url": "YAHOO.widget.Layout.html#method_destroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_doc", "url": "YAHOO.widget.Layout.html#property__doc", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "duration", "url": "YAHOO.widget.LayoutUnit.html#config_duration", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "durationChange", "url": "YAHOO.widget.LayoutUnit.html#event_durationChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "easing", "url": "YAHOO.widget.LayoutUnit.html#config_easing", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "easingChange", "url": "YAHOO.widget.LayoutUnit.html#event_easingChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "endResize", "url": "YAHOO.widget.LayoutUnit.html#event_endResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "expand", "url": "YAHOO.widget.LayoutUnit.html#method_expand", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "expand", "url": "YAHOO.widget.LayoutUnit.html#event_expand", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_fixQuirks", "url": "YAHOO.widget.LayoutUnit.html#method__fixQuirks", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "footer", "url": "YAHOO.widget.LayoutUnit.html#property_footer", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "footer", "url": "YAHOO.widget.LayoutUnit.html#config_footer", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "footerChange", "url": "YAHOO.widget.LayoutUnit.html#event_footerChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_getBorderSizes", "url": "YAHOO.widget.LayoutUnit.html#method__getBorderSizes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_getBoxSize", "url": "YAHOO.widget.LayoutUnit.html#method__getBoxSize", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "getLayoutById", "url": "YAHOO.widget.Layout.html#method_getLayoutById", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "getLayoutUnitById", "url": "YAHOO.widget.LayoutUnit.html#method_getLayoutUnitById", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "getSizes", "url": "YAHOO.widget.LayoutUnit.html#method_getSizes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "getSizes", "url": "YAHOO.widget.Layout.html#method_getSizes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "getUnitById", "url": "YAHOO.widget.Layout.html#method_getUnitById", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "getUnitByPosition", "url": "YAHOO.widget.Layout.html#method_getUnitByPosition", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "grids", "url": "YAHOO.widget.LayoutUnit.html#config_grids", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "gridsChange", "url": "YAHOO.widget.LayoutUnit.html#event_gridsChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_gutter", "url": "YAHOO.widget.LayoutUnit.html#property__gutter", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "gutter", "url": "YAHOO.widget.LayoutUnit.html#config_gutter", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "gutterChange", "url": "YAHOO.widget.LayoutUnit.html#event_gutterChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "header", "url": "YAHOO.widget.LayoutUnit.html#property_header", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "header", "url": "YAHOO.widget.LayoutUnit.html#config_header", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "headerChange", "url": "YAHOO.widget.LayoutUnit.html#event_headerChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "height", "url": "YAHOO.widget.LayoutUnit.html#config_height", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "height", "url": "YAHOO.widget.Layout.html#config_height", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "heightChange", "url": "YAHOO.widget.LayoutUnit.html#event_heightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "heightChange", "url": "YAHOO.widget.Layout.html#event_heightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "hover", "url": "YAHOO.widget.LayoutUnit.html#config_hover", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "hoverChange", "url": "YAHOO.widget.LayoutUnit.html#event_hoverChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "init", "url": "YAHOO.widget.LayoutUnit.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "init", "url": "YAHOO.widget.Layout.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "initAttributes", "url": "YAHOO.widget.LayoutUnit.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "initAttributes", "url": "YAHOO.widget.Layout.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_instances", "url": "YAHOO.widget.LayoutUnit.html#property__instances", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_instances", "url": "YAHOO.widget.Layout.html#property__instances", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_isBody", "url": "YAHOO.widget.Layout.html#property__isBody", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastCenetrScroll", "url": "YAHOO.widget.LayoutUnit.html#property__lastCenetrScroll", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastHeight", "url": "YAHOO.widget.LayoutUnit.html#property__lastHeight", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastLeft", "url": "YAHOO.widget.LayoutUnit.html#property__lastLeft", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastScroll", "url": "YAHOO.widget.LayoutUnit.html#property__lastScroll", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastScrollTop", "url": "YAHOO.widget.LayoutUnit.html#property__lastScrollTop", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastTop", "url": "YAHOO.widget.LayoutUnit.html#property__lastTop", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_lastWidth", "url": "YAHOO.widget.LayoutUnit.html#property__lastWidth", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "left", "url": "YAHOO.widget.LayoutUnit.html#config_left", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "leftChange", "url": "YAHOO.widget.LayoutUnit.html#event_leftChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "load", "url": "YAHOO.widget.LayoutUnit.html#event_load", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadContent", "url": "YAHOO.widget.LayoutUnit.html#method_loadContent", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadError", "url": "YAHOO.widget.LayoutUnit.html#event_loadError", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadHandler", "url": "YAHOO.widget.LayoutUnit.html#property_loadHandler", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_loading", "url": "YAHOO.widget.LayoutUnit.html#property__loading", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "LOADING_CLASSNAME", "url": "YAHOO.widget.LayoutUnit.html#property_LOADING_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadMethod", "url": "YAHOO.widget.LayoutUnit.html#config_loadMethod", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "loadMethodChange", "url": "YAHOO.widget.LayoutUnit.html#event_loadMethodChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "maxHeight", "url": "YAHOO.widget.LayoutUnit.html#config_maxHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "maxHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_maxHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "maxWidth", "url": "YAHOO.widget.LayoutUnit.html#config_maxWidth", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "maxWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_maxWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "minHeight", "url": "YAHOO.widget.LayoutUnit.html#config_minHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "minHeight", "url": "YAHOO.widget.Layout.html#config_minHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "minHeightChange", "url": "YAHOO.widget.LayoutUnit.html#event_minHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "minHeightChange", "url": "YAHOO.widget.Layout.html#event_minHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "minWidth", "url": "YAHOO.widget.LayoutUnit.html#config_minWidth", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "minWidth", "url": "YAHOO.widget.Layout.html#config_minWidth", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "minWidthChange", "url": "YAHOO.widget.LayoutUnit.html#event_minWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "minWidthChange", "url": "YAHOO.widget.Layout.html#event_minWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "parent", "url": "YAHOO.widget.LayoutUnit.html#config_parent", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "parent", "url": "YAHOO.widget.Layout.html#config_parent", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "parentChange", "url": "YAHOO.widget.LayoutUnit.html#event_parentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "parentChange", "url": "YAHOO.widget.Layout.html#event_parentChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "position", "url": "YAHOO.widget.LayoutUnit.html#config_position", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "positionChange", "url": "YAHOO.widget.LayoutUnit.html#event_positionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "proxy", "url": "YAHOO.widget.LayoutUnit.html#config_proxy", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "proxyChange", "url": "YAHOO.widget.LayoutUnit.html#event_proxyChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "removeUnit", "url": "YAHOO.widget.Layout.html#method_removeUnit", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "render", "url": "YAHOO.widget.Layout.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "render", "url": "YAHOO.widget.Layout.html#event_render", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_rendered", "url": "YAHOO.widget.Layout.html#property__rendered", "type": "property"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_resize", "url": "YAHOO.widget.LayoutUnit.html#property__resize", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "resize", "url": "YAHOO.widget.LayoutUnit.html#method_resize", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "resize", "url": "YAHOO.widget.LayoutUnit.html#event_resize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "resize", "url": "YAHOO.widget.LayoutUnit.html#config_resize", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "resize", "url": "YAHOO.widget.Layout.html#method_resize", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "resize", "url": "YAHOO.widget.Layout.html#event_resize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "resizeChange", "url": "YAHOO.widget.LayoutUnit.html#event_resizeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "scroll", "url": "YAHOO.widget.LayoutUnit.html#config_scroll", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "scrollChange", "url": "YAHOO.widget.LayoutUnit.html#event_scrollChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setBodySize", "url": "YAHOO.widget.Layout.html#method__setBodySize", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setCenter", "url": "YAHOO.widget.Layout.html#method__setCenter", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_setHeight", "url": "YAHOO.widget.LayoutUnit.html#method__setHeight", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setSides", "url": "YAHOO.widget.Layout.html#method__setSides", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setupBodyElements", "url": "YAHOO.widget.Layout.html#method__setupBodyElements", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_setupElements", "url": "YAHOO.widget.Layout.html#method__setupElements", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_setWidth", "url": "YAHOO.widget.LayoutUnit.html#method__setWidth", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_sizes", "url": "YAHOO.widget.LayoutUnit.html#property__sizes", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_sizes", "url": "YAHOO.widget.Layout.html#property__sizes", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_stamp", "url": "YAHOO.widget.Layout.html#method__stamp", "type": "method"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "startResize", "url": "YAHOO.widget.LayoutUnit.html#event_startResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "startResize", "url": "YAHOO.widget.Layout.html#event_startResize", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "STR_CLOSE", "url": "YAHOO.widget.LayoutUnit.html#property_STR_CLOSE", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "STR_COLLAPSE", "url": "YAHOO.widget.LayoutUnit.html#property_STR_COLLAPSE", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "STR_EXPAND", "url": "YAHOO.widget.LayoutUnit.html#property_STR_EXPAND", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "toggle", "url": "YAHOO.widget.LayoutUnit.html#method_toggle", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "_toggleClip", "url": "YAHOO.widget.LayoutUnit.html#method__toggleClip", "type": "method"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "top", "url": "YAHOO.widget.LayoutUnit.html#config_top", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "topChange", "url": "YAHOO.widget.LayoutUnit.html#event_topChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "toString", "url": "YAHOO.widget.LayoutUnit.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "toString", "url": "YAHOO.widget.Layout.html#method_toString", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_units", "url": "YAHOO.widget.Layout.html#property__units", "type": "property"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "units", "url": "YAHOO.widget.Layout.html#config_units", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "unitsChange", "url": "YAHOO.widget.Layout.html#event_unitsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "useShim", "url": "YAHOO.widget.LayoutUnit.html#config_useShim", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "useShimChange", "url": "YAHOO.widget.LayoutUnit.html#event_useShimChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "width", "url": "YAHOO.widget.LayoutUnit.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "width", "url": "YAHOO.widget.Layout.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "widthChange", "url": "YAHOO.widget.LayoutUnit.html#event_widthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Layout", "name": "widthChange", "url": "YAHOO.widget.Layout.html#event_widthChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.LayoutUnit", "name": "wrap", "url": "YAHOO.widget.LayoutUnit.html#config_wrap", "type": "config"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "wrapChange", "url": "YAHOO.widget.LayoutUnit.html#event_wrapChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "zIndex", "url": "YAHOO.widget.LayoutUnit.html#config_zIndex", "type": "config"}, {"access": "private", "host": "YAHOO.widget.Layout", "name": "_zIndex", "url": "YAHOO.widget.Layout.html#property__zIndex", "type": "property"}, {"access": "", "host": "YAHOO.widget.LayoutUnit", "name": "zIndexChange", "url": "YAHOO.widget.LayoutUnit.html#event_zIndexChange", "type": "event"}];
+</script>
+</body>
+</html>

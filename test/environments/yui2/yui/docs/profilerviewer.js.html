@@ -1,0 +1,1364 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: profilerviewer   profilerviewer.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>profilerviewer&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_profilerviewer.html" title="profilerviewer">profilerviewer</a>
+                
+                 &gt; profilerviewer.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="o">(</span><span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="c">/**</span>
+<span class="c">     * The ProfilerViewer module provides a graphical display for viewing</span>
+<span class="c">	 * the output of the YUI Profiler &lt;http://developer.yahoo.com/yui/profiler&gt;.</span>
+<span class="c">     * @module profilerviewer</span>
+<span class="c">     * @requires yahoo, dom, event, element, profiler, yuiloader</span>
+<span class="c">     */</span>
+
+    <span class="c">/**</span>
+<span class="c">     * A widget to view YUI Profiler output.</span>
+<span class="c">     * @namespace YAHOO.widget</span>
+<span class="c">     * @class ProfilerViewer</span>
+<span class="c">     * @extends YAHOO.util.Element</span>
+<span class="c">     * @constructor</span>
+<span class="c">     * @param {HTMLElement | String | Object} el(optional) The html </span>
+<span class="c">     * element into which the ProfileViewer should be rendered. </span>
+<span class="c">     * An element will be created if none provided.</span>
+<span class="c">     * @param {Object} attr (optional) A key map of the ProfilerViewer&#39;s </span>
+<span class="c">     * initial attributes.  Ignored if first arg is an attributes object.</span>
+<span class="c">     */</span>
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ProfilerViewer</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">attr</span> <span class="o">=</span> <span class="nx">attr</span> <span class="o">||</span> <span class="o">{};</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">arguments</span><span class="o">.</span><span class="nx">length</span> <span class="o">==</span> <span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">el</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">el</span><span class="o">.</span><span class="nx">nodeName</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">attr</span> <span class="o">=</span> <span class="nx">el</span><span class="o">;</span>
+            <span class="nx">el</span> <span class="o">=</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">element</span> <span class="o">||</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">el</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">attr</span><span class="o">.</span><span class="nx">element</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_createProfilerViewerElement</span><span class="o">();</span>
+        <span class="o">}</span>
+
+    	<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ProfilerViewer</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">el</span><span class="o">,</span> <span class="nx">attr</span><span class="o">);</span> 
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_init</span><span class="o">();</span>
+		
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;ProfilerViewer instantiated.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+    <span class="o">};</span>
+
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ProfilerViewer</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Element</span><span class="o">);</span>
+	
+	<span class="c">// Static members of YAHOO.widget.ProfilerViewer:</span>
+<span class="c"></span>	<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">augmentObject</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ProfilerViewer</span><span class="o">,</span> <span class="o">{</span>
+		<span class="c">/**</span>
+<span class="c">		 * Classname for ProfilerViewer containing element.</span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property CLASS</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default &quot;yui-pv&quot;</span>
+<span class="c">		 */</span>
+		<span class="nx">CLASS</span><span class="o">:</span> <span class="s1">&#39;yui-pv&#39;</span><span class="o">,</span>
+	
+		<span class="c">/**</span>
+<span class="c">		 * Classname for ProfilerViewer button dashboard. </span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property CLASS_DASHBOARD</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default &quot;yui-pv-dashboard&quot;</span>
+<span class="c">		 */</span>
+		<span class="nx">CLASS_DASHBOARD</span><span class="o">:</span> <span class="s1">&#39;yui-pv-dashboard&#39;</span><span class="o">,</span>
+
+		<span class="c">/**</span>
+<span class="c">		 * Classname for the &quot;refresh data&quot; button. </span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property CLASS_REFRESH</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default &quot;yui-pv-refresh&quot;</span>
+<span class="c">		 */</span>
+		<span class="nx">CLASS_REFRESH</span><span class="o">:</span> <span class="s1">&#39;yui-pv-refresh&#39;</span><span class="o">,</span>
+
+		<span class="c">/**</span>
+<span class="c">		 * Classname for busy indicator in the dashboard. </span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property CLASS_BUSY</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default &quot;yui-pv-busy&quot;</span>
+<span class="c">		 */</span>
+		<span class="nx">CLASS_BUSY</span><span class="o">:</span> <span class="s1">&#39;yui-pv-busy&#39;</span><span class="o">,</span>
+	
+		<span class="c">/**</span>
+<span class="c">		 * Classname for element containing the chart and chart</span>
+<span class="c">		 * legend elements.</span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property CLASS_CHART_CONTAINER</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default &quot;yui-pv-chartcontainer&quot;</span>
+<span class="c">		 */</span>
+		<span class="nx">CLASS_CHART_CONTAINER</span><span class="o">:</span> <span class="s1">&#39;yui-pv-chartcontainer&#39;</span><span class="o">,</span>
+	
+		<span class="c">/**</span>
+<span class="c">		 * Classname for element containing the chart.</span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property CLASS_CHART</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default &quot;yui-pv-chart&quot;</span>
+<span class="c">		 */</span>
+		<span class="nx">CLASS_CHART</span><span class="o">:</span> <span class="s1">&#39;yui-pv-chart&#39;</span><span class="o">,</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * Classname for element containing the chart&#39;s legend. </span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property CLASS_CHART_LEGEND</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default &quot;yui-pv-chartlegend&quot;</span>
+<span class="c">		 */</span>
+		<span class="nx">CLASS_CHART_LEGEND</span><span class="o">:</span> <span class="s1">&#39;yui-pv-chartlegend&#39;</span><span class="o">,</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * Classname for element containing the datatable. </span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property CLASS_TABLE</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default &quot;yui-pv-table&quot;</span>
+<span class="c">		 */</span>
+		<span class="nx">CLASS_TABLE</span><span class="o">:</span> <span class="s1">&#39;yui-pv-table&#39;</span><span class="o">,</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * Strings used in the UI.</span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property STRINGS</span>
+<span class="c">		 * @object</span>
+<span class="c">		 * @public</span>
+<span class="c">		 * @default English language strings for UI.</span>
+<span class="c">		 */</span>
+		<span class="nx">STRINGS</span><span class="o">:</span> <span class="o">{</span>
+			<span class="nx">title</span><span class="o">:</span> <span class="s2">&quot;YUI ProfilerViewer&quot;</span><span class="o">,</span>
+			<span class="nx">buttons</span><span class="o">:</span> <span class="o">{</span>
+				<span class="nx">viewprofiler</span><span class="o">:</span> <span class="s2">&quot;View Profiler Data&quot;</span><span class="o">,</span>
+				<span class="nx">hideprofiler</span><span class="o">:</span> <span class="s2">&quot;Hide Profiler Report&quot;</span><span class="o">,</span>
+				<span class="nx">showchart</span><span class="o">:</span> <span class="s2">&quot;Show Chart&quot;</span><span class="o">,</span>
+				<span class="nx">hidechart</span><span class="o">:</span> <span class="s2">&quot;Hide Chart&quot;</span><span class="o">,</span>
+				<span class="nx">refreshdata</span><span class="o">:</span> <span class="s2">&quot;Refresh Data&quot;</span>
+			<span class="o">},</span>
+			<span class="nx">colHeads</span><span class="o">:</span> <span class="o">{</span>
+				<span class="c">//key: [column head label, width in pixels]</span>
+<span class="c"></span>				<span class="nx">fn</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;Function/Method&quot;</span><span class="o">,</span> <span class="kc">null</span><span class="o">],</span> <span class="c">//must auto-size</span>
+<span class="c"></span>				<span class="nx">calls</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;Calls&quot;</span><span class="o">,</span> <span class="m">40</span><span class="o">],</span>
+				<span class="nx">avg</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;Average&quot;</span><span class="o">,</span> <span class="m">80</span><span class="o">],</span>
+				<span class="nx">min</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;Shortest&quot;</span><span class="o">,</span> <span class="m">70</span><span class="o">],</span>
+				<span class="nx">max</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;Longest&quot;</span><span class="o">,</span> <span class="m">70</span><span class="o">],</span>
+				<span class="nx">total</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;Total Time&quot;</span><span class="o">,</span> <span class="m">70</span><span class="o">],</span>
+				<span class="nx">pct</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;Percent&quot;</span><span class="o">,</span> <span class="m">70</span><span class="o">]</span>
+			<span class="o">},</span>
+			<span class="nx">millisecondsAbbrev</span><span class="o">:</span> <span class="s2">&quot;ms&quot;</span><span class="o">,</span>
+			<span class="nx">initMessage</span><span class="o">:</span> <span class="s2">&quot;initialiazing chart...&quot;</span><span class="o">,</span>
+			<span class="nx">installFlashMessage</span><span class="o">:</span> <span class="s2">&quot;Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the &lt;a href=&#39;http://www.adobe.com/go/getflashplayer&#39;&gt;Adobe Flash Player Download Center&lt;/a&gt;.&quot;</span>
+		<span class="o">},</span>
+
+		<span class="c">/**</span>
+<span class="c">		 * Function used to format numbers in milliseconds</span>
+<span class="c">		 * for chart; must be publicly accessible, per Charts spec.</span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property timeAxisLabelFunction</span>
+<span class="c">		 * @type function</span>
+<span class="c">		 * @private</span>
+<span class="c">		 */</span>
+		<span class="nx">timeAxisLabelFunction</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">n</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="o">(</span><span class="nx">n</span> <span class="o">===</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">floor</span><span class="o">(</span><span class="nx">n</span><span class="o">))</span> <span class="o">?</span> <span class="nx">n</span> <span class="o">:</span> <span class="o">(</span><span class="nb">Math</span><span class="o">.</span><span class="nx">round</span><span class="o">(</span><span class="nx">n</span><span class="o">*</span><span class="m">1000</span><span class="o">))/</span><span class="m">1000</span><span class="o">;</span>
+			<span class="k">return</span> <span class="o">(</span><span class="nx">a</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ProfilerViewer</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">millisecondsAbbrev</span><span class="o">);</span>
+		<span class="o">},</span>
+
+		<span class="c">/**</span>
+<span class="c">		 * Function used to format percent numbers for chart; must</span>
+<span class="c">		 * be publicly accessible, per Charts spec.</span>
+<span class="c">		 * @static</span>
+<span class="c">		 * @property percentAxisLabelFunction</span>
+<span class="c">		 * @type function</span>
+<span class="c">		 * @private</span>
+<span class="c">		 */</span>
+		<span class="nx">percentAxisLabelFunction</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">n</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="o">(</span><span class="nx">n</span> <span class="o">===</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">floor</span><span class="o">(</span><span class="nx">n</span><span class="o">))</span> <span class="o">?</span> <span class="nx">n</span> <span class="o">:</span> <span class="o">(</span><span class="nb">Math</span><span class="o">.</span><span class="nx">round</span><span class="o">(</span><span class="nx">n</span><span class="o">*</span><span class="m">100</span><span class="o">))/</span><span class="m">100</span><span class="o">;</span>
+			<span class="k">return</span> <span class="o">(</span><span class="nx">a</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+	
+	<span class="o">},</span><span class="kc">true</span><span class="o">);</span>
+	
+
+	<span class="c">//</span>
+<span class="c"></span>	<span class="c">// STANDARD SHORTCUTS</span>
+<span class="c"></span>	<span class="c">//</span>
+<span class="c"></span>    <span class="k">var</span> <span class="nx">Dom</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">;</span>
+    <span class="k">var</span> <span class="nx">Event</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Event</span><span class="o">;</span>
+	<span class="k">var</span> <span class="nx">Profiler</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">tool</span><span class="o">.</span><span class="nx">Profiler</span><span class="o">;</span>
+	<span class="k">var</span> <span class="nx">PV</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ProfilerViewer</span><span class="o">;</span>
+	<span class="k">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">prototype</span><span class="o">;</span>
+
+
+	<span class="c">//</span>
+<span class="c"></span>	<span class="c">// PUBLIC METHODS</span>
+<span class="c"></span>	<span class="c">//</span>
+<span class="c"></span>	
+	 <span class="c">/**</span>
+<span class="c">     * Refreshes the data displayed in the ProfilerViewer. When called,</span>
+<span class="c">	 * this will invoke a refresh of the DataTable and (if displayed)</span>
+<span class="c">	 * the Chart.</span>
+<span class="c">     * @method refreshData</span>
+<span class="c">     * @return void</span>
+<span class="c">	 * @public</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">refreshData</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Data refresh requested via refreshData method.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s2">&quot;dataRefreshEvent&quot;</span><span class="o">);</span>
+	<span class="o">};</span>
+
+	 <span class="c">/**</span>
+<span class="c">     * Returns the element containing the console&#39;s header.</span>
+<span class="c">     * @method getHeadEl</span>
+<span class="c">     * @return HTMLElement</span>
+<span class="c">	 * @public</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">getHeadEl</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Head element requested via getHeadEl.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span><span class="o">)</span> <span class="o">?</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span><span class="o">)</span> <span class="o">:</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">};</span>
+
+	 <span class="c">/**</span>
+<span class="c">     * Returns the element containing the console&#39;s body, including</span>
+<span class="c">	 * the chart and the datatable..</span>
+<span class="c">     * @method getBodyEl</span>
+<span class="c">     * @return HTMLElement</span>
+<span class="c">	 * @public</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">getBodyEl</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Body element requested via getBodyEl.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_bodyEl</span><span class="o">)</span> <span class="o">?</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_bodyEl</span><span class="o">)</span> <span class="o">:</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">};</span>
+
+	 <span class="c">/**</span>
+<span class="c">     * Returns the element containing the console&#39;s chart.</span>
+<span class="c">     * @method getChartEl</span>
+<span class="c">     * @return HTMLElement</span>
+<span class="c">	 * @public</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">getChartEl</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Chart element requested via getChartEl.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartEl</span><span class="o">)</span> <span class="o">?</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartEl</span><span class="o">)</span> <span class="o">:</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">};</span>
+
+	 <span class="c">/**</span>
+<span class="c">     * Returns the element containing the console&#39;s dataTable.</span>
+<span class="c">     * @method getTableEl</span>
+<span class="c">     * @return HTMLElement</span>
+<span class="c">	 * @public</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">getTableEl</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;DataTable element requested via getTableEl.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_tableEl</span><span class="o">)</span> <span class="o">?</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_tableEl</span><span class="o">)</span> <span class="o">:</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">};</span>
+
+	 <span class="c">/**</span>
+<span class="c">     * Returns the element containing the console&#39;s DataTable</span>
+<span class="c">	 * instance.</span>
+<span class="c">     * @method getDataTable</span>
+<span class="c">     * @return YAHOO.widget.DataTable</span>
+<span class="c">	 * @public</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">getDataTable</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;DataTable instance requested via getDataTable.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span><span class="o">;</span>
+	<span class="o">};</span>
+
+	 <span class="c">/**</span>
+<span class="c">     * Returns the element containing the console&#39;s Chart instance.</span>
+<span class="c">     * @method getChart</span>
+<span class="c">     * @return YAHOO.widget.BarChart</span>
+<span class="c">	 * @public</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">getChart</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Chart instance requested via getChart.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_chart</span><span class="o">;</span>
+	<span class="o">};</span>
+
+
+    <span class="c">//</span>
+<span class="c"></span>    <span class="c">// PRIVATE PROPERTIES</span>
+<span class="c"></span>    <span class="c">//</span>
+<span class="c"></span>    <span class="nx">proto</span><span class="o">.</span><span class="nx">_rendered</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_headEl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_bodyEl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_toggleVisibleEl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_busyEl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_busy</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_tableEl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_dataTable</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_chartEl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_chartLegendEl</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_chartElHeight</span> <span class="o">=</span> <span class="m">250</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_chart</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_chartInitialized</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="c">//</span>
+<span class="c"></span>    <span class="c">// PRIVATE METHODS</span>
+<span class="c"></span>    <span class="c">//</span>
+<span class="c"></span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_init</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="c">/**</span>
+<span class="c">		 * CUSTOM EVENTS</span>
+<span class="c">		 **/</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * Fired when a data refresh is requested. No arguments are passed</span>
+<span class="c">		 * with this event.</span>
+<span class="c">		 *</span>
+<span class="c">		 * @event refreshDataEvent</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;dataRefreshEvent&quot;</span><span class="o">);</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * Fired when the viewer canvas first renders. No arguments are passed</span>
+<span class="c">		 * with this event.</span>
+<span class="c">		 *</span>
+<span class="c">		 * @event renderEvent</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;renderEvent&quot;</span><span class="o">);</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s2">&quot;dataRefreshEvent&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_refreshDataTable</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_initLauncherDOM</span><span class="o">();</span>
+		
+		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;showChart&quot;</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s2">&quot;sortedByChange&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_refreshChart</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;ProfilerViewer instance initialization complete.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+	<span class="o">};</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * If no element is passed in, create it as the first element</span>
+<span class="c">	 * in the document.</span>
+<span class="c">	 * @method _createProfilerViewerElement</span>
+<span class="c">	 * @return HTMLElement</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_createProfilerViewerElement</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Creating root element...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+
+		<span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;div&quot;</span><span class="o">);</span>
+		<span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">.</span><span class="nx">firstChild</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">SKIN_CLASS</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS</span><span class="o">);</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="nx">el</span><span class="o">);</span>
+		<span class="k">return</span> <span class="nx">el</span><span class="o">;</span>
+	<span class="o">};</span>
+			
+    <span class="c">/**</span>
+<span class="c">     * Provides a readable name for the ProfilerViewer instance.</span>
+<span class="c">     * @method toString</span>
+<span class="c">     * @return String</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+    <span class="nx">proto</span><span class="o">.</span><span class="nx">toString</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s2">&quot;ProfilerViewer &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;id&#39;</span><span class="o">)</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;tagName&#39;</span><span class="o">));</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Toggles visibility of the viewer canvas.</span>
+<span class="c">     * @method _toggleVisible</span>
+<span class="c">     * @return void</span>
+<span class="c">	 * @private</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_toggleVisible</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Toggling visibility to &quot;</span> <span class="o">+</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;visible&quot;</span><span class="o">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">newVis</span> <span class="o">=</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;visible&quot;</span><span class="o">))</span> <span class="o">?</span> <span class="kc">false</span> <span class="o">:</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;visible&quot;</span><span class="o">,</span> <span class="nx">newVis</span><span class="o">);</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Shows the viewer canvas.</span>
+<span class="c">     * @method show</span>
+<span class="c">     * @return void</span>
+<span class="c">	 * @private</span>
+<span class="c">     */</span>	
+	 <span class="nx">proto</span><span class="o">.</span><span class="nx">_show</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+	 	<span class="k">if</span><span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">_busy</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_setBusyState</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+			<span class="k">if</span><span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">_rendered</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">var</span> <span class="nx">loader</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">YUILoader</span><span class="o">();</span>
+				<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;base&quot;</span><span class="o">))</span> <span class="o">{</span>
+					<span class="nx">loader</span><span class="o">.</span><span class="nx">base</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;base&quot;</span><span class="o">);</span>
+				<span class="o">}</span>
+				
+				<span class="k">var</span> <span class="nx">modules</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;datatable&quot;</span><span class="o">];</span>
+				<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;showChart&quot;</span><span class="o">))</span> <span class="o">{</span>
+					<span class="nx">modules</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="s2">&quot;charts&quot;</span><span class="o">);</span>
+				<span class="o">}</span>
+				
+				<span class="nx">loader</span><span class="o">.</span><span class="nx">insert</span><span class="o">({</span> <span class="nx">require</span><span class="o">:</span> <span class="nx">modules</span><span class="o">,</span>
+								<span class="nx">onSuccess</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+									<span class="k">this</span><span class="o">.</span><span class="nx">_render</span><span class="o">();</span>
+								<span class="o">},</span>
+								<span class="nx">scope</span><span class="o">:</span> <span class="k">this</span><span class="o">});</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">);</span>
+				<span class="nx">Dom</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;yui-pv-minimized&quot;</span><span class="o">);</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_toggleVisibleEl</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">buttons</span><span class="o">.</span><span class="nx">hideprofiler</span><span class="o">;</span>
+				
+				<span class="c">//The Flash Charts component can&#39;t be set to display:none,</span>
+<span class="c"></span>				<span class="c">//and even after positioning it offscreen the screen</span>
+<span class="c"></span>				<span class="c">//may fail to repaint in some browsers.  Adding an empty</span>
+<span class="c"></span>				<span class="c">//style rule to the console body can help force a repaint:</span>
+<span class="c"></span>				<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;yui-pv-null&quot;</span><span class="o">);</span>
+				<span class="nx">Dom</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;yui-pv-null&quot;</span><span class="o">);</span>
+				
+				<span class="c">//Always refresh data when changing to visible:</span>
+<span class="c"></span>				<span class="k">this</span><span class="o">.</span><span class="nx">refreshData</span><span class="o">();</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Hides the viewer canvas.</span>
+<span class="c">     * @method hide</span>
+<span class="c">     * @return void</span>
+<span class="c">	 * @private</span>
+<span class="c">     */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_hide</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_toggleVisibleEl</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">buttons</span><span class="o">.</span><span class="nx">viewprofiler</span><span class="o">;</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">),</span> <span class="s2">&quot;yui-pv-minimized&quot;</span><span class="o">);</span>
+    <span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Render the viewer canvas</span>
+<span class="c">	 * @method _render</span>
+<span class="c">	 * @return void</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_render</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Beginning to render ProfilerViewer canvas...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">),</span> <span class="s2">&quot;yui-pv-minimized&quot;</span><span class="o">);</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_initViewerDOM</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_initDataTable</span><span class="o">();</span>
+		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;showChart&quot;</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_initChartDOM</span><span class="o">();</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_initChart</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_rendered</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_toggleVisibleEl</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">buttons</span><span class="o">.</span><span class="nx">hideprofiler</span><span class="o">;</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s2">&quot;renderEvent&quot;</span><span class="o">);</span>
+
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;ProfilerViewer rendering complete...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Set up the DOM structure for the ProfilerViewer launcher.</span>
+<span class="c">	 * @method _initLauncherDOM</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_initLauncherDOM</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Creating the launcher...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s2">&quot;yui-pv-minimized&quot;</span><span class="o">);</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;div&quot;</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span><span class="o">,</span> <span class="s2">&quot;hd&quot;</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">buttons</span><span class="o">;</span>
+		<span class="k">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;visible&quot;</span><span class="o">))</span> <span class="o">?</span> <span class="nx">s</span><span class="o">.</span><span class="nx">hideprofiler</span> <span class="o">:</span> <span class="nx">s</span><span class="o">.</span><span class="nx">viewprofiler</span><span class="o">;</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_toggleVisibleEl</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_createButton</span><span class="o">(</span><span class="nx">b</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span><span class="o">);</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_refreshEl</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_createButton</span><span class="o">(</span><span class="nx">s</span><span class="o">.</span><span class="nx">refreshdata</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_refreshEl</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS_REFRESH</span><span class="o">);</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_busyEl</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;span&quot;</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_busyEl</span><span class="o">);</span>
+
+		<span class="k">var</span> <span class="nx">title</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;h4&quot;</span><span class="o">);</span>
+		<span class="nx">title</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">title</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">title</span><span class="o">);</span>
+		
+		<span class="nx">el</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_headEl</span><span class="o">);</span>
+		
+		<span class="nx">Event</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_toggleVisibleEl</span><span class="o">,</span> <span class="s2">&quot;click&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_toggleVisible</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		<span class="nx">Event</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_refreshEl</span><span class="o">,</span> <span class="s2">&quot;click&quot;</span><span class="o">,</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">_busy</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_setBusyState</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s2">&quot;dataRefreshEvent&quot;</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">},</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+	<span class="o">};</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Set up the DOM structure for the ProfilerViewer canvas,</span>
+<span class="c">	 * including the holder for the DataTable.</span>
+<span class="c">	 * @method _initViewerDOM</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_initViewerDOM</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Creating DOM structure for viewer...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;element&quot;</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_bodyEl</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;div&quot;</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_bodyEl</span><span class="o">,</span> <span class="s2">&quot;bd&quot;</span><span class="o">);</span>
+	 	<span class="k">this</span><span class="o">.</span><span class="nx">_tableEl</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;div&quot;</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_tableEl</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS_TABLE</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_bodyEl</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_tableEl</span><span class="o">);</span>
+		<span class="nx">el</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_bodyEl</span><span class="o">);</span>
+	<span class="o">};</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Set up the DOM structure for the ProfilerViewer canvas.</span>
+<span class="c">	 * @method _initChartDOM</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_initChartDOM</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Adding DOM structure for chart...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartContainer</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;div&quot;</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartContainer</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS_CHART_CONTAINER</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">chl</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;div&quot;</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">chl</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS_CHART_LEGEND</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">chw</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;div&quot;</span><span class="o">);</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartLegendEl</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;dl&quot;</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartLegendEl</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;dd&gt;&quot;</span> <span class="o">+</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">initMessage</span> <span class="o">+</span> <span class="s2">&quot;&lt;/dd&gt;&quot;</span><span class="o">;</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartEl</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;div&quot;</span><span class="o">);</span>
+		<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartEl</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS_CHART</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;p&quot;</span><span class="o">);</span>
+		<span class="nx">msg</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">installFlashMessage</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartEl</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">msg</span><span class="o">);</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartContainer</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">chl</span><span class="o">);</span>
+		<span class="nx">chl</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">chw</span><span class="o">);</span>
+		<span class="nx">chw</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartLegendEl</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartContainer</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartEl</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_bodyEl</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartContainer</span><span class="o">,</span><span class="k">this</span><span class="o">.</span><span class="nx">_tableEl</span><span class="o">);</span>
+	<span class="o">};</span>
+
+
+	<span class="c">/**</span>
+<span class="c">	 * Create anchor elements for use as buttons. Args: label</span>
+<span class="c">	 * is text to appear on the face of the button, parentEl</span>
+<span class="c">	 * is the el to which the anchor will be attached, position</span>
+<span class="c">	 * is true for inserting as the first node and false for</span>
+<span class="c">	 * inserting as the last node of the parentEl.</span>
+<span class="c">	 * @method _createButton</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>	
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_createButton</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="k">label</span><span class="o">,</span> <span class="nx">parentEl</span><span class="o">,</span> <span class="nx">position</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">var</span> <span class="nx">b</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;a&quot;</span><span class="o">);</span>
+		<span class="nx">b</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">b</span><span class="o">.</span><span class="nx">title</span> <span class="o">=</span> <span class="k">label</span><span class="o">;</span>
+		<span class="k">if</span><span class="o">(</span><span class="nx">parentEl</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(!</span><span class="nx">position</span><span class="o">)</span> <span class="o">{</span>
+				<span class="nx">parentEl</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">b</span><span class="o">);</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="nx">parentEl</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">(</span><span class="nx">b</span><span class="o">,</span> <span class="nx">parentEl</span><span class="o">.</span><span class="nx">firstChild</span><span class="o">);</span>	
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="nx">b</span><span class="o">;</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Set&#39;s console busy state.</span>
+<span class="c">	 * @method _setBusyState</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_setBusyState</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">b</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="nx">b</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_busyEl</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS_BUSY</span><span class="o">);</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_busy</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+			<span class="nx">Dom</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_busyEl</span><span class="o">,</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">CLASS_BUSY</span><span class="o">);</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_busy</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">};</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Generages a sorting function based on current sortedBy</span>
+<span class="c">	 * values.</span>
+<span class="c">	 * @method _createProfilerViewerElement</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_genSortFunction</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">dir</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">var</span> <span class="nx">by</span> <span class="o">=</span> <span class="nx">key</span><span class="o">;</span>
+		<span class="k">var</span> <span class="nx">direction</span> <span class="o">=</span> <span class="nx">dir</span><span class="o">;</span>
+		<span class="k">return</span> <span class="k">function</span><span class="o">(</span><span class="nx">a</span><span class="o">,</span> <span class="nx">b</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span> <span class="o">(</span><span class="nx">direction</span> <span class="o">==</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">DataTable</span><span class="o">.</span><span class="nx">CLASS_ASC</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="nx">a</span><span class="o">[</span><span class="nx">by</span><span class="o">]</span> <span class="o">-</span> <span class="nx">b</span><span class="o">[</span><span class="nx">by</span><span class="o">];</span>	
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="o">((</span><span class="nx">a</span><span class="o">[</span><span class="nx">by</span><span class="o">]</span> <span class="o">-</span> <span class="nx">b</span><span class="o">[</span><span class="nx">by</span><span class="o">])</span> <span class="o">*</span> <span class="o">-</span><span class="m">1</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">};</span>
+	<span class="o">};</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Utility function for array sums.</span>
+<span class="c">	 * @method _arraySum</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>	
+	 <span class="k">var</span> <span class="nx">_arraySum</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">arr</span><span class="o">){</span>
+		<span class="k">var</span> <span class="nx">ct</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">arr</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">ct</span><span class="o">+=</span><span class="nx">arr</span><span class="o">[</span><span class="nx">i</span><span class="o">++]){}</span>
+		<span class="k">return</span> <span class="nx">ct</span><span class="o">;</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Retrieves data from Profiler, filtering and sorting as needed</span>
+<span class="c">	 * based on current widget state.  Adds calculated percentage</span>
+<span class="c">	 * column and function name to data returned by Profiler.</span>
+<span class="c">	 * @method _getProfilerData</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_getProfilerData</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Profiler data requested from function DataSource.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nx">Profiler</span><span class="o">.</span><span class="nx">getFullReport</span><span class="o">();</span>
+		<span class="k">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="o">[];</span>
+		<span class="k">var</span> <span class="nx">totalTime</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+		<span class="k">for</span> <span class="o">(</span><span class="nx">name</span> <span class="k">in</span> <span class="nx">obj</span><span class="o">)</span> <span class="o">{</span>
+    		<span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">obj</span><span class="o">,</span> <span class="nx">name</span><span class="o">))</span> <span class="o">{</span>
+				<span class="k">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nx">obj</span><span class="o">[</span><span class="nx">name</span><span class="o">];</span>
+				<span class="k">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="o">{};</span>
+				<span class="nx">o</span><span class="o">.</span><span class="nx">fn</span> <span class="o">=</span> <span class="nx">name</span><span class="o">;</span> <span class="c">//add function name to record</span>
+<span class="c"></span>				<span class="nx">o</span><span class="o">.</span><span class="nx">points</span> <span class="o">=</span> <span class="nx">r</span><span class="o">.</span><span class="nx">points</span><span class="o">.</span><span class="nx">slice</span><span class="o">();</span> <span class="c">//copy live array</span>
+<span class="c"></span>				<span class="nx">o</span><span class="o">.</span><span class="nx">calls</span> <span class="o">=</span> <span class="nx">r</span><span class="o">.</span><span class="nx">calls</span><span class="o">;</span>
+				<span class="nx">o</span><span class="o">.</span><span class="nx">min</span> <span class="o">=</span> <span class="nx">r</span><span class="o">.</span><span class="nx">min</span><span class="o">;</span>
+				<span class="nx">o</span><span class="o">.</span><span class="nx">max</span> <span class="o">=</span> <span class="nx">r</span><span class="o">.</span><span class="nx">max</span><span class="o">;</span>
+				<span class="nx">o</span><span class="o">.</span><span class="nx">avg</span> <span class="o">=</span> <span class="nx">r</span><span class="o">.</span><span class="nx">avg</span><span class="o">;</span>
+				<span class="nx">o</span><span class="o">.</span><span class="nx">total</span> <span class="o">=</span> <span class="nx">_arraySum</span><span class="o">(</span><span class="nx">o</span><span class="o">.</span><span class="nx">points</span><span class="o">);</span>
+				<span class="nx">o</span><span class="o">.</span><span class="nx">points</span> <span class="o">=</span> <span class="nx">r</span><span class="o">.</span><span class="nx">points</span><span class="o">;</span>
+				<span class="k">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;filter&quot;</span><span class="o">);</span>
+				<span class="k">if</span><span class="o">((!</span><span class="nx">f</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="nx">f</span><span class="o">(</span><span class="nx">o</span><span class="o">)))</span> <span class="o">{</span>
+					<span class="nx">arr</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">o</span><span class="o">);</span>
+					<span class="nx">totalTime</span> <span class="o">+=</span> <span class="nx">o</span><span class="o">.</span><span class="nx">total</span><span class="o">;</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		
+		<span class="c">//add calculated percentage column</span>
+<span class="c"></span>		<span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">arr</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">j</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nx">arr</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">pct</span> <span class="o">=</span> <span class="o">(</span><span class="nx">totalTime</span><span class="o">)</span> <span class="o">?</span> <span class="o">(</span><span class="nx">arr</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">total</span> <span class="o">*</span> <span class="m">100</span><span class="o">)</span> <span class="o">/</span> <span class="nx">totalTime</span> <span class="o">:</span> <span class="m">0</span><span class="o">;</span>	
+		<span class="o">}</span>
+
+		<span class="k">var</span> <span class="nx">sortedBy</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;sortedBy&quot;</span><span class="o">);</span>
+		<span class="k">var</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">sortedBy</span><span class="o">.</span><span class="nx">key</span><span class="o">;</span>
+		<span class="k">var</span> <span class="nx">dir</span> <span class="o">=</span> <span class="nx">sortedBy</span><span class="o">.</span><span class="nx">dir</span><span class="o">;</span>		
+
+		<span class="nx">arr</span><span class="o">.</span><span class="nx">sort</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_genSortFunction</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">dir</span><span class="o">));</span>
+		
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Returning data from DataSource: &quot;</span> <span class="o">+</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">dump</span><span class="o">(</span><span class="nx">arr</span><span class="o">),</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="k">return</span> <span class="nx">arr</span><span class="o">;</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Set up the DataTable.</span>
+<span class="c">	 * @method _initDataTable</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_initDataTable</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Creating DataTable instance...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="k">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+		
+		<span class="c">//Set up the JS Function DataSource, pulling data from</span>
+<span class="c"></span>		<span class="c">//the Profiler.</span>
+<span class="c"></span>		<span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DataSource</span><span class="o">(</span>
+			<span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="nx">self</span><span class="o">.</span><span class="nx">_getProfilerData</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="nx">self</span><span class="o">);</span>	
+			<span class="o">},</span>
+			<span class="o">{</span>
+				<span class="nx">responseType</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DataSource</span><span class="o">.</span><span class="nx">TYPE_JSARRAY</span><span class="o">,</span>
+				<span class="nx">maxCacheEntries</span><span class="o">:</span> <span class="m">0</span>
+			<span class="o">}</span>
+		<span class="o">);</span>
+		<span class="k">var</span> <span class="nx">ds</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span><span class="o">;</span>
+
+		<span class="nx">ds</span><span class="o">.</span><span class="nx">responseSchema</span> <span class="o">=</span>
+		<span class="o">{</span>
+			<span class="nx">fields</span><span class="o">:</span> <span class="o">[</span> <span class="s2">&quot;fn&quot;</span><span class="o">,</span> <span class="s2">&quot;avg&quot;</span><span class="o">,</span> <span class="s2">&quot;calls&quot;</span><span class="o">,</span> <span class="s2">&quot;max&quot;</span><span class="o">,</span> <span class="s2">&quot;min&quot;</span><span class="o">,</span> <span class="s2">&quot;total&quot;</span><span class="o">,</span> <span class="s2">&quot;pct&quot;</span><span class="o">,</span> <span class="s2">&quot;points&quot;</span><span class="o">]</span>
+		<span class="o">};</span>
+		
+		<span class="c">//Set up the DataTable.</span>
+<span class="c"></span>		<span class="k">var</span> <span class="nx">formatTimeValue</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">elCell</span><span class="o">,</span> <span class="nx">oRecord</span><span class="o">,</span> <span class="nx">oColumn</span><span class="o">,</span> <span class="nx">oData</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="o">(</span><span class="nx">oData</span> <span class="o">===</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">floor</span><span class="o">(</span><span class="nx">oData</span><span class="o">))</span> <span class="o">?</span> <span class="nx">oData</span> <span class="o">:</span> <span class="o">(</span><span class="nb">Math</span><span class="o">.</span><span class="nx">round</span><span class="o">(</span><span class="nx">oData</span><span class="o">*</span><span class="m">1000</span><span class="o">))/</span><span class="m">1000</span><span class="o">;</span>
+			<span class="nx">elCell</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">a</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">millisecondsAbbrev</span><span class="o">;</span>
+		<span class="o">};</span>
+
+		<span class="k">var</span> <span class="nx">formatPercent</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">elCell</span><span class="o">,</span> <span class="nx">oRecord</span><span class="o">,</span> <span class="nx">oColumn</span><span class="o">,</span> <span class="nx">oData</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="o">(</span><span class="nx">oData</span> <span class="o">===</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">floor</span><span class="o">(</span><span class="nx">oData</span><span class="o">))</span> <span class="o">?</span> <span class="nx">oData</span> <span class="o">:</span> <span class="o">(</span><span class="nb">Math</span><span class="o">.</span><span class="nx">round</span><span class="o">(</span><span class="nx">oData</span><span class="o">*</span><span class="m">100</span><span class="o">))/</span><span class="m">100</span><span class="o">;</span>
+			<span class="nx">elCell</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">a</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span><span class="o">;</span>
+		<span class="o">};</span>
+		
+		<span class="k">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">DataTable</span><span class="o">.</span><span class="nx">CLASS_ASC</span><span class="o">;</span>
+		<span class="k">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">DataTable</span><span class="o">.</span><span class="nx">CLASS_DESC</span><span class="o">;</span>
+		<span class="k">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">colHeads</span><span class="o">;</span>
+		<span class="k">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">formatTimeValue</span><span class="o">;</span>
+		
+		<span class="k">var</span> <span class="nx">cols</span> <span class="o">=</span> <span class="o">[</span>
+			<span class="o">{</span><span class="nx">key</span><span class="o">:</span><span class="s2">&quot;fn&quot;</span><span class="o">,</span> <span class="nx">sortable</span><span class="o">:</span><span class="kc">true</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="nx">c</span><span class="o">.</span><span class="nx">fn</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+				<span class="nx">sortOptions</span><span class="o">:</span> <span class="o">{</span><span class="nx">defaultDir</span><span class="o">:</span><span class="nx">a</span><span class="o">},</span> 
+				<span class="nx">resizeable</span><span class="o">:</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DragDrop</span><span class="o">)</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+				<span class="nx">minWidth</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">fn</span><span class="o">[</span><span class="m">1</span><span class="o">]},</span>
+			<span class="o">{</span><span class="nx">key</span><span class="o">:</span><span class="s2">&quot;calls&quot;</span><span class="o">,</span> <span class="nx">sortable</span><span class="o">:</span><span class="kc">true</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="nx">c</span><span class="o">.</span><span class="nx">calls</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+				<span class="nx">sortOptions</span><span class="o">:</span> <span class="o">{</span><span class="nx">defaultDir</span><span class="o">:</span><span class="nx">d</span><span class="o">},</span>
+				<span class="nx">width</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">calls</span><span class="o">[</span><span class="m">1</span><span class="o">]},</span>
+			<span class="o">{</span><span class="nx">key</span><span class="o">:</span><span class="s2">&quot;avg&quot;</span><span class="o">,</span> <span class="nx">sortable</span><span class="o">:</span><span class="kc">true</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="nx">c</span><span class="o">.</span><span class="nx">avg</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+				<span class="nx">sortOptions</span><span class="o">:</span> <span class="o">{</span><span class="nx">defaultDir</span><span class="o">:</span><span class="nx">d</span><span class="o">},</span>
+				<span class="nx">formatter</span><span class="o">:</span><span class="nx">f</span><span class="o">,</span>
+				<span class="nx">width</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">avg</span><span class="o">[</span><span class="m">1</span><span class="o">]},</span>
+			<span class="o">{</span><span class="nx">key</span><span class="o">:</span><span class="s2">&quot;min&quot;</span><span class="o">,</span> <span class="nx">sortable</span><span class="o">:</span><span class="kc">true</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="nx">c</span><span class="o">.</span><span class="nx">min</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+				<span class="nx">sortOptions</span><span class="o">:</span> <span class="o">{</span><span class="nx">defaultDir</span><span class="o">:</span><span class="nx">a</span><span class="o">},</span>
+				<span class="nx">formatter</span><span class="o">:</span><span class="nx">f</span><span class="o">,</span>
+				<span class="nx">width</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">min</span><span class="o">[</span><span class="m">1</span><span class="o">]},</span> 
+			<span class="o">{</span><span class="nx">key</span><span class="o">:</span><span class="s2">&quot;max&quot;</span><span class="o">,</span> <span class="nx">sortable</span><span class="o">:</span><span class="kc">true</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="nx">c</span><span class="o">.</span><span class="nx">max</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+				<span class="nx">sortOptions</span><span class="o">:</span> <span class="o">{</span><span class="nx">defaultDir</span><span class="o">:</span><span class="nx">d</span><span class="o">},</span>
+				<span class="nx">formatter</span><span class="o">:</span><span class="nx">f</span><span class="o">,</span>
+				<span class="nx">width</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">max</span><span class="o">[</span><span class="m">1</span><span class="o">]},</span>
+			<span class="o">{</span><span class="nx">key</span><span class="o">:</span><span class="s2">&quot;total&quot;</span><span class="o">,</span> <span class="nx">sortable</span><span class="o">:</span><span class="kc">true</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="nx">c</span><span class="o">.</span><span class="nx">total</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+				<span class="nx">sortOptions</span><span class="o">:</span> <span class="o">{</span><span class="nx">defaultDir</span><span class="o">:</span><span class="nx">d</span><span class="o">},</span>
+				<span class="nx">formatter</span><span class="o">:</span><span class="nx">f</span><span class="o">,</span>
+				<span class="nx">width</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">total</span><span class="o">[</span><span class="m">1</span><span class="o">]},</span>
+			<span class="o">{</span><span class="nx">key</span><span class="o">:</span><span class="s2">&quot;pct&quot;</span><span class="o">,</span> <span class="nx">sortable</span><span class="o">:</span><span class="kc">true</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="nx">c</span><span class="o">.</span><span class="nx">pct</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+				<span class="nx">sortOptions</span><span class="o">:</span> <span class="o">{</span><span class="nx">defaultDir</span><span class="o">:</span><span class="nx">d</span><span class="o">},</span> 
+				<span class="nx">formatter</span><span class="o">:</span><span class="nx">formatPercent</span><span class="o">,</span>
+				<span class="nx">width</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">pct</span><span class="o">[</span><span class="m">1</span><span class="o">]}</span>
+		<span class="o">];</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">DataTable</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_tableEl</span><span class="o">,</span> <span class="nx">cols</span><span class="o">,</span> <span class="nx">ds</span><span class="o">,</span> <span class="o">{</span>
+			<span class="nx">scrollable</span><span class="o">:</span><span class="kc">true</span><span class="o">,</span>
+			<span class="nx">height</span><span class="o">:</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;tableHeight&quot;</span><span class="o">),</span>
+			<span class="nx">initialRequest</span><span class="o">:</span><span class="kc">null</span><span class="o">,</span>
+			<span class="nx">sortedBy</span><span class="o">:</span> <span class="o">{</span>
+				<span class="nx">key</span><span class="o">:</span> <span class="s2">&quot;total&quot;</span><span class="o">,</span>
+				<span class="nx">dir</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">DataTable</span><span class="o">.</span><span class="nx">CLASS_DESC</span>
+			<span class="o">}</span>
+		<span class="o">});</span>
+		<span class="k">var</span> <span class="nx">dt</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span><span class="o">;</span>
+
+		<span class="c">//Wire up DataTable events to drive the rest of the UI.</span>
+<span class="c"></span>		<span class="nx">dt</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s2">&quot;sortedByChange&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sortedByChange</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		<span class="nx">dt</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s2">&quot;renderEvent&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataTableRenderHandler</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		<span class="nx">dt</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s2">&quot;initEvent&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataTableRenderHandler</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		<span class="nx">Event</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_tableEl</span><span class="o">.</span><span class="nx">getElementsByTagName</span><span class="o">(</span><span class="s2">&quot;th&quot;</span><span class="o">),</span> <span class="s2">&quot;click&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_thClickHandler</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;DataTable initialized.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+	<span class="o">};</span>
+		
+	<span class="c">/**</span>
+<span class="c">	 * Proxy the sort event in DataTable into the ProfilerViewer</span>
+<span class="c">	 * attribute.</span>
+<span class="c">	 * @method _sortedByChange</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_sortedByChange</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">o</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="nx">o</span><span class="o">.</span><span class="nx">newValue</span> <span class="o">&amp;&amp;</span> <span class="nx">o</span><span class="o">.</span><span class="nx">newValue</span><span class="o">.</span><span class="nx">key</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Relaying DataTable sortedBy value change; new key: &quot;</span> <span class="o">+</span> <span class="nx">o</span><span class="o">.</span><span class="nx">newValue</span><span class="o">.</span><span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;; new direction: &quot;</span> <span class="o">+</span> <span class="nx">o</span><span class="o">.</span><span class="nx">newValue</span><span class="o">.</span><span class="nx">dir</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;sortedBy&quot;</span><span class="o">,</span> <span class="o">{</span><span class="nx">key</span><span class="o">:</span> <span class="nx">o</span><span class="o">.</span><span class="nx">newValue</span><span class="o">.</span><span class="nx">key</span><span class="o">,</span> <span class="nx">dir</span><span class="o">:</span><span class="nx">o</span><span class="o">.</span><span class="nx">newValue</span><span class="o">.</span><span class="nx">dir</span><span class="o">});</span>
+		<span class="o">}</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Proxy the render event in DataTable into the ProfilerViewer</span>
+<span class="c">	 * attribute.</span>
+<span class="c">	 * @method _dataTableRenderHandler</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_dataTableRenderHandler</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">o</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;DataTable&#39;s render event has fired.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_setBusyState</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Event handler for clicks on the DataTable&#39;s sortable column</span>
+<span class="c">	 * heads.</span>
+<span class="c">	 * @method _thClickHandler</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_thClickHandler</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">o</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;DataTable&#39;s header row was clicked for sorting.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_setBusyState</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+	<span class="o">};</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Refresh DataTable, getting new data from Profiler.</span>
+<span class="c">	 * @method _refreshDataTable</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_refreshDataTable</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Beginning to refresh DataTable contents...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">var</span> <span class="nx">dt</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span><span class="o">;</span>
+		<span class="nx">dt</span><span class="o">.</span><span class="nx">getDataSource</span><span class="o">().</span><span class="nx">sendRequest</span><span class="o">(</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">dt</span><span class="o">.</span><span class="nx">onDataReturnInitializeTable</span><span class="o">,</span> <span class="nx">dt</span><span class="o">);</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;DataTable refresh complete.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+	<span class="o">};</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Refresh chart, getting new data from table.</span>
+<span class="c">	 * @method _refreshChart</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_refreshChart</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Beginning to refresh Chart contents...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="nx">switch</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;sortedBy&quot;</span><span class="o">).</span><span class="nx">key</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nx">case</span> <span class="s2">&quot;fn&quot;</span><span class="o">:</span>
+				<span class="c">/*Keep the same data on the chart, but force update to </span>
+<span class="c">				  reflect new sort order on function/method name: */</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_chart</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;dataSource&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_chart</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;dataSource&quot;</span><span class="o">));</span>
+				<span class="c">/*no further action necessary; chart redraws*/</span>
+				<span class="k">return</span><span class="o">;</span>
+			<span class="nx">case</span> <span class="s2">&quot;calls&quot;</span><span class="o">:</span>
+				<span class="c">/*Null out the xAxis formatting before redrawing chart.*/</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_chart</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;xAxis&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionPlain</span><span class="o">);</span>
+				<span class="k">break</span><span class="o">;</span>
+			<span class="nx">case</span> <span class="s2">&quot;pct&quot;</span><span class="o">:</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_chart</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;xAxis&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionPercent</span><span class="o">);</span>
+				<span class="k">break</span><span class="o">;</span>
+			<span class="nx">default</span><span class="o">:</span>
+				<span class="c">/*Set the default xAxis; redraw legend; set the new series definition.*/</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_chart</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;xAxis&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionTime</span><span class="o">);</span>
+				<span class="k">break</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_drawChartLegend</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chart</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;series&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getSeriesDef</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;sortedBy&quot;</span><span class="o">).</span><span class="nx">key</span><span class="o">));</span>
+
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Chart refresh complete.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Get data for the Chart from DataTable recordset</span>
+<span class="c">	 * @method _getChartData</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_getChartData</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Getting data for chart from function DataSource.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="c">//var records = this._getProfilerData();</span>
+<span class="c"></span>		<span class="k">var</span> <span class="nx">records</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span><span class="o">.</span><span class="nx">getRecordSet</span><span class="o">().</span><span class="nx">getRecords</span><span class="o">(</span><span class="m">0</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;maxChartFunctions&quot;</span><span class="o">));</span>
+		<span class="k">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="o">[];</span>
+		<span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">records</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">j</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nx">arr</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">records</span><span class="o">[</span><span class="nx">i</span><span class="o">].</span><span class="nx">getData</span><span class="o">());</span>	
+		<span class="o">}</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Returning data to Chart: &quot;</span> <span class="o">+</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">dump</span><span class="o">(</span><span class="nx">arr</span><span class="o">),</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">return</span> <span class="nx">arr</span><span class="o">;</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Build series definition based on current configuration attributes.</span>
+<span class="c">	 * @method _getSeriesDef</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_getSeriesDef</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">field</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">var</span> <span class="nx">sd</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;chartSeriesDefinitions&quot;</span><span class="o">)[</span><span class="nx">field</span><span class="o">];</span>
+		<span class="k">var</span> <span class="nx">arr</span> <span class="o">=</span> <span class="o">[];</span>
+		<span class="k">for</span><span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">sd</span><span class="o">.</span><span class="nx">group</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">j</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;chartSeriesDefinitions&quot;</span><span class="o">)[</span><span class="nx">sd</span><span class="o">.</span><span class="nx">group</span><span class="o">[</span><span class="nx">i</span><span class="o">]];</span>
+			<span class="nx">arr</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span>
+				<span class="o">{</span><span class="nx">displayName</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">displayName</span><span class="o">,</span>
+				 <span class="nx">xField</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">xField</span><span class="o">,</span>
+				 <span class="nx">style</span><span class="o">:</span> <span class="o">{</span><span class="nx">color</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">style</span><span class="o">.</span><span class="nx">color</span><span class="o">,</span> <span class="nx">size</span><span class="o">:</span><span class="nx">c</span><span class="o">.</span><span class="nx">style</span><span class="o">.</span><span class="nx">size</span><span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Returning new series definition to chart: &quot;</span> <span class="o">+</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">dump</span><span class="o">(</span><span class="nx">arr</span><span class="o">),</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">return</span> <span class="nx">arr</span><span class="o">;</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Set up the Chart.</span>
+<span class="c">	 * @method _initChart</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_initChart</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Initializing chart...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_sizeChartCanvas</span><span class="o">();</span>
+		
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">SWFURL</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;swfUrl&quot;</span><span class="o">);</span>
+
+		<span class="k">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+
+		<span class="c">//Create DataSource based on records currently displayed</span>
+<span class="c"></span>		<span class="c">//at the top of the sort list in the DataTable.</span>
+<span class="c"></span>		<span class="k">var</span> <span class="nx">ds</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DataSource</span><span class="o">(</span>
+			<span class="c">//force the jsfunction DataSource to run in the scope of</span>
+<span class="c"></span>			<span class="c">//the ProfilerViewer, not in the YAHOO.util.DataSource scope:</span>
+<span class="c"></span>			<span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="nx">self</span><span class="o">.</span><span class="nx">_getChartData</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="nx">self</span><span class="o">);</span>
+			<span class="o">},</span> 
+			<span class="o">{</span>
+				<span class="nx">responseType</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">DataSource</span><span class="o">.</span><span class="nx">TYPE_JSARRAY</span><span class="o">,</span>
+				<span class="nx">maxCacheEntries</span><span class="o">:</span> <span class="m">0</span>
+			<span class="o">}</span>
+		<span class="o">);</span>
+
+		<span class="nx">ds</span><span class="o">.</span><span class="nx">responseSchema</span> <span class="o">=</span>
+		<span class="o">{</span>
+			<span class="nx">fields</span><span class="o">:</span> <span class="o">[</span> <span class="s2">&quot;fn&quot;</span><span class="o">,</span> <span class="s2">&quot;avg&quot;</span><span class="o">,</span> <span class="s2">&quot;calls&quot;</span><span class="o">,</span> <span class="s2">&quot;max&quot;</span><span class="o">,</span> <span class="s2">&quot;min&quot;</span><span class="o">,</span> <span class="s2">&quot;total&quot;</span><span class="o">,</span> <span class="s2">&quot;pct&quot;</span> <span class="o">]</span>
+		<span class="o">};</span>
+		
+		<span class="nx">ds</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s1">&#39;responseEvent&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_sizeChartCanvas</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		
+		<span class="c">//Set up the chart itself.</span>
+<span class="c"></span>		<span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">NumericAxis</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionTime</span><span class="o">.</span><span class="nx">labelFunction</span> <span class="o">=</span> <span class="s2">&quot;YAHOO.widget.ProfilerViewer.timeAxisLabelFunction&quot;</span><span class="o">;</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionPercent</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">NumericAxis</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionPercent</span><span class="o">.</span><span class="nx">labelFunction</span> <span class="o">=</span> <span class="s2">&quot;YAHOO.widget.ProfilerViewer.percentAxisLabelFunction&quot;</span><span class="o">;</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionPlain</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">NumericAxis</span><span class="o">();</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chart</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">BarChart</span><span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">_chartEl</span><span class="o">,</span> <span class="nx">ds</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">yField</span><span class="o">:</span> <span class="s2">&quot;fn&quot;</span><span class="o">,</span>
+			<span class="nx">series</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getSeriesDef</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;sortedBy&quot;</span><span class="o">).</span><span class="nx">key</span><span class="o">),</span>
+			<span class="nx">style</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;chartStyle&quot;</span><span class="o">),</span>
+			<span class="nx">xAxis</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_chartAxisDefinitionTime</span>
+		<span class="o">}</span> <span class="o">);</span>
+		
+		<span class="k">this</span><span class="o">.</span><span class="nx">_drawChartLegend</span><span class="o">();</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_chartInitialized</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span><span class="o">.</span><span class="nx">unsubscribe</span><span class="o">(</span><span class="s2">&quot;initEvent&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_initChart</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s2">&quot;initEvent&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_refreshChart</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Chart initialization complete.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Set up the Chart&#39;s legend</span>
+<span class="c">	 * @method _drawChartLegend</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_drawChartLegend</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Drawing chart legend...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">var</span> <span class="nx">seriesDefs</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;chartSeriesDefinitions&quot;</span><span class="o">);</span>
+		<span class="k">var</span> <span class="nx">currentDef</span> <span class="o">=</span> <span class="nx">seriesDefs</span><span class="o">[</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;sortedBy&quot;</span><span class="o">).</span><span class="nx">key</span><span class="o">];</span>
+		<span class="k">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_chartLegendEl</span><span class="o">;</span>
+		<span class="nx">l</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">currentDef</span><span class="o">.</span><span class="nx">group</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">j</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">seriesDefs</span><span class="o">[</span><span class="nx">currentDef</span><span class="o">.</span><span class="nx">group</span><span class="o">[</span><span class="nx">i</span><span class="o">]];</span>
+			<span class="k">var</span> <span class="nx">dt</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;dt&quot;</span><span class="o">);</span>
+			<span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="nx">dt</span><span class="o">,</span> <span class="s2">&quot;backgroundColor&quot;</span><span class="o">,</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nx">c</span><span class="o">.</span><span class="nx">style</span><span class="o">.</span><span class="nx">color</span><span class="o">);</span>
+			<span class="k">var</span> <span class="nx">dd</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s2">&quot;dd&quot;</span><span class="o">);</span>
+			<span class="nx">dd</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">c</span><span class="o">.</span><span class="nx">displayName</span><span class="o">;</span>
+			<span class="nx">l</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">dt</span><span class="o">);</span>
+			<span class="nx">l</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">dd</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">};</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Resize the chart&#39;s canvas if based on number of records</span>
+<span class="c">	 * returned from the chart&#39;s datasource.</span>
+<span class="c">	 * @method _sizeChartCanvas</span>
+<span class="c">	 * @private</span>
+<span class="c">	 **/</span>
+	<span class="nx">proto</span><span class="o">.</span><span class="nx">_sizeChartCanvas</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">o</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Resizing chart canvas...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+		<span class="k">var</span> <span class="nx">bars</span> <span class="o">=</span> <span class="o">(</span><span class="nx">o</span><span class="o">)</span> <span class="o">?</span> <span class="nx">o</span><span class="o">.</span><span class="nx">response</span><span class="o">.</span><span class="nx">length</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;maxChartFunctions&quot;</span><span class="o">);</span>
+		<span class="k">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="o">(</span><span class="nx">bars</span> <span class="o">*</span> <span class="m">36</span><span class="o">)</span> <span class="o">+</span> <span class="m">34</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="nx">s</span> <span class="o">!=</span> <span class="nb">parseInt</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartElHeight</span><span class="o">,</span> <span class="m">10</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_chartElHeight</span> <span class="o">=</span> <span class="nx">s</span><span class="o">;</span>
+			<span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_chartEl</span><span class="o">,</span> <span class="s2">&quot;height&quot;</span><span class="o">,</span> <span class="nx">s</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * setAttributeConfigs TabView specific properties.</span>
+<span class="c">     * @method initAttributes</span>
+<span class="c">     * @param {Object} attr Hash of initial attributes</span>
+<span class="c">	 * @method initAttributes</span>
+<span class="c">	 * @private</span>
+<span class="c">     */</span>
+    <span class="nx">proto</span><span class="o">.</span><span class="nx">initAttributes</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Initializing attributes...&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ProfilerViewer</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">initAttributes</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">attr</span><span class="o">);</span>
+        <span class="c">/**</span>
+<span class="c">         * The YUI Loader base path from which to pull YUI files needed</span>
+<span class="c">		 * in the rendering of the ProfilerViewer canvas.  Passed directly</span>
+<span class="c">		 * to YUI Loader.  Leave blank to draw files from</span>
+<span class="c">		 * yui.yahooapis.com.</span>
+<span class="c">         * @attribute base</span>
+<span class="c">         * @type string</span>
+<span class="c">		 * @default &quot;&quot;</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;base&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">base</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * The height of the DataTable.  The table will scroll</span>
+<span class="c">		 * vertically if the content overflows the specified</span>
+<span class="c">		 * height.</span>
+<span class="c">         * @attribute tableHeight</span>
+<span class="c">         * @type string</span>
+<span class="c">		 * @default &quot;15em&quot;</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;tableHeight&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">tableHeight</span> <span class="o">||</span> <span class="s2">&quot;15em&quot;</span><span class="o">,</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">s</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">this</span><span class="o">.</span><span class="nx">_dataTable</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;height&quot;</span><span class="o">,</span> <span class="nx">s</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+        <span class="o">});</span>
+		
+        <span class="c">/**</span>
+<span class="c">         * The default column key to sort by.  Valid keys are: fn, calls,</span>
+<span class="c">		 * avg, min, max, total.  Valid dir values are: </span>
+<span class="c">		 * YAHOO.widget.DataTable.CLASS_ASC and</span>
+<span class="c">		 * YAHOO.widget.DataTable.CLASS_DESC (or their</span>
+<span class="c">		 * string equivalents).</span>
+<span class="c">         * @attribute sortedBy</span>
+<span class="c">         * @type string</span>
+<span class="c">		 * @default {key:&quot;total&quot;, dir:&quot;yui-dt-desc&quot;}</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;sortedBy&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">sortedBy</span> <span class="o">||</span> <span class="o">{</span><span class="nx">key</span><span class="o">:</span><span class="s2">&quot;total&quot;</span><span class="o">,</span> <span class="nx">dir</span><span class="o">:</span><span class="s2">&quot;yui-dt-desc&quot;</span><span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * A filter function to use in selecting functions that will</span>
+<span class="c">		 * appear in the ProfilerViewer report.  The function is passed</span>
+<span class="c">		 * a function report object and should return a boolean indicating</span>
+<span class="c">		 * whether that function should be included in the ProfilerViewer</span>
+<span class="c">		 * display.  The argument is structured as follows:</span>
+<span class="c">		 *</span>
+<span class="c">		 * {</span>
+<span class="c">		 *	 	fn: &lt;str function name&gt;,</span>
+<span class="c">		 *		calls : &lt;n number of calls&gt;,</span>
+<span class="c">		 *		avg : &lt;n average call duration&gt;,</span>
+<span class="c">		 *		max: &lt;n duration of longest call&gt;,</span>
+<span class="c">		 *		min: &lt;n duration of shortest call&gt;,</span>
+<span class="c">		 *		total: &lt;n total time of all calls&gt;</span>
+<span class="c">		 *		points : &lt;array time in ms of each call&gt;</span>
+<span class="c">		 *	}</span>
+<span class="c">		 *</span>
+<span class="c">		 * For example, you would use the follwing filter function to </span>
+<span class="c">		 * return only functions that have been called at least once:</span>
+<span class="c">		 * </span>
+<span class="c">		 * 	function(o) {</span>
+<span class="c">		 *		return (o.calls &gt; 0);</span>
+<span class="c">		 *	}</span>
+<span class="c">		 *</span>
+<span class="c">         * @attribute filter</span>
+<span class="c">         * @type function</span>
+<span class="c">		 * @default null</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;filter&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">filter</span> <span class="o">||</span> <span class="kc">null</span><span class="o">,</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isFunction</span>
+        <span class="o">});</span>
+
+		<span class="c">/**</span>
+<span class="c">		 * The path to the YUI Charts swf file; must be a full URI</span>
+<span class="c">		 * or a path relative to the page being profiled. Changes at runtime</span>
+<span class="c">		 * not supported; pass this value in at instantiation.</span>
+<span class="c">		 * @attribute swfUrl</span>
+<span class="c">		 * @type string</span>
+<span class="c">		 * @default &quot;http://yui.yahooapis.com/2.5.0/build/charts/assets/charts.swf&quot;</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;swfUrl&#39;</span><span class="o">,</span> <span class="o">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">swfUrl</span> <span class="o">||</span> <span class="s2">&quot;http://yui.yahooapis.com/2.5.0/build/charts/assets/charts.swf&quot;</span>
+		<span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * The maximum number of functions to profile in the chart. The</span>
+<span class="c">		 * greater the number of functions, the greater the height of the</span>
+<span class="c">		 * chart canvas.</span>
+<span class="c">		 * height.</span>
+<span class="c">         * @attribute maxChartFunctions</span>
+<span class="c">         * @type int</span>
+<span class="c">		 * @default 6</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;maxChartFunctions&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">maxChartFunctions</span> <span class="o">||</span> <span class="m">6</span><span class="o">,</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">s</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_rendered</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">this</span><span class="o">.</span><span class="nx">_sizeChartCanvas</span><span class="o">();</span>
+				<span class="o">}</span>
+			<span class="o">},</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isNumber</span>
+        <span class="o">});</span>
+		
+        <span class="c">/**</span>
+<span class="c">         * The style object that defines the chart&#39;s visual presentation.</span>
+<span class="c">		 * Conforms to the style attribute passed to the Charts Control</span>
+<span class="c">		 * constructor.  See Charts Control User&#39;s Guide for more information</span>
+<span class="c">		 * on how to format this object.</span>
+<span class="c">         * @attribute chartStyle</span>
+<span class="c">         * @type obj</span>
+<span class="c">		 * @default See JS source for default definitions.</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;chartStyle&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> 	<span class="nx">attr</span><span class="o">.</span><span class="nx">chartStyle</span> <span class="o">||</span> <span class="o">{</span>
+				<span class="nx">font</span><span class="o">:</span>
+					<span class="o">{</span>
+						<span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Arial&quot;</span><span class="o">,</span>
+						<span class="nx">color</span><span class="o">:</span> <span class="m">0</span><span class="nx">xeeee5c</span><span class="o">,</span>
+						<span class="nx">size</span><span class="o">:</span> <span class="m">12</span>
+					<span class="o">},</span>
+					<span class="nx">background</span><span class="o">:</span>
+					<span class="o">{</span>
+						<span class="nx">color</span><span class="o">:</span> <span class="s2">&quot;6e6e63&quot;</span>
+					<span class="o">}</span>
+				<span class="o">},</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_rendered</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;showChart&quot;</span><span class="o">))</span> <span class="o">{</span>
+						<span class="k">this</span><span class="o">.</span><span class="nx">_refreshChart</span><span class="o">();</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+        <span class="o">});</span>
+		
+        <span class="c">/**</span>
+<span class="c">         * The series definition information to use when charting</span>
+<span class="c">		 * specific fields on the chart.  displayName, xField,</span>
+<span class="c">		 * and style members are used to construct the series</span>
+<span class="c">		 * definition; the &quot;group&quot; member is the array of fields</span>
+<span class="c">		 * that should be charted when the table is sorted by a</span>
+<span class="c">		 * given field.</span>
+<span class="c">         * @attribute chartSeriesDefinitions</span>
+<span class="c">         * @type obj</span>
+<span class="c">		 * @default See JS source for full default definitions.</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;chartSeriesDefinitions&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> 	<span class="nx">attr</span><span class="o">.</span><span class="nx">chartSeriesDefinitions</span> <span class="o">||</span>  <span class="o">{</span>
+						<span class="nx">total</span><span class="o">:</span> <span class="o">{</span>
+							<span class="nx">displayName</span><span class="o">:</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">colHeads</span><span class="o">.</span><span class="nx">total</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+							<span class="nx">xField</span><span class="o">:</span> <span class="s2">&quot;total&quot;</span><span class="o">,</span>
+							<span class="nx">style</span><span class="o">:</span> <span class="o">{</span><span class="nx">color</span><span class="o">:</span><span class="s2">&quot;4d95dd&quot;</span><span class="o">,</span> <span class="nx">size</span><span class="o">:</span><span class="m">20</span><span class="o">},</span>
+							<span class="nx">group</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;total&quot;</span><span class="o">]</span>
+						<span class="o">},</span>
+						<span class="nx">calls</span><span class="o">:</span> <span class="o">{</span>		
+							<span class="nx">displayName</span><span class="o">:</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">colHeads</span><span class="o">.</span><span class="nx">calls</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+							<span class="nx">xField</span><span class="o">:</span> <span class="s2">&quot;calls&quot;</span><span class="o">,</span>
+							<span class="nx">style</span><span class="o">:</span> <span class="o">{</span><span class="nx">color</span><span class="o">:</span><span class="s2">&quot;edff9f&quot;</span><span class="o">,</span> <span class="nx">size</span><span class="o">:</span><span class="m">20</span><span class="o">},</span>
+							<span class="nx">group</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;calls&quot;</span><span class="o">]</span>
+						<span class="o">},</span>
+						<span class="nx">avg</span><span class="o">:</span> <span class="o">{</span>
+							<span class="nx">displayName</span><span class="o">:</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">colHeads</span><span class="o">.</span><span class="nx">avg</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+							<span class="nx">xField</span><span class="o">:</span> <span class="s2">&quot;avg&quot;</span><span class="o">,</span>
+							<span class="nx">style</span><span class="o">:</span> <span class="o">{</span><span class="nx">color</span><span class="o">:</span><span class="s2">&quot;209daf&quot;</span><span class="o">,</span> <span class="nx">size</span><span class="o">:</span><span class="m">9</span><span class="o">},</span>
+							<span class="nx">group</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;avg&quot;</span><span class="o">,</span> <span class="s2">&quot;min&quot;</span><span class="o">,</span> <span class="s2">&quot;max&quot;</span><span class="o">]</span>
+						<span class="o">},</span>
+						<span class="nx">min</span><span class="o">:</span> <span class="o">{</span>
+							<span class="nx">displayName</span><span class="o">:</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">colHeads</span><span class="o">.</span><span class="nx">min</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+							<span class="nx">xField</span><span class="o">:</span> <span class="s2">&quot;min&quot;</span><span class="o">,</span>
+							<span class="nx">style</span><span class="o">:</span> <span class="o">{</span><span class="nx">color</span><span class="o">:</span><span class="s2">&quot;b6ecf4&quot;</span><span class="o">,</span> <span class="nx">size</span><span class="o">:</span><span class="m">9</span><span class="o">},</span>
+							<span class="nx">group</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;avg&quot;</span><span class="o">,</span> <span class="s2">&quot;min&quot;</span><span class="o">,</span> <span class="s2">&quot;max&quot;</span><span class="o">]</span>
+						<span class="o">},</span>
+						<span class="nx">max</span><span class="o">:</span> <span class="o">{</span>
+							<span class="nx">displayName</span><span class="o">:</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">colHeads</span><span class="o">.</span><span class="nx">max</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+							<span class="nx">xField</span><span class="o">:</span> <span class="s2">&quot;max&quot;</span><span class="o">,</span>
+							<span class="nx">style</span><span class="o">:</span> <span class="o">{</span><span class="nx">color</span><span class="o">:</span><span class="s2">&quot;29c7de&quot;</span><span class="o">,</span> <span class="nx">size</span><span class="o">:</span><span class="m">9</span><span class="o">},</span>
+							<span class="nx">group</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;avg&quot;</span><span class="o">,</span> <span class="s2">&quot;min&quot;</span><span class="o">,</span> <span class="s2">&quot;max&quot;</span><span class="o">]</span>
+						<span class="o">},</span>
+						<span class="nx">pct</span><span class="o">:</span> <span class="o">{</span>
+							<span class="nx">displayName</span><span class="o">:</span> <span class="nx">PV</span><span class="o">.</span><span class="nx">STRINGS</span><span class="o">.</span><span class="nx">colHeads</span><span class="o">.</span><span class="nx">pct</span><span class="o">[</span><span class="m">0</span><span class="o">],</span>
+							<span class="nx">xField</span><span class="o">:</span> <span class="s2">&quot;pct&quot;</span><span class="o">,</span>
+							<span class="nx">style</span><span class="o">:</span> <span class="o">{</span><span class="nx">color</span><span class="o">:</span><span class="s2">&quot;C96EDB&quot;</span><span class="o">,</span> <span class="nx">size</span><span class="o">:</span><span class="m">20</span><span class="o">},</span>
+							<span class="nx">group</span><span class="o">:</span> <span class="o">[</span><span class="s2">&quot;pct&quot;</span><span class="o">]</span>
+						<span class="o">}</span>
+				<span class="o">},</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_rendered</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;showChart&quot;</span><span class="o">))</span> <span class="o">{</span>
+						<span class="k">this</span><span class="o">.</span><span class="nx">_refreshChart</span><span class="o">();</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+        <span class="o">});</span>
+		
+        <span class="c">/**</span>
+<span class="c">         * The default visibility setting for the viewer canvas. If true,</span>
+<span class="c">		 * the viewer will load all necessary files and render itself</span>
+<span class="c">		 * immediately upon instantiation; otherwise, the viewer will</span>
+<span class="c">		 * load only minimal resources until the user toggles visibility</span>
+<span class="c">		 * via the UI.</span>
+<span class="c">         * @attribute visible</span>
+<span class="c">         * @type boolean</span>
+<span class="c">		 * @default false</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;visible&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">visible</span> <span class="o">||</span> <span class="kc">false</span><span class="o">,</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isBoolean</span><span class="o">,</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">b</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="nx">b</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">this</span><span class="o">.</span><span class="nx">_show</span><span class="o">();</span>
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_rendered</span><span class="o">)</span> <span class="o">{</span>
+						<span class="k">this</span><span class="o">.</span><span class="nx">_hide</span><span class="o">();</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="c">/**</span>
+<span class="c">         * The default visibility setting for the chart.</span>
+<span class="c">         * @attribute showChart</span>
+<span class="c">         * @type boolean</span>
+<span class="c">		 * @default true</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s1">&#39;showChart&#39;</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">value</span><span class="o">:</span> <span class="nx">attr</span><span class="o">.</span><span class="nx">showChart</span> <span class="o">||</span> <span class="kc">true</span><span class="o">,</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isBoolean</span><span class="o">,</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+			
+        <span class="o">});</span>
+		
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">ProfilerViewer</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">initAttributes</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">attr</span><span class="o">);</span>
+		
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Attributes initialized.&quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;ProfilerViewer&quot;</span><span class="o">);</span>
+    <span class="o">};</span>
+	
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class="selected"><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.ProfilerViewer.html" title="YAHOO.widget.ProfilerViewer">YAHOO.widget.ProfilerViewer</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="profilerviewer.js.html" title="profilerviewer.js">profilerviewer.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_arraySum", "url": "YAHOO.widget.ProfilerViewer.html#method__arraySum", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "base", "url": "YAHOO.widget.ProfilerViewer.html#config_base", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "baseChange", "url": "YAHOO.widget.ProfilerViewer.html#event_baseChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeBaseChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeBaseChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeChartSeriesDefinitionsChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeChartSeriesDefinitionsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeChartStyleChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeChartStyleChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeFilterChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeFilterChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeMaxChartFunctionsChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeMaxChartFunctionsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeShowChartChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeShowChartChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeSortedByChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeSortedByChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeSwfUrlChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeSwfUrlChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeTableHeightChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeTableHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "beforeVisibleChange", "url": "YAHOO.widget.ProfilerViewer.html#event_beforeVisibleChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "chartSeriesDefinitions", "url": "YAHOO.widget.ProfilerViewer.html#config_chartSeriesDefinitions", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "chartSeriesDefinitionsChange", "url": "YAHOO.widget.ProfilerViewer.html#event_chartSeriesDefinitionsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "chartStyle", "url": "YAHOO.widget.ProfilerViewer.html#config_chartStyle", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "chartStyleChange", "url": "YAHOO.widget.ProfilerViewer.html#event_chartStyleChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "CLASS", "url": "YAHOO.widget.ProfilerViewer.html#property_CLASS", "type": "property"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "CLASS_BUSY", "url": "YAHOO.widget.ProfilerViewer.html#property_CLASS_BUSY", "type": "property"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "CLASS_CHART", "url": "YAHOO.widget.ProfilerViewer.html#property_CLASS_CHART", "type": "property"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "CLASS_CHART_CONTAINER", "url": "YAHOO.widget.ProfilerViewer.html#property_CLASS_CHART_CONTAINER", "type": "property"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "CLASS_CHART_LEGEND", "url": "YAHOO.widget.ProfilerViewer.html#property_CLASS_CHART_LEGEND", "type": "property"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "CLASS_DASHBOARD", "url": "YAHOO.widget.ProfilerViewer.html#property_CLASS_DASHBOARD", "type": "property"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "CLASS_REFRESH", "url": "YAHOO.widget.ProfilerViewer.html#property_CLASS_REFRESH", "type": "property"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "CLASS_TABLE", "url": "YAHOO.widget.ProfilerViewer.html#property_CLASS_TABLE", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_createButton", "url": "YAHOO.widget.ProfilerViewer.html#method__createButton", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_createProfilerViewerElement", "url": "YAHOO.widget.ProfilerViewer.html#method__createProfilerViewerElement", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_dataTableRenderHandler", "url": "YAHOO.widget.ProfilerViewer.html#method__dataTableRenderHandler", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_drawChartLegend", "url": "YAHOO.widget.ProfilerViewer.html#method__drawChartLegend", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "filter", "url": "YAHOO.widget.ProfilerViewer.html#config_filter", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "filterChange", "url": "YAHOO.widget.ProfilerViewer.html#event_filterChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "getBodyEl", "url": "YAHOO.widget.ProfilerViewer.html#method_getBodyEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "getChart", "url": "YAHOO.widget.ProfilerViewer.html#method_getChart", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_getChartData", "url": "YAHOO.widget.ProfilerViewer.html#method__getChartData", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "getChartEl", "url": "YAHOO.widget.ProfilerViewer.html#method_getChartEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "getDataTable", "url": "YAHOO.widget.ProfilerViewer.html#method_getDataTable", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "getHeadEl", "url": "YAHOO.widget.ProfilerViewer.html#method_getHeadEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_getProfilerData", "url": "YAHOO.widget.ProfilerViewer.html#method__getProfilerData", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_getSeriesDef", "url": "YAHOO.widget.ProfilerViewer.html#method__getSeriesDef", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "getTableEl", "url": "YAHOO.widget.ProfilerViewer.html#method_getTableEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "hide", "url": "YAHOO.widget.ProfilerViewer.html#method_hide", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "initAttributes", "url": "YAHOO.widget.ProfilerViewer.html#method_initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_initChart", "url": "YAHOO.widget.ProfilerViewer.html#method__initChart", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_initChartDOM", "url": "YAHOO.widget.ProfilerViewer.html#method__initChartDOM", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_initDataTable", "url": "YAHOO.widget.ProfilerViewer.html#method__initDataTable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_initLauncherDOM", "url": "YAHOO.widget.ProfilerViewer.html#method__initLauncherDOM", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_initViewerDOM", "url": "YAHOO.widget.ProfilerViewer.html#method__initViewerDOM", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "maxChartFunctions", "url": "YAHOO.widget.ProfilerViewer.html#config_maxChartFunctions", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "maxChartFunctionsChange", "url": "YAHOO.widget.ProfilerViewer.html#event_maxChartFunctionsChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "percentAxisLabelFunction", "url": "YAHOO.widget.ProfilerViewer.html#property_percentAxisLabelFunction", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_refreshChart", "url": "YAHOO.widget.ProfilerViewer.html#method__refreshChart", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "refreshData", "url": "YAHOO.widget.ProfilerViewer.html#method_refreshData", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "refreshDataEvent", "url": "YAHOO.widget.ProfilerViewer.html#event_refreshDataEvent", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_refreshDataTable", "url": "YAHOO.widget.ProfilerViewer.html#method__refreshDataTable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_render", "url": "YAHOO.widget.ProfilerViewer.html#method__render", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "renderEvent", "url": "YAHOO.widget.ProfilerViewer.html#event_renderEvent", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_setBusyState", "url": "YAHOO.widget.ProfilerViewer.html#method__setBusyState", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "show", "url": "YAHOO.widget.ProfilerViewer.html#method_show", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "showChart", "url": "YAHOO.widget.ProfilerViewer.html#config_showChart", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "showChartChange", "url": "YAHOO.widget.ProfilerViewer.html#event_showChartChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_sizeChartCanvas", "url": "YAHOO.widget.ProfilerViewer.html#method__sizeChartCanvas", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "sortedBy", "url": "YAHOO.widget.ProfilerViewer.html#config_sortedBy", "type": "config"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_sortedByChange", "url": "YAHOO.widget.ProfilerViewer.html#method__sortedByChange", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "sortedByChange", "url": "YAHOO.widget.ProfilerViewer.html#event_sortedByChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "STRINGS", "url": "YAHOO.widget.ProfilerViewer.html#property_STRINGS", "type": "property"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "swfUrl", "url": "YAHOO.widget.ProfilerViewer.html#config_swfUrl", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "swfUrlChange", "url": "YAHOO.widget.ProfilerViewer.html#event_swfUrlChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "tableHeight", "url": "YAHOO.widget.ProfilerViewer.html#config_tableHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "tableHeightChange", "url": "YAHOO.widget.ProfilerViewer.html#event_tableHeightChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_thClickHandler", "url": "YAHOO.widget.ProfilerViewer.html#method__thClickHandler", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "timeAxisLabelFunction", "url": "YAHOO.widget.ProfilerViewer.html#property_timeAxisLabelFunction", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "_toggleVisible", "url": "YAHOO.widget.ProfilerViewer.html#method__toggleVisible", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ProfilerViewer", "name": "toString", "url": "YAHOO.widget.ProfilerViewer.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "visible", "url": "YAHOO.widget.ProfilerViewer.html#config_visible", "type": "config"}, {"access": "", "host": "YAHOO.widget.ProfilerViewer", "name": "visibleChange", "url": "YAHOO.widget.ProfilerViewer.html#event_visibleChange", "type": "event"}];
+</script>
+</body>
+</html>

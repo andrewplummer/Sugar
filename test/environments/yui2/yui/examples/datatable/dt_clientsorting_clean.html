@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Client-side Sorting</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Client-side Sorting</h1>
+
+<div class="exampleIntro">
+	<p>A custom sort handler has been defined in this example to enable custom nested
+sorting, such that clicking on the "States" Column will sort by states, and then
+by area code.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="sort"></div>
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    YAHOO.example.CustomSort = function() {
+        // Custom sort handler to sort by state and then by areacode
+        // where a and b are Record instances to compare
+        var sortStates = function(a, b, desc) {
+            // Deal with empty values
+            if(!YAHOO.lang.isValue(a)) {
+                return (!YAHOO.lang.isValue(b)) ? 0 : 1;
+            }
+            else if(!YAHOO.lang.isValue(b)) {
+                return -1;
+            }
+
+            // First compare by state
+            var comp = YAHOO.util.Sort.compare;
+            var compState = comp(a.getData("state"), b.getData("state"), desc);
+
+            // If states are equal, then compare by areacode
+            return (compState !== 0) ? compState : comp(a.getData("areacode"), b.getData("areacode"), desc);
+        };
+
+        var myColumnDefs = [
+            {key:"areacode",label:"Area Codes",sortable:true},
+            {key:"state",label:"States",sortable:true,sortOptions:{sortFunction:sortStates}}
+        ];
+
+        var myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.areacodes.slice(0,25));
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+        myDataSource.responseSchema = {
+            fields: ["areacode","state"]
+        };
+
+        var myDataTable = new YAHOO.widget.DataTable("sort", myColumnDefs,
+                myDataSource, {sortedBy:{key:"areacode", dir:"asc"}});
+                
+        return {
+            oDS: myDataSource,
+            oDT: myDataTable
+        };
+    }();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,3036 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: logger  LogReader   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Logger Widget&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_logger.html" title="logger">logger</a>
+                 &gt; LogReader 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">LogReader</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        The LogReader class provides UI to read messages logged to YAHOO.widget.Logger.
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">LogReader</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                elContainer
+
+
+                                                , 
+                                                oConfigs
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">elContainer</span>
+                                                    &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  (optional) DOM element reference of an existing DIV.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">elContainer</span>
+                                                    &lt;<span property="yui:type">String</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  (optional) String ID of an existing DIV.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">oConfigs</span>
+                                                    &lt;<span property="yui:type">Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  (optional) Object literal of configuration params.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__btnClear">
+                                    <h4><a name="property__btnClear" property="yui:name">_btnClear</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Clear button element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__btnCollapse">
+                                    <h4><a name="property__btnCollapse" property="yui:name">_btnCollapse</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader collapse button element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__btnPause">
+                                    <h4><a name="property__btnPause" property="yui:name">_btnPause</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader pause button element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__buffer">
+                                    <h4><a name="property__buffer" property="yui:name">_buffer</a>
+                                        - <code>private <span property="yui:type">Object[]</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Buffer of log message objects for batch output.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__categoryFilters">
+                                    <h4><a name="property__categoryFilters" property="yui:name">_categoryFilters</a>
+                                        - <code>private <span property="yui:type">String[]</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Array of filters for log message categories.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__consoleMsgCount">
+                                    <h4><a name="property__consoleMsgCount" property="yui:name">_consoleMsgCount</a>
+                                        - <code>private <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Number of log messages output to console.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 0
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elBtns">
+                                    <h4><a name="property__elBtns" property="yui:name">_elBtns</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader buttons container element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elCategoryFilters">
+                                    <h4><a name="property__elCategoryFilters" property="yui:name">_elCategoryFilters</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Container element for LogReader category filter checkboxes.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elCollapse">
+                                    <h4><a name="property__elCollapse" property="yui:name">_elCollapse</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader collapse element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elConsole">
+                                    <h4><a name="property__elConsole" property="yui:name">_elConsole</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader console element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elContainer">
+                                    <h4><a name="property__elContainer" property="yui:name">_elContainer</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader container element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elDefaultContainer">
+                                    <h4><a name="property__elDefaultContainer" property="yui:name">_elDefaultContainer</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A class member shared by all LogReaders if a container needs to be
+created during instantiation. Will be null if a container element never needs to
+be created on the fly, such as when the implementer passes in their own element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elFt">
+                                    <h4><a name="property__elFt" property="yui:name">_elFt</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader footer element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elHd">
+                                    <h4><a name="property__elHd" property="yui:name">_elHd</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader header element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__elSourceFilters">
+                                    <h4><a name="property__elSourceFilters" property="yui:name">_elSourceFilters</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Container element for LogReader source filter checkboxes.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__filterCheckboxes">
+                                    <h4><a name="property__filterCheckboxes" property="yui:name">_filterCheckboxes</a>
+                                        - <code>private <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Hash of filters and their related checkbox elements.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__lastTime">
+                                    <h4><a name="property__lastTime" property="yui:name">_lastTime</a>
+                                        - <code>private <span property="yui:type">Date</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Date of last output log message.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__memberName">
+                                    <h4><a name="property__memberName" property="yui:name">_memberName</a>
+                                        - <code>private static <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Internal class member to index multiple LogReader instances.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 0
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__sName">
+                                    <h4><a name="property__sName" property="yui:name">_sName</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Name of LogReader instance.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__sourceFilters">
+                                    <h4><a name="property__sourceFilters" property="yui:name">_sourceFilters</a>
+                                        - <code>private <span property="yui:type">String[]</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Array of filters for log message sources.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__timeout">
+                                    <h4><a name="property__timeout" property="yui:name">_timeout</a>
+                                        - <code>private <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Batched output timeout ID.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__title">
+                                    <h4><a name="property__title" property="yui:name">_title</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            LogReader title header element.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_autoRender">
+                                    <h4><a name="property_autoRender" property="yui:name">autoRender</a>
+                                        - <code><span property="yui:type">{Boolean}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Render the LogReader immediately upon instantiation.  If set to false,
+you must call myLogReader.render() to generate the UI.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: true
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_BASIC_TEMPLATE">
+                                    <h4><a name="property_BASIC_TEMPLATE" property="yui:name">BASIC_TEMPLATE</a>
+                                        - <code>static <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Template used for innerHTML of compact entry output.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: "&lt;p>&lt;span class='{category}'>{label}&lt;/span>{totalTime}ms (+{elapsedTime}) {localTime}: {sourceAndDetail}: {message}&lt;/p>"
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_bottom">
+                                    <h4><a name="property_bottom" property="yui:name">bottom</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Public member to access CSS bottom position of the LogReader container.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_draggable">
+                                    <h4><a name="property_draggable" property="yui:name">draggable</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Enables draggable LogReader if DragDrop Utility is present.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: true
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_ENTRY_TEMPLATE">
+                                    <h4><a name="property_ENTRY_TEMPLATE" property="yui:name">ENTRY_TEMPLATE</a>
+                                        - <code>static <span property="yui:type">{HTMLElement}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Node template for the log entries
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: <code>pre</code> element with class yui-log-entry
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_entryFormat">
+                                    <h4><a name="property_entryFormat" property="yui:name">entryFormat</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Custom output format for log messages.  Defaults to null, which falls
+back to verboseOutput param deciding between LogReader.VERBOSE_TEMPLATE
+and LogReader.BASIC_TEMPLATE.  Use bracketed place holders to mark where
+message info should go.  Available place holder names include:
+<ul>
+<li>category</li>
+<li>label</li>
+<li>sourceAndDetail</li>
+<li>message</li>
+<li>localTime</li>
+<li>elapsedTime</li>
+<li>totalTime</li>
+</ul>
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: null
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_fontSize">
+                                    <h4><a name="property_fontSize" property="yui:name">fontSize</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Public member to access CSS font size of the LogReader container.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_footerEnabled">
+                                    <h4><a name="property_footerEnabled" property="yui:name">footerEnabled</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Whether or not the footer UI is enabled for the LogReader.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: true
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_height">
+                                    <h4><a name="property_height" property="yui:name">height</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Public member to access CSS height of the LogReader container.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_isCollapsed">
+                                    <h4><a name="property_isCollapsed" property="yui:name">isCollapsed</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            True when LogReader is in a collapsed state, false otherwise.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: false
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_isPaused">
+                                    <h4><a name="property_isPaused" property="yui:name">isPaused</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            True when LogReader is in a paused state, false otherwise.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: false
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_left">
+                                    <h4><a name="property_left" property="yui:name">left</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Public member to access CSS left position of the LogReader container.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_logReaderEnabled">
+                                    <h4><a name="property_logReaderEnabled" property="yui:name">logReaderEnabled</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Whether or not LogReader is enabled to output log messages.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: true
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_newestOnTop">
+                                    <h4><a name="property_newestOnTop" property="yui:name">newestOnTop</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Whether or not newest message is printed on top.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_outputBuffer">
+                                    <h4><a name="property_outputBuffer" property="yui:name">outputBuffer</a>
+                                        - <code><span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Output timeout buffer in milliseconds.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 100
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_right">
+                                    <h4><a name="property_right" property="yui:name">right</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Public member to access CSS right position of the LogReader container.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_thresholdMax">
+                                    <h4><a name="property_thresholdMax" property="yui:name">thresholdMax</a>
+                                        - <code><span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Maximum number of messages a LogReader console will display.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 500
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_thresholdMin">
+                                    <h4><a name="property_thresholdMin" property="yui:name">thresholdMin</a>
+                                        - <code><span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            When a LogReader console reaches its thresholdMax, it will clear out messages
+and print out the latest thresholdMin number of messages.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: 100
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_top">
+                                    <h4><a name="property_top" property="yui:name">top</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Public member to access CSS top position of the LogReader container.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_VERBOSE_TEMPLATE">
+                                    <h4><a name="property_VERBOSE_TEMPLATE" property="yui:name">VERBOSE_TEMPLATE</a>
+                                        - <code>static <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Template used for innerHTML of verbose entry output.
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: "&lt;p>&lt;span class='{category}'>{label}&lt;/span>{totalTime}ms (+{elapsedTime}) {localTime}:&lt;/p>&lt;p>{sourceAndDetail}&lt;/p>&lt;p>{message}&lt;/p>"
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_verboseOutput">
+                                    <h4><a name="property_verboseOutput" property="yui:name">verboseOutput</a>
+                                        - <code><span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Whether or not output is verbose (more readable). Setting to true will make
+output more compact (less readable).
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: true
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_width">
+                                    <h4><a name="property_width" property="yui:name">width</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Public member to access CSS width of the LogReader container.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method__createCategoryCheckbox">
+                                    <h4>
+                                        <a name="method__createCategoryCheckbox">_createCategoryCheckbox</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createCategoryCheckbox</strong>
+                                           (
+                                                
+                                                        
+                                                         sCategory
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates the UI for a category filter in the LogReader footer element.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sCategory</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Category name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__createSourceCheckbox">
+                                    <h4>
+                                        <a name="method__createSourceCheckbox">_createSourceCheckbox</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createSourceCheckbox</strong>
+                                           (
+                                                
+                                                        
+                                                         sSource
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates a checkbox in the LogReader footer element to filter by source.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sSource</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Source name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__filterLogs">
+                                    <h4>
+                                        <a name="method__filterLogs">_filterLogs</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_filterLogs</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Reprints all log messages in the stack through filters.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__init">
+                                    <h4>
+                                        <a name="method__init">_init</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_init</strong>
+                                           (
+                                                
+                                                        
+                                                         container
+                                                    
+                                                
+                                                        , 
+                                                         config
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the instance's message buffer, start time, etc
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">container</span>
+                                                        &lt;<span property="yui:type">String|HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  (optional) the render target</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">config</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  (optional) instance configuration</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initCategories">
+                                    <h4>
+                                        <a name="method__initCategories">_initCategories</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initCategories</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes category filters.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initConsoleEl">
+                                    <h4>
+                                        <a name="method__initConsoleEl">_initConsoleEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initConsoleEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the console element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initContainerEl">
+                                    <h4>
+                                        <a name="method__initContainerEl">_initContainerEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initContainerEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the primary container element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initDragDrop">
+                                    <h4>
+                                        <a name="method__initDragDrop">_initDragDrop</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initDragDrop</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes Drag and Drop on the header element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initFooterEl">
+                                    <h4>
+                                        <a name="method__initFooterEl">_initFooterEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initFooterEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the footer element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initHeaderEl">
+                                    <h4>
+                                        <a name="method__initHeaderEl">_initHeaderEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initHeaderEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes the header element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__initSources">
+                                    <h4>
+                                        <a name="method__initSources">_initSources</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_initSources</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes source filters.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onCategoryCreate">
+                                    <h4>
+                                        <a name="method__onCategoryCreate">_onCategoryCreate</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onCategoryCreate</strong>
+                                           (
+                                                
+                                                        
+                                                         sType
+                                                    
+                                                
+                                                        , 
+                                                         aArgs
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles Logger's categoryCreateEvent.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">aArgs</span>
+                                                        &lt;<span property="yui:type">Object[]</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Data passed from event firer.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onCheckCategory">
+                                    <h4>
+                                        <a name="method__onCheckCategory">_onCheckCategory</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onCheckCategory</strong>
+                                           (
+                                                
+                                                        
+                                                         v
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles check events on the category filter checkboxes.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">v</span>
+                                                        &lt;<span property="yui:type">HTMLEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The click event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onCheckSource">
+                                    <h4>
+                                        <a name="method__onCheckSource">_onCheckSource</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onCheckSource</strong>
+                                           (
+                                                
+                                                        
+                                                         v
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles check events on the category filter checkboxes.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">v</span>
+                                                        &lt;<span property="yui:type">HTMLEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The click event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onClickClearBtn">
+                                    <h4>
+                                        <a name="method__onClickClearBtn">_onClickClearBtn</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onClickClearBtn</strong>
+                                           (
+                                                
+                                                        
+                                                         v
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles click events on the clear button.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">v</span>
+                                                        &lt;<span property="yui:type">HTMLEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The click event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onClickCollapseBtn">
+                                    <h4>
+                                        <a name="method__onClickCollapseBtn">_onClickCollapseBtn</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onClickCollapseBtn</strong>
+                                           (
+                                                
+                                                        
+                                                         v
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles click events on the collapse button.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">v</span>
+                                                        &lt;<span property="yui:type">HTMLEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The click event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onClickPauseBtn">
+                                    <h4>
+                                        <a name="method__onClickPauseBtn">_onClickPauseBtn</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onClickPauseBtn</strong>
+                                           (
+                                                
+                                                        
+                                                         v
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles click events on the pause button.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">v</span>
+                                                        &lt;<span property="yui:type">HTMLEvent</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The click event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onNewLog">
+                                    <h4>
+                                        <a name="method__onNewLog">_onNewLog</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onNewLog</strong>
+                                           (
+                                                
+                                                        
+                                                         sType
+                                                    
+                                                
+                                                        , 
+                                                         aArgs
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles Logger's newLogEvent.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">aArgs</span>
+                                                        &lt;<span property="yui:type">Object[]</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Data passed from event firer.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onReset">
+                                    <h4>
+                                        <a name="method__onReset">_onReset</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onReset</strong>
+                                           (
+                                                
+                                                        
+                                                         sType
+                                                    
+                                                
+                                                        , 
+                                                         aArgs
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles Logger's resetEvent.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">aArgs</span>
+                                                        &lt;<span property="yui:type">Object[]</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Data passed from event firer.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__onSourceCreate">
+                                    <h4>
+                                        <a name="method__onSourceCreate">_onSourceCreate</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_onSourceCreate</strong>
+                                           (
+                                                
+                                                        
+                                                         sType
+                                                    
+                                                
+                                                        , 
+                                                         aArgs
+                                                    
+                                                
+                                                        , 
+                                                         oSelf
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles Logger's sourceCreateEvent.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The event.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">aArgs</span>
+                                                        &lt;<span property="yui:type">Object[]</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Data passed from event firer.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">oSelf</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The LogReader instance.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__printBuffer">
+                                    <h4>
+                                        <a name="method__printBuffer">_printBuffer</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_printBuffer</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sends buffer of log messages to output and clears buffer.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__printToConsole">
+                                    <h4>
+                                        <a name="method__printToConsole">_printToConsole</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_printToConsole</strong>
+                                           (
+                                                
+                                                        
+                                                         aEntries
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Cycles through an array of log messages, and outputs each one to the console
+if its category has not been filtered out.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">aEntries</span>
+                                                        &lt;<span property="yui:type">Object[]</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Array of LogMsg objects to output to console.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_clearConsole">
+                                    <h4>
+                                        <a name="method_clearConsole">clearConsole</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">clearConsole</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Does not delete any log messages, but clears all printed log messages from
+the console. Log messages will be printed out again if user re-filters. The
+static method YAHOO.widget.Logger.reset() should be called in order to
+actually delete log messages.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_collapse">
+                                    <h4>
+                                        <a name="method_collapse">collapse</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">collapse</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Collapses UI of LogReader. Logging functionality is not disrupted.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_destroy">
+                                    <h4>
+                                        <a name="method_destroy">destroy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">destroy</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes the UI from the DOM entirely and detaches all event listeners.
+Implementers should note that Logger will still accumulate messages.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_expand">
+                                    <h4>
+                                        <a name="method_expand">expand</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">expand</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Expands UI of LogReader. Logging functionality is not disrupted.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getCategories">
+                                    <h4>
+                                        <a name="method_getCategories">getCategories</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String[]
+                                            <strong property="yui:name">getCategories</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns array of enabled categories.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String[]
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Array of enabled categories.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getCheckbox">
+                                    <h4>
+                                        <a name="method_getCheckbox">getCheckbox</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">getCheckbox</strong>
+                                           (
+                                                
+                                                        
+                                                         Category
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns related checkbox element for given filter (i.e., category or source).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Category</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> or source name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Array of all filter checkboxes.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getLastTime">
+                                    <h4>
+                                        <a name="method_getLastTime">getLastTime</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Date
+                                            <strong property="yui:name">getLastTime</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Gets timestamp of the last log.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Date
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Timestamp of the last log.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getSources">
+                                    <h4>
+                                        <a name="method_getSources">getSources</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">getSources</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns array of enabled sources.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Array of enabled sources.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_hide">
+                                    <h4>
+                                        <a name="method_hide">hide</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">hide</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Hides UI of LogReader. Logging functionality is not disrupted.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_hideCategory">
+                                    <h4>
+                                        <a name="method_hideCategory">hideCategory</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">hideCategory</strong>
+                                           (
+                                                
+                                                        
+                                                         Category
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Hides log messages associated with given category.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Category</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_hideSource">
+                                    <h4>
+                                        <a name="method_hideSource">hideSource</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">hideSource</strong>
+                                           (
+                                                
+                                                        
+                                                         Source
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Hides log messages associated with given source.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Source</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_html2Text">
+                                    <h4>
+                                        <a name="method_html2Text">html2Text</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">html2Text</strong>
+                                           (
+                                                
+                                                        
+                                                         sHtml
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Converts input chars "<", ">", and "&" to HTML entities.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sHtml</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  String to convert.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_pause">
+                                    <h4>
+                                        <a name="method_pause">pause</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">pause</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Pauses output of log messages. While paused, log messages are not lost, but
+get saved to a buffer and then output upon resume of LogReader.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_render">
+                                    <h4>
+                                        <a name="method_render">render</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">render</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Adds the UI to the DOM, attaches event listeners, and bootstraps initial
+UI state.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_resume">
+                                    <h4>
+                                        <a name="method_resume">resume</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">resume</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Resumes output of log messages, including outputting any log messages that
+have been saved to buffer while paused.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setTitle">
+                                    <h4>
+                                        <a name="method_setTitle">setTitle</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setTitle</strong>
+                                           (
+                                                
+                                                        
+                                                         sTitle
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Updates title to given string.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">sTitle</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  New title.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_show">
+                                    <h4>
+                                        <a name="method_show">show</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">show</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Shows UI of LogReader. Logging functionality is not disrupted.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_showCategory">
+                                    <h4>
+                                        <a name="method_showCategory">showCategory</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">showCategory</strong>
+                                           (
+                                                
+                                                        
+                                                         Category
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Shows log messages associated with given category.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Category</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_showSource">
+                                    <h4>
+                                        <a name="method_showSource">showSource</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">showSource</strong>
+                                           (
+                                                
+                                                        
+                                                         Source
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Shows log messages associated with given source.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Source</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> name.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Public accessor to the unique name of the LogReader instance.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Unique name of the LogReader instance.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class="selected"><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="LogMsg.html" title="LogMsg">LogMsg</a></li>
+                                <li class="selected"><a href="LogReader.html" title="LogReader">LogReader</a></li>
+                                <li class=""><a href="LogWriter.html" title="LogWriter">LogWriter</a></li>
+                                <li class=""><a href="YAHOO.widget.Logger.html" title="YAHOO.widget.Logger">YAHOO.widget.Logger</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Logger.js.html" title="Logger.js">Logger.js</a></li>
+                                <li class=""><a href="LogMsg.js.html" title="LogMsg.js">LogMsg.js</a></li>
+                                <li class=""><a href="LogReader.js.html" title="LogReader.js">LogReader.js</a></li>
+                                <li class=""><a href="LogWriter.js.html" title="LogWriter.js">LogWriter.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__btnClear" title="_btnClear">_btnClear</a></li>
+                                <li class="private"><a href="#property__btnCollapse" title="_btnCollapse">_btnCollapse</a></li>
+                                <li class="private"><a href="#property__btnPause" title="_btnPause">_btnPause</a></li>
+                                <li class="private"><a href="#property__buffer" title="_buffer">_buffer</a></li>
+                                <li class="private"><a href="#property__categoryFilters" title="_categoryFilters">_categoryFilters</a></li>
+                                <li class="private"><a href="#property__consoleMsgCount" title="_consoleMsgCount">_consoleMsgCount</a></li>
+                                <li class="private"><a href="#property__elBtns" title="_elBtns">_elBtns</a></li>
+                                <li class="private"><a href="#property__elCategoryFilters" title="_elCategoryFilters">_elCategoryFilters</a></li>
+                                <li class="private"><a href="#property__elCollapse" title="_elCollapse">_elCollapse</a></li>
+                                <li class="private"><a href="#property__elConsole" title="_elConsole">_elConsole</a></li>
+                                <li class="private"><a href="#property__elContainer" title="_elContainer">_elContainer</a></li>
+                                <li class="private"><a href="#property__elDefaultContainer" title="_elDefaultContainer">_elDefaultContainer</a></li>
+                                <li class="private"><a href="#property__elFt" title="_elFt">_elFt</a></li>
+                                <li class="private"><a href="#property__elHd" title="_elHd">_elHd</a></li>
+                                <li class="private"><a href="#property__elSourceFilters" title="_elSourceFilters">_elSourceFilters</a></li>
+                                <li class="private"><a href="#property__filterCheckboxes" title="_filterCheckboxes">_filterCheckboxes</a></li>
+                                <li class="private"><a href="#property__lastTime" title="_lastTime">_lastTime</a></li>
+                                <li class="private"><a href="#property__memberName" title="_memberName">_memberName</a></li>
+                                <li class="private"><a href="#property__sName" title="_sName">_sName</a></li>
+                                <li class="private"><a href="#property__sourceFilters" title="_sourceFilters">_sourceFilters</a></li>
+                                <li class="private"><a href="#property__timeout" title="_timeout">_timeout</a></li>
+                                <li class="private"><a href="#property__title" title="_title">_title</a></li>
+                                <li class=""><a href="#property_autoRender" title="autoRender">autoRender</a></li>
+                                <li class=""><a href="#property_BASIC_TEMPLATE" title="BASIC_TEMPLATE">BASIC_TEMPLATE</a></li>
+                                <li class=""><a href="#property_bottom" title="bottom">bottom</a></li>
+                                <li class=""><a href="#property_draggable" title="draggable">draggable</a></li>
+                                <li class=""><a href="#property_ENTRY_TEMPLATE" title="ENTRY_TEMPLATE">ENTRY_TEMPLATE</a></li>
+                                <li class=""><a href="#property_entryFormat" title="entryFormat">entryFormat</a></li>
+                                <li class=""><a href="#property_fontSize" title="fontSize">fontSize</a></li>
+                                <li class=""><a href="#property_footerEnabled" title="footerEnabled">footerEnabled</a></li>
+                                <li class=""><a href="#property_height" title="height">height</a></li>
+                                <li class=""><a href="#property_isCollapsed" title="isCollapsed">isCollapsed</a></li>
+                                <li class=""><a href="#property_isPaused" title="isPaused">isPaused</a></li>
+                                <li class=""><a href="#property_left" title="left">left</a></li>
+                                <li class=""><a href="#property_logReaderEnabled" title="logReaderEnabled">logReaderEnabled</a></li>
+                                <li class=""><a href="#property_newestOnTop" title="newestOnTop">newestOnTop</a></li>
+                                <li class=""><a href="#property_outputBuffer" title="outputBuffer">outputBuffer</a></li>
+                                <li class=""><a href="#property_right" title="right">right</a></li>
+                                <li class=""><a href="#property_thresholdMax" title="thresholdMax">thresholdMax</a></li>
+                                <li class=""><a href="#property_thresholdMin" title="thresholdMin">thresholdMin</a></li>
+                                <li class=""><a href="#property_top" title="top">top</a></li>
+                                <li class=""><a href="#property_VERBOSE_TEMPLATE" title="VERBOSE_TEMPLATE">VERBOSE_TEMPLATE</a></li>
+                                <li class=""><a href="#property_verboseOutput" title="verboseOutput">verboseOutput</a></li>
+                                <li class=""><a href="#property_width" title="width">width</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method__createCategoryCheckbox" title="_createCategoryCheckbox">_createCategoryCheckbox</a></li>
+                                <li class="private"><a href="#method__createSourceCheckbox" title="_createSourceCheckbox">_createSourceCheckbox</a></li>
+                                <li class="private"><a href="#method__filterLogs" title="_filterLogs">_filterLogs</a></li>
+                                <li class="protected"><a href="#method__init" title="_init">_init</a></li>
+                                <li class="private"><a href="#method__initCategories" title="_initCategories">_initCategories</a></li>
+                                <li class="private"><a href="#method__initConsoleEl" title="_initConsoleEl">_initConsoleEl</a></li>
+                                <li class="private"><a href="#method__initContainerEl" title="_initContainerEl">_initContainerEl</a></li>
+                                <li class="private"><a href="#method__initDragDrop" title="_initDragDrop">_initDragDrop</a></li>
+                                <li class="private"><a href="#method__initFooterEl" title="_initFooterEl">_initFooterEl</a></li>
+                                <li class="private"><a href="#method__initHeaderEl" title="_initHeaderEl">_initHeaderEl</a></li>
+                                <li class="private"><a href="#method__initSources" title="_initSources">_initSources</a></li>
+                                <li class="private"><a href="#method__onCategoryCreate" title="_onCategoryCreate">_onCategoryCreate</a></li>
+                                <li class="private"><a href="#method__onCheckCategory" title="_onCheckCategory">_onCheckCategory</a></li>
+                                <li class="private"><a href="#method__onCheckSource" title="_onCheckSource">_onCheckSource</a></li>
+                                <li class="private"><a href="#method__onClickClearBtn" title="_onClickClearBtn">_onClickClearBtn</a></li>
+                                <li class="private"><a href="#method__onClickCollapseBtn" title="_onClickCollapseBtn">_onClickCollapseBtn</a></li>
+                                <li class="private"><a href="#method__onClickPauseBtn" title="_onClickPauseBtn">_onClickPauseBtn</a></li>
+                                <li class="private"><a href="#method__onNewLog" title="_onNewLog">_onNewLog</a></li>
+                                <li class="private"><a href="#method__onReset" title="_onReset">_onReset</a></li>
+                                <li class="private"><a href="#method__onSourceCreate" title="_onSourceCreate">_onSourceCreate</a></li>
+                                <li class="private"><a href="#method__printBuffer" title="_printBuffer">_printBuffer</a></li>
+                                <li class="private"><a href="#method__printToConsole" title="_printToConsole">_printToConsole</a></li>
+                                <li class=""><a href="#method_clearConsole" title="clearConsole">clearConsole</a></li>
+                                <li class=""><a href="#method_collapse" title="collapse">collapse</a></li>
+                                <li class=""><a href="#method_destroy" title="destroy">destroy</a></li>
+                                <li class=""><a href="#method_expand" title="expand">expand</a></li>
+                                <li class=""><a href="#method_getCategories" title="getCategories">getCategories</a></li>
+                                <li class=""><a href="#method_getCheckbox" title="getCheckbox">getCheckbox</a></li>
+                                <li class=""><a href="#method_getLastTime" title="getLastTime">getLastTime</a></li>
+                                <li class=""><a href="#method_getSources" title="getSources">getSources</a></li>
+                                <li class=""><a href="#method_hide" title="hide">hide</a></li>
+                                <li class=""><a href="#method_hideCategory" title="hideCategory">hideCategory</a></li>
+                                <li class=""><a href="#method_hideSource" title="hideSource">hideSource</a></li>
+                                <li class="private"><a href="#method_html2Text" title="html2Text">html2Text</a></li>
+                                <li class=""><a href="#method_pause" title="pause">pause</a></li>
+                                <li class=""><a href="#method_render" title="render">render</a></li>
+                                <li class=""><a href="#method_resume" title="resume">resume</a></li>
+                                <li class=""><a href="#method_setTitle" title="setTitle">setTitle</a></li>
+                                <li class=""><a href="#method_show" title="show">show</a></li>
+                                <li class=""><a href="#method_showCategory" title="showCategory">showCategory</a></li>
+                                <li class=""><a href="#method_showSource" title="showSource">showSource</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "LogReader", "name": "autoRender", "url": "LogReader.html#property_autoRender", "type": "property"}, {"access": "", "host": "LogReader", "name": "BASIC_TEMPLATE", "url": "LogReader.html#property_BASIC_TEMPLATE", "type": "property"}, {"access": "", "host": "LogReader", "name": "bottom", "url": "LogReader.html#property_bottom", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_btnClear", "url": "LogReader.html#property__btnClear", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_btnCollapse", "url": "LogReader.html#property__btnCollapse", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_btnPause", "url": "LogReader.html#property__btnPause", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_buffer", "url": "LogReader.html#property__buffer", "type": "property"}, {"access": "", "host": "LogMsg", "name": "category", "url": "LogMsg.html#property_category", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_categoryFilters", "url": "LogReader.html#property__categoryFilters", "type": "property"}, {"access": "", "host": "LogReader", "name": "clearConsole", "url": "LogReader.html#method_clearConsole", "type": "method"}, {"access": "", "host": "LogReader", "name": "collapse", "url": "LogReader.html#method_collapse", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_consoleMsgCount", "url": "LogReader.html#property__consoleMsgCount", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_createCategoryCheckbox", "url": "LogReader.html#method__createCategoryCheckbox", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_createSourceCheckbox", "url": "LogReader.html#method__createSourceCheckbox", "type": "method"}, {"access": "", "host": "LogReader", "name": "destroy", "url": "LogReader.html#method_destroy", "type": "method"}, {"access": "", "host": "LogReader", "name": "draggable", "url": "LogReader.html#property_draggable", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elBtns", "url": "LogReader.html#property__elBtns", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elCategoryFilters", "url": "LogReader.html#property__elCategoryFilters", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elCollapse", "url": "LogReader.html#property__elCollapse", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elConsole", "url": "LogReader.html#property__elConsole", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elContainer", "url": "LogReader.html#property__elContainer", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elDefaultContainer", "url": "LogReader.html#property__elDefaultContainer", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elFt", "url": "LogReader.html#property__elFt", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elHd", "url": "LogReader.html#property__elHd", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_elSourceFilters", "url": "LogReader.html#property__elSourceFilters", "type": "property"}, {"access": "", "host": "LogReader", "name": "entryFormat", "url": "LogReader.html#property_entryFormat", "type": "property"}, {"access": "", "host": "LogReader", "name": "ENTRY_TEMPLATE", "url": "LogReader.html#property_ENTRY_TEMPLATE", "type": "property"}, {"access": "", "host": "LogReader", "name": "expand", "url": "LogReader.html#method_expand", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_filterCheckboxes", "url": "LogReader.html#property__filterCheckboxes", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_filterLogs", "url": "LogReader.html#method__filterLogs", "type": "method"}, {"access": "", "host": "LogReader", "name": "fontSize", "url": "LogReader.html#property_fontSize", "type": "property"}, {"access": "", "host": "LogReader", "name": "footerEnabled", "url": "LogReader.html#property_footerEnabled", "type": "property"}, {"access": "", "host": "LogReader", "name": "getCategories", "url": "LogReader.html#method_getCategories", "type": "method"}, {"access": "", "host": "LogReader", "name": "getCheckbox", "url": "LogReader.html#method_getCheckbox", "type": "method"}, {"access": "", "host": "LogReader", "name": "getLastTime", "url": "LogReader.html#method_getLastTime", "type": "method"}, {"access": "", "host": "LogWriter", "name": "getSource", "url": "LogWriter.html#method_getSource", "type": "method"}, {"access": "", "host": "LogReader", "name": "getSources", "url": "LogReader.html#method_getSources", "type": "method"}, {"access": "", "host": "LogReader", "name": "height", "url": "LogReader.html#property_height", "type": "property"}, {"access": "", "host": "LogReader", "name": "hide", "url": "LogReader.html#method_hide", "type": "method"}, {"access": "", "host": "LogReader", "name": "hideCategory", "url": "LogReader.html#method_hideCategory", "type": "method"}, {"access": "", "host": "LogReader", "name": "hideSource", "url": "LogReader.html#method_hideSource", "type": "method"}, {"access": "private", "host": "LogReader", "name": "html2Text", "url": "LogReader.html#method_html2Text", "type": "method"}, {"access": "protected", "host": "LogReader", "name": "_init", "url": "LogReader.html#method__init", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initCategories", "url": "LogReader.html#method__initCategories", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initConsoleEl", "url": "LogReader.html#method__initConsoleEl", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initContainerEl", "url": "LogReader.html#method__initContainerEl", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initDragDrop", "url": "LogReader.html#method__initDragDrop", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initFooterEl", "url": "LogReader.html#method__initFooterEl", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initHeaderEl", "url": "LogReader.html#method__initHeaderEl", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_initSources", "url": "LogReader.html#method__initSources", "type": "method"}, {"access": "", "host": "LogReader", "name": "isCollapsed", "url": "LogReader.html#property_isCollapsed", "type": "property"}, {"access": "", "host": "LogReader", "name": "isPaused", "url": "LogReader.html#property_isPaused", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_lastTime", "url": "LogReader.html#property__lastTime", "type": "property"}, {"access": "", "host": "LogReader", "name": "left", "url": "LogReader.html#property_left", "type": "property"}, {"access": "", "host": "LogWriter", "name": "log", "url": "LogWriter.html#method_log", "type": "method"}, {"access": "", "host": "LogReader", "name": "logReaderEnabled", "url": "LogReader.html#property_logReaderEnabled", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_memberName", "url": "LogReader.html#property__memberName", "type": "property"}, {"access": "", "host": "LogMsg", "name": "msg", "url": "LogMsg.html#property_msg", "type": "property"}, {"access": "", "host": "LogReader", "name": "newestOnTop", "url": "LogReader.html#property_newestOnTop", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_onCategoryCreate", "url": "LogReader.html#method__onCategoryCreate", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onCheckCategory", "url": "LogReader.html#method__onCheckCategory", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onCheckSource", "url": "LogReader.html#method__onCheckSource", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onClickClearBtn", "url": "LogReader.html#method__onClickClearBtn", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onClickCollapseBtn", "url": "LogReader.html#method__onClickCollapseBtn", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onClickPauseBtn", "url": "LogReader.html#method__onClickPauseBtn", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onNewLog", "url": "LogReader.html#method__onNewLog", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onReset", "url": "LogReader.html#method__onReset", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_onSourceCreate", "url": "LogReader.html#method__onSourceCreate", "type": "method"}, {"access": "", "host": "LogReader", "name": "outputBuffer", "url": "LogReader.html#property_outputBuffer", "type": "property"}, {"access": "", "host": "LogReader", "name": "pause", "url": "LogReader.html#method_pause", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_printBuffer", "url": "LogReader.html#method__printBuffer", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_printToConsole", "url": "LogReader.html#method__printToConsole", "type": "method"}, {"access": "", "host": "LogReader", "name": "render", "url": "LogReader.html#method_render", "type": "method"}, {"access": "", "host": "LogReader", "name": "resume", "url": "LogReader.html#method_resume", "type": "method"}, {"access": "", "host": "LogReader", "name": "right", "url": "LogReader.html#property_right", "type": "property"}, {"access": "", "host": "LogWriter", "name": "setSource", "url": "LogWriter.html#method_setSource", "type": "method"}, {"access": "", "host": "LogReader", "name": "setTitle", "url": "LogReader.html#method_setTitle", "type": "method"}, {"access": "", "host": "LogReader", "name": "show", "url": "LogReader.html#method_show", "type": "method"}, {"access": "", "host": "LogReader", "name": "showCategory", "url": "LogReader.html#method_showCategory", "type": "method"}, {"access": "", "host": "LogReader", "name": "showSource", "url": "LogReader.html#method_showSource", "type": "method"}, {"access": "private", "host": "LogReader", "name": "_sName", "url": "LogReader.html#property__sName", "type": "property"}, {"access": "", "host": "LogMsg", "name": "source", "url": "LogMsg.html#property_source", "type": "property"}, {"access": "private", "host": "LogWriter", "name": "_source", "url": "LogWriter.html#property__source", "type": "property"}, {"access": "", "host": "LogMsg", "name": "sourceDetail", "url": "LogMsg.html#property_sourceDetail", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_sourceFilters", "url": "LogReader.html#property__sourceFilters", "type": "property"}, {"access": "", "host": "LogReader", "name": "thresholdMax", "url": "LogReader.html#property_thresholdMax", "type": "property"}, {"access": "", "host": "LogReader", "name": "thresholdMin", "url": "LogReader.html#property_thresholdMin", "type": "property"}, {"access": "", "host": "LogMsg", "name": "time", "url": "LogMsg.html#property_time", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_timeout", "url": "LogReader.html#property__timeout", "type": "property"}, {"access": "private", "host": "LogReader", "name": "_title", "url": "LogReader.html#property__title", "type": "property"}, {"access": "", "host": "LogReader", "name": "top", "url": "LogReader.html#property_top", "type": "property"}, {"access": "", "host": "LogWriter", "name": "toString", "url": "LogWriter.html#method_toString", "type": "method"}, {"access": "", "host": "LogReader", "name": "toString", "url": "LogReader.html#method_toString", "type": "method"}, {"access": "", "host": "LogReader", "name": "verboseOutput", "url": "LogReader.html#property_verboseOutput", "type": "property"}, {"access": "", "host": "LogReader", "name": "VERBOSE_TEMPLATE", "url": "LogReader.html#property_VERBOSE_TEMPLATE", "type": "property"}, {"access": "", "host": "LogReader", "name": "width", "url": "LogReader.html#property_width", "type": "property"}];
+</script>
+</body>
+</html>

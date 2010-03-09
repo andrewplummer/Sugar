@@ -1,0 +1,3 @@
+/* neutral CSS file forces browser to repaint;
+   necessary in some A-Grade browsers when purging
+   CSS style sheets */

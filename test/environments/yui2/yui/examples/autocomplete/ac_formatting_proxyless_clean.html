@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Custom Formatting, with a Proxyless Remote DataSource</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/get/get-min.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+label {
+    color:#E76300;
+    font-weight:bold;
+}
+#myAutoComplete {
+    width:30em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+/* styles for custom formatting */
+.yui-ac .result {position:relative;height:62px;}
+.yui-ac .name {position:absolute;bottom:0;left:64px;}
+.yui-ac .img {position:absolute;top:0;left:0;width:58px;height:58px;border:1px solid black;background-color:black;color:white;}
+.yui-ac .imgtext {position:absolute;width:58px;top:50%;text-align:center;}
+.yui-ac img {width:60px;height:60px;margin-right:4px;}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Custom Formatting, with a Proxyless Remote DataSource</h1>
+
+<div class="exampleIntro">
+	<p>This AutoComplete instance uses a ScriptNodeDataSource to to find images from the YQL webservice without a proxy. The generateRequest() method must be customized to comply with the open API. Please note that the ScriptNodeDataSource requires that the webservice support a callback mechanism.</p>
+
+<p>A custom formatter function is defined in order to show thumbnail images in the results container.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<label for="myInput">Yahoo! Image Search:</label>
+<div id="myAutoComplete">
+	<input id="myInput" type="text" name="p">
+	<div id="myContainer"></div>
+</div>
+
+
+<script type="text/javascript">
+YAHOO.example.CustomFormatting = (function(){
+    // Instantiate DataSource
+    var oDS = new YAHOO.util.ScriptNodeDataSource("http://query.yahooapis.com/v1/public/yql?");
+    oDS.responseSchema = {
+        resultsList: "query.results.result",
+        fields: ["url", "thumbnail_url", "clickurl"]
+    };
+    
+    // Setting to default value for demonstration purposes.
+    // The webservice needs to support execution of a callback function.
+    oDS.scriptCallbackParam = "callback";
+
+    // Instantiate AutoComplete
+    var oAC = new YAHOO.widget.AutoComplete("myInput","myContainer", oDS);
+
+    // Bump up the query delay to reduce server load
+    oAC.queryDelay = 1;
+    
+    // The webservice needs custom parameters
+    oAC.generateRequest = function(sQuery) {
+        return "q=select%20*%20from%20search.images%20where%20query%3D%22" +
+            sQuery +
+            "%22%20and%20mimetype%20like%20%22%25jpeg%25%22&format=json";
+    };
+    
+    // Result data passed as object for easy access from custom formatter.
+    oAC.resultTypeList = false;
+    // Customize formatter to show thumbnail images
+    oAC.formatResult = function(oResultData, sQuery, sResultMatch) {
+        if(oResultData.thumbnail_url) {
+            img = "<img src=\""+ oResultData.thumbnail_url + "\">";
+        }
+        else {
+            img = "<span class=\"img\"><span class=\"imgtext\">N/A</span></span>";
+        }
+        return "<div class=\"result\">" + img + "&nbsp;<span class=\"name\">" + sResultMatch + "</span></div>";
+    };
+    oAC.itemSelectEvent.subscribe(function(sType, aArgs) {
+        var oData = aArgs[2]; // object literal of selected item's result data
+        
+        // Redirect to the img
+        window.location.href = oData.clickurl;
+    });
+
+    // Stub for form validation
+    var validateForm = function() {
+        // Validation code goes here
+        return true;
+    };
+    
+    return {
+        oDS: oDS,
+        oAC: oAC,
+        validateForm: validateForm
+    }
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

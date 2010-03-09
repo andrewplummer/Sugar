@@ -1,0 +1,1015 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: Storage  YAHOO.util.Storage   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Storage&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_storage.html" title="Storage">Storage</a>
+                 &gt; YAHOO.util.Storage 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.util.Storage</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        The Storage class is an HTML 5 storage API clone, used to wrap individual storage implementations with a common API.
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.util.Storage</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                location
+
+                                                , 
+                                                conf
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">location</span>
+                                                    &lt;<span property="yui:type">String</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  Required. The storage location.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">conf</span>
+                                                    &lt;<span property="yui:type">Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  Required. A configuration object.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="protected" rel="yui:property" resource="#property__cfg">
+                                    <h4><a name="property__cfg" property="yui:name">_cfg</a>
+                                        - <code>protected <span property="yui:type">{Object}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The configuration of the engine.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:property" resource="#property__location">
+                                    <h4><a name="property__location" property="yui:name">_location</a>
+                                        - <code>protected <span property="yui:type">{String}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The location for this instance.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:property" resource="#property__name">
+                                    <h4><a name="property__name" property="yui:name">_name</a>
+                                        - <code>protected <span property="yui:type">{String}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The name of this engine.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_CE_CHANGE">
+                                    <h4><a name="property_CE_CHANGE" property="yui:name">CE_CHANGE</a>
+                                        - <code><span property="yui:type">{String}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The event name for when the storage item has changed.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_CE_READY">
+                                    <h4><a name="property_CE_READY" property="yui:name">CE_READY</a>
+                                        - <code><span property="yui:type">{String}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The event name for when the storage item is ready.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_DELIMITER">
+                                    <h4><a name="property_DELIMITER" property="yui:name">DELIMITER</a>
+                                        - <code><span property="yui:type">{String}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The delimiter uesed between the data type and the data.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:property" resource="#property_isReady">
+                                    <h4><a name="property_isReady" property="yui:name">isReady</a>
+                                        - <code>protected <span property="yui:type">{String}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            This engine singleton has been initialized already.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_length">
+                                    <h4><a name="property_length" property="yui:name">length</a>
+                                        - <code><span property="yui:type">{Number}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The current length of the keys.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="protected" rel="yui:method" resource="#method__clear">
+                                    <h4>
+                                        <a name="method__clear">_clear</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_clear</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Implementation of the clear login; should be overwritten by storage engine.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__createValue">
+                                    <h4>
+                                        <a name="method__createValue">_createValue</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createValue</strong>
+                                           (
+                                                
+                                                        
+                                                         s
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Converts the object into a string, with meta data (type), so it can be restored later.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">s</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. An object to store.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__getItem">
+                                    <h4>
+                                        <a name="method__getItem">_getItem</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        String|NULL
+                                            <strong property="yui:name">_getItem</strong>
+                                           (
+                                                
+                                                        
+                                                         key
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Implementation of the getItem login; should be overwritten by storage engine.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">key</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The key used to reference this value.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String|NULL
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The value stored at the provided key.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__getValue">
+                                    <h4>
+                                        <a name="method__getValue">_getValue</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_getValue</strong>
+                                           (
+                                                
+                                                        
+                                                         s
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Converts the stored value into its appropriate type.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">s</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The stored value.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__key">
+                                    <h4>
+                                        <a name="method__key">_key</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        String|NULL
+                                            <strong property="yui:name">_key</strong>
+                                           (
+                                                
+                                                        
+                                                         index
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Implementation of the key logic; should be overwritten by storage engine.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">index</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The index to retrieve (unsigned long in HTML 5 spec).</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String|NULL
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Required. The key at the provided index (DOMString in HTML 5 spec).</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__removeItem">
+                                    <h4>
+                                        <a name="method__removeItem">_removeItem</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_removeItem</strong>
+                                           (
+                                                
+                                                        
+                                                         key
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Implementation of the removeItem login; should be overwritten by storage engine.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">key</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The key to remove.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__setItem">
+                                    <h4>
+                                        <a name="method__setItem">_setItem</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">_setItem</strong>
+                                           (
+                                                
+                                                        
+                                                         key
+                                                    
+                                                
+                                                        , 
+                                                         data
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Implementation of the setItem login; should be overwritten by storage engine.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">key</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The key used to reference this value.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">data</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The data to storage at key.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">True when successful, false when size QUOTA exceeded.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_clear">
+                                    <h4>
+                                        <a name="method_clear">clear</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">clear</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Clears any existing key/value pairs.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getItem">
+                                    <h4>
+                                        <a name="method_getItem">getItem</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String|NULL
+                                            <strong property="yui:name">getItem</strong>
+                                           (
+                                                
+                                                        
+                                                         key
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fetches the data stored and the provided key.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">key</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The key used to reference this value (DOMString in HTML 5 spec).</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String|NULL
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The value stored at the provided key (DOMString in HTML 5 spec).</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getName">
+                                    <h4>
+                                        <a name="method_getName">getName</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">getName</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fetches the storage object's name; should be overwritten by storage engine.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The name of the data storage object.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_hasKey">
+                                    <h4>
+                                        <a name="method_hasKey">hasKey</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">hasKey</strong>
+                                           (
+                                                
+                                                        
+                                                         key
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Tests if the key has been set (not in HTML 5 spec); should be overwritten by storage engine.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">key</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The key to search for.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">True when key has been set.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_key">
+                                    <h4>
+                                        <a name="method_key">key</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">key</strong>
+                                           (
+                                                
+                                                        
+                                                         index
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Retrieve the key stored at the provided index; should be overwritten by storage engine.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">index</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The index to retrieve (unsigned long in HTML 5 spec).</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Required. The key at the provided index (DOMString in HTML 5 spec).</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setItem">
+                                    <h4>
+                                        <a name="method_setItem">setItem</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setItem</strong>
+                                           (
+                                                
+                                                        
+                                                         key
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Remove an item from the data storage.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">key</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Required. The key to remove (DOMString in HTML 5 spec).</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class="selected"><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="YAHOO.util.Storage.html" title="YAHOO.util.Storage">YAHOO.util.Storage</a></li>
+                                <li class=""><a href="YAHOO.util.StorageEngineGears.html" title="YAHOO.util.StorageEngineGears">YAHOO.util.StorageEngineGears</a></li>
+                                <li class=""><a href="YAHOO.util.StorageEngineHTML5.html" title="YAHOO.util.StorageEngineHTML5">YAHOO.util.StorageEngineHTML5</a></li>
+                                <li class=""><a href="YAHOO.util.StorageEngineKeyed.html" title="YAHOO.util.StorageEngineKeyed">YAHOO.util.StorageEngineKeyed</a></li>
+                                <li class=""><a href="YAHOO.util.StorageEngineSWF.html" title="YAHOO.util.StorageEngineSWF">YAHOO.util.StorageEngineSWF</a></li>
+                                <li class=""><a href="YAHOO.util.StorageEvent.html" title="YAHOO.util.StorageEvent">YAHOO.util.StorageEvent</a></li>
+                                <li class=""><a href="YAHOO.util.StorageManager.html" title="YAHOO.util.StorageManager">YAHOO.util.StorageManager</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="gears_init.js.html" title="gears_init.js">gears_init.js</a></li>
+                                <li class=""><a href="Storage.js.html" title="Storage.js">Storage.js</a></li>
+                                <li class=""><a href="StorageEngineGears.js.html" title="StorageEngineGears.js">StorageEngineGears.js</a></li>
+                                <li class=""><a href="StorageEngineHTML5.js.html" title="StorageEngineHTML5.js">StorageEngineHTML5.js</a></li>
+                                <li class=""><a href="StorageEngineKeyed.js.html" title="StorageEngineKeyed.js">StorageEngineKeyed.js</a></li>
+                                <li class=""><a href="StorageEngineSWF.js.html" title="StorageEngineSWF.js">StorageEngineSWF.js</a></li>
+                                <li class=""><a href="StorageEvent.js.html" title="StorageEvent.js">StorageEvent.js</a></li>
+                                <li class=""><a href="StorageManager.js.html" title="StorageManager.js">StorageManager.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="protected"><a href="#property__cfg" title="_cfg">_cfg</a></li>
+                                <li class="protected"><a href="#property__location" title="_location">_location</a></li>
+                                <li class="protected"><a href="#property__name" title="_name">_name</a></li>
+                                <li class=""><a href="#property_CE_CHANGE" title="CE_CHANGE">CE_CHANGE</a></li>
+                                <li class=""><a href="#property_CE_READY" title="CE_READY">CE_READY</a></li>
+                                <li class=""><a href="#property_DELIMITER" title="DELIMITER">DELIMITER</a></li>
+                                <li class="protected"><a href="#property_isReady" title="isReady">isReady</a></li>
+                                <li class=""><a href="#property_length" title="length">length</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="protected"><a href="#method__clear" title="_clear">_clear</a></li>
+                                <li class="protected"><a href="#method__createValue" title="_createValue">_createValue</a></li>
+                                <li class="protected"><a href="#method__getItem" title="_getItem">_getItem</a></li>
+                                <li class="protected"><a href="#method__getValue" title="_getValue">_getValue</a></li>
+                                <li class="protected"><a href="#method__key" title="_key">_key</a></li>
+                                <li class="protected"><a href="#method__removeItem" title="_removeItem">_removeItem</a></li>
+                                <li class="protected"><a href="#method__setItem" title="_setItem">_setItem</a></li>
+                                <li class=""><a href="#method_clear" title="clear">clear</a></li>
+                                <li class=""><a href="#method_getItem" title="getItem">getItem</a></li>
+                                <li class=""><a href="#method_getName" title="getName">getName</a></li>
+                                <li class=""><a href="#method_hasKey" title="hasKey">hasKey</a></li>
+                                <li class=""><a href="#method_key" title="key">key</a></li>
+                                <li class=""><a href="#method_setItem" title="setItem">setItem</a></li>
+                        </ul>
+                    </div>
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.util.Storage", "name": "CE_CHANGE", "url": "YAHOO.util.Storage.html#property_CE_CHANGE", "type": "property"}, {"access": "", "host": "YAHOO.util.Storage", "name": "CE_READY", "url": "YAHOO.util.Storage.html#property_CE_READY", "type": "property"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_cfg", "url": "YAHOO.util.Storage.html#property__cfg", "type": "property"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_clear", "url": "YAHOO.util.Storage.html#method__clear", "type": "method"}, {"access": "", "host": "YAHOO.util.Storage", "name": "clear", "url": "YAHOO.util.Storage.html#method_clear", "type": "method"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_createValue", "url": "YAHOO.util.Storage.html#method__createValue", "type": "method"}, {"access": "", "host": "YAHOO.util.Storage", "name": "DELIMITER", "url": "YAHOO.util.Storage.html#property_DELIMITER", "type": "property"}, {"access": "", "host": "YAHOO.util.StorageManager", "name": "get", "url": "YAHOO.util.StorageManager.html#method_get", "type": "method"}, {"access": "private", "host": "YAHOO.util.StorageManager", "name": "_getClass", "url": "YAHOO.util.StorageManager.html#method__getClass", "type": "method"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_getItem", "url": "YAHOO.util.Storage.html#method__getItem", "type": "method"}, {"access": "", "host": "YAHOO.util.Storage", "name": "getItem", "url": "YAHOO.util.Storage.html#method_getItem", "type": "method"}, {"access": "", "host": "YAHOO.util.Storage", "name": "getName", "url": "YAHOO.util.Storage.html#method_getName", "type": "method"}, {"access": "private", "host": "YAHOO.util.StorageManager", "name": "_getStorageEngine", "url": "YAHOO.util.StorageManager.html#method__getStorageEngine", "type": "method"}, {"access": "private", "host": "YAHOO.util.StorageManager", "name": "_getValidLocation", "url": "YAHOO.util.StorageManager.html#method__getValidLocation", "type": "method"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_getValue", "url": "YAHOO.util.Storage.html#method__getValue", "type": "method"}, {"access": "", "host": "YAHOO.util.Storage", "name": "hasKey", "url": "YAHOO.util.Storage.html#method_hasKey", "type": "method"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "isReady", "url": "YAHOO.util.Storage.html#property_isReady", "type": "property"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_key", "url": "YAHOO.util.Storage.html#method__key", "type": "method"}, {"access": "", "host": "YAHOO.util.Storage", "name": "key", "url": "YAHOO.util.Storage.html#method_key", "type": "method"}, {"access": "", "host": "YAHOO.util.Storage", "name": "length", "url": "YAHOO.util.Storage.html#property_length", "type": "property"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_location", "url": "YAHOO.util.Storage.html#property__location", "type": "property"}, {"access": "", "host": "YAHOO.util.StorageManager", "name": "LOCATION_LOCAL", "url": "YAHOO.util.StorageManager.html#property_LOCATION_LOCAL", "type": "property"}, {"access": "", "host": "YAHOO.util.StorageManager", "name": "LOCATION_SESSION", "url": "YAHOO.util.StorageManager.html#property_LOCATION_SESSION", "type": "property"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_name", "url": "YAHOO.util.Storage.html#property__name", "type": "property"}, {"access": "", "host": "YAHOO.util.StorageManager", "name": "register", "url": "YAHOO.util.StorageManager.html#method_register", "type": "method"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_removeItem", "url": "YAHOO.util.Storage.html#method__removeItem", "type": "method"}, {"access": "protected", "host": "YAHOO.util.Storage", "name": "_setItem", "url": "YAHOO.util.Storage.html#method__setItem", "type": "method"}, {"access": "", "host": "YAHOO.util.Storage", "name": "setItem", "url": "YAHOO.util.Storage.html#method_setItem", "type": "method"}];
+</script>
+</body>
+</html>

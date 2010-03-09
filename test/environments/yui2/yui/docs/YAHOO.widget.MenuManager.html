@@ -1,0 +1,1259 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: menu  YAHOO.widget.MenuManager   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Menu&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_menu.html" title="menu">menu</a>
+                 &gt; YAHOO.widget.MenuManager 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        <code>static</code>
+                        
+                            Class <b property="yui:name">YAHOO.widget.MenuManager</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Singleton that manages a collection of all menus and menu items.  Listens 
+for DOM events at the document level and dispatches the events to the 
+corresponding menu or menu item.
+                    </div>
+
+                    
+                    <div rel="yui:properties" resource="#properties">
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:method" resource="#method_addMenu">
+                                    <h4>
+                                        <a name="method_addMenu">addMenu</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">addMenu</strong>
+                                           (
+                                                
+                                                        
+                                                         p_oMenu
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Adds a menu to the collection of known menus.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_oMenu</span>
+                                                        &lt;<span property="yui:type">YAHOO.widget.Menu</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Object specifying the Menu  
+instance to be added.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getFocusedMenu">
+                                    <h4>
+                                        <a name="method_getFocusedMenu">getFocusedMenu</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        YAHOO.widget.Menu
+                                            <strong property="yui:name">getFocusedMenu</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a reference to the menu that currently 
+has focus.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        YAHOO.widget.Menu
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getFocusedMenuItem">
+                                    <h4>
+                                        <a name="method_getFocusedMenuItem">getFocusedMenuItem</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        YAHOO.widget.MenuItem
+                                            <strong property="yui:name">getFocusedMenuItem</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a reference to the menu item that currently 
+has focus.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        YAHOO.widget.MenuItem
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getMenu">
+                                    <h4>
+                                        <a name="method_getMenu">getMenu</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        YAHOO.widget.Menu
+                                            <strong property="yui:name">getMenu</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sId
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a menu with the specified id.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sId</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String specifying the id of the 
+<code>&#60;div&#62;</code> element representing the menu to
+be retrieved.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        YAHOO.widget.Menu
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getMenuItem">
+                                    <h4>
+                                        <a name="method_getMenuItem">getMenuItem</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        YAHOO.widget.MenuItem
+                                            <strong property="yui:name">getMenuItem</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sId
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a menu item with the specified id.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sId</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String specifying the id of the 
+<code>&#60;li&#62;</code> element representing the menu item to
+be retrieved.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        YAHOO.widget.MenuItem
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getMenuItemGroup">
+                                    <h4>
+                                        <a name="method_getMenuItemGroup">getMenuItemGroup</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">getMenuItemGroup</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sId
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns an array of menu item instances whose 
+corresponding <code>&#60;li&#62;</code> elements are child 
+nodes of the <code>&#60;ul&#62;</code> element with the 
+specified id.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sId</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String specifying the id of the 
+<code>&#60;ul&#62;</code> element representing the group of 
+menu items to be retrieved.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_getMenuRootElement">
+                                    <h4>
+                                        <a name="method_getMenuRootElement">getMenuRootElement</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">getMenuRootElement</strong>
+                                           (
+                                                
+                                                        
+                                                         p_oElement
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Finds the root DIV node of a menu or the root LI node of 
+a menu item.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_oElement</span>
+                                                        &lt;<span property="yui:type"><a href="http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/
+level-one-html.html#ID-58190037">HTMLElement</a></span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Object 
+specifying an HTML element.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getMenus">
+                                    <h4>
+                                        <a name="method_getMenus">getMenus</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getMenus</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a collection of all menus registered with the 
+menu manger.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getVisible">
+                                    <h4>
+                                        <a name="method_getVisible">getVisible</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getVisible</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a collection of all visible menus registered
+with the menu manger.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_hideVisible">
+                                    <h4>
+                                        <a name="method_hideVisible">hideVisible</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">hideVisible</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Hides all visible, dynamically positioned menus 
+(excluding instances of YAHOO.widget.MenuBar).
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_onDOMEvent">
+                                    <h4>
+                                        <a name="method_onDOMEvent">onDOMEvent</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onDOMEvent</strong>
+                                           (
+                                                
+                                                        
+                                                         p_oEvent
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Generic, global event handler for all of a menu's 
+DOM-based events.  This listens for events against the document 
+object.  If the target of a given event is a member of a menu or 
+menu item's DOM, the instance's corresponding Custom Event is fired.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_oEvent</span>
+                                                        &lt;<span property="yui:type">Event</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Object representing the DOM event object  
+passed back by the event utility (YAHOO.util.Event).</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_onItemAdded">
+                                    <h4>
+                                        <a name="method_onItemAdded">onItemAdded</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onItemAdded</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sType
+                                                    
+                                                
+                                                        , 
+                                                         p_aArgs
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            "itemadded" event handler for a Menu instance.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String representing the name of the event  
+that was fired.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_aArgs</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Array of arguments sent when the event 
+was fired.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_onItemDestroy">
+                                    <h4>
+                                        <a name="method_onItemDestroy">onItemDestroy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onItemDestroy</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sType
+                                                    
+                                                
+                                                        , 
+                                                         p_aArgs
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            "destroy" event handler for a MenuItem instance.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String representing the name of the event  
+that was fired.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_aArgs</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Array of arguments sent when the event 
+was fired.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_onMenuBlur">
+                                    <h4>
+                                        <a name="method_onMenuBlur">onMenuBlur</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onMenuBlur</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sType
+                                                    
+                                                
+                                                        , 
+                                                         p_aArgs
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            "blur" event handler for a MenuItem instance.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String representing the name of the event  
+that was fired.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_aArgs</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Array of arguments sent when the event 
+was fired.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_onMenuDestroy">
+                                    <h4>
+                                        <a name="method_onMenuDestroy">onMenuDestroy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onMenuDestroy</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sType
+                                                    
+                                                
+                                                        , 
+                                                         p_aArgs
+                                                    
+                                                
+                                                        , 
+                                                         p_oMenu
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            "destroy" event handler for a menu.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String representing the name of the event 
+that was fired.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_aArgs</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Array of arguments sent when the event 
+was fired.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_oMenu</span>
+                                                        &lt;<span property="yui:type">YAHOO.widget.Menu</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The menu that fired the event.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_onMenuFocus">
+                                    <h4>
+                                        <a name="method_onMenuFocus">onMenuFocus</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onMenuFocus</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sType
+                                                    
+                                                
+                                                        , 
+                                                         p_aArgs
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            "focus" event handler for a MenuItem instance.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String representing the name of the event 
+that was fired.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_aArgs</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Array of arguments sent when the event 
+was fired.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_onMenuVisibleConfigChange">
+                                    <h4>
+                                        <a name="method_onMenuVisibleConfigChange">onMenuVisibleConfigChange</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">onMenuVisibleConfigChange</strong>
+                                           (
+                                                
+                                                        
+                                                         p_sType
+                                                    
+                                                
+                                                        , 
+                                                         p_aArgs
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Event handler for when the "visible" configuration  
+property of a Menu instance changes.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_sType</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> String representing the name of the event  
+that was fired.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_aArgs</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Array of arguments sent when the event 
+was fired.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_removeItem">
+                                    <h4>
+                                        <a name="method_removeItem">removeItem</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">removeItem</strong>
+                                           (
+                                                
+                                                        
+                                                         p_oMenuItem
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes a MenuItem instance from the MenuManager's collection of MenuItems.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_oMenuItem</span>
+                                                        &lt;<span property="yui:type">MenuItem</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The MenuItem instance to be removed.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_removeMenu">
+                                    <h4>
+                                        <a name="method_removeMenu">removeMenu</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">removeMenu</strong>
+                                           (
+                                                
+                                                        
+                                                         p_oMenu
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes a menu from the collection of known menus.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">p_oMenu</span>
+                                                        &lt;<span property="yui:type">YAHOO.widget.Menu</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Object specifying the Menu  
+instance to be removed.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a string representing the menu manager.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class="selected"><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.ContextMenu.html" title="YAHOO.widget.ContextMenu">YAHOO.widget.ContextMenu</a></li>
+                                <li class=""><a href="YAHOO.widget.ContextMenuItem.html" title="YAHOO.widget.ContextMenuItem">YAHOO.widget.ContextMenuItem</a></li>
+                                <li class=""><a href="YAHOO.widget.Menu.html" title="YAHOO.widget.Menu">YAHOO.widget.Menu</a></li>
+                                <li class=""><a href="YAHOO.widget.MenuBar.html" title="YAHOO.widget.MenuBar">YAHOO.widget.MenuBar</a></li>
+                                <li class=""><a href="YAHOO.widget.MenuBarItem.html" title="YAHOO.widget.MenuBarItem">YAHOO.widget.MenuBarItem</a></li>
+                                <li class=""><a href="YAHOO.widget.MenuItem.html" title="YAHOO.widget.MenuItem">YAHOO.widget.MenuItem</a></li>
+                                <li class="selected"><a href="YAHOO.widget.MenuManager.html" title="YAHOO.widget.MenuManager">YAHOO.widget.MenuManager</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="contextmenu.js.html" title="contextmenu.js">contextmenu.js</a></li>
+                                <li class=""><a href="contextmenuitem.js.html" title="contextmenuitem.js">contextmenuitem.js</a></li>
+                                <li class=""><a href="menu.js.html" title="menu.js">menu.js</a></li>
+                                <li class=""><a href="menuariaplugin.js.html" title="menuariaplugin.js">menuariaplugin.js</a></li>
+                                <li class=""><a href="menubar.js.html" title="menubar.js">menubar.js</a></li>
+                                <li class=""><a href="menubaritem.js.html" title="menubaritem.js">menubaritem.js</a></li>
+                                <li class=""><a href="menuitem.js.html" title="menuitem.js">menuitem.js</a></li>
+                                <li class=""><a href="menumanager.js.html" title="menumanager.js">menumanager.js</a></li>
+                        </ul>
+                    </div>
+
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#method_addMenu" title="addMenu">addMenu</a></li>
+                                <li class=""><a href="#method_getFocusedMenu" title="getFocusedMenu">getFocusedMenu</a></li>
+                                <li class=""><a href="#method_getFocusedMenuItem" title="getFocusedMenuItem">getFocusedMenuItem</a></li>
+                                <li class=""><a href="#method_getMenu" title="getMenu">getMenu</a></li>
+                                <li class=""><a href="#method_getMenuItem" title="getMenuItem">getMenuItem</a></li>
+                                <li class=""><a href="#method_getMenuItemGroup" title="getMenuItemGroup">getMenuItemGroup</a></li>
+                                <li class="private"><a href="#method_getMenuRootElement" title="getMenuRootElement">getMenuRootElement</a></li>
+                                <li class=""><a href="#method_getMenus" title="getMenus">getMenus</a></li>
+                                <li class=""><a href="#method_getVisible" title="getVisible">getVisible</a></li>
+                                <li class=""><a href="#method_hideVisible" title="hideVisible">hideVisible</a></li>
+                                <li class="private"><a href="#method_onDOMEvent" title="onDOMEvent">onDOMEvent</a></li>
+                                <li class="private"><a href="#method_onItemAdded" title="onItemAdded">onItemAdded</a></li>
+                                <li class="private"><a href="#method_onItemDestroy" title="onItemDestroy">onItemDestroy</a></li>
+                                <li class="private"><a href="#method_onMenuBlur" title="onMenuBlur">onMenuBlur</a></li>
+                                <li class="private"><a href="#method_onMenuDestroy" title="onMenuDestroy">onMenuDestroy</a></li>
+                                <li class="private"><a href="#method_onMenuFocus" title="onMenuFocus">onMenuFocus</a></li>
+                                <li class="private"><a href="#method_onMenuVisibleConfigChange" title="onMenuVisibleConfigChange">onMenuVisibleConfigChange</a></li>
+                                <li class="private"><a href="#method_removeItem" title="removeItem">removeItem</a></li>
+                                <li class=""><a href="#method_removeMenu" title="removeMenu">removeMenu</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.MenuManager", "name": "addMenu", "url": "YAHOO.widget.MenuManager.html#method_addMenu", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "getFocusedMenu", "url": "YAHOO.widget.MenuManager.html#method_getFocusedMenu", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "getFocusedMenuItem", "url": "YAHOO.widget.MenuManager.html#method_getFocusedMenuItem", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "getMenu", "url": "YAHOO.widget.MenuManager.html#method_getMenu", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "getMenuItem", "url": "YAHOO.widget.MenuManager.html#method_getMenuItem", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "getMenuItemGroup", "url": "YAHOO.widget.MenuManager.html#method_getMenuItemGroup", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "getMenuRootElement", "url": "YAHOO.widget.MenuManager.html#method_getMenuRootElement", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "getMenus", "url": "YAHOO.widget.MenuManager.html#method_getMenus", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "getVisible", "url": "YAHOO.widget.MenuManager.html#method_getVisible", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "hideVisible", "url": "YAHOO.widget.MenuManager.html#method_hideVisible", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "onDOMEvent", "url": "YAHOO.widget.MenuManager.html#method_onDOMEvent", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "onItemAdded", "url": "YAHOO.widget.MenuManager.html#method_onItemAdded", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "onItemDestroy", "url": "YAHOO.widget.MenuManager.html#method_onItemDestroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "onMenuBlur", "url": "YAHOO.widget.MenuManager.html#method_onMenuBlur", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "onMenuDestroy", "url": "YAHOO.widget.MenuManager.html#method_onMenuDestroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "onMenuFocus", "url": "YAHOO.widget.MenuManager.html#method_onMenuFocus", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "onMenuVisibleConfigChange", "url": "YAHOO.widget.MenuManager.html#method_onMenuVisibleConfigChange", "type": "method"}, {"access": "private", "host": "YAHOO.widget.MenuManager", "name": "removeItem", "url": "YAHOO.widget.MenuManager.html#method_removeItem", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "removeMenu", "url": "YAHOO.widget.MenuManager.html#method_removeMenu", "type": "method"}, {"access": "", "host": "YAHOO.widget.MenuManager", "name": "toString", "url": "YAHOO.widget.MenuManager.html#method_toString", "type": "method"}];
+</script>
+</body>
+</html>

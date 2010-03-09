@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Dragged Element on Top</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+
+<style type="text/css">
+
+.dd-demo {
+    position:relative;
+    border:4px solid #666;
+    text-align:center;
+    color:#fff;
+    cursor:move;
+    height:60px;
+    width:60px;
+}
+
+.dd-demo-em {
+    border:4px solid purple;
+}
+
+#dd-demo-1 { 
+    background-color:#6D739A;top:0px; left:0px;
+}
+
+#dd-demo-2 { 
+    background-color:#566F4E;top:50px; left:100px;
+}
+
+#dd-demo-3 {
+    background-color:#7E5B60;top:-150px; left:200px;
+}
+
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Dragged Element on Top</h1>
+
+<div class="exampleIntro">
+	<p>This example builds on the basic drag and drop, keeping the dragged element
+on top of the others by changing its <code>z-index</code> property during the drag.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="dd-demo-1" class="dd-demo"></div>
+<div id="dd-demo-2" class="dd-demo"></div>
+<div id="dd-demo-3" class="dd-demo"></div>
+
+<script type="text/javascript">
+
+// Our custom drag and drop implementation, extending YAHOO.util.DD
+YAHOO.example.DDOnTop = function(id, sGroup, config) {
+    YAHOO.example.DDOnTop.superclass.constructor.apply(this, arguments);
+};
+
+YAHOO.extend(YAHOO.example.DDOnTop, YAHOO.util.DD, {
+    origZ: 0,
+
+    startDrag: function(x, y) {
+        YAHOO.log(this.id + " startDrag", "info", "example");
+
+        var style = this.getEl().style;
+
+        // store the original z-index
+        this.origZ = style.zIndex;
+
+        // The z-index needs to be set very high so the element will indeed be on top
+        style.zIndex = 999;
+    },
+
+    endDrag: function(e) {
+        YAHOO.log(this.id + " endDrag", "info", "example");
+
+        // restore the original z-index
+        this.getEl().style.zIndex = this.origZ;
+    }
+});
+
+</script>
+
+<script type="text/javascript">
+
+(function() {
+
+    var dd, dd2, dd3;
+    YAHOO.util.Event.onDOMReady(function() {
+        dd = new YAHOO.example.DDOnTop("dd-demo-1");
+        dd2 = new YAHOO.example.DDOnTop("dd-demo-2");
+        dd3 = new YAHOO.example.DDOnTop("dd-demo-3");
+    });
+
+})();
+
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

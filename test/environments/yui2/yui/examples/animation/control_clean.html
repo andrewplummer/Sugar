@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Animating Along a Curved Path</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#demo {
+    background:#ccc;
+    margin-bottom:1em;
+    height:30px;
+    width:30px;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Animating Along a Curved Path</h1>
+
+<div class="exampleIntro">
+	<p>This demonstrates how to use the YUI Animation to animate along a curved path. Click the button to begin the demo.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo"></div>
+<button id="demo-run">run</button>
+
+<script type="text/javascript">
+(function() {
+    var attributes = {
+        points: { to: [600, 10], control: [ [300, 100], [800, 800] ] }
+    };
+    var anim = new YAHOO.util.Motion('demo', attributes);
+
+    YAHOO.util.Event.on('demo-run', 'click', function() {
+        anim.animate();
+    });
+
+    YAHOO.log("The example has finished loading; as you interact with it, you'll see log messages appearing here.", "info", "example");
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

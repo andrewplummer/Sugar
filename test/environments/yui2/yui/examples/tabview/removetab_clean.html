@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Removing Tabs</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/tabview/assets/skins/sam/tabview.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/tabview/tabview-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+.yui-navset button {
+    position:absolute;
+    top:0;
+    right:0;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Removing Tabs</h1>
+
+<div class="exampleIntro">
+	<p>This demonstrates how to dynamically remove tabs from a TabView widget.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo" class="yui-navset">
+    <ul class="yui-nav">
+        <li><a href="#tab1"><em>Tab One Label</em></a></li>
+        <li class="selected"><a href="#tab2"><em>Tab Two Label</em></a></li>
+        <li><a href="#tab3"><em>Tab Three Label</em></a></li>
+    </ul>            
+    <div class="yui-content">
+        <div id="tab1"><p>Tab One Content</p></div>
+        <div id="tab2"><p>Tab Two Content</p></div>
+        <div id="tab3"><p>Tab Three Content</p></div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var tabView = new YAHOO.widget.TabView('demo');
+    
+    var removeTab = function() {
+        var activeTab = tabView.get('activeTab');
+        if (activeTab) {
+            tabView.removeTab(activeTab);
+        }
+    };
+
+    var button = document.createElement('button');
+    button.innerHTML = 'remove tab';
+
+    YAHOO.util.Event.on(button, 'click', removeTab);
+    tabView.appendChild(button);
+
+    YAHOO.log("The example has finished loading; as you interact with it, you'll see log messages appearing here.", "info", "example");
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Event Utility: Using Event Utility and Event Delegation to Improve Performance</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/selector/selector-min.js"></script>
+<script type="text/javascript" src="../../build/event-delegate/event-delegate-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+#list li { 
+	cursor: pointer;
+}
+
+#list li.selected {
+	background-color: red;	
+}
+
+#list li.hover {
+	background-color: yellow;
+}
+
+</style>
+
+
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Event Utility: Using Event Utility and Event Delegation to Improve Performance</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Event Utility: Using Event Utility and Event Delegation to Improve Performance</h1>
+	
+	<div class="exampleIntro">
+	<p>
+Event delegation is a technique whereby you use a single event handler on a 
+parent element to listen for interactions that affect the parent's descendant 
+elements; because events on the descendant elements will bubble up to the 
+parent, this can be a reliable and extremely efficient mitigation strategy for 
+reducing the number of resource-consuming event handlers you have on any given 
+page. (<a href="http://yuiblog.com/blog/2007/01/17/event-plan/">You can read 
+more about Event Delegation in this YUIBlog article</a>.)
+</p>
+<p>
+In the example below, mousing over an item in the list will change its 
+background color to yellow.  Clicking an item will change its 
+background color to red.  Because we're using event delegation, only one event 
+listener is needed for each type of event (<code>click</code>, 
+<code>mouseover</code>, and <code>mouseout</code>), regardless of the size of 
+the list.  To illustrate this point, click the "Add Item" button to append more 
+items to list.  An infinite number of items can be added to the list, and still 
+just one <code>click</code>, <code>mouseover</code>, and <code>mouseout</code> 
+event handler is required to highlight the items.
+</p>			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="event-delegation_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<div id="container">
+	<ul id="list">
+		<li id="li-1">List Item 1</li>
+		<li id="li-2">List Item 2</li>
+		<li id="li-3">List Item 3</li>
+		<li id="li-4">List Item 4</li>
+		<li id="li-5">List Item 5</li>
+	</ul>
+</div>
+<button id="add-item">Add Item</button>
+
+<script type="text/javascript">
+
+(function() {
+
+var Dom = YAHOO.util.Dom,
+	Event = YAHOO.util.Event;
+
+var onLIClick = function (event, matchedEl, container) {
+
+	if (Dom.hasClass(matchedEl, "selected")) {
+		Dom.removeClass(matchedEl, "selected");		
+	}
+	else {
+		Dom.addClass(matchedEl, "selected");
+	}
+
+};
+
+//	Use the "delegate" method to attach a "click" event listener to the 
+//	container (<div id="container">).  The listener will only be called if the 
+//	target of the click event matches the element specified via the CSS 
+//	selector passed as the fourth argument to the delegate method.
+
+Event.delegate("container", "click", onLIClick, "li");
+
+var onLIMouseOver = function (event, matchedEl, container) {
+
+	Dom.addClass(matchedEl, "hover");
+};
+
+var onLIMouseOut = function (event, matchedEl, container) {
+
+	Dom.removeClass(matchedEl, "hover");
+	
+};
+
+
+//	Use the "delegate" method to attach a mouseover and mouseout event listener 
+//	to the container (<div id="container">).  The listener will only be called  
+//	if the target of the click event matches the element specified via the CSS 
+//	selector passed as the fourth argument to the delegate method.
+
+Event.delegate("container", "mouseover", onLIMouseOver, "li");
+Event.delegate("container", "mouseout", onLIMouseOut, "li");
+
+
+//	Add a click event listener to the button that will add new items to the list
+//	to illustrate that new items can be added and the existing click, mouseover,
+//	and mouseout event listeners will apply to them as well.
+
+Event.on("add-item", "click", function (event) {
+
+	var list = Dom.get("list"),
+		items = Dom.getChildren(list),
+ 		nItemNumber = (items.length + 1),
+ 		fragment = Dom.get("container").ownerDocument.createElement("div");
+	
+	fragment.innerHTML = '<li id ="li-'+ nItemNumber +'">List Item ' + nItemNumber + '</li>';
+
+	list.appendChild(fragment.firstChild);
+	
+});
+
+})();
+
+</script>	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Understanding Event Delegation</h2>
+
+<p>
+Event delegation refers to the use of a single event listener on a parent object 
+to listen for events happening on its children (or deeper descendants).  Event 
+delegation allows developers to be sparse in their application of event 
+listeners while still reacting to events as they happen on highly specific 
+targets.  This proves to be a key strategy for maintaining high performance in 
+event-rich web projects, where the creation of hundreds of event listeners can 
+quickly degrade performance.
+</p>
+
+<p>
+This example illustrates the use of event delegation (via the 
+<a href="http://developer.yahoo.com/yui/event/">Event Utility</a>) on  
+<code>click</code>, <code>mouseover</code>, and <code>mouseout</code> events.  
+The problem we will solve here involves reacting to <code>click</code>, 
+<code>mouseover</code>, and <code>mouseout</code> events on list items.  As 
+there can be many list items, we want to be frugal in applying event listeners. 
+At the same time, we want to know exactly which <code>&lt;li&gt;</code> was 
+involved in a <code>click</code>, <code>mouseover</code>, and 
+<code>mouseout</code> event.
+</p>
+
+<p>
+To do this, we'll rely on DOM event bubbling &mdash; the process by which an 
+event progresses from its direct target up through the target's node ancestry 
+until it reaches the <code>window</code> object.  The graphic below may help to 
+illustrate the flow: In this case, we'll count on the fact that a click or a 
+mouseover on (A) the text node <em>within</em> an <code>&lt;li&gt; </code> 
+progresses to the <code>&lt;li&gt;</code> element itself (B), then to the 
+<code>&lt;ul&gt;</code> element (C), and then to the list's parent 
+<code>&lt;div&gt;</code> (D) and so on up the document:
+</p>
+<p><img src="assets/eventdelegation.gif"></p>
+
+
+<h2>Getting Started</h2>
+<p>
+Because events flow this way, we can count on events happening to our 
+<code>&lt;li&gt;s</code> bubbling up to our &lt;div&gt; whose ID attribute is 
+&quot;container.&quot;
+</p>
+<p>
+We'll start with some structural markup &mdash; a <code>&lt;div&gt;</code> 
+containing a <code>&lt;ul&gt;</code> with 5 <code>&lt;li&gt;</code> children. 
+</p>
+<textarea name="code" class="HTML" cols="60" rows="1"><div id="container">
+	<ul id="list">
+		<li id="li-1">List Item 1</li>
+		<li id="li-2">List Item 2</li>
+		<li id="li-3">List Item 3</li>
+		<li id="li-4">List Item 4</li>
+		<li id="li-5">List Item 5</li>
+	</ul>
+</div></textarea>
+
+
+<h2>Event Delegation Made Easy</h2>
+<p>
+The Event Utility makes using event delegation easy by providing a 
+<code>delegate</code> method that enables the use of CSS selector 
+syntax to define the descendants of the delegation container for which the 
+event listener should be called.  <em>Note: Event's delegation functionality
+is packaged separately in an event-delegate module, which itself requires the 
+Selector Utility.</em>
+</p>
+<p>
+To use the <code>delegate</code> method, pass the id of the element that is 
+the delegation container as the first argument (in this case 
+<code>&#60;div id="container"&#62;</code>).  The second argument is the 
+type of event you want to delegate, and the third is the event listener.  The 
+forth argument is a CSS selector that defines the descendant elements that must 
+match the target of the event in order for the listener to be called.
+</p>
+<p>
+First we'll add the event listener used to highlight each item when it is 
+clicked.  As we're only really interested in clicks on <code>&lt;li&gt;</code>s, 
+we'll specify a CSS selector of "li" as the fourth argument to the 
+<code>delegate</code> method.  The element that matched the CSS selector 
+will be passed as the second argument to the event listener.  The element 
+that is the delegation container for the listener is passed as the third 
+argument:
+</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+(function() {
+
+var Dom = YAHOO.util.Dom,
+	Event = YAHOO.util.Event;
+
+var onLIClick = function (event, matchedEl, container) {
+
+	if (Dom.hasClass(matchedEl, "selected")) {
+		Dom.removeClass(matchedEl, "selected");		
+	}
+	else {
+		Dom.addClass(matchedEl, "selected");
+	}
+
+};
+
+//	Use the "delegate" method to attach a "click" event listener to the 
+//	container (<div id="container">).  The listener will only be called if the 
+//	target of the click event matches the element specified via the CSS 
+//	selector passed as the fourth argument to the delegate method.
+
+Event.delegate("container", "click", onLIClick, "li");
+
+})();
+</textarea>
+
+<p>
+The same technique works for the <code>mouseover</code> and 
+<code>mouseout</code> events as well.  
+</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+(function() {
+
+var Dom = YAHOO.util.Dom,
+	Event = YAHOO.util.Event;
+
+var onLIMouseOver = function (event, matchedEl, container) {
+
+	Dom.addClass(matchedEl, "hover");
+};
+
+var onLIMouseOut = function (event, matchedEl, container) {
+
+	Dom.removeClass(matchedEl, "hover");
+	
+};
+
+
+//	Use the "delegate" method to attach a mouseover and mouseout event listener 
+//	to the container (<div id="container">).  The listener will only be called  
+//	if the target of the click event matches the element specified via the CSS 
+//	selector passed as the fourth argument to the delegate method.
+
+Event.delegate("container", "mouseover", onLIMouseOver, "li");
+Event.delegate("container", "mouseout", onLIMouseOut, "li");
+
+})();</textarea>
+
+<p>
+In this example, we've used three event listeners with their associated memory 
+and performance load to serve as delegates for the same three events on each 
+item in the list.  Instead of 3 event listeners per item, we now have three 
+on the container.  And 
+the code works regardless of the number of <code>li</code>'s added to the list 
+&mdash; if the list was 100 items long, we'd be saving ourselves 297 event 
+listeners, which is enough to make a noticable difference in how your page 
+responds.  In a complicated page context, it's easy to see how this technique 
+can dramatically reduce the number of event listeners required and thereby 
+improve the performance of your application.
+</p>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?dom&event&selector&event-delegate&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerGloss"><p><strong>Note:</strong> Logging and debugging is currently turned off for this example.</p> 
+							<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="event-delegation_log.html">Reload with logging<br />
+	 and debugging enabled.</a></span></span></p></div>
+	
+						</div>
+					
+				
+					<div id="examples">
+						<h3>Event Utility Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../event/eventsimple.html'>Simple Event Handling and Processing</a></li><li><a href='../event/custom-event.html'>Using Custom Events</a></li><li><a href='../event/event-timing.html'>Using onAvailable, onContentReady, and onDOMReady</a></li><li class='selected'><a href='../event/event-delegation.html'>Using Event Utility and Event Delegation to Improve Performance</a></li><li><a href='../event/event-focus-blur.html'>Skinning via Progressive Enhancement using the Event Utility and the YUILoader</a></li><li><a href='../container/keylistener.html'>Implementing Container Keyboard Shortcuts with KeyListener (included with examples for Container Family)</a></li><li><a href='../container/container-ariaplugin.html'>Using the Container ARIA Plugin (included with examples for Container Family)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Event Utility Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/event/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_event.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/event.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="selected "><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../../print.css" type="text/css" media="print">
+<meta content="Animation,com.yahoo.astra.animation.Animation,active,duration,easingFunction,create,end,kill,pause,start,yoyo" name="keywords">
+<title>com.yahoo.astra.animation.Animation</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'Animation - YUI Flash Component Documentation';
+				var baseRef = '../../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">YUI Flash Component Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../../all-classes.html')" href="../../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../all-classes.html')" href="../../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../index-list.html')" href="../../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../../index.html?com/yahoo/astra/animation/Animation.html&amp;com/yahoo/astra/animation/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;Animation</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#propertySummary">Properties</a>&nbsp;| <a href="#methodSummary">Methods</a>&nbsp;| <a href="#eventSummary">Events</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class Animation"); titleBar_setSubNav(false,true,false,false,true,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">com.yahoo.astra.animation</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class Animation</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Inheritance</td><td class="inheritanceList">Animation <img class="inheritArrow" alt="Inheritance" title="Inheritance" src="../../../../images/inherit-arrow.gif"> flash.events.EventDispatcher</td>
+</tr>
+</table>
+<p></p>
+  An ultra lightweight animation engine.
+  
+  <p></p>
+<br>
+<span class="label">Example</span>
+<br>The following code animates a Shape from its current location to a new location over a period of two seconds:
+  <div class='listing'><pre>
+  // create the square
+  var square:Shape = new Shape();
+  square.graphics.beginFill( 0xcccccc );
+  square.graphics.drawRect( 0, 0, 20, 20 );
+  square.graphics.endFill();
+  square.x = 20;
+  square.y = 20;
+  this.addChild( square );
+  
+  // animate the square's position
+  var animation:Animation = Animation.create( square, 2000, { x: 100, y: 200 } );
+  </pre></div>
+  
+  <p></p>The following code will draw a circle and use an Animation instance
+   to change its alpha property from 0.0 to 1.0 over a period of 1.5 seconds.
+   It will set the easingFunction property to <code>Back.easeOut</code>, which
+  is an easing function included with Flash CS3. In order to implement this 
+  example, you will need to save this code as a class file and set it as the   
+  Document Class of your flash application.
+  
+  <div class='listing'><pre>
+   package
+   {
+    import fl.motion.easing.Back;
+    import flash.display.Shape; 
+    import flash.display.Sprite;
+    import com.yahoo.astra.animation.Animation;
+    import com.yahoo.astra.animation.AnimationEvent;
+   
+    public class AnimationExample extends Sprite
+    {
+     public function AnimationExample()
+     {
+      // Create a simple circular display object
+      this.circle = new Shape();
+      this.circle.graphics.beginFill(0xcccccc);
+      this.circle.graphics.drawEllipse(0, 0, 50, 50);
+      this.circle.graphics.endFill();
+      this.addChild(circle);
+   
+      // Create the instance animating over 1500ms from 0 to 1
+      this.animation = new Animation( 1500, { alpha: 0.0 }, { alpha: 1.0 } );
+   
+      // Use an easing equation
+      this.animation.easingFunction = Back.easeOut;
+   
+      // Listen for events to update our circle's values
+      this.animation.addEventListener( AnimationEvent.UPDATE, animationUpdateHandler );
+      this.animation.addEventListener( AnimationEvent.COMPLETE, animationCompleteHandler );
+     }
+   
+     // Should be a member variable so that the garbage collector doesn't
+     // remove the instance from memory before it finishes
+     private var animation:Animation;
+   
+     // The display object whose properties we will animate
+     private var circle:Shape;
+   
+     private function animationUpdateHandler(event:AnimationEvent):void
+     {
+      this.circle.alpha = event.parameters.alpha;
+     }
+   
+     private function animationCompleteHandler(event:AnimationEvent):void
+     {
+      this.animationUpdateHandler(event);
+   
+      // Set the animation instance to null to ensure garbage collection
+      this.animation = null;
+     }
+    }
+   }
+  </pre></div>
+  <p></p>
+<br>
+<hr>
+</div>
+<a name="propertySummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Properties</div>
+<table id="summaryTableProperty" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Property</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#active">active</a> : Boolean<div class="summaryTableDescription">[read-only]
+   If true, the animation is currently running.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#duration">duration</a> : int<div class="summaryTableDescription">[read-only]
+   The duration in milliseconds that the animation will run.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#easingFunction">easingFunction</a> : Function<div class="summaryTableDescription">
+       The easing function which is used with the tween.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+</table>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#Animation()">Animation</a>(duration:int, start:Object, end:Object, autoStart:Boolean = true)</div>
+<div class="summaryTableDescription">
+   Constructor.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#create()">create</a>(target:Object, duration:int, parameters:Object, autoStart:Boolean = true, clearAllRunning:Boolean = false):<a href="../animation/Animation.html">Animation</a>
+</div>
+<div class="summaryTableDescription">[static]
+   Animates one or more properties of a target object.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#end()">end</a>():void</div>
+<div class="summaryTableDescription">
+   Forces a tween to its completion values.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#kill()">kill</a>(animation:<a href="Animation.html">Animation</a>):void</div>
+<div class="summaryTableDescription">[static]
+   Immediately destroys an animation instantiated with <code>create()</code>.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#pause()">pause</a>():void</div>
+<div class="summaryTableDescription">
+   Pauses a tween so that it may be restarted again with the same
+   timing.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#start()">start</a>():void</div>
+<div class="summaryTableDescription">
+   Starts the tween.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#yoyo()">yoyo</a>():void</div>
+<div class="summaryTableDescription">
+   Swaps the start and end parameters and restarts the animation.</div>
+</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+</table>
+</div>
+<a name="eventSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Events</div>
+<table id="summaryTableEvent" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Event</th><th>Summary</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#event:complete">complete</a>
+</div>
+</td><td class="summaryTableDescription summaryTableCol">
+  Dispatched when the Animation instance has finished.</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#event:pause">pause</a>
+</div>
+</td><td class="summaryTableDescription summaryTableCol">
+  Dispatched when the Animation instance is paused.</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#event:start">start</a>
+</div>
+</td><td class="summaryTableDescription summaryTableCol">
+  Dispatched when the Animation instance starts.</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#event:update">update</a>
+</div>
+</td><td class="summaryTableDescription summaryTableCol">
+  Dispatched when the Animation instance has changed.</td><td class="summaryTableOwnerCol">Animation</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="propertyDetail"></a>
+<div class="detailSectionHeader">Property detail</div>
+<a name="active"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">active</td><td class="detailHeaderType">property</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>active:Boolean</code>&nbsp;&nbsp;[read-only]<p>
+   If true, the animation is currently running.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get active():Boolean</code>
+<br>
+</div>
+<a name="duration"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">duration</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>duration:int</code>&nbsp;&nbsp;[read-only]<p>
+   The duration in milliseconds that the animation will run.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get duration():int</code>
+<br>
+</div>
+<a name="easingFunction"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">easingFunction</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>easingFunction:Function</code>&nbsp;&nbsp;[read-write]<p>
+       The easing function which is used with the tween.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get easingFunction():Function</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set easingFunction(value:Function):void</code>
+<br>
+</div>
+<a name="constructorDetail"></a>
+<div class="detailSectionHeader">Constructor detail</div>
+<a name="Animation()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">Animation</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">constructor</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function Animation(duration:int, start:Object, end:Object, autoStart:Boolean = true)</code><p>
+   Constructor.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">duration</span>:int</code> &mdash;  the time in milliseconds that the tween will run
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">start</span>:Object</code> &mdash;   the starting values of the tween
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">end</span>:Object</code> &mdash;   the ending values of the tween
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">autoStart</span>:Boolean</code> (default = <code>true</code>)<code></code> &mdash;  if false, the tween will not run until start() is called
+   </td>
+</tr>
+</table>
+</div>
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="create()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">create</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function create(target:Object, duration:int, parameters:Object, autoStart:Boolean = true, clearAllRunning:Boolean = false):<a href="../animation/Animation.html">Animation</a></code><p>
+   Animates one or more properties of a target object. Uses the current values
+   of these properties as the starting values.
+      </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">target</span>:Object</code> &mdash;   the object whose properties will be animated.
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">duration</span>:int</code> &mdash;   the time in milliseconds over which the properties will be animated.   
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">parameters</span>:Object</code> &mdash;  an object containing keys of property names on the object and the ending values.
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">autoStart</span>:Boolean</code> (default = <code>true</code>)<code></code> &mdash;   if true (the default), the animation will begin automatically.
+         if false, the returned Animation object will not automatically begin, and
+         one must call the <code>start()</code> function to make it run.
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">clearAllRunning</span>:Boolean</code> (default = <code>false</code>)<code></code> &mdash; If true, all other animations started with <code>create()</code> for this target will be cleared.
+   
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code><a href="../animation/Animation.html">Animation</a></code> &mdash; 
+                            The newly-created Animation instance
+   
+                        
+                     </td>
+</tr>
+</table>
+</div>
+<a name="end()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">end</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function end():void</code><p>
+   Forces a tween to its completion values.
+   </p></div>
+<a name="kill()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">kill</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function kill(animation:<a href="Animation.html">Animation</a>):void</code><p>
+   Immediately destroys an animation instantiated with <code>create()</code>.
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">animation</span>:<a href="Animation.html">Animation</a></code></td>
+</tr>
+</table>
+</div>
+<a name="pause()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">pause</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function pause():void</code><p>
+   Pauses a tween so that it may be restarted again with the same
+   timing.
+   </p></div>
+<a name="start()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">start</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function start():void</code><p>
+   Starts the tween. Should be used to restart a paused tween, or to
+   start a new tween with autoStart disabled.
+   </p></div>
+<a name="yoyo()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">yoyo</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function yoyo():void</code><p>
+   Swaps the start and end parameters and restarts the animation.
+   </p></div>
+<div class="detailSectionHeader">Event detail</div>
+<a name="event:complete"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">complete</td><td class="detailHeaderType">event&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<span class="label">Event object type: </span><a href="../animation/AnimationEvent.html"><code>com.yahoo.astra.animation.AnimationEvent</code></a>
+<br>
+<span class="label">AnimationEvent.type property = </span><a href="../animation/AnimationEvent.html#COMPLETE"><code>com.yahoo.astra.animation.AnimationEvent.COMPLETE</code></a>
+<br><p>
+  Dispatched when the Animation instance has finished.
+  
+  </p></div>
+<a name="event:pause"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">pause</td><td class="detailHeaderType">event&nbsp;</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<span class="label">Event object type: </span><a href="../animation/AnimationEvent.html"><code>com.yahoo.astra.animation.AnimationEvent</code></a>
+<br>
+<span class="label">AnimationEvent.type property = </span><a href="../animation/AnimationEvent.html#PAUSE"><code>com.yahoo.astra.animation.AnimationEvent.PAUSE</code></a>
+<br><p>
+  Dispatched when the Animation instance is paused.
+  
+  </p></div>
+<a name="event:start"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">start</td><td class="detailHeaderType">event&nbsp;</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<span class="label">Event object type: </span><a href="../animation/AnimationEvent.html"><code>com.yahoo.astra.animation.AnimationEvent</code></a>
+<br>
+<span class="label">AnimationEvent.type property = </span><a href="../animation/AnimationEvent.html#START"><code>com.yahoo.astra.animation.AnimationEvent.START</code></a>
+<br><p>
+  Dispatched when the Animation instance starts.
+  
+  </p></div>
+<a name="event:update"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">update</td><td class="detailHeaderType">event&nbsp;</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<span class="label">Event object type: </span><a href="../animation/AnimationEvent.html"><code>com.yahoo.astra.animation.AnimationEvent</code></a>
+<br>
+<span class="label">AnimationEvent.type property = </span><a href="../animation/AnimationEvent.html#UPDATE"><code>com.yahoo.astra.animation.AnimationEvent.UPDATE</code></a>
+<br><p>
+  Dispatched when the Animation instance has changed.
+  
+  </p></div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright"> 
+</center>
+</div>
+</body>
+</html>
+<!-- -->

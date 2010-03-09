@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Events</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/slider/assets/skins/sam/slider.css" />
+<link rel="stylesheet" type="text/css" href="../../build/progressbar/assets/skins/sam/progressbar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/progressbar/progressbar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+.example-container .bd {
+    overflow:hidden;
+}
+
+#containers {
+	float:left;
+	margin-top:2em;
+}
+
+
+#textContainers {
+	overflow:hidden;
+	width:200px;
+	position: absolute; /* for ie7 and ie8 */
+}
+
+#minValueContainer {
+	float:left;
+}
+
+#maxValueContainer {
+	float:right;
+}
+
+#status {
+	text-align:center;
+}
+
+#pbContainer .yui-pb-bar {
+	background-color: rgb(127,127,127);
+	background-image: none;
+}
+
+#control {
+	float:right;
+	width:300px;
+	*margin-top:2em;
+}
+
+/* start ie workaround */
+fieldset {
+	border: thin solid silver;
+	background-color:#F0F0F0;
+	padding:1em;
+	margin:1em;
+
+	*position: relative;
+	*margin: 0 0 1em 0;
+    *padding-top:2em;
+}
+
+fieldset p {
+	margin:0 1em;
+}
+
+legend {
+	font-weight:bold;
+	margin:0 0.5em;
+	padding:0 0.2em;
+
+	*position:absolute;
+    *top: -.5em;
+    *left: .5em;
+}
+/* end ie workaround */
+
+.dp-highlighter th, .dp-highlighter td {
+	border:0;
+	padding:0;
+}
+.dp-highlighter .line1, .dp-highlighter  .line2 {
+	padding-left:10px;
+	white-space:nowrap;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Events</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how you can use the events that ProgressBar fires.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="containers">
+	<div id="pbContainer"></div>
+	<div id="textContainers">
+		<div id="minValueContainer" class="yui-pb-range">0</div>
+		<div id="maxValueContainer" class="yui-pb-range">255</div>
+		<div class="yui-pb-caption">
+			<span id="valueContainer">127</span>
+			<span id="status"></span>
+		</div>
+	</div>
+</div>
+<fieldset id="control">
+	<legend>Control</legend>
+	<fieldset id="valueSet">
+		<legend>Value</legend>
+		<div id="sliderValue" class="yui-h-slider" tabindex="-1" title="Value slider">
+			<div id="sliderValueThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-n.gif"></div>
+		</div>
+	</fieldset>
+	<fieldset id="rangeSet">
+		<legend>Range</legend>
+		<div id="sliderRange" class="yui-h-slider" title="Range slider">
+			<div id="sliderRangeMinThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-e.gif"></div>
+			<div id="sliderRangeMaxThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-w.gif"></div>
+		</div>
+	</fieldset>
+</fieldset>
+
+<script type="text/javascript">
+// Workaround for bug #2528312
+//YAHOO.widget.Slider.prototype.baselinePos = [];
+
+YAHOO.util.Event.onDOMReady( function () {
+	var Dom = YAHOO.util.Dom;
+
+	var pb = new YAHOO.widget.ProgressBar({
+		value:127,
+		maxValue:255,
+		anim:true
+	}).render('pbContainer');
+	var anim = pb.get('anim');
+	anim.duration = 3;
+	anim.method = YAHOO.util.Easing.bounceBoth;
+
+	pb.on('start',function (value) {
+		Dom.get('status').innerHTML = 'Started';
+		window.setTimeout(function() {
+			Dom.get('status').innerHTML = '';
+		},1000);
+	});
+
+	pb.on('progress',function (value) {
+		Dom.setStyle(this.get('barEl'),'backgroundColor','rgb(' + value + ',' + value + ',127)');
+		Dom.get('valueContainer').innerHTML = value;
+	});
+
+	pb.on('complete',function (value) {
+		Dom.get('status').innerHTML = 'Stopped';
+		window.setTimeout(function() {
+			Dom.get('status').innerHTML = '';
+		},1000);
+	});
+
+	pb.on('minValueChange',function(oArgs)  {
+		Dom.get('minValueContainer').innerHTML = oArgs.newValue;
+	});
+
+	pb.on('maxValueChange',function(oArgs)  {
+		Dom.get('maxValueContainer').innerHTML = oArgs.newValue;
+	});
+
+	// From here on, it is mostly handling of the Sliders
+
+	var valueSlider = YAHOO.widget.Slider.getHorizSlider('sliderValue',
+        'sliderValueThumb', 0, 200, 0
+	);
+	valueSlider.setValue(100,true,true,true);
+	valueSlider.animate = false;
+
+	var valueScale = 1.275, minValue = 0;
+
+	valueSlider.subscribe("slideEnd", function() {
+		var value = Math.round(valueSlider.getValue() * valueScale + minValue);
+		pb.set('value',value);
+		window.setTimeout(function() {
+			valueSlider.setValue((pb.get('value') - minValue)/ valueScale,true,true,true);
+		},1);
+	});
+
+	var rangeSlider = YAHOO.widget.Slider.getHorizDualSlider("sliderRange",
+        "sliderRangeMinThumb", "sliderRangeMaxThumb",
+        200, 0, [0, 200]
+	);
+
+	rangeSlider.animate = false;
+
+	rangeSlider.subscribe('slideEnd', function() {
+		minValue = Math.round(this.minVal * 1.275);
+		pb.set('minValue',minValue);
+		var maxValue = Math.round(this.maxVal * 1.275);
+		pb.set('maxValue',maxValue);
+		valueScale = (maxValue - minValue) / 200;
+		valueSlider.setValue((pb.get('value') - minValue) / valueScale,true,true,true);
+	});
+
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

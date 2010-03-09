@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <title>YUI Carousel Unit Tests</title>
+        <!-- Dependency CSS files -->
+        <link type="text/css" rel="stylesheet"
+              href="../../../build/logger/assets/logger.css">
+        <link type="text/css" rel="stylesheet"
+              href="../../../build/yuitest/assets/testlogger.css">
+        <style type="text/css">
+        #container, #container2 {
+            width: 400px;
+        }
+
+        .yui-carousel-element {
+            margin: 0;
+            padding: 0;
+        }
+
+        .yui-carousel-element li {
+            border: none;
+            margin: 0;
+            padding: 0;
+            width: 100px;
+        }
+        </style>
+        <!-- Dependency JS files -->
+        <script type="text/javascript"
+            src="../../../build/yahoo/yahoo-min.js"></script>
+        <script type="text/javascript"
+            src="../../../build/dom/dom-min.js"></script>
+        <script type="text/javascript"
+            src="../../../build/event/event-min.js"></script>
+        <script type="text/javascript"
+            src="../../../build/logger/logger-min.js"></script>
+        <script type="text/javascript"
+            src="../../../build/element/element-min.js"></script>
+        <script type="text/javascript"
+            src="../../../build/carousel/carousel-min.js"></script>
+        <script type="text/javascript"
+            src="../../../build/yuitest/yuitest-min.js"></script>
+        <!-- Carousel Test Cases -->
+        <script type="text/javascript" src="markupTests.js"></script>
+        <script type="text/javascript" src="scriptTests.js"></script>
+        <script type="text/javascript" src="protectedMethodTests.js"></script>
+        <script type="text/javascript">
+            (function () {
+                YAHOO.util.Event.onDOMReady(function () {
+                    var logger = new YAHOO.tool.TestLogger(),
+                        tests  = YAHOO.CarouselTests;
+                    
+                    YAHOO.tool.TestRunner.add(tests.markupTests);
+                    YAHOO.tool.TestRunner.add(tests.scriptTests);
+                    YAHOO.tool.TestRunner.add(tests.protectedMethodTests);
+                    YAHOO.tool.TestRunner.run();
+                });
+            })();
+        </script>
+    </head>
+    <body>
+        <div id="container">
+            <ol id="carousel">
+                <li id="item1">One</li>
+                <li id="item2">Two</li>
+                <li id="item3">Three</li>
+                <li id="item4">Four</li>
+                <li id="item5">Five</li>
+            </ol>
+        </div>
+        <div id="container2"></div>
+        <div id="container3">
+            <ul id="carousel3">
+                <li>Test</li>
+            </ul>
+        </div>
+        <div id="container4"></div>
+        <div id="container5"></div>
+    </body>
+</html>

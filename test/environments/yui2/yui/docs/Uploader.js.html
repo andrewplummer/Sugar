@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: uploader   Uploader.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Uploader&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_uploader.html" title="uploader">uploader</a>
+                
+                 &gt; Uploader.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * The YUI Uploader Control</span>
+<span class="c"> * @module uploader</span>
+<span class="c"> * @description &lt;p&gt;YUI Uploader provides file upload functionality that goes beyond the basic browser-based methods. </span>
+<span class="c"> * Specifically, the YUI Uploader allows for:</span>
+<span class="c"> * &lt;ol&gt;</span>
+<span class="c"> * &lt;li&gt; Multiple file selection in a single &quot;Open File&quot; dialog.&lt;/li&gt;</span>
+<span class="c"> * &lt;li&gt; File extension filters to facilitate the user&#39;s selection.&lt;/li&gt;</span>
+<span class="c"> * &lt;li&gt; Progress tracking for file uploads.&lt;/li&gt;</span>
+<span class="c"> * &lt;li&gt; A range of file metadata: filename, size, date created, date modified, and author.&lt;/li&gt;</span>
+<span class="c"> * &lt;li&gt; A set of events dispatched on various aspects of the file upload process: file selection, upload progress, upload completion, etc.&lt;/li&gt;</span>
+<span class="c"> * &lt;li&gt; Inclusion of additional data in the file upload POST request.&lt;/li&gt;</span>
+<span class="c"> * &lt;li&gt; Faster file upload on broadband connections due to the modified SEND buffer size.&lt;/li&gt;</span>
+<span class="c"> * &lt;li&gt; Same-page server response upon completion of the file upload.&lt;/li&gt;</span>
+<span class="c"> * &lt;/ol&gt;</span>
+<span class="c"> * &lt;/p&gt;</span>
+<span class="c"> * @title Uploader</span>
+<span class="c"> * @namespace YAHOO.widget</span>
+<span class="c"> * @requires yahoo, dom, element, event</span>
+<span class="c"> */</span>
+<span class="c">/**</span>
+<span class="c"> * Uploader class for the YUI Uploader component.</span>
+<span class="c"> *</span>
+<span class="c"> * @namespace YAHOO.widget</span>
+<span class="c"> * @class Uploader</span>
+<span class="c"> * @uses YAHOO.widget.FlashAdapter</span>
+<span class="c"> * @constructor</span>
+<span class="c"> * @param containerId {HTMLElement} Container element for the Flash Player instance.</span>
+<span class="c"> * @param buttonSkin {String} [optional]. If defined, the uploader is </span>
+<span class="c"> * rendered as a button. This parameter must provide the URL of a button</span>
+<span class="c"> * skin sprite image. Acceptable types are: jpg, gif, png and swf. The </span>
+<span class="c"> * sprite is divided evenly into four sections along its height (e.g., if</span>
+<span class="c"> * the sprite is 200 px tall, it&#39;s divided into four sections 50px each).</span>
+<span class="c"> * Each section is used as a skin for a specific state of the button: top</span>
+<span class="c"> * section is &quot;up&quot;, second section is &quot;over&quot;, third section is &quot;down&quot;, and</span>
+<span class="c"> * fourth section is &quot;disabled&quot;. </span>
+<span class="c"> * If the parameter is not supplied, the uploader is rendered transparent,</span>
+<span class="c"> * and it&#39;s the developer&#39;s responsibility to create a visible UI below it.</span>
+<span class="c"> * @param forceTransparent {Boolean} This parameter, if true, forces the Flash</span>
+<span class="c"> * UI to be rendered with wmode set to &quot;transparent&quot;. This behavior is useful </span>
+<span class="c"> * in conjunction with non-rectangular button skins with PNG transparency. </span>
+<span class="c"> * The parameter is false by default, and ignored if no buttonSkin is defined.</span>
+<span class="c">  */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Uploader</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">containerId</span><span class="o">,</span> <span class="nx">buttonSkin</span><span class="o">,</span> <span class="nx">forceTransparent</span><span class="o">)</span>
+<span class="o">{</span>
+	<span class="k">var</span> <span class="nx">newWMode</span> <span class="o">=</span> <span class="s2">&quot;window&quot;</span><span class="o">;</span>
+
+	<span class="k">if</span> <span class="o">(!(</span><span class="nx">buttonSkin</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="nx">buttonSkin</span> <span class="o">&amp;&amp;</span> <span class="nx">forceTransparent</span><span class="o">))</span> <span class="o">{</span>
+		<span class="nx">newWMode</span> <span class="o">=</span> <span class="s2">&quot;transparent&quot;</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	
+ 	<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Uploader</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Uploader</span><span class="o">.</span><span class="nx">SWFURL</span><span class="o">,</span> <span class="nx">containerId</span><span class="o">,</span> <span class="o">{</span><span class="nx">wmode</span><span class="o">:</span><span class="nx">newWMode</span><span class="o">},</span> <span class="nx">buttonSkin</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the mouse is pressed over the Uploader.</span>
+<span class="c">	 * Only fires when the Uploader UI is enabled and</span>
+<span class="c">	 * the render type is &#39;transparent&#39;.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event mouseDown</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;mouseDown&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the mouse is released over the Uploader.</span>
+<span class="c">	 * Only fires when the Uploader UI is enabled and</span>
+<span class="c">	 * the render type is &#39;transparent&#39;.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event mouseUp</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;mouseUp&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the mouse rolls over the Uploader.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event rollOver</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;rollOver&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the mouse rolls out of the Uploader.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event rollOut</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;rollOut&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the uploader is clicked.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event click</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;click&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the user has finished selecting files in the &quot;Open File&quot; dialog.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event fileSelect</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.fileList {Object} A dictionary of objects with file information</span>
+<span class="c">	 * @param event.fileList[].size {Number} File size in bytes for a specific file in fileList</span>
+<span class="c">	 * @param event.fileList[].cDate {Date} Creation date for a specific file in fileList</span>
+<span class="c">	 * @param event.fileList[].mDate {Date} Modification date for a specific file in fileList</span>
+<span class="c">	 * @param event.fileList[].name {String} File name for a specific file in fileList</span>
+<span class="c">	 * @param event.fileList[].id {String} Unique file id of a specific file in fileList</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;fileSelect&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when an upload of a specific file has started.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event uploadStart</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.id {String} The id of the file that&#39;s started to upload</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;uploadStart&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when new information about the upload progress for a specific file is available.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event uploadProgress</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.id {String} The id of the file with which the upload progress data is associated</span>
+<span class="c">	 * @param bytesLoaded {Number} The number of bytes of the file uploaded so far</span>
+<span class="c">	 * @param bytesTotal {Number} The total size of the file</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;uploadProgress&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when an upload for a specific file is cancelled.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event uploadCancel</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.id {String} The id of the file with which the upload has been cancelled.</span>
+<span class="c">	 */</span>	
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;uploadCancel&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when an upload for a specific file is complete.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event uploadComplete</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.id {String} The id of the file for which the upload has been completed.</span>
+<span class="c">	 */</span>	
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;uploadComplete&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the server sends data in response to a completed upload.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event uploadCompleteData</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.id {String} The id of the file for which the upload has been completed.</span>
+<span class="c">	 * @param event.data {String} The raw data returned by the server in response to the upload.</span>
+<span class="c">	 */</span>	
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;uploadCompleteData&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when an upload error occurs.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event uploadError</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.id {String} The id of the file that was being uploaded when the error has occurred.</span>
+<span class="c">	 * @param event.status {String} The status message associated with the error.</span>
+<span class="c">	 */</span>	
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;uploadError&quot;</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c">/**</span>
+<span class="c"> * Location of the Uploader SWF</span>
+<span class="c"> *</span>
+<span class="c"> * @property Chart.SWFURL</span>
+<span class="c"> * @private</span>
+<span class="c"> * @static</span>
+<span class="c"> * @final</span>
+<span class="c"> * @default &quot;assets/uploader.swf&quot;</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Uploader</span><span class="o">.</span><span class="nx">SWFURL</span> <span class="o">=</span> <span class="s2">&quot;assets/uploader.swf&quot;</span><span class="o">;</span>
+
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Uploader</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">FlashAdapter</span><span class="o">,</span>
+<span class="o">{</span>	
+<span class="c">/**</span>
+<span class="c"> * Starts the upload of the file specified by fileID to the location specified by uploadScriptPath.</span>
+<span class="c"> *</span>
+<span class="c"> * @param fileID {String} The id of the file to start uploading.</span>
+<span class="c"> * @param uploadScriptPath {String} The URL of the upload location.</span>
+<span class="c"> * @param method {String} Either &quot;GET&quot; or &quot;POST&quot;, specifying how the variables accompanying the file upload POST request should be submitted. &quot;GET&quot; by default.</span>
+<span class="c"> * @param vars {Object} The object containing variables to be sent in the same request as the file upload.</span>
+<span class="c"> * @param fieldName {String} The name of the variable in the POST request containing the file data. &quot;Filedata&quot; by default.</span>
+<span class="c"> * &lt;/code&gt; </span>
+<span class="c"> */</span>
+	<span class="nx">upload</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">fileID</span><span class="o">,</span> <span class="nx">uploadScriptPath</span><span class="o">,</span> <span class="nx">method</span><span class="o">,</span> <span class="nx">vars</span><span class="o">,</span> <span class="nx">fieldName</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">upload</span><span class="o">(</span><span class="nx">fileID</span><span class="o">,</span> <span class="nx">uploadScriptPath</span><span class="o">,</span> <span class="nx">method</span><span class="o">,</span> <span class="nx">vars</span><span class="o">,</span> <span class="nx">fieldName</span><span class="o">);</span>
+	<span class="o">},</span>
+	
+<span class="c">/**</span>
+<span class="c"> * Starts the upload of the files specified by fileIDs, or adds them to a currently running queue. The upload queue is automatically managed.</span>
+<span class="c"> *</span>
+<span class="c"> * @param fileIDs {Array} The ids of the files to start uploading.</span>
+<span class="c"> * @param uploadScriptPath {String} The URL of the upload location.</span>
+<span class="c"> * @param method {String} Either &quot;GET&quot; or &quot;POST&quot;, specifying how the variables accompanying the file upload POST request should be submitted. &quot;GET&quot; by default.</span>
+<span class="c"> * @param vars {Object} The object containing variables to be sent in the same request as the file upload.</span>
+<span class="c"> * @param fieldName {String} The name of the variable in the POST request containing the file data. &quot;Filedata&quot; by default.</span>
+<span class="c"> * &lt;/code&gt; </span>
+<span class="c"> */</span>
+	<span class="nx">uploadThese</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">fileIDs</span><span class="o">,</span> <span class="nx">uploadScriptPath</span><span class="o">,</span> <span class="nx">method</span><span class="o">,</span> <span class="nx">vars</span><span class="o">,</span> <span class="nx">fieldName</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">uploadThese</span><span class="o">(</span><span class="nx">fileIDs</span><span class="o">,</span> <span class="nx">uploadScriptPath</span><span class="o">,</span> <span class="nx">method</span><span class="o">,</span> <span class="nx">vars</span><span class="o">,</span> <span class="nx">fieldName</span><span class="o">);</span>
+	<span class="o">},</span>
+	
+<span class="c">/**</span>
+<span class="c"> * Starts uploading all files in the queue. If this function is called, the upload queue is automatically managed.</span>
+<span class="c"> *</span>
+<span class="c"> * @param uploadScriptPath {String} The URL of the upload location.</span>
+<span class="c"> * @param method {String} Either &quot;GET&quot; or &quot;POST&quot;, specifying how the variables accompanying the file upload POST request should be submitted. &quot;GET&quot; by default.</span>
+<span class="c"> * @param vars {Object} The object containing variables to be sent in the same request as the file upload.</span>
+<span class="c"> * @param fieldName {String} The name of the variable in the POST request containing the file data. &quot;Filedata&quot; by default.</span>
+<span class="c"> * &lt;/code&gt; </span>
+<span class="c"> */</span>
+	<span class="nx">uploadAll</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">uploadScriptPath</span><span class="o">,</span> <span class="nx">method</span><span class="o">,</span> <span class="nx">vars</span><span class="o">,</span> <span class="nx">fieldName</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">uploadAll</span><span class="o">(</span><span class="nx">uploadScriptPath</span><span class="o">,</span> <span class="nx">method</span><span class="o">,</span> <span class="nx">vars</span><span class="o">,</span> <span class="nx">fieldName</span><span class="o">);</span>
+	<span class="o">},</span>
+
+<span class="c">/**</span>
+<span class="c"> * Cancels the upload of a specified file. If no file id is specified, all ongoing uploads are cancelled.</span>
+<span class="c"> *</span>
+<span class="c"> * @param fileID {String} The ID of the file whose upload should be cancelled.</span>
+<span class="c"> */</span>
+	<span class="nx">cancel</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">fileID</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">cancel</span><span class="o">(</span><span class="nx">fileID</span><span class="o">);</span>
+	<span class="o">},</span>
+
+<span class="c">/**</span>
+<span class="c"> * Clears the list of files queued for upload.</span>
+<span class="c"> *</span>
+<span class="c"> */</span>
+	<span class="nx">clearFileList</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">clearFileList</span><span class="o">();</span>
+	<span class="o">},</span>
+	
+<span class="c">/**</span>
+<span class="c"> * Removes the specified file from the upload queue. </span>
+<span class="c"> *</span>
+<span class="c"> * @param fileID {String} The id of the file to remove from the upload queue. </span>
+<span class="c"> */</span>
+	<span class="nx">removeFile</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">fileID</span><span class="o">)</span> 
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">removeFile</span><span class="o">(</span><span class="nx">fileID</span><span class="o">);</span>
+	<span class="o">},</span>
+
+<span class="c">/**</span>
+<span class="c"> * Turns the logging functionality on.</span>
+<span class="c"> * Uses Flash internal trace logging, as well as YUI Logger, if available.</span>
+<span class="c"> *</span>
+<span class="c"> * @param allowLogging {Boolean} If true, logs are output; otherwise, no logs are produced.</span>
+<span class="c"> */</span>
+    <span class="nx">setAllowLogging</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">allowLogging</span><span class="o">)</span>
+    <span class="o">{</span>
+      	<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setAllowLogging</span><span class="o">(</span><span class="nx">allowLogging</span><span class="o">);</span>
+    <span class="o">},</span>
+
+<span class="c">/**</span>
+<span class="c"> * Sets the number of simultaneous uploads when using uploadAll()</span>
+<span class="c"> * The minimum value is 1, and maximum value is 5. The default value is 2.</span>
+<span class="c"> *</span>
+<span class="c"> * @param simUploadLimit {int} Number of simultaneous uploads, between 1 and 5.</span>
+<span class="c"> */</span>
+    <span class="nx">setSimUploadLimit</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">simUploadLimit</span><span class="o">)</span>
+    <span class="o">{</span>
+       <span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setSimUploadLimit</span><span class="o">(</span><span class="nx">simUploadLimit</span><span class="o">);</span>
+    <span class="o">},</span>
+
+<span class="c">/**</span>
+<span class="c"> * Sets the flag allowing users to select multiple files for the upload.</span>
+<span class="c"> *</span>
+<span class="c"> * @param allowMultipleFiles {Boolean} If true, multiple files can be selected. False by default.</span>
+<span class="c"> */</span>     
+    <span class="nx">setAllowMultipleFiles</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">allowMultipleFiles</span><span class="o">)</span> 
+    <span class="o">{</span>
+       <span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setAllowMultipleFiles</span><span class="o">(</span><span class="nx">allowMultipleFiles</span><span class="o">);</span>
+    <span class="o">},</span>
+
+<span class="c">/**</span>
+<span class="c"> * Sets the file filters for the &quot;Browse&quot; dialog.</span>
+<span class="c"> *</span>
+<span class="c"> *  @param newFilterArray An array of sets of key-value pairs of the form</span>
+<span class="c"> *  {extensions: extensionString, description: descriptionString, [optional]macType: macTypeString}</span>
+<span class="c"> *  The extensions string is a semicolon-delimited list of elements of the form &quot;*.xxx&quot;, </span>
+<span class="c"> *  e.g. &quot;*.jpg;*.gif;*.png&quot;. </span>
+<span class="c"> */</span>       
+    <span class="nx">setFileFilters</span> <span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">fileFilters</span><span class="o">)</span> 
+    <span class="o">{</span>
+       <span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setFileFilters</span><span class="o">(</span><span class="nx">fileFilters</span><span class="o">);</span>
+    <span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Enables the mouse events on the Uploader.</span>
+<span class="c">	 * If the uploader is being rendered as a button,</span>
+<span class="c">	 * then the button&#39;s skin is set to &quot;up&quot;</span>
+<span class="c">	 * (first section of the button skin sprite).</span>
+<span class="c">	 *</span>
+<span class="c">	 */</span>
+	<span class="nx">enable</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">enable</span><span class="o">();</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Disables the mouse events on the Uploader.</span>
+<span class="c">	 * If the uploader is being rendered as a button,</span>
+<span class="c">	 * then the button&#39;s skin is set to &quot;disabled&quot;</span>
+<span class="c">	 * (fourth section of the button skin sprite).</span>
+<span class="c">	 *</span>
+<span class="c">	 */</span>
+	<span class="nx">disable</span> <span class="o">:</span> <span class="k">function</span> <span class="o">()</span> 
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">disable</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class="selected"><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.FlashAdapter.html" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a></li>
+                                <li class=""><a href="YAHOO.widget.Uploader.html" title="YAHOO.widget.Uploader">YAHOO.widget.Uploader</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="FlashAdapter.js.html" title="FlashAdapter.js">FlashAdapter.js</a></li>
+                                <li class=""><a href="swfobject.js.html" title="swfobject.js">swfobject.js</a></li>
+                                <li class="selected"><a href="Uploader.js.html" title="Uploader.js">Uploader.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "altText", "url": "YAHOO.widget.FlashAdapter.html#config_altText", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "altTextChange", "url": "YAHOO.widget.FlashAdapter.html#event_altTextChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_attributes", "url": "YAHOO.widget.FlashAdapter.html#property__attributes", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "backgroundColor", "url": "YAHOO.widget.FlashAdapter.html#config_backgroundColor", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "backgroundColorChange", "url": "YAHOO.widget.FlashAdapter.html#event_backgroundColorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeAltTextChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeAltTextChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeBackgroundColorChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeBackgroundColorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeExpressInstallChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeExpressInstallChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeSwfURLChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeSwfURLChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeVersionChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeVersionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "beforeWmodeChange", "url": "YAHOO.widget.FlashAdapter.html#event_beforeWmodeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "cancel", "url": "YAHOO.widget.Uploader.html#method_cancel", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Uploader", "name": "Chart.SWFURL", "url": "YAHOO.widget.Uploader.html#property_Chart.SWFURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "clearFileList", "url": "YAHOO.widget.Uploader.html#method_clearFileList", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "click", "url": "YAHOO.widget.Uploader.html#event_click", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_containerID", "url": "YAHOO.widget.FlashAdapter.html#property__containerID", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "contentReady", "url": "YAHOO.widget.FlashAdapter.html#event_contentReady", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "destroy", "url": "YAHOO.widget.FlashAdapter.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "disable", "url": "YAHOO.widget.Uploader.html#method_disable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_embedSWF", "url": "YAHOO.widget.FlashAdapter.html#method__embedSWF", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "enable", "url": "YAHOO.widget.Uploader.html#method_enable", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_eventHandler", "url": "YAHOO.widget.FlashAdapter.html#method__eventHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "expressInstall", "url": "YAHOO.widget.FlashAdapter.html#config_expressInstall", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "expressInstallChange", "url": "YAHOO.widget.FlashAdapter.html#event_expressInstallChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "fileSelect", "url": "YAHOO.widget.Uploader.html#event_fileSelect", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_getAltText", "url": "YAHOO.widget.FlashAdapter.html#method__getAltText", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_getSWFURL", "url": "YAHOO.widget.FlashAdapter.html#method__getSWFURL", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_id", "url": "YAHOO.widget.FlashAdapter.html#property__id", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_initAttributes", "url": "YAHOO.widget.FlashAdapter.html#method__initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_initialized", "url": "YAHOO.widget.FlashAdapter.html#property__initialized", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_loadHandler", "url": "YAHOO.widget.FlashAdapter.html#method__loadHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "mouseDown", "url": "YAHOO.widget.Uploader.html#event_mouseDown", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "mouseUp", "url": "YAHOO.widget.Uploader.html#event_mouseUp", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "proxyFunctionCount", "url": "YAHOO.widget.FlashAdapter.html#property_proxyFunctionCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "removeFile", "url": "YAHOO.widget.Uploader.html#method_removeFile", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "rollOut", "url": "YAHOO.widget.Uploader.html#event_rollOut", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "rollOver", "url": "YAHOO.widget.Uploader.html#event_rollOver", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setAllowLogging", "url": "YAHOO.widget.Uploader.html#method_setAllowLogging", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setAllowMultipleFiles", "url": "YAHOO.widget.Uploader.html#method_setAllowMultipleFiles", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_setAltText", "url": "YAHOO.widget.FlashAdapter.html#method__setAltText", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setFileFilters", "url": "YAHOO.widget.Uploader.html#method_setFileFilters", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setSimUploadLimit", "url": "YAHOO.widget.Uploader.html#method_setSimUploadLimit", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_swf", "url": "YAHOO.widget.FlashAdapter.html#property__swf", "type": "property"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "_swfURL", "url": "YAHOO.widget.FlashAdapter.html#property__swfURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "swfURL", "url": "YAHOO.widget.FlashAdapter.html#config_swfURL", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "swfURLChange", "url": "YAHOO.widget.FlashAdapter.html#event_swfURLChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "toString", "url": "YAHOO.widget.FlashAdapter.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "upload", "url": "YAHOO.widget.Uploader.html#method_upload", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadAll", "url": "YAHOO.widget.Uploader.html#method_uploadAll", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadCancel", "url": "YAHOO.widget.Uploader.html#event_uploadCancel", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadComplete", "url": "YAHOO.widget.Uploader.html#event_uploadComplete", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadCompleteData", "url": "YAHOO.widget.Uploader.html#event_uploadCompleteData", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadError", "url": "YAHOO.widget.Uploader.html#event_uploadError", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadProgress", "url": "YAHOO.widget.Uploader.html#event_uploadProgress", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadStart", "url": "YAHOO.widget.Uploader.html#event_uploadStart", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadThese", "url": "YAHOO.widget.Uploader.html#method_uploadThese", "type": "method"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "version", "url": "YAHOO.widget.FlashAdapter.html#config_version", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "versionChange", "url": "YAHOO.widget.FlashAdapter.html#event_versionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "wmode", "url": "YAHOO.widget.FlashAdapter.html#config_wmode", "type": "config"}, {"access": "", "host": "YAHOO.widget.FlashAdapter", "name": "wmodeChange", "url": "YAHOO.widget.FlashAdapter.html#event_wmodeChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.createProxyFunction", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.createProxyFunction", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.eventHandler", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.eventHandler", "type": "method"}, {"access": "private", "host": "YAHOO.widget.FlashAdapter", "name": "YAHOO.widget.FlashAdapter.removeProxyFunction", "url": "YAHOO.widget.FlashAdapter.html#method_YAHOO.widget.FlashAdapter.removeProxyFunction", "type": "method"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>VU Meters</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/progressbar/assets/skins/sam/progressbar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/progressbar/progressbar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* Here I am using the className of each bar to set the masks and/or bar images for each one separately */
+
+#vumeter {
+	padding:3px;
+	margin:10px;
+	border: medium ridge silver;_border:none;
+	overflow:hidden;
+}
+
+
+#vumeter .yui-pb {
+	margin:3px;
+	float:left;
+}
+
+#vumeter .yui-pb-bar  {
+	background-image: url(../progressbar/assets/vumeter.png);
+}
+
+.dp-highlighter th, .dp-highlighter td {
+	border:0;
+	padding:0;
+}
+.dp-highlighter .line1, .dp-highlighter  .line2 {
+	padding-left:10px;
+	white-space:nowrap;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>VU Meters</h1>
+
+<div class="exampleIntro">
+	<p>Multiple instances of ProgressBar can be grouped together and animated for a dynamic interface.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="vumeter" ></div>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady( function () {
+
+	var pbvu = [],i,NUM_BARS= 8, hold = false;
+	for (i = 0; i < NUM_BARS;i++) {
+		pbvu[i] = new YAHOO.widget.ProgressBar({
+			direction:'btt',
+			width:20,
+			height:80,
+			anim:true
+		}).render('vumeter');
+		pbvu[i].get('anim').duration = 0.3;
+	}
+	var redrawVUs = function() {
+		var points = [],i;
+		for (i=0;i<4;i++) {
+			points[i] = [i,Math.random() * 100];
+		}
+		for (i = 0;i < NUM_BARS;i++) {
+			var newValue = Math.floor(YAHOO.util.Bezier.getPosition(points,i/(NUM_BARS-1))[1]);
+			pbvu[i].set('value',newValue);
+		}
+	};
+	pbvu[NUM_BARS -1].on('complete',redrawVUs);
+	redrawVUs();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

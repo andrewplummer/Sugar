@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Three Ways to Define a TreeView: Markup (Progressive Enhancement), Existing TreeView Instance, and Object Literal </title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/treeview/assets/skins/sam/treeview.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/treeview/treeview-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+.whitebg {
+	background-color:white;
+}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Three Ways to Define a TreeView: Markup (Progressive Enhancement), Existing TreeView Instance, and Object Literal </h1>
+
+<div class="exampleIntro">
+	<p>In this simple example you can see how to build 
+<a href="http://developer.yahoo.com/yui/treeview/">TreeView Control</a> from existing HTML markup 
+and from a previous tree definition or from a branch of it.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<link rel="stylesheet" type="text/css" href="../../build/assets/skins/sam/calendar.css" />
+
+<h3>Tree from markup</h3>
+<div id="markup"  class="whitebg">
+	<ul>
+		<li class="expanded">List 0
+			<ul>
+				<li class="expanded">List 0-0
+					<ul>
+						<li>item 0-0-0</li>
+						<li><a target="_new" href="www.elsewhere.com" title="go elsewhere">elsewhere</a></li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>List 1
+			<ul>
+				<li>List 1-0
+					<ul>
+						<li yuiConfig='{"type":"DateNode","editable":true}'>02/01/2009</li>
+						<li><span>item <strong>1-1-0</strong></span></li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+<hr/>
+<h3>Copy of the tree above taken from its own definition</h3>
+<div id="treeDiv2" class="whitebg"></div>
+<hr/>
+<h3>Copy of the second branch of the tree at the top</h3>
+<div id="treeDiv3" class="whitebg"></div>
+<hr/>
+<h3>Tree built from a static definition</h3>
+<div id="treeDiv4" class="whitebg"></div>
+
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+
+<script type="text/javascript">
+
+//global variable to allow console inspection of tree:
+var tree1, tree2, tree3;
+
+//anonymous function wraps the remainder of the logic:
+(function() {
+	var treeInit = function() {
+		tree1 = new YAHOO.widget.TreeView("markup");
+		tree1.render();
+		
+		tree1.subscribe('dblClickEvent',tree1.onEventEditNode);
+		
+		tree2 = new YAHOO.widget.TreeView("treeDiv2",tree1.getTreeDefinition());
+		tree2.render();
+		
+		tree2.subscribe('dblClickEvent',tree2.onEventEditNode);
+
+		var branch = tree1.getRoot().children[1];
+		tree3 = new YAHOO.widget.TreeView("treeDiv3", branch.getNodeDefinition());
+		tree3.render();
+		
+		tree3.subscribe('dblClickEvent',tree3.onEventEditNode);
+		
+		(new YAHOO.widget.TreeView("treeDiv4",[
+			'Label 0',
+			{type:'Text', label:'text label 1', title:'this is the tooltip for text label 1'},
+			{type:'Text', label:'branch 1', title:'there should be children here', expanded:true, children:[
+				'Label 1-0'
+			]},
+			{type:'Text',label:'YAHOO',title:'this should be an href', href:'http://www.yahoo.com', target:'somewhere new'},
+			{type:'HTML',html:'<a href="developer.yahoo.com/yui">YUI</a>'},
+			{type:'MenuNode',label:'branch 3',title:'this is a menu node', expanded:false, children:[
+				'Label 3-0',
+				'Label 3-1'
+			]}
+		])).render();		
+	};
+
+	//Add an onDOMReady handler to build the tree when the document is ready
+    YAHOO.util.Event.onDOMReady(treeInit);
+
+})();
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

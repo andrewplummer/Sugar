@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Selector Test Suite</title>
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/logger/assets/logger.css&amp;2.7.0/build/yuitest/assets/testlogger.css"/>
+
+<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&amp;2.7.0/build/cookie/cookie-min.js&amp;2.7.0/build/element/element-min.js&amp;2.7.0/build/logger/logger-min.js&amp;2.7.0/build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="testvalues.js"></script>
+<script type="text/javascript" src="../../swfdetect/js/swfdetect.js"></script>
+<script type="text/javascript" src="../../swf/js/swf.js"></script>
+<script type="text/javascript" src="../js/gears_init.js"></script>
+<script type="text/javascript" src="../js/StorageManager.js"></script>
+<script type="text/javascript" src="../js/Storage.js"></script>
+<script type="text/javascript" src="../js/StorageEngineKeyed.js"></script>
+<script type="text/javascript" src="../js/StorageEngineHTML5.js"></script>
+<script type="text/javascript" src="../js/StorageEngineGears.js"></script>
+<script type="text/javascript" src="../js/StorageEngineSWF.js"></script>
+<script type="text/javascript" src="../js/StorageEvent.js"></script>
+<style type="text/css">
+	#swfcontainer {
+		width: 500px;
+	}
+</style>
+</head>
+<body>
+	<div id="swfcontainer"></div>
+
+
+<script type="text/javascript">(function() {
+var Y = YAHOO,
+	YU = Y.util,
+	YA = YU.Assert,
+	YT = Y.tool,
+	YE = YU.Event,
+	Storage = YU.StorageManager,
+
+    logger = new YT.TestLogger(null, {height:'2000px'}),
+	suite = new YT.TestSuite("Storage Suite"),
+
+	_engineReadyStates = [];
+
+	YU.StorageEngineSWF.SWFURL = "../assets/swf/swfstore.swf";
+
+	/*
+	 tests should:
+	 	open 3 different engines
+	 	tests all functions of each engine
+	 		pass in good values
+	 		pass in bad values
+	 	test the limits of each engine
+	  */
+		
+	var createTestCase = function(i, engine) {
+		_engineReadyStates[i] = 'false';
+		
+		try {
+			var engineLocal = Storage.get(engine.ENGINE_NAME, Storage.LOCATION_LOCAL, {engine: {containerID: 'swfcontainer'}, force: true}),
+				engineSession = Storage.get(engine.ENGINE_NAME, Storage.LOCATION_SESSION, {engine: {containerID: 'swfcontainer'}, force: true});
+		}
+		catch(e) {
+			_engineReadyStates[i] = 'true';
+			return; // this engine is not supported
+		}
+
+		engineLocal.subscribe(engineLocal.CE_READY, function() {
+			var testStorage = new YT.TestCase({
+				name: engine.ENGINE_NAME.toUpperCase() + ' Storage',
+
+				testGetName: function() {
+					YA.areEqual(engine.ENGINE_NAME, engineLocal.getName());
+					YA.areEqual(engine.ENGINE_NAME, engineSession.getName());
+				},
+
+				testClear: function() {
+					engineLocal.clear();
+					YA.areEqual(0, engineLocal.length);
+					engineSession.clear();
+					YA.areEqual(0, engineSession.length);
+				},
+
+				testSetItem: function() {
+					YA.areEqual(0, engineLocal.length);
+					engineLocal.setItem('textShortLocal', textShort);
+					YA.areEqual(1, engineLocal.length);
+					engineLocal.setItem('textMediumLocal', textMedium);
+					YA.areEqual(2, engineLocal.length);
+					engineLocal.setItem('textLongLocal', textLong);
+					YA.areEqual(3, engineLocal.length);
+					engineLocal.setItem('textXMLLocal', textXML);
+					YA.areEqual(4, engineLocal.length);
+					engineLocal.setItem('testBooleanLocal', testBoolean);
+					YA.areEqual(5, engineLocal.length);
+					engineLocal.setItem('testNumberLocal', testNumber);
+					YA.areEqual(6, engineLocal.length);
+
+					YA.areEqual(0, engineSession.length);
+					engineSession.setItem('textShortSession', textShort);
+					YA.areEqual(1, engineSession.length);
+					engineSession.setItem('textMediumSession', textMedium);
+					YA.areEqual(2, engineSession.length);
+					engineSession.setItem('textLongSession', textLong);
+					YA.areEqual(3, engineSession.length);
+					engineSession.setItem('textXMLSession', textXML);
+					YA.areEqual(4, engineSession.length);
+					engineSession.setItem('testBooleanSession', testBoolean);
+					YA.areEqual(5, engineSession.length);
+					engineSession.setItem('testNumberSession', testNumber);
+					YA.areEqual(6, engineSession.length);
+
+					YA.areEqual(engineLocal.length, engineSession.length);
+				},
+
+				testGetItem: function() {
+					// todo: figure out why FAUST isn't equal
+					YA.areEqual(textShort, engineLocal.getItem('textShortLocal'));
+					YA.areEqual(textMedium, engineLocal.getItem('textMediumLocal'));
+					var test = engineLocal.getItem('textLongLocal');
+					YA.areEqual(textLong, engineLocal.getItem('textLongLocal'));
+					YA.areEqual(textXML, engineLocal.getItem('textXMLLocal'));
+					YA.areEqual(testBoolean, engineLocal.getItem('testBooleanLocal'));
+					YA.areEqual(testNumber, engineLocal.getItem('testNumberLocal'));
+					YA.areEqual(null, engineLocal.getItem('testBooleanSession'));
+					YA.areEqual(textShort, engineSession.getItem('textShortSession'));
+					YA.areEqual(textMedium, engineSession.getItem('textMediumSession'));
+					YA.areEqual(textLong, engineSession.getItem('textLongSession'));
+					YA.areEqual(textXML, engineSession.getItem('textXMLSession'));
+					YA.areEqual(testBoolean, engineSession.getItem('testBooleanSession'));
+					YA.areEqual(testNumber, engineSession.getItem('testNumberSession'));
+					YA.areEqual(null, engineSession.getItem('testBooleanLocal'));
+				},
+
+				testHasKey: function() {
+					YA.isTrue(engineLocal.hasKey('textMediumLocal'));
+					YA.isTrue(engineLocal.hasKey('testBooleanLocal'));
+					YA.isFalse(engineLocal.hasKey('textMediumSession'));
+					YA.isTrue(engineSession.hasKey('textShortSession'));
+					YA.isTrue(engineSession.hasKey('testNumberSession'));
+					YA.isFalse(engineSession.hasKey('textMediumLocal'));
+				},
+
+				testKey: function() {
+					if (YU.StorageEngineHTML5.ENGINE_NAME === engineLocal.getName()) {return;}
+					YA.areEqual('textShortLocal', engineLocal.key(0));
+					YA.areEqual('textMediumLocal', engineLocal.key(1));
+					YA.areEqual('textLongLocal', engineLocal.key(2));
+					YA.areEqual('textXMLLocal', engineLocal.key(3));
+					YA.areEqual('testBooleanLocal', engineLocal.key(4));
+					YA.areEqual('testNumberLocal', engineLocal.key(5));
+//					YA.areEqual(null, engineLocal.key(6));
+					YA.areEqual('textShortSession', engineSession.key(0));
+					YA.areEqual('textMediumSession', engineSession.key(1));
+					YA.areEqual('textLongSession', engineSession.key(2));
+					YA.areEqual('textXMLSession', engineSession.key(3));
+					YA.areEqual('testBooleanSession', engineSession.key(4));
+					YA.areEqual('testNumberSession', engineSession.key(5));
+//					YA.areEqual(null, engineSession.key(6));
+				},
+
+				testRemove: function() {
+					YA.areEqual(6, engineLocal.length);
+					engineLocal.removeItem('textShortLocal', textShort);
+					YA.areEqual(5, engineLocal.length);
+					engineLocal.removeItem('textMediumLocal', textMedium);
+					YA.areEqual(4, engineLocal.length);
+					engineLocal.removeItem('textLongLocal', textLong);
+					YA.areEqual(3, engineLocal.length);
+					engineLocal.removeItem('textXMLLocal', textXML);
+					YA.areEqual(2, engineLocal.length);
+					engineLocal.removeItem('testBooleanLocal', testBoolean);
+					YA.areEqual(1, engineLocal.length);
+					engineLocal.removeItem('testNumberLocal', testNumber);
+					YA.areEqual(0, engineLocal.length);
+
+					YA.areEqual(6, engineSession.length);
+					engineSession.removeItem('textShortSession', textShort);
+					YA.areEqual(5, engineSession.length);
+					engineSession.removeItem('textMediumSession', textMedium);
+					YA.areEqual(4, engineSession.length);
+					engineSession.removeItem('textLongSession', textLong);
+					YA.areEqual(3, engineSession.length);
+					engineSession.removeItem('textXMLSession', textXML);
+					YA.areEqual(2, engineSession.length);
+					engineSession.removeItem('testBooleanSession', testBoolean);
+					YA.areEqual(1, engineSession.length);
+					engineSession.removeItem('testNumberSession', testNumber);
+					YA.areEqual(0, engineSession.length);
+
+					YA.areEqual(engineLocal.length, engineSession.length);
+				}
+			});
+
+			suite.add(testStorage);
+			_engineReadyStates[i] = 'true';
+		});
+	};
+
+	createTestCase(0, YU.StorageEngineHTML5);
+	createTestCase(1, YU.StorageEngineSWF);
+	createTestCase(2, YU.StorageEngineGears);
+
+	var j = 0,
+		intervalId = setInterval(function() {
+		if (-1 === _engineReadyStates.join('').indexOf('false')) {
+			clearInterval(intervalId);
+			YT.TestRunner.add(suite);
+			YT.TestRunner.run();
+		}
+		else {
+			j += 1;
+			if (10 === j) {
+				YAHOO.log('One or more storage engines failed to initialize.');
+				_engineReadyStates = [];
+			}
+		}
+	}, 500);
+}());</script>
+</body>
+</html>

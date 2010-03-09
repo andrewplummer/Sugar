@@ -1,0 +1,2829 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: calendar  YAHOO.widget.CalendarNavigator   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Calendar&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_calendar.html" title="calendar">calendar</a>
+                 &gt; YAHOO.widget.CalendarNavigator 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.CalendarNavigator</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        The CalendarNavigator is used along with a Calendar/CalendarGroup to 
+provide a Month/Year popup navigation control, allowing the user to navigate 
+to a specific month/year in the Calendar/CalendarGroup without having to 
+scroll through months sequentially
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.widget.CalendarNavigator</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                cal
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">cal</span>
+                                                    &lt;<span property="yui:type">Calendar|CalendarGroup</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The instance of the Calendar or CalendarGroup to which this CalendarNavigator should be attached.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property___isIEQuirks">
+                                    <h4><a name="property___isIEQuirks" property="yui:name">__isIEQuirks</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Private flag, to identify IE Quirks
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property___isMac">
+                                    <h4><a name="property___isMac" property="yui:name">__isMac</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Private flag, to identify MacOS
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property___rendered">
+                                    <h4><a name="property___rendered" property="yui:name">__rendered</a>
+                                        - <code>private <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Private internal state property which indicates whether or not the 
+Navigator has been rendered.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="protected deprecated" rel="yui:property" resource="#property__DEFAULT_CFG">
+                                    <h4><a name="property__DEFAULT_CFG" property="yui:name">_DEFAULT_CFG</a>
+                                        - <code>protected static <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Object literal containing the default configuration values for the CalendarNavigator
+                                        </div>
+                                    </div>
+     
+                                        
+
+                                    <div class="deprecated" property="yui:deprecated">
+                                        <strong>Deprecated:</strong> Made public. See the public DEFAULT_CONFIG property
+                                    </div>        
+
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:property" resource="#property__doc">
+                                    <h4><a name="property__doc" property="yui:name">_doc</a>
+                                        - <code>protected <span property="yui:type">HTMLDocument</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The document containing the Calendar/Calendar group instance
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:property" resource="#property__month">
+                                    <h4><a name="property__month" property="yui:name">_month</a>
+                                        - <code>protected <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Internal state property for the current month index displayed in the navigator
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:property" resource="#property__year">
+                                    <h4><a name="property__year" property="yui:name">_year</a>
+                                        - <code>protected <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Internal state property for the current year displayed in the navigator
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_cal">
+                                    <h4><a name="property_cal" property="yui:name">cal</a>
+                                        - <code><span property="yui:type">{Calendar|CalendarGroup}</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The Calendar/CalendarGroup instance to which the navigator belongs
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_cancelEl">
+                                    <h4><a name="property_cancelEl" property="yui:name">cancelEl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the HTMLElement used to hide the navigator without updating the 
+Calendar/Calendar group
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_DEFAULT_CONFIG">
+                                    <h4><a name="property_DEFAULT_CONFIG" property="yui:name">DEFAULT_CONFIG</a>
+                                        - <code>static <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Object literal containing the default configuration values for the CalendarNavigator
+The configuration object is expected to follow the format below, with the properties being
+case sensitive.
+<dl>
+<dt>strings</dt>
+<dd><em>Object</em> :  An object with the properties shown below, defining the string labels to use in the Navigator's UI
+<dl>
+<dt>month</dt><dd><em>String</em> : The string to use for the month label. Defaults to "Month".</dd>
+<dt>year</dt><dd><em>String</em> : The string to use for the year label. Defaults to "Year".</dd>
+<dt>submit</dt><dd><em>String</em> : The string to use for the submit button label. Defaults to "Okay".</dd>
+<dt>cancel</dt><dd><em>String</em> : The string to use for the cancel button label. Defaults to "Cancel".</dd>
+<dt>invalidYear</dt><dd><em>String</em> : The string to use for invalid year values. Defaults to "Year needs to be a number".</dd>
+</dl>
+</dd>
+<dt>monthFormat</dt><dd><em>String</em> : The month format to use. Either YAHOO.widget.Calendar.LONG, or YAHOO.widget.Calendar.SHORT. Defaults to YAHOO.widget.Calendar.LONG</dd>
+<dt>initialFocus</dt><dd><em>String</em> : Either "year" or "month" specifying which input control should get initial focus. Defaults to "year"</dd>
+</dl>
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_errorEl">
+                                    <h4><a name="property_errorEl" property="yui:name">errorEl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the HTMLElement used to display validation errors
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_firstCtrl">
+                                    <h4><a name="property_firstCtrl" property="yui:name">firstCtrl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the first focusable control in the navigator (by default monthEl)
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_id">
+                                    <h4><a name="property_id" property="yui:name">id</a>
+                                        - <code><span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The unique ID for this CalendarNavigator instance
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_lastCtrl">
+                                    <h4><a name="property_lastCtrl" property="yui:name">lastCtrl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the last focusable control in the navigator (by default cancelEl)
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_maskEl">
+                                    <h4><a name="property_maskEl" property="yui:name">maskEl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the HTMLElement used to render the navigator's mask
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_monthEl">
+                                    <h4><a name="property_monthEl" property="yui:name">monthEl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the HTMLElement used to input the month
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_navEl">
+                                    <h4><a name="property_navEl" property="yui:name">navEl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the HTMLElement used to render the navigator's bounding box
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_submitEl">
+                                    <h4><a name="property_submitEl" property="yui:name">submitEl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the HTMLElement used to update the Calendar/Calendar group
+with the month/year values
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CANCEL_SUFFIX">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CANCEL_SUFFIX" property="yui:name">YAHOO.widget.CalendarNavigator.CANCEL_SUFFIX</a>
+                                        - <code>static final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The suffix added to the Navigator's ID, to generate
+a unique ID for the "Cancel" button.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES</a>
+                                        - <code>static <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            YAHOO.widget.CalendarNavigator.CLASSES contains constants
+for the class values applied to the CalendarNaviatgator's 
+DOM elements
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.BUTTON">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.BUTTON" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.BUTTON</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to buttons wrapping element
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.BUTTONS">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.BUTTONS" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.BUTTONS</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the submit/cancel button's bounding box
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.DEFAULT">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.DEFAULT" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.DEFAULT</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to default controls
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.ERROR">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.ERROR" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.ERROR</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the validation error area's bounding box
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.INVALID">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.INVALID" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.INVALID</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to controls with invalid data (e.g. a year input field with invalid an year)
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.MASK">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.MASK" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.MASK</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the Navigator mask's bounding box
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.MONTH">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.MONTH" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.MONTH</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the month label/control bounding box
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.MONTH_CTRL">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.MONTH_CTRL" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.MONTH_CTRL</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the month input control
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.NAV">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.NAV" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.NAV</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the Calendar Navigator's bounding box
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.NAV_VISIBLE">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.NAV_VISIBLE" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.NAV_VISIBLE</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the Calendar/CalendarGroup's bounding box to indicate
+the Navigator is currently visible
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.YEAR">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.YEAR" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.YEAR</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the year label/control bounding box
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.CLASSES.YEAR_CTRL">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.CLASSES.YEAR_CTRL" property="yui:name">YAHOO.widget.CalendarNavigator.CLASSES.YEAR_CTRL</a>
+                                        - <code>static <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Class applied to the year input control
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.ERROR_SUFFIX">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.ERROR_SUFFIX" property="yui:name">YAHOO.widget.CalendarNavigator.ERROR_SUFFIX</a>
+                                        - <code>static final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The suffix added to the Navigator's ID, to generate
+a unique ID for the error bounding box.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.ID_SUFFIX">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.ID_SUFFIX" property="yui:name">YAHOO.widget.CalendarNavigator.ID_SUFFIX</a>
+                                        - <code>static final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The suffix added to the Calendar/CalendarGroup's ID, to generate
+a unique ID for the Navigator and it's bounding box.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.MONTH_SUFFIX">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.MONTH_SUFFIX" property="yui:name">YAHOO.widget.CalendarNavigator.MONTH_SUFFIX</a>
+                                        - <code>static final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The suffix added to the Navigator's ID, to generate
+a unique ID for the month control.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.SUBMIT_SUFFIX">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.SUBMIT_SUFFIX" property="yui:name">YAHOO.widget.CalendarNavigator.SUBMIT_SUFFIX</a>
+                                        - <code>static final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The suffix added to the Navigator's ID, to generate
+a unique ID for the "Submit" button.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.TRIM">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.TRIM" property="yui:name">YAHOO.widget.CalendarNavigator.TRIM</a>
+                                        - <code>static <span property="yui:type">RegExp</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Regular expression used to trim strings
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.UPDATE_DELAY">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.UPDATE_DELAY" property="yui:name">YAHOO.widget.CalendarNavigator.UPDATE_DELAY</a>
+                                        - <code>static <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Artificial delay (in ms) between the time the Navigator is hidden
+and the Calendar/CalendarGroup state is updated. Allows the user
+the see the Calendar/CalendarGroup page changing. If set to 0
+the Calendar/CalendarGroup page will be updated instantly
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.YEAR_SUFFIX">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.YEAR_SUFFIX" property="yui:name">YAHOO.widget.CalendarNavigator.YEAR_SUFFIX</a>
+                                        - <code>static final <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The suffix added to the Navigator's ID, to generate
+a unique ID for the year control.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.YR_MAJOR_INC">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.YR_MAJOR_INC" property="yui:name">YAHOO.widget.CalendarNavigator.YR_MAJOR_INC</a>
+                                        - <code>static <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The amount by which to increment the current year value,
+when the page up/down key is pressed on the year control
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.YR_MAX_DIGITS">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.YR_MAX_DIGITS" property="yui:name">YAHOO.widget.CalendarNavigator.YR_MAX_DIGITS</a>
+                                        - <code>static <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The number of digits to which the year input control is to be limited.
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.YR_MINOR_INC">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.YR_MINOR_INC" property="yui:name">YAHOO.widget.CalendarNavigator.YR_MINOR_INC</a>
+                                        - <code>static <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The amount by which to increment the current year value,
+when the arrow up/down key is pressed on the year control
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_YAHOO.widget.CalendarNavigator.YR_PATTERN">
+                                    <h4><a name="property_YAHOO.widget.CalendarNavigator.YR_PATTERN" property="yui:name">YAHOO.widget.CalendarNavigator.YR_PATTERN</a>
+                                        - <code>static <span property="yui:type">RegExp</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Regular expression used to validate the year input
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:property" resource="#property_yearEl">
+                                    <h4><a name="property_yearEl" property="yui:name">yearEl</a>
+                                        - <code><span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Reference to the HTMLElement used to input the year
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method___getCfg">
+                                    <h4>
+                                        <a name="method___getCfg">__getCfg</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">__getCfg</strong>
+                                           (
+                                                
+                                                        
+                                                         Case
+                                                    
+                                                
+                                                        , 
+                                                         true,
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Retrieve Navigator configuration values from 
+the parent Calendar/CalendarGroup's config value.
+<p>
+If it has not been set in the user provided configuration, the method will 
+return the default value of the configuration property, as set in DEFAULT_CONFIG
+</p>
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Case</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> sensitive property name.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">true,</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> if the property is a string property, false if not.</span>
+                                                        </dd>
+                                                </dl>
+
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__getMonthFromUI">
+                                    <h4>
+                                        <a name="method__getMonthFromUI">_getMonthFromUI</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">_getMonthFromUI</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the month value (index), from the month UI element
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The month index, or 0 if a UI element for the month
+is not found</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__getYearFromUI">
+                                    <h4>
+                                        <a name="method__getYearFromUI">_getYearFromUI</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">_getYearFromUI</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the year value, from the Navitator's year UI element
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The year value set in the UI, if valid. null is returned if 
+the UI does not contain a valid year value.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__handleDirectionKeys">
+                                    <h4>
+                                        <a name="method__handleDirectionKeys">_handleDirectionKeys</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleDirectionKeys</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Default Keyboard event handler to capture up/down/pgup/pgdown
+on the Navigator's year control (yearEl).
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">Event</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The DOM event being handled</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__handleEnterKey">
+                                    <h4>
+                                        <a name="method__handleEnterKey">_handleEnterKey</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleEnterKey</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Default Keyboard event handler to capture Enter 
+on the Navigator's year control (yearEl)
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">Event</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The DOM event being handled</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__handleShiftTabKey">
+                                    <h4>
+                                        <a name="method__handleShiftTabKey">_handleShiftTabKey</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleShiftTabKey</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Default Keyboard event handler to capture Shift-Tab 
+on the first control (firstCtrl) in the Navigator.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">Event</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The DOM event being handled</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__handleTabKey">
+                                    <h4>
+                                        <a name="method__handleTabKey">_handleTabKey</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleTabKey</strong>
+                                           (
+                                                
+                                                        
+                                                         e
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Default Keyboard event handler to capture Tab 
+on the last control (lastCtrl) in the Navigator.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">e</span>
+                                                        &lt;<span property="yui:type">Event</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The DOM event being handled</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__setFirstLastElements">
+                                    <h4>
+                                        <a name="method__setFirstLastElements">_setFirstLastElements</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setFirstLastElements</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets up references to the first and last focusable element in the Navigator's UI
+in terms of tab order (Naviagator's firstEl and lastEl properties). The references
+are used to control modality by looping around from the first to the last control
+and visa versa for tab/shift-tab navigation.
+<p>
+See <a href="#applyKeyListeners">applyKeyListeners</a>
+</p>
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__show">
+                                    <h4>
+                                        <a name="method__show">_show</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_show</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Protected implementation to handle how UI elements are 
+hidden/shown.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__syncMask">
+                                    <h4>
+                                        <a name="method__syncMask">_syncMask</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_syncMask</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Used to set the width/height of the mask in pixels to match the Calendar Container.
+Currently only used for IE6 or IE in quirks mode. The other A-Grade browser are handled using CSS (width/height 100%).
+<p>
+The method is also registered as an HTMLElement resize listener on the Calendars container element.
+</p>
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__update">
+                                    <h4>
+                                        <a name="method__update">_update</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_update</strong>
+                                           (
+                                                
+                                                        
+                                                         cal
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Updates the Calendar rendered state, based on the state of the CalendarNavigator
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">cal</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The Calendar instance to update</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__updateMonthUI">
+                                    <h4>
+                                        <a name="method__updateMonthUI">_updateMonthUI</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_updateMonthUI</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Updates the Navigator's month UI, based on the month value set on the Navigator object
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="protected" rel="yui:method" resource="#method__updateYearUI">
+                                    <h4>
+                                        <a name="method__updateYearUI">_updateYearUI</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         protected 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_updateYearUI</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Updates the Navigator's year UI, based on the year value set on the Navigator object
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_applyKeyListeners">
+                                    <h4>
+                                        <a name="method_applyKeyListeners">applyKeyListeners</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">applyKeyListeners</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Attaches DOM listeners for keyboard support. 
+Tab/Shift-Tab looping, Enter Key Submit on Year element,
+Up/Down/PgUp/PgDown year increment on Year element
+<p>
+NOTE: MacOSX Safari 2.x doesn't let you tab to buttons and 
+MacOSX Gecko does not let you tab to buttons or select controls,
+so for these browsers, Tab/Shift-Tab looping is limited to the 
+elements which can be reached using the tab key.
+</p>
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_applyListeners">
+                                    <h4>
+                                        <a name="method_applyListeners">applyListeners</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">applyListeners</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Attaches DOM event listeners to the rendered elements
+<p>
+The method will call applyKeyListeners, to setup keyboard specific 
+listeners
+</p>
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_cancel">
+                                    <h4>
+                                        <a name="method_cancel">cancel</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">cancel</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Hides the navigator and mask, without updating the Calendar/CalendarGroup's state
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_clearError">
+                                    <h4>
+                                        <a name="method_clearError">clearError</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">clearError</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Clears the navigator's error message and hides the error panel
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_clearErrors">
+                                    <h4>
+                                        <a name="method_clearErrors">clearErrors</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">clearErrors</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Clears all validation and error messages in the UI
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_clearYearError">
+                                    <h4>
+                                        <a name="method_clearYearError">clearYearError</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">clearYearError</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes the validation error UI for the year control
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_createMask">
+                                    <h4>
+                                        <a name="method_createMask">createMask</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">createMask</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates the Mask HTMLElement and appends it to the Calendar/CalendarGroups
+container.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_createNav">
+                                    <h4>
+                                        <a name="method_createNav">createNav</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">createNav</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates the navigator's containing HTMLElement, it's contents, and appends 
+the containg element to the Calendar/CalendarGroup's container.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_destroy">
+                                    <h4>
+                                        <a name="method_destroy">destroy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">destroy</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Destroys the Navigator object and any HTML references
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_erase">
+                                    <h4>
+                                        <a name="method_erase">erase</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">erase</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes all renderered HTML elements for the Navigator from
+the DOM, purges event listeners and clears (nulls) any property
+references to HTML references
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getMonth">
+                                    <h4>
+                                        <a name="method_getMonth">getMonth</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">getMonth</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the current month set on the navigator
+Note: This may not be the month set in the UI, if 
+the UI contains an invalid value.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The Navigator's current month index</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getYear">
+                                    <h4>
+                                        <a name="method_getYear">getYear</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Number
+                                            <strong property="yui:name">getYear</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the current year set on the navigator
+Note: This may not be the year set in the UI, if 
+the UI contains an invalid value.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Number
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The Navigator's current year value</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_hide">
+                                    <h4>
+                                        <a name="method_hide">hide</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">hide</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Hides the navigator and mask
+The show method will fire the Calendar/CalendarGroup's beforeHideNav event and hideNav events
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_hideMask">
+                                    <h4>
+                                        <a name="method_hideMask">hideMask</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">hideMask</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Hides the navigator's mask element
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_init">
+                                    <h4>
+                                        <a name="method_init">init</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">init</strong>
+                                           (
+                                                
+                                                        
+                                                         cal
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Init lifecycle method called as part of construction
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">cal</span>
+                                                        &lt;<span property="yui:type">Calendar</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The instance of the Calendar or CalendarGroup to which this CalendarNavigator should be attached</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_purgeKeyListeners">
+                                    <h4>
+                                        <a name="method_purgeKeyListeners">purgeKeyListeners</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">purgeKeyListeners</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes/purges DOM listeners for keyboard support
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_purgeListeners">
+                                    <h4>
+                                        <a name="method_purgeListeners">purgeListeners</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">purgeListeners</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes/purges DOM event listeners from the rendered elements
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_render">
+                                    <h4>
+                                        <a name="method_render">render</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">render</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Renders the HTML for the navigator, adding it to the 
+document and attaches event listeners if it has not 
+already been rendered.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_renderButton">
+                                    <h4>
+                                        <a name="method_renderButton">renderButton</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">renderButton</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Renders the submit/cancel buttons for the navigator
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The HTML created for the Button UI</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_renderNavContents">
+                                    <h4>
+                                        <a name="method_renderNavContents">renderNavContents</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">renderNavContents</strong>
+                                           (
+                                                
+                                                        
+                                                         html
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Renders the contents of the navigator
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">html</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTML buffer to append the HTML to.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A reference to the buffer passed in.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_renderYear">
+                                    <h4>
+                                        <a name="method_renderYear">renderYear</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Array
+                                            <strong property="yui:name">renderYear</strong>
+                                           (
+                                                
+                                                        
+                                                         html
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Renders the year label and control for the navigator
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">html</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The HTML buffer to append the HTML to.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Array
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">A reference to the buffer passed in.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setError">
+                                    <h4>
+                                        <a name="method_setError">setError</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setError</strong>
+                                           (
+                                                
+                                                        
+                                                         msg
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Displays an error message in the Navigator's error panel
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">msg</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The error message to display</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setInitialFocus">
+                                    <h4>
+                                        <a name="method_setInitialFocus">setInitialFocus</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setInitialFocus</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the initial focus, based on the configured value
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setMonth">
+                                    <h4>
+                                        <a name="method_setMonth">setMonth</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setMonth</strong>
+                                           (
+                                                
+                                                        
+                                                         nMonth
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the current month on the Navigator, and updates the UI
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">nMonth</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The month index, from 0 (Jan) through 11 (Dec).</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setYear">
+                                    <h4>
+                                        <a name="method_setYear">setYear</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setYear</strong>
+                                           (
+                                                
+                                                        
+                                                         nYear
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the current year on the Navigator, and updates the UI. If the 
+provided year is invalid, it will not be set.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">nYear</span>
+                                                        &lt;<span property="yui:type">Number</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The full year value to set the Navigator to.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setYearError">
+                                    <h4>
+                                        <a name="method_setYearError">setYearError</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setYearError</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Displays the validation error UI for the year control
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_show">
+                                    <h4>
+                                        <a name="method_show">show</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">show</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Displays the navigator and mask, updating the input controls to reflect the 
+currently set month and year. The show method will invoke the render method
+if the navigator has not been renderered already, allowing for lazy rendering
+of the control.
+The show method will fire the Calendar/CalendarGroup's beforeShowNav and showNav events
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_showMask">
+                                    <h4>
+                                        <a name="method_showMask">showMask</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">showMask</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Displays the navigator's mask element
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_submit">
+                                    <h4>
+                                        <a name="method_submit">submit</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">submit</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Updates the Calendar/CalendarGroup's pagedate with the currently set month and year if valid.
+<p>
+If the currently set month/year is invalid, a validation error will be displayed and the 
+Calendar/CalendarGroup's pagedate will not be updated.
+</p>
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_validate">
+                                    <h4>
+                                        <a name="method_validate">validate</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Boolean
+                                            <strong property="yui:name">validate</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Validates the current state of the UI controls
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Boolean
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">true, if the current UI state contains valid values, false if not</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class="selected"><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Calendar.html" title="YAHOO.widget.Calendar">YAHOO.widget.Calendar</a></li>
+                                <li class=""><a href="YAHOO.widget.Calendar2up.html" title="YAHOO.widget.Calendar2up">YAHOO.widget.Calendar2up</a></li>
+                                <li class=""><a href="YAHOO.widget.Calendar_Core.html" title="YAHOO.widget.Calendar_Core">YAHOO.widget.Calendar_Core</a></li>
+                                <li class=""><a href="YAHOO.widget.CalendarGroup.html" title="YAHOO.widget.CalendarGroup">YAHOO.widget.CalendarGroup</a></li>
+                                <li class="selected"><a href="YAHOO.widget.CalendarNavigator.html" title="YAHOO.widget.CalendarNavigator">YAHOO.widget.CalendarNavigator</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Calendar.js.html" title="Calendar.js">Calendar.js</a></li>
+                                <li class=""><a href="CalendarGroup.js.html" title="CalendarGroup.js">CalendarGroup.js</a></li>
+                                <li class=""><a href="CalendarNavigator.js.html" title="CalendarNavigator.js">CalendarNavigator.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property___isIEQuirks" title="__isIEQuirks">__isIEQuirks</a></li>
+                                <li class="private"><a href="#property___isMac" title="__isMac">__isMac</a></li>
+                                <li class="private"><a href="#property___rendered" title="__rendered">__rendered</a></li>
+                                <li class="protected deprecated"><a href="#property__DEFAULT_CFG" title="_DEFAULT_CFG">_DEFAULT_CFG</a></li>
+                                <li class="protected"><a href="#property__doc" title="_doc">_doc</a></li>
+                                <li class="protected"><a href="#property__month" title="_month">_month</a></li>
+                                <li class="protected"><a href="#property__year" title="_year">_year</a></li>
+                                <li class=""><a href="#property_cal" title="cal">cal</a></li>
+                                <li class=""><a href="#property_cancelEl" title="cancelEl">cancelEl</a></li>
+                                <li class=""><a href="#property_DEFAULT_CONFIG" title="DEFAULT_CONFIG">DEFAULT_CONFIG</a></li>
+                                <li class=""><a href="#property_errorEl" title="errorEl">errorEl</a></li>
+                                <li class=""><a href="#property_firstCtrl" title="firstCtrl">firstCtrl</a></li>
+                                <li class=""><a href="#property_id" title="id">id</a></li>
+                                <li class=""><a href="#property_lastCtrl" title="lastCtrl">lastCtrl</a></li>
+                                <li class=""><a href="#property_maskEl" title="maskEl">maskEl</a></li>
+                                <li class=""><a href="#property_monthEl" title="monthEl">monthEl</a></li>
+                                <li class=""><a href="#property_navEl" title="navEl">navEl</a></li>
+                                <li class=""><a href="#property_submitEl" title="submitEl">submitEl</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CANCEL_SUFFIX" title="YAHOO.widget.CalendarNavigator.CANCEL_SUFFIX">YAHOO.widget.CalendarNavigator.CANCEL_SUFFIX</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES" title="YAHOO.widget.CalendarNavigator.CLASSES">YAHOO.widget.CalendarNavigator.CLASSES</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.BUTTON" title="YAHOO.widget.CalendarNavigator.CLASSES.BUTTON">YAHOO.widget.CalendarNavigator.CLASSES.BUTTON</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.BUTTONS" title="YAHOO.widget.CalendarNavigator.CLASSES.BUTTONS">YAHOO.widget.CalendarNavigator.CLASSES.BUTTONS</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.DEFAULT" title="YAHOO.widget.CalendarNavigator.CLASSES.DEFAULT">YAHOO.widget.CalendarNavigator.CLASSES.DEFAULT</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.ERROR" title="YAHOO.widget.CalendarNavigator.CLASSES.ERROR">YAHOO.widget.CalendarNavigator.CLASSES.ERROR</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.INVALID" title="YAHOO.widget.CalendarNavigator.CLASSES.INVALID">YAHOO.widget.CalendarNavigator.CLASSES.INVALID</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.MASK" title="YAHOO.widget.CalendarNavigator.CLASSES.MASK">YAHOO.widget.CalendarNavigator.CLASSES.MASK</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.MONTH" title="YAHOO.widget.CalendarNavigator.CLASSES.MONTH">YAHOO.widget.CalendarNavigator.CLASSES.MONTH</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.MONTH_CTRL" title="YAHOO.widget.CalendarNavigator.CLASSES.MONTH_CTRL">YAHOO.widget.CalendarNavigator.CLASSES.MONTH_CTRL</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.NAV" title="YAHOO.widget.CalendarNavigator.CLASSES.NAV">YAHOO.widget.CalendarNavigator.CLASSES.NAV</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.NAV_VISIBLE" title="YAHOO.widget.CalendarNavigator.CLASSES.NAV_VISIBLE">YAHOO.widget.CalendarNavigator.CLASSES.NAV_VISIBLE</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.YEAR" title="YAHOO.widget.CalendarNavigator.CLASSES.YEAR">YAHOO.widget.CalendarNavigator.CLASSES.YEAR</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.CLASSES.YEAR_CTRL" title="YAHOO.widget.CalendarNavigator.CLASSES.YEAR_CTRL">YAHOO.widget.CalendarNavigator.CLASSES.YEAR_CTRL</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.ERROR_SUFFIX" title="YAHOO.widget.CalendarNavigator.ERROR_SUFFIX">YAHOO.widget.CalendarNavigator.ERROR_SUFFIX</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.ID_SUFFIX" title="YAHOO.widget.CalendarNavigator.ID_SUFFIX">YAHOO.widget.CalendarNavigator.ID_SUFFIX</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.MONTH_SUFFIX" title="YAHOO.widget.CalendarNavigator.MONTH_SUFFIX">YAHOO.widget.CalendarNavigator.MONTH_SUFFIX</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.SUBMIT_SUFFIX" title="YAHOO.widget.CalendarNavigator.SUBMIT_SUFFIX">YAHOO.widget.CalendarNavigator.SUBMIT_SUFFIX</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.TRIM" title="YAHOO.widget.CalendarNavigator.TRIM">YAHOO.widget.CalendarNavigator.TRIM</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.UPDATE_DELAY" title="YAHOO.widget.CalendarNavigator.UPDATE_DELAY">YAHOO.widget.CalendarNavigator.UPDATE_DELAY</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.YEAR_SUFFIX" title="YAHOO.widget.CalendarNavigator.YEAR_SUFFIX">YAHOO.widget.CalendarNavigator.YEAR_SUFFIX</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.YR_MAJOR_INC" title="YAHOO.widget.CalendarNavigator.YR_MAJOR_INC">YAHOO.widget.CalendarNavigator.YR_MAJOR_INC</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.YR_MAX_DIGITS" title="YAHOO.widget.CalendarNavigator.YR_MAX_DIGITS">YAHOO.widget.CalendarNavigator.YR_MAX_DIGITS</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.YR_MINOR_INC" title="YAHOO.widget.CalendarNavigator.YR_MINOR_INC">YAHOO.widget.CalendarNavigator.YR_MINOR_INC</a></li>
+                                <li class=""><a href="#property_YAHOO.widget.CalendarNavigator.YR_PATTERN" title="YAHOO.widget.CalendarNavigator.YR_PATTERN">YAHOO.widget.CalendarNavigator.YR_PATTERN</a></li>
+                                <li class=""><a href="#property_yearEl" title="yearEl">yearEl</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method___getCfg" title="__getCfg">__getCfg</a></li>
+                                <li class="protected"><a href="#method__getMonthFromUI" title="_getMonthFromUI">_getMonthFromUI</a></li>
+                                <li class="protected"><a href="#method__getYearFromUI" title="_getYearFromUI">_getYearFromUI</a></li>
+                                <li class="protected"><a href="#method__handleDirectionKeys" title="_handleDirectionKeys">_handleDirectionKeys</a></li>
+                                <li class="protected"><a href="#method__handleEnterKey" title="_handleEnterKey">_handleEnterKey</a></li>
+                                <li class="protected"><a href="#method__handleShiftTabKey" title="_handleShiftTabKey">_handleShiftTabKey</a></li>
+                                <li class="protected"><a href="#method__handleTabKey" title="_handleTabKey">_handleTabKey</a></li>
+                                <li class="protected"><a href="#method__setFirstLastElements" title="_setFirstLastElements">_setFirstLastElements</a></li>
+                                <li class="protected"><a href="#method__show" title="_show">_show</a></li>
+                                <li class="protected"><a href="#method__syncMask" title="_syncMask">_syncMask</a></li>
+                                <li class="protected"><a href="#method__update" title="_update">_update</a></li>
+                                <li class="protected"><a href="#method__updateMonthUI" title="_updateMonthUI">_updateMonthUI</a></li>
+                                <li class="protected"><a href="#method__updateYearUI" title="_updateYearUI">_updateYearUI</a></li>
+                                <li class=""><a href="#method_applyKeyListeners" title="applyKeyListeners">applyKeyListeners</a></li>
+                                <li class=""><a href="#method_applyListeners" title="applyListeners">applyListeners</a></li>
+                                <li class=""><a href="#method_cancel" title="cancel">cancel</a></li>
+                                <li class=""><a href="#method_clearError" title="clearError">clearError</a></li>
+                                <li class=""><a href="#method_clearErrors" title="clearErrors">clearErrors</a></li>
+                                <li class=""><a href="#method_clearYearError" title="clearYearError">clearYearError</a></li>
+                                <li class=""><a href="#method_createMask" title="createMask">createMask</a></li>
+                                <li class=""><a href="#method_createNav" title="createNav">createNav</a></li>
+                                <li class=""><a href="#method_destroy" title="destroy">destroy</a></li>
+                                <li class=""><a href="#method_erase" title="erase">erase</a></li>
+                                <li class=""><a href="#method_getMonth" title="getMonth">getMonth</a></li>
+                                <li class=""><a href="#method_getYear" title="getYear">getYear</a></li>
+                                <li class=""><a href="#method_hide" title="hide">hide</a></li>
+                                <li class=""><a href="#method_hideMask" title="hideMask">hideMask</a></li>
+                                <li class=""><a href="#method_init" title="init">init</a></li>
+                                <li class=""><a href="#method_purgeKeyListeners" title="purgeKeyListeners">purgeKeyListeners</a></li>
+                                <li class=""><a href="#method_purgeListeners" title="purgeListeners">purgeListeners</a></li>
+                                <li class=""><a href="#method_render" title="render">render</a></li>
+                                <li class=""><a href="#method_renderButton" title="renderButton">renderButton</a></li>
+                                <li class=""><a href="#method_renderNavContents" title="renderNavContents">renderNavContents</a></li>
+                                <li class=""><a href="#method_renderYear" title="renderYear">renderYear</a></li>
+                                <li class=""><a href="#method_setError" title="setError">setError</a></li>
+                                <li class=""><a href="#method_setInitialFocus" title="setInitialFocus">setInitialFocus</a></li>
+                                <li class=""><a href="#method_setMonth" title="setMonth">setMonth</a></li>
+                                <li class=""><a href="#method_setYear" title="setYear">setYear</a></li>
+                                <li class=""><a href="#method_setYearError" title="setYearError">setYearError</a></li>
+                                <li class=""><a href="#method_show" title="show">show</a></li>
+                                <li class=""><a href="#method_showMask" title="showMask">showMask</a></li>
+                                <li class=""><a href="#method_submit" title="submit">submit</a></li>
+                                <li class=""><a href="#method_validate" title="validate">validate</a></li>
+                        </ul>
+                    </div>
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "applyKeyListeners", "url": "YAHOO.widget.CalendarNavigator.html#method_applyKeyListeners", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "applyListeners", "url": "YAHOO.widget.CalendarNavigator.html#method_applyListeners", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "cal", "url": "YAHOO.widget.CalendarNavigator.html#property_cal", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "cancel", "url": "YAHOO.widget.CalendarNavigator.html#method_cancel", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "cancelEl", "url": "YAHOO.widget.CalendarNavigator.html#property_cancelEl", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "clearError", "url": "YAHOO.widget.CalendarNavigator.html#method_clearError", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "clearErrors", "url": "YAHOO.widget.CalendarNavigator.html#method_clearErrors", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "clearYearError", "url": "YAHOO.widget.CalendarNavigator.html#method_clearYearError", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "createMask", "url": "YAHOO.widget.CalendarNavigator.html#method_createMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "createNav", "url": "YAHOO.widget.CalendarNavigator.html#method_createNav", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_DEFAULT_CFG", "url": "YAHOO.widget.CalendarNavigator.html#property__DEFAULT_CFG", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.CalendarNavigator.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "destroy", "url": "YAHOO.widget.CalendarNavigator.html#method_destroy", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_doc", "url": "YAHOO.widget.CalendarNavigator.html#property__doc", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "erase", "url": "YAHOO.widget.CalendarNavigator.html#method_erase", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "errorEl", "url": "YAHOO.widget.CalendarNavigator.html#property_errorEl", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "firstCtrl", "url": "YAHOO.widget.CalendarNavigator.html#property_firstCtrl", "type": "property"}, {"access": "private", "host": "YAHOO.widget.CalendarNavigator", "name": "__getCfg", "url": "YAHOO.widget.CalendarNavigator.html#method___getCfg", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "getMonth", "url": "YAHOO.widget.CalendarNavigator.html#method_getMonth", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_getMonthFromUI", "url": "YAHOO.widget.CalendarNavigator.html#method__getMonthFromUI", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "getYear", "url": "YAHOO.widget.CalendarNavigator.html#method_getYear", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_getYearFromUI", "url": "YAHOO.widget.CalendarNavigator.html#method__getYearFromUI", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_handleDirectionKeys", "url": "YAHOO.widget.CalendarNavigator.html#method__handleDirectionKeys", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_handleEnterKey", "url": "YAHOO.widget.CalendarNavigator.html#method__handleEnterKey", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_handleShiftTabKey", "url": "YAHOO.widget.CalendarNavigator.html#method__handleShiftTabKey", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_handleTabKey", "url": "YAHOO.widget.CalendarNavigator.html#method__handleTabKey", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "hide", "url": "YAHOO.widget.CalendarNavigator.html#method_hide", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "hideMask", "url": "YAHOO.widget.CalendarNavigator.html#method_hideMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "id", "url": "YAHOO.widget.CalendarNavigator.html#property_id", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "init", "url": "YAHOO.widget.CalendarNavigator.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CalendarNavigator", "name": "__isIEQuirks", "url": "YAHOO.widget.CalendarNavigator.html#property___isIEQuirks", "type": "property"}, {"access": "private", "host": "YAHOO.widget.CalendarNavigator", "name": "__isMac", "url": "YAHOO.widget.CalendarNavigator.html#property___isMac", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "lastCtrl", "url": "YAHOO.widget.CalendarNavigator.html#property_lastCtrl", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "maskEl", "url": "YAHOO.widget.CalendarNavigator.html#property_maskEl", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_month", "url": "YAHOO.widget.CalendarNavigator.html#property__month", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "monthEl", "url": "YAHOO.widget.CalendarNavigator.html#property_monthEl", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "navEl", "url": "YAHOO.widget.CalendarNavigator.html#property_navEl", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "purgeKeyListeners", "url": "YAHOO.widget.CalendarNavigator.html#method_purgeKeyListeners", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "purgeListeners", "url": "YAHOO.widget.CalendarNavigator.html#method_purgeListeners", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "render", "url": "YAHOO.widget.CalendarNavigator.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "renderButton", "url": "YAHOO.widget.CalendarNavigator.html#method_renderButton", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CalendarNavigator", "name": "__rendered", "url": "YAHOO.widget.CalendarNavigator.html#property___rendered", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "renderNavContents", "url": "YAHOO.widget.CalendarNavigator.html#method_renderNavContents", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "renderYear", "url": "YAHOO.widget.CalendarNavigator.html#method_renderYear", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "setError", "url": "YAHOO.widget.CalendarNavigator.html#method_setError", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_setFirstLastElements", "url": "YAHOO.widget.CalendarNavigator.html#method__setFirstLastElements", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "setInitialFocus", "url": "YAHOO.widget.CalendarNavigator.html#method_setInitialFocus", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "setMonth", "url": "YAHOO.widget.CalendarNavigator.html#method_setMonth", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "setYear", "url": "YAHOO.widget.CalendarNavigator.html#method_setYear", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "setYearError", "url": "YAHOO.widget.CalendarNavigator.html#method_setYearError", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_show", "url": "YAHOO.widget.CalendarNavigator.html#method__show", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "show", "url": "YAHOO.widget.CalendarNavigator.html#method_show", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "showMask", "url": "YAHOO.widget.CalendarNavigator.html#method_showMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "submit", "url": "YAHOO.widget.CalendarNavigator.html#method_submit", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "submitEl", "url": "YAHOO.widget.CalendarNavigator.html#property_submitEl", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_syncMask", "url": "YAHOO.widget.CalendarNavigator.html#method__syncMask", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_update", "url": "YAHOO.widget.CalendarNavigator.html#method__update", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_updateMonthUI", "url": "YAHOO.widget.CalendarNavigator.html#method__updateMonthUI", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_updateYearUI", "url": "YAHOO.widget.CalendarNavigator.html#method__updateYearUI", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "validate", "url": "YAHOO.widget.CalendarNavigator.html#method_validate", "type": "method"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CANCEL_SUFFIX", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CANCEL_SUFFIX", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.BUTTON", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.BUTTON", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.BUTTONS", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.BUTTONS", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.DEFAULT", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.DEFAULT", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.ERROR", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.ERROR", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.INVALID", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.INVALID", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.MASK", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.MASK", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.MONTH", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.MONTH", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.MONTH_CTRL", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.MONTH_CTRL", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.NAV", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.NAV", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.NAV_VISIBLE", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.NAV_VISIBLE", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.YEAR", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.YEAR", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.CLASSES.YEAR_CTRL", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.CLASSES.YEAR_CTRL", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.ERROR_SUFFIX", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.ERROR_SUFFIX", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.ID_SUFFIX", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.ID_SUFFIX", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.MONTH_SUFFIX", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.MONTH_SUFFIX", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.SUBMIT_SUFFIX", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.SUBMIT_SUFFIX", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.TRIM", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.TRIM", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.UPDATE_DELAY", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.UPDATE_DELAY", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.YEAR_SUFFIX", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.YEAR_SUFFIX", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.YR_MAJOR_INC", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.YR_MAJOR_INC", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.YR_MAX_DIGITS", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.YR_MAX_DIGITS", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.YR_MINOR_INC", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.YR_MINOR_INC", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "YAHOO.widget.CalendarNavigator.YR_PATTERN", "url": "YAHOO.widget.CalendarNavigator.html#property_YAHOO.widget.CalendarNavigator.YR_PATTERN", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.CalendarNavigator", "name": "_year", "url": "YAHOO.widget.CalendarNavigator.html#property__year", "type": "property"}, {"access": "", "host": "YAHOO.widget.CalendarNavigator", "name": "yearEl", "url": "YAHOO.widget.CalendarNavigator.html#property_yearEl", "type": "property"}];
+</script>
+</body>
+</html>

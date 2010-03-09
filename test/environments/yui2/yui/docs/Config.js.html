@@ -1,0 +1,850 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: container   Config.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Container&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_container.html" title="container">container</a>
+                
+                 &gt; Config.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="o">(</span><span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+
+    <span class="c">/**</span>
+<span class="c">    * Config is a utility used within an Object to allow the implementer to</span>
+<span class="c">    * maintain a list of local configuration properties and listen for changes </span>
+<span class="c">    * to those properties dynamically using CustomEvent. The initial values are </span>
+<span class="c">    * also maintained so that the configuration can be reset at any given point </span>
+<span class="c">    * to its initial state.</span>
+<span class="c">    * @namespace YAHOO.util</span>
+<span class="c">    * @class Config</span>
+<span class="c">    * @constructor</span>
+<span class="c">    * @param {Object} owner The owner Object to which this Config Object belongs</span>
+<span class="c">    */</span>
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Config</span> <span class="o">=</span> <span class="k">function</span> <span class="o">(</span><span class="nx">owner</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">owner</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">init</span><span class="o">(</span><span class="nx">owner</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">owner</span><span class="o">)</span> <span class="o">{</span>  <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;No owner specified for Config object&quot;</span><span class="o">,</span> <span class="s2">&quot;error&quot;</span><span class="o">,</span> <span class="s2">&quot;Config&quot;</span><span class="o">);</span> <span class="o">}</span>
+
+    <span class="o">};</span>
+
+
+    <span class="k">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">,</span>
+        <span class="nx">CustomEvent</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">,</span>
+        <span class="nx">Config</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Config</span><span class="o">;</span>
+
+
+    <span class="c">/**</span>
+<span class="c">     * Constant representing the CustomEvent type for the config changed event.</span>
+<span class="c">     * @property YAHOO.util.Config.CONFIG_CHANGED_EVENT</span>
+<span class="c">     * @private</span>
+<span class="c">     * @static</span>
+<span class="c">     * @final</span>
+<span class="c">     */</span>
+    <span class="nx">Config</span><span class="o">.</span><span class="nx">CONFIG_CHANGED_EVENT</span> <span class="o">=</span> <span class="s2">&quot;configChanged&quot;</span><span class="o">;</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Constant representing the boolean type string</span>
+<span class="c">     * @property YAHOO.util.Config.BOOLEAN_TYPE</span>
+<span class="c">     * @private</span>
+<span class="c">     * @static</span>
+<span class="c">     * @final</span>
+<span class="c">     */</span>
+    <span class="nx">Config</span><span class="o">.</span><span class="nx">BOOLEAN_TYPE</span> <span class="o">=</span> <span class="s2">&quot;boolean&quot;</span><span class="o">;</span>
+    
+    <span class="nx">Config</span><span class="o">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="o">{</span>
+     
+        <span class="c">/**</span>
+<span class="c">        * Object reference to the owner of this Config Object</span>
+<span class="c">        * @property owner</span>
+<span class="c">        * @type Object</span>
+<span class="c">        */</span>
+        <span class="nx">owner</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Boolean flag that specifies whether a queue is currently </span>
+<span class="c">        * being executed</span>
+<span class="c">        * @property queueInProgress</span>
+<span class="c">        * @type Boolean</span>
+<span class="c">        */</span>
+        <span class="nx">queueInProgress</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Maintains the local collection of configuration property objects and </span>
+<span class="c">        * their specified values</span>
+<span class="c">        * @property config</span>
+<span class="c">        * @private</span>
+<span class="c">        * @type Object</span>
+<span class="c">        */</span> 
+        <span class="nx">config</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Maintains the local collection of configuration property objects as </span>
+<span class="c">        * they were initially applied.</span>
+<span class="c">        * This object is used when resetting a property.</span>
+<span class="c">        * @property initialConfig</span>
+<span class="c">        * @private</span>
+<span class="c">        * @type Object</span>
+<span class="c">        */</span> 
+        <span class="nx">initialConfig</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Maintains the local, normalized CustomEvent queue</span>
+<span class="c">        * @property eventQueue</span>
+<span class="c">        * @private</span>
+<span class="c">        * @type Object</span>
+<span class="c">        */</span> 
+        <span class="nx">eventQueue</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Custom Event, notifying subscribers when Config properties are set </span>
+<span class="c">        * (setProperty is called without the silent flag</span>
+<span class="c">        * @event configChangedEvent</span>
+<span class="c">        */</span>
+        <span class="nx">configChangedEvent</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+    
+        <span class="c">/**</span>
+<span class="c">        * Initializes the configuration Object and all of its local members.</span>
+<span class="c">        * @method init</span>
+<span class="c">        * @param {Object} owner The owner Object to which this Config </span>
+<span class="c">        * Object belongs</span>
+<span class="c">        */</span>
+        <span class="nx">init</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">owner</span><span class="o">)</span> <span class="o">{</span>
+    
+            <span class="k">this</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="nx">owner</span><span class="o">;</span>
+    
+            <span class="k">this</span><span class="o">.</span><span class="nx">configChangedEvent</span> <span class="o">=</span> 
+                <span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="nx">Config</span><span class="o">.</span><span class="nx">CONFIG_CHANGED_EVENT</span><span class="o">);</span>
+    
+            <span class="k">this</span><span class="o">.</span><span class="nx">configChangedEvent</span><span class="o">.</span><span class="nx">signature</span> <span class="o">=</span> <span class="nx">CustomEvent</span><span class="o">.</span><span class="nx">LIST</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">queueInProgress</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">config</span> <span class="o">=</span> <span class="o">{};</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">initialConfig</span> <span class="o">=</span> <span class="o">{};</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span> <span class="o">=</span> <span class="o">[];</span>
+        
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Validates that the value passed in is a Boolean.</span>
+<span class="c">        * @method checkBoolean</span>
+<span class="c">        * @param {Object} val The value to validate</span>
+<span class="c">        * @return {Boolean} true, if the value is valid</span>
+<span class="c">        */</span> 
+        <span class="nx">checkBoolean</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">val</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="o">(</span><span class="k">typeof</span> <span class="nx">val</span> <span class="o">==</span> <span class="nx">Config</span><span class="o">.</span><span class="nx">BOOLEAN_TYPE</span><span class="o">);</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Validates that the value passed in is a number.</span>
+<span class="c">        * @method checkNumber</span>
+<span class="c">        * @param {Object} val The value to validate</span>
+<span class="c">        * @return {Boolean} true, if the value is valid</span>
+<span class="c">        */</span>
+        <span class="nx">checkNumber</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">val</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="o">(!</span><span class="nb">isNaN</span><span class="o">(</span><span class="nx">val</span><span class="o">));</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Fires a configuration property event using the specified value. </span>
+<span class="c">        * @method fireEvent</span>
+<span class="c">        * @private</span>
+<span class="c">        * @param {String} key The configuration property&#39;s name</span>
+<span class="c">        * @param {value} Object The value of the correct type for the property</span>
+<span class="c">        */</span> 
+        <span class="nx">fireEvent</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span> <span class="nx">key</span><span class="o">,</span> <span class="nx">value</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Firing Config event: &quot;</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">value</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Config&quot;</span><span class="o">);</span>
+            <span class="k">var</span> <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">];</span>
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+            <span class="o">}</span> 
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Adds a property to the Config Object&#39;s private config hash.</span>
+<span class="c">        * @method addProperty</span>
+<span class="c">        * @param {String} key The configuration property&#39;s name</span>
+<span class="c">        * @param {Object} propertyObject The Object containing all of this </span>
+<span class="c">        * property&#39;s arguments</span>
+<span class="c">        */</span>
+        <span class="nx">addProperty</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span> <span class="nx">key</span><span class="o">,</span> <span class="nx">propertyObject</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="nx">key</span> <span class="o">=</span> <span class="nx">key</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">();</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Added property: &quot;</span> <span class="o">+</span> <span class="nx">key</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Config&quot;</span><span class="o">);</span>
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">]</span> <span class="o">=</span> <span class="nx">propertyObject</span><span class="o">;</span>
+        
+            <span class="nx">propertyObject</span><span class="o">.</span><span class="nx">event</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="o">{</span> <span class="nx">scope</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">owner</span> <span class="o">});</span>
+            <span class="nx">propertyObject</span><span class="o">.</span><span class="nx">event</span><span class="o">.</span><span class="nx">signature</span> <span class="o">=</span> <span class="nx">CustomEvent</span><span class="o">.</span><span class="nx">LIST</span><span class="o">;</span>
+            
+            
+            <span class="nx">propertyObject</span><span class="o">.</span><span class="nx">key</span> <span class="o">=</span> <span class="nx">key</span><span class="o">;</span>
+        
+            <span class="k">if</span> <span class="o">(</span><span class="nx">propertyObject</span><span class="o">.</span><span class="nx">handler</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">propertyObject</span><span class="o">.</span><span class="nx">event</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="nx">propertyObject</span><span class="o">.</span><span class="nx">handler</span><span class="o">,</span> 
+                    <span class="k">this</span><span class="o">.</span><span class="nx">owner</span><span class="o">);</span>
+            <span class="o">}</span>
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">setProperty</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">propertyObject</span><span class="o">.</span><span class="nx">value</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            
+            <span class="k">if</span> <span class="o">(!</span> <span class="nx">propertyObject</span><span class="o">.</span><span class="nx">suppressEvent</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">queueProperty</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">propertyObject</span><span class="o">.</span><span class="nx">value</span><span class="o">);</span>
+            <span class="o">}</span>
+            
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Returns a key-value configuration map of the values currently set in  </span>
+<span class="c">        * the Config Object.</span>
+<span class="c">        * @method getConfig</span>
+<span class="c">        * @return {Object} The current config, represented in a key-value map</span>
+<span class="c">        */</span>
+        <span class="nx">getConfig</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">cfg</span> <span class="o">=</span> <span class="o">{},</span>
+                <span class="nx">currCfg</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">,</span>
+                <span class="nx">prop</span><span class="o">,</span>
+                <span class="nx">property</span><span class="o">;</span>
+                
+            <span class="k">for</span> <span class="o">(</span><span class="nx">prop</span> <span class="k">in</span> <span class="nx">currCfg</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">currCfg</span><span class="o">,</span> <span class="nx">prop</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">property</span> <span class="o">=</span> <span class="nx">currCfg</span><span class="o">[</span><span class="nx">prop</span><span class="o">];</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">cfg</span><span class="o">[</span><span class="nx">prop</span><span class="o">]</span> <span class="o">=</span> <span class="nx">property</span><span class="o">.</span><span class="nx">value</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+
+            <span class="k">return</span> <span class="nx">cfg</span><span class="o">;</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Returns the value of specified property.</span>
+<span class="c">        * @method getProperty</span>
+<span class="c">        * @param {String} key The name of the property</span>
+<span class="c">        * @return {Object}  The value of the specified property</span>
+<span class="c">        */</span>
+        <span class="nx">getProperty</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">key</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">()];</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="nx">property</span><span class="o">.</span><span class="nx">value</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">undefined</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Resets the specified property&#39;s value to its initial value.</span>
+<span class="c">        * @method resetProperty</span>
+<span class="c">        * @param {String} key The name of the property</span>
+<span class="c">        * @return {Boolean} True is the property was reset, false if not</span>
+<span class="c">        */</span>
+        <span class="nx">resetProperty</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">key</span><span class="o">)</span> <span class="o">{</span>
+    
+            <span class="nx">key</span> <span class="o">=</span> <span class="nx">key</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">();</span>
+        
+            <span class="k">var</span> <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">];</span>
+    
+            <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+    
+                <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">initialConfig</span><span class="o">[</span><span class="nx">key</span><span class="o">]</span> <span class="o">&amp;&amp;</span> 
+                    <span class="o">!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">initialConfig</span><span class="o">[</span><span class="nx">key</span><span class="o">]))</span> <span class="o">{</span>
+    
+                    <span class="k">this</span><span class="o">.</span><span class="nx">setProperty</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">initialConfig</span><span class="o">[</span><span class="nx">key</span><span class="o">]);</span>
+
+                    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    
+                <span class="o">}</span>
+    
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+    
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Sets the value of a property. If the silent property is passed as </span>
+<span class="c">        * true, the property&#39;s event will not be fired.</span>
+<span class="c">        * @method setProperty</span>
+<span class="c">        * @param {String} key The name of the property</span>
+<span class="c">        * @param {String} value The value to set the property to</span>
+<span class="c">        * @param {Boolean} silent Whether the value should be set silently, </span>
+<span class="c">        * without firing the property event.</span>
+<span class="c">        * @return {Boolean} True, if the set was successful, false if it failed.</span>
+<span class="c">        */</span>
+        <span class="nx">setProperty</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">value</span><span class="o">,</span> <span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">property</span><span class="o">;</span>
+        
+            <span class="nx">key</span> <span class="o">=</span> <span class="nx">key</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">();</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;setProperty: &quot;</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">value</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Config&quot;</span><span class="o">);</span>
+        
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">queueInProgress</span> <span class="o">&amp;&amp;</span> <span class="o">!</span> <span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c">// Currently running through a queue... </span>
+<span class="c"></span>                <span class="k">this</span><span class="o">.</span><span class="nx">queueProperty</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span><span class="nx">value</span><span class="o">);</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">];</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">property</span><span class="o">.</span><span class="nx">validator</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">property</span><span class="o">.</span><span class="nx">validator</span><span class="o">(</span><span class="nx">value</span><span class="o">))</span> <span class="o">{</span>
+                        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="nx">property</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+                        <span class="k">if</span> <span class="o">(!</span> <span class="nx">silent</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">value</span><span class="o">);</span>
+                            <span class="k">this</span><span class="o">.</span><span class="nx">configChangedEvent</span><span class="o">.</span><span class="nx">fire</span><span class="o">([</span><span class="nx">key</span><span class="o">,</span> <span class="nx">value</span><span class="o">]);</span>
+                        <span class="o">}</span>
+                        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Sets the value of a property and queues its event to execute. If the </span>
+<span class="c">        * event is already scheduled to execute, it is</span>
+<span class="c">        * moved from its current position to the end of the queue.</span>
+<span class="c">        * @method queueProperty</span>
+<span class="c">        * @param {String} key The name of the property</span>
+<span class="c">        * @param {String} value The value to set the property to</span>
+<span class="c">        * @return {Boolean}  true, if the set was successful, false if </span>
+<span class="c">        * it failed.</span>
+<span class="c">        */</span> 
+        <span class="nx">queueProperty</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">value</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="nx">key</span> <span class="o">=</span> <span class="nx">key</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">();</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;queueProperty: &quot;</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">value</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Config&quot;</span><span class="o">);</span>
+        
+            <span class="k">var</span> <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">],</span>
+                <span class="nx">foundDuplicate</span> <span class="o">=</span> <span class="kc">false</span><span class="o">,</span>
+                <span class="nx">iLen</span><span class="o">,</span>
+                <span class="nx">queueItem</span><span class="o">,</span>
+                <span class="nx">queueItemKey</span><span class="o">,</span>
+                <span class="nx">queueItemValue</span><span class="o">,</span>
+                <span class="nx">sLen</span><span class="o">,</span>
+                <span class="nx">supercedesCheck</span><span class="o">,</span>
+                <span class="nx">qLen</span><span class="o">,</span>
+                <span class="nx">queueItemCheck</span><span class="o">,</span>
+                <span class="nx">queueItemCheckKey</span><span class="o">,</span>
+                <span class="nx">queueItemCheckValue</span><span class="o">,</span>
+                <span class="nx">i</span><span class="o">,</span>
+                <span class="nx">s</span><span class="o">,</span>
+                <span class="nx">q</span><span class="o">;</span>
+                                
+            <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+    
+                <span class="k">if</span> <span class="o">(!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">validator</span> <span class="o">&amp;&amp;</span> 
+                    <span class="o">!</span><span class="nx">property</span><span class="o">.</span><span class="nx">validator</span><span class="o">(</span><span class="nx">value</span><span class="o">))</span> <span class="o">{</span> <span class="c">// validator</span>
+<span class="c"></span>                    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        
+                    <span class="k">if</span> <span class="o">(!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">value</span><span class="o">))</span> <span class="o">{</span>
+                        <span class="nx">property</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="nx">value</span> <span class="o">=</span> <span class="nx">property</span><span class="o">.</span><span class="nx">value</span><span class="o">;</span>
+                    <span class="o">}</span>
+        
+                    <span class="nx">foundDuplicate</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                    <span class="nx">iLen</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+        
+                    <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">iLen</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+                        <span class="nx">queueItem</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+        
+                        <span class="k">if</span> <span class="o">(</span><span class="nx">queueItem</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="nx">queueItemKey</span> <span class="o">=</span> <span class="nx">queueItem</span><span class="o">[</span><span class="m">0</span><span class="o">];</span>
+                            <span class="nx">queueItemValue</span> <span class="o">=</span> <span class="nx">queueItem</span><span class="o">[</span><span class="m">1</span><span class="o">];</span>
+
+                            <span class="k">if</span> <span class="o">(</span><span class="nx">queueItemKey</span> <span class="o">==</span> <span class="nx">key</span><span class="o">)</span> <span class="o">{</span>
+    
+                                <span class="c">/*</span>
+<span class="c">                                    found a dupe... push to end of queue, null </span>
+<span class="c">                                    current item, and break</span>
+<span class="c">                                */</span>
+    
+                                <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    
+                                <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span>
+                                    <span class="o">[</span><span class="nx">key</span><span class="o">,</span> <span class="o">(!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span> <span class="o">?</span> 
+                                    <span class="nx">value</span> <span class="o">:</span> <span class="nx">queueItemValue</span><span class="o">)]);</span>
+    
+                                <span class="nx">foundDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                                <span class="k">break</span><span class="o">;</span>
+                            <span class="o">}</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                    
+                    <span class="c">// this is a refire, or a new property in the queue</span>
+<span class="c"></span>    
+                    <span class="k">if</span> <span class="o">(!</span> <span class="nx">foundDuplicate</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">value</span><span class="o">))</span> <span class="o">{</span> 
+                        <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">.</span><span class="nx">push</span><span class="o">([</span><span class="nx">key</span><span class="o">,</span> <span class="nx">value</span><span class="o">]);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+        
+                <span class="k">if</span> <span class="o">(</span><span class="nx">property</span><span class="o">.</span><span class="nx">supercedes</span><span class="o">)</span> <span class="o">{</span>
+
+                    <span class="nx">sLen</span> <span class="o">=</span> <span class="nx">property</span><span class="o">.</span><span class="nx">supercedes</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+
+                    <span class="k">for</span> <span class="o">(</span><span class="nx">s</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">s</span> <span class="o">&lt;</span> <span class="nx">sLen</span><span class="o">;</span> <span class="nx">s</span><span class="o">++)</span> <span class="o">{</span>
+
+                        <span class="nx">supercedesCheck</span> <span class="o">=</span> <span class="nx">property</span><span class="o">.</span><span class="nx">supercedes</span><span class="o">[</span><span class="nx">s</span><span class="o">];</span>
+                        <span class="nx">qLen</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+
+                        <span class="k">for</span> <span class="o">(</span><span class="nx">q</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">q</span> <span class="o">&lt;</span> <span class="nx">qLen</span><span class="o">;</span> <span class="nx">q</span><span class="o">++)</span> <span class="o">{</span>
+                            <span class="nx">queueItemCheck</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">[</span><span class="nx">q</span><span class="o">];</span>
+
+                            <span class="k">if</span> <span class="o">(</span><span class="nx">queueItemCheck</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="nx">queueItemCheckKey</span> <span class="o">=</span> <span class="nx">queueItemCheck</span><span class="o">[</span><span class="m">0</span><span class="o">];</span>
+                                <span class="nx">queueItemCheckValue</span> <span class="o">=</span> <span class="nx">queueItemCheck</span><span class="o">[</span><span class="m">1</span><span class="o">];</span>
+
+                                <span class="k">if</span> <span class="o">(</span><span class="nx">queueItemCheckKey</span> <span class="o">==</span> 
+                                    <span class="nx">supercedesCheck</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">()</span> <span class="o">)</span> <span class="o">{</span>
+
+                                    <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">.</span><span class="nx">push</span><span class="o">([</span><span class="nx">queueItemCheckKey</span><span class="o">,</span> 
+                                        <span class="nx">queueItemCheckValue</span><span class="o">]);</span>
+
+                                    <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">[</span><span class="nx">q</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                                    <span class="k">break</span><span class="o">;</span>
+
+                                <span class="o">}</span>
+                            <span class="o">}</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+
+                <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Config event queue: &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">outputEventQueue</span><span class="o">(),</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Config&quot;</span><span class="o">);</span>
+
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Fires the event for a property using the property&#39;s current value.</span>
+<span class="c">        * @method refireEvent</span>
+<span class="c">        * @param {String} key The name of the property</span>
+<span class="c">        */</span>
+        <span class="nx">refireEvent</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">key</span><span class="o">)</span> <span class="o">{</span>
+    
+            <span class="nx">key</span> <span class="o">=</span> <span class="nx">key</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">();</span>
+        
+            <span class="k">var</span> <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">];</span>
+    
+            <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span> <span class="o">&amp;&amp;</span> 
+    
+                <span class="o">!</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">property</span><span class="o">.</span><span class="nx">value</span><span class="o">))</span> <span class="o">{</span>
+    
+                <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">queueInProgress</span><span class="o">)</span> <span class="o">{</span>
+    
+                    <span class="k">this</span><span class="o">.</span><span class="nx">queueProperty</span><span class="o">(</span><span class="nx">key</span><span class="o">);</span>
+    
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    
+                    <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">property</span><span class="o">.</span><span class="nx">value</span><span class="o">);</span>
+    
+                <span class="o">}</span>
+    
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Applies a key-value Object literal to the configuration, replacing  </span>
+<span class="c">        * any existing values, and queueing the property events.</span>
+<span class="c">        * Although the values will be set, fireQueue() must be called for their </span>
+<span class="c">        * associated events to execute.</span>
+<span class="c">        * @method applyConfig</span>
+<span class="c">        * @param {Object} userConfig The configuration Object literal</span>
+<span class="c">        * @param {Boolean} init  When set to true, the initialConfig will </span>
+<span class="c">        * be set to the userConfig passed in, so that calling a reset will </span>
+<span class="c">        * reset the properties to the passed values.</span>
+<span class="c">        */</span>
+        <span class="nx">applyConfig</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">userConfig</span><span class="o">,</span> <span class="nx">init</span><span class="o">)</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">sKey</span><span class="o">,</span>
+                <span class="nx">oConfig</span><span class="o">;</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">init</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">oConfig</span> <span class="o">=</span> <span class="o">{};</span>
+                <span class="k">for</span> <span class="o">(</span><span class="nx">sKey</span> <span class="k">in</span> <span class="nx">userConfig</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">userConfig</span><span class="o">,</span> <span class="nx">sKey</span><span class="o">))</span> <span class="o">{</span>
+                        <span class="nx">oConfig</span><span class="o">[</span><span class="nx">sKey</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">()]</span> <span class="o">=</span> <span class="nx">userConfig</span><span class="o">[</span><span class="nx">sKey</span><span class="o">];</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">initialConfig</span> <span class="o">=</span> <span class="nx">oConfig</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="nx">sKey</span> <span class="k">in</span> <span class="nx">userConfig</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">userConfig</span><span class="o">,</span> <span class="nx">sKey</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">queueProperty</span><span class="o">(</span><span class="nx">sKey</span><span class="o">,</span> <span class="nx">userConfig</span><span class="o">[</span><span class="nx">sKey</span><span class="o">]);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Refires the events for all configuration properties using their </span>
+<span class="c">        * current values.</span>
+<span class="c">        * @method refresh</span>
+<span class="c">        */</span>
+        <span class="nx">refresh</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+
+            <span class="k">var</span> <span class="nx">prop</span><span class="o">;</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="nx">prop</span> <span class="k">in</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">,</span> <span class="nx">prop</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="k">this</span><span class="o">.</span><span class="nx">refireEvent</span><span class="o">(</span><span class="nx">prop</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Fires the normalized list of queued property change events</span>
+<span class="c">        * @method fireQueue</span>
+<span class="c">        */</span>
+        <span class="nx">fireQueue</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+        
+            <span class="k">var</span> <span class="nx">i</span><span class="o">,</span> 
+                <span class="nx">queueItem</span><span class="o">,</span>
+                <span class="nx">key</span><span class="o">,</span>
+                <span class="nx">value</span><span class="o">,</span>
+                <span class="nx">property</span><span class="o">;</span>
+        
+            <span class="k">this</span><span class="o">.</span><span class="nx">queueInProgress</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="nx">queueItem</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">queueItem</span><span class="o">)</span> <span class="o">{</span>
+        
+                    <span class="nx">key</span> <span class="o">=</span> <span class="nx">queueItem</span><span class="o">[</span><span class="m">0</span><span class="o">];</span>
+                    <span class="nx">value</span> <span class="o">=</span> <span class="nx">queueItem</span><span class="o">[</span><span class="m">1</span><span class="o">];</span>
+                    <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">];</span>
+
+                    <span class="nx">property</span><span class="o">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+
+                    <span class="c">// Clear out queue entry, to avoid it being </span>
+<span class="c"></span>                    <span class="c">// re-added to the queue by any queueProperty/supercedes</span>
+<span class="c"></span>                    <span class="c">// calls which are invoked during fireEvent</span>
+<span class="c"></span>                    <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+                    <span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="nx">key</span><span class="o">,</span><span class="nx">value</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">queueInProgress</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span> <span class="o">=</span> <span class="o">[];</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Subscribes an external handler to the change event for any </span>
+<span class="c">        * given property. </span>
+<span class="c">        * @method subscribeToConfigEvent</span>
+<span class="c">        * @param {String} key The property name</span>
+<span class="c">        * @param {Function} handler The handler function to use subscribe to </span>
+<span class="c">        * the property&#39;s event</span>
+<span class="c">        * @param {Object} obj The Object to use for scoping the event handler </span>
+<span class="c">        * (see CustomEvent documentation)</span>
+<span class="c">        * @param {Boolean} overrideContext Optional. If true, will override</span>
+<span class="c">        * &quot;this&quot; within the handler to map to the scope Object passed into the</span>
+<span class="c">        * method.</span>
+<span class="c">        * @return {Boolean} True, if the subscription was successful, </span>
+<span class="c">        * otherwise false.</span>
+<span class="c">        */</span> 
+        <span class="nx">subscribeToConfigEvent</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">handler</span><span class="o">,</span> <span class="nx">obj</span><span class="o">,</span> <span class="nx">overrideContext</span><span class="o">)</span> <span class="o">{</span>
+    
+            <span class="k">var</span> <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">()];</span>
+    
+            <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="nx">Config</span><span class="o">.</span><span class="nx">alreadySubscribed</span><span class="o">(</span><span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">,</span> <span class="nx">handler</span><span class="o">,</span> <span class="nx">obj</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="nx">handler</span><span class="o">,</span> <span class="nx">obj</span><span class="o">,</span> <span class="nx">overrideContext</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+    
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Unsubscribes an external handler from the change event for any </span>
+<span class="c">        * given property. </span>
+<span class="c">        * @method unsubscribeFromConfigEvent</span>
+<span class="c">        * @param {String} key The property name</span>
+<span class="c">        * @param {Function} handler The handler function to use subscribe to </span>
+<span class="c">        * the property&#39;s event</span>
+<span class="c">        * @param {Object} obj The Object to use for scoping the event </span>
+<span class="c">        * handler (see CustomEvent documentation)</span>
+<span class="c">        * @return {Boolean} True, if the unsubscription was successful, </span>
+<span class="c">        * otherwise false.</span>
+<span class="c">        */</span>
+        <span class="nx">unsubscribeFromConfigEvent</span><span class="o">:</span> <span class="k">function</span> <span class="o">(</span><span class="nx">key</span><span class="o">,</span> <span class="nx">handler</span><span class="o">,</span> <span class="nx">obj</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">property</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">[</span><span class="nx">key</span><span class="o">.</span><span class="nx">toLowerCase</span><span class="o">()];</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">property</span> <span class="o">&amp;&amp;</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="nx">property</span><span class="o">.</span><span class="nx">event</span><span class="o">.</span><span class="nx">unsubscribe</span><span class="o">(</span><span class="nx">handler</span><span class="o">,</span> <span class="nx">obj</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Returns a string representation of the Config object</span>
+<span class="c">        * @method toString</span>
+<span class="c">        * @return {String} The Config object in string format.</span>
+<span class="c">        */</span>
+        <span class="nx">toString</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">output</span> <span class="o">=</span> <span class="s2">&quot;Config&quot;</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">owner</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">output</span> <span class="o">+=</span> <span class="s2">&quot; [&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">owner</span><span class="o">.</span><span class="nx">toString</span><span class="o">()</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="nx">output</span><span class="o">;</span>
+        <span class="o">},</span>
+        
+        <span class="c">/**</span>
+<span class="c">        * Returns a string representation of the Config object&#39;s current </span>
+<span class="c">        * CustomEvent queue</span>
+<span class="c">        * @method outputEventQueue</span>
+<span class="c">        * @return {String} The string list of CustomEvents currently queued </span>
+<span class="c">        * for execution</span>
+<span class="c">        */</span>
+        <span class="nx">outputEventQueue</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+
+            <span class="k">var</span> <span class="nx">output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">,</span>
+                <span class="nx">queueItem</span><span class="o">,</span>
+                <span class="nx">q</span><span class="o">,</span>
+                <span class="nx">nQueue</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+              
+            <span class="k">for</span> <span class="o">(</span><span class="nx">q</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">q</span> <span class="o">&lt;</span> <span class="nx">nQueue</span><span class="o">;</span> <span class="nx">q</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="nx">queueItem</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span><span class="o">[</span><span class="nx">q</span><span class="o">];</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">queueItem</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">output</span> <span class="o">+=</span> <span class="nx">queueItem</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">queueItem</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="nx">output</span><span class="o">;</span>
+        <span class="o">},</span>
+
+        <span class="c">/**</span>
+<span class="c">        * Sets all properties to null, unsubscribes all listeners from each </span>
+<span class="c">        * property&#39;s change event and all listeners from the configChangedEvent.</span>
+<span class="c">        * @method destroy</span>
+<span class="c">        */</span>
+        <span class="nx">destroy</span><span class="o">:</span> <span class="k">function</span> <span class="o">()</span> <span class="o">{</span>
+
+            <span class="k">var</span> <span class="nx">oConfig</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">config</span><span class="o">,</span>
+                <span class="nx">sProperty</span><span class="o">,</span>
+                <span class="nx">oProperty</span><span class="o">;</span>
+
+
+            <span class="k">for</span> <span class="o">(</span><span class="nx">sProperty</span> <span class="k">in</span> <span class="nx">oConfig</span><span class="o">)</span> <span class="o">{</span>
+            
+                <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">oConfig</span><span class="o">,</span> <span class="nx">sProperty</span><span class="o">))</span> <span class="o">{</span>
+
+                    <span class="nx">oProperty</span> <span class="o">=</span> <span class="nx">oConfig</span><span class="o">[</span><span class="nx">sProperty</span><span class="o">];</span>
+
+                    <span class="nx">oProperty</span><span class="o">.</span><span class="nx">event</span><span class="o">.</span><span class="nx">unsubscribeAll</span><span class="o">();</span>
+                    <span class="nx">oProperty</span><span class="o">.</span><span class="nx">event</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+                <span class="o">}</span>
+            
+            <span class="o">}</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">configChangedEvent</span><span class="o">.</span><span class="nx">unsubscribeAll</span><span class="o">();</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">configChangedEvent</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">owner</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">config</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">initialConfig</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">eventQueue</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        
+        <span class="o">}</span>
+
+    <span class="o">};</span>
+    
+    
+    
+    <span class="c">/**</span>
+<span class="c">    * Checks to determine if a particular function/Object pair are already </span>
+<span class="c">    * subscribed to the specified CustomEvent</span>
+<span class="c">    * @method YAHOO.util.Config.alreadySubscribed</span>
+<span class="c">    * @static</span>
+<span class="c">    * @param {YAHOO.util.CustomEvent} evt The CustomEvent for which to check </span>
+<span class="c">    * the subscriptions</span>
+<span class="c">    * @param {Function} fn The function to look for in the subscribers list</span>
+<span class="c">    * @param {Object} obj The execution scope Object for the subscription</span>
+<span class="c">    * @return {Boolean} true, if the function/Object pair is already subscribed </span>
+<span class="c">    * to the CustomEvent passed in</span>
+<span class="c">    */</span>
+    <span class="nx">Config</span><span class="o">.</span><span class="nx">alreadySubscribed</span> <span class="o">=</span> <span class="k">function</span> <span class="o">(</span><span class="nx">evt</span><span class="o">,</span> <span class="nx">fn</span><span class="o">,</span> <span class="nx">obj</span><span class="o">)</span> <span class="o">{</span>
+    
+        <span class="k">var</span> <span class="nx">nSubscribers</span> <span class="o">=</span> <span class="nx">evt</span><span class="o">.</span><span class="nx">subscribers</span><span class="o">.</span><span class="nx">length</span><span class="o">,</span>
+            <span class="nx">subsc</span><span class="o">,</span>
+            <span class="nx">i</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">nSubscribers</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">i</span> <span class="o">=</span> <span class="nx">nSubscribers</span> <span class="o">-</span> <span class="m">1</span><span class="o">;</span>
+            <span class="k">do</span> <span class="o">{</span>
+                <span class="nx">subsc</span> <span class="o">=</span> <span class="nx">evt</span><span class="o">.</span><span class="nx">subscribers</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">subsc</span> <span class="o">&amp;&amp;</span> <span class="nx">subsc</span><span class="o">.</span><span class="nx">obj</span> <span class="o">==</span> <span class="nx">obj</span> <span class="o">&amp;&amp;</span> <span class="nx">subsc</span><span class="o">.</span><span class="nx">fn</span> <span class="o">==</span> <span class="nx">fn</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">while</span> <span class="o">(</span><span class="nx">i</span><span class="o">--);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="o">};</span>
+
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">augmentProto</span><span class="o">(</span><span class="nx">Config</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">EventProvider</span><span class="o">);</span>
+
+<span class="o">}());</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class="selected"><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.Config.html" title="YAHOO.util.Config">YAHOO.util.Config</a></li>
+                                <li class=""><a href="YAHOO.widget.ContainerEffect.html" title="YAHOO.widget.ContainerEffect">YAHOO.widget.ContainerEffect</a></li>
+                                <li class=""><a href="YAHOO.widget.Dialog.html" title="YAHOO.widget.Dialog">YAHOO.widget.Dialog</a></li>
+                                <li class=""><a href="YAHOO.widget.Module.html" title="YAHOO.widget.Module">YAHOO.widget.Module</a></li>
+                                <li class=""><a href="YAHOO.widget.Overlay.html" title="YAHOO.widget.Overlay">YAHOO.widget.Overlay</a></li>
+                                <li class=""><a href="YAHOO.widget.OverlayManager.html" title="YAHOO.widget.OverlayManager">YAHOO.widget.OverlayManager</a></li>
+                                <li class=""><a href="YAHOO.widget.Panel.html" title="YAHOO.widget.Panel">YAHOO.widget.Panel</a></li>
+                                <li class=""><a href="YAHOO.widget.SimpleDialog.html" title="YAHOO.widget.SimpleDialog">YAHOO.widget.SimpleDialog</a></li>
+                                <li class=""><a href="YAHOO.widget.Tooltip.html" title="YAHOO.widget.Tooltip">YAHOO.widget.Tooltip</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="Config.js.html" title="Config.js">Config.js</a></li>
+                                <li class=""><a href="ContainerEffect.js.html" title="ContainerEffect.js">ContainerEffect.js</a></li>
+                                <li class=""><a href="Dialog.js.html" title="Dialog.js">Dialog.js</a></li>
+                                <li class=""><a href="Module.js.html" title="Module.js">Module.js</a></li>
+                                <li class=""><a href="Overlay.js.html" title="Overlay.js">Overlay.js</a></li>
+                                <li class=""><a href="OverlayManager.js.html" title="OverlayManager.js">OverlayManager.js</a></li>
+                                <li class=""><a href="Panel.js.html" title="Panel.js">Panel.js</a></li>
+                                <li class=""><a href="SimpleDialog.js.html" title="SimpleDialog.js">SimpleDialog.js</a></li>
+                                <li class=""><a href="Tooltip.js.html" title="Tooltip.js">Tooltip.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.widget.OverlayManager", "name": "activeOverlay", "url": "YAHOO.widget.OverlayManager.html#property_activeOverlay", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_addFocusHandlers", "url": "YAHOO.widget.Panel.html#method__addFocusHandlers", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "addProperty", "url": "YAHOO.util.Config.html#method_addProperty", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Module", "name": "_addToParent", "url": "YAHOO.widget.Module.html#method__addToParent", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "align", "url": "YAHOO.widget.Overlay.html#method_align", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_alignOnTrigger", "url": "YAHOO.widget.Overlay.html#method__alignOnTrigger", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "animateIn", "url": "YAHOO.widget.ContainerEffect.html#method_animateIn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "animateOut", "url": "YAHOO.widget.ContainerEffect.html#method_animateOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "animClass", "url": "YAHOO.widget.ContainerEffect.html#property_animClass", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "appendEvent", "url": "YAHOO.widget.Module.html#event_appendEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Module", "name": "appendToBody", "url": "YAHOO.widget.Module.html#method_appendToBody", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "appendtodocumentbody", "url": "YAHOO.widget.Module.html#config_appendtodocumentbody", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "appendToFooter", "url": "YAHOO.widget.Module.html#method_appendToFooter", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "appendToHeader", "url": "YAHOO.widget.Module.html#method_appendToHeader", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "applyConfig", "url": "YAHOO.util.Config.html#method_applyConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "asyncSubmitEvent", "url": "YAHOO.widget.Dialog.html#event_asyncSubmitEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "attrIn", "url": "YAHOO.widget.ContainerEffect.html#property_attrIn", "type": "property"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "attrOut", "url": "YAHOO.widget.ContainerEffect.html#property_attrOut", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "autodismissdelay", "url": "YAHOO.widget.Tooltip.html#config_autodismissdelay", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "autofillheight", "url": "YAHOO.widget.Overlay.html#config_autofillheight", "type": "config"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_autoFillOnHeightChange", "url": "YAHOO.widget.Overlay.html#method__autoFillOnHeightChange", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_autoFillOnHeightChange", "url": "YAHOO.widget.Panel.html#method__autoFillOnHeightChange", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "beforeHideEvent", "url": "YAHOO.widget.Module.html#event_beforeHideEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Module", "name": "beforeInitEvent", "url": "YAHOO.widget.Module.html#event_beforeInitEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "beforeMoveEvent", "url": "YAHOO.widget.Overlay.html#event_beforeMoveEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Module", "name": "beforeRenderEvent", "url": "YAHOO.widget.Module.html#event_beforeRenderEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Module", "name": "beforeShowEvent", "url": "YAHOO.widget.Module.html#event_beforeShowEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "beforeSubmitEvent", "url": "YAHOO.widget.Dialog.html#event_beforeSubmitEvent", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.OverlayManager", "name": "_bindBlur", "url": "YAHOO.widget.OverlayManager.html#method__bindBlur", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.OverlayManager", "name": "_bindDestroy", "url": "YAHOO.widget.OverlayManager.html#method__bindDestroy", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.OverlayManager", "name": "_bindFocus", "url": "YAHOO.widget.OverlayManager.html#method__bindFocus", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "blurAll", "url": "YAHOO.widget.OverlayManager.html#method_blurAll", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "blurButtons", "url": "YAHOO.widget.Dialog.html#method_blurButtons", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "body", "url": "YAHOO.widget.Module.html#property_body", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "bringToTop", "url": "YAHOO.widget.Overlay.html#method_bringToTop", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "bringToTop", "url": "YAHOO.widget.OverlayManager.html#method_bringToTop", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "browser", "url": "YAHOO.widget.Module.html#property_browser", "type": "property"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "buildMask", "url": "YAHOO.widget.Panel.html#method_buildMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "buildWrapper", "url": "YAHOO.widget.Panel.html#method_buildWrapper", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "buttons", "url": "YAHOO.widget.Dialog.html#config_buttons", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback", "url": "YAHOO.widget.Dialog.html#property_callback", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback.argument", "url": "YAHOO.widget.Dialog.html#property_callback.argument", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback.failure", "url": "YAHOO.widget.Dialog.html#property_callback.failure", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback.success", "url": "YAHOO.widget.Dialog.html#property_callback.success", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "callback.upload", "url": "YAHOO.widget.Dialog.html#property_callback.upload", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "cancel", "url": "YAHOO.widget.Dialog.html#method_cancel", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "cancelEvent", "url": "YAHOO.widget.Dialog.html#event_cancelEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "center", "url": "YAHOO.widget.Overlay.html#method_center", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "cfg", "url": "YAHOO.widget.Module.html#property_cfg", "type": "property"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "cfg", "url": "YAHOO.widget.OverlayManager.html#property_cfg", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "changeBodyEvent", "url": "YAHOO.widget.Module.html#event_changeBodyEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Module", "name": "changeContentEvent", "url": "YAHOO.widget.Module.html#event_changeContentEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Module", "name": "changeFooterEvent", "url": "YAHOO.widget.Module.html#event_changeFooterEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Module", "name": "changeHeaderEvent", "url": "YAHOO.widget.Module.html#event_changeHeaderEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.Config", "name": "checkBoolean", "url": "YAHOO.util.Config.html#method_checkBoolean", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "checkNumber", "url": "YAHOO.util.Config.html#method_checkNumber", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "close", "url": "YAHOO.widget.Panel.html#config_close", "type": "config"}, {"access": "private", "host": "YAHOO.widget.OverlayManager", "name": "compareZIndexDesc", "url": "YAHOO.widget.OverlayManager.html#method_compareZIndexDesc", "type": "method"}, {"access": "private", "host": "YAHOO.util.Config", "name": "config", "url": "YAHOO.util.Config.html#property_config", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configAutoFillHeight", "url": "YAHOO.widget.Overlay.html#method_configAutoFillHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "configButtons", "url": "YAHOO.widget.Dialog.html#method_configButtons", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "configChangedEvent", "url": "YAHOO.util.Config.html#event_configChangedEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configClose", "url": "YAHOO.widget.Panel.html#method_configClose", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "configClose", "url": "YAHOO.widget.Dialog.html#method_configClose", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configConstrainToViewport", "url": "YAHOO.widget.Overlay.html#method_configConstrainToViewport", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "configContainer", "url": "YAHOO.widget.Tooltip.html#method_configContainer", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configContext", "url": "YAHOO.widget.Overlay.html#method_configContext", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "configContext", "url": "YAHOO.widget.Tooltip.html#method_configContext", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configDraggable", "url": "YAHOO.widget.Panel.html#method_configDraggable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configFixedCenter", "url": "YAHOO.widget.Overlay.html#method_configFixedCenter", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configHeight", "url": "YAHOO.widget.Overlay.html#method_configHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configHeight", "url": "YAHOO.widget.Panel.html#method_configHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "configIcon", "url": "YAHOO.widget.SimpleDialog.html#method_configIcon", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configIframe", "url": "YAHOO.widget.Overlay.html#method_configIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configKeyListeners", "url": "YAHOO.widget.Panel.html#method_configKeyListeners", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configModal", "url": "YAHOO.widget.Panel.html#method_configModal", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "configMonitorResize", "url": "YAHOO.widget.Module.html#method_configMonitorResize", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "configPostMethod", "url": "YAHOO.widget.Dialog.html#method_configPostMethod", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configStrings", "url": "YAHOO.widget.Panel.html#method_configStrings", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "configText", "url": "YAHOO.widget.Tooltip.html#method_configText", "type": "method"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "configText", "url": "YAHOO.widget.SimpleDialog.html#method_configText", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configUnderlay", "url": "YAHOO.widget.Panel.html#method_configUnderlay", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configVisible", "url": "YAHOO.widget.Overlay.html#method_configVisible", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "configVisible", "url": "YAHOO.widget.Module.html#method_configVisible", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configWidth", "url": "YAHOO.widget.Overlay.html#method_configWidth", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configWidth", "url": "YAHOO.widget.Panel.html#method_configWidth", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configX", "url": "YAHOO.widget.Overlay.html#method_configX", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configXY", "url": "YAHOO.widget.Overlay.html#method_configXY", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configY", "url": "YAHOO.widget.Overlay.html#method_configY", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "configzIndex", "url": "YAHOO.widget.Overlay.html#method_configzIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "configzIndex", "url": "YAHOO.widget.Panel.html#method_configzIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "constraintoviewport", "url": "YAHOO.widget.Overlay.html#config_constraintoviewport", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "container", "url": "YAHOO.widget.Tooltip.html#config_container", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "context", "url": "YAHOO.widget.Overlay.html#config_context", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "context", "url": "YAHOO.widget.Tooltip.html#config_context", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "contextMouseOutEvent", "url": "YAHOO.widget.Tooltip.html#event_contextMouseOutEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "contextMouseOverEvent", "url": "YAHOO.widget.Tooltip.html#event_contextMouseOverEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "contextTriggerEvent", "url": "YAHOO.widget.Tooltip.html#event_contextTriggerEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "CONTEXT_TRIGGERS", "url": "YAHOO.widget.Overlay.html#property_CONTEXT_TRIGGERS", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "contructor", "url": "YAHOO.widget.Module.html#property_contructor", "type": "property"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "contructor", "url": "YAHOO.widget.OverlayManager.html#property_contructor", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Panel", "name": "_createHiddenFocusElement", "url": "YAHOO.widget.Panel.html#method__createHiddenFocusElement", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "dd", "url": "YAHOO.widget.Panel.html#property_dd", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Overlay.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Panel", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Panel.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Dialog", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Dialog.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Tooltip", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Tooltip.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Module", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.Module.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "private", "host": "YAHOO.widget.SimpleDialog", "name": "DEFAULT_CONFIG", "url": "YAHOO.widget.SimpleDialog.html#property_DEFAULT_CONFIG", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "destroy", "url": "YAHOO.widget.Overlay.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "destroy", "url": "YAHOO.widget.Panel.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "destroy", "url": "YAHOO.widget.Dialog.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "destroy", "url": "YAHOO.widget.Tooltip.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "destroy", "url": "YAHOO.util.Config.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "destroy", "url": "YAHOO.widget.Module.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "destroyEvent", "url": "YAHOO.widget.Module.html#event_destroyEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "disabled", "url": "YAHOO.widget.Tooltip.html#config_disabled", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "doCenterOnDOMEvent", "url": "YAHOO.widget.Overlay.html#method_doCenterOnDOMEvent", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_doClose", "url": "YAHOO.widget.Panel.html#method__doClose", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Dialog", "name": "_doClose", "url": "YAHOO.widget.Dialog.html#method__doClose", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "doHide", "url": "YAHOO.widget.Tooltip.html#method_doHide", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "doShow", "url": "YAHOO.widget.Tooltip.html#method_doShow", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "doSubmit", "url": "YAHOO.widget.Dialog.html#method_doSubmit", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "dragEvent", "url": "YAHOO.widget.Panel.html#event_dragEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "draggable", "url": "YAHOO.widget.Panel.html#config_draggable", "type": "config"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "dragOnly", "url": "YAHOO.widget.Panel.html#config_dragOnly", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "effect", "url": "YAHOO.widget.Module.html#config_effect", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "element", "url": "YAHOO.widget.Module.html#property_element", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "enforceConstraints", "url": "YAHOO.widget.Overlay.html#method_enforceConstraints", "type": "method"}, {"access": "private", "host": "YAHOO.util.Config", "name": "eventQueue", "url": "YAHOO.util.Config.html#property_eventQueue", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "EVENT_TYPES", "url": "YAHOO.widget.Overlay.html#property_EVENT_TYPES", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Panel", "name": "EVENT_TYPES", "url": "YAHOO.widget.Panel.html#property_EVENT_TYPES", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Dialog", "name": "EVENT_TYPES", "url": "YAHOO.widget.Dialog.html#property_EVENT_TYPES", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Tooltip", "name": "EVENT_TYPES", "url": "YAHOO.widget.Tooltip.html#property_EVENT_TYPES", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Module", "name": "EVENT_TYPES", "url": "YAHOO.widget.Module.html#property_EVENT_TYPES", "type": "property"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "FADE", "url": "YAHOO.widget.ContainerEffect.html#method_FADE", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "fillHeight", "url": "YAHOO.widget.Overlay.html#method_fillHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "find", "url": "YAHOO.widget.OverlayManager.html#method_find", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "_findTriggerCE", "url": "YAHOO.widget.Overlay.html#method__findTriggerCE", "type": "method"}, {"access": "private", "host": "YAHOO.util.Config", "name": "fireEvent", "url": "YAHOO.util.Config.html#method_fireEvent", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "fireQueue", "url": "YAHOO.util.Config.html#method_fireQueue", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "fitsInViewport", "url": "YAHOO.widget.Overlay.html#method_fitsInViewport", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "fixedcenter", "url": "YAHOO.widget.Overlay.html#config_fixedcenter", "type": "config"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "focus", "url": "YAHOO.widget.OverlayManager.html#method_focus", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusDefaultButton", "url": "YAHOO.widget.Dialog.html#method_focusDefaultButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "focusevent", "url": "YAHOO.widget.OverlayManager.html#config_focusevent", "type": "config"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "focusFirst", "url": "YAHOO.widget.Panel.html#method_focusFirst", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusFirst", "url": "YAHOO.widget.Dialog.html#method_focusFirst", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusFirstButton", "url": "YAHOO.widget.Dialog.html#method_focusFirstButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "focusLast", "url": "YAHOO.widget.Panel.html#method_focusLast", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusLast", "url": "YAHOO.widget.Dialog.html#method_focusLast", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "focusLastButton", "url": "YAHOO.widget.Dialog.html#method_focusLastButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "footer", "url": "YAHOO.widget.Module.html#property_footer", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "forceContainerRedraw", "url": "YAHOO.widget.Overlay.html#method_forceContainerRedraw", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "forceUnderlayRedraw", "url": "YAHOO.widget.Panel.html#method_forceUnderlayRedraw", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "forceUnderlayRedraw", "url": "YAHOO.widget.Tooltip.html#method_forceUnderlayRedraw", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "form", "url": "YAHOO.widget.Dialog.html#property_form", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "formSubmitEvent", "url": "YAHOO.widget.Dialog.html#event_formSubmitEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "getActive", "url": "YAHOO.widget.OverlayManager.html#method_getActive", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Dialog", "name": "_getButton", "url": "YAHOO.widget.Dialog.html#method__getButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "getButtons", "url": "YAHOO.widget.Dialog.html#method_getButtons", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "_getComputedHeight", "url": "YAHOO.widget.Overlay.html#method__getComputedHeight", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "getConfig", "url": "YAHOO.util.Config.html#method_getConfig", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_getConstrainedPos", "url": "YAHOO.widget.Overlay.html#method__getConstrainedPos", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "getConstrainedX", "url": "YAHOO.widget.Overlay.html#method_getConstrainedX", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "getConstrainedXY", "url": "YAHOO.widget.Overlay.html#method_getConstrainedXY", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "getConstrainedY", "url": "YAHOO.widget.Overlay.html#method_getConstrainedY", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "getData", "url": "YAHOO.widget.Dialog.html#method_getData", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "getFocusableElements", "url": "YAHOO.widget.Panel.html#method_getFocusableElements", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Dialog", "name": "_getFormAttributes", "url": "YAHOO.widget.Dialog.html#method__getFormAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "_getPreciseHeight", "url": "YAHOO.widget.Overlay.html#method__getPreciseHeight", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "getProperty", "url": "YAHOO.util.Config.html#method_getProperty", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleCompleteAnimateIn", "url": "YAHOO.widget.ContainerEffect.html#method_handleCompleteAnimateIn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleCompleteAnimateOut", "url": "YAHOO.widget.ContainerEffect.html#method_handleCompleteAnimateOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleStartAnimateIn", "url": "YAHOO.widget.ContainerEffect.html#method_handleStartAnimateIn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleStartAnimateOut", "url": "YAHOO.widget.ContainerEffect.html#method_handleStartAnimateOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleTweenAnimateIn", "url": "YAHOO.widget.ContainerEffect.html#method_handleTweenAnimateIn", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "handleTweenAnimateOut", "url": "YAHOO.widget.ContainerEffect.html#method_handleTweenAnimateOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "header", "url": "YAHOO.widget.Module.html#property_header", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "height", "url": "YAHOO.widget.Overlay.html#config_height", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "hide", "url": "YAHOO.widget.Module.html#method_hide", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "hideaftersubmit", "url": "YAHOO.widget.Dialog.html#config_hideaftersubmit", "type": "config"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "hideAll", "url": "YAHOO.widget.OverlayManager.html#method_hideAll", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "hidedelay", "url": "YAHOO.widget.Tooltip.html#config_hidedelay", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "hideEvent", "url": "YAHOO.widget.Module.html#event_hideEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "hideIframe", "url": "YAHOO.widget.Overlay.html#method_hideIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "hideMacGeckoScrollbars", "url": "YAHOO.widget.Overlay.html#method_hideMacGeckoScrollbars", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "hideMask", "url": "YAHOO.widget.Panel.html#method_hideMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "hideMaskEvent", "url": "YAHOO.widget.Panel.html#event_hideMaskEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "icon", "url": "YAHOO.widget.SimpleDialog.html#config_icon", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "id", "url": "YAHOO.widget.Module.html#property_id", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "iframe", "url": "YAHOO.widget.Overlay.html#config_iframe", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "imageRoot", "url": "YAHOO.widget.Module.html#property_imageRoot", "type": "property"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "init", "url": "YAHOO.widget.ContainerEffect.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "init", "url": "YAHOO.widget.Overlay.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "init", "url": "YAHOO.widget.Panel.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "init", "url": "YAHOO.widget.Dialog.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "init", "url": "YAHOO.widget.Tooltip.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "init", "url": "YAHOO.util.Config.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "init", "url": "YAHOO.widget.Module.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "init", "url": "YAHOO.widget.SimpleDialog.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "init", "url": "YAHOO.widget.OverlayManager.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "initDefaultConfig", "url": "YAHOO.widget.Overlay.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "initDefaultConfig", "url": "YAHOO.widget.Panel.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "initDefaultConfig", "url": "YAHOO.widget.Dialog.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "initDefaultConfig", "url": "YAHOO.widget.Tooltip.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "initDefaultConfig", "url": "YAHOO.widget.Module.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "initDefaultConfig", "url": "YAHOO.widget.SimpleDialog.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "initDefaultConfig", "url": "YAHOO.widget.OverlayManager.html#method_initDefaultConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "initEvent", "url": "YAHOO.widget.Module.html#event_initEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "initEvents", "url": "YAHOO.widget.Overlay.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "initEvents", "url": "YAHOO.widget.Panel.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "initEvents", "url": "YAHOO.widget.Dialog.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "initEvents", "url": "YAHOO.widget.Tooltip.html#method_initEvents", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "initEvents", "url": "YAHOO.widget.Module.html#method_initEvents", "type": "method"}, {"access": "private", "host": "YAHOO.util.Config", "name": "initialConfig", "url": "YAHOO.util.Config.html#property_initialConfig", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Module", "name": "_initResizeMonitor", "url": "YAHOO.widget.Module.html#method__initResizeMonitor", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "initResizeMonitor", "url": "YAHOO.widget.Module.html#method_initResizeMonitor", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "isSecure", "url": "YAHOO.widget.Module.html#property_isSecure", "type": "property"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "keylisteners", "url": "YAHOO.widget.Panel.html#config_keylisteners", "type": "config"}, {"access": "protected", "host": "YAHOO.widget.OverlayManager", "name": "_manageBlur", "url": "YAHOO.widget.OverlayManager.html#method__manageBlur", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.OverlayManager", "name": "_manageFocus", "url": "YAHOO.widget.OverlayManager.html#method__manageFocus", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "manualSubmitEvent", "url": "YAHOO.widget.Dialog.html#event_manualSubmitEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "modal", "url": "YAHOO.widget.Panel.html#config_modal", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "monitorresize", "url": "YAHOO.widget.Module.html#config_monitorresize", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "moveEvent", "url": "YAHOO.widget.Overlay.html#event_moveEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "moveTo", "url": "YAHOO.widget.Overlay.html#method_moveTo", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "onContextMouseMove", "url": "YAHOO.widget.Tooltip.html#method_onContextMouseMove", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "onContextMouseOut", "url": "YAHOO.widget.Tooltip.html#method_onContextMouseOut", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "onContextMouseOver", "url": "YAHOO.widget.Tooltip.html#method_onContextMouseOver", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "onDomResize", "url": "YAHOO.widget.Overlay.html#method_onDomResize", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "onDomResize", "url": "YAHOO.widget.Module.html#method_onDomResize", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Panel", "name": "_onElementFocus", "url": "YAHOO.widget.Panel.html#method__onElementFocus", "type": "method"}, {"access": "private", "host": "YAHOO.widget.OverlayManager", "name": "_onOverlayBlurHandler", "url": "YAHOO.widget.OverlayManager.html#method__onOverlayBlurHandler", "type": "method"}, {"access": "private", "host": "YAHOO.widget.OverlayManager", "name": "_onOverlayDestroy", "url": "YAHOO.widget.OverlayManager.html#method__onOverlayDestroy", "type": "method"}, {"access": "private", "host": "YAHOO.widget.OverlayManager", "name": "_onOverlayElementFocus", "url": "YAHOO.widget.OverlayManager.html#method__onOverlayElementFocus", "type": "method"}, {"access": "private", "host": "YAHOO.widget.OverlayManager", "name": "_onOverlayFocusHandler", "url": "YAHOO.widget.OverlayManager.html#method__onOverlayFocusHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "onRender", "url": "YAHOO.widget.Tooltip.html#method_onRender", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "outputEventQueue", "url": "YAHOO.util.Config.html#method_outputEventQueue", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "overlay", "url": "YAHOO.widget.ContainerEffect.html#property_overlay", "type": "property"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "OverlayManager.CSS_FOCUSED", "url": "YAHOO.widget.OverlayManager.html#property_OverlayManager.CSS_FOCUSED", "type": "property"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "overlays", "url": "YAHOO.widget.OverlayManager.html#property_overlays", "type": "property"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "overlays", "url": "YAHOO.widget.OverlayManager.html#config_overlays", "type": "config"}, {"access": "", "host": "YAHOO.util.Config", "name": "owner", "url": "YAHOO.util.Config.html#property_owner", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "platform", "url": "YAHOO.widget.Module.html#property_platform", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "postdata", "url": "YAHOO.widget.Dialog.html#config_postdata", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "postmethod", "url": "YAHOO.widget.Dialog.html#config_postmethod", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "preventcontextoverlap", "url": "YAHOO.widget.Overlay.html#config_preventcontextoverlap", "type": "config"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_preventOverlap", "url": "YAHOO.widget.Overlay.html#method__preventOverlap", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "preventoverlap", "url": "YAHOO.widget.Tooltip.html#config_preventoverlap", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "preventOverlay", "url": "YAHOO.widget.Tooltip.html#method_preventOverlay", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_primeXYFromDOM", "url": "YAHOO.widget.Overlay.html#method__primeXYFromDOM", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_processTriggers", "url": "YAHOO.widget.Overlay.html#method__processTriggers", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "queueInProgress", "url": "YAHOO.util.Config.html#property_queueInProgress", "type": "property"}, {"access": "", "host": "YAHOO.util.Config", "name": "queueProperty", "url": "YAHOO.util.Config.html#method_queueProperty", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "refireEvent", "url": "YAHOO.util.Config.html#method_refireEvent", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "refresh", "url": "YAHOO.util.Config.html#method_refresh", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "register", "url": "YAHOO.widget.OverlayManager.html#method_register", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "registerDragDrop", "url": "YAHOO.widget.Panel.html#method_registerDragDrop", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "registerForm", "url": "YAHOO.widget.Dialog.html#method_registerForm", "type": "method"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "registerForm", "url": "YAHOO.widget.SimpleDialog.html#method_registerForm", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "remove", "url": "YAHOO.widget.OverlayManager.html#method_remove", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Tooltip", "name": "_removeEventListeners", "url": "YAHOO.widget.Tooltip.html#method__removeEventListeners", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_removeFocusHandlers", "url": "YAHOO.widget.Panel.html#method__removeFocusHandlers", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "removeMask", "url": "YAHOO.widget.Panel.html#method_removeMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "render", "url": "YAHOO.widget.Panel.html#method_render", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "render", "url": "YAHOO.widget.Module.html#method_render", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_renderBody", "url": "YAHOO.widget.Panel.html#method__renderBody", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Module", "name": "_renderBody", "url": "YAHOO.widget.Module.html#method__renderBody", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "renderEvent", "url": "YAHOO.widget.Module.html#event_renderEvent", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_renderFooter", "url": "YAHOO.widget.Panel.html#method__renderFooter", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Module", "name": "_renderFooter", "url": "YAHOO.widget.Module.html#method__renderFooter", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Panel", "name": "_renderHeader", "url": "YAHOO.widget.Panel.html#method__renderHeader", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Module", "name": "_renderHeader", "url": "YAHOO.widget.Module.html#method__renderHeader", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "resetProperty", "url": "YAHOO.util.Config.html#method_resetProperty", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "setBody", "url": "YAHOO.widget.Module.html#method_setBody", "type": "method"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "setBody", "url": "YAHOO.widget.SimpleDialog.html#method_setBody", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_setDomVisibility", "url": "YAHOO.widget.Overlay.html#method__setDomVisibility", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "setFirstLastFocusable", "url": "YAHOO.widget.Panel.html#method_setFirstLastFocusable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "setFirstLastFocusable", "url": "YAHOO.widget.Dialog.html#method_setFirstLastFocusable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "setFooter", "url": "YAHOO.widget.Module.html#method_setFooter", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "setHeader", "url": "YAHOO.widget.Module.html#method_setHeader", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "setProperty", "url": "YAHOO.util.Config.html#method_setProperty", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "setTabLoop", "url": "YAHOO.widget.Panel.html#method_setTabLoop", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "setTabLoop", "url": "YAHOO.widget.Dialog.html#method_setTabLoop", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "show", "url": "YAHOO.widget.Module.html#method_show", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "showAll", "url": "YAHOO.widget.OverlayManager.html#method_showAll", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "showdelay", "url": "YAHOO.widget.Tooltip.html#config_showdelay", "type": "config"}, {"access": "", "host": "YAHOO.widget.Module", "name": "showEvent", "url": "YAHOO.widget.Module.html#event_showEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "showIframe", "url": "YAHOO.widget.Overlay.html#method_showIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "showMacGeckoScrollbars", "url": "YAHOO.widget.Overlay.html#method_showMacGeckoScrollbars", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "showMask", "url": "YAHOO.widget.Panel.html#method_showMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "showMaskEvent", "url": "YAHOO.widget.Panel.html#event_showMaskEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "showProcId", "url": "YAHOO.widget.Tooltip.html#property_showProcId", "type": "property"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "sizeMask", "url": "YAHOO.widget.Panel.html#method_sizeMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "sizeUnderlay", "url": "YAHOO.widget.Panel.html#method_sizeUnderlay", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "SLIDE", "url": "YAHOO.widget.ContainerEffect.html#method_SLIDE", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "stackIframe", "url": "YAHOO.widget.Overlay.html#method_stackIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "stackMask", "url": "YAHOO.widget.Panel.html#method_stackMask", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "strings", "url": "YAHOO.widget.Panel.html#config_strings", "type": "config"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "submit", "url": "YAHOO.widget.Dialog.html#method_submit", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "submitEvent", "url": "YAHOO.widget.Dialog.html#event_submitEvent", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Dialog", "name": "_submitHandler", "url": "YAHOO.widget.Dialog.html#method__submitHandler", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "subscribeToConfigEvent", "url": "YAHOO.util.Config.html#method_subscribeToConfigEvent", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Module", "name": "_supportsCWResize", "url": "YAHOO.widget.Module.html#method__supportsCWResize", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "syncIframe", "url": "YAHOO.widget.Overlay.html#method_syncIframe", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "syncPosition", "url": "YAHOO.widget.Overlay.html#method_syncPosition", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.OverlayManager", "name": "_syncZIndex", "url": "YAHOO.widget.OverlayManager.html#method__syncZIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "targetElement", "url": "YAHOO.widget.ContainerEffect.html#property_targetElement", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "text", "url": "YAHOO.widget.Tooltip.html#config_text", "type": "config"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "text", "url": "YAHOO.widget.SimpleDialog.html#config_text", "type": "config"}, {"access": "", "host": "YAHOO.widget.ContainerEffect", "name": "toString", "url": "YAHOO.widget.ContainerEffect.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "toString", "url": "YAHOO.widget.Overlay.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "toString", "url": "YAHOO.widget.Panel.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "toString", "url": "YAHOO.widget.Dialog.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "toString", "url": "YAHOO.widget.Tooltip.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.Config", "name": "toString", "url": "YAHOO.util.Config.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "toString", "url": "YAHOO.widget.Module.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "toString", "url": "YAHOO.widget.SimpleDialog.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.OverlayManager", "name": "toString", "url": "YAHOO.widget.OverlayManager.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "underlay", "url": "YAHOO.widget.Panel.html#config_underlay", "type": "config"}, {"access": "", "host": "YAHOO.util.Config", "name": "unsubscribeFromConfigEvent", "url": "YAHOO.util.Config.html#method_unsubscribeFromConfigEvent", "type": "method"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "validate", "url": "YAHOO.widget.Dialog.html#method_validate", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Overlay", "name": "_validateAutoFillHeight", "url": "YAHOO.widget.Overlay.html#method__validateAutoFillHeight", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "visible", "url": "YAHOO.widget.Module.html#config_visible", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "width", "url": "YAHOO.widget.Overlay.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "width", "url": "YAHOO.widget.Tooltip.html#config_width", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "x", "url": "YAHOO.widget.Overlay.html#config_x", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "xy", "url": "YAHOO.widget.Overlay.html#config_xy", "type": "config"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "xyoffset", "url": "YAHOO.widget.Tooltip.html#config_xyoffset", "type": "config"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "y", "url": "YAHOO.widget.Overlay.html#config_y", "type": "config"}, {"access": "", "host": "YAHOO.util.Config", "name": "YAHOO.util.Config.alreadySubscribed", "url": "YAHOO.util.Config.html#method_YAHOO.util.Config.alreadySubscribed", "type": "method"}, {"access": "private", "host": "YAHOO.util.Config", "name": "YAHOO.util.Config.BOOLEAN_TYPE", "url": "YAHOO.util.Config.html#property_YAHOO.util.Config.BOOLEAN_TYPE", "type": "property"}, {"access": "private", "host": "YAHOO.util.Config", "name": "YAHOO.util.Config.CONFIG_CHANGED_EVENT", "url": "YAHOO.util.Config.html#property_YAHOO.util.Config.CONFIG_CHANGED_EVENT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Dialog", "name": "YAHOO.widget.Dialog.CSS_DIALOG", "url": "YAHOO.widget.Dialog.html#property_YAHOO.widget.Dialog.CSS_DIALOG", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.CSS_BODY", "url": "YAHOO.widget.Module.html#property_YAHOO.widget.Module.CSS_BODY", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.CSS_FOOTER", "url": "YAHOO.widget.Module.html#property_YAHOO.widget.Module.CSS_FOOTER", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.CSS_HEADER", "url": "YAHOO.widget.Module.html#property_YAHOO.widget.Module.CSS_HEADER", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.CSS_MODULE", "url": "YAHOO.widget.Module.html#property_YAHOO.widget.Module.CSS_MODULE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.forceDocumentRedraw", "url": "YAHOO.widget.Module.html#method_YAHOO.widget.Module.forceDocumentRedraw", "type": "method"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.IMG_ROOT", "url": "YAHOO.widget.Module.html#property_YAHOO.widget.Module.IMG_ROOT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.IMG_ROOT_SSL", "url": "YAHOO.widget.Module.html#property_YAHOO.widget.Module.IMG_ROOT_SSL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.RESIZE_MONITOR_BUFFER", "url": "YAHOO.widget.Module.html#property_YAHOO.widget.Module.RESIZE_MONITOR_BUFFER", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.RESIZE_MONITOR_SECURE_URL", "url": "YAHOO.widget.Module.html#property_YAHOO.widget.Module.RESIZE_MONITOR_SECURE_URL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Module", "name": "YAHOO.widget.Module.textResizeEvent", "url": "YAHOO.widget.Module.html#event_YAHOO.widget.Module.textResizeEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.BOTTOM_LEFT", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.BOTTOM_LEFT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.BOTTOM_RIGHT", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.BOTTOM_RIGHT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.CSS_HIDDEN", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.CSS_HIDDEN", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.CSS_IFRAME", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.CSS_IFRAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.CSS_OVERLAY", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.CSS_OVERLAY", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.IFRAME_SRC", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.IFRAME_SRC", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay._initialized", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay._initialized", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.STD_MOD_RE", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.STD_MOD_RE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.TOP_LEFT", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.TOP_LEFT", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.TOP_RIGHT", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.TOP_RIGHT", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay._TRIGGER_MAP", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay._TRIGGER_MAP", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.VIEWPORT_OFFSET", "url": "YAHOO.widget.Overlay.html#property_YAHOO.widget.Overlay.VIEWPORT_OFFSET", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.windowResizeEvent", "url": "YAHOO.widget.Overlay.html#event_YAHOO.widget.Overlay.windowResizeEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.windowResizeHandler", "url": "YAHOO.widget.Overlay.html#method_YAHOO.widget.Overlay.windowResizeHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.windowScrollEvent", "url": "YAHOO.widget.Overlay.html#event_YAHOO.widget.Overlay.windowScrollEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "YAHOO.widget.Overlay.windowScrollHandler", "url": "YAHOO.widget.Overlay.html#method_YAHOO.widget.Overlay.windowScrollHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "YAHOO.widget.Panel.CSS_PANEL", "url": "YAHOO.widget.Panel.html#property_YAHOO.widget.Panel.CSS_PANEL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "YAHOO.widget.Panel.CSS_PANEL_CONTAINER", "url": "YAHOO.widget.Panel.html#property_YAHOO.widget.Panel.CSS_PANEL_CONTAINER", "type": "property"}, {"access": "", "host": "YAHOO.widget.Panel", "name": "YAHOO.widget.Panel.FOCUSABLE", "url": "YAHOO.widget.Panel.html#property_YAHOO.widget.Panel.FOCUSABLE", "type": "property"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "YAHOO.widget.SimpleDialog.CSS_SIMPLEDIALOG", "url": "YAHOO.widget.SimpleDialog.html#property_YAHOO.widget.SimpleDialog.CSS_SIMPLEDIALOG", "type": "property"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "YAHOO.widget.SimpleDialog.ICON_ALARM", "url": "YAHOO.widget.SimpleDialog.html#property_YAHOO.widget.SimpleDialog.ICON_ALARM", "type": "property"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "YAHOO.widget.SimpleDialog.ICON_BLOCK", "url": "YAHOO.widget.SimpleDialog.html#property_YAHOO.widget.SimpleDialog.ICON_BLOCK", "type": "property"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "YAHOO.widget.SimpleDialog.ICON_CSS_CLASSNAME", "url": "YAHOO.widget.SimpleDialog.html#property_YAHOO.widget.SimpleDialog.ICON_CSS_CLASSNAME", "type": "property"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "YAHOO.widget.SimpleDialog.ICON_HELP", "url": "YAHOO.widget.SimpleDialog.html#property_YAHOO.widget.SimpleDialog.ICON_HELP", "type": "property"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "YAHOO.widget.SimpleDialog.ICON_INFO", "url": "YAHOO.widget.SimpleDialog.html#property_YAHOO.widget.SimpleDialog.ICON_INFO", "type": "property"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "YAHOO.widget.SimpleDialog.ICON_TIP", "url": "YAHOO.widget.SimpleDialog.html#property_YAHOO.widget.SimpleDialog.ICON_TIP", "type": "property"}, {"access": "", "host": "YAHOO.widget.SimpleDialog", "name": "YAHOO.widget.SimpleDialog.ICON_WARN", "url": "YAHOO.widget.SimpleDialog.html#property_YAHOO.widget.SimpleDialog.ICON_WARN", "type": "property"}, {"access": "", "host": "YAHOO.widget.Tooltip", "name": "YAHOO.widget.Tooltip.CSS_TOOLTIP", "url": "YAHOO.widget.Tooltip.html#property_YAHOO.widget.Tooltip.CSS_TOOLTIP", "type": "property"}, {"access": "", "host": "YAHOO.widget.Overlay", "name": "zIndex", "url": "YAHOO.widget.Overlay.html#config_zIndex", "type": "config"}];
+</script>
+</body>
+</html>

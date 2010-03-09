@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Asynchronous Testing</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/yuitest/assets/skins/sam/yuitest.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/yuitest/yuitest-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Asynchronous Testing</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to create an asynchronous test with the YUI Test framework for testing browser-based JavaScript code. 
+  A <a href="/yui/yuitest/#testcase"><code>TestCase</code></a> object is created with a test that waits for a
+  few seconds before continuing. The <a href="/yui/yuitest/#testrunner"><code>TestRunner</code></a>
+  is then used to run the tests once the page has loaded.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="testLogger"></div>
+<script type="text/javascript">
+
+    YAHOO.namespace("example.yuitest");
+    
+    YAHOO.example.yuitest.AsyncTestCase = new YAHOO.tool.TestCase({
+    
+        //name of the test case - if not provided, one is auto-generated
+        name : "Asynchronous Tests",
+        
+        //---------------------------------------------------------------------
+        // setUp and tearDown methods - optional
+        //---------------------------------------------------------------------
+        
+        /*
+         * Sets up data that is needed by each test.
+         */
+        setUp : function () {
+            this.data = {
+                name: "yuitest",
+                year: 2007,
+                beta: true
+            };
+        },
+        
+        /*
+         * Cleans up everything that was created by setUp().
+         */
+        tearDown : function () {
+            delete this.data;
+        },
+                
+        //---------------------------------------------------------------------
+        // Test methods - names must begin with "test"
+        //---------------------------------------------------------------------
+        
+        testWait : function (){
+            var Assert = YAHOO.util.Assert;
+            
+            //do some assertions now
+            Assert.isTrue(this.data.beta);
+            Assert.isNumber(this.data.year);
+            
+            //wait five seconds and do some more
+            this.wait(function(){
+            
+                Assert.isString(this.data.name);                
+            
+            }, 5000);
+        
+        }
+                    
+    });
+     
+    YAHOO.util.Event.onDOMReady(function (){
+        //create the logger
+        var logger = new YAHOO.tool.TestLogger("testLogger");
+        YAHOO.tool.TestRunner.add(YAHOO.example.yuitest.AsyncTestCase);
+
+        //run the tests
+        YAHOO.tool.TestRunner.run();
+    });
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

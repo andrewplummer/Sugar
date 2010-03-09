@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Push Buttons</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    #button-example-form fieldset, 
+    #button-example-form fieldset div {
+
+        border: 2px groove #ccc;
+        margin: .5em;
+        padding: .5em;
+
+    }
+
+    .yui-button#pushbutton2 button,
+    .yui-button#pushbutton5 button, 
+    .yui-button#pushbutton8 button {
+
+        background: url(../button/assets/add.gif) center center no-repeat;
+        text-indent: -4em;
+        overflow: hidden;
+        padding: 0 .75em;
+        width: 2em;
+        *margin-left: 4em;   /* IE only */
+        *padding: 0 1.75em;  /* IE only */
+
+    }
+    
+    .yui-button#pushbutton3 button,
+    .yui-button#pushbutton6 button, 
+    .yui-button#pushbutton9 button {
+
+        padding-left: 2em;
+        background: url(../button/assets/add.gif) 10% 50% no-repeat;
+    
+    }
+
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Push Buttons</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates different ways to create a Push Button.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+    YAHOO.example.init = function () {
+
+        // "click" event handler for each Button instance
+
+        function onButtonClick(p_oEvent) {
+
+            YAHOO.log("You clicked button: " + this.get("id"), "info", "example1");
+        
+        }
+
+
+        // "contentready" event handler for the "pushbuttonsfrommarkup" <fieldset>
+
+        YAHOO.util.Event.onContentReady("pushbuttonsfrommarkup", function () {
+
+            // Create Buttons using existing <input> elements as a data source
+
+            var oPushButton1 = new YAHOO.widget.Button("pushbutton1");
+            oPushButton1.on("click", onButtonClick);
+            
+            var oPushButton2 = new YAHOO.widget.Button("pushbutton2", { onclick: { fn: onButtonClick } });
+            var oPushButton3 = new YAHOO.widget.Button("pushbutton3", { onclick: { fn: onButtonClick } });
+
+
+            // Create Buttons using the YUI Button markup
+
+            var oPushButton4 = new YAHOO.widget.Button("pushbutton4");
+            oPushButton4.on("click", onButtonClick);
+
+            var oPushButton5 = new YAHOO.widget.Button("pushbutton5", { onclick: { fn: onButtonClick } });
+            var oPushButton6 = new YAHOO.widget.Button("pushbutton6", { onclick: { fn: onButtonClick } });        
+        
+        });
+
+
+        // Create Buttons without using existing markup
+
+        var oPushButton7 = new YAHOO.widget.Button({ label:"Add", id:"pushbutton7", container:"pushbuttonsfromjavascript" });
+        oPushButton7.on("click", onButtonClick);
+
+        var oPushButton8 = new YAHOO.widget.Button({ label:"Add", id:"pushbutton8", container:"pushbuttonsfromjavascript", onclick: { fn: onButtonClick } });
+        var oPushButton9 = new YAHOO.widget.Button({ label:"Add", id:"pushbutton9", container:"pushbuttonsfromjavascript", onclick: { fn: onButtonClick } });
+
+    } ();
+
+</script>
+
+<form id="button-example-form" name="button-example-form" method="post">
+
+    <fieldset id="pushbuttons">
+        <legend>Push Buttons</legend>
+
+        <fieldset id="pushbuttonsfrommarkup">
+            <legend>From Markup</legend>
+
+            <div>
+                <button type="button" id="pushbutton1" name="button1" value="Add">Add</button>
+                <input type="button" id="pushbutton2" name="button2" value="Add">
+                <input type="button" id="pushbutton3" name="button3" value="Add">
+            </div>
+
+            <div>
+                <span id="pushbutton4" class="yui-button yui-push-button"><span class="first-child"><input type="button" name="button4" value="Add"></span></span>
+                <span id="pushbutton5" class="yui-button yui-push-button"><em class="first-child"><button type="button" name="button5">Add</button></em></span>
+                <span id="pushbutton6" class="yui-button yui-push-button"><strong class="first-child"><button type="button" name="button6">Add</button></strong></span>
+            </div>
+
+        </fieldset>
+        
+        <fieldset id="pushbuttonsfromjavascript">
+            <legend>From JavaScript</legend>
+        </fieldset>
+
+    </fieldset>
+
+</form>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

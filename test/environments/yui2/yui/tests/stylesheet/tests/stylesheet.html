@@ -1,0 +1,644 @@
+<!doctype html>
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" id="locallink" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">
+    <style type="text/css" id="styleblock" class="highlight-ignore">
+        h1 {
+            font: normal 125%/1.4 Arial, sans-serif;
+        }
+        .yui-log {
+            display: inline;
+            float: right;
+            position: relative;
+        }
+        .yui-log-container {
+            width: 300px;
+        }
+        .yui-log .yui-log-bd {
+            height: 525px;
+        }
+        .yui-log .yui-log-ft {
+            position: static;
+        }
+        .highlight-example {
+            display: inline;
+            float: left;
+            width: 650px;
+        }
+        .highlight-example h2 {
+            display: none;
+        }
+        .yui-log-bd h3 {
+            border-bottom: 1px solid #ccc;
+            color: #900;
+            margin: 0;
+            padding: 1em 0 0 1ex;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<h1>Tests</h1>
+<div id="testbed"></div>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="../../../build/stylesheet/stylesheet-debug.js"></script>
+<script type="text/javascript">
+(function () {
+
+var d = document,
+    t = YAHOO.tool,
+    u = YAHOO.util,
+    w = YAHOO.widget,
+    TestSuite   = t.TestSuite,
+    TestCase    = t.TestCase,
+    TestLogger  = t.TestLogger,
+    TestRunner  = t.TestRunner,
+    Event       = u.Event,
+    Dom         = u.Dom,
+    Assert      = u.Assert,
+    ArrayAssert = u.ArrayAssert,
+    StyleAssert = {},
+    testbed     = Dom.get('testbed'),
+    StyleSheet  = u.StyleSheet,
+    suite;
+
+StyleAssert.normalizeColor = function (c) {
+    return c && (c+'').
+        replace(/#([0-9a-f])([0-9a-f])([0-9a-f])(?![0-9a-f])/i,'#$1$1$2$2$3$3').
+        replace(/#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})(?![0-9a-f])/i,
+            function (m,r,g,b) {
+                return "rgb("+parseInt(r,16)+", "+
+                              parseInt(g,16)+", "+
+                              parseInt(b,16)+")" });
+};
+StyleAssert.areEqual = function (a,b,msg) {
+    var aa = StyleAssert.normalizeColor(a),
+        bb = StyleAssert.normalizeColor(b);
+
+    if ((+aa === 700 && bb === 'bold') || (+bb === 700 && aa === 'bold')) {
+        aa = bb;
+    }
+    if (aa !== bb) {
+        throw new u.ComparisonFailure(
+            Assert._formatMessage(msg, "Values should be equal."), a, b);
+    }
+};
+
+Dom.add = function (el,tag,conf) {
+    var child = d.createElement(tag);
+    if (conf) {
+        YAHOO.lang.augmentObject(child,conf,true);
+    }
+    return el.appendChild(child);
+};
+Dom.getNodeCount = function (tag,root) {
+    return (root||d).getElementsByTagName(tag||'*').length;
+};
+
+suite = new TestSuite("Tests");
+
+suite.add(new TestCase({
+    name : "Test &lt;style&gt; node creation",
+
+    setUp : function () {
+        this.styleNodeCount = Dom.getNodeCount('style');
+        this.linkNodeCount  = Dom.getNodeCount('link');
+
+        this.testNode = Dom.add(testbed,'div',{id:'target'});
+    },
+
+    tearDown : function () {
+        testbed.innerHTML + '';
+    },
+
+    test_createNew : function () {
+        var s = new StyleSheet('test');
+
+        Assert.areSame(this.styleNodeCount + 1, Dom.getNodeCount('style'));
+    },
+
+    test_createFromExistingStyle : function () {
+        var s = new StyleSheet('styleblock');
+
+        Assert.areSame(this.styleNodeCount, Dom.getNodeCount('style'));
+    },
+
+    test_createFromExistingLink : function () {
+        var s = new StyleSheet('locallink');
+
+        Assert.areSame(this.styleNodeCount, Dom.getNodeCount('style'),"style");
+        Assert.areSame(this.linkNodeCount, Dom.getNodeCount('link'),"link");
+    },
+
+    test_createEntireSheet : function () {
+        var s = new StyleSheet("#target { font-weight: bold; }");
+
+        Assert.areSame(this.styleNodeCount + 1, Dom.getNodeCount('style'));
+
+        Assert.areEqual('bold',Dom.getStyle(this.testNode,'font-weight'));
+    },
+
+    test_gettingFromCache : function () {
+        // By name
+        var a = new StyleSheet('test'),
+            b = new StyleSheet('test');
+
+        Assert.areSame(this.styleNodeCount, Dom.getNodeCount('style'));
+        Assert.areSame(a,b,"From cache by name");
+
+        // By generated id
+        b = new StyleSheet(a.getId());
+
+        Assert.areSame(this.styleNodeCount, Dom.getNodeCount('style'));
+        Assert.areSame(a,b,"From cache by yuiSSID");
+
+        // By node
+        a = new StyleSheet(d.getElementById('styleblock'));
+        b = new StyleSheet('styleblock');
+
+        Assert.areSame(this.styleNodeCount, Dom.getNodeCount('style'));
+        Assert.areSame(a,b,"From cache by node vs id");
+    }
+}));
+
+suite.add(new TestCase({
+    name : "Test xdomain stylesheet access",
+
+    setUp : function () {
+        this.remoteLink = Dom.add(
+            d.getElementsByTagName('head')[0],'link',{
+                type : 'text/css',
+                rel  : 'stylesheet',
+                href : 'http://yui.yahooapis.com/2.6.0/build/base/base-min.css'
+            });
+    },
+
+    tearDown : function () {
+        this.remoteLink.parentNode.removeChild(this.remoteLink);
+    },
+
+    _should : {
+        error : {
+            test_remoteStyleSheet : true
+        }
+    },
+
+    test_remoteStyleSheet : function () {
+        // Each line should throw an exception
+        var sheet = YAHOO.util.StyleSheet(this.remoteLink);
+
+        sheet.getCssText();
+
+        sheet.set('#target', { color: '#f00' });
+
+        sheet.unset('#target', 'color');
+
+        sheet.disable();
+
+        sheet.enable();
+    }
+}));
+
+suite.add(new TestCase({
+    name : "Test set",
+
+    setUp : function () {
+        this.stylesheet = new StyleSheet('test');
+
+        this.testNode = Dom.add(testbed,'div',{
+            id:'target',
+            innerHTML:'<p>1</p><p>2</p><pre>pre</pre>'
+        });
+    },
+    tearDown : function () {
+        testbed.innerHTML = '';
+        this.stylesheet.unset('#target');
+        this.stylesheet.unset('#target p');
+        this.stylesheet.unset('#target pre');
+        // This should be unnecessary, but for the sake of cleanliness...
+        this.stylesheet.unset('#target, #target p, #target pre');
+    },
+
+    test_addSimpleSelector : function () {
+        this.stylesheet.set('#target',{
+            color           : '#123456',
+            backgroundColor : '#eef',
+            border          : '1px solid #ccc'
+        });
+
+        StyleAssert.areEqual('#123456',
+                        Dom.getStyle(this.testNode,'color'),
+                        "color");
+        StyleAssert.areEqual('#eef',
+                        Dom.getStyle(this.testNode,'backgroundColor'),
+                        "backgroundColor");
+        StyleAssert.areEqual('1px',
+                        Dom.getStyle(this.testNode,'borderLeftWidth'),
+                        "border");
+    },
+
+    test_addRuleWithInvalidValue : function () {
+        // This would throw an exception in IE if anywhere
+        this.stylesheet.set('#target .foo .bar', { color : 'invalid-value' });
+    },
+
+    test_descendantSelector : function () {
+        var before = Dom.getStyle(
+                        testbed.getElementsByTagName('pre')[0],'textAlign');
+
+        this.stylesheet.set('#target p', { textAlign: 'right' });
+
+        StyleAssert.areEqual('right',
+                        Dom.getStyle(
+                            testbed.getElementsByTagName('p')[0],'textAlign'),
+                        "#target p { text-align: right; }");
+
+        StyleAssert.areEqual(before,
+                        Dom.getStyle(
+                            testbed.getElementsByTagName('pre')[0],'textAlign'),
+                        "#target pre should not be set (maybe auto/inherit?)");
+    },
+
+    test_setCommaSelector : function () {
+        var sheet = this.stylesheet.node.sheet ||
+            this.stylesheet.node.styleSheet;
+
+        if (!sheet) {
+            Assert.fail("Could not capture this.node.sheet");
+        }
+
+        this.stylesheet.set('#target, #target p, #target pre', {
+            paddingLeft: '16px'
+        });
+
+        Assert.areEqual(3,(sheet.cssRules || sheet.rules).length, "Comma selector split failure");
+
+        StyleAssert.areEqual('16px', Dom.getStyle(this.testNode,'paddingLeft'));
+        StyleAssert.areEqual('16px',
+                        Dom.getStyle(
+                            testbed.getElementsByTagName('p')[0],'paddingLeft'),
+                        "#target p");
+        StyleAssert.areEqual('16px',
+                        Dom.getStyle(
+                            testbed.getElementsByTagName('pre')[0],'paddingLeft'),
+                        "#target pre");
+    },
+
+    test_setWithCSSTextString : function () {
+        this.stylesheet.set('#target p', 'font-weight: bold; color: #00f').
+                        set('#target pre', 'text-transform: uppercase');
+
+        StyleAssert.areEqual('bold', Dom.getStyle(
+            this.testNode.getElementsByTagName('p')[0],'fontWeight'));
+        StyleAssert.areEqual('uppercase', Dom.getStyle(
+            this.testNode.getElementsByTagName('pre')[0],'textTransform'));
+    }
+}));
+
+suite.add(new TestCase({
+    name : "Test Enable/Disable sheet",
+
+    setUp : function () {
+        this.stylesheet = new StyleSheet('test');
+
+        this.stylesheet.enable();
+
+        this.testNode = Dom.add(testbed,'div',{id:'target'});
+
+        this.before = {
+            color           : Dom.getStyle(this.testNode,'color'),
+            backgroundColor : Dom.getStyle(this.testNode,'backgroundColor'),
+            borderLeftWidth : Dom.getStyle(this.testNode,'borderLeftWidth')
+        };
+
+    },
+
+    tearDown : function () {
+        testbed.innerHTML = '';
+        this.stylesheet.enable();
+        this.stylesheet.unset('#target');
+        this.stylesheet.unset('#target p');
+    },
+
+    test_disableSheet : function () {
+        this.stylesheet.set('#target',{
+            color           : '#123456',
+            backgroundColor : '#eef',
+            border          : '1px solid #ccc'
+        });
+
+        StyleAssert.areEqual('#123456',
+                        Dom.getStyle(this.testNode,'color'),
+                        "color (enabled)");
+        StyleAssert.areEqual('#eef',
+                        Dom.getStyle(this.testNode,'backgroundColor'),
+                        "backgroundColor (enabled)");
+        StyleAssert.areEqual('1px',
+                        Dom.getStyle(this.testNode,'borderLeftWidth'),
+                        "border (enabled)");
+
+        this.stylesheet.disable();
+
+        StyleAssert.areEqual(this.before.color,
+                        Dom.getStyle(this.testNode,'color'),
+                        "color (disabled)");
+        StyleAssert.areEqual(this.before.backgroundColor,
+                        Dom.getStyle(this.testNode,'backgroundColor'),
+                        "backgroundColor (disabled)");
+        StyleAssert.areEqual(this.before.borderLeftWidth,
+                        Dom.getStyle(this.testNode,'borderLeftWidth'),
+                        "border (disabled)");
+    },
+
+    test_enableSheet : function () {
+        this.stylesheet.disable();
+
+        this.stylesheet.set('#target',{
+            color           : '#123456',
+            backgroundColor : '#eef',
+            border          : '1px solid #ccc'
+        });
+
+        StyleAssert.areEqual(this.before.color,
+                        Dom.getStyle(this.testNode,'color'),
+                        "color (disabled)");
+        StyleAssert.areEqual(this.before.backgroundColor,
+                        Dom.getStyle(this.testNode,'backgroundColor'),
+                        "backgroundColor (disabled)");
+        StyleAssert.areEqual(this.before.borderLeftWidth,
+                        Dom.getStyle(this.testNode,'borderLeftWidth'),
+                        "border (disabled)");
+
+        this.stylesheet.enable();
+
+        StyleAssert.areEqual('#123456',
+                        Dom.getStyle(this.testNode,'color'),
+                        "color (enabled)");
+        StyleAssert.areEqual('#eef',
+                        Dom.getStyle(this.testNode,'backgroundColor'),
+                        "backgroundColor (enabled)");
+        StyleAssert.areEqual('1px',
+                        Dom.getStyle(this.testNode,'borderLeftWidth'),
+                        "border (enabled)");
+    }
+}));
+
+suite.add(new TestCase({
+    name : "Test unset",
+
+    setUp : function () {
+        this.stylesheet = new StyleSheet('test');
+
+        this.testNode = Dom.add(testbed,'div',{
+            id:'target',
+            innerHTML:'<p>1</p><p>2</p><pre>pre</pre>'
+        });
+
+        this.before = {
+            color           : Dom.getStyle(this.testNode,'color'),
+            backgroundColor : Dom.getStyle(this.testNode,'backgroundColor'),
+            borderLeftWidth : Dom.getStyle(this.testNode,'borderLeftWidth'),
+            textAlign       : Dom.getStyle(this.testNode,'textAlign')
+        };
+
+    },
+    tearDown : function () {
+        testbed.innerHTML = '';
+        this.stylesheet.unset('#target');
+        this.stylesheet.unset('#target p');
+        this.stylesheet.unset('#target pre');
+        // This should be unnecessary, but for the sake of cleanliness...
+        this.stylesheet.unset('#target, #target p, #target pre');
+    },
+
+    test_unset : function () {
+        this.stylesheet.set('#target',{
+            color           : '#f00',
+            backgroundColor : '#eef',
+            border          : '1px solid #ccc'
+        });
+
+        StyleAssert.areEqual('#f00',
+                        Dom.getStyle(this.testNode,'color'),
+                        "color (before unset)");
+        StyleAssert.areEqual('#eef',
+                        Dom.getStyle(this.testNode,'backgroundColor'),
+                        "backgroundColor (before unset)");
+        StyleAssert.areEqual('1px',
+                        Dom.getStyle(this.testNode,'borderLeftWidth'),
+                        "border (before unset)");
+
+        this.stylesheet.unset('#target', 'color');
+
+        StyleAssert.areEqual(this.before.color,
+                        Dom.getStyle(this.testNode,'color'),
+                        "color (after unset)");
+
+        this.stylesheet.unset('#target', ['backgroundColor','border']);
+
+        StyleAssert.areEqual(this.before.backgroundColor,
+                        Dom.getStyle(this.testNode,'backgroundColor'),
+                        "backgroundColor (after unset)");
+        StyleAssert.areEqual(this.before.borderLeftWidth,
+                        Dom.getStyle(this.testNode,'borderLeftWidth'),
+                        "border (after unset)");
+    },
+
+    test_removeRule : function () {
+        this.stylesheet.set('#target', { textAlign: 'right' });
+
+        StyleAssert.areEqual('right',
+                        Dom.getStyle(this.testNode,'textAlign'),
+                        "#target { text-align: right; }");
+
+        this.stylesheet.unset('#target');
+        StyleAssert.areEqual(this.before.textAlign,
+                        Dom.getStyle(this.testNode,'textAlign'),
+                        "#target text-align still in place");
+    },
+
+    test_unsetCommaSelector : function () {
+        var p      = this.testNode.getElementsByTagName('p')[0],
+            pre    = this.testNode.getElementsByTagName('pre')[0],
+            before = {
+                paddingLeft:Dom.getStyle([this.testNode,p,pre],'paddingLeft'),
+                marginRight:Dom.getStyle([this.testNode,p,pre],'marginRight')
+            },
+            after,
+            sheet = this.stylesheet.node.sheet ||
+                    this.stylesheet.node.styleSheet;
+
+        if (!sheet) {
+            Assert.fail("Could not capture this.node.sheet");
+        }
+
+        this.stylesheet.set('#target, #target p, #target pre', {
+            marginRight: '30px',
+            paddingLeft: '16px'
+        });
+
+
+        Assert.areEqual(3,(sheet.cssRules || sheet.rules).length,
+                        "Comma selector split failure");
+
+
+        this.stylesheet.unset('#target, #target p, #target pre','paddingLeft');
+
+        after = Dom.getStyle([this.testNode,p,pre],'paddingLeft');
+
+        Assert.areEqual(3,(sheet.cssRules || sheet.rules).length,
+                        "Should still be 3 rules");
+
+        ArrayAssert.itemsAreEqual(before.paddingLeft,after);
+
+        after = Dom.getStyle([this.testNode,p,pre],'marginRight');
+        ArrayAssert.itemsAreEqual(['30px','30px','30px'],after);
+    },
+
+    test_removeCommaSelector : function () {
+        var p      = this.testNode.getElementsByTagName('p')[0],
+            pre    = this.testNode.getElementsByTagName('pre')[0],
+            before = {
+                paddingLeft:Dom.getStyle([this.testNode,p,pre],'paddingLeft')
+            },
+            sheet = this.stylesheet.node.sheet ||
+                    this.stylesheet.node.styleSheet;
+
+        if (!sheet) {
+            Assert.fail("Could not capture this.node.sheet");
+        }
+
+        this.stylesheet.set('#target, #target p, #target pre', {
+            paddingLeft: '16px'
+        });
+
+        Assert.areEqual(3,(sheet.cssRules || sheet.rules).length,
+                        "Comma selector split failure");
+
+        this.stylesheet.unset('#target, #target pre','paddingLeft');
+
+        Assert.areEqual(1,(sheet.cssRules || sheet.rules).length);
+    }
+}));
+
+suite.add(new TestCase({
+    name : "Test getCssText",
+
+    setUp : function () {
+        this.stylesheet = new StyleSheet('test');
+
+        this.testNode = Dom.add(testbed,'div',{
+            id:'target',
+            innerHTML:'<p>1</p><p>2</p><pre>pre</pre>'
+        });
+
+        this.stylesheet.set('#target, #target p', {
+            padding: '3px'
+        });
+    },
+    tearDown : function () {
+        testbed.innerHTML = '';
+        this.stylesheet.unset('#target');
+        this.stylesheet.unset('#target p');
+    },
+
+    test_getRuleCSS : function () {
+        var css = this.stylesheet.getCssText('#target p');
+        YAHOO.log(css, 'info','TestLogger');
+        Assert.isString(css);
+        Assert.areSame(true, /padding/i.test(css));
+    },
+
+    test_getSheetCSS : function () {
+        var css = this.stylesheet.getCssText();
+
+        YAHOO.log(css, 'info','TestLogger');
+
+        Assert.isString(css);
+        Assert.areSame(true, /padding/i.test(css));
+        Assert.areSame(true, /#target/i.test(css));
+        Assert.areSame(true, /#target\s+p\s+\{/i.test(css));
+    }
+}));
+
+suite.add(new TestCase({
+    name : "Test float/opacity",
+
+    setUp : function () {
+        this.stylesheet = new StyleSheet('test');
+
+        if (!Dom.get('target')) {
+            this.testNode = Dom.add(testbed,'div',{
+                id:'target',
+                innerHTML:'<p id="p1">1</p><p id="p2">2</p><p id="p3">3</p>'
+            });
+        }
+    },
+
+    test_float : function () {
+        this.stylesheet.set('#target',{
+                            overflow: 'hidden',
+                            background: '#000',
+                            zoom: 1
+                        }).
+                        set('#target p',{
+                            height:'100px',
+                            width:'100px',
+                            border: '5px solid #ccc',
+                            background: '#fff',
+                            margin: '1em'
+                        }).
+                        set('#p1',{ float: 'left' }).
+                        set('#p2',{ cssFloat: 'left' }).
+                        set('#p3',{ styleFloat: 'left' });
+
+        Assert.areEqual('left', Dom.getStyle('p1','float'));
+        Assert.areEqual('left', Dom.getStyle('p2','float'));
+        Assert.areEqual('left', Dom.getStyle('p3','float'));
+    },
+
+    test_opacity : function () {
+        this.stylesheet.set('#p1',{ opacity: .5 }).
+                        set('#p2',{ opacity: ".2" }).
+                        set('#p3',{ opacity: 1 });
+
+        Assert.areEqual(0.5,Dom.getStyle('p1','opacity'));
+        Assert.areEqual(0.2,Dom.getStyle('p2','opacity'));
+        Assert.areEqual(1,Dom.getStyle('p3','opacity'));
+    }
+}));
+
+Event.onDOMReady(function () {
+
+    var logger = new TestLogger("log");
+    logger.hideCategory('info');
+    logger.formatMsg = function (e) {
+        if (e.category === 'section') {
+            return "<h3>"+e.msg+"</h3>";
+        } else if (e.category === "break") {
+            return "<br>";
+        } else {
+            return TestLogger.prototype.formatMsg.call(this,e);
+        }
+    };
+
+    YAHOO.log("Tests","section","TestRunner");
+
+    TestRunner.add(suite);
+
+    TestRunner.run();
+});
+
+})();
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js"></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: connection   connection_xdr.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>connection&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_connection.html" title="connection">connection</a>
+                
+                 &gt; connection_xdr.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c">  * @for Connect</span>
+<span class="c">  */</span>
+<span class="o">(</span><span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+	<span class="k">var</span> <span class="nx">YCM</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Connect</span><span class="o">,</span> <span class="nx">_fn</span> <span class="o">=</span> <span class="o">{};</span>
+
+   <span class="c">/**</span>
+<span class="c">    * @description This method creates and instantiates the Flash transport.</span>
+<span class="c">    * @method _swf</span>
+<span class="c">    * @private</span>
+<span class="c">    * @static</span>
+<span class="c">    * @param {string} URI to connection.swf.</span>
+<span class="c">    * @return {void}</span>
+<span class="c">    */</span>
+	<span class="k">function</span> <span class="nx">_swf</span><span class="o">(</span><span class="nx">uri</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="s1">&#39;&lt;object id=&quot;YUIConnectionSwf&quot; type=&quot;application/x-shockwave-flash&quot; data=&quot;&#39;</span> <span class="o">+</span>
+		        <span class="nx">uri</span> <span class="o">+</span> <span class="s1">&#39;&quot; width=&quot;0&quot; height=&quot;0&quot;&gt;&#39;</span> <span class="o">+</span>
+		     	<span class="s1">&#39;&lt;param name=&quot;movie&quot; value=&quot;&#39;</span> <span class="o">+</span> <span class="nx">uri</span> <span class="o">+</span> <span class="s1">&#39;&quot;&gt;&#39;</span> <span class="o">+</span>
+                <span class="s1">&#39;&lt;param name=&quot;allowScriptAccess&quot; value=&quot;always&quot;&gt;&#39;</span> <span class="o">+</span>
+		    	<span class="s1">&#39;&lt;/object&gt;&#39;</span><span class="o">,</span>
+		    <span class="nx">c</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="s1">&#39;div&#39;</span><span class="o">);</span>
+
+		<span class="nb">document</span><span class="o">.</span><span class="nx">body</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">c</span><span class="o">);</span>
+		<span class="nx">c</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">o</span><span class="o">;</span>
+	<span class="o">}</span>
+
+   <span class="c">/**</span>
+<span class="c">    * @description This method calls the public method on the</span>
+<span class="c">    * Flash transport to start the XDR transaction.  It is analogous</span>
+<span class="c">    * to Connection Manager&#39;s asyncRequest method.</span>
+<span class="c">    * @method xdr</span>
+<span class="c">    * @private</span>
+<span class="c">    * @static</span>
+<span class="c">    * @param {object} The transaction object.</span>
+<span class="c">    * @param {string} HTTP request method.</span>
+<span class="c">    * @param {string} URI for the transaction.</span>
+<span class="c">    * @param {object} The transaction&#39;s callback object.</span>
+<span class="c">    * @param {object} The JSON object used as HTTP POST data.</span>
+<span class="c">    * @return {void}</span>
+<span class="c">    */</span>
+	<span class="k">function</span> <span class="nx">_xdr</span><span class="o">(</span><span class="nx">o</span><span class="o">,</span> <span class="nx">m</span><span class="o">,</span> <span class="nx">u</span><span class="o">,</span> <span class="nx">c</span><span class="o">,</span> <span class="nx">d</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nx">_fn</span><span class="o">[</span><span class="nb">parseInt</span><span class="o">(</span><span class="nx">o</span><span class="o">.</span><span class="nx">tId</span><span class="o">)]</span> <span class="o">=</span> <span class="o">{</span> <span class="s1">&#39;o&#39;</span><span class="o">:</span><span class="nx">o</span><span class="o">,</span> <span class="s1">&#39;c&#39;</span><span class="o">:</span><span class="nx">c</span> <span class="o">};</span>
+		<span class="k">if</span> <span class="o">(</span><span class="nx">d</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nx">c</span><span class="o">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">m</span><span class="o">;</span>
+			<span class="nx">c</span><span class="o">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">d</span><span class="o">;</span>
+		<span class="o">}</span>
+
+		<span class="nx">o</span><span class="o">.</span><span class="nx">conn</span><span class="o">.</span><span class="nx">send</span><span class="o">(</span><span class="nx">u</span><span class="o">,</span> <span class="nx">c</span><span class="o">,</span> <span class="nx">o</span><span class="o">.</span><span class="nx">tId</span><span class="o">);</span>
+	<span class="o">}</span>
+
+   <span class="c">/**</span>
+<span class="c">    * @description This method instantiates the Flash transport and</span>
+<span class="c">    * establishes a static reference to it, used for all XDR requests.</span>
+<span class="c">    * @method transport</span>
+<span class="c">    * @public</span>
+<span class="c">    * @static</span>
+<span class="c">    * @param {string} URI to connection.swf.</span>
+<span class="c">    * @return {void}</span>
+<span class="c">    */</span>
+	<span class="k">function</span> <span class="nx">_init</span><span class="o">(</span><span class="nx">uri</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nx">_swf</span><span class="o">(</span><span class="nx">uri</span><span class="o">);</span>
+		<span class="nx">YCM</span><span class="o">.</span><span class="nx">_transport</span> <span class="o">=</span> <span class="nb">document</span><span class="o">.</span><span class="nx">getElementById</span><span class="o">(</span><span class="s1">&#39;YUIConnectionSwf&#39;</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="k">function</span> <span class="nx">_xdrReady</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nx">YCM</span><span class="o">.</span><span class="nx">xdrReadyEvent</span><span class="o">.</span><span class="nx">fire</span><span class="o">();</span>
+	<span class="o">}</span>
+
+   <span class="c">/**</span>
+<span class="c">    * @description This method fires the global and transaction start</span>
+<span class="c">    * events.</span>
+<span class="c">    * @method _xdrStart</span>
+<span class="c">    * @private</span>
+<span class="c">    * @static</span>
+<span class="c">    * @param {object} The transaction object.</span>
+<span class="c">    * @param {string} The transaction&#39;s callback object.</span>
+<span class="c">    * @return {void}</span>
+<span class="c">    */</span>
+	<span class="k">function</span> <span class="nx">_xdrStart</span><span class="o">(</span><span class="nx">o</span><span class="o">,</span> <span class="nx">cb</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="nx">o</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c">// Fire global custom event -- startEvent</span>
+<span class="c"></span>			<span class="nx">YCM</span><span class="o">.</span><span class="nx">startEvent</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">o</span><span class="o">,</span> <span class="nx">cb</span><span class="o">.</span><span class="nx">argument</span><span class="o">);</span>
+
+			<span class="k">if</span><span class="o">(</span><span class="nx">o</span><span class="o">.</span><span class="nx">startEvent</span><span class="o">){</span>
+				<span class="c">// Fire transaction custom event -- startEvent</span>
+<span class="c"></span>				<span class="nx">o</span><span class="o">.</span><span class="nx">startEvent</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">o</span><span class="o">,</span> <span class="nx">cb</span><span class="o">.</span><span class="nx">argument</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+   <span class="c">/**</span>
+<span class="c">    * @description This method is the initial response handler</span>
+<span class="c">    * for XDR transactions.  The Flash transport calls this</span>
+<span class="c">    * function and sends the response payload.</span>
+<span class="c">    * @method handleXdrResponse</span>
+<span class="c">    * @private</span>
+<span class="c">    * @static</span>
+<span class="c">    * @param {object} The response object sent from the Flash transport.</span>
+<span class="c">    * @return {void}</span>
+<span class="c">    */</span>
+	<span class="k">function</span> <span class="nx">_handleXdrResponse</span><span class="o">(</span><span class="nx">r</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="nx">_fn</span><span class="o">[</span><span class="nx">r</span><span class="o">.</span><span class="nx">tId</span><span class="o">].</span><span class="nx">o</span><span class="o">,</span>
+			<span class="nx">cb</span> <span class="o">=</span> <span class="nx">_fn</span><span class="o">[</span><span class="nx">r</span><span class="o">.</span><span class="nx">tId</span><span class="o">].</span><span class="nx">c</span><span class="o">;</span>
+
+		<span class="k">if</span> <span class="o">(</span><span class="nx">r</span><span class="o">.</span><span class="nx">statusText</span> <span class="o">===</span> <span class="s1">&#39;xdr:start&#39;</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nx">_xdrStart</span><span class="o">(</span><span class="nx">o</span><span class="o">,</span> <span class="nx">cb</span><span class="o">);</span>
+			<span class="k">return</span><span class="o">;</span>
+		<span class="o">}</span>
+
+		<span class="nx">r</span><span class="o">.</span><span class="nx">responseText</span> <span class="o">=</span> <span class="nb">decodeURI</span><span class="o">(</span><span class="nx">r</span><span class="o">.</span><span class="nx">responseText</span><span class="o">);</span>
+		<span class="nx">o</span><span class="o">.</span><span class="nx">r</span> <span class="o">=</span> <span class="nx">r</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="nx">cb</span><span class="o">.</span><span class="nx">argument</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nx">o</span><span class="o">.</span><span class="nx">r</span><span class="o">.</span><span class="nx">argument</span> <span class="o">=</span> <span class="nx">cb</span><span class="o">.</span><span class="nx">argument</span><span class="o">;</span>
+		<span class="o">}</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">handleTransactionResponse</span><span class="o">(</span><span class="nx">o</span><span class="o">,</span> <span class="nx">cb</span><span class="o">,</span> <span class="nx">r</span><span class="o">.</span><span class="nx">statusText</span> <span class="o">===</span> <span class="s1">&#39;xdr:abort&#39;</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span> <span class="kc">false</span><span class="o">);</span>
+		<span class="nx">delete</span> <span class="nx">_fn</span><span class="o">[</span><span class="nx">r</span><span class="o">.</span><span class="nx">tId</span><span class="o">];</span>
+	<span class="o">}</span>
+
+	<span class="c">// Bind the functions to Connection Manager as static fields.</span>
+<span class="c"></span>	<span class="nx">YCM</span><span class="o">.</span><span class="nx">xdr</span> <span class="o">=</span> <span class="nx">_xdr</span><span class="o">;</span>
+	<span class="nx">YCM</span><span class="o">.</span><span class="nx">swf</span> <span class="o">=</span> <span class="nx">_swf</span><span class="o">;</span>
+	<span class="nx">YCM</span><span class="o">.</span><span class="nx">transport</span> <span class="o">=</span> <span class="nx">_init</span><span class="o">;</span>
+	<span class="nx">YCM</span><span class="o">.</span><span class="nx">xdrReadyEvent</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s1">&#39;xdrReady&#39;</span><span class="o">);</span>
+	<span class="nx">YCM</span><span class="o">.</span><span class="nx">xdrReady</span> <span class="o">=</span> <span class="nx">_xdrReady</span><span class="o">;</span>
+	<span class="nx">YCM</span><span class="o">.</span><span class="nx">handleXdrResponse</span> <span class="o">=</span> <span class="nx">_handleXdrResponse</span><span class="o">;</span>
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class="selected"><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.Connect.html" title="YAHOO.util.Connect">YAHOO.util.Connect</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="connection_core.js.html" title="connection_core.js">connection_core.js</a></li>
+                                <li class="selected"><a href="connection_xdr.js.html" title="connection_xdr.js">connection_xdr.js</a></li>
+                                <li class=""><a href="connectionx.js.html" title="connectionx.js">connectionx.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.util.Connect", "name": "abort", "url": "YAHOO.util.Connect.html#method_abort", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "abortEvent", "url": "YAHOO.util.Connect.html#property_abortEvent", "type": "property"}, {"access": "", "host": "YAHOO.util.Connect", "name": "asyncRequest", "url": "YAHOO.util.Connect.html#method_asyncRequest", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "completeEvent", "url": "YAHOO.util.Connect.html#property_completeEvent", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "createExceptionObject", "url": "YAHOO.util.Connect.html#method_createExceptionObject", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "createResponseObject", "url": "YAHOO.util.Connect.html#method_createResponseObject", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "createXhrObject", "url": "YAHOO.util.Connect.html#method_createXhrObject", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_customEvents", "url": "YAHOO.util.Connect.html#property__customEvents", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_default_form_header", "url": "YAHOO.util.Connect.html#property__default_form_header", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_default_post_header", "url": "YAHOO.util.Connect.html#property__default_post_header", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_default_xhr_header", "url": "YAHOO.util.Connect.html#property__default_xhr_header", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "failureEvent", "url": "YAHOO.util.Connect.html#property_failureEvent", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "getConnectionObject", "url": "YAHOO.util.Connect.html#method_getConnectionObject", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "handleReadyState", "url": "YAHOO.util.Connect.html#method_handleReadyState", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "handleTransactionResponse", "url": "YAHOO.util.Connect.html#method_handleTransactionResponse", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_has_default_header", "url": "YAHOO.util.Connect.html#property__has_default_header", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_has_http_headers", "url": "YAHOO.util.Connect.html#property__has_http_headers", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_http_header", "url": "YAHOO.util.Connect.html#property__http_header", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "initCustomEvents", "url": "YAHOO.util.Connect.html#method_initCustomEvents", "type": "method"}, {"access": "", "host": "YAHOO.util.Connect", "name": "initHeader", "url": "YAHOO.util.Connect.html#method_initHeader", "type": "method"}, {"access": "", "host": "YAHOO.util.Connect", "name": "isCallInProgress", "url": "YAHOO.util.Connect.html#method_isCallInProgress", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_msxml_progid", "url": "YAHOO.util.Connect.html#property__msxml_progid", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_poll", "url": "YAHOO.util.Connect.html#property__poll", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_polling_interval", "url": "YAHOO.util.Connect.html#property__polling_interval", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "releaseObject", "url": "YAHOO.util.Connect.html#method_releaseObject", "type": "method"}, {"access": "", "host": "YAHOO.util.Connect", "name": "resetDefaultHeaders", "url": "YAHOO.util.Connect.html#method_resetDefaultHeaders", "type": "method"}, {"access": "", "host": "YAHOO.util.Connect", "name": "setDefaultPostHeader", "url": "YAHOO.util.Connect.html#method_setDefaultPostHeader", "type": "method"}, {"access": "", "host": "YAHOO.util.Connect", "name": "setDefaultXhrHeader", "url": "YAHOO.util.Connect.html#method_setDefaultXhrHeader", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "setHeader", "url": "YAHOO.util.Connect.html#method_setHeader", "type": "method"}, {"access": "", "host": "YAHOO.util.Connect", "name": "setPollingInterval", "url": "YAHOO.util.Connect.html#method_setPollingInterval", "type": "method"}, {"access": "", "host": "YAHOO.util.Connect", "name": "setProgId", "url": "YAHOO.util.Connect.html#method_setProgId", "type": "method"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "startEvent", "url": "YAHOO.util.Connect.html#property_startEvent", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "successEvent", "url": "YAHOO.util.Connect.html#property_successEvent", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_timeOut", "url": "YAHOO.util.Connect.html#property__timeOut", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_transaction_id", "url": "YAHOO.util.Connect.html#property__transaction_id", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_use_default_post_header", "url": "YAHOO.util.Connect.html#property__use_default_post_header", "type": "property"}, {"access": "private", "host": "YAHOO.util.Connect", "name": "_use_default_xhr_header", "url": "YAHOO.util.Connect.html#property__use_default_xhr_header", "type": "property"}];
+</script>
+</body>
+</html>

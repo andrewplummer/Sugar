@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Find Photos on Flickr</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#flickrselections {
+    float:right;
+    width:240px;
+    padding:10px;
+    background-color:#FFA928;
+}
+
+#flickrselections h5 {
+    color:#009;
+    margin:0;
+}
+
+/* custom styles for scrolling container */
+#flickrautocomplete {
+    width:15em; /* set width of widget here */
+    padding-bottom:2em;
+}
+#flickrautocomplete .yui-ac-content {
+    max-height:30em;overflow:auto;overflow-x:hidden; /* set scrolling */
+    _height:30em; /* ie6 */
+}
+#flickrautocomplete .flickrImg {
+    width:6em;height:6em;padding:.1em;vertical-align:middle;
+}
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Find Photos on Flickr</h1>
+
+<div class="exampleIntro">
+	<p>This example uses AutoComplete to find images by tag from the Flickr webservice. A simple PHP proxy is used to access the remote server via XHR. The <code>generateRequest()</code> method has been customized in order send additional required parameters to the Flickr application. The <code>formatResult()</code> method has been customized in order to display images in the results container, and the default CSS has been enhanced so the results container can scroll. Finally, a <code>itemSelectEvent</code> handler has been defined to collect selected images in a separate container.
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<label for="flickrinput">Find photos by tag and collect your selections:</label>
+<div id="flickrselections">
+    <h5>Selections</h5>
+    <div id="photos"></div>
+</div>
+
+<div id="flickrautocomplete">
+	<input id="flickrinput" type="text">
+	<div id="flickrcontainer"></div>
+</div>
+
+	
+<script type="text/javascript">
+YAHOO.example.ACFlickr = function() {
+    // Set up a local proxy to the Flickr webservice
+    var myDS = new YAHOO.util.XHRDataSource("assets/php/flickr_proxy.php");
+    myDS.responseSchema = {
+        resultNode: "photo",
+        fields: ["title", "id", "owner", "secret", "server"]
+    };
+    myDS.responseType = YAHOO.util.XHRDataSource.TYPE_XML;
+    myDS.maxCacheEntries = 100;
+    
+    // Instantiate AutoComplete
+    var myAC = new YAHOO.widget.AutoComplete("flickrinput","flickrcontainer", myDS);
+    myAC.resultTypeList = false;
+    myAC.suppressInputUpdate = true;
+    myAC.generateRequest = function(sQuery) {
+        return "?method=flickr.photos.search&tags="+sQuery;
+    };
+    var getImgUrl = function(oPhoto, sSize) {
+        var sId = oPhoto.id;
+        var sSecret = oPhoto.secret;
+        var sServer = oPhoto.server;
+        var sUrl = "http://static.flickr.com/" +
+            sServer +
+            "/" +
+            sId +
+            "_" +
+            sSecret +
+            "_"+ (sSize || "s") +".jpg";
+        return "<img src='" + sUrl + "' class='flickrImg'>";
+    }
+    
+    myAC.formatResult = function(oResultItem, sQuery) {
+        // This was defined by the schema array of the data source
+        var sTitle = oResultItem.title;
+        var sMarkup = getImgUrl(oResultItem) + " " + sTitle;
+        return (sMarkup);
+    };
+    myAC.itemSelectEvent.subscribe(function(sType, aArgs){
+        var oPhoto = aArgs[2];
+        YAHOO.util.Dom.get("photos").innerHTML = 
+            "<p>"+getImgUrl(oPhoto, "m")+"</p>"+YAHOO.util.Dom.get("photos").innerHTML
+    });
+    
+    return {
+        oDS: myDS,
+        oAC: myAC
+    };
+}();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

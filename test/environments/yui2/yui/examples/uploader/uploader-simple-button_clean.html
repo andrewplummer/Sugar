@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Simple Uploader Example With Button UI</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/uploader/uploader-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Simple Uploader Example With Button UI</h1>
+
+<div class="exampleIntro">
+	<p>This example is a demonstration of the <a href="../../uploader/">YUI Uploader Control</a>'s features.</p>
+
+<p><strong>Note:</strong> The YUI Uploader Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>
+<p><strong>Note:</strong> The YUI Uploader Control requires the uploader.swf Flash file that is distributed as part of the YUI package, in the uploader/assets folder. Copy the uploader.swf to your server and set the YAHOO.Uploader.SWFURL variable to its full path.</p>
+<p><strong>Note:</strong> This example uses a server-side script to accept file uploads. The script used does not open or store any data sent to it. Nonetheless, when trying out the example, do not send any sensitive or private data. Do not exceed file size of 10 MB.			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style type="text/css">
+	.uploadButton a, .clearButton a {
+		display:block;
+		width:100px;
+		height:40px;
+		text-decoration: none;
+		margin-left:5px;
+	}
+	
+	.uploadButton a {
+		background: url("assets/uploadFileButton.png") 0 0 no-repeat;
+	}
+	
+	.clearButton a {
+		background: url("assets/clearListButton.png") 0 0 no-repeat;
+	}
+	
+    .uploadButton a:visited, .clearButton a:visited {
+		background-position: 0 0;
+	}
+	
+    .uploadButton a:hover, .clearButton a:hover {	
+		background-position: 0 -40px;
+	}
+	
+    .uploadButton a:active, .clearButton a:active {
+		background-position: 0 -80px;
+	}
+</style>
+
+<div>
+	<div id="fileProgress" style="border: black 1px solid; width:300px; height:40px;float:left">
+		<div id="fileName" style="text-align:center; margin:5px; font-size:15px; width:290px; height:25px; overflow:hidden"></div>
+		<div id="progressBar" style="width:300px;height:5px;background-color:#CCCCCC"></div>
+	</div>
+<div id="uploaderUI" style="width:100px;height:40px;margin-left:5px;float:left"></div>
+<div class="uploadButton" style="float:left"><a class="rolloverButton" href="#" onClick="upload(); return false;"></a></div>
+<div class="clearButton" style="float:left"><a class="rolloverButton" href="#" onClick="handleClearFiles(); return false;"></a></div>
+</div>
+
+
+<script type="text/javascript">
+    
+    // Instantiate the uploader and write it to its placeholder div.
+	
+	YAHOO.widget.Uploader.SWFURL = "assets/uploader.swf";
+	
+	var uploader = new YAHOO.widget.Uploader( "uploaderUI", "assets/selectFileButton.png" );
+	
+	// Add event listeners to various events on the uploader.
+	// Methods on the uploader should only be called once the 
+	// contentReady event has fired.
+	
+	uploader.addListener('contentReady', handleContentReady);
+	uploader.addListener('fileSelect',onFileSelect)
+	uploader.addListener('uploadStart',onUploadStart);
+	uploader.addListener('uploadProgress',onUploadProgress);
+	uploader.addListener('uploadCancel',onUploadCancel);
+	uploader.addListener('uploadComplete',onUploadComplete);
+	uploader.addListener('uploadCompleteData',onUploadResponse);
+	uploader.addListener('uploadError', onUploadError);
+    	
+    // Variable for holding the selected file ID.
+	var fileID;
+	
+	function handleClearFiles() {
+	uploader.clearFileList();
+	uploader.enable();
+	fileID = null;
+	
+	var filename = document.getElementById("fileName");
+	filename.innerHTML = "";
+	
+	var progressbar = document.getElementById("progressBar");
+	progressbar.innerHTML = "";
+	}
+		
+	// When contentReady event is fired, you can call methods on the uploader.
+	function handleContentReady () {
+	    // Allows the uploader to send log messages to trace, as well as to YAHOO.log
+		uploader.setAllowLogging(true);
+		
+		// Restrict selection to a single file (that's what it is by default,
+		// just demonstrating how).
+		uploader.setAllowMultipleFiles(false);
+		
+		// New set of file filters.
+		var ff = new Array({description:"Images", extensions:"*.jpg;*.png;*.gif"},
+		                   {description:"Videos", extensions:"*.avi;*.mov;*.mpg"});
+		                   
+		// Apply new set of file filters to the uploader.
+		uploader.setFileFilters(ff);
+	}
+
+	// Initiate the file upload. Since there's only one file, 
+	// we can use either upload() or uploadAll() call. fileList 
+	// needs to have been populated by the user.
+	function upload() {
+	if (fileID != null) {
+		uploader.upload(fileID, "http://www.yswfblog.com/upload/upload_simple.php");
+		fileID = null;
+	}
+	}
+	
+	// Fired when the user selects files in the "Browse" dialog
+	// and clicks "Ok".
+	function onFileSelect(event) {
+		for (var item in event.fileList) {
+		    if(YAHOO.lang.hasOwnProperty(event.fileList, item)) {
+				YAHOO.log(event.fileList[item].id);
+				fileID = event.fileList[item].id;
+			}
+		}
+		uploader.disable();
+		
+		var filename = document.getElementById("fileName");
+		filename.innerHTML = event.fileList[fileID].name;
+		
+		var progressbar = document.getElementById("progressBar");
+		progressbar.innerHTML = "";
+	}
+
+    // Do something on each file's upload start.
+	function onUploadStart(event) {
+	
+	}
+	
+	// Do something on each file's upload progress event.
+	function onUploadProgress(event) {
+		prog = Math.round(300*(event["bytesLoaded"]/event["bytesTotal"]));
+	  	progbar = "<div style=\"background-color: #f00; height: 5px; width: " + prog + "px\"/>";
+
+		var progressbar = document.getElementById("progressBar");
+		progressbar.innerHTML = progbar;
+	}
+	
+	// Do something when each file's upload is complete.
+	function onUploadComplete(event) {
+		uploader.clearFileList();
+		uploader.enable();
+		
+		progbar = "<div style=\"background-color: #f00; height: 5px; width: 300px\"/>";
+		var progressbar = document.getElementById("progressBar");
+		progressbar.innerHTML = progbar;
+	}
+	
+	// Do something if a file upload throws an error.
+	// (When uploadAll() is used, the Uploader will
+	// attempt to continue uploading.
+	function onUploadError(event) {
+
+	}
+	
+	// Do something if an upload is cancelled.
+	function onUploadCancel(event) {
+
+	}
+	
+	// Do something when data is received back from the server.
+	function onUploadResponse(event) {
+		YAHOO.log("Server response received.");
+	}
+
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

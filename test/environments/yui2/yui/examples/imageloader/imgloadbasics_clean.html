@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Basic Features of the ImageLoader Utility</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/imageloader/imageloader-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Basic Features of the ImageLoader Utility</h1>
+
+<div class="exampleIntro">
+	<p>Displayed here are the basic abilities of the <a href="http://developer.yahoo.com/yui/imageloader/">ImageLoader Utility</a>. Images are loaded only after triggers are fired or time limits are reached.</p>
+
+<p>Hover over each image to show its triggers and its time limit. Try tripping the triggers to see the load reactions. Refresh the page to reset the images.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+
+.everything { position:relative; height:420px; }
+.everything div { border:1px solid #888; }
+.topmain { position:absolute; top:10px; left:120px; height:75px; width:100px; }
+.duo1 { position:absolute; top:130px; left:20px; height:67px; width:100px; }
+.duo2 { position:absolute; top:130px; left:220px; height:53px; width:100px; }
+.png { position:absolute; top:240px; left:140px; height:34px; width:61px; }
+.scroll { position:absolute; top:320px; left:120px; height:72px; width:100px; }
+
+</style>
+
+
+<div class='everything' id='everything'>
+	<div class='topmain' id='topmain' title='group 1; mouse over image; 2 sec limit'></div>
+	<div class='duo1' id='duo1' title='group 2; mouse over left image, or click on right image; 4 sec limit'></div>
+	<div class='duo2' id='duo2' title='group 2; mouse over left image, or click on right image; 4 sec limit'></div>
+	<div class='png' id='pngimg' title='group 3; no trigger; 5 sec limit'></div>
+	<div class='scroll' title='group 4; scroll; no time limit'>
+		<img id='scrollImg' style='visibility:hidden;' />
+	</div>
+</div>
+
+
+<script>
+
+var mainGroup = new YAHOO.util.ImageLoader.group('topmain', 'mouseover', 2);
+mainGroup.registerBgImage('topmain', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/museum.jpg');
+mainGroup.name = 'group 1';
+
+var duoGroup = new YAHOO.util.ImageLoader.group('duo1', 'mouseover', 4);
+duoGroup.registerBgImage('duo1', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/uluru.jpg');
+duoGroup.registerBgImage('duo2', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/katatjuta.jpg');
+duoGroup.addTrigger('duo2', 'click');
+duoGroup.name = 'group 2';
+
+var pngGroup = new YAHOO.util.ImageLoader.group(null, null, 5);
+pngGroup.registerPngBgImage('pngimg', 'http://l.yimg.com/a/i/us/nws/weather/gr/47s.png');
+pngGroup.name = 'group 3';
+
+var scrollGroup = new YAHOO.util.ImageLoader.group(window, 'scroll');
+var scrollImg = scrollGroup.registerSrcImage('scrollImg', 'http://developer.yahoo.com/yui/docs/assets/examples/exampleimages/small/morraine.jpg');
+scrollImg.setVisible = true;
+scrollGroup.name = 'group 4';
+
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

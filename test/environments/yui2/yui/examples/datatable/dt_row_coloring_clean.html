@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Conditional row coloring</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+/* Remove row striping, column borders, and sort highlighting */
+.yui-skin-sam tr.yui-dt-odd,
+.yui-skin-sam tr.yui-dt-odd td.yui-dt-asc,
+.yui-skin-sam tr.yui-dt-odd td.yui-dt-desc,
+.yui-skin-sam tr.yui-dt-even td.yui-dt-asc,
+.yui-skin-sam tr.yui-dt-even td.yui-dt-desc {
+    background-color: #fff;
+}
+.yui-skin-sam .yui-dt tbody td {
+    border-bottom: 1px solid #ddd;
+}
+.yui-skin-sam .yui-dt thead th {
+    border-bottom: 1px solid #7f7f7f;
+}
+.yui-skin-sam .yui-dt tr.yui-dt-last td,
+.yui-skin-sam .yui-dt th,
+.yui-skin-sam .yui-dt td {
+    border: none;
+}
+
+/* Class for marked rows */
+.yui-skin-sam .yui-dt tr.mark,
+.yui-skin-sam .yui-dt tr.mark td.yui-dt-asc,
+.yui-skin-sam .yui-dt tr.mark td.yui-dt-desc,
+.yui-skin-sam .yui-dt tr.mark td.yui-dt-asc,
+.yui-skin-sam .yui-dt tr.mark td.yui-dt-desc {
+    background-color: #a33;
+    color: #fff;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Conditional row coloring</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates how to color DataTable rows based on data in a Record.  In this case, rows with Quantity less than 40 are highlighted.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div class="demo">
+    <div id="tbl"></div>
+</div>
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+// Create a shortcut
+var Dom = YAHOO.util.Dom;
+
+// Contain our code under the YAHOO.example namespace
+var Ex = YAHOO.example;
+
+// Create the DataSource
+Ex.dataSource = new YAHOO.util.DataSource(Ex.Data.inventory);
+Ex.dataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+Ex.dataSource.responseSchema = {
+    fields : ['SKU','Quantity','Item','Description']
+};
+
+// Define a custom row formatter function
+var myRowFormatter = function(elTr, oRecord) {
+    if (oRecord.getData('Quantity') < 40) {
+        Dom.addClass(elTr, 'mark');
+    }
+    return true;
+}; 
+
+// Instantiate the DataTable.
+Ex.dataTable = new YAHOO.widget.DataTable('tbl',
+                [ {key:'SKU',sortable: true},
+                  {key:'Item',sortable: true},
+                  {key:'Quantity',sortable: true},
+                  {key:'Description',sortable: true}
+                ],
+                Ex.dataSource,
+                {formatRow: myRowFormatter}); // Enable the row formatter
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

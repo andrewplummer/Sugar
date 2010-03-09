@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Creating and Positioning an Overlay</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Creating and Positioning an Overlay</h1>
+
+<div class="exampleIntro">
+	<p>Overlays are extensions of Modules and differ in the sense that the float <em>above</em> the normal page flow.  They can be positioned in three different ways: By fixing them to the center of the viewport (overlay1 below), by specifying a position (overlay2), and by positioning them relative to a context element (overlay3).</p>
+
+<p>Use the buttons in the example below to show and hide the three Overlay instances.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+	.yui-overlay { position:absolute;background:#fff;border:1px dotted black;padding:5px;margin:10px; }
+	.yui-overlay .hd { border:1px solid red;padding:5px; }
+	.yui-overlay .bd { border:1px solid green;padding:5px; }
+	.yui-overlay .ft { border:1px solid blue;padding:5px; }
+
+	#ctx { background:orange;width:100px;height:25px; }
+	
+	#example {height:15em;}
+</style>
+
+<script>
+		YAHOO.namespace("example.container");
+
+		function init() {
+			// Build overlay1 based on markup, initially hidden, fixed to the center of the viewport, and 300px wide
+			YAHOO.example.container.overlay1 = new YAHOO.widget.Overlay("overlay1", { fixedcenter:true,
+																					  visible:false,
+																					  width:"300px" } );
+			YAHOO.example.container.overlay1.render();
+			YAHOO.log("Overlay1 rendered.", "info", "example");
+
+			// Build overlay2 dynamically, initially hidden, at position x:400,y:500, and 300px wide
+			YAHOO.example.container.overlay2 = new YAHOO.widget.Overlay("overlay2", { xy:[600,200],
+																					  visible:false,
+																					  width:"300px" } );
+			YAHOO.example.container.overlay2.setHeader("Overlay #2 from Script");
+			YAHOO.example.container.overlay2.setBody("This is a dynamically generated Overlay.");
+			YAHOO.example.container.overlay2.setFooter("End of Overlay #2");
+			YAHOO.example.container.overlay2.render(document.body);
+			YAHOO.log("Overlay2 rendered.", "info", "example");
+
+			// Build overlay3 dynamically, initially hidden, aligned to context element "context", and 200px wide
+
+            // Re-align just before the overlay is shown and whenever the window is resized to account for changes in the position  
+            // of the context element after the initial context alignment 
+			YAHOO.example.container.overlay3 = new YAHOO.widget.Overlay("overlay3", { context:["ctx","tl","bl", ["beforeShow", "windowResize"]],
+																					  visible:false,
+																					  width:"200px" } );
+			YAHOO.example.container.overlay3.setHeader("Overlay #3 from Script");
+			YAHOO.example.container.overlay3.setBody("This is a dynamically generated Overlay.");
+			YAHOO.example.container.overlay3.setFooter("End of Overlay #3");
+			YAHOO.example.container.overlay3.render(document.body);
+			YAHOO.log("Overlay3 rendered.", "info", "example");
+
+			YAHOO.util.Event.addListener("show1", "click", YAHOO.example.container.overlay1.show, YAHOO.example.container.overlay1, true);
+			YAHOO.util.Event.addListener("hide1", "click", YAHOO.example.container.overlay1.hide, YAHOO.example.container.overlay1, true);
+
+			YAHOO.util.Event.addListener("show2", "click", YAHOO.example.container.overlay2.show, YAHOO.example.container.overlay2, true);
+			YAHOO.util.Event.addListener("hide2", "click", YAHOO.example.container.overlay2.hide, YAHOO.example.container.overlay2, true);
+
+			YAHOO.util.Event.addListener("show3", "click", YAHOO.example.container.overlay3.show, YAHOO.example.container.overlay3, true);
+			YAHOO.util.Event.addListener("hide3", "click", YAHOO.example.container.overlay3.hide, YAHOO.example.container.overlay3, true);
+		}
+
+		YAHOO.util.Event.addListener(window, "load", init);
+</script>
+
+
+<div>
+	overlay1:
+	<button id="show1">Show</button>
+	<button id="hide1">Hide</button>
+</div>
+<div>
+	overlay2:
+	<button id="show2">Show</button>
+	<button id="hide2">Hide</button>
+</div>
+<div>
+	overlay3:
+	<button id="show3">Show</button>
+	<button id="hide3">Hide</button>
+</div>
+
+<div id="ctx">Align to me</div>
+
+<div id="overlay1" style="visibility:hidden">
+	<div class="hd">Overlay #1 from Markup</div>
+	<div class="bd">This is a Overlay that was marked up in the document.</div>
+	<div class="ft">End of Overlay #1</div>
+</div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

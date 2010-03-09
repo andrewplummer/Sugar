@@ -1,0 +1,76 @@
+.yui-checkbox {
+
+	display: -moz-inline-stack;	/* Gecko < 1.9, since it doesn't support "inline-block" */
+	display: inline-block; /* IE, Opera and Webkit, and Gecko 1.9 */
+	width: 10px;
+	height: 10px;
+	border: inset 2px #999;
+	
+	background-color: #fff;	/*	Need to set a background color or IE won't get mouse events	*/
+
+	/*
+		Necessary for IE 6 (Quirks and Standards Mode) and IE 7 (Quirks Mode), since 
+		they don't support use of negative margins without relative positioning.  
+	*/
+
+	_position: relative;
+}
+
+.yui-checkbox span {
+
+	display: block;
+	height: 14px;
+	width: 12px;
+	overflow: hidden;
+
+	/* Position the checkmark for Gecko, Opera and Webkit and IE 7 (Strict Mode). */
+	margin: -5px 0 0 1px;
+	
+
+	/* Position the checkmark for IE 6 (Strict and Quirks Mode) and IE 7 (Quirks Mode).*/
+	_margin: 0;
+	_position: absolute;
+	_top: -5px;
+	_left: 1px;
+	
+}
+
+/* For Gecko < 1.9: Positions the checkbox on the same line as its corresponding label. */
+.yui-checkbox span:after {
+
+	content: ".";
+	visibility: hidden;
+	line-height: 2;
+
+}
+
+/*
+	Hide the actual checkbox offscreen so that it is out of view, but still accessible via 
+	the keyboard. 
+*/
+.yui-checkbox input {
+
+	position: absolute;
+	left: -10000px;
+
+}
+
+.yui-checkbox-focus {
+
+	border-color: #39f;
+	background-color: #9cf;
+
+}
+
+.yui-checkbox-active {
+
+	background-color: #ccc;
+
+}
+
+.yui-checkbox-checked span {
+
+	/* Draw a custom checkmark for the checked state using a background image. */
+	background: url(checkmark.png) no-repeat;
+
+}

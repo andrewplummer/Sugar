@@ -1,0 +1,3046 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: imagecropper  YAHOO.widget.ImageCropper   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>imagecropper&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_imagecropper.html" title="imagecropper">imagecropper</a>
+                 &gt; YAHOO.widget.ImageCropper 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.ImageCropper</b>
+                        <span class="extends">
+                           - extends <a href="YAHOO.util.Element.html" title="YAHOO.util.Element">YAHOO.util.Element</a>
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        <p>Creates a Image Cropper control.</p>
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.widget.ImageCropper</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                el
+
+                                                , 
+                                                attrs
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">el</span>
+                                                    &lt;<span property="yui:type">String/HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> The image element to make croppable.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">attrs</span>
+                                                    &lt;<span property="yui:type">Object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description"> Object liternal containing configuration parameters.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property__active">
+                                    <h4><a name="property__active" property="yui:name">_active</a>
+                                        - <code>private <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Flag to determine if the crop region is active
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__image">
+                                    <h4><a name="property__image" property="yui:name">_image</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The url of the image we are cropping
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__instances">
+                                    <h4><a name="property__instances" property="yui:name">_instances</a>
+                                        - <code>private static <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Internal hash table for all ImageCropper instances
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__mask">
+                                    <h4><a name="property__mask" property="yui:name">_mask</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The HTML Element created to "mask" the image being cropped
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__resize">
+                                    <h4><a name="property__resize" property="yui:name">_resize</a>
+                                        - <code>private <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A reference to the Resize Utility used in this Cropper Instance
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__resizeEl">
+                                    <h4><a name="property__resizeEl" property="yui:name">_resizeEl</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The HTML Element used to create the Resize Oject
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__resizeMaskEl">
+                                    <h4><a name="property__resizeMaskEl" property="yui:name">_resizeMaskEl</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The HTML Element used to create the Resize mask
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property__wrap">
+                                    <h4><a name="property__wrap" property="yui:name">_wrap</a>
+                                        - <code>private <span property="yui:type">HTMLElement</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The HTML Element created to wrap the image
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_CSS_MAIN">
+                                    <h4><a name="property_CSS_MAIN" property="yui:name">CSS_MAIN</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The CSS class used to wrap the element
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_CSS_MASK">
+                                    <h4><a name="property_CSS_MASK" property="yui:name">CSS_MASK</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The CSS class for the mask element
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_CSS_RESIZE_MASK">
+                                    <h4><a name="property_CSS_RESIZE_MASK" property="yui:name">CSS_RESIZE_MASK</a>
+                                        - <code>private <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The CSS class for the mask inside the resize element
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.Element.html#property_DOM_EVENTS">
+                                        <a class="" href="YAHOO.util.Element.html#property_DOM_EVENTS" property="yui:name" title="DOM_EVENTS">DOM_EVENTS</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.AttributeProvider.html#property__configs">
+                                        <a class="private" href="YAHOO.util.AttributeProvider.html#property__configs" property="yui:name" title="_configs">_configs</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:method" resource="#method__createMask">
+                                    <h4>
+                                        <a name="method__createMask">_createMask</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createMask</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates the mask element used to mask the image
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__createResize">
+                                    <h4>
+                                        <a name="method__createResize">_createResize</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createResize</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates the resize element and the instance of the Resize Utility
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__createWrap">
+                                    <h4>
+                                        <a name="method__createWrap">_createWrap</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_createWrap</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Creates the wrapper element used to wrap the image
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleB4DragEvent">
+                                    <h4>
+                                        <a name="method__handleB4DragEvent">_handleB4DragEvent</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleB4DragEvent</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the DragDrop b4DragEvent event
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleBeforeResizeEvent">
+                                    <h4>
+                                        <a name="method__handleBeforeResizeEvent">_handleBeforeResizeEvent</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleBeforeResizeEvent</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the Resize Utilitys beforeResize event
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleDragEvent">
+                                    <h4>
+                                        <a name="method__handleDragEvent">_handleDragEvent</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleDragEvent</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the DragDrop DragEvent event
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleEndResizeEvent">
+                                    <h4>
+                                        <a name="method__handleEndResizeEvent">_handleEndResizeEvent</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleEndResizeEvent</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the Resize Utilitys endResize event
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleKeyPress">
+                                    <h4>
+                                        <a name="method__handleKeyPress">_handleKeyPress</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleKeyPress</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the keypress event
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleMouseOut">
+                                    <h4>
+                                        <a name="method__handleMouseOut">_handleMouseOut</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleMouseOut</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the mouseout event
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleMouseOver">
+                                    <h4>
+                                        <a name="method__handleMouseOver">_handleMouseOver</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleMouseOver</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the mouseover event
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleResizeEvent">
+                                    <h4>
+                                        <a name="method__handleResizeEvent">_handleResizeEvent</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleResizeEvent</strong>
+                                           (
+                                                
+                                                        
+                                                         Event
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the Resize Utilitys Resize event
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Event</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> ev The Resize Utilitys resize event.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleResizeMaskEl">
+                                    <h4>
+                                        <a name="method__handleResizeMaskEl">_handleResizeMaskEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleResizeMaskEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Resizes the inner mask element
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__handleStartResizeEvent">
+                                    <h4>
+                                        <a name="method__handleStartResizeEvent">_handleStartResizeEvent</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_handleStartResizeEvent</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Handles the Resize Utilitys startResize event
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__moveEl">
+                                    <h4>
+                                        <a name="method__moveEl">_moveEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_moveEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Moves the resize element based on the arrow keys
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setBackgroundImage">
+                                    <h4>
+                                        <a name="method__setBackgroundImage">_setBackgroundImage</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setBackgroundImage</strong>
+                                           (
+                                                
+                                                        
+                                                         String
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the background image of the resize element
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">String</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> url The url of the image</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setBackgroundPosition">
+                                    <h4>
+                                        <a name="method__setBackgroundPosition">_setBackgroundPosition</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_setBackgroundPosition</strong>
+                                           (
+                                                
+                                                        
+                                                         Number
+                                                    
+                                                
+
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the background image position to the top and left position
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Number</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> l The left position</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Number</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> t The top position</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__setConstraints">
+                                    <h4>
+                                        <a name="method__setConstraints">_setConstraints</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">_setConstraints</strong>
+                                           (
+                                                
+                                                        
+                                                         Boolean
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Set the DragDrop constraints to keep the element inside the crop area.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">Boolean</span>
+                                                        &lt;<span property="yui:type">object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> inside Used when called from inside a resize event, false by default (dragging)</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Object containing Top, Right, Bottom and Left constraints</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method__syncBackgroundPosition">
+                                    <h4>
+                                        <a name="method__syncBackgroundPosition">_syncBackgroundPosition</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">_syncBackgroundPosition</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Syncs the packground position of the resize element with the resize elements top and left style position
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_destroy">
+                                    <h4>
+                                        <a name="method_destroy">destroy</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">destroy</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Destroys the ImageCropper object and all of it's elements & listeners.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getCropCoords">
+                                    <h4>
+                                        <a name="method_getCropCoords">getCropCoords</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        Object
+                                            <strong property="yui:name">getCropCoords</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns the coordinates needed to crop the image
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The top, left, height, width and image url of the image being cropped</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getCropperById">
+                                    <h4>
+                                        <a name="method_getCropperById">getCropperById</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                         static 
+                                        
+                                        Object
+                                            <strong property="yui:name">getCropperById</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get's an ImageCropper object by the HTML id of the image associated with the ImageCropper object.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        Object
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The ImageCropper Object</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getEl">
+                                    <h4>
+                                        <a name="method_getEl">getEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">getEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get the HTML reference for the image element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The image element</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getMaskEl">
+                                    <h4>
+                                        <a name="method_getMaskEl">getMaskEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">getMaskEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get the HTML reference for the mask element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The mask element</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getResizeEl">
+                                    <h4>
+                                        <a name="method_getResizeEl">getResizeEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">getResizeEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get the HTML reference for the resize element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The resize element</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getResizeMaskEl">
+                                    <h4>
+                                        <a name="method_getResizeMaskEl">getResizeMaskEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">getResizeMaskEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get the HTML reference for the resizable object's mask element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The resize objects mask element.</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getResizeObject">
+                                    <h4>
+                                        <a name="method_getResizeObject">getResizeObject</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        <a href="YAHOO.util.Resize.html">YAHOO.util.Resize</a>
+                                            <strong property="yui:name">getResizeObject</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get the Resize Utility object.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        <a href="YAHOO.util.Resize.html">YAHOO.util.Resize</a>
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The Resize instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_getWrapEl">
+                                    <h4>
+                                        <a name="method_getWrapEl">getWrapEl</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        HTMLElement
+                                            <strong property="yui:name">getWrapEl</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Get the HTML reference for the wrap element.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        HTMLElement
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The wrap element</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_init">
+                                    <h4>
+                                        <a name="method_init">init</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">init</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            The ImageCropper class's initialization method
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:method" resource="#method_initAttributes">
+                                    <h4>
+                                        <a name="method_initAttributes">initAttributes</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                         private 
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">initAttributes</strong>
+                                           (
+                                                
+                                                        
+                                                         attr
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Initializes all of the configuration attributes used to create a croppable element.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">attr</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> Object literal specifying a set of 
+configuration attributes used to create the widget.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_reset">
+                                    <h4>
+                                        <a name="method_reset">reset</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        <a href="YAHOO.widget.ImageCropper.html">YAHOO.widget.ImageCropper</a>
+                                            <strong property="yui:name">reset</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Resets the crop element back to it's original position
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        <a href="YAHOO.widget.ImageCropper.html">YAHOO.widget.ImageCropper</a>
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">The ImageCropper instance</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a string representing the ImageCropper Object.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method__setHTMLAttrConfig">                                        
+                                            <a class="private" href="YAHOO.util.Element.html#method__setHTMLAttrConfig" property="yui:name" title="_setHTMLAttrConfig">_setHTMLAttrConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_addClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_addClass" property="yui:name" title="addClass">addClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_addListener">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_addListener" property="yui:name" title="addListener">addListener</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_appendChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_appendChild" property="yui:name" title="appendChild">appendChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_appendTo">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_appendTo" property="yui:name" title="appendTo">appendTo</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_delegate">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_delegate" property="yui:name" title="delegate">delegate</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_fireQueue">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_fireQueue" property="yui:name" title="fireQueue">fireQueue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getElementsByClassName">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getElementsByClassName" property="yui:name" title="getElementsByClassName">getElementsByClassName</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getElementsByTagName">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getElementsByTagName" property="yui:name" title="getElementsByTagName">getElementsByTagName</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_getStyle">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_getStyle" property="yui:name" title="getStyle">getStyle</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_hasChildNodes">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_hasChildNodes" property="yui:name" title="hasChildNodes">hasChildNodes</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_hasClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_hasClass" property="yui:name" title="hasClass">hasClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_initAttributes">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_initAttributes" property="yui:name" title="initAttributes">initAttributes</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_insertBefore">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_insertBefore" property="yui:name" title="insertBefore">insertBefore</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_on">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeChild" property="yui:name" title="removeChild">removeChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeClass" property="yui:name" title="removeClass">removeClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeDelegate">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeDelegate" property="yui:name" title="removeDelegate">removeDelegate</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_removeListener">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_removeListener" property="yui:name" title="removeListener">removeListener</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_replaceChild">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_replaceChild" property="yui:name" title="replaceChild">replaceChild</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_replaceClass">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_replaceClass" property="yui:name" title="replaceClass">replaceClass</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_setStyle">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_setStyle" property="yui:name" title="setStyle">setStyle</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.Element.html#method_subscribe">                                        
+                                            <a class="" href="YAHOO.util.Element.html#method_subscribe" property="yui:name" title="subscribe">subscribe</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_configureAttribute">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_configureAttribute" property="yui:name" title="configureAttribute">configureAttribute</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent" property="yui:name" title="fireBeforeChangeEvent">fireBeforeChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireChangeEvent" property="yui:name" title="fireChangeEvent">fireChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_get">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_get" property="yui:name" title="get">get</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_getAttributeConfig" property="yui:name" title="getAttributeConfig">getAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeKeys">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_getAttributeKeys" property="yui:name" title="getAttributeKeys">getAttributeKeys</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_refresh">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_refresh" property="yui:name" title="refresh">refresh</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_register">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_register" property="yui:name" title="register">register</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig" property="yui:name" title="resetAttributeConfig">resetAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetValue">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_resetValue" property="yui:name" title="resetValue">resetValue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_set">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributeConfig">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributeConfig" property="yui:name" title="setAttributeConfig">setAttributeConfig</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributes">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributes" property="yui:name" title="setAttributes">setAttributes</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_beforeInitHeightChange">
+                                    <h4>
+                                        <a name="event_beforeInitHeightChange">beforeInitHeightChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeInitHeightChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'initHeight' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeInitialXYChange">
+                                    <h4>
+                                        <a name="event_beforeInitialXYChange">beforeInitialXYChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeInitialXYChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'initialXY' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeInitWidthChange">
+                                    <h4>
+                                        <a name="event_beforeInitWidthChange">beforeInitWidthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeInitWidthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'initWidth' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeKeyTickChange">
+                                    <h4>
+                                        <a name="event_beforeKeyTickChange">beforeKeyTickChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeKeyTickChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'keyTick' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeMinHeightChange">
+                                    <h4>
+                                        <a name="event_beforeMinHeightChange">beforeMinHeightChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeMinHeightChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'minHeight' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeMinWidthChange">
+                                    <h4>
+                                        <a name="event_beforeMinWidthChange">beforeMinWidthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeMinWidthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'minWidth' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeRatioChange">
+                                    <h4>
+                                        <a name="event_beforeRatioChange">beforeRatioChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeRatioChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'ratio' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeShiftKeyTickChange">
+                                    <h4>
+                                        <a name="event_beforeShiftKeyTickChange">beforeShiftKeyTickChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeShiftKeyTickChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'shiftKeyTick' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeStatusChange">
+                                    <h4>
+                                        <a name="event_beforeStatusChange">beforeStatusChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeStatusChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'status' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_beforeUseKeysChange">
+                                    <h4>
+                                        <a name="event_beforeUseKeysChange">beforeUseKeysChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">beforeUseKeysChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires before the value for the configuration attribute 'useKeys' changes. Return false to cancel the attribute change.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_dragEvent">
+                                    <h4>
+                                        <a name="event_dragEvent">dragEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">dragEvent</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the DragDrop dragEvent
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_initHeightChange">
+                                    <h4>
+                                        <a name="event_initHeightChange">initHeightChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">initHeightChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'initHeight' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_initialXYChange">
+                                    <h4>
+                                        <a name="event_initialXYChange">initialXYChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">initialXYChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'initialXY' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_initWidthChange">
+                                    <h4>
+                                        <a name="event_initWidthChange">initWidthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">initWidthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'initWidth' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_keyTickChange">
+                                    <h4>
+                                        <a name="event_keyTickChange">keyTickChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">keyTickChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'keyTick' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_minHeightChange">
+                                    <h4>
+                                        <a name="event_minHeightChange">minHeightChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">minHeightChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'minHeight' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_minWidthChange">
+                                    <h4>
+                                        <a name="event_minWidthChange">minWidthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">minWidthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'minWidth' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_moveEvent">
+                                    <h4>
+                                        <a name="event_moveEvent">moveEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">moveEvent</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires on every element move. Inside these methods: _handleKeyPress, _handleDragEvent, _handleResizeEvent
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_ratioChange">
+                                    <h4>
+                                        <a name="event_ratioChange">ratioChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">ratioChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'ratio' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_resizeEvent">
+                                    <h4>
+                                        <a name="event_resizeEvent">resizeEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">resizeEvent</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires on every element resize.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_shiftKeyTickChange">
+                                    <h4>
+                                        <a name="event_shiftKeyTickChange">shiftKeyTickChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">shiftKeyTickChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'shiftKeyTick' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_startResizeEvent">
+                                    <h4>
+                                        <a name="event_startResizeEvent">startResizeEvent</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">startResizeEvent</strong>
+
+                                            (
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when when a resize action is started.
+                                        </div>
+
+                                        <div class="description">
+
+
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_statusChange">
+                                    <h4>
+                                        <a name="event_statusChange">statusChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">statusChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'status' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_useKeysChange">
+                                    <h4>
+                                        <a name="event_useKeysChange">useKeysChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">useKeysChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'useKeys' changes.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">{oldValue: any, newValue: any}</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An object containing the previous attribute value and the new value.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Events inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.util.Element.html#event_appendTo">
+                                        <a class="" href="YAHOO.util.Element.html#event_appendTo" property="yui:name" title="appendTo">appendTo</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_available">
+                                        <a class="" href="YAHOO.util.Element.html#event_available" property="yui:name" title="available">available</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_beforeAppendTo">
+                                        <a class="" href="YAHOO.util.Element.html#event_beforeAppendTo" property="yui:name" title="beforeAppendTo">beforeAppendTo</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_beforeElementChange">
+                                        <a class="" href="YAHOO.util.Element.html#event_beforeElementChange" property="yui:name" title="beforeElementChange">beforeElementChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_contentReady">
+                                        <a class="" href="YAHOO.util.Element.html#event_contentReady" property="yui:name" title="contentReady">contentReady</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.Element.html#event_elementChange">
+                                        <a class="" href="YAHOO.util.Element.html#event_elementChange" property="yui:name" title="elementChange">elementChange</a><span class="">,</span>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+                        <div class="section field details">
+                            <h3 id="configattributes">Configuration Attributes</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:attribute" resource="#config_initHeight">
+                                    <h4><a name="config_initHeight">initHeight</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Set the initlal height of the crop area, defaults to 1/4 of the image height
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_initialXY">
+                                    <h4><a name="config_initialXY">initialXY</a>
+                                        <code>- <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Array of the XY position that we need to set the crop element to when we build it. Defaults to [10, 10]
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_initWidth">
+                                    <h4><a name="config_initWidth">initWidth</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Set the initlal width of the crop area, defaults to 1/4 of the image width
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_keyTick">
+                                    <h4><a name="config_keyTick">keyTick</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The pixel tick for the arrow keys, defaults to 1
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_minHeight">
+                                    <h4><a name="config_minHeight">minHeight</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            MinHeight of the crop area, default 50
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_minWidth">
+                                    <h4><a name="config_minWidth">minWidth</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            MinWidth of the crop area, default 50.
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_ratio">
+                                    <h4><a name="config_ratio">ratio</a>
+                                        <code>- <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Set the ratio config option of the Resize Utlility, default false
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_shiftKeyTick">
+                                    <h4><a name="config_shiftKeyTick">shiftKeyTick</a>
+                                        <code>- <span property="yui:type">Number</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The pixel tick for shift + the arrow keys, defaults to 10
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_status">
+                                    <h4><a name="config_status">status</a>
+                                        <code>- <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Show the Resize Utility status, defaults to true
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_useKeys">
+                                    <h4><a name="config_useKeys">useKeys</a>
+                                        <code>- <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Should we use the Arrow keys to position the crop element, defaults to true
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.Element.html">
+                            <h4>Configuration attributes inherited from <a href="YAHOO.util.Element.html" property="yui:name" title="YAHOO.util.Element">YAHOO.util.Element</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                        <span rel="yui:attribute" resource="YAHOO.util.Element.html#config_element">                                        
+                                        <a class="" href="YAHOO.util.Element.html#config_element" property="yui:name" title="element">element</a><span class="">,</span>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class="selected"><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="YAHOO.widget.ImageCropper.html" title="YAHOO.widget.ImageCropper">YAHOO.widget.ImageCropper</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="crop.js.html" title="crop.js">crop.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property__active" title="_active">_active</a></li>
+                                <li class="private"><a href="#property__image" title="_image">_image</a></li>
+                                <li class="private"><a href="#property__instances" title="_instances">_instances</a></li>
+                                <li class="private"><a href="#property__mask" title="_mask">_mask</a></li>
+                                <li class="private"><a href="#property__resize" title="_resize">_resize</a></li>
+                                <li class="private"><a href="#property__resizeEl" title="_resizeEl">_resizeEl</a></li>
+                                <li class="private"><a href="#property__resizeMaskEl" title="_resizeMaskEl">_resizeMaskEl</a></li>
+                                <li class="private"><a href="#property__wrap" title="_wrap">_wrap</a></li>
+                                <li class="private"><a href="#property_CSS_MAIN" title="CSS_MAIN">CSS_MAIN</a></li>
+                                <li class="private"><a href="#property_CSS_MASK" title="CSS_MASK">CSS_MASK</a></li>
+                                <li class="private"><a href="#property_CSS_RESIZE_MASK" title="CSS_RESIZE_MASK">CSS_RESIZE_MASK</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#method__createMask" title="_createMask">_createMask</a></li>
+                                <li class="private"><a href="#method__createResize" title="_createResize">_createResize</a></li>
+                                <li class="private"><a href="#method__createWrap" title="_createWrap">_createWrap</a></li>
+                                <li class="private"><a href="#method__handleB4DragEvent" title="_handleB4DragEvent">_handleB4DragEvent</a></li>
+                                <li class="private"><a href="#method__handleBeforeResizeEvent" title="_handleBeforeResizeEvent">_handleBeforeResizeEvent</a></li>
+                                <li class="private"><a href="#method__handleDragEvent" title="_handleDragEvent">_handleDragEvent</a></li>
+                                <li class="private"><a href="#method__handleEndResizeEvent" title="_handleEndResizeEvent">_handleEndResizeEvent</a></li>
+                                <li class="private"><a href="#method__handleKeyPress" title="_handleKeyPress">_handleKeyPress</a></li>
+                                <li class="private"><a href="#method__handleMouseOut" title="_handleMouseOut">_handleMouseOut</a></li>
+                                <li class="private"><a href="#method__handleMouseOver" title="_handleMouseOver">_handleMouseOver</a></li>
+                                <li class="private"><a href="#method__handleResizeEvent" title="_handleResizeEvent">_handleResizeEvent</a></li>
+                                <li class="private"><a href="#method__handleResizeMaskEl" title="_handleResizeMaskEl">_handleResizeMaskEl</a></li>
+                                <li class="private"><a href="#method__handleStartResizeEvent" title="_handleStartResizeEvent">_handleStartResizeEvent</a></li>
+                                <li class="private"><a href="#method__moveEl" title="_moveEl">_moveEl</a></li>
+                                <li class="private"><a href="#method__setBackgroundImage" title="_setBackgroundImage">_setBackgroundImage</a></li>
+                                <li class="private"><a href="#method__setBackgroundPosition" title="_setBackgroundPosition">_setBackgroundPosition</a></li>
+                                <li class="private"><a href="#method__setConstraints" title="_setConstraints">_setConstraints</a></li>
+                                <li class="private"><a href="#method__syncBackgroundPosition" title="_syncBackgroundPosition">_syncBackgroundPosition</a></li>
+                                <li class=""><a href="#method_destroy" title="destroy">destroy</a></li>
+                                <li class=""><a href="#method_getCropCoords" title="getCropCoords">getCropCoords</a></li>
+                                <li class=""><a href="#method_getCropperById" title="getCropperById">getCropperById</a></li>
+                                <li class=""><a href="#method_getEl" title="getEl">getEl</a></li>
+                                <li class=""><a href="#method_getMaskEl" title="getMaskEl">getMaskEl</a></li>
+                                <li class=""><a href="#method_getResizeEl" title="getResizeEl">getResizeEl</a></li>
+                                <li class=""><a href="#method_getResizeMaskEl" title="getResizeMaskEl">getResizeMaskEl</a></li>
+                                <li class=""><a href="#method_getResizeObject" title="getResizeObject">getResizeObject</a></li>
+                                <li class=""><a href="#method_getWrapEl" title="getWrapEl">getWrapEl</a></li>
+                                <li class="private"><a href="#method_init" title="init">init</a></li>
+                                <li class="private"><a href="#method_initAttributes" title="initAttributes">initAttributes</a></li>
+                                <li class=""><a href="#method_reset" title="reset">reset</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_beforeInitHeightChange" title="beforeInitHeightChange">beforeInitHeightChange</a></li>
+                                <li class=""><a href="#event_beforeInitialXYChange" title="beforeInitialXYChange">beforeInitialXYChange</a></li>
+                                <li class=""><a href="#event_beforeInitWidthChange" title="beforeInitWidthChange">beforeInitWidthChange</a></li>
+                                <li class=""><a href="#event_beforeKeyTickChange" title="beforeKeyTickChange">beforeKeyTickChange</a></li>
+                                <li class=""><a href="#event_beforeMinHeightChange" title="beforeMinHeightChange">beforeMinHeightChange</a></li>
+                                <li class=""><a href="#event_beforeMinWidthChange" title="beforeMinWidthChange">beforeMinWidthChange</a></li>
+                                <li class=""><a href="#event_beforeRatioChange" title="beforeRatioChange">beforeRatioChange</a></li>
+                                <li class=""><a href="#event_beforeShiftKeyTickChange" title="beforeShiftKeyTickChange">beforeShiftKeyTickChange</a></li>
+                                <li class=""><a href="#event_beforeStatusChange" title="beforeStatusChange">beforeStatusChange</a></li>
+                                <li class=""><a href="#event_beforeUseKeysChange" title="beforeUseKeysChange">beforeUseKeysChange</a></li>
+                                <li class=""><a href="#event_dragEvent" title="dragEvent">dragEvent</a></li>
+                                <li class=""><a href="#event_initHeightChange" title="initHeightChange">initHeightChange</a></li>
+                                <li class=""><a href="#event_initialXYChange" title="initialXYChange">initialXYChange</a></li>
+                                <li class=""><a href="#event_initWidthChange" title="initWidthChange">initWidthChange</a></li>
+                                <li class=""><a href="#event_keyTickChange" title="keyTickChange">keyTickChange</a></li>
+                                <li class=""><a href="#event_minHeightChange" title="minHeightChange">minHeightChange</a></li>
+                                <li class=""><a href="#event_minWidthChange" title="minWidthChange">minWidthChange</a></li>
+                                <li class=""><a href="#event_moveEvent" title="moveEvent">moveEvent</a></li>
+                                <li class=""><a href="#event_ratioChange" title="ratioChange">ratioChange</a></li>
+                                <li class=""><a href="#event_resizeEvent" title="resizeEvent">resizeEvent</a></li>
+                                <li class=""><a href="#event_shiftKeyTickChange" title="shiftKeyTickChange">shiftKeyTickChange</a></li>
+                                <li class=""><a href="#event_startResizeEvent" title="startResizeEvent">startResizeEvent</a></li>
+                                <li class=""><a href="#event_statusChange" title="statusChange">statusChange</a></li>
+                                <li class=""><a href="#event_useKeysChange" title="useKeysChange">useKeysChange</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="configList" class="module">
+                        <h4>Configuration Attributes</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#config_initHeight" title="initHeight">initHeight</a></li>
+                                <li class=""><a href="#config_initialXY" title="initialXY">initialXY</a></li>
+                                <li class=""><a href="#config_initWidth" title="initWidth">initWidth</a></li>
+                                <li class=""><a href="#config_keyTick" title="keyTick">keyTick</a></li>
+                                <li class=""><a href="#config_minHeight" title="minHeight">minHeight</a></li>
+                                <li class=""><a href="#config_minWidth" title="minWidth">minWidth</a></li>
+                                <li class=""><a href="#config_ratio" title="ratio">ratio</a></li>
+                                <li class=""><a href="#config_shiftKeyTick" title="shiftKeyTick">shiftKeyTick</a></li>
+                                <li class=""><a href="#config_status" title="status">status</a></li>
+                                <li class=""><a href="#config_useKeys" title="useKeys">useKeys</a></li>
+                        </ul>
+                    </div>
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_active", "url": "YAHOO.widget.ImageCropper.html#property__active", "type": "property"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeInitHeightChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeInitHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeInitialXYChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeInitialXYChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeInitWidthChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeInitWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeKeyTickChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeKeyTickChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeMinHeightChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeMinHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeMinWidthChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeMinWidthChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeRatioChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeRatioChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeShiftKeyTickChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeShiftKeyTickChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeStatusChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeStatusChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "beforeUseKeysChange", "url": "YAHOO.widget.ImageCropper.html#event_beforeUseKeysChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_createMask", "url": "YAHOO.widget.ImageCropper.html#method__createMask", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_createResize", "url": "YAHOO.widget.ImageCropper.html#method__createResize", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_createWrap", "url": "YAHOO.widget.ImageCropper.html#method__createWrap", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "CSS_MAIN", "url": "YAHOO.widget.ImageCropper.html#property_CSS_MAIN", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "CSS_MASK", "url": "YAHOO.widget.ImageCropper.html#property_CSS_MASK", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "CSS_RESIZE_MASK", "url": "YAHOO.widget.ImageCropper.html#property_CSS_RESIZE_MASK", "type": "property"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "destroy", "url": "YAHOO.widget.ImageCropper.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "dragEvent", "url": "YAHOO.widget.ImageCropper.html#event_dragEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "getCropCoords", "url": "YAHOO.widget.ImageCropper.html#method_getCropCoords", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "getCropperById", "url": "YAHOO.widget.ImageCropper.html#method_getCropperById", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "getEl", "url": "YAHOO.widget.ImageCropper.html#method_getEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "getMaskEl", "url": "YAHOO.widget.ImageCropper.html#method_getMaskEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "getResizeEl", "url": "YAHOO.widget.ImageCropper.html#method_getResizeEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "getResizeMaskEl", "url": "YAHOO.widget.ImageCropper.html#method_getResizeMaskEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "getResizeObject", "url": "YAHOO.widget.ImageCropper.html#method_getResizeObject", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "getWrapEl", "url": "YAHOO.widget.ImageCropper.html#method_getWrapEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleB4DragEvent", "url": "YAHOO.widget.ImageCropper.html#method__handleB4DragEvent", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleBeforeResizeEvent", "url": "YAHOO.widget.ImageCropper.html#method__handleBeforeResizeEvent", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleDragEvent", "url": "YAHOO.widget.ImageCropper.html#method__handleDragEvent", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleEndResizeEvent", "url": "YAHOO.widget.ImageCropper.html#method__handleEndResizeEvent", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleKeyPress", "url": "YAHOO.widget.ImageCropper.html#method__handleKeyPress", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleMouseOut", "url": "YAHOO.widget.ImageCropper.html#method__handleMouseOut", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleMouseOver", "url": "YAHOO.widget.ImageCropper.html#method__handleMouseOver", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleResizeEvent", "url": "YAHOO.widget.ImageCropper.html#method__handleResizeEvent", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleResizeMaskEl", "url": "YAHOO.widget.ImageCropper.html#method__handleResizeMaskEl", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_handleStartResizeEvent", "url": "YAHOO.widget.ImageCropper.html#method__handleStartResizeEvent", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_image", "url": "YAHOO.widget.ImageCropper.html#property__image", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "init", "url": "YAHOO.widget.ImageCropper.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "initAttributes", "url": "YAHOO.widget.ImageCropper.html#method_initAttributes", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "initHeight", "url": "YAHOO.widget.ImageCropper.html#config_initHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "initHeightChange", "url": "YAHOO.widget.ImageCropper.html#event_initHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "initialXY", "url": "YAHOO.widget.ImageCropper.html#config_initialXY", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "initialXYChange", "url": "YAHOO.widget.ImageCropper.html#event_initialXYChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "initWidth", "url": "YAHOO.widget.ImageCropper.html#config_initWidth", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "initWidthChange", "url": "YAHOO.widget.ImageCropper.html#event_initWidthChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_instances", "url": "YAHOO.widget.ImageCropper.html#property__instances", "type": "property"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "keyTick", "url": "YAHOO.widget.ImageCropper.html#config_keyTick", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "keyTickChange", "url": "YAHOO.widget.ImageCropper.html#event_keyTickChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_mask", "url": "YAHOO.widget.ImageCropper.html#property__mask", "type": "property"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "minHeight", "url": "YAHOO.widget.ImageCropper.html#config_minHeight", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "minHeightChange", "url": "YAHOO.widget.ImageCropper.html#event_minHeightChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "minWidth", "url": "YAHOO.widget.ImageCropper.html#config_minWidth", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "minWidthChange", "url": "YAHOO.widget.ImageCropper.html#event_minWidthChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_moveEl", "url": "YAHOO.widget.ImageCropper.html#method__moveEl", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "moveEvent", "url": "YAHOO.widget.ImageCropper.html#event_moveEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "ratio", "url": "YAHOO.widget.ImageCropper.html#config_ratio", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "ratioChange", "url": "YAHOO.widget.ImageCropper.html#event_ratioChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "reset", "url": "YAHOO.widget.ImageCropper.html#method_reset", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_resize", "url": "YAHOO.widget.ImageCropper.html#property__resize", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_resizeEl", "url": "YAHOO.widget.ImageCropper.html#property__resizeEl", "type": "property"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "resizeEvent", "url": "YAHOO.widget.ImageCropper.html#event_resizeEvent", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_resizeMaskEl", "url": "YAHOO.widget.ImageCropper.html#property__resizeMaskEl", "type": "property"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_setBackgroundImage", "url": "YAHOO.widget.ImageCropper.html#method__setBackgroundImage", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_setBackgroundPosition", "url": "YAHOO.widget.ImageCropper.html#method__setBackgroundPosition", "type": "method"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_setConstraints", "url": "YAHOO.widget.ImageCropper.html#method__setConstraints", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "shiftKeyTick", "url": "YAHOO.widget.ImageCropper.html#config_shiftKeyTick", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "shiftKeyTickChange", "url": "YAHOO.widget.ImageCropper.html#event_shiftKeyTickChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "startResizeEvent", "url": "YAHOO.widget.ImageCropper.html#event_startResizeEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "status", "url": "YAHOO.widget.ImageCropper.html#config_status", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "statusChange", "url": "YAHOO.widget.ImageCropper.html#event_statusChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_syncBackgroundPosition", "url": "YAHOO.widget.ImageCropper.html#method__syncBackgroundPosition", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "toString", "url": "YAHOO.widget.ImageCropper.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "useKeys", "url": "YAHOO.widget.ImageCropper.html#config_useKeys", "type": "config"}, {"access": "", "host": "YAHOO.widget.ImageCropper", "name": "useKeysChange", "url": "YAHOO.widget.ImageCropper.html#event_useKeysChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.ImageCropper", "name": "_wrap", "url": "YAHOO.widget.ImageCropper.html#property__wrap", "type": "property"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using the Overlay Manager to Manage Multiple Panels</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using the Overlay Manager to Manage Multiple Panels</h1>
+
+<div class="exampleIntro">
+	<p>OverlayManager allows you to manage multiple Overlays (and Overlay subclasses like Panel, Dialog, SimpleDialog and Tooltip) on the same page, giving focus and z-index supremacy to the focused overlay and providing you with event hooks to respond to focus and blur of your overlays with your own scripts.</p>
+
+<p>Use the buttons below to show and hide the overlays in this example's OverlayManager group.  Click within differnt overlays and drag them around to get a sense for how OverlayManager provides a light, operating-system-like feel to the interaction.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style type="text/css">
+
+.yui-skin-sam .yui-panel .hd {
+    background: #F2F2F2;
+}
+
+.yui-skin-sam .yui-panel-container.focused .yui-panel .hd {
+    background: url(../../build/assets/skins/sam/sprite.png) repeat-x 0 -200px;
+}
+
+</style>
+
+<script>
+YAHOO.namespace("example.container");
+
+function init() {
+	// Build panel1 based on markup
+	YAHOO.example.container.panel1 = new YAHOO.widget.Panel("panel1", { xy:[250,100],
+																		visible:false,
+																		width:"300px"
+																	  } );
+	YAHOO.example.container.panel1.render();
+
+	// Build panel2 based on markup
+	YAHOO.example.container.panel2 = new YAHOO.widget.Panel("panel2", { xy:[350,150],
+																		visible:false,
+																		width:"300px"
+																	  } );
+	YAHOO.example.container.panel2.render();
+
+	// Build panel3 based on markup
+	YAHOO.example.container.panel3 = new YAHOO.widget.Panel("panel3", { xy:[450,200],
+																		visible:false,
+																		width:"300px"
+																	  } );
+	YAHOO.example.container.panel3.render();
+
+	YAHOO.example.container.manager = new YAHOO.widget.OverlayManager();
+	YAHOO.example.container.manager.register([YAHOO.example.container.panel1,
+											  YAHOO.example.container.panel2,
+											  YAHOO.example.container.panel3]);
+
+	YAHOO.util.Event.addListener("show1", "click", YAHOO.example.container.panel1.show, YAHOO.example.container.panel1, true);
+	YAHOO.util.Event.addListener("hide1", "click", YAHOO.example.container.panel1.hide, YAHOO.example.container.panel1, true);
+	YAHOO.util.Event.addListener("focus1", "click", YAHOO.example.container.panel1.focus, YAHOO.example.container.panel1, true);
+
+	YAHOO.util.Event.addListener("show2", "click", YAHOO.example.container.panel2.show, YAHOO.example.container.panel2, true);
+	YAHOO.util.Event.addListener("hide2", "click", YAHOO.example.container.panel2.hide, YAHOO.example.container.panel2, true);
+	YAHOO.util.Event.addListener("focus2", "click", YAHOO.example.container.panel2.focus, YAHOO.example.container.panel2, true);
+
+	YAHOO.util.Event.addListener("show3", "click", YAHOO.example.container.panel3.show, YAHOO.example.container.panel3, true);
+	YAHOO.util.Event.addListener("hide3", "click", YAHOO.example.container.panel3.hide, YAHOO.example.container.panel3, true);
+	YAHOO.util.Event.addListener("focus3", "click", YAHOO.example.container.panel3.focus, YAHOO.example.container.panel3, true);
+
+	YAHOO.util.Event.addListener("showAll", "click", YAHOO.example.container.manager.showAll, YAHOO.example.container.manager, true);
+	YAHOO.util.Event.addListener("hideAll", "click", YAHOO.example.container.manager.hideAll, YAHOO.example.container.manager, true);
+	YAHOO.util.Event.addListener("blurAll", "click", YAHOO.example.container.manager.blurAll, YAHOO.example.container.manager, true);
+}
+
+YAHOO.util.Event.onDOMReady(init);
+</script>
+
+<div>
+panel1:
+<button id="show1">Show</button>
+<button id="hide1">Hide</button>
+<button id="focus1">Focus</button>
+</div>
+<div>
+panel2:
+<button id="show2">Show</button>
+<button id="hide2">Hide</button>
+<button id="focus2">Focus</button>
+</div>
+<div>
+panel3:
+<button id="show3">Show</button>
+<button id="hide3">Hide</button>
+<button id="focus3">Focus</button>
+</div>
+<div>
+All Panels:
+<button id="showAll">Show All</button>
+<button id="hideAll">Hide All</button>
+<button id="blurAll">Blur All</button>
+</div>
+
+<div id="panel1" style="visibility:hidden">
+<div class="hd">Panel #1 from Markup</div>
+<div class="bd">This is a Panel that was marked up in the document.</div>
+<div class="ft">End of Panel #1</div>
+</div>
+
+<div id="panel2" style="visibility:hidden">
+<div class="hd">Panel #2 from Markup</div>
+<div class="bd">This is a Panel that was marked up in the document.</div>
+<div class="ft">End of Panel #2</div>
+</div>
+
+<div id="panel3" style="visibility:hidden">
+<div class="hd">Panel #3 from Markup</div>
+<div class="bd">This is a Panel that was marked up in the document.</div>
+<div class="ft">End of Panel #3</div>
+</div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

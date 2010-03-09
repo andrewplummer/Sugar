@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <style type="text/css">
+        .yui-skin-sam .yui-dt tbody td.up {
+            background-color: #efe;
+        }
+        .yui-skin-sam .yui-dt tbody td.down {
+            background-color: #fee;
+        }
+    </style>
+</head>
+
+<body class="yui-skin-sam">
+<h1>Custom Cell Formatting</h1>
+<div id="formatting"></div>
+
+<script type="text/javascript" src="../../build/yuiloader/yuiloader.js"></script>
+<script type="text/javascript" src="./assets/js/data.js"></script>
+<script type="text/javascript">
+var loader = new YAHOO.util.YUILoader();
+loader.insert({
+    require: ["fonts", "datatable", "json"],
+    filter: 'debug',
+    base: '../../build/',
+    onSuccess: function() {
+        YAHOO.example.CustomFormatting = function() {
+            // Define a custom formatter for the Column labeled "flag"
+            // draws an up icon and adds class "up" to the cell liner to affect
+            // a green background color if value of field3 is greater than 100.
+            // Otherwise renders a down icon and assigns class "down", setting
+            // the background color to red.
+            var myCustomFormatter = function(elLiner, oRecord, oColumn, oData) {
+                if(oRecord.getData("field3") > 100) {
+                    YAHOO.util.Dom.replaceClass(elLiner.parentNode, "down", "up");
+                    elLiner.innerHTML = '&nbsp;<img src="../../build/datatable/assets/skins/sam/dt-arrow-up.png">';
+                }
+                else {
+                    YAHOO.util.Dom.replaceClass(elLiner.parentNode, "up","down");
+                    elLiner.innerHTML = '&nbsp;<img src="../../build/datatable/assets/skins/sam/dt-arrow-dn.png">';
+                }
+            };
+            
+            // Add the custom formatter to the shortcuts
+            YAHOO.widget.DataTable.Formatter.myCustom = myCustomFormatter;
+
+            // Override the built-in formatter
+            YAHOO.widget.DataTable.formatEmail = function(elLiner, oRecord, oColumn, oData) {
+                var user = oData;
+                elLiner.innerHTML = "<a href=\"mailto:" + user + "@mycompany.com\">" + user + "</a>";
+            };
+            
+
+            var myColumnDefs = [
+                {key:"flag", formatter:"myCustom"}, // use custom shortcut
+                {key:"radio", formatter:"radio"}, // use the built-in radio formatter
+                {key:"check", formatter:"checkbox"}, // use the built-in checkbox formatter (shortcut)
+                {key:"button", label:"Show record data", formatter:YAHOO.widget.DataTable.formatButton}, // use the built-in button formatter
+                {key:"field1", formatter:"dropdown", dropdownOptions:["apples","bananas","cherries"],sortable:true},
+                {key:"field2", sortable:true, formatter:"date"}, // use the built-in date formatter
+                {key:"field3", sortable:true, formatter:"number"},
+                {key:"field4", sortable:true, formatter:"currency"}, // use the built-in currency formatter
+                {key:"field5", sortable:true, formatter:YAHOO.widget.DataTable.formatEmail}, // use the overridden email formatter
+                {key:"field6", sortable:true, formatter:YAHOO.widget.DataTable.formatLink} // use the built-in link formatter
+            ];
+
+            var myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.multitypes);
+            myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+            myDataSource.responseSchema = {
+                resultsList: "items",
+                // Use the parse methods to populate the RecordSet with the right data types
+                fields: [
+                    {key:"field1", parser:"string"}, // point to the string parser
+                    {key:"field2", parser:"date"}, // point to the date parser
+                    {key:"field3", parser:"number"}, // point to the number parser
+                    {key:"field4", parser:"number"}, // point to the number parser
+                    {key:"field5"}, // this is already string data so no parser needed
+                    {key:"field6"} // this is already string data so no parser needed
+                ]
+            };
+
+            var myDataTable = new YAHOO.widget.DataTable("formatting", myColumnDefs, myDataSource);
+
+            var lastSelectedRadioRecord = null;
+            myDataTable.subscribe("radioClickEvent", function(oArgs){
+                if(lastSelectedRadioRecord) {
+                    lastSelectedRadioRecord.setData("radio",false);
+                }
+                var elRadio = oArgs.target;
+                var oRecord = this.getRecord(elRadio);
+                oRecord.setData("radio",true);
+                lastSelectedRadioRecord = oRecord;
+                var name = oRecord.getData("field5");
+            });
+
+            myDataTable.subscribe("checkboxClickEvent", function(oArgs){
+                var elCheckbox = oArgs.target;
+                var oRecord = this.getRecord(elCheckbox);
+                oRecord.setData("check",elCheckbox.checked);
+            });
+
+            myDataTable.subscribe("buttonClickEvent", function(oArgs){
+                var oRecord = this.getRecord(oArgs.target);
+                alert(YAHOO.lang.dump(oRecord.getData()));
+            });
+
+            myDataTable.subscribe("dropdownChangeEvent", function(oArgs){
+                var elDropdown = oArgs.target;
+                var oRecord = this.getRecord(elDropdown);
+                oRecord.setData("field1",elDropdown.options[elDropdown.selectedIndex].value);
+            });
+            
+            return {
+                oDS: myDataSource,
+                oDT: myDataTable
+            };
+        }();
+    }
+});
+
+</script>
+</body>
+</html>

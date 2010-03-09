@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using getElementsByClassName</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#foo {
+    margin-bottom:1em;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using getElementsByClassName</h1>
+
+<div class="exampleIntro">
+	<p>Clicking the document will use Dom's <code>getElementsByClassName</code> method to collect all of the elements with the  class <code>bar</code> applied.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div class="bar">div class="bar"</div>
+<div class="bar-baz">div class="bar-baz"</div>
+<div class="bar ">div class="bar "</div>
+<div class=" bar ">div class=" bar "</div>
+<div class="bar baz">div class=" bar baz"</div>
+<div class="bar2 baz">div class=" bar2 baz"</div>
+<div class="foo">div class="foo"</div>
+<div class="foo" id="bar">div class="foo" id="bar"</div>
+<div class="foo bar baz">div class="foo bar baz"</div>
+<p class="bar">p class="bar"</p>
+<button id="demo-run">run</button>
+
+<script type="text/javascript">
+(function() {
+    var getByClass = function(e) {
+        alert('found: ' + YAHOO.util.Dom.getElementsByClassName('bar', 'div').length + ' elements');
+    };
+
+    YAHOO.util.Event.on('demo-run', 'click', getByClass);
+
+    YAHOO.log("The example has finished loading; as you interact with it, you'll see log messages appearing here.", "info", "example");
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

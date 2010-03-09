@@ -1,0 +1,35 @@
+YUI Library - Cookie Utility - Release Notes
+
+2.8.0
+ 
+  * Changed behavior for Boolean cookies (those that don't contain an equals sign). Previously, calling Cookie.get() on a Boolean cookie would return the name of the cookie. Now, it returns an empty string. This is necessary because IE doesn't store an equals sign when the cookie value is empty ("info=" becomes just "info").
+  * Added Cookie.exists() to allow for easier Boolean cookie detection.
+  * Removed check for cookie value before parsing. Previously, parsing checked for name=value, now it parses anything that is passed in.
+  * Changed formatting of date from toGMTString() to toUTCString() (YUILibrary bug #2527892). 
+  * Updated remove() so that it no longer modifies the options object that is passed in (YUILibrary bug #2527838).
+  * Removing the last subcookie with removeSub() now removes the cookie if the removeIfEmpty option is set to true (YUILibrary bug #2527954)
+  * Added option to disable url encoding/decoding by passing options.raw to set() and get() (YUILibrary bug #2527953).
+  * Changed get() to take an options object with raw and converter properties, if a function is passed instead of an object then it is used as the converter for backward compatibility (YUILibrary bug #2527953).  
+  
+2.7.0
+
+  * Implemented change to return null for any cookie with an invalid encoding (causing decodeURIComponent() to fail).
+
+2.6.0
+
+  * Implemented removeSub() method.
+  * Fixed parsing error when cookie name has special characters in it (YUILibrary bug #1985549).
+  * Fixed parsing issue when cookie string was empty (YUILibrary bug #2007223).
+  * Out of beta.
+
+2.5.2
+
+  * No changes.
+  
+2.5.1
+
+  * Fixed error in parsing routine that incorrectly handled special characters.  
+  
+2.5.0
+
+  * Beta release

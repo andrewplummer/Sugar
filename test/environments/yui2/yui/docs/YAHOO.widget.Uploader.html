@@ -1,0 +1,1923 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: uploader  YAHOO.widget.Uploader   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Uploader&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_uploader.html" title="uploader">uploader</a>
+                 &gt; YAHOO.widget.Uploader 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.Uploader</b>
+                        <span class="extends">
+                        </span>
+
+                            <span class="extends" rel="yui:extends">
+                          - uses 
+                            
+                                <span rel="extend" resource="YAHOO.widget.FlashAdapter.html">
+                                <a href="YAHOO.widget.FlashAdapter.html" property="yui:name" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a>
+                                </span>
+                            
+                            
+                        </span>
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Uploader class for the YUI Uploader component.
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.widget.Uploader</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                containerId
+
+                                                , 
+                                                buttonSkin
+
+                                                , 
+                                                forceTransparent
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">containerId</span>
+                                                    &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  Container element for the Flash Player instance.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">buttonSkin</span>
+                                                    &lt;<span property="yui:type">String</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  [optional]. If defined, the uploader is 
+rendered as a button. This parameter must provide the URL of a button
+skin sprite image. Acceptable types are: jpg, gif, png and swf. The 
+sprite is divided evenly into four sections along its height (e.g., if
+the sprite is 200 px tall, it's divided into four sections 50px each).
+Each section is used as a skin for a specific state of the button: top
+section is "up", second section is "over", third section is "down", and
+fourth section is "disabled". 
+If the parameter is not supplied, the uploader is rendered transparent,
+and it's the developer's responsibility to create a visible UI below it.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">forceTransparent</span>
+                                                    &lt;<span property="yui:type">Boolean</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  This parameter, if true, forces the Flash
+UI to be rendered with wmode set to "transparent". This behavior is useful 
+in conjunction with non-rectangular button skins with PNG transparency. 
+The parameter is false by default, and ignored if no buttonSkin is defined.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property_Chart.SWFURL">
+                                    <h4><a name="property_Chart.SWFURL" property="yui:name">Chart.SWFURL</a>
+                                        - <code>private static final <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Location of the Uploader SWF
+                                        </div>
+                                    </div>
+     
+                                        
+                                    <div class="default" property="yui:defaultValue">
+                                        Default Value: "assets/uploader.swf"
+                                    </div>        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.FlashAdapter.html">
+                            <h4>Properties inherited from <a href="YAHOO.widget.FlashAdapter.html" property="yui:name" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.FlashAdapter.html#property__attributes">
+                                        <a class="private" href="YAHOO.widget.FlashAdapter.html#property__attributes" property="yui:name" title="_attributes">_attributes</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.FlashAdapter.html#property__containerID">
+                                        <a class="private" href="YAHOO.widget.FlashAdapter.html#property__containerID" property="yui:name" title="_containerID">_containerID</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.FlashAdapter.html#property__id">
+                                        <a class="private" href="YAHOO.widget.FlashAdapter.html#property__id" property="yui:name" title="_id">_id</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.FlashAdapter.html#property__initialized">
+                                        <a class="private" href="YAHOO.widget.FlashAdapter.html#property__initialized" property="yui:name" title="_initialized">_initialized</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.FlashAdapter.html#property__swf">
+                                        <a class="private" href="YAHOO.widget.FlashAdapter.html#property__swf" property="yui:name" title="_swf">_swf</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.widget.FlashAdapter.html#property__swfURL">
+                                        <a class="private" href="YAHOO.widget.FlashAdapter.html#property__swfURL" property="yui:name" title="_swfURL">_swfURL</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.AttributeProvider.html#property__configs">
+                                        <a class="private" href="YAHOO.util.AttributeProvider.html#property__configs" property="yui:name" title="_configs">_configs</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:method" resource="#method_cancel">
+                                    <h4>
+                                        <a name="method_cancel">cancel</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">cancel</strong>
+                                           (
+                                                
+                                                        
+                                                         fileID
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Cancels the upload of a specified file. If no file id is specified, all ongoing uploads are cancelled.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">fileID</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The ID of the file whose upload should be cancelled.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_clearFileList">
+                                    <h4>
+                                        <a name="method_clearFileList">clearFileList</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">clearFileList</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Clears the list of files queued for upload.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_disable">
+                                    <h4>
+                                        <a name="method_disable">disable</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">disable</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Disables the mouse events on the Uploader.
+If the uploader is being rendered as a button,
+then the button's skin is set to "disabled"
+(fourth section of the button skin sprite).
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_enable">
+                                    <h4>
+                                        <a name="method_enable">enable</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">enable</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Enables the mouse events on the Uploader.
+If the uploader is being rendered as a button,
+then the button's skin is set to "up"
+(first section of the button skin sprite).
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_removeFile">
+                                    <h4>
+                                        <a name="method_removeFile">removeFile</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">removeFile</strong>
+                                           (
+                                                
+                                                        
+                                                         fileID
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes the specified file from the upload queue.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">fileID</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The id of the file to remove from the upload queue.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setAllowLogging">
+                                    <h4>
+                                        <a name="method_setAllowLogging">setAllowLogging</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setAllowLogging</strong>
+                                           (
+                                                
+                                                        
+                                                         allowLogging
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Turns the logging functionality on.
+Uses Flash internal trace logging, as well as YUI Logger, if available.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">allowLogging</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  If true, logs are output; otherwise, no logs are produced.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setAllowMultipleFiles">
+                                    <h4>
+                                        <a name="method_setAllowMultipleFiles">setAllowMultipleFiles</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setAllowMultipleFiles</strong>
+                                           (
+                                                
+                                                        
+                                                         allowMultipleFiles
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the flag allowing users to select multiple files for the upload.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">allowMultipleFiles</span>
+                                                        &lt;<span property="yui:type">Boolean</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  If true, multiple files can be selected. False by default.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setFileFilters">
+                                    <h4>
+                                        <a name="method_setFileFilters">setFileFilters</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setFileFilters</strong>
+                                           (
+                                                
+                                                        
+                                                         newFilterArray
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the file filters for the "Browse" dialog.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">newFilterArray</span>
+                                                        &lt;<span property="yui:type">extensions: extensionString, description: descriptionString, [optional]macType: macTypeString</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> An array of sets of key-value pairs of the form
+
+The extensions string is a semicolon-delimited list of elements of the form "*.xxx", 
+e.g. "*.jpg;*.gif;*.png".</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setSimUploadLimit">
+                                    <h4>
+                                        <a name="method_setSimUploadLimit">setSimUploadLimit</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setSimUploadLimit</strong>
+                                           (
+                                                
+                                                        
+                                                         simUploadLimit
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the number of simultaneous uploads when using uploadAll()
+The minimum value is 1, and maximum value is 5. The default value is 2.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">simUploadLimit</span>
+                                                        &lt;<span property="yui:type">int</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Number of simultaneous uploads, between 1 and 5.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_upload">
+                                    <h4>
+                                        <a name="method_upload">upload</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">upload</strong>
+                                           (
+                                                
+                                                        
+                                                         fileID
+                                                    
+                                                
+                                                        , 
+                                                         uploadScriptPath
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                                        , 
+                                                         vars
+                                                    
+                                                
+                                                        , 
+                                                         fieldName
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Starts the upload of the file specified by fileID to the location specified by uploadScriptPath.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">fileID</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The id of the file to start uploading.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">uploadScriptPath</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The URL of the upload location.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Either "GET" or "POST", specifying how the variables accompanying the file upload POST request should be submitted. "GET" by default.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">vars</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The object containing variables to be sent in the same request as the file upload.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">fieldName</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The name of the variable in the POST request containing the file data. "Filedata" by default.
+</code></span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_uploadAll">
+                                    <h4>
+                                        <a name="method_uploadAll">uploadAll</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">uploadAll</strong>
+                                           (
+                                                
+                                                        
+                                                         uploadScriptPath
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                                        , 
+                                                         vars
+                                                    
+                                                
+                                                        , 
+                                                         fieldName
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Starts uploading all files in the queue. If this function is called, the upload queue is automatically managed.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">uploadScriptPath</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The URL of the upload location.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Either "GET" or "POST", specifying how the variables accompanying the file upload POST request should be submitted. "GET" by default.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">vars</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The object containing variables to be sent in the same request as the file upload.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">fieldName</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The name of the variable in the POST request containing the file data. "Filedata" by default.
+</code></span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_uploadThese">
+                                    <h4>
+                                        <a name="method_uploadThese">uploadThese</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">uploadThese</strong>
+                                           (
+                                                
+                                                        
+                                                         fileIDs
+                                                    
+                                                
+                                                        , 
+                                                         uploadScriptPath
+                                                    
+                                                
+                                                        , 
+                                                         method
+                                                    
+                                                
+                                                        , 
+                                                         vars
+                                                    
+                                                
+                                                        , 
+                                                         fieldName
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Starts the upload of the files specified by fileIDs, or adds them to a currently running queue. The upload queue is automatically managed.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">fileIDs</span>
+                                                        &lt;<span property="yui:type">Array</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The ids of the files to start uploading.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">uploadScriptPath</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The URL of the upload location.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">method</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  Either "GET" or "POST", specifying how the variables accompanying the file upload POST request should be submitted. "GET" by default.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">vars</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The object containing variables to be sent in the same request as the file upload.</span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">fieldName</span>
+                                                        &lt;<span property="yui:type">String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description">  The name of the variable in the POST request containing the file data. "Filedata" by default.
+</code></span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.FlashAdapter.html">
+                                <h4>Methods inherited from <a href="YAHOO.widget.FlashAdapter.html" property="yui:name" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method__embedSWF">                                        
+                                            <a class="private" href="YAHOO.widget.FlashAdapter.html#method__embedSWF" property="yui:name" title="_embedSWF">_embedSWF</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method__eventHandler">                                        
+                                            <a class="private" href="YAHOO.widget.FlashAdapter.html#method__eventHandler" property="yui:name" title="_eventHandler">_eventHandler</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method__getAltText">                                        
+                                            <a class="private" href="YAHOO.widget.FlashAdapter.html#method__getAltText" property="yui:name" title="_getAltText">_getAltText</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method__getSWFURL">                                        
+                                            <a class="private" href="YAHOO.widget.FlashAdapter.html#method__getSWFURL" property="yui:name" title="_getSWFURL">_getSWFURL</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method__initAttributes">                                        
+                                            <a class="private" href="YAHOO.widget.FlashAdapter.html#method__initAttributes" property="yui:name" title="_initAttributes">_initAttributes</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method__loadHandler">                                        
+                                            <a class="private" href="YAHOO.widget.FlashAdapter.html#method__loadHandler" property="yui:name" title="_loadHandler">_loadHandler</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method__setAltText">                                        
+                                            <a class="private" href="YAHOO.widget.FlashAdapter.html#method__setAltText" property="yui:name" title="_setAltText">_setAltText</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method_destroy">                                        
+                                            <a class="" href="YAHOO.widget.FlashAdapter.html#method_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.widget.FlashAdapter.html#method_toString">                                        
+                                            <a class="" href="YAHOO.widget.FlashAdapter.html#method_toString" property="yui:name" title="toString">toString</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.AttributeProvider.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.AttributeProvider.html" property="yui:name" title="YAHOO.util.AttributeProvider">YAHOO.util.AttributeProvider</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_configureAttribute">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_configureAttribute" property="yui:name" title="configureAttribute">configureAttribute</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireBeforeChangeEvent" property="yui:name" title="fireBeforeChangeEvent">fireBeforeChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_fireChangeEvent">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_fireChangeEvent" property="yui:name" title="fireChangeEvent">fireChangeEvent</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_get">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_get" property="yui:name" title="get">get</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_getAttributeConfig" property="yui:name" title="getAttributeConfig">getAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_getAttributeKeys">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_getAttributeKeys" property="yui:name" title="getAttributeKeys">getAttributeKeys</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_refresh">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_refresh" property="yui:name" title="refresh">refresh</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_register">                                        
+                                            <a class=" deprecated" href="YAHOO.util.AttributeProvider.html#method_register" property="yui:name" title="register">register</a><span class=" deprecated">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig">                                        
+                                            <a class="private" href="YAHOO.util.AttributeProvider.html#method_resetAttributeConfig" property="yui:name" title="resetAttributeConfig">resetAttributeConfig</a><span class="private">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_resetValue">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_resetValue" property="yui:name" title="resetValue">resetValue</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_set">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributeConfig">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributeConfig" property="yui:name" title="setAttributeConfig">setAttributeConfig</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.AttributeProvider.html#method_setAttributes">                                        
+                                            <a class="" href="YAHOO.util.AttributeProvider.html#method_setAttributes" property="yui:name" title="setAttributes">setAttributes</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_click">
+                                    <h4>
+                                        <a name="event_click">click</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">click</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the uploader is clicked.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_fileSelect">
+                                    <h4>
+                                        <a name="event_fileSelect">fileSelect</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">fileSelect</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                                        , 
+                                                         event.fileList
+                                                    
+                                                
+                                                        , 
+                                                         event.fileList[].size
+                                                    
+                                                
+                                                        , 
+                                                         event.fileList[].cDate
+                                                    
+                                                
+                                                        , 
+                                                         event.fileList[].mDate
+                                                    
+                                                
+                                                        , 
+                                                         event.fileList[].name
+                                                    
+                                                
+                                                        , 
+                                                         event.fileList[].id
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the user has finished selecting files in the "Open File" dialog.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.fileList</span>
+                                                                &lt;<span property="yui:type">Object</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  A dictionary of objects with file information</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.fileList[].size</span>
+                                                                &lt;<span property="yui:type">Number</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  File size in bytes for a specific file in fileList</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.fileList[].cDate</span>
+                                                                &lt;<span property="yui:type">Date</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  Creation date for a specific file in fileList</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.fileList[].mDate</span>
+                                                                &lt;<span property="yui:type">Date</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  Modification date for a specific file in fileList</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.fileList[].name</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  File name for a specific file in fileList</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.fileList[].id</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  Unique file id of a specific file in fileList</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_mouseDown">
+                                    <h4>
+                                        <a name="event_mouseDown">mouseDown</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">mouseDown</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the mouse is pressed over the Uploader.
+Only fires when the Uploader UI is enabled and
+the render type is 'transparent'.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_mouseUp">
+                                    <h4>
+                                        <a name="event_mouseUp">mouseUp</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">mouseUp</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the mouse is released over the Uploader.
+Only fires when the Uploader UI is enabled and
+the render type is 'transparent'.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_rollOut">
+                                    <h4>
+                                        <a name="event_rollOut">rollOut</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">rollOut</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the mouse rolls out of the Uploader.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_rollOver">
+                                    <h4>
+                                        <a name="event_rollOver">rollOver</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">rollOver</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the mouse rolls over the Uploader.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_uploadCancel">
+                                    <h4>
+                                        <a name="event_uploadCancel">uploadCancel</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">uploadCancel</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                                        , 
+                                                         event.id
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when an upload for a specific file is cancelled.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.id</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The id of the file with which the upload has been cancelled.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_uploadComplete">
+                                    <h4>
+                                        <a name="event_uploadComplete">uploadComplete</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">uploadComplete</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                                        , 
+                                                         event.id
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when an upload for a specific file is complete.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.id</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The id of the file for which the upload has been completed.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_uploadCompleteData">
+                                    <h4>
+                                        <a name="event_uploadCompleteData">uploadCompleteData</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">uploadCompleteData</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                                        , 
+                                                         event.id
+                                                    
+                                                
+                                                        , 
+                                                         event.data
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the server sends data in response to a completed upload.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.id</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The id of the file for which the upload has been completed.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.data</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The raw data returned by the server in response to the upload.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_uploadError">
+                                    <h4>
+                                        <a name="event_uploadError">uploadError</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">uploadError</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                                        , 
+                                                         event.id
+                                                    
+                                                
+                                                        , 
+                                                         event.status
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when an upload error occurs.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.id</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The id of the file that was being uploaded when the error has occurred.</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.status</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The status message associated with the error.</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_uploadProgress">
+                                    <h4>
+                                        <a name="event_uploadProgress">uploadProgress</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">uploadProgress</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                                        , 
+                                                         event.id
+                                                    
+                                                
+                                                        , 
+                                                         bytesLoaded
+                                                    
+                                                
+                                                        , 
+                                                         bytesTotal
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when new information about the upload progress for a specific file is available.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.id</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The id of the file with which the upload progress data is associated</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">bytesLoaded</span>
+                                                                &lt;<span property="yui:type">Number</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The number of bytes of the file uploaded so far</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">bytesTotal</span>
+                                                                &lt;<span property="yui:type">Number</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The total size of the file</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_uploadStart">
+                                    <h4>
+                                        <a name="event_uploadStart">uploadStart</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">uploadStart</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event.type
+                                                    
+                                                
+                                                        , 
+                                                         event.id
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when an upload of a specific file has started.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.type</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The event type</span>
+                                                        </dd>
+                                                        
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event.id</span>
+                                                                &lt;<span property="yui:type">String</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">  The id of the file that's started to upload</span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.FlashAdapter.html">
+                            <h4>Events inherited from <a href="YAHOO.widget.FlashAdapter.html" property="yui:name" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_altTextChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_altTextChange" property="yui:name" title="altTextChange">altTextChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_backgroundColorChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_backgroundColorChange" property="yui:name" title="backgroundColorChange">backgroundColorChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_beforeAltTextChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_beforeAltTextChange" property="yui:name" title="beforeAltTextChange">beforeAltTextChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_beforeBackgroundColorChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_beforeBackgroundColorChange" property="yui:name" title="beforeBackgroundColorChange">beforeBackgroundColorChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_beforeExpressInstallChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_beforeExpressInstallChange" property="yui:name" title="beforeExpressInstallChange">beforeExpressInstallChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_beforeSwfURLChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_beforeSwfURLChange" property="yui:name" title="beforeSwfURLChange">beforeSwfURLChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_beforeVersionChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_beforeVersionChange" property="yui:name" title="beforeVersionChange">beforeVersionChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_beforeWmodeChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_beforeWmodeChange" property="yui:name" title="beforeWmodeChange">beforeWmodeChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_contentReady">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_contentReady" property="yui:name" title="contentReady">contentReady</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_expressInstallChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_expressInstallChange" property="yui:name" title="expressInstallChange">expressInstallChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_swfURLChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_swfURLChange" property="yui:name" title="swfURLChange">swfURLChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_versionChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_versionChange" property="yui:name" title="versionChange">versionChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.widget.FlashAdapter.html#event_wmodeChange">
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#event_wmodeChange" property="yui:name" title="wmodeChange">wmodeChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.widget.FlashAdapter.html">
+                            <h4>Configuration attributes inherited from <a href="YAHOO.widget.FlashAdapter.html" property="yui:name" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                        <span rel="yui:attribute" resource="YAHOO.widget.FlashAdapter.html#config_altText">                                        
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#config_altText" property="yui:name" title="altText">altText</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.FlashAdapter.html#config_backgroundColor">                                        
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#config_backgroundColor" property="yui:name" title="backgroundColor">backgroundColor</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.FlashAdapter.html#config_expressInstall">                                        
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#config_expressInstall" property="yui:name" title="expressInstall">expressInstall</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.FlashAdapter.html#config_swfURL">                                        
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#config_swfURL" property="yui:name" title="swfURL">swfURL</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.FlashAdapter.html#config_version">                                        
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#config_version" property="yui:name" title="version">version</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="YAHOO.widget.FlashAdapter.html#config_wmode">                                        
+                                        <a class="" href="YAHOO.widget.FlashAdapter.html#config_wmode" property="yui:name" title="wmode">wmode</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class="selected"><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.FlashAdapter.html" title="YAHOO.widget.FlashAdapter">YAHOO.widget.FlashAdapter</a></li>
+                                <li class="selected"><a href="YAHOO.widget.Uploader.html" title="YAHOO.widget.Uploader">YAHOO.widget.Uploader</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="FlashAdapter.js.html" title="FlashAdapter.js">FlashAdapter.js</a></li>
+                                <li class=""><a href="swfobject.js.html" title="swfobject.js">swfobject.js</a></li>
+                                <li class=""><a href="Uploader.js.html" title="Uploader.js">Uploader.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property_Chart.SWFURL" title="Chart.SWFURL">Chart.SWFURL</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#method_cancel" title="cancel">cancel</a></li>
+                                <li class=""><a href="#method_clearFileList" title="clearFileList">clearFileList</a></li>
+                                <li class=""><a href="#method_disable" title="disable">disable</a></li>
+                                <li class=""><a href="#method_enable" title="enable">enable</a></li>
+                                <li class=""><a href="#method_removeFile" title="removeFile">removeFile</a></li>
+                                <li class=""><a href="#method_setAllowLogging" title="setAllowLogging">setAllowLogging</a></li>
+                                <li class=""><a href="#method_setAllowMultipleFiles" title="setAllowMultipleFiles">setAllowMultipleFiles</a></li>
+                                <li class=""><a href="#method_setFileFilters" title="setFileFilters">setFileFilters</a></li>
+                                <li class=""><a href="#method_setSimUploadLimit" title="setSimUploadLimit">setSimUploadLimit</a></li>
+                                <li class=""><a href="#method_upload" title="upload">upload</a></li>
+                                <li class=""><a href="#method_uploadAll" title="uploadAll">uploadAll</a></li>
+                                <li class=""><a href="#method_uploadThese" title="uploadThese">uploadThese</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_click" title="click">click</a></li>
+                                <li class=""><a href="#event_fileSelect" title="fileSelect">fileSelect</a></li>
+                                <li class=""><a href="#event_mouseDown" title="mouseDown">mouseDown</a></li>
+                                <li class=""><a href="#event_mouseUp" title="mouseUp">mouseUp</a></li>
+                                <li class=""><a href="#event_rollOut" title="rollOut">rollOut</a></li>
+                                <li class=""><a href="#event_rollOver" title="rollOver">rollOver</a></li>
+                                <li class=""><a href="#event_uploadCancel" title="uploadCancel">uploadCancel</a></li>
+                                <li class=""><a href="#event_uploadComplete" title="uploadComplete">uploadComplete</a></li>
+                                <li class=""><a href="#event_uploadCompleteData" title="uploadCompleteData">uploadCompleteData</a></li>
+                                <li class=""><a href="#event_uploadError" title="uploadError">uploadError</a></li>
+                                <li class=""><a href="#event_uploadProgress" title="uploadProgress">uploadProgress</a></li>
+                                <li class=""><a href="#event_uploadStart" title="uploadStart">uploadStart</a></li>
+                        </ul>
+                    </div>
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.Uploader", "name": "cancel", "url": "YAHOO.widget.Uploader.html#method_cancel", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Uploader", "name": "Chart.SWFURL", "url": "YAHOO.widget.Uploader.html#property_Chart.SWFURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "clearFileList", "url": "YAHOO.widget.Uploader.html#method_clearFileList", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "click", "url": "YAHOO.widget.Uploader.html#event_click", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "disable", "url": "YAHOO.widget.Uploader.html#method_disable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "enable", "url": "YAHOO.widget.Uploader.html#method_enable", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "fileSelect", "url": "YAHOO.widget.Uploader.html#event_fileSelect", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "mouseDown", "url": "YAHOO.widget.Uploader.html#event_mouseDown", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "mouseUp", "url": "YAHOO.widget.Uploader.html#event_mouseUp", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "removeFile", "url": "YAHOO.widget.Uploader.html#method_removeFile", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "rollOut", "url": "YAHOO.widget.Uploader.html#event_rollOut", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "rollOver", "url": "YAHOO.widget.Uploader.html#event_rollOver", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setAllowLogging", "url": "YAHOO.widget.Uploader.html#method_setAllowLogging", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setAllowMultipleFiles", "url": "YAHOO.widget.Uploader.html#method_setAllowMultipleFiles", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setFileFilters", "url": "YAHOO.widget.Uploader.html#method_setFileFilters", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "setSimUploadLimit", "url": "YAHOO.widget.Uploader.html#method_setSimUploadLimit", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "upload", "url": "YAHOO.widget.Uploader.html#method_upload", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadAll", "url": "YAHOO.widget.Uploader.html#method_uploadAll", "type": "method"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadCancel", "url": "YAHOO.widget.Uploader.html#event_uploadCancel", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadComplete", "url": "YAHOO.widget.Uploader.html#event_uploadComplete", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadCompleteData", "url": "YAHOO.widget.Uploader.html#event_uploadCompleteData", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadError", "url": "YAHOO.widget.Uploader.html#event_uploadError", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadProgress", "url": "YAHOO.widget.Uploader.html#event_uploadProgress", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadStart", "url": "YAHOO.widget.Uploader.html#event_uploadStart", "type": "event"}, {"access": "", "host": "YAHOO.widget.Uploader", "name": "uploadThese", "url": "YAHOO.widget.Uploader.html#method_uploadThese", "type": "method"}];
+</script>
+</body>
+</html>

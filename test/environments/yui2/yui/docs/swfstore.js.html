@@ -1,0 +1,605 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: swfstore   swfstore.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>swfstore&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_swfstore.html" title="swfstore">swfstore</a>
+                
+                 &gt; swfstore.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * Provides a swf based storage implementation</span>
+<span class="c"> *</span>
+<span class="c"> * @module swfstore</span>
+<span class="c"> */</span>
+
+<span class="c">/**</span>
+<span class="c"> * Class for the YUI SWFStore util.</span>
+<span class="c"> *</span>
+<span class="c"> * @namespace YAHOO.util</span>
+<span class="c"> * @class SWFStore</span>
+<span class="c"> * @uses YAHOO.util.AttributeProvider</span>
+<span class="c"> * @constructor</span>
+<span class="c"> * @param containerId {HTMLElement} Container element for the Flash Player instance.</span>
+<span class="c"> * @param shareData {Boolean} Whether or not data should be shared across browsers</span>
+<span class="c"> * @param useCompression {Boolean} Container element for the Flash Player instance.</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">SWFStore</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">containerID</span><span class="o">,</span> <span class="nx">shareData</span><span class="o">,</span> <span class="nx">useCompression</span><span class="o">)</span>
+<span class="o">{</span>
+			<span class="c">//browser detection</span>
+<span class="c"></span>			<span class="k">var</span> <span class="nx">browser</span><span class="o">;</span>
+			<span class="k">var</span> <span class="nx">newValue</span><span class="o">;</span>
+			<span class="c">//convert Booleans to strings for flashvars compatibility</span>
+<span class="c"></span>			<span class="nx">shareData</span> <span class="o">=</span> <span class="nx">shareData</span><span class="o">.</span><span class="nx">toString</span><span class="o">();</span>
+			<span class="nx">useCompression</span> <span class="o">=</span> <span class="nx">useCompression</span><span class="o">.</span><span class="nx">toString</span><span class="o">();</span>
+			
+			<span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">env</span><span class="o">.</span><span class="nx">ua</span><span class="o">.</span><span class="nx">ie</span><span class="o">)</span> <span class="nx">browser</span> <span class="o">=</span> <span class="s2">&quot;ie&quot;</span><span class="o">;</span>
+			<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">env</span><span class="o">.</span><span class="nx">ua</span><span class="o">.</span><span class="nx">gecko</span><span class="o">)</span> <span class="nx">browser</span> <span class="o">=</span>  <span class="s2">&quot;gecko&quot;</span><span class="o">;</span>  <span class="c">//Firefox</span>
+<span class="c"></span>			<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">env</span><span class="o">.</span><span class="nx">ua</span><span class="o">.</span><span class="nx">webkit</span><span class="o">)</span> <span class="nx">browser</span> <span class="o">=</span>  <span class="s2">&quot;webkit&quot;</span><span class="o">;</span> <span class="c">// Safari, Webkit </span>
+<span class="c"></span>			<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">env</span><span class="o">.</span><span class="nx">ua</span><span class="o">.</span><span class="nx">caja</span><span class="o">)</span> <span class="nx">browser</span> <span class="o">=</span>  <span class="s2">&quot;caja&quot;</span><span class="o">;</span>   
+			<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">env</span><span class="o">.</span><span class="nx">ua</span><span class="o">.</span><span class="nx">opera</span><span class="o">)</span> <span class="nx">browser</span> <span class="o">=</span>  <span class="s2">&quot;opera&quot;</span><span class="o">;</span> 
+			<span class="k">else</span> <span class="nx">browser</span> <span class="o">=</span>  <span class="s2">&quot;other&quot;</span><span class="o">;</span>
+
+			<span class="k">if</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Cookie</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;swfstore&quot;</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Cookie</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;swfstore&quot;</span><span class="o">)</span> <span class="o">==</span> <span class="s2">&quot;null&quot;</span> <span class="o">||</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Cookie</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;swfstore&quot;</span><span class="o">)</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="o">)</span>
+			<span class="o">{</span>
+
+				<span class="nx">newValue</span> <span class="o">=</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">round</span><span class="o">(</span><span class="nb">Math</span><span class="o">.</span><span class="nx">random</span><span class="o">()</span> <span class="o">*</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">PI</span> <span class="o">*</span> <span class="m">100000</span><span class="o">);</span> 
+				<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Cookie</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;swfstore&quot;</span><span class="o">,</span> <span class="nx">newValue</span><span class="o">);</span>
+
+			<span class="o">}</span>
+
+			<span class="k">else</span> 
+			<span class="o">{</span>
+				<span class="nx">newValue</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Cookie</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s2">&quot;swfstore&quot;</span><span class="o">);</span>
+			<span class="o">}</span>
+
+			
+			<span class="k">var</span> <span class="nx">params</span> <span class="o">=</span> 
+				<span class="o">{</span> 
+					<span class="nx">version</span><span class="o">:</span> <span class="m">9</span><span class="o">.</span><span class="m">115</span><span class="o">,</span>
+					<span class="nx">useExpressInstall</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+					<span class="nx">fixedAttributes</span><span class="o">:</span>
+						<span class="o">{</span><span class="nx">allowScriptAccess</span><span class="o">:</span><span class="s2">&quot;always&quot;</span><span class="o">,</span> <span class="nx">allowNetworking</span><span class="o">:</span><span class="s2">&quot;all&quot;</span><span class="o">,</span> <span class="nx">scale</span><span class="o">:</span><span class="s2">&quot;noScale&quot;</span><span class="o">},</span>
+						<span class="nx">flashVars</span><span class="o">:</span>
+							<span class="o">{</span><span class="nx">shareData</span><span class="o">:</span> <span class="nx">shareData</span><span class="o">,</span> <span class="nx">browser</span><span class="o">:</span> <span class="nx">newValue</span><span class="o">,</span> <span class="nx">useCompression</span><span class="o">:</span> <span class="nx">useCompression</span><span class="o">}</span>
+				 <span class="o">};</span>
+	
+	
+	
+	<span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">SWF</span><span class="o">(</span><span class="nx">containerID</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">SWFStore</span><span class="o">.</span><span class="nx">SWFURL</span><span class="o">,</span> <span class="nx">params</span><span class="o">);</span> 
+	
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when an error occurs</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event error</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.message {String} The data </span>
+<span class="c">	 * </span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;error&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when there is not enough space available to store the data</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event quotaExceededError</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.message {String} The data </span>
+<span class="c">	 * </span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;quotaExceededError&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the url matching for the security whitelist is invalid.</span>
+<span class="c">     * If no whitelist is used, fires when page&#39;s url does not match the embedded swf&#39;s url</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event securityError</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.message {String} The data </span>
+<span class="c">	 * </span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;securityError&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when a store is saved successfully</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event save</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * </span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;save&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when a store is successfully cleared</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event clear</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * </span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;clear&quot;</span><span class="o">);</span>
+		
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the save is pending, due to a request for additional storage</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event error</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * </span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;pending&quot;</span><span class="o">);</span>
+	
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires as the settings dialog displays</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event openingDialog</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * </span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;openingDialog&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when a settings dialog is not able to be displayed due to </span>
+<span class="c">	 * the SWF not being large enough to show it. In this case, the developer</span>
+<span class="c">	 * needs to resize the SWF to width of 215px and height of 138px or above, </span>
+<span class="c">	 * or display an external settings page.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event inadequateDimensions</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * </span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;inadequateDimensions&quot;</span><span class="o">);</span>
+<span class="o">};</span>
+
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">SWFStore</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">AttributeProvider</span><span class="o">,</span>
+<span class="o">{</span>
+
+
+	
+	<span class="c">/**</span>
+<span class="c">	 * Method to attach listeners to events</span>
+<span class="c">	 * @param type {String} The tyep of event to listen for</span>
+<span class="c">	 * @param listener {String} The function to call</span>
+<span class="c">	 */</span>
+	<span class="nx">on</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">listener</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">addListener</span><span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">listener</span><span class="o">);</span> 
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Method to attach listeners to events</span>
+<span class="c">	 * @param type {String} The tyep of event to listen for</span>
+<span class="c">	 * @param listener {String} The function to call</span>
+<span class="c">	 */</span>
+	<span class="nx">addListener</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">listener</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;adding &#39;&quot;</span> <span class="o">+</span> <span class="nx">type</span> <span class="o">+</span> <span class="s2">&quot;&#39; listener&quot;</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">addListener</span><span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">listener</span><span class="o">);</span> 
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Public accessor to the unique name of the SWFStore instance.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method toString</span>
+<span class="c">	 * @return {String} Unique name of the SWFStore instance.</span>
+<span class="c">	 */</span>
+	<span class="nx">toString</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="s2">&quot;SWFStore &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">_id</span><span class="o">;</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Public accessor to the unique name of the SWFStore instance.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method getShareData</span>
+<span class="c">	 * @return {Boolean} Whether or not data is being shared among browsers</span>
+<span class="c">	 */</span>
+	<span class="nx">getShareData</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getShareData&quot;</span><span class="o">);</span>
+	<span class="o">},</span>
+	<span class="c">/**</span>
+<span class="c">	 * Public accessor to the unique name of the SWFStore instance.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method setShareData</span>
+<span class="c">	 * @param {Boolean} Whether or not to share among browsers</span>
+<span class="c">	 */</span>
+	<span class="nx">setShareData</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Setting share data to &quot;</span> <span class="o">+</span> <span class="nx">value</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;setShareData&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">value</span><span class="o">]);</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Determines if SWF&#39;s visible area is large enough to fit the settings panel</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method hasAdequateDimensions</span>
+<span class="c">	 * @return {Boolean} Whether or not to share among browsers</span>
+<span class="c">	 */</span>
+	<span class="nx">hasAdequateDimensions</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;dimensions adequate? &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;hasAdequateDimensions&quot;</span><span class="o">));</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;hasAdequateDimensions&quot;</span><span class="o">);</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Public accessor to the unique name of the SWFStore instance.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method getUseCompression</span>
+<span class="c">	 * @return {Boolean} Whether or compression is being used</span>
+<span class="c">	 */</span>
+	<span class="nx">getUseCompression</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getUseCompression&quot;</span><span class="o">);</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Public accessor to the unique name of the SWFStore instance.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method setUseCompression</span>
+<span class="c">	 * @param {Boolean} Whether or to compress stored data</span>
+<span class="c">	 */</span>
+	<span class="nx">setUseCompression</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Setting compression to &quot;</span> <span class="o">+</span> <span class="nx">value</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;setUseCompression&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">value</span><span class="o">]);</span>
+	<span class="o">},</span>	
+
+	   <span class="c">/**</span>
+<span class="c">	    * Saves data to local storage. It returns a String that can</span>
+<span class="c">		* be one of three values: &quot;true&quot; if the storage succeeded; &quot;false&quot; if the user</span>
+<span class="c">		* has denied storage on their machine or storage space allotted is not sufficient.</span>
+<span class="c">		* &lt;p&gt;The size limit for the passed parameters is ~40Kb.&lt;/p&gt;</span>
+<span class="c">		* @method setItem</span>
+<span class="c">	    * @param data {Object} The data to store</span>
+<span class="c">	    * @param location {String} The name of the &quot;cookie&quot; or store </span>
+<span class="c">		* @return {Boolean} Whether or not the save was successful</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>
+		<span class="nx">setItem</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">location</span><span class="o">,</span><span class="nx">data</span><span class="o">)</span> 
+		<span class="o">{</span>	
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;setting &quot;</span> <span class="o">+</span> <span class="nx">location</span> <span class="o">+</span> <span class="s2">&quot; to &quot;</span> <span class="o">+</span> <span class="nx">data</span><span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;setItem&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">location</span><span class="o">,</span> <span class="nx">data</span><span class="o">]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+	    	
+	   <span class="c">/**</span>
+<span class="c">	    * Returns the value of the store at the specified index, if any.</span>
+<span class="c">		* @method getValueAt</span>
+<span class="c">	    * @param index {Number} The index of the stored item</span>
+<span class="c">	    * @return {Object} The value of the store at that index</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>	    
+		<span class="nx">getValueAt</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">index</span><span class="o">)</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;value at &quot;</span> <span class="o">+</span> <span class="nx">index</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getValueAt&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">index</span><span class="o">])</span> <span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getValueAt&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">index</span><span class="o">]);</span>
+		<span class="o">},</span>
+
+	   <span class="c">/**</span>
+<span class="c">	    * Returns the key name in storage, if any, at the specified index.</span>
+<span class="c">	    * </span>
+<span class="c">	    * @param index {Number} The index of the &quot;cookie&quot; or store</span>
+<span class="c">		* @return {Object}The data</span>
+<span class="c">		* @method setItem</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>	    
+		<span class="nx">getNameAt</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">index</span><span class="o">)</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;name at &quot;</span> <span class="o">+</span> <span class="nx">index</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getNameAt&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">index</span><span class="o">])</span> <span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getNameAt&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">index</span><span class="o">]);</span>
+		<span class="o">},</span>
+		
+		
+	    <span class="c">/**</span>
+<span class="c">	    * Returns the value of the item in storage, if any.</span>
+<span class="c">	    * @method getValueOf</span>
+<span class="c">	    * @param location {String} The name of the &quot;cookie&quot; or store</span>
+<span class="c">		* @return {Object} The data</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>
+		<span class="nx">getValueOf</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">location</span><span class="o">)</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;value of &quot;</span> <span class="o">+</span> <span class="nx">location</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getValueOf&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">location</span><span class="o">])</span> <span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getValueOf&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">location</span><span class="o">]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+
+	    <span class="c">/**</span>
+<span class="c">	    *  Returns the data type of of the storage.</span>
+<span class="c">		* &lt;p&gt;May be one of the following types:</span>
+<span class="c">	    * &lt;ul&gt;</span>
+<span class="c">	    * &lt;li&gt;boolean&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;function&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;number&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;object&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;string&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;number&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;xml&lt;/li&gt;</span>
+<span class="c">	    * &lt;/ul&gt;</span>
+<span class="c">	    * &lt;/p&gt;</span>
+<span class="c">	    * @method getTypeOf</span>
+<span class="c">	    * @param location {String} The name of the &quot;cookie&quot; or store</span>
+<span class="c">		* @return {String} The type</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>
+		<span class="nx">getTypeOf</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">location</span><span class="o">)</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;type of &quot;</span> <span class="o">+</span> <span class="nx">location</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getTypeOf&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">location</span><span class="o">])</span> <span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getTypeOf&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">location</span><span class="o">]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+
+	    <span class="c">/**</span>
+<span class="c">	    *  Returns the data type of of the storage.</span>
+<span class="c">		* &lt;p&gt;May be one of the following types:</span>
+<span class="c">	    * &lt;ul&gt;</span>
+<span class="c">	    * &lt;li&gt;boolean&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;function&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;number&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;object&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;string&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;number&lt;/li&gt;</span>
+<span class="c">	    * &lt;li&gt;xml&lt;/li&gt;</span>
+<span class="c">	    * &lt;/ul&gt;</span>
+<span class="c">	    * &lt;/p&gt;</span>
+<span class="c">	    * @method getTypeAt</span>
+<span class="c">	    * @param location {Number} The index of the &quot;cookie&quot; or store</span>
+<span class="c">		* @return {String} The type</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>
+		<span class="nx">getTypeAt</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">index</span><span class="o">)</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;type at &quot;</span> <span class="o">+</span> <span class="nx">index</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getTypeAt&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">index</span><span class="o">])</span> <span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getTypeAt&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">index</span><span class="o">]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+		 
+		<span class="c">/**</span>
+<span class="c">		 * Returns the items in storage as an array.</span>
+<span class="c">		 * @method getItems</span>
+<span class="c">		 * @return {Object} The data.</span>
+<span class="c">		 * @public</span>
+<span class="c">		 */</span>
+		<span class="nx">getItems</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> 
+		<span class="o">{</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getItems&quot;</span><span class="o">,</span> <span class="o">[]);</span>
+		<span class="o">},</span>
+
+	    <span class="c">/**</span>
+<span class="c">	    * Removes the item in storage, if any.</span>
+<span class="c">	    * @method removeItem</span>
+<span class="c">	    * @param location {String} The name of the &quot;cookie&quot; or store</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>
+		<span class="nx">removeItem</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">location</span><span class="o">)</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;removing &quot;</span> <span class="o">+</span> <span class="nx">location</span><span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;removeItem&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">location</span><span class="o">]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+
+	    <span class="c">/**</span>
+<span class="c">	    * Removes the item in storage at the specified index, if any.</span>
+<span class="c">	    * @method removeItem</span>
+<span class="c">	    * @param index {Number} The index of the &quot;cookie&quot; or store</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>
+		<span class="nx">removeItemAt</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">index</span><span class="o">)</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;removing item at &quot;</span> <span class="o">+</span> <span class="nx">index</span><span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;removeItemAt&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">index</span><span class="o">]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+		
+	    <span class="c">/**</span>
+<span class="c">	    * Returns the number of items in storage, if any.</span>
+<span class="c">	    * @method getLength</span>
+<span class="c">	    * @return {Number} The number of items</span>
+<span class="c">	    * </span>
+<span class="c">	    */</span>
+		<span class="nx">getLength</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> 
+		<span class="o">{</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getLength&quot;</span><span class="o">,</span> <span class="o">[]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+		
+	   <span class="c">/**</span>
+<span class="c">	    * Removes all data in local storage for this domain.</span>
+<span class="c">	    * &lt;p&gt;Be careful when using this method, as it may </span>
+<span class="c">	    * remove stored information that is used by other applications</span>
+<span class="c">	    * in this domain &lt;/p&gt;</span>
+<span class="c">	    * @method clear</span>
+<span class="c">	    */</span>		
+		<span class="nx">clear</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;clearing all items&quot;</span><span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;clear&quot;</span><span class="o">,</span> <span class="o">[]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+		
+	    <span class="c">/**</span>
+<span class="c">	     * Gets the current size, in KB, of the amount of space taken by the current store.</span>
+<span class="c">		 * Note that this is calculated, and may take time depending on the number of items stored</span>
+<span class="c">	     * @method calculateCurrentSize</span>
+<span class="c">	     * @return {Number} The size of the store in KB</span>
+<span class="c">	     */</span>		
+		<span class="nx">calculateCurrentSize</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;calculating size&quot;</span><span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;calculateCurrentSize&quot;</span><span class="o">,</span> <span class="o">[]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+		
+	    <span class="c">/**</span>
+<span class="c">	     * Gets the timestamp of the last store. This value is automatically set when </span>
+<span class="c">	     * data is stored.</span>
+<span class="c">	     * @method getModificationDate</span>
+<span class="c">	     * @return {Date} A Date object</span>
+<span class="c">	     */</span>
+		<span class="nx">getModificationDate</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;getting date&quot;</span><span class="o">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;getModificationDate&quot;</span><span class="o">,</span> <span class="o">[]);</span>
+		<span class="o">}</span> <span class="o">,</span>
+		
+		<span class="c">/**</span>
+<span class="c">		* This method requests more storage (if the amount is above 100KB or the current setting).</span>
+<span class="c">		* </span>
+<span class="c">		* The request dialog has to be displayed within the Flash player itself</span>
+<span class="c">		* so the SWF it is called from must be visible and at least 215px x 138px (w x h) in size.</span>
+<span class="c">		* </span>
+<span class="c">		* @method setSize</span>
+<span class="c">		* @param value {Number} The size, in KB</span>
+<span class="c">		* @return {String} </span>
+<span class="c">		*/</span>		
+		<span class="nx">setSize</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span> 
+		<span class="o">{</span>
+			<span class="k">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;setSize&quot;</span><span class="o">,</span> <span class="o">[</span><span class="nx">value</span><span class="o">]);</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;attempt to set size to &quot;</span> <span class="o">+</span> <span class="nx">value</span><span class="o">*</span><span class="m">1024</span> <span class="o">+</span> <span class="s2">&quot; bytes resulted in &quot;</span> <span class="o">+</span> <span class="nx">result</span><span class="o">);</span>
+			<span class="k">return</span> <span class="nx">result</span><span class="o">;</span>
+		<span class="o">}</span> <span class="o">,</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * Displays the settings dialog to allow the user to configure</span>
+<span class="c">		 * storage settings manually. If the SWF height and width are smaller than</span>
+<span class="c">		 * what is allowable to display the local settings panel,</span>
+<span class="c">		 * an openExternalDialog message will be sent to JavaScript.</span>
+<span class="c">		 * @method displaySettings</span>
+<span class="c">		 */</span>		
+		<span class="nx">displaySettings</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> 
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;attempting to show settings. are dimensions adequate? &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;hasAdequateDimensions&quot;</span><span class="o">));</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">embeddedSWF</span><span class="o">.</span><span class="nx">callSWF</span><span class="o">(</span><span class="s2">&quot;displaySettings&quot;</span><span class="o">,</span> <span class="o">[]);</span>
+		<span class="o">}</span> 
+
+<span class="o">});</span>
+
+
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">SWFStore</span><span class="o">.</span><span class="nx">SWFURL</span> <span class="o">=</span> <span class="s2">&quot;swfstore.swf&quot;</span><span class="o">;</span>
+
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">register</span><span class="o">(</span><span class="s2">&quot;swfstore&quot;</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">SWFStore</span><span class="o">,</span> <span class="o">{</span><span class="nx">version</span><span class="o">:</span> <span class="s2">&quot;@VERSION@&quot;</span><span class="o">,</span> <span class="nx">build</span><span class="o">:</span> <span class="s2">&quot;@BUILD@&quot;</span><span class="o">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class="selected"><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.SWFStore.html" title="YAHOO.util.SWFStore">YAHOO.util.SWFStore</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="swfstore.js.html" title="swfstore.js">swfstore.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.util.SWFStore", "name": "addListener", "url": "YAHOO.util.SWFStore.html#method_addListener", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "calculateCurrentSize", "url": "YAHOO.util.SWFStore.html#method_calculateCurrentSize", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "clear", "url": "YAHOO.util.SWFStore.html#method_clear", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "clear", "url": "YAHOO.util.SWFStore.html#event_clear", "type": "event"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "displaySettings", "url": "YAHOO.util.SWFStore.html#method_displaySettings", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "error", "url": "YAHOO.util.SWFStore.html#event_error", "type": "event"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getItems", "url": "YAHOO.util.SWFStore.html#method_getItems", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getLength", "url": "YAHOO.util.SWFStore.html#method_getLength", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getModificationDate", "url": "YAHOO.util.SWFStore.html#method_getModificationDate", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getShareData", "url": "YAHOO.util.SWFStore.html#method_getShareData", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getTypeAt", "url": "YAHOO.util.SWFStore.html#method_getTypeAt", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getTypeOf", "url": "YAHOO.util.SWFStore.html#method_getTypeOf", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getUseCompression", "url": "YAHOO.util.SWFStore.html#method_getUseCompression", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getValueAt", "url": "YAHOO.util.SWFStore.html#method_getValueAt", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "getValueOf", "url": "YAHOO.util.SWFStore.html#method_getValueOf", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "hasAdequateDimensions", "url": "YAHOO.util.SWFStore.html#method_hasAdequateDimensions", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "inadequateDimensions", "url": "YAHOO.util.SWFStore.html#event_inadequateDimensions", "type": "event"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "on", "url": "YAHOO.util.SWFStore.html#method_on", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "openingDialog", "url": "YAHOO.util.SWFStore.html#event_openingDialog", "type": "event"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "quotaExceededError", "url": "YAHOO.util.SWFStore.html#event_quotaExceededError", "type": "event"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "removeItem", "url": "YAHOO.util.SWFStore.html#method_removeItem", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "save", "url": "YAHOO.util.SWFStore.html#event_save", "type": "event"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "securityError", "url": "YAHOO.util.SWFStore.html#event_securityError", "type": "event"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "setItem", "url": "YAHOO.util.SWFStore.html#method_setItem", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "setShareData", "url": "YAHOO.util.SWFStore.html#method_setShareData", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "setSize", "url": "YAHOO.util.SWFStore.html#method_setSize", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "setUseCompression", "url": "YAHOO.util.SWFStore.html#method_setUseCompression", "type": "method"}, {"access": "", "host": "YAHOO.util.SWFStore", "name": "toString", "url": "YAHOO.util.SWFStore.html#method_toString", "type": "method"}];
+</script>
+</body>
+</html>

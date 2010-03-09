@@ -1,0 +1,56 @@
+<html>
+<head>
+<title>YUI DataTable Tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css" />
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />
+<link type="text/css" rel="stylesheet" href="../../../build/datatable/assets/skins/sam/datatable.css" />
+<style type="text/css">
+.yui-skin-sam .yui-log .yui-log-bd {height:60em;margin-top:2em;}
+</style>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo-min.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../../build/event-simulate/event-simulate-min.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../../build/datatable/datatable.js"></script>
+<script type="text/javascript" src="../../../build/paginator/paginator.js"></script>
+
+<script type="text/javascript" src="datatable/DataTable.js"></script>
+<script type="text/javascript" src="datatable/ColumnSet.js"></script>
+<script type="text/javascript" src="datatable/RecordSet.js"></script>
+</head>
+<body class="yui-skin-sam">
+<h1>DataTable Tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" disabled="true" /></p>
+
+<script type="text/javascript">
+
+(function() {
+
+    /**
+     *
+     *
+     * Sets up test page.
+     *
+     *
+     */
+    YAHOO.util.Event.addListener(window, "load", function() {
+        var logger = new YAHOO.tool.TestLogger();
+        
+        if (parent && parent != window) {
+            YAHOO.tool.TestManager.load();
+        }
+
+        YAHOO.util.Event.addListener("btnRun", "click", function(){YAHOO.tool.TestRunner.run();});
+        YAHOO.tool.TestRunner.run();
+        YAHOO.util.Dom.get("btnRun").disabled = false;
+    });
+})();
+
+</script>
+</body>
+</html>

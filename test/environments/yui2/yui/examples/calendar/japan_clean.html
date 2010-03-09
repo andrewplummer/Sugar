@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Localization - Japan</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	.yui-skin-sam .yui-calendar td.wd0 { background-color:#fde0e0; }
+	.yui-skin-sam .yui-calendar td.wd0 a { color:red; }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Localization - Japan</h1>
+
+<div class="exampleIntro">
+	<p>Calendar provides configuration properties that can be used to change the Calendar's various data labels, when the Calendar is used in different locales. This example shows how to provide locale specific labels for month and weekday names, how to configure the format of any date strings passed in to the Calendar and how to configure the format of the month, year label used in the header. It uses Japan as an example locale</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="cal1Container"></div>
+
+<script type="text/javascript">
+    YAHOO.namespace("example.calendar");
+
+    YAHOO.example.calendar.init = function() {
+        YAHOO.example.calendar.cal1 = new YAHOO.widget.CalendarGroup("cal1","cal1Container", { START_WEEKDAY: 1, MULTI_SELECT:true } );
+
+        // Correct formats for Japan: yyyy/mm/dd, mm/dd, yyyy/mm
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_YEAR_POSITION", 1);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_MONTH_POSITION", 2);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_DAY_POSITION", 3);
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("MY_YEAR_POSITION", 1);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MY_MONTH_POSITION", 2);
+
+        // Date labels for Japanese locale
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("MONTHS_SHORT",   ["1\u6708", "2\u6708", "3\u6708", "4\u6708", "5\u6708", "6\u6708", "7\u6708", "8\u6708", "9\u6708", "10\u6708", "11\u6708", "12\u6708"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MONTHS_LONG",    ["1\u6708", "2\u6708", "3\u6708", "4\u6708", "5\u6708", "6\u6708", "7\u6708", "8\u6708", "9\u6708", "10\u6708", "11\u6708", "12\u6708"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_1CHAR", ["\u65E5", "\u6708", "\u706B", "\u6C34", "\u6728", "\u91D1", "\u571F"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_SHORT", ["\u65E5", "\u6708", "\u706B", "\u6C34", "\u6728", "\u91D1", "\u571F"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_MEDIUM",["\u65E5", "\u6708", "\u706B", "\u6C34", "\u6728", "\u91D1", "\u571F"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_LONG",  ["\u65E5", "\u6708", "\u706B", "\u6C34", "\u6728", "\u91D1", "\u571F"]);
+
+        // Month/Year label format for Japan
+                YAHOO.example.calendar.cal1.cfg.setProperty("MY_LABEL_YEAR_POSITION",  1);
+                YAHOO.example.calendar.cal1.cfg.setProperty("MY_LABEL_MONTH_POSITION",  2);
+                YAHOO.example.calendar.cal1.cfg.setProperty("MY_LABEL_YEAR_SUFFIX",  "\u5E74");
+                YAHOO.example.calendar.cal1.cfg.setProperty("MY_LABEL_MONTH_SUFFIX",  "");
+
+        YAHOO.example.calendar.cal1.select("2009/10/1-2009/10/8");
+        YAHOO.example.calendar.cal1.cfg.setProperty("PAGEDATE", "2009/10");
+        YAHOO.example.calendar.cal1.render();
+    }
+
+    YAHOO.util.Event.onDOMReady(YAHOO.example.calendar.init);
+</script>
+
+<div style="clear:both" ></div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

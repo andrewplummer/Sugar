@@ -1,0 +1,75 @@
+YUI Library - Charts - Release Notes
+2.8.0
+  * Add ability to show/hide series
+  * Add ability to style series by index
+  * Add ability to export chart as jpg or png (fp 10+)
+  * Add ability for displaying 2 Numeric Axes on the same chart
+  * Add ability to allow markers to extend beyond viewport
+  * Add font styling to chart title
+  * Add ability to set dataTip function on a series level
+  * Add ability to set scope for label formatting functions
+  * Add ability to filter series from legend
+  * Add ability to format legend labels
+  * Enhanced legend so that items wrap when there are too many for one row/column
+  * Add ability to specify different shaped line series markers
+  * Fixed bug in which setting the size style of xAxis and yAxis to "0" still showed a line
+  * Fixed Bug in which TimeAxis labels overlap when max/min dates are set
+  * Fixed bug in which stacked bar and column charts widths were incorrectly calculated
+  * Fixed bug in which chart font colors only accepted hex values. Now they can accept hex strings as well.
+  * Fixed bug in which small numbers were not calculated correctly.
+  * Fixed bug in which big numbers were not rounded properly
+  * Fixed bug in which stacked bar and column charts do not display properly when both negative and positive values are present
+  * Fixed bug in which line chart area fills were not calculated correctly when there are both positive and negative values and a maximum or minimum of have been set
+  * The following changes have been made to the charts.swf. (This will not impact the behavior or API of the Charts Control)
+	- The flashvar elementID has changed to YUISwfId
+	- The flashvar eventHandler has changed to YUIBridgeCallback
+
+2.7.0
+  * Added ability to rotate axis labels and titles.
+  * Enhanced series marker styling by adding ability to set color and alpha properties for borders, fills and lines.
+  * Fixed TimeAxis bug in which majorUnit was not being calculated properly.
+  * Fixed TimeAxis bug in which the minorUnit was not being calculated.
+  * Fixed bug in which Cartesian Charts were not updating properly whent the series length changed.
+  * Fixed bug in which Pie Chart would not render properly when the data source was refreshed.
+  * Fixed bug in which the Line Chart broke when the first value of a data source was null.
+  * Fixed bug in which mouseover events were fired before the chart object was ready.
+  * Refactored axes so that major units are more accurately plotted.
+  * Added ability to uniquely style a non-origin 0 gridline.
+
+2.6.0
+  * Fixed bug in which an empty series definition caused charts to ignore styles.
+  * Fixed bug in which additions to Object.prototype cause SWFObject embed to fail
+  * refreshData is now a public method
+  * Fixed bug in which TimeAxis bounds calculation fails when polling. 
+  * Added new optional altText attribute.
+  * Moved _initialized flag from Charts to FlashAdapter.
+  * Fixed bug in which changes in the dom (e.g. display property of chart) would cause the chart to erase. New known issue added. (see known issues section)
+  * Added support for marker labels on PieSeries. Default is percentage values. May be customized with labelFunction property.
+  * New Chart Types: StackedColumnChart and StackedBarChart.
+  * Fixed bug in which charts delivered in an iframe from a different domain failed to render in Firefox.
+  * contentReady event now fires after the dataSource is available. In some rare cases it may not be backwards compatible. If you need the event to fire earlier, you can revert back to the previous code. (see version 2.5.2)
+  
+2.5.2
+  * Support for legends
+  * New series styles connectPoints, connectDiscontinuousPoints, and discontinuousDashLength
+  * dataTipFunction, xAxisLabelFunction, and yAxisLabelFunction attributes now support function references
+  * Added destroy() function.
+  * Changed majorTicks and minorTicks substyle "position" to "display". New option "none" will hide ticks.
+  * When polling is enabled, the chart now makes an immediate request instead of waiting for the first interval.
+  * Includes ActionScript source files and sample Ant build file.
+
+2.5.1
+  * No changes
+
+2.5.0
+  * Added lineSize style to series styles
+  * Added showLabels substyle to xAxis and yAxis styles
+  * Added more descriptive local content warning for ExternalInterface failure
+  * Improved minor unit calculation
+  * Fixed animation and marker positioning bugs
+  * Fixed bug that caused series definition update to fail
+  * Fixed bug that caused setting hex color values with # symbol to fail
+  * Added initialization flag to ensure DataSource doesn't receive multiple requests during initialization.
+
+2.4.0
+  * Experimental release

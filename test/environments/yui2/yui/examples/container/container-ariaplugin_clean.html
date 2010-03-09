@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using the Container ARIA Plugin</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+	/* Default/unfocused Panel style */
+	.yui-skin-sam div[role=panel].yui-panel .hd {
+		background: #F2F2F2;
+	}
+
+	/* Focused Panel style */	
+	.yui-skin-sam .yui-panel-container.focused div[role=panel].yui-panel .hd {
+		background: url(http://yui.yahooapis.com/2.5.2/build/assets/skins/sam/sprite.png) repeat-x 0 -200px;
+	}
+	
+	/*
+		The Container ARIA Plugin removes the "href" attribute from the <A> used to create the 
+		close button for a Panel, resulting in the focus outline no longer be rendered in 
+		Gecko-based browsers when the <A> element is focused.  For this reason, it is necessary to 
+		restore the focus outline for the <A>.
+	*/	
+	a.container-close[role=button]:focus {
+		outline: dotted 1px #000;
+	}
+
+	/*
+		Necessary to explicitly set the text-align property so the content of the Panels 
+		is aligned properly when viewed inside the YUI Examples chrome.
+	*/
+	#panel-2,
+	#panel-3 {
+		text-align: left;
+	}
+	
+</style>
+
+<script type="text/javascript" src="../container/assets/containerariaplugin.js"></script>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using the Container ARIA Plugin</h1>
+
+<div class="exampleIntro">
+	<p>
+The Container ARIA Plugin makes it easy to use the 
+<a href="http://www.w3.org/TR/wai-aria/">WAI-ARIA Roles and States</a> with the Container
+family of controls.
+Using the ARIA plugin, Dialogs, Alerts and Tooltips created using the Container family are 
+more interoperable with assistive technologies (AT), such as screen readers, making them more 
+accessible to users with disabilities.
+</p>
+<p>
+<a href="http://video.yahoo.com/watch/3608783/9955344">Watch a screen cast of this example 
+running in Firefox 3 with the NVDA screen reader</a>, to see immediately the benefits that 
+ARIA provides, or 
+<a href="http://www.nvda-project.org/wiki/Snapshots">download the latest development snapshot of 
+NVDA</a> to test this example for yourself.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+	(function () {
+	
+		var Event = YAHOO.util.Event,
+			Dom = YAHOO.util.Dom;
+
+
+		Event.onDOMReady(function () {
+
+			var oPanel1 = new YAHOO.widget.Panel("panel-1", {
+				
+				visible: false,
+				fixedcenter: true,
+				constraintoviewport: true,
+				width: "300px"
+			
+			});
+			
+			oPanel1.render();
+			
+			Event.on("show-dialog-1", "click", oPanel1.show, null, oPanel1);
+
+
+			var oTooltip1 = new YAHOO.widget.Tooltip("tooltip-1", { 
+				context:"show-dialog-1", 
+				text:"Shows a Dialog built using Panel from existing markup.",
+				iframe: true,
+				showDelay:500 } );
+
+
+			var oPanel2 = new YAHOO.widget.Dialog("panel-2", {
+				
+				modal: true,
+				visible: false,
+				fixedcenter: true,
+				constraintoviewport: true,
+				width: "300px",
+				postmethod: "form"
+			
+			});	
+
+			oPanel2.render(document.body);
+
+			Event.on("show-dialog-2", "click", oPanel2.show, null, oPanel2);	
+
+
+			var oTooltip2 = new YAHOO.widget.Tooltip("tooltip-2", { 
+				context:"show-dialog-2", 
+				text:"Shows a Modal Dialog built using Dialog from existing markup.",
+				iframe: true,
+				showDelay:500 } );
+
+
+			var handleOK = function() {
+				this.cancel();
+			};
+			
+			var oPanel3 = new YAHOO.widget.SimpleDialog("panel-3", {
+				
+				modal: true,
+				icon: YAHOO.widget.SimpleDialog.ICON_INFO,
+				visible: false,
+				fixedcenter: true,
+				constraintoviewport: true,
+				width: "300px",
+				role: "alertdialog",
+				buttons: [ { text:"OK", handler:handleOK, isDefault:true } ],
+				text: "Your changes have been saved."
+			
+			});	
+
+			oPanel3.setHeader("Info");
+			oPanel3.render(document.body);
+
+			var oTooltip3 = new YAHOO.widget.Tooltip("tooltip-3", { 
+				context:"show-dialog-3", 
+				text:"Shows a Modal Dialog built using SimpleDialog using the ARIA role of alertdialog.",
+				iframe: true,
+				showDelay:500 } );
+			
+			Event.on("show-dialog-3", "click", oPanel3.show, null, oPanel3);					
+
+		});
+	
+	}());
+
+</script>
+
+<button id="show-dialog-1">Show Dialog 1</button>
+<button id="show-dialog-2">Show Dialog 2</button>
+<button id="show-dialog-3">Show Dialog 3</button>
+
+<form name="panel-1-form" id="panel-1-form" method="post">
+<div id="panel-1">
+	<div class="hd">Personal Information</div>
+	<div class="bd">
+		<div>
+			<label for="panel-1-first-name" id="panel-1-first-name-label">First Name</label>
+			<input type="text" id="panel-1-first-name" name="first-name">
+		</div>
+		<div>
+			<label for="panel-1-last-name">Last Name</label>
+			<input type="text" id="panel-1-last-name" name="last-name">
+		</div>	
+		<div>
+			<label for="panel-1-email">Email</label>
+			<input type="text" id="panel-1-email" name="email">
+		</div>		
+		<div>
+			<input type="submit" id="panel-1-button-1" name="button-1" value="Submit">
+		</div>
+	</div>
+</div>
+</form>
+
+
+<div id="panel-2">
+	<div class="hd">Personal Information</div>
+	<div class="bd">
+		<form name="panel-2-form" id="panel-2-form" method="post">
+			<div>
+				<label for="panel-2-first-name" id="panel-2-first-name-label">First Name</label>
+				<input type="text" id="panel-2-first-name" name="first-name">
+			</div>
+			<div>
+				<label for="panel-2-last-name">Last Name</label>
+				<input type="text" id="panel-2-last-name" name="last-name">
+			</div>	
+			<div>
+				<label for="panel-2-email">Email</label>
+				<input type="text" id="panel-2-email" name="email">
+			</div>
+			<div>
+				<input type="submit" id="panel-2-button-1" name="button-1" value="Submit">
+			</div>
+		</form>
+	</div>
+</div>
+	
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

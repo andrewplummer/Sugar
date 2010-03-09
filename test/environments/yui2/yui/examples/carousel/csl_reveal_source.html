@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>Carousel: Partially revealing previous and next items</title>
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts.css"> 
+<link type="text/css" rel="stylesheet" href="../../build/carousel/assets/skins/sam/carousel.css">
+<style type="text/css">
+#container {
+    margin: 0 auto;
+}
+
+.yui-carousel-element li {
+    height: 180px;
+    width: 240px;
+}
+</style>
+<script src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script src="../../build/element/element-min.js"></script>
+<script src="../../build/carousel/carousel-min.js"></script>
+</head>
+
+<body class="yui-skin-sam">
+
+<h1>Partially revealing previous and next items</h1>
+
+<p> This example showcases a simple yet powerful feature of the <a href="http://developer.yahoo.com/yui/carousel/">YUI Carousel Control</a>.  In this example, the Carousel displays the previous and next
+  elements partially, giving a sneak peak of the upcoming image to the user.
+  The <code>revealAmount</code> configuration setting accepts the percentage of the
+  width of an item to reveal. </p>
+
+<!-- The Carousel container -->
+<div id="container">
+    <ol id="carousel">
+        <li>
+            <img src="http://farm1.static.flickr.com/32/52955391_e7bed4c41f_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/28/52955478_0a35209bbb_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/26/52955086_df2cdece3d_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/24/52956234_809467624f_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/30/52954770_ef743b4afe_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/33/52953744_1c4a4ffaaf_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/26/52953668_33ea00edac_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/32/52953229_28f32b92a1_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/32/52953161_9e067407b2_m.jpg"
+                 height="180" width="240">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/32/52953399_047d25504b_m.jpg"
+                 height="180" width="240">
+        </li>
+    </ol>
+</div>
+<script>
+    (function () {
+        var carousel;
+                
+        YAHOO.util.Event.onDOMReady(function (ev) {
+            var carousel    = new YAHOO.widget.Carousel("container", {
+                        revealAmount: 25
+                });
+                        
+            carousel.render(); // get ready for rendering the widget
+            carousel.show();   // display the widget
+        });
+    })();
+</script>
+
+</body>
+</html>

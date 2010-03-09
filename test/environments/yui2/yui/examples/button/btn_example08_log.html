@@ -1,0 +1,662 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Button Control: Split Buttons</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-debug.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    /*
+        Set the "zoom" property to "normal" since it is set to "1" by the 
+        ".example-container .bd" rule in yui.css and this causes a Menu
+        instance's width to expand to 100% of the browser viewport.
+    */
+    
+    div.yuimenu .bd {
+    
+        zoom: normal;
+    
+    }
+
+    #button-example-form fieldset {
+
+        border: 2px groove #ccc;
+        margin: .5em;
+        padding: .5em;
+
+    }
+    
+    #splitbutton3menu,
+    #splitbutton4menu {
+    
+        position: absolute;
+        visibility: hidden;
+        border: solid 1px #000;
+        padding: .5em;
+        background-color: #ccc;
+    
+    }
+
+    #button-example-form-postdata {
+    
+        border: dashed 1px #666;
+        background-color: #ccc;
+        padding: 1em;
+    
+    }
+
+    #button-example-form-postdata h2 {
+    
+        margin: 0 0 .5em 0;
+        padding: 0;
+        border: none;
+    
+    }
+
+</style>
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Button Control: Split Buttons</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Button Control: Split Buttons</h1>
+	
+	<div class="exampleIntro">
+	<p>This example demonstrates different ways to create and use a Split Button.</p>			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="btn_example08_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<script type="text/javascript">
+
+	//	"contentready" event handler for the "splitbuttonsfrommarkup" <fieldset>
+
+	YAHOO.util.Event.onContentReady("splitbuttonsfrommarkup", function () {
+
+		//	Create a Button using an existing <input> and <select> element.
+		//	Because the "type" attribute of the <input> element was set to 
+		//	"submit" - clicking on any MenuItem in the Button's Menu will
+		//	automatically submit the Button's parent <form>.
+
+		var oSplitButton1 = new YAHOO.widget.Button("splitbutton1", { type: "split", menu: "splitbutton1select" });
+
+		//	"render" event handler for the Button's Menu
+
+		var onMenuRender = function (p_sType, p_aArgs) {
+		
+			this.addItems([
+
+				{ text: "Four", value: 4 },
+				{ text: "Five", value: 5 }
+
+			]);
+			
+		};
+
+		//	Add some additional MenuItems to the Button's Menu once it has been rendered
+		
+		oSplitButton1.getMenu().subscribe("render", onMenuRender);
+
+		//	"submit" event handler for the <form>
+		
+		var onExampleSubmit = function (p_oEvent) {
+
+			var bSubmit = window.confirm("Are you sure you want to submit this form?");
+
+			if(!bSubmit) {
+				YAHOO.util.Event.preventDefault(p_oEvent);
+			}
+
+		};
+
+		//	Add a "submit" event handler to the <form> to confirm that 
+		//	clicking on one of the MenuItems in the Button's Menu 
+		//	submits the <form>.
+
+		YAHOO.util.Event.on("button-example-form", "submit", onExampleSubmit);
+
+
+
+		//	"click" event handler for the Button - called when the user clicks 
+		//	on the Button's text label, not when the user clicks on the area 
+		//	of the Button that displays the Button's Menu.
+
+		var onButtonClick = function () {
+		
+			YAHOO.log("You clicked the Button.");
+			
+		};
+
+		//	Create a Button using an existing <input> and <select> element
+
+		var oSplitButton2 = new YAHOO.widget.Button("splitbutton2", { type: "split", menu: "splitbutton2select", onclick: { fn: onButtonClick } });
+
+		//	Click event listener for the second Button's Menu instance
+
+		var onMenuClick = function (p_sType, p_aArgs) {
+
+			var oEvent = p_aArgs[0],	//	DOM event
+				oMenuItem = p_aArgs[1];	//	MenuItem instance that was the target of the event
+
+			if (oMenuItem) {
+				YAHOO.log("[MenuItem Properties] text: " + oMenuItem.cfg.getProperty("text") + ", value: " + oMenuItem.value);
+			}
+
+		};
+
+		//	Add a "click" event listener for the Button's Menu
+
+		oSplitButton2.getMenu().subscribe("click", onMenuClick);
+		
+		//	"option" event listener - called when the user clicks on the 
+		//	area of the Button that displays its Menu.
+		
+		var onOption = function () {
+			
+			YAHOO.log("You clicked the Split Button's option area.");
+			
+		};
+
+		//	Add a listener for the Button's "option" event
+
+		oSplitButton2.on("option", onOption);
+
+		
+
+		// Create a Button using an existing <input> element and an Overlay instance as its menu
+
+		var oSplitButton3 = new YAHOO.widget.Button("splitbutton3", { type: "split", menu: "splitbutton3menu" });
+
+	});
+
+
+
+	//	Search for an element to place the Split Button into via the 
+	//	Event Utility's "onContentReady" method
+
+	YAHOO.util.Event.onContentReady("splitbuttonsfromjavascript", function () {
+
+		//	Create two Buttons without using existing markup
+
+
+		// Instantiate an Overlay instance
+
+		var oOverlay = new YAHOO.widget.Overlay("splitbutton4menu", { visible: false });
+
+		oOverlay.setBody("Split Button 4 Menu");
+
+		// Instantiate a Split Button
+
+		var oSplitButton4 = new YAHOO.widget.Button({ type: "split",  label: "Split Button 4", menu: oOverlay, container: this });
+
+
+
+		//	"click" event handler for each item in the Button's Menu
+
+		var onMenuItemClick = function (p_sType, p_aArgs, p_oItem) {
+			
+			var sText = p_oItem.cfg.getProperty("text");
+			
+			YAHOO.log("[MenuItem Properties] text: " + sText + ", value: " + p_oItem.value);
+
+		};
+
+		//	Create an array of YAHOO.widget.MenuItem configuration properties
+
+		var aSplitButton5Menu = [
+
+			{ text: "One", value: 1, onclick: { fn: onMenuItemClick } },
+			{ text: "Two", value: 2, onclick: { fn: onMenuItemClick } },
+			{ text: "Three", value: 3, onclick: { fn: onMenuItemClick } }
+
+		];
+
+		//	Instantiate a Split Button using the array of YAHOO.widget.MenuItem 
+		//	configuration properties as the value for the "menu" 
+		//	configuration attribute.
+
+		var oSplitButton5 = new YAHOO.widget.Button({ type: "split",  label: "Split Button 5", name: "splitbutton5", menu: aSplitButton5Menu, container: this });
+    
+	});
+
+</script>
+
+<form id="button-example-form" name="button-example-form" method="post">
+
+    <fieldset id="splitbuttons">
+        <legend>Split Buttons</legend>
+
+        <fieldset id="splitbuttonsfrommarkup">
+            <legend>From Markup</legend>
+
+            <input type="submit" id="splitbutton1" name="splitbutton1_button" value="Split Button 1">
+            <select id="splitbutton1select" name="splitbutton1select" multiple>
+                <option value="0">One</option>
+                <option value="1">Two</option>
+                <option value="2">Three</option>                
+            </select>
+
+            <input type="button" id="splitbutton2" name="splitbutton2_button" value="Split Button 2">
+            <select id="splitbutton2select" name="splitbutton2select">
+                <option value="0">One</option>
+                <option value="1">Two</option>
+                <option value="2">Three</option>                
+            </select>
+
+            <input type="button" id="splitbutton3" name="splitbutton3_button" value="Split Button 3">
+            <div id="splitbutton3menu" class="yui-overlay">
+                <div class="bd">Split Button 3 Menu</div>
+            </div>
+
+        </fieldset>
+
+        <fieldset id="splitbuttonsfromjavascript">
+            <legend>From JavaScript</legend>
+        </fieldset>
+
+    </fieldset> 
+
+</form>	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Creating Split Buttons</h2>
+
+<p>With the inclusion of the optional Menu library, it is possible to create Buttons that incorporate a menu.</p>
+<p>Split Buttons can be created with or without existing HTML. In either case, create a Split Button by setting the "type" configuration attribute to "split" and the "menu" configuration attribute to one of the following values:</p>
+<ul>
+    <li>Object specifying a <a href="../../docs/YAHOO.widget.Menu.html">YAHOO.widget.Menu</a> instance.</li>
+    <li>Object specifying a <a href="../../docs/YAHOO.widget.Overlay.html">YAHOO.widget.Overlay</a> instance.</li>
+    <li>String specifying the id attribute of the <code>&#60;div&#62;</code> element used to create the menu.  By default the menu will be created as an instance of <a href="../../docs/YAHOO.widget.Overlay.html">YAHOO.widget.Overlay</a>.  If the <a href="../../docs/YAHOO.widget.Menu.html#CSS_CLASS_NAME">default CSS class name for YAHOO.widget.Menu</a> is applied to the <code>&#60;div&#62;</code> element, it will be created as an instance of <a href="../../docs/YAHOO.widget.Menu.html">YAHOO.widget.Menu</a>.</li>
+    <li>String specifying the id attribute of the <code>&#60;select&#62;</code> element used to create the menu.</li>
+    <li>Object specifying the <code>&#60;select&#62;</code> element used to create the menu.</li>
+    <li>Array of object literals, each representing a set of <a href="../../docs/YAHOO.widget.MenuItem.html">YAHOO.widget.MenuItem</a> configuration properties.</li>
+    <li>Array of strings representing the text labels for each item in the menu.</li>
+</ul>
+
+<h3>Creating Split Buttons Using Existing Markup</h3>
+<p>Since the "menu" attribute can be set to the id of an existing <code>&#60;select&#62;</code> element, a Split Button can be used to collapse two HTML form controls (<code>&#60;input&#62;</code> and <code>&#60;select&#62;</code>) into one DHTML control. For example, consider the following HTML:</p>
+<textarea name="code" class="HTML" cols="60" rows="1">
+<input type="submit" id="splitbutton1" name="splitbutton1_button" value="Split Button 1">
+<select id="splitbutton1select" name="splitbutton1select" multiple>
+    <option value="0">One</option>
+    <option value="1">Two</option>
+    <option value="2">Three</option>                
+</select>
+
+<input type="button" id="splitbutton2" name="splitbutton2_button" value="Split Button 2">
+<select id="splitbutton2select" name="splitbutton2select">
+    <option value="0">One</option>
+    <option value="1">Two</option>
+    <option value="2">Three</option>                
+</select>
+</textarea>
+<p>To instantiate a Split Button, pass the id of the source element as the first argument to the Button's constructor. Set the "type" configuration attribute to "split" and the "menu" configuration attribute to the id of the Button's corresponding <code>&#60;select&#62;</code> element.</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+var oSplitButton1 = new YAHOO.widget.Button("splitbutton1", { type: "split",
+                                        menu: "splitbutton1select" });
+
+var oSplitButton2 = new YAHOO.widget.Button("splitbutton2", { type: "split", 
+                                        menu: "splitbutton2select" });
+</textarea>
+<p>As a convenience, if the "type" attribute of the Button's source <code>&#60;input&#62;</code> element was set to "submit", clicking on any MenuItem in the Button's Menu will automatically submit the Button's parent <code>&#60;form&#62;</code>.</p>
+
+<h4>Adding MenuItems To A Button's Menu</h4>
+<p>
+Add MenuItems to a Button's Menu using the Menu's 
+<a href="../../docs/YAHOO.widget.Menu.html#method_addItem"><code>addItem</code></a>, 
+<a href="../../docs/YAHOO.widget.Menu.html#method_addItems"><code>addItems</code></a>, and 
+<a href="../../docs/YAHOO.widget.Menu.html#method_insertItem"><code>insertItem</code></a> methods.  
+The following example adds two additional MenuItems to the first Button's Menu by 
+passing an array of object literals (each containing a set of 
+<a href="../../docs/YAHOO.widget.MenuItem.html#configList">MenuItem configuration properties</a>) 
+to the <code>addItems</code> method.
+</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+//	"render" event handler for the Button's Menu
+
+var onMenuRender = function (p_sType, p_aArgs) {
+
+	this.addItems([
+
+		{ text: "Four", value: 4 },
+		{ text: "Five", value: 5 }
+
+	]);
+	
+};
+
+
+//	Add some additional MenuItems to the Button's Menu once it has been rendered
+
+oSplitButton1.getMenu().subscribe("render", onMenuRender);
+</textarea>
+
+<h4>Adding Click Event Listeners To A Split Button</h4>
+
+<p>
+The most common events to listen for on a Split Button are <code>click</code> 
+events.  A standard <code>click</code> event is fired when the face/text label 
+of a Split Button is clicked.  Use the <code>on</code> method or 
+<a href="../../docs/YAHOO.widget.Button.html#config_onclick"><code>onclick</code></a> 
+configuration attribute to listen for the <code>click</code> event.  
+(<em>Note:</em> The <code>click</code> event is not fired when the user clicks 
+on the area of the Button that displays the Button's Menu.)
+</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+//	"click" event handler for the Button - called when the user clicks 
+//	on the Button's text label, not when the user clicks on the area 
+//	of the Button that displays the Button's Menu.
+
+var onButtonClick = function () {
+
+	YAHOO.log("You clicked the Button.");
+	
+};
+
+//	Create a Button using an existing <input> and <select> element
+
+var oSplitButton2 = new YAHOO.widget.Button("splitbutton2", { type: "split", menu: "splitbutton2select", onclick: { fn: onButtonClick } });
+</textarea>
+
+<p>
+Split Buttons also fire an 
+<a href="../../docs/YAHOO.widget.Button.html#event_option"><code>option</code></a> 
+event when the user clicks on the area the that invokes the display of its menu.  
+Use the <code>on</code> method to listen for the 
+<a href="../../docs/YAHOO.widget.Button.html#event_option"><code>option</code></a> event.
+</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+//	"click" event handler for the Button - called when the user clicks 
+//	on the Button's text label, not when the user clicks on the area 
+//	of the Button that displays the Button's Menu.
+
+var onButtonClick = function () {
+
+	YAHOO.log("You clicked the Button.");
+	
+};
+
+//	Create a Button using an existing <input> and <select> element
+
+var oSplitButton2 = new YAHOO.widget.Button("splitbutton2", { type: "split", menu: "splitbutton2select", onclick: { fn: onButtonClick } });
+
+
+//	"option" event listener - called when the user clicks on the 
+//	area of the Button that displays its Menu.
+
+var onOption = function () {
+	
+	YAHOO.log("You clicked the Split Button's option area.");
+	
+};
+
+//	Add a listener for the Button's "option" event
+
+oSplitButton2.on("option", onOption);
+</textarea>
+
+<p>
+Add event listeners to a Button's Menu using the Menu's 
+<code>subscribe</code> 
+method.  The following example adds a <code>click</code> event listener to the 
+Button's Menu.  The <code>click</code> event listener displays the text label 
+and value of the MenuItem that was clicked.
+</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+//	"click" event handler for the Button - called when the user clicks 
+//	on the Button's text label, not when the user clicks on the area 
+//	of the Button that displays the Button's Menu.
+
+var onButtonClick = function () {
+
+	YAHOO.log("You clicked the Button.");
+	
+};
+
+//	Create a Button using an existing <input> and <select> element
+
+var oSplitButton2 = new YAHOO.widget.Button("splitbutton2", { type: "split", menu: "splitbutton2select", onclick: { fn: onButtonClick } });
+
+//	Click event listener for the second Button's Menu instance
+
+var onMenuClick = function (p_sType, p_aArgs) {
+
+	var oEvent = p_aArgs[0],	//	DOM event
+		oMenuItem = p_aArgs[1];	//	MenuItem instance that was the target of the event
+
+	if (oMenuItem) {
+		YAHOO.log("[MenuItem Properties] text: " + oMenuItem.cfg.getProperty("text") + ", value: " + oMenuItem.value);
+	}
+
+};
+
+//	Add a "click" event listener for the Button's Menu
+
+oSplitButton2.getMenu().subscribe("click", onMenuClick);
+
+//	"option" event listener - called when the user clicks on the 
+//	area of the Button that displays its Menu.
+
+var onOption = function () {
+	
+	YAHOO.log("You clicked the Split Button's option area.");
+	
+};
+
+//	Add a listener for the Button's "option" event
+
+oSplitButton2.on("option", onOption);
+</textarea>
+
+
+<p>Another way to create a Split Button from markup is to begin with an <code>&#60;input&#62;</code> element and the markup format required for <a href="../../docs/YAHOO.widget.Overlay.html">Overlay</a>:</p>
+<textarea name="code" class="HTML" cols="60" rows="1">
+<input type="button" id="splitbutton3" name="splitbutton3_button" value="Split Button 3">
+<div id="splitbutton3menu" class="yui-overlay">
+    <div class="bd">Split Button 3 Menu</div>
+</div>
+</textarea>
+<p>To instantiate the Split Button, pass the id of the source element as the first argument to the Button's constructor. Set the "type" configuration attribute to "split" and the "menu" configuration attribute to the id or node reference of the HTML element to be used to create the Overlay:
+<textarea name="code" class="JScript" cols="60" rows="1">
+var oSplitButton3 = new YAHOO.widget.Button("splitbutton3", { type: "split", 
+                                        menu: "splitbutton3menu" });
+</textarea>
+<p>Using an Overlay instance as a Split Button's menu is useful when you need a simple container to house HTML content or another YUI widget, such as a Calendar or Color Picker.</p>
+
+<h3>Creating Split Buttons Using JavaScript</h3>
+<p>It is also possible to create a Split Button that utilizes <a href="../../docs/YAHOO.widget.Overlay.html">Overlay</a> completely from JavaScript.  Begin by instantiating an Overlay.  Then instantiate a Split Button, setting its "type" configuration attribute to "split" and its "menu" configuration attribute to the Overlay instance via an object literal passed as a single argument to the Button's constructor:</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+//	Search for an element to place the Split Button into via the 
+//	Event Utility's "onContentReady" method
+
+YAHOO.util.Event.onContentReady("splitbuttonsfromjavascript", function () {
+
+	// Instantiate an Overlay instance
+
+	var oOverlay = new YAHOO.widget.Overlay("splitbutton4menu", { visible: false });
+
+	oOverlay.setBody("Split Button 4 Menu");
+
+	// Instantiate a Split Button
+
+	var oSplitButton4 = new YAHOO.widget.Button({ type: "split",  label: "Split Button 4", menu: oOverlay, container: this });
+   
+});
+</textarea>
+
+
+<p>Another easy way to create a Split Button from JavaScript is to set the "menu" configuration property to an array of <a href="../../docs/YAHOO.widget.MenuItem.html">MenuItem</a> configuration properties.</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+//	Search for an element to place the Split Button into via the 
+//	Event Utility's "onContentReady" method
+
+YAHOO.util.Event.onContentReady("splitbuttonsfromjavascript", function () {
+
+	//	"click" event handler for each item in the Button's Menu
+
+	var onMenuItemClick = function (p_sType, p_aArgs, p_oItem) {
+
+		var sText = p_oItem.cfg.getProperty("text");
+
+		YAHOO.log("[MenuItem Properties] text: " + sText + ", value: " + p_oItem.value);
+
+	};
+
+	//	Create an array of YAHOO.widget.MenuItem configuration properties
+
+	var aSplitButton5Menu = [
+
+		{ text: "One", value: 1, onclick: { fn: onMenuItemClick } },
+		{ text: "Two", value: 2, onclick: { fn: onMenuItemClick } },
+		{ text: "Three", value: 3, onclick: { fn: onMenuItemClick } }
+
+	];
+
+	//	Instantiate a Split Button using the array of YAHOO.widget.MenuItem 
+	//	configuration properties as the value for the "menu" 
+	//	configuration attribute.
+
+	var oSplitButton5 = new YAHOO.widget.Button({ type: "split",  label: "Split Button 5", name: "splitbutton5", menu: aSplitButton5Menu, container: this });
+
+});
+</textarea>
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?menu&button&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerDiv"></div>
+							<div id="loggerGloss">
+								<p><strong>Note:</strong> You are viewing this example in debug mode with logging enabled.  This can significantly slow performance.</p>
+	
+								<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="btn_example08.html">Reload with logging<br />and debugging disabled.</a></span></span></p>
+							</div>
+						</div>
+					
+				
+					<div id="examples">
+						<h3>Button Control Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../button/btn_example01.html'>Push Buttons</a></li><li><a href='../button/btn_example02.html'>Link Buttons</a></li><li><a href='../button/btn_example03.html'>Checkbox Buttons</a></li><li><a href='../button/btn_example04.html'>Radio Buttons</a></li><li><a href='../button/btn_example05.html'>Submit Buttons</a></li><li><a href='../button/btn_example06.html'>Reset Buttons</a></li><li><a href='../button/btn_example07.html'>Menu Buttons</a></li><li class='selected'><a href='../button/btn_example08.html'>Split Buttons</a></li><li><a href='../button/btn_example09.html'>Simple Calendar Menu Button</a></li><li><a href='../button/btn_example10.html'>Calendar Menu Button with Date on Button Face</a></li><li><a href='../button/btn_example11.html'>Color Picker Button</a></li><li><a href='../button/btn_example12.html'>Fixed Width Menu Button</a></li><li><a href='../button/btn_example13.html'>Glowing Button</a></li><li><a href='../button/btn_example14.html'>Slider Button</a></li><li><a href='../button/button-ariaplugin.html'>Using the Button ARIA Plugin</a></li><li><a href='../button/button-menu-select.html'>Using A Menu Button To Replace A &#60;select&#62; Element</a></li><li><a href='../button/button-menu-swap.html'>Replacing the content of a Button's Menu</a></li><li><a href='../autocomplete/ac_combobox.html'>Combobox, with CSS for Multiple Stacked Instances (included with examples for AutoComplete Control)</a></li><li><a href='../datatable/dt_colshowhide.html'>Showing, Hiding, and Reordering Columns. (included with examples for DataTable Control)</a></li><li><a href='../get/get-css-basic.html'>Getting CSS Style Sheets (included with examples for Get Utility)</a></li><li><a href='../layout/adv_layout.html'>Complex Application (included with examples for Layout Manager)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Button Control Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/button/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_button.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/button.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="selected "><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

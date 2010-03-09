@@ -1,0 +1,62 @@
+body { padding:0 }
+a {color:#0000de;} 
+a:visited {color:#639}
+a:active {color: #f00;}
+p {color:#000; margin-bottom:1em }
+
+strong { font-weight:bold }
+em { font-style:italic }
+
+#hd a#logo { display:block;margin:10px;width:378px; }
+#hd a#logo div { background:url(../assets/yui.gif) no-repeat;height:34px; }
+#hd h1 { font-weight:bold;text-indent:15px; background: url(http://l.yimg.com/a/i/ydn/bg_hd.gif) 0 0 repeat-x #B6CDE1; border:1px solid #93B2CC; position:relative;font-size:110%;padding:5px 0;margin:0 auto;}
+#hd { margin-bottom:10px; }
+
+#toc { background-color:#ecf5fa; padding:0; border:1px solid #89d;overflow:hidden;zoom:1}
+#toc ul {list-style:none; margin:0; padding:0; font-size:90%;}
+#toc ul li { height:100%;padding:0;margin:0;*margin:0 0 -3px;*zoom:1; }
+
+#toc ul li a { margin:0;display:block;padding:5px 2px 5px 5px; text-decoration:none; }
+#toc ul li a:hover { color:#fff; background-color:#3c3cb7; }
+
+#toc ul li.selected { font-weight:bold; color:#fff; background:#666; padding:0; }
+#toc ul li.selected a { color:#fff; }
+#toc ul li.selected a:hover { font-weight:bold; color:#fff; background:#3c3cb7; }
+
+#toc ul li.child { background-color:#ddd }
+#toc ul li.child a { margin:0;display:block; padding:5px 2px 5px 20px; text-decoration:none; }
+
+#toc ul li.active { font-weight:bold; color:#000; }
+#toc ul li.active a { color:#000; }
+
+#toc ul li a.printer { padding:0;margin-right:2px;margin-top:-1.5em;display:none;float:right;height:12px;width:12px; }
+#toc ul li.selected a.printer { display:block;background:url(http://l.yimg.com/a/i/us/aut/pltfrm/ic/print_12.gif) no-repeat;cursor:pointer;  }
+#toc ul li.selected a.printer:hover { background:url(http://l.yimg.com/a/i/us/aut/pltfrm/ic/print_12.gif) no-repeat;cursor:pointer;  }
+
+#toc ul li em { display:none; }
+#toc ul li.sect { font-weight:bold; color:#fff; background:#ccc; }
+#toc ul li.sect a { color:#333 }
+#toc ul li.sect a:hover { color:#fff }
+
+#bd { margin-left:15px; }
+#bd .dp-highlighter { margin:10px 0 15px }
+#bd h1 { line-height:1.2em; color:#E76300; font-size:120%; margin:0 0 12px;}
+#bd h2 { line-height:1.2em; color:#E76300; font-size:110%; margin:0 0 10px;}
+
+#bd ul.properties { width:85%;margin:20px auto; }
+#bd ul.properties li { margin:1em 0; }
+
+#stepnav { font-size:100%; margin:25px 0 0 15px }
+#stepnav .back { margin-right:15px }
+
+#solution { margin-left:15px; }
+#solution a { display:block;margin-top:7px;margin-bottom:20px }
+#solution { zoom:1 }
+
+#ft { height:2px;line-height:2px;text-indent:15px; background:#B6CDE1;margin:10px auto;clear:both}
+
+#landing { margin-left:1em }
+#landing h3 { font-size:105%;margin-bottom:.5em }
+#landing p { margin-left:1em }
+
+.dp-highlighter { width:96% }

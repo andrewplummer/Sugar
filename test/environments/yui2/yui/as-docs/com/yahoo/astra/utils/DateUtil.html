@@ -1,0 +1,699 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../../print.css" type="text/css" media="print">
+<meta content="DateUtil,com.yahoo.astra.utils.DateUtil,DAYS_IN_APRIL,DAYS_IN_AUGUST,DAYS_IN_DECEMBER,DAYS_IN_FEBRUARY,DAYS_IN_FEBRUARY_LEAP_YEAR,DAYS_IN_JANUARY,DAYS_IN_JULY,DAYS_IN_JUNE,DAYS_IN_LEAP_YEAR,DAYS_IN_MARCH,DAYS_IN_MAY,DAYS_IN_NOVEMBER,DAYS_IN_OCTOBER,DAYS_IN_SEPTEMBER,DAYS_IN_YEAR,daysInMonths,months,countDays,getDateDifferenceByTimeUnit,getHoursIn12HourFormat,getMonthName,getShortMonthName,isLeapYear,roundDown,roundUp,timeCodeToUTC" name="keywords">
+<title>com.yahoo.astra.utils.DateUtil</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'DateUtil - YUI Flash Component Documentation';
+				var baseRef = '../../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">YUI Flash Component Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../../all-classes.html')" href="../../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../all-classes.html')" href="../../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../index-list.html')" href="../../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../../index.html?com/yahoo/astra/utils/DateUtil.html&amp;com/yahoo/astra/utils/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;DateUtil</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#propertySummary">Properties</a>&nbsp;| <a href="#methodSummary">Methods</a>&nbsp;| <a href="#constantSummary">Constants</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class DateUtil"); titleBar_setSubNav(true,true,false,false,false,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">com.yahoo.astra.utils</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class DateUtil</td>
+</tr>
+</table>
+<p></p>
+  A collection of utility functions for the manipulation and inspection of date and time values.
+  
+  <p></p>
+<p>
+<span class="classHeaderTableLabel">See also</span>
+</p>
+<div class="seeAlso">Date</div>
+<br>
+<hr>
+</div>
+<a name="propertySummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Properties</div>
+<table id="summaryTableProperty" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Property</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#daysInMonths">daysInMonths</a> : Array<div class="summaryTableDescription">[static]
+   The number of days appearing in each month.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#months">months</a> : Array<div class="summaryTableDescription">[static]
+   The names of months in English.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+</table>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#countDays()">countDays</a>(start:Date, end:Date):Number</div>
+<div class="summaryTableDescription">[static]
+   Determines the number of days between the start value and the end value.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#getDateDifferenceByTimeUnit()">getDateDifferenceByTimeUnit</a>(minDate:Date, maxDate:Date, timeUnit:String):Number</div>
+<div class="summaryTableDescription">[static]</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#getHoursIn12HourFormat()">getHoursIn12HourFormat</a>(value:Date):Number</div>
+<div class="summaryTableDescription">[static]
+   Determines the hours value in the range 1 - 12 for the AM/PM time format.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#getMonthName()">getMonthName</a>(index:int):String</div>
+<div class="summaryTableDescription">[static]
+   Gets the English name of the month specified by index.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#getShortMonthName()">getShortMonthName</a>(index:int):String</div>
+<div class="summaryTableDescription">[static]
+   Gets the abbreviated month name specified by index.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#isLeapYear()">isLeapYear</a>(year:int):Boolean</div>
+<div class="summaryTableDescription">[static]
+   Determines if the input year is a leap year (with 366 days, rather than 365).</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#roundDown()">roundDown</a>(dateToRound:Date, timeUnit:String = "day"):Date</div>
+<div class="summaryTableDescription">[static]
+   Rounds a Date value down to the nearest value on the specified time unit.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#roundUp()">roundUp</a>(dateToRound:Date, timeUnit:String = "day"):Date</div>
+<div class="summaryTableDescription">[static]
+   Rounds a Date value up to the nearest value on the specified time unit.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#timeCodeToUTC()">timeCodeToUTC</a>(timecode:String):String</div>
+<div class="summaryTableDescription">[static]
+   Converts a time code to UTC.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+</table>
+</div>
+<a name="constantSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Constants</div>
+<table id="summaryTableConstant" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Constant</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_APRIL">DAYS_IN_APRIL</a> : int = 30<div class="summaryTableDescription">[static]
+   The number of days in April.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_AUGUST">DAYS_IN_AUGUST</a> : int = 31<div class="summaryTableDescription">[static]
+   The number of days in August.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_DECEMBER">DAYS_IN_DECEMBER</a> : int = 31<div class="summaryTableDescription">[static]
+   The number of days in December.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_FEBRUARY">DAYS_IN_FEBRUARY</a> : int = 28<div class="summaryTableDescription">[static]
+   The number of days in February on a standard year.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_FEBRUARY_LEAP_YEAR">DAYS_IN_FEBRUARY_LEAP_YEAR</a> : int = 29<div class="summaryTableDescription">[static]
+   The number of days in February on a leap year.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_JANUARY">DAYS_IN_JANUARY</a> : int = 31<div class="summaryTableDescription">[static]
+   The number of days in January.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_JULY">DAYS_IN_JULY</a> : int = 31<div class="summaryTableDescription">[static]
+   The number of days in July.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_JUNE">DAYS_IN_JUNE</a> : int = 30<div class="summaryTableDescription">[static]
+   The number of days in June.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_LEAP_YEAR">DAYS_IN_LEAP_YEAR</a> : int = 366<div class="summaryTableDescription">[static]
+   The number of days in a leap year.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_MARCH">DAYS_IN_MARCH</a> : int = 31<div class="summaryTableDescription">[static]
+   The number of days in March.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_MAY">DAYS_IN_MAY</a> : int = 31<div class="summaryTableDescription">[static]
+   The number of days in May.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_NOVEMBER">DAYS_IN_NOVEMBER</a> : int = 30<div class="summaryTableDescription">[static]
+   The number of days in November.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_OCTOBER">DAYS_IN_OCTOBER</a> : int = 31<div class="summaryTableDescription">[static]
+   The number of days in October.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_SEPTEMBER">DAYS_IN_SEPTEMBER</a> : int = 30<div class="summaryTableDescription">[static]
+   The number of days in September.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DAYS_IN_YEAR">DAYS_IN_YEAR</a> : int = 365<div class="summaryTableDescription">[static]
+   The number of days in a standard year.</div>
+</td><td class="summaryTableOwnerCol">DateUtil</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="propertyDetail"></a>
+<div class="detailSectionHeader">Property detail</div>
+<a name="daysInMonths"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">daysInMonths</td><td class="detailHeaderType">property</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static var daysInMonths:Array</code><p>
+   The number of days appearing in each month. May be used for easy index lookups.
+   The stored value for February corresponds to a standard year--not a leap year.
+   </p></div>
+<a name="months"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">months</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static var months:Array</code><p>
+   The names of months in English. The index in the array corresponds to the value of the month
+   in a date object.
+   </p></div>
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="countDays()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">countDays</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function countDays(start:Date, end:Date):Number</code><p>
+   Determines the number of days between the start value and the end value. The result
+   may contain a fractional part, so cast it to int if a whole number is desired.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">start</span>:Date</code> &mdash; start the starting date of the range
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">end</span>:Date</code> &mdash; end  the ending date of the range
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Number</code> &mdash;  the number of dats between start and end
+   </td>
+</tr>
+</table>
+</div>
+<a name="getDateDifferenceByTimeUnit()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">getDateDifferenceByTimeUnit</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function getDateDifferenceByTimeUnit(minDate:Date, maxDate:Date, timeUnit:String):Number</code><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">minDate</span>:Date</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">maxDate</span>:Date</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">timeUnit</span>:String</code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Number</code></td>
+</tr>
+</table>
+</div>
+<a name="getHoursIn12HourFormat()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">getHoursIn12HourFormat</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function getHoursIn12HourFormat(value:Date):Number</code><p>
+   Determines the hours value in the range 1 - 12 for the AM/PM time format.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">value</span>:Date</code> &mdash;  the input Date value
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Number</code> &mdash;   the calculated hours value
+   </td>
+</tr>
+</table>
+</div>
+<a name="getMonthName()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">getMonthName</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function getMonthName(index:int):String</code><p>
+   Gets the English name of the month specified by index. This is the month value
+   as stored in a Date object.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">index</span>:int</code> &mdash; index the numeric value of the month
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>String</code> &mdash;  the string name of the month in English
+   </td>
+</tr>
+</table>
+</div>
+<a name="getShortMonthName()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">getShortMonthName</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function getShortMonthName(index:int):String</code><p>
+   Gets the abbreviated month name specified by index. This is the month value
+   as stored in a Date object.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">index</span>:int</code> &mdash; index the numeric value of the month
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>String</code> &mdash;  the short string name of the month in English
+   </td>
+</tr>
+</table>
+</div>
+<a name="isLeapYear()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">isLeapYear</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function isLeapYear(year:int):Boolean</code><p>
+   Determines if the input year is a leap year (with 366 days, rather than 365).
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">year</span>:int</code> &mdash; year the year value as stored in a Date object.
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Boolean</code> &mdash;  true if the year input is a leap year
+   </td>
+</tr>
+</table>
+</div>
+<a name="roundDown()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">roundDown</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function roundDown(dateToRound:Date, timeUnit:String = "day"):Date</code><p>
+   Rounds a Date value down to the nearest value on the specified time unit.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">dateToRound</span>:Date</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">timeUnit</span>:String</code> (default = "<code>day</code>")<code></code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Date</code></td>
+</tr>
+</table>
+<p>
+<span class="label">See also</span>
+</p>
+<div class="seeAlso">
+<a href="../utils/TimeUnit.html" target="">com.yahoo.astra.utils.TimeUnit</a>
+</div>
+</div>
+<a name="roundUp()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">roundUp</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function roundUp(dateToRound:Date, timeUnit:String = "day"):Date</code><p>
+   Rounds a Date value up to the nearest value on the specified time unit.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">dateToRound</span>:Date</code></td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">timeUnit</span>:String</code> (default = "<code>day</code>")<code></code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Date</code></td>
+</tr>
+</table>
+<p>
+<span class="label">See also</span>
+</p>
+<div class="seeAlso">
+<a href="../utils/TimeUnit.html" target="">com.yahoo.astra.utils.TimeUnit</a>
+</div>
+</div>
+<a name="timeCodeToUTC()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">timeCodeToUTC</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function timeCodeToUTC(timecode:String):String</code><p>
+   Converts a time code to UTC.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">timecode</span>:String</code> &mdash; the input timecode
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>String</code> &mdash;   the UTC value
+   </td>
+</tr>
+</table>
+</div>
+<a name="constantDetail"></a>
+<div class="detailSectionHeader">Constant detail</div>
+<a name="DAYS_IN_APRIL"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_APRIL</td><td class="detailHeaderType">constant</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_APRIL:int = 30</code><p>
+   The number of days in April.
+   </p></div>
+<a name="DAYS_IN_AUGUST"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_AUGUST</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_AUGUST:int = 31</code><p>
+   The number of days in August.
+   </p></div>
+<a name="DAYS_IN_DECEMBER"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_DECEMBER</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_DECEMBER:int = 31</code><p>
+   The number of days in December.
+   </p></div>
+<a name="DAYS_IN_FEBRUARY"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_FEBRUARY</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_FEBRUARY:int = 28</code><p>
+   The number of days in February on a standard year.
+   </p></div>
+<a name="DAYS_IN_FEBRUARY_LEAP_YEAR"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_FEBRUARY_LEAP_YEAR</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_FEBRUARY_LEAP_YEAR:int = 29</code><p>
+   The number of days in February on a leap year.
+   </p></div>
+<a name="DAYS_IN_JANUARY"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_JANUARY</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_JANUARY:int = 31</code><p>
+   The number of days in January.
+   </p></div>
+<a name="DAYS_IN_JULY"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_JULY</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_JULY:int = 31</code><p>
+   The number of days in July.
+   </p></div>
+<a name="DAYS_IN_JUNE"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_JUNE</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_JUNE:int = 30</code><p>
+   The number of days in June.
+   </p></div>
+<a name="DAYS_IN_LEAP_YEAR"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_LEAP_YEAR</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_LEAP_YEAR:int = 366</code><p>
+   The number of days in a leap year.
+   </p></div>
+<a name="DAYS_IN_MARCH"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_MARCH</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_MARCH:int = 31</code><p>
+   The number of days in March.
+   </p></div>
+<a name="DAYS_IN_MAY"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_MAY</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_MAY:int = 31</code><p>
+   The number of days in May.
+   </p></div>
+<a name="DAYS_IN_NOVEMBER"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_NOVEMBER</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_NOVEMBER:int = 30</code><p>
+   The number of days in November.
+   </p></div>
+<a name="DAYS_IN_OCTOBER"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_OCTOBER</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_OCTOBER:int = 31</code><p>
+   The number of days in October.
+   </p></div>
+<a name="DAYS_IN_SEPTEMBER"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_SEPTEMBER</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_SEPTEMBER:int = 30</code><p>
+   The number of days in September.
+   </p></div>
+<a name="DAYS_IN_YEAR"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DAYS_IN_YEAR</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DAYS_IN_YEAR:int = 365</code><p>
+   The number of days in a standard year.
+   </p></div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright"> 
+</center>
+</div>
+</body>
+</html>
+<!-- -->

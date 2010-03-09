@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Grids CSS: Using ARIA Landmark Roles With Grids</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Grids CSS: Using ARIA Landmark Roles With Grids</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Grids CSS: Using ARIA Landmark Roles With Grids</h1>
+	
+	<div class="exampleIntro">
+	<p>
+The 
+<a href="http://www.w3.org/TR/wai-aria/#roleattribute_inherits">ARIA Landmark Roles</a> 
+improve the accessibility of layouts created using Grids by allowing developers 
+to more accurately communicate to users of screen readers the intended purpose 
+of each section of a document or application.  
+</p>
+<p>
+<em>Note:</em> To use this example, you'll need both a screen reader that 
+supports the ARIA Landmark Roles (such as 
+<a href="http://www.freedomscientific.com/products/fs/jaws-product-page.asp">JAWS 10</a>) 
+as well as a browser that supports ARIA (such as <a href="http://www.mozilla.com/">Firefox 3</a>).
+</p>			
+	</div>	
+					
+	<div class="example-container module  newWindow">
+			<div id="example-canvas" class="bd">
+	
+		<p class="newWindowButton yui-skin-sam"><span id="newWindowLink"><span class="first-child"><a href="grids-landmarks_source.html" target="_blank">View example in new window.</a></span></span>		
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Using ARIA Landmark Roles With Grids</h2>
+<p>
+Using ARIA Landmark Roles with Grids is easy.  Begin by configuring your 
+layout, and then simply use the <code>role</code> attribute to define, as 
+accurately as possible, the content of each section.  
+</p>
+<p>Presently there are seven different ARIA Landmark Roles to choose from:</p>
+<ul>
+	<li><a href="http://www.w3.org/TR/wai-aria/#application"><code>application</code></a></li>
+	<li><a href="http://www.w3.org/TR/wai-aria/#banner"><code>banner</code></a></li>
+	<li><a href="http://www.w3.org/TR/wai-aria/#complementary"><code>complementary</code></a></li>
+	<li><a href="http://www.w3.org/TR/wai-aria/#contentinfo"><code>contentinfo</code></a></li>
+	<li><a href="http://www.w3.org/TR/wai-aria/#main"><code>main</code></a></li>
+	<li><a href="http://www.w3.org/TR/wai-aria/#navigation"><code>navigation</code></a></li>
+	<li><a href="http://www.w3.org/TR/wai-aria/#search"><code>search</code></a></li>
+</ul>
+<p>
+In this example a template for a blog is created.  The layout is simple, 
+having a header, three columns, followed by a footer.  The usage of the 
+ARIA Landmark Roles is straightforward:  The roles of <code>banner</code> and 
+<code>contentinfo</code> are used for the header and footer.  For the body of 
+the Grid, the primary content section is indicated with a role of 
+<code>main</code>, while the secondary content section is given a role of 
+<code>complementary</code>.  Lastly, the navigation and search functionality are 
+indicated using the roles of <code>navigation</code> and <code>search</code>.
+Here is how the basic layout comes together:
+<textarea name="code" class="HTML" cols="60" rows="13">
+<div id="doc" class="yui-t1">
+	<div id="hd" role="banner">
+		<!-- Header -->
+	</div>
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+				<div class="yui-gc">
+					<div role="main" class="yui-u first">
+						<!-- Main Content -->
+					</div>
+					<div class="yui-u">
+						<div id="search" role="search">
+							<!-- Search Functionality -->
+						</div>
+						<div id="news" role="complementary">
+							<!-- Secondary Content -->									
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div role="navigation" class="yui-b">
+			<!-- Navigation -->
+		</div>
+	</div>
+	<div id="ft" role="contentinfo">
+		<!-- Footer -->
+	</div>
+</div>
+</textarea>
+<em>Note:</em> Some ARIA Landmark Roles such as <code>banner</code> and 
+<code>main</code> are only to be used once inside a section with a role of 
+document or application applied.  For more info on using the ARIA Landmark Roles 
+consult both the <a href="http://www.w3.org/TR/wai-aria/">ARIA Specification</a> 
+and corresponding 
+<a href="http://www.w3.org/TR/wai-aria-practices/">Best Practices document</a>.
+</p>
+<p>
+In addition to improving the semantics of a Grid, use of the ARIA Landmark Roles 
+significantly improve its navigability.  For example, the JAWS screen reader 
+will announce all of the ARIA Landmarks when a page is loaded, and allows users 
+to quickly jump between them by pressing the semicolon key.  The following 
+video demonstrates this example running in Firefox 3, using the JAWS screen 
+reader.  In this video, the user navigates amongst each of the landmarks 
+on the page, then cycles back to specific sections of interest.
+</p>
+<div><object width="512" height="322"><param name="movie" value="http://d.yimg.com/static.video.yahoo.com/yep/YV_YEP.swf?ver=2.2.34" /><param name="allowFullScreen" value="true" /><param name="AllowScriptAccess" VALUE="always" /><param name="bgcolor" value="#000000" /><param name="flashVars" value="id=12214507&vid=4561284&lang=en-us&intl=us&thumbUrl=http%3A//us.i1.yimg.com/us.yimg.com/p/i/bcst/videosearch/7558/80857405.jpeg&embed=1" /><embed src="http://d.yimg.com/static.video.yahoo.com/yep/YV_YEP.swf?ver=2.2.34" type="application/x-shockwave-flash" width="512" height="322" allowFullScreen="true" AllowScriptAccess="always" bgcolor="#000000" flashVars="id=12214507&vid=4561284&lang=en-us&intl=us&thumbUrl=http%3A//us.i1.yimg.com/us.yimg.com/p/i/bcst/videosearch/7558/80857405.jpeg&embed=1" ></embed></object><br /><a href="http://video.yahoo.com/watch/4561284/12214507">Example Page Using YUI Grids And ARIA Landmark Roles</a> @ <a href="http://video.yahoo.com" >Yahoo! Video</a></div>
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?reset&fonts&grids&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+					
+				
+					<div id="examples">
+						<h3 class='firstContent'>Grids CSS Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../grids/grids-doc.html'>Page Width = 750px</a></li><li><a href='../grids/grids-doc2.html'>Page Width = 950px</a></li><li><a href='../grids/grids-doc4.html'>Page Width = 974px</a></li><li><a href='../grids/grids-doc3.html'>Page Width = 100%</a></li><li><a href='../grids/grids-doc-custom.html'>Custom Page Width</a></li><li><a href='../grids/grids-t1.html'>Preset Template 1, 160px left</a></li><li><a href='../grids/grids-t2.html'>Preset Template 2, 180px left</a></li><li><a href='../grids/grids-t3.html'>Preset Template 3, 300px left</a></li><li><a href='../grids/grids-t4.html'>Preset Template 4, 180px right</a></li><li><a href='../resize/grids_resize.html'>Split Pane resizing with Grids CSS (included with examples for Resize Utility)</a></li><li><a href='../layout/grids_layout.html'>Using a Layout with Grids CSS (included with examples for Layout Manager)</a></li><li><a href='../grids/grids-t5.html'>Preset Template 5, 240px right</a></li><li><a href='../grids/grids-t6.html'>Preset Template 6, 300px right</a></li><li><a href='../grids/grids-g.html'>Standard Nesting Grid (1/2 - 1/2)</a></li><li><a href='../grids/grids-gb.html'>Special Nesting Grid "B" (1/3, 1/3, 1/3)</a></li><li><a href='../grids/grids-gc.html'>Special Nesting Grid "C" (2/3, 1/3)</a></li><li><a href='../grids/grids-gd.html'>Special Nesting Grid "D" (1/3, 2/3)</a></li><li><a href='../grids/grids-ge.html'>Special Nesting Grid "E" (3/4, 1/4)</a></li><li><a href='../grids/grids-gf.html'>Special Nesting Grid "F" (1/4, 3/4)</a></li><li><a href='../grids/grids-gg.html'>Nested Standard Nesting Grids (1/4 - 1/4 - 1/4 - 1/4)</a></li><li class='selected'><a href='../grids/grids-landmarks.html'>Using ARIA Landmark Roles With Grids</a></li><li><a href='../menu/leftnavfrommarkup.html'>Website Left Nav With Submenus Built From Markup (included with examples for Menu Family)</a></li><li><a href='../menu/leftnavfromjs.html'>Website Left Nav With Submenus From JavaScript (included with examples for Menu Family)</a></li><li><a href='../menu/topnavfrommarkup.html'>Website Top Nav With Submenus Built From Markup (included with examples for Menu Family)</a></li><li><a href='../menu/topnavfromjs.html'>Website Top Nav With Submenus From JavaScript (included with examples for Menu Family)</a></li><li><a href='../menu/leftnavfrommarkupwithanim.html'>Website Left Nav Using Animation With Submenus Built From Markup (included with examples for Menu Family)</a></li><li><a href='../menu/leftnavfromjswithanim.html'>Website Left Nav Using Animation With Submenus From JavaScript (included with examples for Menu Family)</a></li><li><a href='../menu/topnavfrommarkupwithanim.html'>Website Top Nav Using Animation With Submenus Built From Markup (included with examples for Menu Family)</a></li><li><a href='../menu/topnavfromjswithanim.html'>Website Top Nav Using Animation With Submenus From JavaScript (included with examples for Menu Family)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Grids CSS Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/grids/">User's Guide</a> (external)</li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/css.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="selected "><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

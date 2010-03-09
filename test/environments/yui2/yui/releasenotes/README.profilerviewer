@@ -1,0 +1,20 @@
+ProfilerViewer Control -- Release Notes
+
+2.8.0
+
+  * No changes.
+
+2.7.0
+
+  * Minor changes to account for updates made in DataSource, DataTable,
+    and Charts over the past few releases.  No feature/function changes
+    to ProfilerViewer.
+  * ProfilerViewer promoted to GA from Beta.
+
+2.5.1-2.6.0
+
+  * No changes.
+
+2.5.0
+
+  * Beta release

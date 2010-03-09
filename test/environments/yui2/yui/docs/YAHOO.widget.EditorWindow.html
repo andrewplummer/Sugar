@@ -1,0 +1,476 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: editor  YAHOO.widget.EditorWindow   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>editor&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_editor.html" title="editor">editor</a>
+                 &gt; YAHOO.widget.EditorWindow 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.widget.EditorWindow</b>
+                        <span class="extends">
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        Class to hold Window information between uses. We use the same panel to show the windows, so using this will allow you to configure a window before it is shown.
+This is what you pass to Editor.openWindow();. These parameters will not take effect until the openWindow() is called in the editor.
+                    </div>
+
+                    
+                    <div rel="yui:properties" resource="#properties">
+                        <div class="section field details">
+                            <h3 id="properties">Properties</h3>
+                            <div class="content">
+                                    <div class="private" rel="yui:property" resource="#property_attrs">
+                                    <h4><a name="property_attrs" property="yui:name">attrs</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The window attributes
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_body">
+                                    <h4><a name="property_body" property="yui:name">body</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Holder for the body of the window, used in Editor.openWindow
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_footer">
+                                    <h4><a name="property_footer" property="yui:name">footer</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Holder for the footer of the window, used in Editor.openWindow
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_header">
+                                    <h4><a name="property_header" property="yui:name">header</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Holder for the header of the window, used in Editor.openWindow
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                                    <div class="private" rel="yui:property" resource="#property_name">
+                                    <h4><a name="property_name" property="yui:name">name</a>
+                                        - <code>private <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A unique name for the window
+                                        </div>
+                                    </div>
+     
+                                        
+
+
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+                        <div class="section method details">
+                            <h3 id="methods">Methods</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:method" resource="#method_setBody">
+                                    <h4>
+                                        <a name="method_setBody">setBody</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setBody</strong>
+                                           (
+                                                
+                                                        
+                                                         str
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the body for the window.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">str</span>
+                                                        &lt;<span property="yui:type">String/HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The string or DOM reference to be used as the windows body.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setFooter">
+                                    <h4>
+                                        <a name="method_setFooter">setFooter</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setFooter</strong>
+                                           (
+                                                
+                                                        
+                                                         str
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the footer for the window.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">str</span>
+                                                        &lt;<span property="yui:type">String/HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The string or DOM reference to be used as the windows footer.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_setHeader">
+                                    <h4>
+                                        <a name="method_setHeader">setHeader</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">setHeader</strong>
+                                           (
+                                                
+                                                        
+                                                         str
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Sets the header for the window.
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">str</span>
+                                                        &lt;<span property="yui:type">String/HTMLElement</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"> The string or DOM reference to be used as the windows header.</span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        void
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_toString">
+                                    <h4>
+                                        <a name="method_toString">toString</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        String
+                                            <strong property="yui:name">toString</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a string representing the EditorWindow.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                        String
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo"></dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class="selected"><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Editor.html" title="YAHOO.widget.Editor">YAHOO.widget.Editor</a></li>
+                                <li class=""><a href="YAHOO.widget.EditorInfo.html" title="YAHOO.widget.EditorInfo">YAHOO.widget.EditorInfo</a></li>
+                                <li class="selected"><a href="YAHOO.widget.EditorWindow.html" title="YAHOO.widget.EditorWindow">YAHOO.widget.EditorWindow</a></li>
+                                <li class=""><a href="YAHOO.widget.SimpleEditor.html" title="YAHOO.widget.SimpleEditor">YAHOO.widget.SimpleEditor</a></li>
+                                <li class=""><a href="YAHOO.widget.Toolbar.html" title="YAHOO.widget.Toolbar">YAHOO.widget.Toolbar</a></li>
+                                <li class=""><a href="YAHOO.widget.ToolbarButton.html" title="YAHOO.widget.ToolbarButton">YAHOO.widget.ToolbarButton</a></li>
+                                <li class=""><a href="YAHOO.widget.ToolbarButtonAdvanced.html" title="YAHOO.widget.ToolbarButtonAdvanced">YAHOO.widget.ToolbarButtonAdvanced</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="editor.js.html" title="editor.js">editor.js</a></li>
+                                <li class=""><a href="simple-editor.js.html" title="simple-editor.js">simple-editor.js</a></li>
+                                <li class=""><a href="toolbar-button.js.html" title="toolbar-button.js">toolbar-button.js</a></li>
+                                <li class=""><a href="toolbar.js.html" title="toolbar.js">toolbar.js</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="propertyList" class="module">
+                        <h4>Properties</h4>
+                        <ul class="content">        
+                                <li class="private"><a href="#property_attrs" title="attrs">attrs</a></li>
+                                <li class="private"><a href="#property_body" title="body">body</a></li>
+                                <li class="private"><a href="#property_footer" title="footer">footer</a></li>
+                                <li class="private"><a href="#property_header" title="header">header</a></li>
+                                <li class="private"><a href="#property_name" title="name">name</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="methodsList" class="module">
+                        <h4>Methods</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#method_setBody" title="setBody">setBody</a></li>
+                                <li class=""><a href="#method_setFooter" title="setFooter">setFooter</a></li>
+                                <li class=""><a href="#method_setHeader" title="setHeader">setHeader</a></li>
+                                <li class=""><a href="#method_toString" title="toString">toString</a></li>
+                        </ul>
+                    </div>
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.Toolbar", "name": "addButton", "url": "YAHOO.widget.Toolbar.html#method_addButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "addButtonGroup", "url": "YAHOO.widget.Toolbar.html#method_addButtonGroup", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "addButtonToGroup", "url": "YAHOO.widget.Toolbar.html#method_addButtonToGroup", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_addMenuClasses", "url": "YAHOO.widget.Toolbar.html#method__addMenuClasses", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "addSeparator", "url": "YAHOO.widget.Toolbar.html#method_addSeparator", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "afterOpenWindow", "url": "YAHOO.widget.Editor.html#event_afterOpenWindow", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_alwaysDisabled", "url": "YAHOO.widget.Editor.html#property__alwaysDisabled", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_alwaysEnabled", "url": "YAHOO.widget.Editor.html#property__alwaysEnabled", "type": "property"}, {"access": "private", "host": "YAHOO.widget.EditorWindow", "name": "attrs", "url": "YAHOO.widget.EditorWindow.html#property_attrs", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "beforeButtonsChange", "url": "YAHOO.widget.Toolbar.html#event_beforeButtonsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "beforeButtonTypeChange", "url": "YAHOO.widget.Toolbar.html#event_beforeButtonTypeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "beforeCollapseChange", "url": "YAHOO.widget.Toolbar.html#event_beforeCollapseChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "beforeDisabledChange", "url": "YAHOO.widget.Toolbar.html#event_beforeDisabledChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "beforeDraggableChange", "url": "YAHOO.widget.Toolbar.html#event_beforeDraggableChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "beforeGrouplabelsChange", "url": "YAHOO.widget.Toolbar.html#event_beforeGrouplabelsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "beforeHiddencssChange", "url": "YAHOO.widget.Editor.html#event_beforeHiddencssChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "beforeLocalFileWarningChange", "url": "YAHOO.widget.Editor.html#event_beforeLocalFileWarningChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "beforeOpenWindow", "url": "YAHOO.widget.Editor.html#event_beforeOpenWindow", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "beforeTitlebarChange", "url": "YAHOO.widget.Toolbar.html#event_beforeTitlebarChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.EditorWindow", "name": "body", "url": "YAHOO.widget.EditorWindow.html#property_body", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "browser", "url": "YAHOO.widget.Toolbar.html#property_browser", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "_buttonClick", "url": "YAHOO.widget.Toolbar.html#method__buttonClick", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "buttonClick", "url": "YAHOO.widget.Toolbar.html#event_buttonClick", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "_buttonGroupList", "url": "YAHOO.widget.Toolbar.html#property__buttonGroupList", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "_buttonList", "url": "YAHOO.widget.Toolbar.html#property__buttonList", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "buttons", "url": "YAHOO.widget.Toolbar.html#config_buttons", "type": "config"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "buttonsChange", "url": "YAHOO.widget.Toolbar.html#event_buttonsChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "buttonType", "url": "YAHOO.widget.Toolbar.html#property_buttonType", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "buttonType", "url": "YAHOO.widget.Toolbar.html#config_buttonType", "type": "config"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "buttonTypeChange", "url": "YAHOO.widget.Toolbar.html#event_buttonTypeChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_checkUndo", "url": "YAHOO.widget.Editor.html#method__checkUndo", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "CLASS_CONTAINER", "url": "YAHOO.widget.Toolbar.html#property_CLASS_CONTAINER", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "CLASS_DISABLED", "url": "YAHOO.widget.Toolbar.html#property_CLASS_DISABLED", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "CLASS_DRAGHANDLE", "url": "YAHOO.widget.Toolbar.html#property_CLASS_DRAGHANDLE", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Editor", "name": "CLASS_HIDDEN", "url": "YAHOO.widget.Editor.html#property_CLASS_HIDDEN", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Editor", "name": "CLASS_LOCAL_FILE", "url": "YAHOO.widget.Editor.html#property_CLASS_LOCAL_FILE", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "CLASS_PREFIX", "url": "YAHOO.widget.Toolbar.html#property_CLASS_PREFIX", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "CLASS_SEPARATOR", "url": "YAHOO.widget.Toolbar.html#property_CLASS_SEPARATOR", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_closeWindow", "url": "YAHOO.widget.Editor.html#method__closeWindow", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "closeWindow", "url": "YAHOO.widget.Editor.html#method_closeWindow", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "closeWindow", "url": "YAHOO.widget.Editor.html#event_closeWindow", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_heading", "url": "YAHOO.widget.Editor.html#method_cmd_heading", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_hiddenelements", "url": "YAHOO.widget.Editor.html#method_cmd_hiddenelements", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_indent", "url": "YAHOO.widget.Editor.html#method_cmd_indent", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_justify", "url": "YAHOO.widget.Editor.html#method_cmd_justify", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_justifycenter", "url": "YAHOO.widget.Editor.html#method_cmd_justifycenter", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_justifyleft", "url": "YAHOO.widget.Editor.html#method_cmd_justifyleft", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_justifyright", "url": "YAHOO.widget.Editor.html#method_cmd_justifyright", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_outdent", "url": "YAHOO.widget.Editor.html#method_cmd_outdent", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_redo", "url": "YAHOO.widget.Editor.html#method_cmd_redo", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_removeformat", "url": "YAHOO.widget.Editor.html#method_cmd_removeformat", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_script", "url": "YAHOO.widget.Editor.html#method_cmd_script", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_subscript", "url": "YAHOO.widget.Editor.html#method_cmd_subscript", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_superscript", "url": "YAHOO.widget.Editor.html#method_cmd_superscript", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "cmd_undo", "url": "YAHOO.widget.Editor.html#method_cmd_undo", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "collapse", "url": "YAHOO.widget.Toolbar.html#method_collapse", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "collapse", "url": "YAHOO.widget.Toolbar.html#config_collapse", "type": "config"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "collapseChange", "url": "YAHOO.widget.Toolbar.html#event_collapseChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "_colorData", "url": "YAHOO.widget.Toolbar.html#property__colorData", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "_colorPicker", "url": "YAHOO.widget.Toolbar.html#property__colorPicker", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "_configuredButtons", "url": "YAHOO.widget.Toolbar.html#property__configuredButtons", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "cont", "url": "YAHOO.widget.Toolbar.html#config_cont", "type": "config"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_createColorPicker", "url": "YAHOO.widget.Toolbar.html#method__createColorPicker", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "dd", "url": "YAHOO.widget.Toolbar.html#property_dd", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_defaultImageToolbar", "url": "YAHOO.widget.Editor.html#method__defaultImageToolbar", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_defaultImageToolbarConfig", "url": "YAHOO.widget.Editor.html#method__defaultImageToolbarConfig", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "deselectAllButtons", "url": "YAHOO.widget.Toolbar.html#method_deselectAllButtons", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "deselectButton", "url": "YAHOO.widget.Toolbar.html#method_deselectButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "destroy", "url": "YAHOO.widget.Toolbar.html#method_destroy", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "destroyButton", "url": "YAHOO.widget.Toolbar.html#method_destroyButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "disableAllButtons", "url": "YAHOO.widget.Toolbar.html#method_disableAllButtons", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "disableButton", "url": "YAHOO.widget.Toolbar.html#method_disableButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "disabled", "url": "YAHOO.widget.Toolbar.html#config_disabled", "type": "config"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_disabled", "url": "YAHOO.widget.Editor.html#property__disabled", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "disabledChange", "url": "YAHOO.widget.Toolbar.html#event_disabledChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "draggable", "url": "YAHOO.widget.Toolbar.html#config_draggable", "type": "config"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "draggableChange", "url": "YAHOO.widget.Toolbar.html#event_draggableChange", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "draghandle", "url": "YAHOO.widget.Toolbar.html#property_draghandle", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "EDITOR_PANEL_ID", "url": "YAHOO.widget.Editor.html#property_EDITOR_PANEL_ID", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "enableAllButtons", "url": "YAHOO.widget.Toolbar.html#method_enableAllButtons", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "enableButton", "url": "YAHOO.widget.Toolbar.html#method_enableButton", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_fixNodes", "url": "YAHOO.widget.Editor.html#method__fixNodes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.EditorWindow", "name": "footer", "url": "YAHOO.widget.EditorWindow.html#property_footer", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "getButtonById", "url": "YAHOO.widget.Toolbar.html#method_getButtonById", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "getButtonByIndex", "url": "YAHOO.widget.Toolbar.html#method_getButtonByIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "getButtonByValue", "url": "YAHOO.widget.Toolbar.html#method_getButtonByValue", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "getButtons", "url": "YAHOO.widget.Toolbar.html#method_getButtons", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_getUndo", "url": "YAHOO.widget.Editor.html#method__getUndo", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "grouplabels", "url": "YAHOO.widget.Toolbar.html#config_grouplabels", "type": "config"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "grouplabelsChange", "url": "YAHOO.widget.Toolbar.html#event_grouplabelsChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_handleCreateLinkWindowClose", "url": "YAHOO.widget.Editor.html#method__handleCreateLinkWindowClose", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_handleFocus", "url": "YAHOO.widget.Toolbar.html#method__handleFocus", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_handleInsertImageClick", "url": "YAHOO.widget.Editor.html#method__handleInsertImageClick", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_handleInsertImageWindowClose", "url": "YAHOO.widget.Editor.html#method__handleInsertImageWindowClose", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_handleKeyDown", "url": "YAHOO.widget.Editor.html#method__handleKeyDown", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "_handleWindowInputs", "url": "YAHOO.widget.Editor.html#method__handleWindowInputs", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_hasUndoLevel", "url": "YAHOO.widget.Editor.html#method__hasUndoLevel", "type": "method"}, {"access": "private", "host": "YAHOO.widget.EditorWindow", "name": "header", "url": "YAHOO.widget.EditorWindow.html#property_header", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "hiddencss", "url": "YAHOO.widget.Editor.html#config_hiddencss", "type": "config"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "hiddencssChange", "url": "YAHOO.widget.Editor.html#event_hiddencssChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "init", "url": "YAHOO.widget.Toolbar.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "init", "url": "YAHOO.widget.Editor.html#method_init", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "initAttributes", "url": "YAHOO.widget.Toolbar.html#method_initAttributes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "initAttributes", "url": "YAHOO.widget.Editor.html#method_initAttributes", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "isSelected", "url": "YAHOO.widget.Toolbar.html#method_isSelected", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_keyNav", "url": "YAHOO.widget.Toolbar.html#property__keyNav", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "localFileWarning", "url": "YAHOO.widget.Editor.html#config_localFileWarning", "type": "config"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "localFileWarningChange", "url": "YAHOO.widget.Editor.html#event_localFileWarningChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_makeColorButton", "url": "YAHOO.widget.Toolbar.html#method__makeColorButton", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_makeSpinButton", "url": "YAHOO.widget.Toolbar.html#method__makeSpinButton", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "moveWindow", "url": "YAHOO.widget.Editor.html#method_moveWindow", "type": "method"}, {"access": "private", "host": "YAHOO.widget.EditorWindow", "name": "name", "url": "YAHOO.widget.EditorWindow.html#property_name", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_navCounter", "url": "YAHOO.widget.Toolbar.html#property__navCounter", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_navigateButtons", "url": "YAHOO.widget.Toolbar.html#method__navigateButtons", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "openWindow", "url": "YAHOO.widget.Editor.html#method_openWindow", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_putUndo", "url": "YAHOO.widget.Editor.html#method__putUndo", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_renderCreateLinkWindow", "url": "YAHOO.widget.Editor.html#method__renderCreateLinkWindow", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_renderInsertImageWindow", "url": "YAHOO.widget.Editor.html#method__renderInsertImageWindow", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_renderPanel", "url": "YAHOO.widget.Editor.html#method__renderPanel", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "resetAllButtons", "url": "YAHOO.widget.Toolbar.html#method_resetAllButtons", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Toolbar", "name": "_resetColorPicker", "url": "YAHOO.widget.Toolbar.html#method__resetColorPicker", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "selectButton", "url": "YAHOO.widget.Toolbar.html#method_selectButton", "type": "method"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "_sep", "url": "YAHOO.widget.Toolbar.html#property__sep", "type": "property"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "_sepCount", "url": "YAHOO.widget.Toolbar.html#property__sepCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.EditorWindow", "name": "setBody", "url": "YAHOO.widget.EditorWindow.html#method_setBody", "type": "method"}, {"access": "", "host": "YAHOO.widget.EditorWindow", "name": "setFooter", "url": "YAHOO.widget.EditorWindow.html#method_setFooter", "type": "method"}, {"access": "", "host": "YAHOO.widget.EditorWindow", "name": "setHeader", "url": "YAHOO.widget.EditorWindow.html#method_setHeader", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_storeUndo", "url": "YAHOO.widget.Editor.html#method__storeUndo", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_BEFORE_EDITOR", "url": "YAHOO.widget.Editor.html#property_STR_BEFORE_EDITOR", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_CLOSE_WINDOW", "url": "YAHOO.widget.Editor.html#property_STR_CLOSE_WINDOW", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_CLOSE_WINDOW_NOTE", "url": "YAHOO.widget.Editor.html#property_STR_CLOSE_WINDOW_NOTE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "STR_COLLAPSE", "url": "YAHOO.widget.Toolbar.html#property_STR_COLLAPSE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "STR_EXPAND", "url": "YAHOO.widget.Toolbar.html#property_STR_EXPAND", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_BORDER", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_BORDER", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_BORDER_SIZE", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_BORDER_SIZE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_BORDER_TYPE", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_BORDER_TYPE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_COPY", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_COPY", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_ORIG_SIZE", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_ORIG_SIZE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_PADDING", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_PADDING", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_PROP_TITLE", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_PROP_TITLE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_SIZE", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_SIZE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_TEXTFLOW", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_TEXTFLOW", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_IMAGE_TITLE", "url": "YAHOO.widget.Editor.html#property_STR_IMAGE_TITLE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_LINK_NEW_WINDOW", "url": "YAHOO.widget.Editor.html#property_STR_LINK_NEW_WINDOW", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_LINK_PROP_REMOVE", "url": "YAHOO.widget.Editor.html#property_STR_LINK_PROP_REMOVE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_LINK_PROP_TITLE", "url": "YAHOO.widget.Editor.html#property_STR_LINK_PROP_TITLE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_LINK_TITLE", "url": "YAHOO.widget.Editor.html#property_STR_LINK_TITLE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_LOCAL_FILE_WARNING", "url": "YAHOO.widget.Editor.html#property_STR_LOCAL_FILE_WARNING", "type": "property"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "STR_NONE", "url": "YAHOO.widget.Editor.html#property_STR_NONE", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "STR_SPIN_DOWN", "url": "YAHOO.widget.Toolbar.html#property_STR_SPIN_DOWN", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "STR_SPIN_LABEL", "url": "YAHOO.widget.Toolbar.html#property_STR_SPIN_LABEL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "STR_SPIN_UP", "url": "YAHOO.widget.Toolbar.html#property_STR_SPIN_UP", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "_titlebar", "url": "YAHOO.widget.Toolbar.html#property__titlebar", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "titlebar", "url": "YAHOO.widget.Toolbar.html#config_titlebar", "type": "config"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "titlebarChange", "url": "YAHOO.widget.Toolbar.html#event_titlebarChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "toolbarCollapsed", "url": "YAHOO.widget.Toolbar.html#event_toolbarCollapsed", "type": "event"}, {"access": "protected", "host": "YAHOO.widget.Toolbar", "name": "_toolbarConfigs", "url": "YAHOO.widget.Toolbar.html#property__toolbarConfigs", "type": "property"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "toolbarExpanded", "url": "YAHOO.widget.Toolbar.html#event_toolbarExpanded", "type": "event"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "toString", "url": "YAHOO.widget.Toolbar.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "toString", "url": "YAHOO.widget.Editor.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.EditorWindow", "name": "toString", "url": "YAHOO.widget.EditorWindow.html#method_toString", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_undoCache", "url": "YAHOO.widget.Editor.html#property__undoCache", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_undoLevel", "url": "YAHOO.widget.Editor.html#property__undoLevel", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_undoNodeChange", "url": "YAHOO.widget.Editor.html#method__undoNodeChange", "type": "method"}, {"access": "", "host": "YAHOO.widget.Toolbar", "name": "valueClick", "url": "YAHOO.widget.Toolbar.html#event_valueClick", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "windowCMDClose", "url": "YAHOO.widget.Editor.html#event_windowCMDClose", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "windowCMDOpen", "url": "YAHOO.widget.Editor.html#event_windowCMDOpen", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "windowCreateLinkRender", "url": "YAHOO.widget.Editor.html#event_windowCreateLinkRender", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "windowInsertImageRender", "url": "YAHOO.widget.Editor.html#event_windowInsertImageRender", "type": "event"}, {"access": "", "host": "YAHOO.widget.Editor", "name": "windowRender", "url": "YAHOO.widget.Editor.html#event_windowRender", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Editor", "name": "_windows", "url": "YAHOO.widget.Editor.html#method__windows", "type": "method"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Progressive Enhancement</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Progressive Enhancement</h1>
+
+<div class="exampleIntro">
+	<p>This example creates a DataTable instance based on markup that already exists
+on the page. By progressively enhancing markup with higher order functionality,
+users who do not have JavaScript enabled are still able to view the page's content
+and experience core functionality.</p>
+
+<p>In this example's code, note that we listen for the window "load" event
+before calling our function to be sure that the original table markup is fully
+rendered and available as a DataSource source for our DataTable instance.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="markup">
+    <table id="accounts">
+        <thead>
+            <tr>
+                <th>Due Date</th>
+                <th>Account Number</th>
+                <th>Quantity</th>
+                <th>Amount Due</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1/23/1999</td>
+                <td>29e8548592d8c82</td>
+                <td>12</td>
+                <td>$150.00</td>
+            </tr>
+            <tr>
+                <td>5/19/1999</td>
+                <td>83849</td>
+                <td>8</td>
+                <td>$60.00</td>
+            </tr>
+            <tr>
+                <td>8/9/1999</td>
+                <td>11348</td>
+                <td>1</td>
+                <td>$34.99</td>
+            </tr>
+            <tr>
+                <td>1/23/2000</td>
+                <td>29e8548592d8c82</td>
+                <td>10</td>
+                <td>$1.00</td>
+            </tr>
+            <tr>
+                <td>4/28/2000</td>
+                <td>37892857482836437378273</td>
+                <td>123</td>
+                <td>$33.32</td>
+            </tr>
+            <tr>
+                <td>1/23/2001</td>
+                <td>83849</td>
+                <td>5</td>
+                <td>$15.00</td>
+            </tr>
+            <tr>
+                <td>9/30/2001</td>
+                <td>224747</td>
+                <td>14</td>
+                <td>$56.78</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    YAHOO.example.EnhanceFromMarkup = function() {
+        var myColumnDefs = [
+            {key:"due",label:"Due Date",formatter:YAHOO.widget.DataTable.formatDate,sortable:true},
+            {key:"account",label:"Account Number", sortable:true},
+            {key:"quantity",label:"Quantity",formatter:YAHOO.widget.DataTable.formatNumber,sortable:true},
+            {key:"amount",label:"Amount Due",formatter:YAHOO.widget.DataTable.formatCurrency,sortable:true}
+        ];
+
+        var parseNumberFromCurrency = function(sString) {
+            // Remove dollar sign and make it a float
+            return parseFloat(sString.substring(1));
+        };
+
+        var myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("accounts"));
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+        myDataSource.responseSchema = {
+            fields: [{key:"due", parser:"date"},
+                    {key:"account"},
+                    {key:"quantity", parser:"number"},
+                    {key:"amount", parser:parseNumberFromCurrency} // point to a custom parser
+            ]
+        };
+
+        var myDataTable = new YAHOO.widget.DataTable("markup", myColumnDefs, myDataSource,
+                {caption:"Example: Progressively Enhanced Table from Markup",
+                sortedBy:{key:"due",dir:"asc"}}
+        );
+        
+        return {
+            oDS: myDataSource,
+            oDT: myDataTable
+        };
+    }();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

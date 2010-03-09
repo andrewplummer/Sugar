@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Screenreader Accessibility</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#myAutoComplete {
+    width:15em; /* set width here or else widget will expand to fit its container */
+    padding-bottom:2em;
+}
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Screenreader Accessibility</h1>
+
+<div class="exampleIntro">
+	<p>This AutoComplete example demonstrates how to make the widget more screenreader accessible.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+
+<div id="myAutoComplete">
+	<label id="myInputLabel" for="myInput">Enter a state:</label>&nbsp;<input id="myInput" type="text">
+	<div id="myContainer"></div>
+</div>
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+YAHOO.example.Accessibility = function() {
+    // Set up DataSource and AutoComplete instances
+    var oDS = new YAHOO.util.LocalDataSource(YAHOO.example.Data.arrayStates, {responseSchema: {fields : ["state"]}});
+    var oAC = new YAHOO.widget.AutoComplete("myInput", "myContainer", oDS);
+    
+
+    // Set up span element with screenreader text
+    var elLabel = YAHOO.util.Dom.get("myInputLabel"),
+        origLabel = elLabel.innerHTML,
+        screenreaderLabel = "<span style=\"position:absolute;left:-999em;\">Use the up and down arrow keys to navigate suggestions.</span>"
+
+    // Insert the screenreader text whenever user starts an AutoComplete interaction
+    oAC.textboxFocusEvent.subscribe(function(){elLabel.innerHTML += screenreaderLabel;});
+    oAC.textboxBlurEvent.subscribe(function(){elLabel.innerHTML = origLabel;});
+
+    // The typeAhead feature must also be set to true for screenreader support
+    oAC.typeAhead = true;
+    
+    // Turn off autoHighlight for less confusion
+    oAC.autoHighlight = false;
+
+    return {
+        oDS: oDS,
+        oAC: oAC
+    };
+}();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

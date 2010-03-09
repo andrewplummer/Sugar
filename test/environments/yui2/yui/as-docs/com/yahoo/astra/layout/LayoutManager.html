@@ -1,0 +1,359 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../../print.css" type="text/css" media="print">
+<meta content="LayoutManager,com.yahoo.astra.layout.LayoutManager,hasInvalidatingEvents,invalidateParentLayout,registerContainerChild,registerInvalidatingEvents,resize,unregisterContainerChild,update" name="keywords">
+<title>com.yahoo.astra.layout.LayoutManager</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'LayoutManager - YUI Flash Component Documentation';
+				var baseRef = '../../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">YUI Flash Component Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../../all-classes.html')" href="../../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../all-classes.html')" href="../../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../index-list.html')" href="../../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../../index.html?com/yahoo/astra/layout/LayoutManager.html&amp;com/yahoo/astra/layout/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;LayoutManager</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#methodSummary">Methods</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class LayoutManager"); titleBar_setSubNav(false,false,false,false,false,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">com.yahoo.astra.layout</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class LayoutManager</td>
+</tr>
+</table>
+<p></p>
+  Generic layout manager for DisplayObjects.
+  
+  <p></p>
+<p>
+<span class="classHeaderTableLabel">See also</span>
+</p>
+<div class="seeAlso">flash.display.DisplayObject<br>
+<a href="../layout/ILayoutContainer.html" target="">com.yahoo.astra.layout.ILayoutContainer</a>
+</div>
+<br>
+<hr>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#hasInvalidatingEvents()">hasInvalidatingEvents</a>(target:DisplayObject):Boolean</div>
+<div class="summaryTableDescription">[static]
+   Determines if a particular DisplayObject's type has been registered
+   with invalidating events.</div>
+</td><td class="summaryTableOwnerCol">LayoutManager</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#invalidateParentLayout()">invalidateParentLayout</a>(target:DisplayObject):void</div>
+<div class="summaryTableDescription">[static]
+   If the target's parent is a layout container, that parent will be
+   informed that it needs to update the layout.</div>
+</td><td class="summaryTableOwnerCol">LayoutManager</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#registerContainerChild()">registerContainerChild</a>(child:DisplayObject):void</div>
+<div class="summaryTableDescription">[static]
+   Called by an ILayoutContainer implementation when a child is added.</div>
+</td><td class="summaryTableOwnerCol">LayoutManager</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#registerInvalidatingEvents()">registerInvalidatingEvents</a>(source:Class, events:Array):void</div>
+<div class="summaryTableDescription">[static]
+   Allows users to specify events that invalidate the parent layout container
+   when fired by instances of a specific class.</div>
+</td><td class="summaryTableOwnerCol">LayoutManager</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#resize()">resize</a>(target:DisplayObject, width:Number, height:Number):void</div>
+<div class="summaryTableDescription">[static]
+   If a DisplayObject that is placed into a layout container doesn't
+   fire events for size changes, calling this function will allow
+   its size to properly affect its parent layout.</div>
+</td><td class="summaryTableOwnerCol">LayoutManager</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#unregisterContainerChild()">unregisterContainerChild</a>(child:DisplayObject):void</div>
+<div class="summaryTableDescription">[static]
+   Called by a layout container when a child is removed.</div>
+</td><td class="summaryTableOwnerCol">LayoutManager</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#update()">update</a>(target:DisplayObject, property:String, value:Object):void</div>
+<div class="summaryTableDescription">[static]
+   Similar to <code>LayoutManager.resize()</code>, this function may be called
+   to update any property of a DisplayObject and notify its parent layout
+   container to refresh if no event normally indicates this is needed.</div>
+</td><td class="summaryTableOwnerCol">LayoutManager</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="hasInvalidatingEvents()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">hasInvalidatingEvents</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function hasInvalidatingEvents(target:DisplayObject):Boolean</code><p>
+   Determines if a particular DisplayObject's type has been registered
+   with invalidating events.
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">target</span>:DisplayObject</code></td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Boolean</code></td>
+</tr>
+</table>
+</div>
+<a name="invalidateParentLayout()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">invalidateParentLayout</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function invalidateParentLayout(target:DisplayObject):void</code><p>
+   If the target's parent is a layout container, that parent will be
+   informed that it needs to update the layout.
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">target</span>:DisplayObject</code></td>
+</tr>
+</table>
+</div>
+<a name="registerContainerChild()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">registerContainerChild</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function registerContainerChild(child:DisplayObject):void</code><p>
+   Called by an ILayoutContainer implementation when a child is added.
+   If the child is an instance of a class with registered events, the
+   layout system will listen for those events.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">child</span>:DisplayObject</code></td>
+</tr>
+</table>
+<p>
+<span class="label">See also</span>
+</p>
+<div class="seeAlso">
+<a href="ILayoutContainer.html" target="">ILayoutContainer</a>
+</div>
+</div>
+<a name="registerInvalidatingEvents()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">registerInvalidatingEvents</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function registerInvalidatingEvents(source:Class, events:Array):void</code><p>
+   Allows users to specify events that invalidate the parent layout container
+   when fired by instances of a specific class.
+   
+   </p><p>For example, if <code>fl.core.UIComponent</code> fires the <code>resize</code>
+   event when it is inside a layout container, the layout container will
+   refresh its layout.</p>
+   
+   <span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">source</span>:Class</code> &mdash;  The class that will fire invalidating events (ie. TextField)
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">events</span>:Array</code> &mdash;  An Array of event constants (ie. Event.CHANGE)
+   
+   </td>
+</tr>
+</table>
+<br>
+<span class="label">Example</span>
+<br>The following code demonstrates how to specify a set of invalidating events:
+   <div class='listing'><pre>
+   LayoutManager.registerInvalidatingEvents( UIComponent, [ComponentEvent.RESIZE, ComponentEvent.MOVE] );
+   </pre></div>
+   <p></p>
+</div>
+<a name="resize()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">resize</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function resize(target:DisplayObject, width:Number, height:Number):void</code><p>
+   If a DisplayObject that is placed into a layout container doesn't
+   fire events for size changes, calling this function will allow
+   its size to properly affect its parent layout.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">target</span>:DisplayObject</code> &mdash;  The display object to resize
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">width</span>:Number</code> &mdash;   The new width of the display object
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">height</span>:Number</code> &mdash;  The new height of the display object
+   
+   </td>
+</tr>
+</table>
+<br>
+<span class="label">Example</span>
+<br>The following code demonstrates how to resize a
+   DisplayObject that doesn't fire an event when it resizes:
+   <div class='listing'><pre>
+   LayoutManager.resize( mySprite, 100, 34 );
+   </pre></div>
+   <p></p>
+</div>
+<a name="unregisterContainerChild()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">unregisterContainerChild</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function unregisterContainerChild(child:DisplayObject):void</code><p>
+   Called by a layout container when a child is removed. If the child is
+   an instance of a class with registered events, the layout system will
+   stop listening to those events.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">child</span>:DisplayObject</code></td>
+</tr>
+</table>
+<p>
+<span class="label">See also</span>
+</p>
+<div class="seeAlso">
+<a href="ILayoutContainer.html" target="">ILayoutContainer</a>
+</div>
+</div>
+<a name="update()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">update</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function update(target:DisplayObject, property:String, value:Object):void</code><p>
+   Similar to <code>LayoutManager.resize()</code>, this function may be called
+   to update any property of a DisplayObject and notify its parent layout
+   container to refresh if no event normally indicates this is needed.
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">target</span>:DisplayObject</code> &mdash;  The display object whose property will be changed
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">property</span>:String</code> &mdash;  The name of the property.
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">value</span>:Object</code> &mdash;   The value of the property
+   
+   </td>
+</tr>
+</table>
+<br>
+<span class="label">Example</span>
+<br>The following code demonstrates how to change a
+   DisplayObject's property when that DisplayObject doesn't fire an
+   event when the property changes:
+   <div class='listing'><pre>
+   LayoutManager.update(mySprite, "transform", new Transform());
+   </pre></div>
+   <p></p>
+</div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright"> 
+</center>
+</div>
+</body>
+</html>
+<!-- -->

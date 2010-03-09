@@ -1,0 +1,485 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: YUI Test Utility: Simple Testing Example</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/yuitest/assets/skins/sam/yuitest.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: YUI Test Utility: Simple Testing Example</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>YUI Test Utility: Simple Testing Example</h1>
+	
+	<div class="exampleIntro">
+	<p>This example shows basic usage of the YUI Test framework for testing browser-based JavaScript code. 
+  Two different <a href="/yui/yuitest/#testcase"><code>TestCase</code></a> objects are created and added to a
+  <a href="/yui/yuitest/#testsuite"><code>TestSuite</code></a> object. The <a href="/yui/yuitest/#testrunner"><code>TestRunner</code></a>
+  is then used to run the tests once the page has loaded.</p>			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="yt-simple-example_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<div id="testLogger"></div>
+<script type="text/javascript">
+
+    YAHOO.namespace("example.yuitest");
+    
+    YAHOO.example.yuitest.DataTestCase = new YAHOO.tool.TestCase({
+    
+        //name of the test case - if not provided, one is auto-generated
+        name : "Data Tests",
+        
+        //---------------------------------------------------------------------
+        // setUp and tearDown methods - optional
+        //---------------------------------------------------------------------
+        
+        /*
+         * Sets up data that is needed by each test.
+         */
+        setUp : function () {
+            this.data = {
+                name: "yuitest",
+                year: 2007,
+                beta: true
+            };
+        },
+        
+        /*
+         * Cleans up everything that was created by setUp().
+         */
+        tearDown : function () {
+            delete this.data;
+        },
+        
+        //---------------------------------------------------------------------
+        // Test methods - names must begin with "test"
+        //---------------------------------------------------------------------
+        
+        testName : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            Assert.isObject(this.data);
+            Assert.isString(this.data.name);
+            Assert.areEqual("yuitest", this.data.name);            
+        },
+        
+        testYear : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            Assert.isObject(this.data);
+            Assert.isNumber(this.data.year);
+            Assert.areEqual(2007, this.data.year);            
+        },
+        
+        testBeta : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            Assert.isObject(this.data);
+            Assert.isBoolean(this.data.beta);
+            Assert.isTrue(this.data.beta);
+        }
+    
+    });
+    
+    YAHOO.example.yuitest.ArrayTestCase = new YAHOO.tool.TestCase({
+    
+        //name of the test case - if not provided, one is auto-generated
+        name : "Array Tests",
+        
+        //---------------------------------------------------------------------
+        // setUp and tearDown methods - optional
+        //---------------------------------------------------------------------
+        
+        /*
+         * Sets up data that is needed by each test.
+         */
+        setUp : function () {
+            this.data = [0,1,2,3,4]
+        },
+        
+        /*
+         * Cleans up everything that was created by setUp().
+         */
+        tearDown : function () {
+            delete this.data;
+        },
+        
+        //---------------------------------------------------------------------
+        // Test methods - names must begin with "test"
+        //---------------------------------------------------------------------
+        
+        testPop : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            var value = this.data.pop();
+            
+            Assert.areEqual(4, this.data.length);
+            Assert.areEqual(4, value);            
+        },        
+        
+        testPush : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            this.data.push(5);
+            
+            Assert.areEqual(6, this.data.length);
+            Assert.areEqual(5, this.data[5]);            
+        },
+        
+        testSplice : function () {
+            var Assert = YAHOO.util.Assert;
+            
+            this.data.splice(2, 1, 6, 7);
+            
+            Assert.areEqual(6, this.data.length);
+            Assert.areEqual(6, this.data[2]);           
+            Assert.areEqual(7, this.data[3]);           
+        }
+    
+    });    
+
+    YAHOO.example.yuitest.ExampleSuite = new YAHOO.tool.TestSuite("Example Suite");
+    YAHOO.example.yuitest.ExampleSuite.add(YAHOO.example.yuitest.DataTestCase);
+    YAHOO.example.yuitest.ExampleSuite.add(YAHOO.example.yuitest.ArrayTestCase);
+    
+     
+    YAHOO.util.Event.onDOMReady(function (){
+        //create the logger
+        var logger = new YAHOO.tool.TestLogger("testLogger");
+        YAHOO.tool.TestRunner.add(YAHOO.example.yuitest.ExampleSuite);
+
+        //run the tests
+        YAHOO.tool.TestRunner.run();
+    });
+
+</script>	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Simple Test Example</h2>
+
+<p>This example begins by creating a namespace:</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+YAHOO.namespace("example.yuitest");  
+</textarea>
+<p>This namespace serves as the core object upon which others will be added (to prevent creating global objects).</p>
+
+<h3>Creating the first TestCase</h3>
+
+<p>The first step is to create a new <a href="/yui/yuitest/#testcase"><code>TestCase</code></a> object called <code>DataTestCase</code>.
+  To do so, using the <code>TestCase</code> constructor and pass in an object literal containing information about the tests to be run:</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+YAHOO.example.yuitest.DataTestCase = new YAHOO.tool.TestCase({
+
+    //name of the test case - if not provided, one is auto-generated
+    name : "Data Tests",
+    
+    //---------------------------------------------------------------------
+    // setUp and tearDown methods - optional
+    //---------------------------------------------------------------------
+    
+    /*
+     * Sets up data that is needed by each test.
+     */
+    setUp : function () {
+        this.data = {
+            name: "yuitest",
+            year: 2007,
+            beta: true
+        };
+    },
+    
+    /*
+     * Cleans up everything that was created by setUp().
+     */
+    tearDown : function () {
+        delete this.data;
+    },
+    
+    //---------------------------------------------------------------------
+    // Test methods - names must begin with "test"
+    //---------------------------------------------------------------------
+    
+    testName : function () {
+        var Assert = YAHOO.util.Assert;
+        
+        Assert.isObject(this.data);
+        Assert.isString(this.data.name);
+        Assert.areEqual("yuitest", this.data.name);            
+    },
+    
+    testYear : function () {
+        var Assert = YAHOO.util.Assert;
+        
+        Assert.isObject(this.data);
+        Assert.isNumber(this.data.year);
+        Assert.areEqual(2007, this.data.year);            
+    },
+    
+    testBeta : function () {
+        var Assert = YAHOO.util.Assert;
+        
+        Assert.isObject(this.data);
+        Assert.isBoolean(this.data.beta);
+        Assert.isTrue(this.data.beta);
+    }
+
+});
+</textarea>  
+<p>The object literal passed into the constructor contains a number of different sections. The first section contains the <code>name</code> property,
+  which is used to determine which <code>TestCase</code> is being executed. A name is necessary, so one is generated if it isn't specified.</p>
+<p>Next, the <code>setUp()</code> and <code>tearDown()</code> methods are included. The <code>setUp()</code> method is used in a <code>TestCase</code>
+  to set up data that may be needed for tests to be completed. This method is called immediately before each test is executed. For this example,
+  <code>setUp()</code> creates a data object. The <code>tearDown()</code> is responsible for undoing what was done in <code>setUp()</code>. It is
+  run immediately after each test is run and, in this case, deletes the data object that was created by <code>setUp</code>. These methods are optional.</p>
+<p>The last section contains the actual tests to be run. Test method names must always begin with the word &quot;test&quot; (all lowercase) in order
+  to differentiate them from other methods that may be added to the object.</p>
+<p>The first test in this object is <code>testName()</code>, which runs
+  various assertions on <code>data.name</code>. Inside of this method, a shortcut to <code>YAHOO.util.Assert</code> is set up and used to run three
+  assertions: <code>isObject()</code> on <code>data</code>, <code>isString()</code> on <code>data.name</code> and <code>areEqual()</code> to compare
+  <code>data.name</code> to the expected value, &quot;yuitest&quot;. These assertions are arranged in order from least-specific to most-specific,
+  which is the recommended way to arrange your assertions. Basically, the third assertion is useless to run unless the second has passes and the second
+  can't possibly pass unless the first passed. Both <code>isObject()</code> and <code>isString()</code> accept a single argument, which is the value
+  to test (you could optionally include a failure message as a second argument, though this is not required). The <code>areEqual()</code> method
+  expects two arguments, the first being the expected value (&quot;yuitest&quot;) and the second being the actual value (<code>data.name</code>).</p>
+<p>The second and third tests follow the same pattern as the first with the exception that they work with different data types. The <code>testYear()</code>
+  method works with <code>data.year</code>, which is a number and so runs tests specifically for numbers (<code>areEqual()</code> can be used with
+  all data types). The <code>testBeta()</code> method works with <code>data.beta</code>, which is a Boolean, and so it uses the <code>isTrue()</code>
+  assertion instead of <code>areEqual()</code> (though it could also use <code>areEqual(true, this.data.beta)</code>).</p>
+ 
+ <h3>Creating the second TestCase</h3>
+ 
+ <p>Although it's possible that you'll have only one <code>TestCase</code> object, typically there is more than one, and so this example includes
+   a second <code>TestCase</code>. This one tests some of the built-in functions of the <code>Array</code> object:</p>
+ <textarea name="code" class="JScript" cols="60" rows="1">
+ YAHOO.example.yuitest.ArrayTestCase = new YAHOO.tool.TestCase({
+
+    //name of the test case - if not provided, one is auto-generated
+    name : "Array Tests",
+    
+    //---------------------------------------------------------------------
+    // setUp and tearDown methods - optional
+    //---------------------------------------------------------------------
+    
+    /*
+     * Sets up data that is needed by each test.
+     */
+    setUp : function () {
+        this.data = [0,1,2,3,4]
+    },
+    
+    /*
+     * Cleans up everything that was created by setUp().
+     */
+    tearDown : function () {
+        delete this.data;
+    },
+    
+    //---------------------------------------------------------------------
+    // Test methods - names must begin with "test"
+    //---------------------------------------------------------------------
+    
+    testPop : function () {
+        var Assert = YAHOO.util.Assert;
+        
+        var value = this.data.pop();
+        
+        Assert.areEqual(4, this.data.length);
+        Assert.areEqual(4, value);            
+    },        
+    
+    testPush : function () {
+        var Assert = YAHOO.util.Assert;
+        
+        this.data.push(5);
+        
+        Assert.areEqual(6, this.data.length);
+        Assert.areEqual(5, this.data[5]);            
+    },
+    
+    testSplice : function () {
+        var Assert = YAHOO.util.Assert;
+        
+        this.data.splice(2, 1, 6, 7);
+        
+        Assert.areEqual(6, this.data.length);
+        Assert.areEqual(6, this.data[2]);           
+        Assert.areEqual(7, this.data[3]);           
+    }
+
+});  
+ </textarea>
+ <p>As with the first <code>TestCase</code>, this one is split up into three sections: the name, the <code>setUp()</code> and <code>tearDown()</code> 
+  methods, and the test methods. The <code>setUp()</code> method in this <code>TestCase</code> creates an array of data to be used by the various
+  tests while the <code>tearDown()</code> method destroys the array. The test methods are very simple, testing the <code>pop()</code>, <code>push()</code>,
+  and <code>splice()</code> methods. Each test method uses <code>areEqual()</code> exclusively, to show the different ways that it can be used.
+  The <code>testPop()</code> method calls <code>pop()</code> on the array of values, then verifies that the length of the array has changed and
+  that the value popped off is 4; the <code>testPush()</code> pushes a new value (5) onto the array and then verifies that the length of the array has
+  changed and that the value is included in the correct location; the <code>testSplice()</code> method tests  <code>splice()</code> by removing one
+  value that's already in the array and inserting two in its place.</p>
+  
+<h3>Creating the TestSuite</h3>
+<p>To better organize the two <code>TestCase</code> objects, a <code>TestSuite</code> is created and those two <code>TestCase</code> objects are
+  added to it:</p>
+<textarea name="code" class="JScript" cols="60" rows="1">
+YAHOO.example.yuitest.ExampleSuite = new YAHOO.tool.TestSuite("Example Suite");
+YAHOO.example.yuitest.ExampleSuite.add(YAHOO.example.yuitest.DataTestCase);
+YAHOO.example.yuitest.ExampleSuite.add(YAHOO.example.yuitest.ArrayTestCase);
+</textarea> 
+<p>The first line creates a new <code>TestSuite</code> object using its constructor, which accepts a single argument - the name of the suite. As with
+  the name of a <code>TestCase</code>, the <code>TestSuite</code> name is used to determine where execution is when tests are being executed. Although
+  not required (one is generated if it's not provided), it is recommended that you select a meaningful name to aid in debugging.</p>
+<p>Any number of <code>TestCase</code> and <code>TestSuite</code> objects can be added to a <code>TestSuite</code> by using the <code>add()</code>
+  method. In this example, the two <code>TestCase</code> objects created earlier are added to the <code>TestSuite</code>.</p>
+  
+<h3>Running the tests</h3>
+
+<p>With all of the tests defined, the last step is to run them. This initialization is assigned to take place when the document tree has been 
+  completely loaded by using the Event utility's <code>onDOMReady()</code> method:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+YAHOO.util.Event.onDOMReady(function (){
+
+    //create the logger
+    var logger = new YAHOO.tool.TestLogger();
+    
+    //add the test suite to the runner's queue
+    YAHOO.tool.TestRunner.add(YAHOO.example.yuitest.ExampleSuite);
+
+    //run the tests
+    YAHOO.tool.TestRunner.run();
+});
+</textarea> 
+
+<p>Before running the tests, it's necessary to create a <code>TestLogger</code> object to display the results (otherwise the tests would run 
+  but you wouldn't see the results). After that, the <code>TestRunner</code> is loaded with the <code>TestSuite</code> object by calling 
+  <code>add()</code> (any number of <code>TestCase</code> and <code>TestSuite</code> objects can be added to a <code>TestRunner</code>, 
+  this example only adds one for simplicity). The very last step is to call <code>run()</code>, which begins executing the tests in its
+  queue and displays the results in the <code>TestLogger</code>.</p>
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?event&dom&logger&yuitest&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+					
+				
+					<div id="examples">
+						<h3 class='firstContent'>YUI Test Utility Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li class='selected'><a href='../yuitest/yt-simple-example.html'>Simple Testing Example</a></li><li><a href='../yuitest/yt-advanced-test-options.html'>Advanced Test Options</a></li><li><a href='../yuitest/yt-array-tests.html'>Array Processing</a></li><li><a href='../yuitest/yt-async-test.html'>Asynchronous Testing</a></li><li><a href='../yuitest/yt-async-event-tests.html'>Asynchronous Event Testing</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More YUI Test Utility Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/yuitest/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_yuitest.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/yuitest.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="selected "><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

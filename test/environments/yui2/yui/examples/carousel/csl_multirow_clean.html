@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Multi-row example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/carousel/assets/skins/sam/carousel.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/carousel/carousel-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+    #container {
+        margin: 0 auto;
+    }
+    
+    /* Always be sure to give your carousel items a width and a height */
+    .yui-carousel-element li {
+        width: 75px;
+        height: 75px;
+    }
+
+    .yui-carousel-element .yui-carousel-item-selected {
+        border:0;/* Override selected item's dashed border so it feels more like a photo album */
+    }
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Multi-row example</h1>
+
+<div class="exampleIntro">
+	<p>This example uses the <a href="http://developer.yahoo.com/yui/carousel/">YUI Carousel Control</a> to showcase a simple multi-row Carousel. The <code>numVisible</code> 
+configuration setting now accepts an array, which instructs Carousel to organize its items into X number of rows by Y number of columns.</p>    
+<p>A multi-row Carousel still offers all the features provided by a single-row carousel including, but not limitted to: <code>isVertical</code>, <code>animation</code>, 
+<code>revealAmount</code>, <code>loadItems</code>, and items containing images and text.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+    <!-- The Carousel container -->
+
+<div id="container">
+    <ol id="carousel">
+        <li>
+            <img src="http://farm1.static.flickr.com/135/342099636_7b05b7cde5_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/136/342099938_fdef3ca3b5_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/147/342099522_3827eaa929_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/143/342100011_ec4d338c71_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/161/342100080_0fe4f9ccb0_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/153/342100324_82589c0ebe_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/147/342100376_d0336252a7_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/156/342100472_b9bc985fa4_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/133/342100566_39dae4698f_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/69/213130158_0d1aa23576_d.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/72/213128367_74b0a657c3_d.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/98/213129707_1f40c509fa_d.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/80/259391136_6fa405c7f6_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+           <img src="http://farm1.static.flickr.com/87/258609416_bf0d44b445_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+           <img src="http://farm1.static.flickr.com/119/259395209_66c773a072_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+           <img src="http://farm1.static.flickr.com/83/259399727_3d170d0445_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+           <img src="http://farm1.static.flickr.com/121/258614620_16eb6867f7_s.jpg"
+                width="75" height="75">
+        </li>
+        <li>
+           <img src="http://farm1.static.flickr.com/108/259397333_3e4a3960bd_s.jpg"
+                width="75" height="75">
+        </li>
+    </ol>
+</div>
+
+<script>
+    (function () {
+        var carousel;
+                
+        YAHOO.util.Event.onDOMReady(function (ev) {
+            carousel    = new YAHOO.widget.Carousel("container", {
+                // specify number of columns and number of rows
+                numVisible: [3, 2]
+            });
+                        
+            carousel.render(); // get ready for rendering the widget
+            carousel.show();   // display the widget
+        });
+    })();
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

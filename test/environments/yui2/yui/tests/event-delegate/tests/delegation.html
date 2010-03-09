@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Event Delegate Tests</title>
+
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/logger/assets/logger.css">
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/yuitest/assets/testlogger.css">
+
+	<script type="text/javascript" src="../../../build/yahoo/yahoo-min.js"></script>
+	<script type="text/javascript" src="../../../build/dom/dom-min.js"></script>
+	<script type="text/javascript" src="../../../build/event/event-min.js"></script>	
+	<script type="text/javascript" src="../../../build/event-simulate/event-simulate-min.js"></script>	
+	<script type="text/javascript" src="../../../build/selector/selector-min.js"></script>
+	<script type="text/javascript" src="../../../build/event-delegate/event-delegate-min.js"></script>
+	<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+	<script type="text/javascript" src="../../../build/yuitest/yuitest-min.js"></script>
+
+	<script type="text/javascript">
+
+		(function () {
+			
+			var Event = YAHOO.util.Event,
+				Dom = YAHOO.util.Dom,
+				Assert = YAHOO.util.Assert,
+				UserAction = YAHOO.util.UserAction;
+			
+			Event.onDOMReady(function () {
+
+				var testLogger = new YAHOO.tool.TestLogger();			
+
+			    var delegateTest = new YAHOO.tool.TestCase({
+
+			        name: "Event Delegation Test",
+
+			        test_simple_delegate_for_anchors : function () {
+
+						var foo = false, 
+							target, 
+							match, 
+							boundEl,
+							bRemoved,
+
+							onClick = function(e, matchedEl, container) {
+
+								foo = true;
+								target = Event.getTarget(e);
+								match = matchedEl;
+								boundEl = container;
+
+							};
+						
+						Event.delegate('mod1', 'click', onClick, 'a');
+
+						UserAction.click(Dom.get('firstlink'));
+
+						Assert.isTrue(foo, "simple delegation fails, mod1 should pickup the event and test target [firstlink]");
+
+						Assert.areEqual(match, Dom.get('firstlink'), "event delegate works but the matched element is an incorrect node, should be the matching node");
+						Assert.areEqual(target, Dom.get('firstlink'), "event delegate works but the target is an incorrect node, should be the actual click target");
+						Assert.areEqual(boundEl, Dom.get('mod1'), "event delegate works but the container property should be the bound element");
+
+						bRemoved = Event.removeDelegate('mod1', 'click', onClick);
+
+						Assert.isTrue(bRemoved, "Removal of delegated click event failed");
+
+			        },
+
+					test_multiple_selectors: function () {
+
+						var foo = false, 
+							target, 
+							match, 
+							boundEl,
+							bRemoved,
+
+							onClick = function(e, matchedEl, container) {
+
+								foo = true;
+								target = Event.getTarget(e);
+								match = matchedEl;
+								boundEl = container;
+
+							};
+						
+						Event.delegate('mod1', 'click', onClick, '.hd,.bd');
+
+						UserAction.click(Dom.get('mod-header'));
+
+						Assert.areEqual(match, Dom.get('mod-header'), "event delegate works but the matched element is an incorrect node, should be the matching node");
+						
+						UserAction.click(Dom.get('mod-body'));		
+
+						Assert.areEqual(match, Dom.get('mod-body'), "event delegate works but the matched element is an incorrect node, should be the matching node");
+						
+					},
+
+					test_document_as_container: function () {
+
+						var foo = false, 
+							target, 
+							match, 
+							boundEl,
+							bRemoved,
+
+							onClick = function(e, matchedEl, container) {
+
+								foo = true;
+								target = Event.getTarget(e);
+								match = matchedEl;
+								boundEl = container;
+
+							};
+						
+						Event.delegate(document, 'click', onClick, 'a');
+
+						UserAction.click(Dom.get('firstlink'));
+
+						Assert.isTrue(foo, "simple delegation fails, document should pickup the event and test target [firstlink]");
+
+						Assert.areEqual(match, Dom.get('firstlink'), "event delegate works but the matched element is an incorrect node, should be the matching node");
+						Assert.areEqual(target, Dom.get('firstlink'), "event delegate works but the target is an incorrect node, should be the actual click target");
+						Assert.areEqual(boundEl, document, "event delegate works but the container property should be the bound element");
+
+						bRemoved = Event.removeDelegate(document, 'click', onClick);
+
+						Assert.isTrue(bRemoved, "Removal of delegated click event failed");
+						
+					},
+			
+					test_checking_delegation_target: function(){
+
+						var foo = false, 
+							target, 
+							match, 
+							boundEl;
+
+						Event.delegate('mod1', 'click', function(e, matchedEl, container) {
+							foo = true;
+							target = Event.getTarget(e);
+							match = matchedEl;
+							boundEl = container;
+						}, 'a');
+
+						UserAction.click(Dom.get('fakeimage'));
+
+						Assert.isTrue(foo, "delegation fails for an image within an anchor, mod1 should pickup the event and test target [secondlink]");
+						Assert.areEqual(match, Dom.get('secondlink'), "event delegate works but the matched element is an incorrect node, should be the matching node");
+						Assert.areEqual(target, Dom.get('fakeimage'), "event delegate works but the target is an incorrect node, should be the actual click target");
+						Assert.areEqual(boundEl, Dom.get('mod1'), "event delegate works but the container property should be the bound element");
+
+					},
+					
+					test_including_container_in_selector: function(){
+
+						var foo = false;
+
+						Event.delegate('mod1', 'click', function(e, matchedEl, container) {
+							foo = true;
+						}, '#mod1 a');
+
+						UserAction.click(Dom.get('firstlink'), 'click');
+
+						Assert.isFalse(foo, "delegation fails, the container (specified in the on) can not be part of the selectors");
+
+					},
+					
+					test_targeting_container_without_selectors: function(){
+
+						var foo = false;
+
+						Event.delegate('mod1', 'click', function(e) {
+							foo = true;
+						});
+
+						UserAction.click(Dom.get('firstlink'), 'click');
+						
+						Assert.isFalse(foo, "delegation fails, delegation without at least one selector should never trigger an event");
+					},										
+
+					test_multiple_selectors_one_match: function(){
+
+						var foo = false, 
+							target;
+
+						Event.delegate('mod1', 'click', function(e, matchedEl) {
+							foo = true;
+							target = Event.getTarget(e);
+						}, 'a,a span');
+
+						UserAction.click(Dom.get('firstlink'), 'click');
+
+						Assert.isTrue(foo, "multiple selectors fails, delegate should be able to match different selectors");
+						Assert.areEqual(target, Dom.get('firstlink'), "event delegate works but the target is an incorrect node, should be the matching selector");
+
+					},
+					
+					test_multiple_delegate_matches: function(){
+
+						var foo1 = false, 
+							foo2 = false, 
+							target1, 
+							target2, 
+							match1, 
+							match2;
+
+						Event.delegate('mod1', 'click',  function(e, matchedEl, container) {
+							foo1 = true;
+							target1 = Event.getTarget(e);
+							match1 = matchedEl;
+						}, 'a');
+
+						Event.delegate('mod1', 'click', function(e, matchedEl, container) {
+							foo2 = true;
+							target2 = Event.getTarget(e);
+							match2 = matchedEl;
+						}, 'a span');
+
+						UserAction.click(Dom.get('spanwithinlink'));
+
+						Assert.isTrue(foo1, "first match fail, delegate should be able to match [a]");
+						Assert.isTrue(foo2, "second match fail, delegate should be able to match [a span]");
+						Assert.areEqual(match1, Dom.get('secondlink'), "event delegate works but the matched element is an incorrect node, should be the matching selector");
+						Assert.areEqual(target1, Dom.get('spanwithinlink'), "event delegate works but the target is an incorrect node, should be the clicked node");
+						Assert.areEqual(match2, Dom.get('spanwithinlink'), "event delegate works but the target is an incorrect node, should be the matching selector");
+						Assert.areEqual(target2, Dom.get('spanwithinlink'), "event delegate works but the target is an incorrect node, should be the clicked");
+
+					},
+					
+					test_bubble_up_after_delegate: function(){
+
+						var foo1 = false, 
+							foo2 = false, 
+							target1, 
+							target2, 
+							match;
+
+						Event.delegate('mod1', 'click', function(e, matchedEl, container) {
+							foo1 = true;
+							target1 = Event.getTarget(e);
+							match = matchedEl;
+						}, 'a');
+
+						Event.on('doc', 'click', function(e) {
+							foo2 = true;
+							target2 = Event.getTarget(e);
+						});
+
+						UserAction.click(Dom.get('spanwithinlink'));
+						Assert.isTrue(foo1, "first match fail, delegate should be able to match [a]");
+						Assert.isTrue(foo2, "second match fail, the event doesn't bubble up after the delegate routine");
+
+						Assert.areEqual(match, Dom.get('secondlink'), "event delegate works but the matched element is an incorrect node, should be the matching selector");
+						Assert.areEqual(target1, Dom.get('spanwithinlink'), "event delegate works but the target is an incorrect node, should be the actual target");
+
+					},
+					
+					test_bubble_up_after_delegate_halt: function(){
+
+						var foo1 = false, 
+							foo2 = false;
+
+						Event.delegate('mod1', 'click', function(e) {
+							foo1 = true;
+							Event.stopEvent(e);
+						}, 'a');
+
+						Event.on('click', function(e) {
+							foo2 = true;
+						}, '#doc');
+
+						UserAction.click(Dom.get('spanwithinlink'));
+						Assert.isTrue(foo1, "first match fail, delegate should be able to match [a]");
+						Assert.isFalse(foo2, "the listener for 'doc' got executed, which means that e.halt fails during the delegate routine");
+
+					},										
+
+					test_delegation_of_focus: function () {
+						
+						var foo = false, 
+							target, 
+							match, 
+							boundEl,
+							bRemoved,
+						
+							onFocus = function(e, matchedEl, container) {
+
+								foo = true;
+								target = Event.getTarget(e);
+								match = matchedEl;
+								boundEl = container;
+
+							};
+						
+						Event.delegate('mod1', 'focusin', onFocus, 'a');
+
+						Dom.get('firstlink').focus();
+
+						Assert.isTrue(foo, "simple delegation fails, mod1 should pickup the event and test target [firstlink]");
+
+						Assert.areEqual(match, Dom.get('firstlink'), "event delegate works but the matched element is an incorrect node, should be the matching node");
+						Assert.areEqual(target, Dom.get('firstlink'), "event delegate works but the target is an incorrect node, should be the actual click target");
+						Assert.areEqual(boundEl, Dom.get('mod1'), "event delegate works but the container property should be the bound element");						
+						
+						bRemoved = Event.removeDelegate('mod1', 'focusin', onFocus);
+						
+						Assert.isTrue(bRemoved, "Removal of delegated focus event handler failed");
+						
+					}
+			    });
+
+
+	            YAHOO.tool.TestRunner.add(delegateTest);
+
+	            if (parent && parent != window) {
+	                YAHOO.tool.TestManager.load();
+	            } else {
+	                YAHOO.tool.TestRunner.run();
+	            }
+
+			});
+			
+		}());
+	
+	</script>
+
+</head>
+<body class="yui-skin-sam">
+    <div id="doc">
+
+		<div id="mod1">
+			<div id="mod-header" class="hd"><h3 class="title">H3 - Title</h3></div>
+			<div id="mod-body" class="bd">
+				<p>simple paragraph with a link <a href="#" id="firstlink">simple link</a></p>
+				<p>another paragraph with a complex link <a href="#" id="secondlink"><strong>strong within link</strong><img alt="fake image" id="fakeimage" /> - complex <span id="spanwithinlink">link</span></a></p>
+			</div>
+		</div>
+
+    </div>
+
+</body>
+</html>
+`

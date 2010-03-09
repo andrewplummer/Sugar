@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Connection Manager Transaction Timeout</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo/yahoo-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style>
+#container li {margin-left:2em;}
+</style>
+
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Connection Manager Transaction Timeout</h1>
+
+<div class="exampleIntro">
+	<p>
+This example illustrates <a href="http://developer.yahoo.com/yui/connection/">Connection Manager</a>'s built-in transaction timeout functionality.
+</p>
+
+<p>Click the "Create Two Transactions" button below.  Two requests will be made to a PHP script that is designed to respond slowly, waiting between 0 and 10 seconds to respond.  If the response takes longer than 1.5 seconds, the request will automatically abort (resulting in a "transaction aborted" message).</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="container"></div>
+
+
+<script>
+
+var div = document.getElementById('container');
+
+var handleSuccess = function(o){
+	YAHOO.log("The success handler was called; this transaction did not abort.  tId: " + o.tId + ".", "info", "example");
+
+	if(o.responseText !== undefined){
+		div.innerHTML += "<li>Transaction id: " + o.tId + "</li>";
+		div.innerHTML += "<li>HTTP status: " + o.status + "</li>";
+		div.innerHTML += "<li>Status code message: " + o.statusText + "</li>";
+		div.innerHTML += "<li>HTTP headers: <ul>" + o.getAllResponseHeaders + "</ul></li>";
+		div.innerHTML += "<li>Server response: " + o.responseText + "</li>";
+		div.innerHTML += "<li>Argument object: Object ( [foo] => " + o.argument.foo +
+						 " [bar] => " + o.argument.bar +" )</li><hr>";
+	}
+}
+
+var handleFailure = function(o){
+		YAHOO.log("The failure handler was called; this transaction aborted.  tId: " + o.tId + ".", "info", "example");
+
+	div.innerHTML += "<li>Transaction id: " + o.tId + "</li>";
+	div.innerHTML += "<li>HTTP status: " + o.status + "</li>";
+	div.innerHTML += "<li>Status code message: " + o.statusText + "</li>";
+}
+
+var callback =
+{
+  success: handleSuccess,
+  failure: handleFailure,
+  argument: { foo:"foo", bar:"bar" },
+  timeout: 1500
+};
+
+var sUrl = 'assets/sync.php';
+
+function makeRequest(){
+	var obj1 = YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
+
+	YAHOO.log("Initiating request; tId: " + obj1.tId + ".", "info", "example");
+
+	var obj2 = YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
+
+	YAHOO.log("Initiating request; tId: " + obj2.tId + ".", "info", "example");
+
+}
+
+YAHOO.log("As you interact with this example, relevant steps in the process will be logged here.", "info", "example");
+
+</script>
+<form><input type="button" value="Create Two Transactions" onClick="makeRequest();"></form>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

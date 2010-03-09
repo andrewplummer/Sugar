@@ -1,0 +1,480 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: TreeView Control: Dynamically Loading Node Data</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/treeview/assets/skins/sam/treeview.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-debug.js"></script>
+<script type="text/javascript" src="../../build/treeview/treeview-debug.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style>
+#treeDiv1 {background: #fff; margin-top:1em; padding:1em; min-height:7em;}
+</style>
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: TreeView Control: Dynamically Loading Node Data</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>TreeView Control: Dynamically Loading Node Data</h1>
+	
+	<div class="exampleIntro">
+	<p>In many cases, you'll want to avoid rendering your <a
+href="http://developer.yahoo.com/yui/treeview/">TreeView Control</a> with a
+full dataset.  Rather, you'll want to load all visible nodes immediately and
+then retrieve data only when needed for nodes that aren't visible when the
+control is first loaded.  This example shows you how to do that.</p>
+
+<p>In the TreeView instance below, we've loaded all "top-level" nodes into the
+page as soon as the page loads; these nodes contain the names of many Indian
+states.  When a node is expanded, we use <a
+href="http://developer.yahoo.com/yui/connection/">Connection Manager</a> to
+access <a
+href="http://developer.yahoo.com/search/web/V1/relatedSuggestion.html">a Yahoo!
+Search web service that will return a list of "related suggestions."</a>  So
+when the page loads, we know nothing about our top-level nodes' children.  And
+while the resulting TreeView instance could grow quite large through user
+interaction, we need only load a very light set of nodes to begin with.
+</p>
+
+<p>This example also shows the two label styles for childless nodes.  The first
+(default) style maintains the expand/collapse icon style even when the node has
+no children; the second style shows childless nodes as leaf nodes with no
+expand/collapse icon.  Note: this is for dynamically loaded nodes after the
+dynamic load process has produced zero children.  You can also force the leaf
+node presentation for any node by setting the isLeaf property to true (this
+also disables dynamic loading).</p>
+			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="dynamic_tree_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<h3>Childless Node Style:</h3>
+<dd><label for="mode0"><input type="radio" id="mode0" name="mode" value ="0" checked />
+    Expand/Collapse</label>
+</dd>
+<dd><label for="mode1"><input type="radio" id="mode1" name="mode" value ="1" /> Leaf Node</label></dd> 
+
+<div id="treeDiv1"></div>
+    
+<script type="text/javascript">
+
+YAHOO.example.treeExample = function() {
+
+    var tree, currentIconMode;
+
+    function changeIconMode() {
+        var newVal = parseInt(this.value);
+        if (newVal != currentIconMode) {
+            currentIconMode = newVal;
+        }
+        buildTree();
+    }
+    
+        function loadNodeData(node, fnLoadComplete)  {
+            
+            //We'll load node data based on what we get back when we
+            //use Connection Manager topass the text label of the 
+            //expanding node to the Yahoo!
+            //Search "related suggestions" API.  Here, we're at the 
+            //first part of the request -- we'll make the request to the
+            //server.  In our success handler, we'll build our new children
+            //and then return fnLoadComplete back to the tree.
+            
+            //Get the node's label and urlencode it; this is the word/s
+            //on which we'll search for related words:
+            var nodeLabel = encodeURI(node.label);
+            
+            //prepare URL for XHR request:
+            var sUrl = "assets/ysuggest_proxy.php?query=" + nodeLabel;
+            
+            //prepare our callback object
+            var callback = {
+            
+                //if our XHR call is successful, we want to make use
+                //of the returned data and create child nodes.
+                success: function(oResponse) {
+                    YAHOO.log("XHR transaction was successful.", "info", "example");
+                    //YAHOO.log(oResponse.responseText);
+                    var oResults = eval("(" + oResponse.responseText + ")");
+                    if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {
+                        //Result is an array if more than one result, string otherwise
+                        if(YAHOO.lang.isArray(oResults.ResultSet.Result)) {
+                            for (var i=0, j=oResults.ResultSet.Result.length; i<j; i++) {
+                                var tempNode = new YAHOO.widget.TextNode(oResults.ResultSet.Result[i], node, false);
+                            }
+                        } else {
+                            //there is only one result; comes as string:
+                            var tempNode = new YAHOO.widget.TextNode(oResults.ResultSet.Result, node, false)
+                        }
+                    }
+                    
+                    //When we're done creating child nodes, we execute the node's
+                    //loadComplete callback method which comes in via the argument
+                    //in the response object (we could also access it at node.loadComplete,
+                    //if necessary):
+                    oResponse.argument.fnLoadComplete();
+                },
+                
+                //if our XHR call is not successful, we want to
+                //fire the TreeView callback and let the Tree
+                //proceed with its business.
+                failure: function(oResponse) {
+                    YAHOO.log("Failed to process XHR transaction.", "info", "example");
+                    oResponse.argument.fnLoadComplete();
+                },
+                
+                //our handlers for the XHR response will need the same
+                //argument information we got to loadNodeData, so
+                //we'll pass those along:
+                argument: {
+                    "node": node,
+                    "fnLoadComplete": fnLoadComplete
+                },
+                
+                //timeout -- if more than 7 seconds go by, we'll abort
+                //the transaction and assume there are no children:
+                timeout: 7000
+            };
+            
+            //With our callback object ready, it's now time to 
+            //make our XHR call using Connection Manager's
+            //asyncRequest method:
+            YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
+        }
+
+        function buildTree() {
+           //create a new tree:
+           tree = new YAHOO.widget.TreeView("treeDiv1");
+           
+           //turn dynamic loading on for entire tree:
+           tree.setDynamicLoad(loadNodeData, currentIconMode);
+           
+           //get root node for tree:
+           var root = tree.getRoot();
+           
+           //add child nodes for tree; our top level nodes are
+           //all the states in India:
+           var aStates = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka"/* we're only using the first half of this list, to keep the tree smaller,"Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Orissa","Punjab","Rajasthan","Sikkim","Tamil Nadu","Tripura","Uttaranchal","Uttar","Pradesh","West Bengal"*/];
+           
+           for (var i=0, j=aStates.length; i<j; i++) {
+                var tempNode = new YAHOO.widget.TextNode(aStates[i], root, false);
+           }
+
+           // Use the isLeaf property to force the leaf node presentation for a given node.
+           // This disables dynamic loading for the node.
+           var tempNode = new YAHOO.widget.TextNode('This is a leaf node', root, false);
+           tempNode.isLeaf = true;
+           
+           //render tree with these toplevel nodes; all descendants of these nodes
+           //will be generated as needed by the dynamic loader.
+           tree.draw();
+        }
+
+
+    return {
+        init: function() {
+            YAHOO.util.Event.on(["mode0", "mode1"], "click", changeIconMode);
+            var el = document.getElementById("mode1");
+            if (el && el.checked) {
+                currentIconMode = parseInt(el.value);
+            } else {
+                currentIconMode = 0;
+            }
+
+            buildTree();
+        }
+
+    }
+} ();
+
+//once the DOM has loaded, we can go ahead and set up our tree:
+YAHOO.util.Event.onDOMReady(YAHOO.example.treeExample.init, YAHOO.example.treeExample,true)
+
+</script>
+
+	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Using TreeView with Connection Manager to Dynamically Load Data</h2>
+
+<p>Dynamic loading of a <a href="http://developer.yahoo.com/yui/treeview/">TreeView Control</a>'s
+child nodes allows you to optmize
+performance by only loading data for and creating the nodes that will
+be visible when the tree is rendered. Nodes that are not expanded when
+the TreeView's <code>draw</code> method is invoked are left childless in the initial
+state. When such a node is expanded (either by user action or by
+script), a dynamic loader function is called. That function has three
+important roles:</p>
+                <ol>
+                  <li><strong>Check for child nodes:</strong>
+The dynamic loader function will check for child nodes by evaluating
+in-page data (for example, data held in a JavaScript array or object)
+or by retrieving data about the expanding node from the server via
+XMLHttpRequest. In the example on this page, We'll use the <a href="http://developer.yahoo.com/yui/connection/">YUI Connection Manager</a> component to check for data from a web service.</li>
+                  <li><strong>Add child nodes, if present:</strong>
+If it determines that child node's are present for the expanding node,
+the dynamic loader must add those child nodes to the TreeView instance.
+Because these nodes are only added when needed, the overall complexity
+of the initial TreeView (in JavaScript and in the DOM) is reduced and
+its render time is much faster.</li>
+                  <li><strong>Invoke the expanding node's callback method:</strong>
+Once the dynamic loader method determines whether the expanding node
+has children (and adds any children that may be present), it must
+notify the expanding node's object that dynamic loading is complete. It
+does this via a callback function which is passed into the dynamic loader
+as an argument.</li>
+              </ol>
+
+<p>Here's how the code on this page manages those three steps.  First, we markup the page with a target element into which the TreeView's DOM structure will be injected:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1"><div id="treeDiv1"></div></textarea>
+
+<p>Next, we build a function that creates our initial TreeView:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">function buildTree() {
+   //create a new tree:
+   tree = new YAHOO.widget.TreeView("treeDiv1");
+   
+   //turn dynamic loading on for entire tree:
+   tree.setDynamicLoad(loadNodeData, currentIconMode);
+   
+   //get root node for tree:
+   var root = tree.getRoot();
+   
+   //add child nodes for tree; our top level nodes are
+   //all the states in India:
+   var aStates = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka"];
+   
+   for (var i=0, j=aStates.length; i<j; i++) {
+        var tempNode = new YAHOO.widget.TextNode(aStates[i], root, false);
+   }
+
+   // Use the isLeaf property to force the leaf node presentation for a given node.
+   // This disables dynamic loading for the node.
+   var tempNode = new YAHOO.widget.TextNode('This is a leaf node', root, false);
+   tempNode.isLeaf = true;
+
+   //render tree with these toplevel nodes; all descendants of these nodes
+   //will be generated as needed by the dynamic loader.
+   tree.draw();
+}</textarea>        
+
+<p>We have turned on dynamic loading (in line 6 above) at the TreeView level rather than on a specific node, so every expanding node now will invoke our dynamic load handler (<code>loadNodeData</code>).  That means that before the node expands, the node object will be passed to <code>loadNodeData</code> along with a callback function and the expansion won't take place until we fire that callback.  That gives us a chance to load child nodes before the expand action occurs.</p>
+
+<p>We'll use Connection Manager to get external data.  Here's our <code>loadNodeData</code> function, with comments describing what happens at each step.</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">function loadNodeData(node, fnLoadComplete)  {
+    
+    //We'll create child nodes based on what we get back when we
+    //use Connection Manager to pass the text label of the 
+    //expanding node to the Yahoo!
+    //Search "related suggestions" API.  Here, we're at the 
+    //first part of the request -- we'll make the request to the
+    //server.  In our Connection Manager success handler, we'll build our new children
+    //and then return fnLoadComplete back to the tree.
+    
+    //Get the node's label and urlencode it; this is the word/s
+    //on which we'll search for related words:
+    var nodeLabel = encodeURI(node.label);
+    
+    //prepare URL for XHR request:
+    var sUrl = "assets/ysuggest_proxy.php?query=" + nodeLabel;
+    
+    //prepare our callback object
+    var callback = {
+    
+        //if our XHR call is successful, we want to make use
+        //of the returned data and create child nodes.
+        success: function(oResponse) {
+            YAHOO.log("XHR transaction was successful.", "info", "example");
+            console.log(oResponse.responseText);
+            var oResults = eval("(" + oResponse.responseText + ")");
+            if((oResults.ResultSet.Result) && (oResults.ResultSet.Result.length)) {
+                //Result is an array if more than one result, string otherwise
+                if(YAHOO.lang.isArray(oResults.ResultSet.Result)) {
+                    for (var i=0, j=oResults.ResultSet.Result.length; i<j; i++) {
+                        var tempNode = new YAHOO.widget.TextNode(oResults.ResultSet.Result[i], node, false);
+                    }
+                } else {
+                    //there is only one result; comes as string:
+                    var tempNode = new YAHOO.widget.TextNode(oResults.ResultSet.Result, node, false)
+                }
+            }
+                                
+            //When we're done creating child nodes, we execute the node's
+            //loadComplete callback method which comes in via the argument
+            //in the response object (we could also access it at node.loadComplete,
+            //if necessary):
+            oResponse.argument.fnLoadComplete();
+        },
+        
+        //if our XHR call is not successful, we want to
+        //fire the TreeView callback and let the Tree
+        //proceed with its business.
+        failure: function(oResponse) {
+            YAHOO.log("Failed to process XHR transaction.", "info", "example");
+            oResponse.argument.fnLoadComplete();
+        },
+        
+        //our handlers for the XHR response will need the same
+        //argument information we got to loadNodeData, so
+        //we'll pass those along:
+        argument: {
+            "node": node,
+            "fnLoadComplete": fnLoadComplete
+        },
+        
+        //timeout -- if more than 7 seconds go by, we'll abort
+        //the transaction and assume there are no children:
+        timeout: 7000
+    };
+    
+    //With our callback object ready, it's now time to 
+    //make our XHR call using Connection Manager's
+    //asyncRequest method:
+    YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
+}</textarea>
+
+<p>In the codeblock above, we set up our XHR call using Connection Manager and provide the functions that should handle the data that comes back. Here are a few important items to note:</p>
+<ol>
+    <li><strong>We pass the node and our TreeView callback into our <code>success</code> and <code>failure</code> handlers in the <code>argument</code> member of the Connection Manager <code>callback</code> ojbect.</strong> That allows us to access those important pieces once we get data back from the XHR transaction.
+    <li><strong>This process is asynchronous.</strong> <code>loadNodeData</code> completes and returns after it fires off the request via <code>YAHOO.util.Connect.asyncRequest</code>. At a later time, Connection Manager fires either the <code>success</code> or <code>failure</code> function we passed in</li>
+  <li><strong>We fire our <code>fnLoadComplete</code> function from both <code>success</code> and <code>failure</code> handlers.</strong> Whether the request succeeds or not, we want TreeView to stop waiting for it at some point. So, if  Connection Manager fires our <code>failure</code> handler, we'll treat that the same way we treat a node that has no children &mdash; we fire <code>fnLoadComplete</code> and move on.</li>
+</ol>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?connection&treeview&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerDiv"></div>
+							<div id="loggerGloss">
+								<p><strong>Note:</strong> You are viewing this example in debug mode with logging enabled.  This can significantly slow performance.</p>
+	
+								<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="dynamic_tree.html">Reload with logging<br />and debugging disabled.</a></span></span></p>
+							</div>
+						</div>
+					
+				
+					<div id="examples">
+						<h3>TreeView Control Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../treeview/default_tree.html'>Default TreeView</a></li><li class='selected'><a href='../treeview/dynamic_tree.html'>Dynamically Loading Node Data</a></li><li><a href='../treeview/folder_style.html'>Folder-Style TreeView Design</a></li><li><a href='../treeview/menu_style.html'>Menu-Style TreeView Design</a></li><li><a href='../treeview/customicons.html'>Using TreeView with Custom Icons</a></li><li><a href='../treeview/tv_tooltip.html'>TreeView with Tooltips</a></li><li><a href='../treeview/tv_markup.html'>Three Ways to Define a TreeView: Markup (Progressive Enhancement), Existing TreeView Instance, and Object Literal </a></li><li><a href='../treeview/tv_edit.html'>Inline Editing of TreeView Node Labels</a></li><li><a href='../treeview/tv_highlight.html'>Treeview Node Selection and Checkbox Example</a></li><li><a href='../menu/treeviewcontextmenu.html'>Adding A Context Menu To A TreeView (included with examples for Menu Family)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More TreeView Control Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/treeview/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_treeview.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/treeview.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="selected "><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

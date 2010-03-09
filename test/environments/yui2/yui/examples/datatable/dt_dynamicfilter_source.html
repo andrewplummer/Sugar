@@ -1,0 +1,498 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<!-- Combo-handled YUIS files:-->
+<link rel="stylesheet" type="text/css" href="../../build/reset/reset.css">
+<link rel="stylesheet" type="text/css" href="../../build/base/base.css">
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts.css">
+
+<style type="text/css">
+#doc {
+	width: 700px;
+	margin: 0 auto;
+}
+#hd {
+	text-align: center;
+}
+.yui-skin-sam .yui-dt table {
+	width: 100%;
+}
+.yui-skin-sam .yui-dt th.yui-dt-col-name {
+	width: 301px;
+}
+.yui-skin-sam .yui-dt .yui-dt-col-state1,
+.yui-skin-sam .yui-dt .yui-dt-col-state2,
+.yui-skin-sam .yui-dt .yui-dt-col-state3 {
+	width: 133px;
+	text-align: right;
+}
+#containerContainer {
+	width: 100%;
+	height: 64px;
+	padding: 8px 0;
+}
+#genderRadioContainer {
+	float: left;
+	width: 301px;
+}
+#stateSelectContainer {
+	float: left;
+	width: 399px;
+}
+#stateSelectContainer .yui-button button{
+	width: 123px;
+	*width: 121px;
+	_width: 118px;
+	font-size: 85%;
+	line-height: 1.5;
+}
+#statePaginator {
+	text-align: center;
+}
+</style>
+<body class="yui-skin-sam">
+<div id="doc" class="yui-skin-sam">
+	<div id="hd">
+		<h1>State Population Comparison Table</h1>
+	</div>
+	<div id="bd">
+		<div id="containerContainer">
+			<div id="genderRadioContainer">
+				<p>Select a gender filter.</p>
+				<input type="radio" name="gender" value="Both" checked>
+				<input type="radio" name="gender" value="Female">
+				<input type="radio" name="gender" value="Male">
+			</div>
+			<div id="stateSelectContainer">
+			<p>Select states to compare.</p>
+				<input type="button" class="menuButton" id="state1" value="<em>Alabama</em>">
+				<select id="state1Select">
+					<option value="04000US01">Alabama</option>
+					<option value="04000US02">Alaska</option>
+					<option value="04000US04">Arizona</option>
+					<option value="04000US05">Arkansas</option>
+					<option value="04000US06">California</option>
+					<option value="04000US08">Colorado</option>
+					<option value="04000US09">Connecticut</option>
+					<option value="04000US10">Delaware</option>
+					<option value="04000US11">DC</option>
+					<option value="04000US12">Florida</option>
+					<option value="04000US13">Georgia</option>
+					<option value="04000US15">Hawaii</option>
+					<option value="04000US16">Idaho</option>
+					<option value="04000US17">Illinois</option>
+					<option value="04000US18">Indiana</option>
+					<option value="04000US19">Iowa</option>
+					<option value="04000US20">Kansas</option>
+					<option value="04000US21">Kentucky</option>
+					<option value="04000US22">Louisiana</option>
+					<option value="04000US23">Maine</option>
+					<option value="04000US24">Maryland</option>
+					<option value="04000US25">Massachusetts</option>
+					<option value="04000US26">Michigan</option>
+					<option value="04000US27">Minnesota</option>
+					<option value="04000US28">Mississippi</option>
+					<option value="04000US29">Missouri</option>
+					<option value="04000US30">Montana</option>
+					<option value="04000US31">Nebraska</option>
+					<option value="04000US32">Nevada</option>
+					<option value="04000US33">New Hampshire</option>
+					<option value="04000US34">New Jersey</option>
+					<option value="04000US35">New Mexico</option>
+					<option value="04000US36">New York</option>
+					<option value="04000US37">North Carolina</option>
+					<option value="04000US38">North Dakota</option>
+					<option value="04000US39">Ohio</option>
+					<option value="04000US40">Oklahoma</option>
+					<option value="04000US41">Oregon</option>
+					<option value="04000US42">Pennsylvania</option>
+					<option value="04000US72">Puerto Rico</option>
+					<option value="04000US44">Rhode Island</option>
+					<option value="04000US45">South Carolina</option>
+					<option value="04000US46">South Dakota</option>
+					<option value="04000US47">Tennessee</option>
+					<option value="04000US48">Texas</option>
+					<option value="04000US49">Utah</option>
+					<option value="04000US50">Vermont</option>
+					<option value="04000US51">Virginia</option>
+					<option value="04000US53">Washington</option>
+					<option value="04000US54">West Virginia</option>
+					<option value="04000US55">Wisconsin</option>
+					<option value="04000US56">Wyoming</option>
+				</select>
+
+				<input type="button" class="menuButton" id="state2" value="State 2">
+				<select id="state2Select">
+					<option value="04000US01">Alabama</option>
+					<option value="04000US02">Alaska</option>
+					<option value="04000US04">Arizona</option>
+					<option value="04000US05">Arkansas</option>
+					<option value="04000US06">California</option>
+					<option value="04000US08">Colorado</option>
+					<option value="04000US09">Connecticut</option>
+					<option value="04000US10">Delaware</option>
+					<option value="04000US11">DC</option>
+					<option value="04000US12">Florida</option>
+					<option value="04000US13">Georgia</option>
+					<option value="04000US15">Hawaii</option>
+					<option value="04000US16">Idaho</option>
+					<option value="04000US17">Illinois</option>
+					<option value="04000US18">Indiana</option>
+					<option value="04000US19">Iowa</option>
+					<option value="04000US20">Kansas</option>
+					<option value="04000US21">Kentucky</option>
+					<option value="04000US22">Louisiana</option>
+					<option value="04000US23">Maine</option>
+					<option value="04000US24">Maryland</option>
+					<option value="04000US25">Massachusetts</option>
+					<option value="04000US26">Michigan</option>
+					<option value="04000US27">Minnesota</option>
+					<option value="04000US28">Mississippi</option>
+					<option value="04000US29">Missouri</option>
+					<option value="04000US30">Montana</option>
+					<option value="04000US31">Nebraska</option>
+					<option value="04000US32">Nevada</option>
+					<option value="04000US33">New Hampshire</option>
+					<option value="04000US34">New Jersey</option>
+					<option value="04000US35">New Mexico</option>
+					<option value="04000US36">New York</option>
+					<option value="04000US37">North Carolina</option>
+					<option value="04000US38">North Dakota</option>
+					<option value="04000US39">Ohio</option>
+					<option value="04000US40">Oklahoma</option>
+					<option value="04000US41">Oregon</option>
+					<option value="04000US42">Pennsylvania</option>
+					<option value="04000US72">Puerto Rico</option>
+					<option value="04000US44">Rhode Island</option>
+					<option value="04000US45">South Carolina</option>
+					<option value="04000US46">South Dakota</option>
+					<option value="04000US47">Tennessee</option>
+					<option value="04000US48">Texas</option>
+					<option value="04000US49">Utah</option>
+					<option value="04000US50">Vermont</option>
+					<option value="04000US51">Virginia</option>
+					<option value="04000US53">Washington</option>
+					<option value="04000US54">West Virginia</option>
+					<option value="04000US55">Wisconsin</option>
+					<option value="04000US56">Wyoming</option>
+				</select>
+
+				<input type="button" class="menuButton" id="state3" value="State 3">
+				<select id="state3Select">
+					<option value="04000US01">Alabama</option>
+					<option value="04000US02">Alaska</option>
+					<option value="04000US04">Arizona</option>
+					<option value="04000US05">Arkansas</option>
+					<option value="04000US06">California</option>
+					<option value="04000US08">Colorado</option>
+					<option value="04000US09">Connecticut</option>
+					<option value="04000US10">Delaware</option>
+					<option value="04000US11">DC</option>
+					<option value="04000US12">Florida</option>
+					<option value="04000US13">Georgia</option>
+					<option value="04000US15">Hawaii</option>
+					<option value="04000US16">Idaho</option>
+					<option value="04000US17">Illinois</option>
+					<option value="04000US18">Indiana</option>
+					<option value="04000US19">Iowa</option>
+					<option value="04000US20">Kansas</option>
+					<option value="04000US21">Kentucky</option>
+					<option value="04000US22">Louisiana</option>
+					<option value="04000US23">Maine</option>
+					<option value="04000US24">Maryland</option>
+					<option value="04000US25">Massachusetts</option>
+					<option value="04000US26">Michigan</option>
+					<option value="04000US27">Minnesota</option>
+					<option value="04000US28">Mississippi</option>
+					<option value="04000US29">Missouri</option>
+					<option value="04000US30">Montana</option>
+					<option value="04000US31">Nebraska</option>
+					<option value="04000US32">Nevada</option>
+					<option value="04000US33">New Hampshire</option>
+					<option value="04000US34">New Jersey</option>
+					<option value="04000US35">New Mexico</option>
+					<option value="04000US36">New York</option>
+					<option value="04000US37">North Carolina</option>
+					<option value="04000US38">North Dakota</option>
+					<option value="04000US39">Ohio</option>
+					<option value="04000US40">Oklahoma</option>
+					<option value="04000US41">Oregon</option>
+					<option value="04000US42">Pennsylvania</option>
+					<option value="04000US72">Puerto Rico</option>
+					<option value="04000US44">Rhode Island</option>
+					<option value="04000US45">South Carolina</option>
+					<option value="04000US46">South Dakota</option>
+					<option value="04000US47">Tennessee</option>
+					<option value="04000US48">Texas</option>
+					<option value="04000US49">Utah</option>
+					<option value="04000US50">Vermont</option>
+					<option value="04000US51">Virginia</option>
+					<option value="04000US53">Washington</option>
+					<option value="04000US54">West Virginia</option>
+					<option value="04000US55">Wisconsin</option>
+					<option value="04000US56">Wyoming</option>
+				</select>
+			</div>
+		</div>
+
+		<div id="statePaginator"><!-- The Paginator widget is rendered here --></div>
+
+		<div id="stateTable"><!-- The DataTable widget is rendered here --></div>
+	</div>
+</div>
+
+<!-- Combo-handled YUI JS files: -->
+<script type="text/javascript" src="../../build/yuiloader/yuiloader.js"></script>
+<script type="text/javascript">
+var loader = new YAHOO.util.YUILoader();
+loader.insert({
+    require: ["reset", "fonts", "menu", "button", "connection", "paginator", "datatable"],
+    base: '../../build/',
+    //filter: 'debug',
+    allowRollup: false,
+    onSuccess: function() {
+    	var Dom = YAHOO.util.Dom,
+    		Event = YAHOO.util.Event,
+    		XHRDataSource = YAHOO.util.XHRDataSource,
+    		Button = YAHOO.widget.Button,
+    		ButtonGroup = YAHOO.widget.ButtonGroup,
+    		DataTable = YAHOO.widget.DataTable,
+    		Paginator = YAHOO.widget.Paginator,
+    		CF; // CustomFilter
+
+    	/**
+    	 * CF creates a paginated DataTable of United States population data
+    	 * which can be filtered by state and/or by gender.
+    	 */
+    	CF = {
+    		/**
+    		 * The three state Menu Buttons are stored in this array.
+    		 */
+    		menuButtons: [],
+
+    		/**
+    		 * Filter settings (gender/states) are stored here. These
+    		 * settings are then used to create the query string.
+    		 */
+    		settings: {
+    			gender: 'Both',
+    			state1: '',
+    			state2: '',
+    			state3: ''
+    		},
+
+    		/**
+    		 * Initialize all the Buttons/Menu Buttons and the DataTable.
+    		 */
+    		init: function () {
+    			var myColumnDefs,
+    				myDataSource,
+    				myConfigs,
+    				genderButtons,
+    				// Get the three United States select menu elements (of course these start out as Input Elements)
+    				menuEls = Dom.getElementsByClassName('menuButton', 'input', 'stateSelectContainer');
+
+    			// Create the three Menu Buttons for the United States select menus.
+    			Dom.batch(menuEls, this.createMenuButton);
+
+    			// Create the Radio Buttons for selecting a gender filter.
+    			genderButtons = new ButtonGroup('genderRadioContainer');
+
+    			// Subscribe to the checked change event which enables us
+    			// to save the new setting and request new data for the DataTable.
+    			genderButtons.subscribe('checkedButtonChange', CF.genderButtonsCheckedChange);
+
+    			// Define the DataTable's columns
+    			myColumnDefs = [
+    				{key: "name", label: "Statistic Name"},
+    				{key: "state1", label: "State 1", formatter: 'number'},
+    				{key: "state2", label: "State 2", formatter: 'number'},
+    				{key: "state3", label: "State 3", formatter: 'number'}
+    			];
+
+    			// Create a new DataSource
+    			myDataSource = new XHRDataSource("assets/php/dynamicfilter/data.php?");
+
+    			// data.php just happens to use JSON. Let the DataSource
+    			// know to expect JSON data.
+    			myDataSource.responseType = XHRDataSource.TYPE_JSON;
+
+    			// Define the structure of the DataSource data.
+    			myDataSource.responseSchema = {
+    				resultsList: "records",
+    				fields: [
+    					{key: "name"},
+    					{key: "state1"},
+    					{key: "state2"},
+    					{key: "state3"}
+    				],
+    				metaFields: {
+    					totalRecords: "totalRecords"
+    				}
+    			};
+
+    			// Set the DataTable configuration
+    			myConfigs = {
+    				initialLoad: false,
+    				dynamicData: true,
+    				paginator: new Paginator({
+    					rowsPerPage: 25,
+    					containers: 'statePaginator'
+    				}),
+
+    				// This configuration item is what builds the query string
+    				// passed to the DataSource.
+    				generateRequest: this.requestBuilder
+    			};
+
+    			// Create the DataTable.
+    			myDataTable = new DataTable("stateTable", myColumnDefs, myDataSource, myConfigs);
+
+    			// Define an event handler that scoops up the totalRecords which we sent as
+    			// part of the JSON data. This is then used to tell the paginator the total records.
+    			// This happens after each time the DataTable is updated with new data.
+    			myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+    				oPayload.totalRecords = oResponse.meta.totalRecords;
+    				return oPayload;
+    			}
+
+    			// Store the DataTable and DataSource for use elsewhere in this script.
+    			CF.myDataSource = myDataSource;
+    			CF.myDataTable = myDataTable;
+
+                // Initial load
+    			CF.settings.state1 = "04000US01";
+    			CF.fireDT(false);
+    		},
+
+    		/**
+    		 * Create a Menu Button. Once the Menu Button is created, attached a
+    		 * selectedMenuItemChange event listener.
+    		 * @param {Object} el
+    		 * An HTML Input Element used in creating a Menu Button from markup.
+    		 */
+    		createMenuButton: function (el) {
+    			var buttonKey = CF.menuButtons.length;
+    			CF.menuButtons[buttonKey] = new Button(el, {
+    				type: 'menu',
+    				menu: Dom.getNextSibling(el)
+    			});
+    			CF.menuButtons[buttonKey].on("selectedMenuItemChange", CF.menuButtonMenuItemChange);
+    		},
+
+    		/**
+    		 * Handler for the selectedMenuItemChange event for the Menu Buttons.
+    		 * This changes the label on the Menu buttons. Then, stores the value
+    		 * of the new selected Menu Item in the CF.settings object. Each of the
+    		 * Menu Buttons has an id that corresponds to one of the three United States
+    		 * columns in the DataTable. This id is used as the key for the CF.settings.[STATE]
+    		 * object. Lastly, fire a request for new data for the DataTable. Pass in a boolean
+    		 * false so that the pagination settings are retained.
+    		 * @param {Object} e
+    		 */
+    		menuButtonMenuItemChange: function (e) {
+    			var oMenuItem = e.newValue;
+    			this.set("label", ("<em class=\"yui-button-label\">" +
+    				oMenuItem.cfg.getProperty("text") + "<\/em>"));
+    			CF.settings[this.get('id')] = oMenuItem.value;
+    			CF.fireDT(false);
+    		},
+
+    		/**
+    		 * Handler for the checkedButtonChange event for the Gender Radio Buttons.
+    		 * This stores the new value in the CF.settings.gender variable. Then
+    		 * it fires a request for new DataTable data passing in a boolean true
+    		 * so that the pagination is reset to the first recordOffset (which is 0).
+    		 * @param {Object} e
+    		 */
+    		genderButtonsCheckedChange: function(e) {
+    			CF.settings.gender = e.newValue.get('label');
+    			CF.fireDT(true);
+    		},
+
+    		/**
+    		 * This method is passed into the DataTable's "generateRequest" configuration
+    		 * setting overriding the default generateRequest function. This function puts
+    		 * together a query string which is passed to the DataSource each time a new
+    		 * set of data is requested. All of the custom sorting and filtering options
+    		 * added in by this script are gathered up here and inserted into the
+    		 * query string.
+    		 * @param {Object} oState
+    		 * @param {Object} oSelf
+    		 * These parameters are explained in detail in DataTable's API
+    		 * documentation. It's important to note that oState contains
+    		 * a reference to the paginator and the pagination state and
+    		 * the column sorting state as well.
+    		 */
+    		requestBuilder: function (oState, oSelf) {
+    			/* We aren't initializing sort and dir variables. If you are
+    			using column sorting built into the DataTable, use this
+    			set of variable initializers.
+    			var sort, dir, startIndex, results; */
+    			var startIndex, results;
+
+    			oState = oState || {pagination: null, sortedBy: null};
+
+    			/* If using column sorting built into DataTable, these next two lines
+    			will properly set the current _sortedBy_ column and the _sortDirection_
+    			sort = (oState.sortedBy) ? oState.sortedBy.key : oSelf.getColumnSet().keys[0].getKey();
+    			dir = (oState.sortedBy && oState.sortedBy.dir === DataTable.CLASS_DESC) ? "desc" : "asc"; */
+    			startIndex = (oState.pagination) ? oState.pagination.recordOffset : 0;
+    			results = (oState.pagination) ? oState.pagination.rowsPerPage : null;
+
+    			return  "&results=" 	+ results +
+    					"&startIndex=" 	+ startIndex +
+    				    "&state[1]=" 	+ CF.settings.state1 +
+    				    "&state[2]=" 	+ CF.settings.state2 +
+    				    "&state[3]=" 	+ CF.settings.state3 +
+    				    "&gender=" 		+ CF.settings.gender;
+    		},
+
+    		/**
+    		 * This method is used to fire off a request for new data for the
+    		 * DataTable from the DataSource. The new state of the DataTable,
+    		 * after the request for new data, will be determined here.
+    		 * @param {Boolean} resetRecordOffset
+    		 */
+    		fireDT: function (resetRecordOffset) {
+                var oState = CF.myDataTable.getState(),
+                	request,
+                	oCallback;
+
+    			/* We don't always want to reset the recordOffset.
+    			If we want the Paginator to be set to the first page,
+    			pass in a value of true to this method. Otherwise, pass in
+    			false or anything falsy and the paginator will remain at the
+    			page it was set at before.*/
+                if (resetRecordOffset) {
+                	oState.pagination.recordOffset = 0;
+                }
+
+    			/* If the column sort direction needs to be updated, that may be done here.
+    			It is beyond the scope of this example, but the DataTable::sortColumn() method
+    			has code that can be used with some modification. */
+
+    			/*
+    			This example uses onDataReturnSetRows because that method
+    			will clear out the old data in the DataTable, making way for
+    			the new data.*/
+    			oCallback = {
+    			    success : CF.myDataTable.onDataReturnSetRows,
+    			    failure : CF.myDataTable.onDataReturnSetRows,
+                    argument : oState,
+    			    scope : CF.myDataTable
+    			};
+
+    			// Generate a query string
+                request = CF.myDataTable.get("generateRequest")(oState, CF.myDataTable);
+
+    			// Fire off a request for new data.
+    			CF.myDataSource.sendRequest(request, oCallback);
+    		}
+    	};
+
+    	CF.init();
+}});
+</script>
+</body>
+</html>

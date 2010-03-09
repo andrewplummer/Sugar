@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Button activeElement Test</title>
+
+	<link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts-min.css" />
+	<link rel="stylesheet" type="text/css" href="../../../build/menu/assets/skins/sam/menu.css" />
+	<link rel="stylesheet" type="text/css" href="../../../build/button/assets/skins/sam/button.css" />
+	<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css">
+	
+	<style type="text/css">
+
+	    #button-example-form fieldset {
+
+	        border: 2px groove #ccc;
+	        margin: .5em;
+	        padding: .5em;
+
+	    }
+
+	    #menubutton3menu,
+	    #menubutton4menu {
+
+	        position: absolute;
+	        visibility: hidden;
+	        border: solid 1px #000;
+	        padding: .5em;
+	        background-color: #ccc;
+
+	    }
+
+	    #button-example-form-postdata {
+
+	        border: dashed 1px #666;
+	        background-color: #ccc;
+	        padding: 1em;
+
+	    }
+
+	    #button-example-form-postdata h2 {
+
+	        margin: 0 0 .5em 0;
+	        padding: 0;
+	        border: none;
+
+	    }
+
+	</style>	
+
+	<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../../build/container/container_core-min.js"></script>
+	<script type="text/javascript" src="../../../build/menu/menu-min.js"></script>
+	<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+	<script type="text/javascript" src="../../../build/button/button-min.js"></script>
+	<script type="text/javascript" src="../../../build/dragdrop/dragdrop-min.js"></script>
+	<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+
+	<script type="text/javascript">
+
+		(function () {
+		
+			var Event = YAHOO.util.Event,
+				Dom = YAHOO.util.Dom;
+
+
+			Event.onDOMReady(function () {
+
+				var logReader = new YAHOO.widget.LogReader();
+
+
+				//	Create a Button using an existing <input> and <select> element.
+				//	Because the "type" attribute of the <input> element was set to 
+				//	"submit" - clicking on any MenuItem in the Button's Menu will
+				//	automatically submit the Button's parent <form>.
+
+				var oMenuButton1 = new YAHOO.widget.Button("menubutton1", 
+										{ type: "menu", menu: "menubutton1select" });
+
+
+				//	"render" event handler for the Button's Menu
+
+				var onMenuRender = function (p_sType, p_aArgs) {
+
+					this.addItems([
+
+						{ text: "Four", value: 4 },
+						{ text: "Five", value: 5 }
+
+					]);
+
+				};
+
+
+				//	Add some additional MenuItems to the Button's Menu once it has 
+				//	been rendered
+
+				oMenuButton1.getMenu().subscribe("render", onMenuRender);
+
+
+
+				//	"submit" event handler for the <form>
+
+				var onExampleSubmit = function(p_oEvent) {
+
+					var bSubmit = 
+							window.confirm("Are you sure you want to submit the form?");
+
+					if(!bSubmit) {
+						Event.preventDefault(p_oEvent);
+					}
+
+				};
+
+
+				//	Add a "submit" event handler to the <form> to confirm that 
+				//	clicking on one of the MenuItems in the Button's Menu 
+				//	submits the <form>.
+
+				Event.on("button-example-form", "submit", onExampleSubmit);
+
+
+				Event.on("text-field-1", "keydown", function (event) {
+
+					YAHOO.log("keydown: " + Event.getCharCode(event));
+				
+				});
+
+			});
+	
+		}());
+
+	</script>
+
+</head>
+
+<body class=" yui-skin-sam">
+
+<h1>Button activeElement Test</h1>
+<p>Test case for <a href="http://yuilibrary.com/projects/yui2/ticket/2528245">bug 2528245</a>.</p>
+<p>
+Clicking on the text box when the Button's Menu is open should result in the Menu closing, 
+the Button blurring and the text box being focused and becoming the activeElement.
+After mousing down on the text box, it should have a black outline and 
+should fire key events.  
+</p>
+
+<form id="button-example-form" name="button-example-form" method="post">
+
+    <input type="submit" id="menubutton1" name="menubutton1_button" value="Menu Button 1">
+    <select id="menubutton1select" name="menubutton1select">
+        <option value="0">One</option>
+        <option value="1">Two</option>
+        <option value="2">Three</option>                
+    </select>
+
+	<input type="text" id="text-field-1" name="text-field-1">
+
+</form>
+
+</body>
+</html>

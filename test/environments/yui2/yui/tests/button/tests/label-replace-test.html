@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Button Label Replace Test</title>
+
+	<link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts-min.css">
+	<link rel="stylesheet" type="text/css" href="../../../build/button/assets/skins/sam/button.css">
+	<link rel="stylesheet" type="text/css" href="../../../build/menu/assets/skins/sam/menu.css">
+
+	<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+	<script type="text/javascript" src="../../../build/button/button-min.js"></script>
+
+	<script type="text/javascript">
+	
+		YAHOO.util.Event.onDOMReady(function () {
+		
+			var oButton1 = new YAHOO.widget.Button("checkbox-1", { replaceLabel: true });
+			var oButton2 = new YAHOO.widget.Button("checkbox-2", { replaceLabel: true });
+			var oButton3 = new YAHOO.widget.Button("checkbox-3", { replaceLabel: true });
+			
+			var oButton4 = new YAHOO.widget.Button("radio-1", { replaceLabel: true });
+			var oButton5 = new YAHOO.widget.Button("radio-2", { replaceLabel: true });
+			var oButton6 = new YAHOO.widget.Button("radio-3", { replaceLabel: true });			
+		
+			YAHOO.util.Event.on("destroy-1", "click", function (event) {
+
+				oButton1.destroy();
+				oButton2.destroy();
+				oButton3.destroy();
+				oButton4.destroy();
+				oButton5.destroy();
+				oButton6.destroy();   
+
+			});		
+			
+		});
+	
+	</script>
+
+</head>
+<body class="yui-skin-sam">
+
+	<h1>Button Label Replace Test</h1>
+	<p>Test case for <a href="http://yuilibrary.com/projects/yui2/ticket/1897085">bug 1897085</a>.</p>
+	<p>The text label for each Button should be the text of its corresponding <code>&#60;label&#60;</code>.</p>
+
+	<form id="form-1" method="post">
+
+		<fieldset>
+			<legend>Checkboxes</legend>
+			<label for="checkbox-1">Checkbox 1</label>
+			<input type="checkbox" name="checkbox-1" id="checkbox-1" value="1">
+
+			<label for="checkbox-2">Checkbox 2</label>
+			<input type="checkbox" name="checkbox-2" id="checkbox-2" value="2">
+
+			<label for="checkbox-3">Checkbox 3</label>
+			<input type="checkbox" name="checkbox-3" id="checkbox-3" value="3">
+		</fieldset>
+
+		<fieldset>	
+			<legend>Radio Buttons</legend>
+			<label for="radio-1">Radio 1</label>
+			<input type="radio" name="radio-field" id="radio-1" value="1">
+
+			<label for="radio-2">Radio 2</label>
+			<input type="radio" name="radio-field" id="radio-2" value="2">
+
+			<label for="radio-3">Radio 3</label>
+			<input type="radio" name="radio-field" id="radio-3" value="3">				
+		</fieldset>
+				
+		<input type="button" name="destroy-1" id="destroy-1" value="Destroy All">
+	
+	</form>
+
+</body>
+</html>

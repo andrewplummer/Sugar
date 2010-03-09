@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Apply scope to label functions</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		width: 500px;
+		height: 350px;
+		margin-bottom: 10px;
+	}
+	.yui-dt-table {width: 500px;}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Apply scope to label functions</h1>
+
+<div class="exampleIntro">
+	<p>A <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> and a <a href="http://developer.yahoo.com/yui/datatable/">DataTable Control</a> may share a <a href="http://developer.yahoo.com/yui/datasource/">DataSource</a> to display the same data.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">Personal Expenses</span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+	var CustomGraph = function()
+	{
+		this.text = "*************************************";
+		this.chart;
+		this.dataTipFunction = CustomGraph.prototype.dataTipFunction;
+		this.monthlyExpenses =
+		[
+			{ month: "January", car: 265.35, power:60.00, cable:101.45, entertainment:304.33},
+			{ month: "February", car: 265.35, power:65.00, cable:123.87, entertainment:255.65},
+			{ month: "March", car: 265.35, power:75.34, cable:101.45, entertainment:284.85},
+			{ month: "April", car: 265.35, power:88.45, cable:115.64, entertainment:245.90},
+			{ month: "May", car: 265.35, power:98.47, cable:101.45, entertainment:265.34},
+			{ month: "June", car: 265.35, power:101.35, cable:108.64, entertainment:301.23}
+		];	
+		this.styleDefinition =
+		{
+			font:{color:0x663333},
+			background:{color:0xDCAD70},
+			border:{color:0x663333, size:2},
+			xAxis:{color:0x663333},
+			yAxis:{color:0x663333, minorTicks:{display:"none"}, majorTicks:{display:"none"}, majorGridLines:{color:0x663333}}
+			
+		}
+	}
+	
+	CustomGraph.prototype.getDataSource = function()
+	{
+		var myDataSource = new YAHOO.util.DataSource( this.monthlyExpenses );
+		myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+		myDataSource.responseSchema =
+		{
+			fields: [ "month", "car", "power", "entertainment", "cable" ]
+		};
+		return myDataSource;	
+	}
+	
+	CustomGraph.prototype.formatCurrencyAxisLabel = function( value )
+	{
+		return this.numberToCurrency(value);
+	}
+
+	CustomGraph.prototype.numberToCurrency = function(value)
+	{
+		return YAHOO.util.Number.format( value,
+		{
+			prefix: "$",
+			thousandsSeparator: ",",
+			decimalPlaces: 2
+		});	
+	}		
+
+	CustomGraph.prototype.fixedExpensesDataTipFunction = function(item, index, series)
+	{
+		var toolTipText = this.text;
+		toolTipText += "\n" + series.displayName + " payment for " + item.month;
+		toolTipText += "\n" + this.formatCurrencyAxisLabel( item[series.yField] );
+		toolTipText += "\n" + this.text;
+		return toolTipText;	
+	}
+
+	CustomGraph.prototype.dataTipFunction = function( item, index, series )
+	{
+		var expense = series.yField;
+		var num = item[expense];
+		return this.getDataTipText(expense, item.month, num);
+	}
+	
+	CustomGraph.prototype.getDataTipText = function(expense, month, amount)
+	{
+		var toolTipText = this.text;
+		toolTipText += "\nYour " + month + " " + expense;
+		var limit;
+		switch(expense)
+		{
+			case "entertainment" :
+				toolTipText += " expenses are";
+				toolTipText += amount <= 300 ? "\n in an acceptable range: \n" : "\n  too high. \nGo out less:\n";
+			break;
+			case "cable" :
+				toolTipText += " bill is";
+				toolTipText += amount <= 110 ? "\n in an acceptable range: \n" : "\n  too high. \nOrder less movies:\n";
+			break;
+			case "power" :
+				toolTipText += " bill is";
+				toolTipText += amount <= 80 ? "\n in an acceptable range: \n" : "\n too high. \nTurn down your AC:\n";
+			break;
+			
+		}
+		toolTipText += this.formatCurrencyAxisLabel(amount);
+		toolTipText += "\n" + this.text;
+		
+		return toolTipText;
+	}
+
+	CustomGraph.prototype.getVerticalAxis = function()
+	{
+		var currencyAxis = new YAHOO.widget.NumericAxis();
+		currencyAxis.alwaysShowZero = false;
+		currencyAxis.labelFunction = {func:this.formatCurrencyAxisLabel, scope:this};	
+
+		return currencyAxis;
+	}
+	
+	CustomGraph.prototype.getSeriesDefs = function()
+	{
+		var seriesDef =
+		[
+			{ 
+				displayName: "Car", 
+				yField: "car", 
+				style:{skin:"DiamondSkin", color:0x006600},
+				dataTipFunction:{func:this.fixedExpensesDataTipFunction, scope:this}
+			 },
+			{ 	
+				displayName: "power", 
+				yField: "power", 
+				style:{color:0x8899dd}
+			},
+			{
+				displayName: "Cable",
+				yField: "cable",
+				style:{color:0xee6600}
+			},
+			{
+				displayName: "Entertainment",
+				yField: "entertainment",
+				style:{color:0x6e5000}
+			}
+		];	
+
+		return seriesDef;
+	}
+	
+	CustomGraph.prototype.drawChart = function(myDiv)
+	{
+		var myAtts = {xField:"month", version:9.28, expressInstall: "assets/expressinstall.swf"};
+		myAtts.dataTipFunction = {func:this.dataTipFunction, scope:this};
+		myAtts.series = this.getSeriesDefs();
+		myAtts.yAxis = this.getVerticalAxis();
+		myAtts.style = this.styleDefinition;
+		this.chart = new YAHOO.widget.LineChart(myDiv, this.getDataSource(), myAtts);
+	}	
+	
+	var myGraph = new CustomGraph();
+	myGraph.drawChart("chart");
+	
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

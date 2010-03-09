@@ -1,0 +1,1492 @@
+<html>
+<head>
+<title>yuitest tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css" />     
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />     
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/event-simulate/event-simulate.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/json/json.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+
+</head>
+<body>
+<h1>yuitest tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" /></p>
+<script type="text/javascript">
+
+YAHOO.namespace("test");
+
+YAHOO.test.YUITest_test = (function(){
+
+    //shortcuts
+    var Assert /*:Object*/ = YAHOO.util.Assert;
+    var ArrayAssert /*:Object*/ = YAHOO.util.ArrayAssert;
+    var ObjectAssert /*:Object*/ = YAHOO.util.ObjectAssert;
+    var UserAction /*:Object*/ = YAHOO.util.UserAction;
+    var YUE /*:Object*/ = YAHOO.util.Event;
+    var YUD /*:Object*/ = YAHOO.util.Dom;
+
+    //-------------------------------------------------------------------------
+    // Generic Event Test Case
+    //-------------------------------------------------------------------------
+    function GenericEventTestCase(type /*:String*/){
+        GenericEventTestCase.superclass.constructor.call(this);
+        this.eventType = type;
+        this.name = "Event '" + type + "' Tests";
+        this.result = null;
+        this.element = null;
+        this.elementTagName = "div";
+    }
+
+    YAHOO.lang.extend(GenericEventTestCase, YAHOO.tool.TestCase, {
+    
+        //---------------------------------------------------------------------
+        // Setup and teardown of test harnesses
+        //---------------------------------------------------------------------
+        
+        /*
+         * Sets up several event handlers used to test UserAction mouse events.
+         */
+        setUp : function() /*:Void*/{
+        
+            //create the element
+            this.element = document.createElement(this.elementTagName);
+            document.body.appendChild(this.element);
+            
+            //reset the result
+            this.result = null;
+            
+            //assign event handler
+            YUE.addListener(this.element, this.eventType, this.handleEvent, this, true);
+        },
+        
+        /*
+         * Removes event handlers that were used during the test.
+         */
+        tearDown : function() /*:Void*/{
+        
+            //remove the element
+            document.body.removeChild(this.element);
+
+            //remove event handler
+            YUE.removeListener(this.element, this.eventType, this.handleEvent, this, true);
+        },
+        
+        //---------------------------------------------------------------------
+        // Event handler
+        //---------------------------------------------------------------------
+        
+        /*
+         * Uses to trap and assign the event object for interrogation.
+         * @param {Event} event The event object created from the event.
+         */
+        handleEvent : function(event /*:Event*/) /*:Void*/ {
+            this.result = event;
+        }
+    });
+    
+    //-------------------------------------------------------------------------
+    // MouseButtonEvent Test Case
+    //-------------------------------------------------------------------------
+
+    function MouseButtonEventTestCase(type /*:String*/){
+        MouseButtonEventTestCase.superclass.constructor.call(this, type);
+    }
+
+    YAHOO.lang.extend(MouseButtonEventTestCase, GenericEventTestCase, {
+            
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+                
+        /*
+         * Tests with default options.
+         */
+        testDefault : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element);
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.areSame(window, this.result.view, "View is incorrect.");
+            Assert.areEqual(1, this.result.detail, "Details is incorrect.");
+            //Assert.areEqual(0, this.result.button, "Button is incorrect.");
+            
+        },
+        
+        /*
+         * Tests when using the right mouse button.
+         */
+        testRightBtn : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { button: 2 });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.areSame(window, this.result.view, "View is incorrect.");
+            Assert.areEqual(1, this.result.detail, "Details is incorrect.");
+            //Assert.areEqual(2, this.result.button, "Button is incorrect.");
+        },
+        
+        /*
+         * Tests when using coordinates.
+         */
+        testCoords : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { clientX: 100, clientY: 150, screenX: 200, screenY: 250 });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.areSame(window, this.result.view, "View is incorrect.");
+            Assert.areEqual(1, this.result.detail, "Details is incorrect.");
+            //Assert.areEqual(0, this.result.button, "Button is incorrect.");
+            Assert.areEqual(100, this.result.clientX, "ClientX is incorrect.");
+            Assert.areEqual(150, this.result.clientY, "ClientX is incorrect.");
+            Assert.areEqual(200, this.result.screenX, "ScreenX is incorrect.");
+            Assert.areEqual(250, this.result.screenY, "ScreenY is incorrect.");
+        },
+        
+        /*
+         * Tests UserAction.click() when using CTRL key.
+         */
+        testCtrlKey : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { ctrlKey: true });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.areSame(window, this.result.view, "View is incorrect.");
+            Assert.areEqual(1, this.result.detail, "Details is incorrect.");
+            //Assert.areEqual(0, this.result.button, "Button is incorrect.");
+            Assert.isTrue(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");
+        },
+        
+        /*
+         * Tests when using ALT key.
+         */
+        testAltKey : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { altKey: true });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.areSame(window, this.result.view, "View is incorrect.");
+            Assert.areEqual(1, this.result.detail, "Details is incorrect.");
+            //Assert.areEqual(0, this.result.button, "Button is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isTrue(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");
+        },
+        
+        /*
+         * Tests when using Shift key.
+         */
+        testShiftKey : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { shiftKey: true });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.areSame(window, this.result.view, "View is incorrect.");
+            Assert.areEqual(1, this.result.detail, "Details is incorrect.");
+            //Assert.areEqual(0, this.result.button, "Button is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isTrue(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");
+        },
+        
+        /*
+         * Tests when using Meta key.
+         */
+        testMetaKey : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { metaKey: true });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.areSame(window, this.result.view, "View is incorrect.");
+            Assert.areEqual(1, this.result.detail, "Details is incorrect.");
+            //Assert.areEqual(0, this.result.button, "Button is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isTrue(this.result.metaKey, "MetaKey is incorrect.");
+        }    
+    
+    });
+    
+    //-------------------------------------------------------------------------
+    // MouseMovementEvent Test Case
+    //-------------------------------------------------------------------------
+    
+    function MouseMovementEventTestCase(type /*:String*/) {
+        MouseMovementEventTestCase.superclass.constructor.call(this,type);    
+    }
+    
+    YAHOO.lang.extend(MouseMovementEventTestCase, MouseButtonEventTestCase, {
+    
+        /*
+         * Tests that the relatedTarget property is correct.
+         */
+        testRelatedTarget : function () /*:Void*/{
+        
+            //fire the click event
+            UserAction[this.eventType](this.element, { relatedTarget: document.body });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.areSame(window, this.result.view, "View is incorrect.");
+            Assert.areEqual(1, this.result.detail, "Details is incorrect.");
+            //Assert.areEqual(0, this.result.button, "Button is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");        
+            Assert.areSame(document.body, YUE.getRelatedTarget(this.result), "RelatedTarget is incorrect.");        
+        }
+    
+    
+    });
+    
+
+    //-------------------------------------------------------------------------
+    // KeyEvent Test Case
+    //-------------------------------------------------------------------------
+    
+    function KeyEventTestCase(type /*:String*/) {
+        KeyEventTestCase.superclass.constructor.call(this,type);
+    }
+    
+    YAHOO.lang.extend(KeyEventTestCase, GenericEventTestCase, {
+    
+        /*
+         * Tests that the default properties are correct.
+         */
+        testDefault : function () /*:Void*/{
+        
+            //fire the click event
+            UserAction[this.eventType](this.element);
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");        
+      
+        },
+        
+        /*
+         * Tests UserAction.click() when using CTRL key.
+         */
+        testCtrlKey : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { ctrlKey: true });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.isTrue(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");
+        },
+        
+        /*
+         * Tests when using ALT key.
+         */
+        testAltKey : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { altKey: true });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isTrue(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");
+        },
+        
+        /*
+         * Tests when using Shift key.
+         */
+        testShiftKey : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { shiftKey: true });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isTrue(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");
+        },
+        
+        /*
+         * Tests when using Meta key.
+         */
+        testMetaKey : function () /*:Void*/{        
+            
+            //fire the click event
+            UserAction[this.eventType](this.element, { metaKey: true });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isTrue(this.result.metaKey, "MetaKey is incorrect.");
+        }            
+    
+    
+    });    
+    
+    //-------------------------------------------------------------------------
+    // KeyDirection Test Case
+    //-------------------------------------------------------------------------    
+    
+    function KeyDirectionEventTestCase(type /*:String*/){
+        KeyDirectionEventTestCase.superclass.constructor.call(this, type);
+    }
+    
+    YAHOO.lang.extend(KeyDirectionEventTestCase, KeyEventTestCase, {
+    
+        /*
+         * Tests that the default properties are correct.
+         */
+        testKeyCode : function () /*:Void*/{
+        
+            //fire the click event
+            UserAction[this.eventType](this.element, { keyCode: 97 });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");        
+            Assert.areEqual(97, this.result.keyCode, "KeyCode is incorrect.");
+        }
+    
+    });
+    
+    //-------------------------------------------------------------------------
+    // TextEvent Test Case
+    //-------------------------------------------------------------------------
+    
+    function TextEventTestCase(type /*:String*/){
+        TextEventTestCase.superclass.constructor.call(this, type);
+    }
+    
+    YAHOO.lang.extend(TextEventTestCase, KeyEventTestCase, {
+    
+        /*
+         * Tests that the default properties are correct.
+         */
+        testCharCode : function () /*:Void*/{
+        
+            //fire the click event
+            UserAction[this.eventType](this.element, { charCode: 97 });
+
+            //test the data coming back
+            Assert.isObject(this.result, "No event object created.");
+            Assert.areSame(this.element, YUE.getTarget(this.result), "Target is not correct.");
+            Assert.areEqual(this.eventType, this.result.type, "Event type is incorrect.");
+            Assert.isTrue(this.result.bubbles, "bubbles is incorrect.");
+            Assert.isTrue(this.result.cancelable, "Cancelable is incorrect.");
+            Assert.isFalse(this.result.ctrlKey, "CtrlKey is incorrect.");
+            Assert.isFalse(this.result.altKey, "AltKey is incorrect.");
+            Assert.isFalse(this.result.shiftKey, "ShiftKey is incorrect.");
+            Assert.isFalse(this.result.metaKey, "MetaKey is incorrect.");        
+            Assert.areEqual(97, YUE.getCharCode(this.result), "CharCode is incorrect.");
+        }
+    
+    });
+    
+    //-------------------------------------------------------------------------
+    // Overall master suite
+    //-------------------------------------------------------------------------
+    
+    var suite /*:YAHOO.tool.TestSuite*/ 
+        = new YAHOO.tool.TestSuite("YuiTest Tests");
+        
+    //-------------------------------------------------------------------------
+    // Asynchronous Tests
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Asynchronous Tests",
+        
+        _should : {
+            fail : {
+                testWaitSimpleFail : true,
+                testWaitComplexFail : true,
+                testWaitComplexFail2 : true,
+                testWaitTimeout: true
+            }
+        
+        },
+        
+        setUp : function(){
+            this.value = 5;
+        },
+        
+        tearDown : function(){
+            delete this.value;
+        },
+        
+        testWaitSimplePass : function (){
+        
+            this.wait(function(){
+                Assert.areEqual(5, this.value, "Value should be 5.");
+            }, 500);
+        
+        },
+        
+        testWaitSimpleFail : function (){
+        
+            this.wait(function(){
+                Assert.areEqual(6, this.value, "Value should be 5.");
+            }, 500);
+        
+        },
+        
+        testWaitComplexPass : function (){
+        
+            var that = this;
+            setTimeout(function(){            
+                that.resume(function(){
+                    Assert.areEqual(5, this.value, "Value should be 6.");
+                });            
+            }, 500);
+        
+            this.wait();
+            
+        },
+        
+        testWaitComplexPass2 : function (){
+        
+            var that = this;
+            setTimeout(function(){            
+                that.resume(function(){
+                    Assert.areEqual(5, this.value, "Value should be 6.");
+                });            
+            }, 500);
+        
+            this.wait(1000);
+            
+        },
+        
+        testWaitComplexFail : function (){
+        
+            var that = this;
+            setTimeout(function(){            
+                that.resume(function(){
+                    Assert.areEqual(6, this.value, "Value should be 6.");
+                });            
+            }, 500);
+
+            this.wait();
+           
+        },
+        
+        testWaitComplexFail2 : function (){
+        
+            var that = this;
+            setTimeout(function(){            
+                that.resume(function(){
+                    Assert.areEqual(6, this.value, "Value should be 6.");
+                });            
+            }, 5000);
+
+            this.wait(1000);
+           
+        },
+        
+        testWaitTimeout: function(){
+            this.wait();   //should pause 10 seconds
+        }
+        
+    
+    }));
+    
+    //-------------------------------------------------------------------------
+    // Assert Tests
+    //-------------------------------------------------------------------------
+
+    //the user action suite
+    var reportSuite /*:YAHOO.tool.TestSuite*/ 
+        = new YAHOO.tool.TestSuite("Test Reporting Tests");
+    suite.add(reportSuite);
+    
+    reportSuite.add(new YAHOO.tool.TestCase({
+ 
+        name: "Test Results Formatting Tests",
+        
+        setUp : function(){
+            this.report = {
+                passed: 2,
+                failed: 2,
+                ignored: 1,
+                total: 5,
+                type: "report",
+                name: "YUI Test Results",
+                
+                "Some Suite":{
+                    passed: 2,
+                    failed: 2,
+                    ignored: 1,
+                    total: 5,
+                    type: "testsuite",
+                    name: "Some Suite",
+                    
+                    "Some Tests": {
+                        passed: 2,
+                        failed: 2,
+                        ignored: 1,
+                        total: 5,
+                        type: "testcase",
+                        name: "Some Tests",
+                        
+                        test1:{
+                            result: "pass",
+                            message: "Test passed.",
+                            type: "test",
+                            name: "test1"
+                        },
+                    
+                        test2:{
+                            result: "pass",
+                            message: "Test passed.",
+                            type: "test",
+                            name: "test2"
+                        },
+                    
+                        test3:{
+                            result: "ignore",
+                            message: "Test ignored.",
+                            type: "test",
+                            name: "test3"
+                        },
+                    
+                        test4:{
+                            result: "fail",
+                            message: "Test failed.",
+                            type: "test",
+                            name: "test4"
+                        },
+                    
+                        test5:{
+                            result: "fail",
+                            message: "Test failed.",
+                            type: "test",
+                            name: "test5"
+                        }                    
+                    }
+                }
+            }
+        },
+        
+        tearDown : function(){
+            delete this.report;
+        },
+        
+        
+        /*testJsonFormat : function(){
+            var json = YAHOO.tool.TestFormat.JSON(this.report);
+            var expectedJson = 
+            "{\"passed\":2,\"failed\":2,\"ignored\":1,\"total\":5,\"type\":\"report\",\"name\":\"YUI Test Results\"," +
+                "\"Some Suite\":{\"passed\":2,\"failed\":2,\"ignored\":1,\"total\":5,\"type\":\"testsuite\",\"name\":\"Some Suite\"," +
+                    "\"Some Tests\":{\"passed\":2,\"failed\":2,\"ignored\":1,\"total\":5,\"type\":\"testcase\",\"name\":\"Some Tests\"," +
+                        "\"test1\":{\"result\":\"pass\",\"message\":\"Test passed.\",\"type\":\"test\",\"name\":\"test1\"}," +
+                        "\"test2\":{\"result\":\"pass\",\"message\":\"Test passed.\",\"type\":\"test\",\"name\":\"test2\"}," +
+                        "\"test3\":{\"result\":\"ignore\",\"message\":\"Test ignored.\",\"type\":\"test\",\"name\":\"test3\"}," +
+                        "\"test4\":{\"result\":\"fail\",\"message\":\"Test failed.\",\"type\":\"test\",\"name\":\"test4\"}," +
+                        "\"test5\":{\"result\":\"fail\",\"message\":\"Test failed.\",\"type\":\"test\",\"name\":\"test5\"}" +                 
+                    "}" +
+                "}" +
+            "}";
+            Assert.areEqual(expectedJson, json, "JSON formatting is incorrect.");        
+        },*/
+        
+        testXmlFormat : function(){
+            var xml = YAHOO.tool.TestFormat.XML(this.report);
+            var expectedXml = 
+                "<report name=\"YUI Test Results\" passed=\"2\" failed=\"2\" ignored=\"1\" total=\"5\">" +
+                    "<testsuite name=\"Some Suite\" passed=\"2\" failed=\"2\" ignored=\"1\" total=\"5\">" +
+                        "<testcase name=\"Some Tests\" passed=\"2\" failed=\"2\" ignored=\"1\" total=\"5\">" +
+                            "<test name=\"test1\" result=\"pass\" message=\"Test passed.\"></test>" +
+                            "<test name=\"test2\" result=\"pass\" message=\"Test passed.\"></test>" +
+                            "<test name=\"test3\" result=\"ignore\" message=\"Test ignored.\"></test>" +
+                            "<test name=\"test4\" result=\"fail\" message=\"Test failed.\"></test>" +
+                            "<test name=\"test5\" result=\"fail\" message=\"Test failed.\"></test>" +
+                        "</testcase>" +
+                    "</testsuite>" + 
+                "</report>";
+            
+            Assert.areEqual(expectedXml, xml, "XML formatting is incorrect.");
+        
+        }
+    }));
+    
+    reportSuite.add(new YAHOO.tool.TestCase({
+ 
+        name: "Test Results Reporting Tests",  
+
+        tearDown: function(){
+            this.reporter.destroy();
+            delete this.reporter;
+        },
+        
+        testConstructorWithUrl: function(){
+            var url = "http://www.yahoo.com/";
+            this.reporter = new YAHOO.tool.TestReporter(url);
+            
+            Assert.areEqual(url, this.reporter.url, "URL was not set correctly.");
+            Assert.areEqual(YAHOO.tool.TestFormat.XML, this.reporter.format, "Formatter is not set correctly.");        
+        },
+        
+        testConstructorWithBoth: function(){
+            var url = "http://www.yahoo.com/";
+            this.reporter = new YAHOO.tool.TestReporter(url, YAHOO.tool.TestFormat.JSON);
+            
+            Assert.areEqual(url, this.reporter.url, "URL was not set correctly.");
+            Assert.areEqual(YAHOO.tool.TestFormat.JSON, this.reporter.format, "Formatter is not set correctly.");        
+        },
+        
+        testReporting: function(){
+            var url = "http://www.yahoo.com/";
+            var report = {
+                passed: 2,
+                failed: 2,
+                ignored: 1,
+                total: 5,
+                type: "report",
+                name: "YUI Test Results",
+                
+                "Some Suite":{
+                    passed: 2,
+                    failed: 2,
+                    ignored: 1,
+                    total: 5,
+                    type: "testsuite",
+                    name: "Some Suite",
+                    
+                    "Some Tests": {
+                        passed: 2,
+                        failed: 2,
+                        ignored: 1,
+                        total: 5,
+                        type: "testcase",
+                        name: "Some Tests",
+                        
+                        test1:{
+                            result: "pass",
+                            message: "Test passed.",
+                            type: "test",
+                            name: "test1"
+                        }                  
+                    }
+                }
+            };
+            this.reporter = new YAHOO.tool.TestReporter(url);
+            this.reporter.report(report, false);
+            
+            Assert.isNotNull(this.reporter._iframe, "Iframe wasn't created.");
+            Assert.isNotNull(this.reporter._form, "Form wasn't created.");
+            Assert.isObject(this.reporter._form.useragent, "Useragent field wasn't created.");
+            Assert.areEqual(navigator.userAgent, this.reporter._form.useragent.value, "Useragent field is incorrect.");
+            Assert.isObject(this.reporter._form.timestamp, "Timestamp field wasn't created.");
+            Assert.isTrue(this.reporter._form.timestamp.value.length > 0, "Timestamp field is not filled in.");
+            Assert.isObject(this.reporter._form.results, "Results field wasn't created.");            
+            Assert.areEqual(YAHOO.tool.TestFormat.XML(report), this.reporter._form.results.value, "Form field is not filled in.");
+        },
+    
+        testReportingWithFields: function(){
+            var url = "http://www.yahoo.com/";
+            var report = {
+                passed: 2,
+                failed: 2,
+                ignored: 1,
+                total: 5,
+                type: "report",
+                name: "YUI Test Results",
+                
+                "Some Suite":{
+                    passed: 2,
+                    failed: 2,
+                    ignored: 1,
+                    total: 5,
+                    type: "testsuite",
+                    name: "Some Suite",
+                    
+                    "Some Tests": {
+                        passed: 2,
+                        failed: 2,
+                        ignored: 1,
+                        total: 5,
+                        type: "testcase",
+                        name: "Some Tests",
+                        
+                        test1:{
+                            result: "pass",
+                            message: "Test passed.",
+                            type: "test",
+                            name: "test1"
+                        }                  
+                    }
+                }
+            };
+            this.reporter = new YAHOO.tool.TestReporter(url);
+            this.reporter.addField("version", 2.5);
+            this.reporter.addField("browser", "custom");
+            this.reporter.report(report, false);
+            
+            Assert.isNotNull(this.reporter._iframe, "Iframe wasn't created.");
+            Assert.isNotNull(this.reporter._form, "Form wasn't created.");
+            Assert.isObject(this.reporter._form.useragent, "Useragent field wasn't created.");
+            Assert.areEqual(navigator.userAgent, this.reporter._form.useragent.value, "Useragent field is incorrect.");
+            Assert.isObject(this.reporter._form.timestamp, "Timestamp field wasn't created.");
+            Assert.isTrue(this.reporter._form.timestamp.value.length > 0, "Timestamp field is not filled in.");
+            Assert.isObject(this.reporter._form.results, "Results field wasn't created.");            
+            Assert.areEqual(YAHOO.tool.TestFormat.XML(report), this.reporter._form.results.value, "Form field is not filled in.");
+            Assert.isObject(this.reporter._form.version, "Version field wasn't created.");            
+            Assert.areEqual(2.5, this.reporter._form.version.value, "Version field is not filled in.");
+            Assert.isObject(this.reporter._form.browser, "Browser field wasn't created.");            
+            Assert.areEqual("custom", this.reporter._form.browser.value, "Browser field is not filled in.");
+        },
+        
+        testReportingWithFieldsCleared: function(){
+            var url = "http://www.yahoo.com/";
+            var report = {
+                passed: 2,
+                failed: 2,
+                ignored: 1,
+                total: 5,
+                type: "report",
+                name: "YUI Test Results",
+                
+                "Some Suite":{
+                    passed: 2,
+                    failed: 2,
+                    ignored: 1,
+                    total: 5,
+                    type: "testsuite",
+                    name: "Some Suite",
+                    
+                    "Some Tests": {
+                        passed: 2,
+                        failed: 2,
+                        ignored: 1,
+                        total: 5,
+                        type: "testcase",
+                        name: "Some Tests",
+                        
+                        test1:{
+                            result: "pass",
+                            message: "Test passed.",
+                            type: "test",
+                            name: "test1"
+                        }                  
+                    }
+                }
+            };
+            this.reporter = new YAHOO.tool.TestReporter(url);
+            this.reporter.addField("version", 2.5);
+            this.reporter.addField("browser", "custom");
+            this.reporter.clearFields();
+            this.reporter.report(report, false);
+            
+            Assert.isNotNull(this.reporter._iframe, "Iframe wasn't created.");
+            Assert.isNotNull(this.reporter._form, "Form wasn't created.");
+            Assert.isObject(this.reporter._form.useragent, "Useragent field wasn't created.");
+            Assert.areEqual(navigator.userAgent, this.reporter._form.useragent.value, "Useragent field is incorrect.");
+            Assert.isObject(this.reporter._form.timestamp, "Timestamp field wasn't created.");
+            Assert.isTrue(this.reporter._form.timestamp.value.length > 0, "Timestamp field is not filled in.");
+            Assert.isObject(this.reporter._form.results, "Results field wasn't created.");            
+            Assert.areEqual(YAHOO.tool.TestFormat.XML(report), this.reporter._form.results.value, "Form field is not filled in.");
+            Assert.isUndefined(this.reporter._form.version, "Version field was created.");            
+            Assert.isUndefined(this.reporter._form.browser, "Browser field was created.");            
+        },
+        
+        testDestroy: function(){
+            var url = "http://www.yahoo.com/";
+            var report = {
+                passed: 2,
+                failed: 2,
+                ignored: 1,
+                total: 5,
+                type: "report",
+                name: "YUI Test Results",
+                
+                "Some Suite":{
+                    passed: 2,
+                    failed: 2,
+                    ignored: 1,
+                    total: 5,
+                    type: "testsuite",
+                    name: "Some Suite",
+                    
+                    "Some Tests": {
+                        passed: 2,
+                        failed: 2,
+                        ignored: 1,
+                        total: 5,
+                        type: "testcase",
+                        name: "Some Tests",
+                        
+                        test1:{
+                            result: "pass",
+                            message: "Test passed.",
+                            type: "test",
+                            name: "test1"
+                        }                  
+                    }
+                }
+            };
+            this.reporter = new YAHOO.tool.TestReporter(url);
+            this.reporter.addField("version", 2.5);
+            this.reporter.addField("browser", "custom");
+            this.reporter.report(report, false);
+            
+            this.reporter.destroy();
+            
+            Assert.isNull(this.reporter._form, "Form wasn't destroyed.");
+            Assert.isNull(this.reporter._iframe, "IFrame wasn't destroyed.");
+            Assert.isNull(this.reporter._fields, "Fields weren't destroyed.");        
+        }
+    }));
+    
+    //-------------------------------------------------------------------------
+    // General Tests
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        //the name of the test case - if not provided, one is automatically generated
+        name: "Advanced Options Tests",
+        
+        /*
+         * Specifies tests that "should" be doing something other than the expected.
+         */
+        _should: {
+        
+            /*
+             * Tests listed in here should fail, meaning that if they fail, the test
+             * has passed. This is used mostly for YuiTest to test itself, but may
+             * be helpful in other cases.
+             */
+            fail: {
+            
+                //the test named "testFail" should fail
+                testFail: true
+            
+            },
+            
+            /*
+             * Tests listed here should throw an error of some sort. If they throw an
+             * error, then they are considered to have passed.
+             */
+            error: {
+            
+                /*
+                 * You can specify "true" for each test, in which case any error will
+                 * cause the test to pass.
+                 */
+                testGenericError: true,
+                
+                /*
+                 * You can specify an error message, in which case the test passes only
+                 * if the error thrown matches the given message.
+                 */
+                testStringError: "I'm a specific error message.",
+                
+                /*
+                 * You can also specify an error object, in which case the test passes only
+                 * if the error thrown is on the same type and has the same message.
+                 */
+                testObjectError: new TypeError("Number expected.")
+                
+            },
+            
+
+            ignore : {
+            
+                testIgnore: true
+                
+            }    
+        },
+        
+        //-------------------------------------------------------------------------
+        // Basic tests - all method names must begin with "test"
+        //-------------------------------------------------------------------------
+        
+        testFail : function() {
+        
+            //force a failure - but since this test "should" fail, it will pass
+            YAHOO.util.Assert.fail("Something bad happened.");
+            
+        },
+        
+        testGenericError : function() {    
+            throw new Error("Generic error");        
+        },
+        
+        testStringError : function() {
+            
+            //throw a specific error message - this will pass because it "should" happen
+            throw new Error("I'm a specific error message.");    
+        },
+        
+        testObjectError : function() {
+            
+            //throw a specific error and message - this will pass because it "should" happen
+            throw new TypeError("Number expected.");    
+        },
+        
+        testIgnore : function () {
+            YAHOO.util.Assert.fail("This test should not be run.");
+        }
+        
+    }));
+    
+    //-------------------------------------------------------------------------
+    // Assert Tests
+    //-------------------------------------------------------------------------
+
+    //the user action suite
+    var assertSuite /*:YAHOO.tool.TestSuite*/ 
+        = new YAHOO.tool.TestSuite("Assert Tests");
+    suite.add(assertSuite);
+    
+    assertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "Boolean Assert Tests",
+        
+        _should: {
+            fail: {
+                testIsTrueOnFalse: true,
+                testIsTrueOnObject: true,
+                testIsFalseOnTrue: true,
+                testIsFalseOnObject: true,
+                testIsBooleanOnObject: true
+            }
+        },
+        
+        testIsTrueOnTrue: function () {
+            Assert.isTrue(true);
+        },
+        
+        testIsTrueOnFalse: function () {
+            Assert.isTrue(false);
+        },
+        
+        testIsTrueOnObject: function () {
+            Assert.isTrue({});
+        },
+            
+        testIsFalseOnTrue: function () {
+            Assert.isFalse(true);
+        },
+        
+        testIsFalseOnFalse: function () {
+            Assert.isFalse(false);
+        },
+        
+        testIsFalseOnObject: function () {
+            Assert.isFalse({});
+        },
+        
+        testIsBooleanOnTrue: function () {
+            Assert.isBoolean(true);
+        },
+        
+        testIsBooleanOnFalse: function () {
+            Assert.isBoolean(false);
+        },
+        
+        testIsBooleanOnObject: function () {
+            Assert.isBoolean({});
+        }        
+    
+    }));
+
+
+    assertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "Equivalence Assert Tests",
+        
+        _should: {
+            fail: {
+                testAreEqualOnTrueAndFalse: true,
+                testAreEqualOn1And2: true,
+                testAreEqualOnObjects: true
+            }
+        },
+        
+        testAreEqualOnTrue: function () {
+            Assert.areEqual(true, true);
+        },
+        
+        testAreEqualOn1: function () {
+            Assert.areEqual(1, 1);
+        },
+        
+        testAreEqualOn1And2: function () {
+            Assert.areEqual(1, 2);
+        },
+        
+        testAreEqualOn1AndString: function () {
+            Assert.areEqual(1, "1");
+        },
+        
+        testAreEqualOn1AndTrue: function () {
+            Assert.areEqual(1, true);
+        },
+
+        testAreEqualOnTrueAndFalse: function () {
+            Assert.areEqual(true, false);
+        },
+
+        testAreEqualOnObjects: function () {
+            Assert.areEqual({}, {});
+        }          
+    }));
+    
+    assertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "Sameness Assert Tests",
+        
+        _should: {
+            fail: {
+                testAreSameOnTrueAndFalse: true,
+                testAreSameOn1And2: true,
+                testAreSameOn1AndString: true,
+                testAreSameOn1AndTrue: true,
+                testAreSameOnObjects: true
+            }
+        },
+        
+        testAreSameOnTrue: function () {
+            Assert.areSame(true, true);
+        },
+        
+        testAreSameOn1: function () {
+            Assert.areSame(1, 1);
+        },
+        
+        testAreSameOn1And2: function () {
+            Assert.areSame(1, 2);
+        },
+        
+        testAreSameOn1AndString: function () {
+            Assert.areSame(1, "1");
+        },
+        
+        testAreSameOn1AndTrue: function () {
+            Assert.areSame(1, true);
+        },
+
+        testAreSameOnTrueAndFalse: function () {
+            Assert.areSame(true, false);
+        },
+
+        testAreSameOnObjects: function () {
+            Assert.areSame({}, {});
+        },
+
+        testAreSameOnSameObjects: function () {
+            var o = {};
+            Assert.areSame(o, o);
+        }
+                
+    }));    
+    
+    //-------------------------------------------------------------------------
+    // ObjectAssert Tests
+    //-------------------------------------------------------------------------
+
+    //the user action suite
+    var objectAssertSuite /*:YAHOO.tool.TestSuite*/ 
+        = new YAHOO.tool.TestSuite("ObjectAssert Tests");
+    suite.add(objectAssertSuite);
+    
+    objectAssertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "HasProperty Assert Tests",
+        
+        _should: {
+            fail: {
+                testUndeclaredProperty: true
+            }
+        },
+        
+        setUp: function(){
+            this.testObject = {
+                name: "value",
+                name2: undefined
+            };
+        },
+        
+        tearDown: function(){
+            delete this.testObject;
+        },
+        
+        testExistingProperty: function () {
+            ObjectAssert.hasProperty("name", this.testObject, "Object should have a property 'name'.");
+        },
+        
+        testUndefinedProperty: function () {
+            ObjectAssert.hasProperty("name2", this.testObject, "Object should have a property 'name2'.");
+        },
+        
+        testUndeclaredProperty: function () {
+            ObjectAssert.hasProperty("name3", this.testObject, "Object should not have a property 'name3'.");
+        }
+    }));
+  
+
+    //-------------------------------------------------------------------------
+    // ArrayAssert Tests
+    //-------------------------------------------------------------------------
+
+    //the user action suite
+    var arrayAssertSuite /*:YAHOO.tool.TestSuite*/ 
+        = new YAHOO.tool.TestSuite("ArrayAssert Tests");
+    suite.add(arrayAssertSuite);
+    
+    arrayAssertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "Contains Assert Tests",
+        
+        _should: {
+            fail: {
+                testSimilarItem: new YAHOO.util.AssertionError("Value 1 (number) not found in array [1,0,false,text]."),
+                testCustomFailureMessage: new YAHOO.util.AssertionError("True should not be there: Value 1 (number) not found in array [1,0,false,text]."),
+                testNonExistingItem: new YAHOO.util.AssertionError("Value true (boolean) not found in array [1,0,false,text].")
+            }
+        },
+        
+        setUp: function(){
+            this.testArray = ["1", 0, false, "text"];
+        },
+        
+        tearDown: function(){
+            delete this.testArray;
+        },
+        
+        testExistingItem: function () {
+            ArrayAssert.contains("1", this.testArray);
+        },
+        
+        testSimilarItem: function () {
+            ArrayAssert.contains(1, this.testArray);
+        },
+        
+        testNonExistingItem: function() {
+            ArrayAssert.contains(true, this.testArray);
+        },
+        
+        testCustomFailureMessage: function(){
+            ArrayAssert.contains(true, this.testArray, "True should not be there: {message}");
+        }
+    }));
+    
+    arrayAssertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "ContainsItems Assert Tests",
+        
+        _should: {
+            fail: {
+                testSimilarItems: new YAHOO.util.AssertionError("Value 1 (number) not found in array [1,0,false,text]."),
+                testNonExistingItems: new YAHOO.util.AssertionError("Value true (boolean) not found in array [1,0,false,text].")
+            }
+        },
+        
+        setUp: function(){
+            this.testArray = ["1", 0, false, "text"];
+        },
+        
+        tearDown: function(){
+            delete this.testArray;
+        },
+        
+        testExistingItems: function () {
+            ArrayAssert.containsItems(["1",0], this.testArray);
+        },
+        
+        testSimilarItems: function () {
+            ArrayAssert.containsItems([1,0], this.testArray);
+        },
+        
+        testNonExistingItems: function() {
+            ArrayAssert.containsItems([true], this.testArray);
+        }
+    }));
+    
+    arrayAssertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "ContainsMatch Assert Tests",
+        
+        _should: {
+            fail: {
+                testNonExistingItems: new YAHOO.util.AssertionError("No match found in array [1,0,false,text].")
+            }
+        },
+        
+        setUp: function(){
+            this.testArray = ["1", 0, false, "text"];
+        },
+        
+        tearDown: function(){
+            delete this.testArray;
+        },
+        
+        testExistingItems: function () {
+            ArrayAssert.containsMatch(function(value){
+                return YAHOO.lang.isString(value);
+            }, this.testArray);
+        },
+        
+        testNonExistingItems: function() {
+            ArrayAssert.containsMatch(function(value){
+                return YAHOO.lang.isObject(value);
+            }, this.testArray);
+        }
+    }));
+    
+    arrayAssertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "itemsAreSame Assert Tests",
+        
+        _should: {
+            fail: {
+                testMissingItem: new YAHOO.util.AssertionError("Values in position 3 are not the same."),
+                testArrayAgainstObject: new YAHOO.util.AssertionError("Values in position 0 are not the same.")
+            }
+        },
+        
+        setUp: function(){
+            this.testArray = ["1", 0, false, "text"];
+        },
+        
+        tearDown: function(){
+            delete this.testArray;
+        },
+        
+        testItemsAreSame: function () {
+            ArrayAssert.itemsAreSame(this.testArray,["1", 0, false, "text"]);
+        },
+        
+        testMissingItem: function() {
+            ArrayAssert.itemsAreSame(this.testArray, ["1", 0, false]);
+        },
+        
+        testArrayAgainstObject: function(){
+            ArrayAssert.itemsAreSame(this.testArray, {});
+        }
+    }));
+    arrayAssertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "itemsAreEqual Assert Tests",
+        
+        _should: {
+            fail: {
+                testMissingItem: new YAHOO.util.AssertionError("Values in position 3 are not equal."),
+                testArrayAgainstObject: new YAHOO.util.AssertionError("Values in position 0 are not equal.")
+            }
+        },
+        
+        setUp: function(){
+            this.testArray = ["1", 0, false, "text"];
+        },
+        
+        tearDown: function(){
+            delete this.testArray;
+        },
+        
+        testItemsAreEqual: function () {
+            ArrayAssert.itemsAreEqual(this.testArray,["1", 0, false, "text"]);
+        },
+        
+        testMissingItem: function() {
+            ArrayAssert.itemsAreEqual(this.testArray, ["1", 0, false]);
+        },
+        
+        testArrayAgainstObject: function(){
+            ArrayAssert.itemsAreEqual(this.testArray, {});
+        }
+    }));  
+  
+    arrayAssertSuite.add(new YAHOO.tool.TestCase({
+    
+        name: "itemsAreEquivalent Assert Tests",
+        
+        _should: {
+            fail: {
+                testMissingItem: new YAHOO.util.AssertionError("Values in position 3 are not equal."),
+                testArrayAgainstObject: new YAHOO.util.AssertionError("Values in position 0 are not equal.")
+            }
+        },
+        
+        setUp: function(){
+            this.testArray = ["1", 0, false, "text"];
+            this.comparator = function(a,b){
+                return a == b;
+            };
+        },
+        
+        tearDown: function(){
+            delete this.testArray;
+            delete this.comparator;
+        },
+        
+        testItemsAreEqual: function () {
+            ArrayAssert.itemsAreEquivalent(this.testArray,["1", 0, false, "text"], this.comparator);
+        },
+        
+        testMissingItem: function() {
+            ArrayAssert.itemsAreEquivalent(this.testArray, ["1", 0, false], this.comparator);
+        },
+        
+        testArrayAgainstObject: function(){
+            ArrayAssert.itemsAreEquivalent(this.testArray, {}, this.comparator);
+        }
+    }));   
+  
+    //-------------------------------------------------------------------------
+    // UserAction Tests
+    //-------------------------------------------------------------------------
+
+    //the user action suite
+    var userActionSuite /*:YAHOO.tool.TestSuite*/ 
+        = new YAHOO.tool.TestSuite("UserAction Tests");
+    suite.add(userActionSuite);
+    
+    var mouseEventsSuite /*:YAHOO.tool.TestSuite*/ 
+        = new YAHOO.tool.TestSuite("MouseEvent Tests");
+    userActionSuite.add(mouseEventsSuite);
+    
+    var keyEventsSuite /*:YAHOO.tool.TestSuite*/ 
+        = new YAHOO.tool.TestSuite("KeyEvent Tests");
+    userActionSuite.add(keyEventsSuite);
+
+    //-------------------------------------------------------------------------
+    // Mouse Tests
+    //-------------------------------------------------------------------------
+    mouseEventsSuite.add(new MouseButtonEventTestCase("click"));
+    mouseEventsSuite.add(new MouseButtonEventTestCase("dblclick"));
+    mouseEventsSuite.add(new MouseButtonEventTestCase("mousedown"));
+    mouseEventsSuite.add(new MouseButtonEventTestCase("mouseup"));        
+    mouseEventsSuite.add(new MouseMovementEventTestCase("mouseover"));
+    mouseEventsSuite.add(new MouseMovementEventTestCase("mouseout"));
+    
+    //-------------------------------------------------------------------------
+    // Key Tests
+    //-------------------------------------------------------------------------
+    keyEventsSuite.add(new KeyDirectionEventTestCase("keyup"));
+    keyEventsSuite.add(new KeyDirectionEventTestCase("keydown"));
+    keyEventsSuite.add(new TextEventTestCase("keypress"));
+
+
+    //return it
+    return suite;
+
+})();
+
+(function (){
+    //create the logger
+    var logger = new YAHOO.tool.TestLogger();
+    
+    //add the tests
+    YAHOO.tool.TestRunner.add(YAHOO.test.YUITest_test);
+    
+    //add event handler
+    YAHOO.util.Event.addListener("btnRun", "click", YAHOO.tool.TestRunner.run);
+
+    if (parent && parent != window) {
+        YAHOO.tool.TestManager.load();
+    } else {
+        YAHOO.tool.TestRunner.run();
+    }
+})();
+
+
+</script>
+</body>
+</html>

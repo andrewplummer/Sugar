@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using query</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/selector/selector-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+
+<style type="text/css">
+#selector-demo ul {
+    float:left;
+}
+
+#selector-demo ol {
+    clear:both;
+}
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using query</h1>
+
+<div class="exampleIntro">
+	<p>Clicking the button will add a red border to all of the LI elements with the class of "selected" that live in a UL.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="selector-demo">
+    <ul>
+        <li class="selected">lorem</li>
+        <li>ipsum</li>
+        <li>dolor</li>
+        <li>sit</li>
+    </ul>
+    <ul>
+        <li>lorem</li>
+        <li class="selected">ipsum</li>
+        <li>dolor</li>
+        <li>sit</li>
+    </ul>
+    <ul>
+        <li>lorem</li>
+        <li>ipsum</li>
+        <li>dolor</li>
+        <li class="selected">sit</li>
+    </ul>
+
+    <ol>
+        <li>lorem</li>
+        <li>ipsum</li>
+        <li>dolor</li>
+        <li class="selected">sit</li>
+    </ol>
+    <button id="demo-run">run</button>
+</div>
+<script type="text/javascript">
+(function() {
+    var handleClick = function(e) {
+        var nodes = YAHOO.util.Selector.query('ul li.selected');
+        YAHOO.util.Dom.setStyle(nodes, 'border', '1px solid red');
+    };
+
+    YAHOO.util.Event.on('demo-run', 'click', handleClick);
+
+    YAHOO.log("The example has finished loading; as you interact with it, you'll see log messages appearing here.", "info", "example");
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

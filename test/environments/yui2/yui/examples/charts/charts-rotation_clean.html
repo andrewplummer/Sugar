@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Column Chart with Rotated Title and Labels</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		width: 500px;
+		height: 350px;
+	}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Column Chart with Rotated Title and Labels</h1>
+
+<div class="exampleIntro">
+	<p>Axes Title and Label fields can be rotated on the <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> by setting the titleRotation and labelRotation axis styles. This example shows you how.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>
+
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">Monthly Expenses</span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+//--- data
+
+	YAHOO.example.monthlyExpenses =
+	[
+		{ month: "January", rent: 1350.00, utilities: 941.68 },
+		{ month: "February", rent: 1350.00, utilities: 901.35 },
+		{ month: "March", rent: 1350.00, utilities: 789.32 },
+		{ month: "April", rent: 1350.00, utilities: 684.71 },
+		{ month: "May", rent: 1500.00, utilities: 779.811 },
+		{ month: "June", rent: 1500.00, utilities: 897.95 },
+		{ month: "July", rent: 1500.00, utilities: 919.811 },
+		{ month: "August", rent: 1500.00, utilities: 937.95 },
+		{ month: "September", rent: 1500.00, utilities: 779.811 },
+		{ month: "October", rent: 1500.00, utilities: 697.95 },
+		{ month: "November", rent: 1500.00, utilities: 679.811 },
+		{ month: "December", rent: 1500.00, utilities: 897.95 }
+	];
+
+	var myDataSource = new YAHOO.util.DataSource( YAHOO.example.monthlyExpenses );
+	myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	myDataSource.responseSchema =
+	{
+		fields: [ "month", "rent", "utilities" ]
+	};
+
+//--- chart
+
+	//series definition for chart
+	var seriesDef =
+	[
+		{
+			displayName: "Rent",
+			yField: "rent",
+			style:{size:10}
+		},
+		{
+			displayName: "Utilities",
+			yField: "utilities",
+			style:{size:10}
+		}
+	];
+
+	//Style object for chart
+	var styleDef =
+	{
+		xAxis:
+		{
+			labelRotation:-90
+		},
+		yAxis:
+		{
+			titleRotation:-90
+		}
+	}
+
+	//format currency
+	YAHOO.example.formatCurrencyAxisLabel = function( value )
+	{
+		return YAHOO.util.Number.format( value,
+		{
+			prefix: "$",
+			thousandsSeparator: ",",
+			decimalPlaces: 2
+		});
+	}
+
+	//DataTip function for the chart
+	YAHOO.example.getDataTipText = function( item, index, series )
+	{
+		var toolTipText = series.displayName + " for " + item.month;
+		toolTipText += "\n" + YAHOO.example.formatCurrencyAxisLabel( item[series.yField] );
+		return toolTipText;
+	}
+
+	//create a Numeric Axis for displaying dollars
+	var currencyAxis = new YAHOO.widget.NumericAxis();
+	currencyAxis.labelFunction = YAHOO.example.formatCurrencyAxisLabel;
+	currencyAxis.title = "Money Spent";
+
+	//create Category Axis to specify a title for the months
+	var categoryAxis = new YAHOO.widget.CategoryAxis();
+	categoryAxis.title = "Month";
+
+	//create a Chart
+	var mychart = new YAHOO.widget.ColumnChart( "chart", myDataSource,
+	{
+		series: seriesDef,
+		xField: "month",
+		yAxis: currencyAxis,
+		xAxis: categoryAxis,
+		style: styleDef,
+		dataTipFunction: YAHOO.example.getDataTipText,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

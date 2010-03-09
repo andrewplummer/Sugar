@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Editor in a Dialog Control</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/editor/editor-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+  	#responseContainer {	
+		margin:1em;
+	  	border: 1px solid black;
+	    background-color: #ccc;
+	    height: 4em;
+		padding: 1em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Editor in a Dialog Control</h1>
+
+<div class="exampleIntro">
+	<p>In YUI-based applications, it's common for forms to appear as part of <a href="http://developer.yahoo.com/yui/container/dialog/">Dialogs</a>.  In this example, a form enhanced with the <a href="http://developer.yahoo.com/yui/editor">Rich Text Editor</a> appears in a Dialog.  Read the tutorial below to learn how to integrate the RTE seamlessly with your Dialog's form contents.</p>
+	
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="dialogContainer">
+	<div class="hd">Enter Title and Description:</div>
+	<div class="bd">
+		<form id="dialogForm" name="dialogForm" method="post" action="../editor/assets/post.php">
+			
+			<p><label for="title">Title:</label> <input name="title" id="title" /></p>
+			
+			<p><label for="description">Description:</label></p>
+			
+				<textarea name="description" id="description"></textarea>
+			
+			<div id="descriptionContainer"></div>
+			
+			<!--This element is here only for purposes of Progressive Enhancement; we will disable and
+			hide it as we render the Dialog so that doesn't interfere with the Dialog's operation.-->
+			<p><input id="submitButton" type="submit" /></p>
+			
+		</form>
+	</div>
+</div>
+
+<button id="showDlg">Show Dialog</button>
+
+<div id="responseContainer">
+	<p>Dialog's post response will appear here after you submit the Dialog.</p>
+</div>
+
+<script language="JavaScript">
+(function() {
+
+	//hide and disable the non-dialog submit button:
+	document.getElementById("submitButton").disabled = true;
+	document.getElementById("submitButton").style.display = "none";
+	
+	//create the RTE:
+	var editor = new YAHOO.widget.Editor('description', {
+	    width: '702px',
+		height: '200px'
+	});
+
+    //After the Editor renders it, we will hide it
+    //so the iframe doesn't bleed through
+	editor.on('afterRender', editor.hide);
+
+	//render the editor explicitly into a container
+	//within the Dialog's DOM:
+	editor.render();
+	
+	//create Dialog:
+	var dlg = new YAHOO.widget.Dialog("dialogContainer", {
+		width:"725px",
+		fixedcenter:true,
+		modal:true,
+		visible:false
+	});
+
+	//event handlers for our Dialog buttons:
+	
+	//if the user clicks "save", then we save the HTML
+	//content of the RTE and submit the dialog:
+	function handleSave() {
+		editor.saveHTML();
+		this.submit();
+	}
+	
+	//if the user clicks cancel, we call Dialog's
+	//cancel method:
+	function handleCancel() {
+		this.cancel();
+	}
+	
+	//set up buttons for the Dialog and wire them
+	//up to our handlers:
+	var myButtons = [ { text:"Save", 
+						handler:handleSave },
+					  { text:"Cancel", 
+						handler:handleCancel,
+						isDefault:true } ];
+	dlg.cfg.queueProperty("buttons", myButtons);
+
+	//Dialog by default will use Connection Manager to POST
+	//form contents to the URI specified in the action
+	//attribute of the form; we can wire up success and
+	//failure handlers for the XHR call and act on them
+	//just as we would with any Connection Manager
+	//transaction:
+	var onSuccess = function(o) {
+		//we're going to get JSON back from post.php; we
+		//can parse it using JSON.parse:
+		var data = YAHOO.lang.JSON.parse(o.responseText);
+		
+		//in this case, we'll just output the contents to 
+		//a div to see what they contain:
+        document.getElementById("responseContainer").innerHTML = 'Status: ' + 
+			data.Results.status + 
+			'<br>' + (new Date().toString());
+	}
+	var onFailure = function(o) {
+		//in the event of a failure, we can log the problem:
+		YAHOO.log("Dialog reported a communication failure; connection object: " + YAHOO.lang.dump(o, 5));
+	}
+	dlg.callback.success = onSuccess;
+	dlg.callback.failure = onFailure;
+
+	//Now that our Dialog is fully configured, we can
+	//render it:
+	dlg.render();
+	
+	//RTE needs a little love to work in in a Dialog that can be 
+	//shown and hidden; we let it know that it's being
+	//shown/hidden so that it can recover from these actions:
+	dlg.showEvent.subscribe(editor.show, editor, true);
+	dlg.hideEvent.subscribe(editor.hide, editor, true);
+	
+	//instantiate button to show Dialog:
+	var btn = new YAHOO.widget.Button("showDlg", {type:"link"});
+	btn.on("click", dlg.show, dlg, true);
+	
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

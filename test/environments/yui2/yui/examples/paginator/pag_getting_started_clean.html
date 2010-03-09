@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Getting started with Paginator</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/paginator/assets/skins/sam/paginator.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/paginator/paginator-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#content {
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #000;
+    font-family: Times New Roman, serif;
+    padding: 1em 2em;
+}
+
+#content div {
+    display: none;
+}
+#demo .page1 div.page1,
+#demo .page2 div.page2,
+#demo .page3 div.page3,
+#demo .page4 div.page4,
+#demo .page5 div.page5 {
+    display: block;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Getting started with Paginator</h1>
+
+<div class="exampleIntro">
+	<p>In this example we illustrate the basics of attaching a Paginator to your application.  We take a short story by Stephen Crane and divide it up into pages, then use Paginator to display the page navigation.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <h2 class="first">The Monster</h2>
+    <p>By Stephen Crane</p>
+
+    <div id="paging"></div>
+
+    <div id="content" class="page1">
+        <div class="page1">
+            <p>Little Jim was, for the time, engine Number 36, and he was making the run between Syracuse and Rochester. He was fourteen minutes behind time, and the throttle was wide open. In consequence, when he swung around the curve at the flower-bed, a wheel of his cart destroyed a peony. Number 36 slowed down at once and looked guiltily at his father, who was mowing the lawn. The doctor had his back to this accident, and he continued to pace slowly to and fro, pushing the mower.</p>     
+            <p>Jim dropped the tongue of the cart. He looked at his father and at the broken flower. Finally he went to the peony and tried to stand it on its pins, resuscitated, but the spine of it was hurt, and it would only hang limply from his hand. Jim could do no reparation. He looked again toward his father.</p>     
+        </div>
+        <div class="page2">
+            <p>He went on to the lawn, very slowly, and kicking wretchedly at the turf. Presently his father came along with the whirring machine, while the sweet, new grass blades spun from the knives. In a low voice, Jim said, “Pa!”</p>     
+            <p>The doctor was shaving this lawn as if it were a priest’s chin. All during the season he had worked at it in the coolness and peace of the evenings after supper. Even in the shadow of the cherry-trees the grass was strong and healthy. Jim raised his voice a trifle. “Pa!”</p>     
+            <p>The doctor paused, and with the howl of the machine no longer occupying the sense, one could hear the robins in the cherry-trees arranging their affairs. Jim’s hands were behind his back, and sometimes his fingers clasped and unclasped. Again he said, “Pa!” The child’s fresh and rosy lip was lowered.</p>     
+        </div>
+        <div class="page3">
+            <p>The doctor stared down at his son, thrusting his head forward and frowning attentively. “What is it, Jimmie?”</p>     
+            <p>“Pa!” repeated the child at length. Then he raised his finger and pointed at the flower-bed. “There!”</p>     
+            <p>“What?” said the doctor, frowning more. “What is it, Jim?”</p>     
+            <p>After a period of silence, during which the child may have undergone a severe mental tumult, he raised his finger and repeated his former word—“There!” The father had respected this silence with perfect courtesy. Afterward his glance carefully followed the direction indicated by the child’s finger, but he could see nothing which explained to him. “I don’t understand what you mean, Jimmie,” he said.</p>     
+        </div>
+        <div class="page4">
+            <p>It seemed that the importance of the whole thing had taken away the boy’s vocabulary. He could only reiterate, “There!”</p>     
+            <p>The doctor mused upon the situation, but he could make nothing of it. At last he said, “Come, show me.”</p>     
+            <p>Together they crossed the lawn toward the flower-bed. At some yards from the broken peony Jimmie began to lag. “There!” The word came almost breathlessly.</p>     
+            <p>“Where?” said the doctor.</p>     
+            <p>Jimmie kicked at the grass. “There!” he replied.</p>     
+        </div>
+        <div class="page5">
+            <p>The doctor was obliged to go forward alone. After some trouble he found the subject of the incident, the broken flower. Turning then, he saw the child lurking at the rear and scanning his countenance.</p>     
+            <p>The father reflected. After a time he said, “Jimmie, come here.” With an infinite modesty of demeanour the child came forward. “Jimmie, how did this happen?”</p>     
+            <p>The child answered, “Now&#8212;I was playin’ train&#8212;and&#8212;now&#8212;I runned over it.”</p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+// Set up the application under the YAHOO.example namespace
+var Ex = YAHOO.namespace('example');
+
+Ex.content    = YAHOO.util.Dom.get('content');
+
+Ex.handlePagination = function (state) {
+    // Show the appropriate content for the requested page
+    Ex.content.className = 'page' + state.page;
+    
+    // Update the Paginator's state, confirming change
+    Ex.paginator.setState(state);
+};
+
+// Create the Paginator widget and subscribe to its changeRequest event
+Ex.paginator = new YAHOO.widget.Paginator({
+    rowsPerPage : 1,
+    totalRecords : Ex.content.getElementsByTagName('div').length,
+    containers : 'paging'
+});
+
+Ex.paginator.subscribe('changeRequest', Ex.handlePagination);
+
+// Render the Paginator into the configured container(s)
+Ex.paginator.render();
+
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

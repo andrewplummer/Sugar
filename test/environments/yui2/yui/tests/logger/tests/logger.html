@@ -1,0 +1,189 @@
+<html>
+<head>
+<title>YUI Logger Tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css" />
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+</head>
+<body class="yui-skin-sam">
+<h1>Logger Tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" disabled="true" /></p>
+
+<script type="text/javascript">
+
+(function() {
+
+    var Dom=YAHOO.util.Dom,
+        Assert=YAHOO.util.Assert,
+        ObjectAssert=YAHOO.util.ObjectAssert,
+        ArrayAssert=YAHOO.util.ArrayAssert,
+        DateAssert=YAHOO.util.DateAssert,
+        UserAction=YAHOO.util.UserAction,
+        TestCase = YAHOO.tool.TestCase,
+        TestLogger = YAHOO.tool.TestLogger,
+        TestRunner = YAHOO.tool.TestRunner,
+        TestSuite = YAHOO.tool.TestSuite,
+        
+        Logger = YAHOO.widget.Logger,
+        LogReader = YAHOO.widget.LogReader,
+        LogWriter = YAHOO.widget.LogWriter;
+        
+    function LoggerTestCase(template) {
+        LoggerTestCase.superclass.constructor.call(this, template);
+    };
+    YAHOO.lang.extend(LoggerTestCase, TestCase);
+
+    var loggerTemplate = {
+        name: "Logger Tests",
+        
+        testCreateNewCategory: function() {
+            Logger._createNewCategory("testcategory");
+            Assert.areSame(Logger.categories[Logger.categories.length-1], "testcategory", "Could not find new category");
+        }
+    };
+    var loggerTest = new LoggerTestCase(loggerTemplate);
+
+    function LogReaderTestCase(template) {
+        LogReaderTestCase.superclass.constructor.call(this, template);
+        this.container = null;
+    };
+    YAHOO.lang.extend(LogReaderTestCase, TestCase);
+
+    LogReaderTestCase.prototype.setUp = function() {
+        this.container = document.createElement("div");
+        this.container.id = "testLogReaderContainer";
+        document.body.appendChild(this.container);
+    };
+
+    LogReaderTestCase.prototype.tearDown = function() {
+        if (this.container != null) {
+            YAHOO.util.Event.purgeElement(this.container, true);
+            document.body.removeChild(this.container);
+        }
+    };
+        
+    LogReaderTestCase.prototype.createInstance = function(oConfig) {
+        var lr = new LogReader(this.container, oConfig);
+        return lr;
+    };
+    
+    var logreaderTemplate = {
+        name: "LogReader Tests",
+        testConstruction: function() {
+            var lr = this.createInstance();
+            Assert.isObject(lr, "Failed to create basic instance");
+            Assert.isInstanceOf(LogReader, lr, "Failed to create basic instance");
+            lr = null;
+        }
+    };
+    var logreaderTest = new LogReaderTestCase(logreaderTemplate);
+    
+    function LogWriterTestCase(template) {
+        LogWriterTestCase.superclass.constructor.call(this, template);
+    };
+    YAHOO.lang.extend(LogWriterTestCase, TestCase);
+
+    LogWriterTestCase.prototype.setUp = function() {
+    };
+
+    LogWriterTestCase.prototype.tearDown = function() {
+    };
+
+    LogWriterTestCase.prototype.createInstance = function(oConfig) {
+        var lw = new LogWriter("testlogwriter", oConfig);
+        return lw;
+    };
+
+    var logwriterTemplate = {
+        name: "LogWriter Tests",
+        
+        testConstruction: function() {
+            var lw = this.createInstance();
+            Assert.isObject(lw, "Failed to create basic instance");
+            Assert.isInstanceOf(LogWriter, lw, "Failed to create basic instance");
+            // bug 1699208
+            Assert.areSame("testlogwriter", lw.getSource());
+            lw.setSource("foo");
+            Assert.areSame("foo", lw.getSource());
+
+            lr = null;
+        }
+    };
+    var logwriterTest = new LogWriterTestCase(logwriterTemplate);
+
+    YAHOO.util.Event.addListener(window, "load", function() {
+        var logger = new TestLogger();
+
+        var loggersuite = new TestSuite("Logger Test Suite");
+        loggersuite.add(loggerTest);
+        loggersuite.add(logreaderTest);
+        loggersuite.add(logwriterTest);
+        loggersuite.add(new TestCase({
+            name : "LogReader test cont.",
+            setUp : function () {
+                this.full = new LogReader();
+                this.noFooter = new LogReader(null, {
+                    footerEnabled: false
+                });
+            },
+            tearDown: function () {
+                delete this.full;
+                delete this.noFooter;
+            },
+            testPauseResume : function () {
+                try {
+                    this.full.pause();
+                    this.full.resume();
+                }
+                catch (e) {
+                    Assert.fail(e);
+                }
+
+                try {
+                    this.noFooter.pause();
+                    this.noFooter.resume();
+                }
+                catch (e) {
+                    Assert.fail(e);
+                }
+            }
+        }));
+
+        // for bug 1987607
+        loggersuite.add(new TestCase({
+            name : "Console logging test",
+            testConsoleLog : function () {
+                if (!YAHOO.env.ua.ie) {
+                    YAHOO.widget.Logger.enableBrowserConsole();
+                    YAHOO.log("Console logging info entry","info");
+                    YAHOO.log("Console logging warn entry","warn");
+                    YAHOO.log("Console logging error entry","error");
+                    YAHOO.widget.Logger.disableBrowserConsole();
+
+                    YAHOO.log("CHECK CONSOLE FOR MESSAGES","warn","TestLogger");
+                }
+            }
+        }));
+
+        
+        TestRunner.add(loggersuite);
+
+        YAHOO.util.Event.addListener("btnRun", "click", function(){TestRunner.run();});
+        YAHOO.util.Dom.get("btnRun").disabled = false;
+
+        if (parent && parent != window) {
+            YAHOO.tool.TestManager.load();
+        }
+        
+        TestRunner.run();
+    });
+})();
+
+</script>
+</body>
+</html>

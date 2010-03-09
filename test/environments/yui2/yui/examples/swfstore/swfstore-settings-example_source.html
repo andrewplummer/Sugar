@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>SWFStore Settings Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.0/build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.0/build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0/build/animation/animation-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0/build/element/element-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0/build/button/button-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0/build/cookie/cookie-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0/build/swf/swf-min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.8.0/build/swfstore/swfstore-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<STYLE type="text/css">
+
+#controls label  
+{
+	clear: left;
+	float: left;
+	width: 13em; 
+} 
+
+fieldset
+{
+	border: 1px;
+}
+
+input[type="text"]
+{
+	padding-bottom: 2px;
+}
+
+
+</STYLE>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>SWFStore Settings Example</h1>
+
+<div class="exampleIntro">
+	<p>This example shows what can happen if storage capacity is exceeded, and how to deal with it effectively. By default, you're allowed 100k per domain. If a larger amount of data is attempted to be stored, an exception will occur. This shows how to deal with that exception and how to enable more storage.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+
+
+<!--Placeholder for SWF, will be replaced with embedded SWF if proper Flash Player is installed-->
+<div id="swfstoreContainer" style="width:0px;height:0px">Unable to load Flash content. The YUI File SWFStore Control requires Flash Player 9.0.115 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<!--Input Controls-->
+
+<div id="controls"> 
+	<label for="valueField">Text to store:</label>
+	<textarea cols="30" id="valueField" rows="5"></textarea>
+
+	
+	<br/>
+	
+	<label for="nameField">Storage name:</label> 
+	
+	<input id="nameField" type="text" value="hamlet"/>
+	<input id="save-button" name="save-button" type="Button" value="Save" /> 
+	 
+	<br/>
+	<br/>
+	<input id="purge-button" name="purge-button" type="Button" value="Purge All Local Data" />
+	<input id="resize-button" name="resize-button" type="Button" value="Resize SWF Container" />
+	<input id="display-button" name="display-button" type="Button" value="Display Settings" />
+
+	
+	<br/>
+	<br/>
+	
+	<fieldset id="additionalOptions">
+        <legend>Additional Options:</legend>
+		<br/>
+		<input id="compression-button" name="compression-button" type="Button" value="Use Compression"/>
+		<br/>
+		<label for="storageAmount">Storage amount requested:</label>
+
+		<input id="storageAmount" name="storageAmount"  type="text" value="1024" size="5"/>k<input id="setsize-button" name="setsize-button" type="Button" value="Increase Storage"/> 
+	</fieldset>
+ 
+</div>
+
+<!--Scripts-->
+<script type="text/javascript">
+	/**
+	 * Pointer to the SWFStore instance
+	 */
+	var swfstore;
+
+	var saveButton;
+	var purgeButton;
+	var compressionCheckbox;
+	var diplayButton;
+	var resizeButton;
+	var setsizeButton;
+	var anim;
+	
+	/**
+	 * Initialization scripts
+	 */	
+	 function initialize()
+	 {
+		var useCompression = compressionCheckbox.get("checked");
+
+		saveButton.set("disabled", true); 
+		purgeButton.set("disabled", true);  
+		compressionCheckbox.set("disabled", true); 
+		resizeButton.set("disabled", true); 
+		setsizeButton.set("disabled", true); 
+
+		//the swfstore instance
+		swfstore = new YAHOO.util.SWFStore("swfstoreContainer", false, useCompression); 
+		
+		//some basic listeners for user feedback
+		swfstore.addListener("save", onSave);
+		swfstore.addListener("error", onError);
+		swfstore.addListener("contentReady", onContentReady);
+		swfstore.addListener("inadequateDimensions", onInadequateDimensions);
+		swfstore.addListener("securityError", onError);
+	}
+
+
+	/**
+	 * Function to let us change the useCompression property of the SWFStore
+	 */	
+	 function changeUseCompression(event)
+	 {
+		swfstore.setUseCompression(event.newValue);
+	 }
+	
+	/**
+	 * This gets called once SWFStore is initialized and ready to be used. 
+	 * We disabled the buttons previously, so once they're usable we'll enable them here.
+	 */	
+	function onContentReady(event)
+	{
+		saveButton.set("disabled", false); 
+		purgeButton.set("disabled", false);  
+		compressionCheckbox.set("disabled", false); 
+		displayButton.set("disabled", false); 
+		setsizeButton.set("disabled", false); 
+		resizeButton.set("disabled", false); 
+	}
+
+	/**
+	 * Clear out all data
+	 */		
+	function purge()
+	{
+    swfstore.clear();	
+    alert("All data was successfully removed from storage")
+
+	}
+	
+	/**
+	 * Called when a save is successful
+	 */	    
+	function onSave(event)  
+	{
+  
+    //added
+		if(event.info == "add")
+		{
+			alert("'" + event.key + "'" + " was added successfully")
+		}
+		
+		//updated
+		else if(event.info == "update")
+		{
+			alert("'" + event.key + "'" + " was updated successfully")
+		}
+		
+		//removed
+		else if(event.info == "delete")
+		{
+			alert("'" + event.key + "'" + " was removed successfully")
+		}
+
+	}
+
+	
+	/**
+	 * Called when something bad happens
+	 */	    	
+	function onError(event) 
+	{
+		alert("Event " + event.message);
+	}
+
+	
+	/**
+	 * Save the data locally
+	 */	
+	function save()
+	{
+		swfstore.setItem( YAHOO.util.Dom.get('nameField').value, YAHOO.util.Dom.get('valueField').value);
+	}
+
+/**
+ * Called when the buttons are ready to be initialized
+ */	
+	function onButtonsReady() 
+{
+
+    saveButton = new YAHOO.widget.Button("save-button");
+		purgeButton = new YAHOO.widget.Button("purge-button");
+
+		compressionCheckbox = new YAHOO.widget.Button("compression-button", {  
+	                                        type:"checkbox",  
+	                                        value:"0",  
+	                                        checked:false}); 
+		
+		displayButton = new YAHOO.widget.Button("display-button");
+		setsizeButton = new YAHOO.widget.Button("setsize-button");
+		resizeButton = new YAHOO.widget.Button("resize-button");
+		
+
+		saveButton.on("click", save); 
+		purgeButton.on("click", purge); 
+		compressionCheckbox.on("checkedChange", changeUseCompression);
+		displayButton.on("click", showSettings);
+		setsizeButton.on("click", setStorageAmount)
+		resizeButton.on("click", resizeSWF)
+    
+		//create an Animation instance to resize the SWF
+	    anim = new YAHOO.util.Anim('swfstoreContainer', {width: { to: 300 },height: {to: 300}});
+	    
+		//initialize
+		initialize();
+		
+		YAHOO.util.Dom.get('nameField').focus()
+    }
+
+	/**
+	 * Request additional storage
+	 */	    
+    function setStorageAmount() 
+    { 
+		if(swfstore.hasAdequateDimensions())
+		{
+			anim.onComplete.unsubscribe(setStorageAmount); 
+			swfstore.setSize(parseInt(YAHOO.util.Dom.get('storageAmount').value));
+		}
+		
+		else
+		{
+			//swf is not large enough to display the storage request panel, so resize it
+			//have it try again when the animation is finished
+		    anim.onComplete.subscribe(setStorageAmount);
+			resizeSWF();
+		}
+		
+	}
+	
+	/**
+	 * Wrapper function to invoke the settings dialog
+	 */	    
+    function showSettings() 
+    { 
+		if(swfstore.hasAdequateDimensions())
+		{
+			anim.onComplete.unsubscribe(showSettings); 
+			swfstore.displaySettings();
+		}
+		
+		else
+		{
+			//swf is not large enough to display the settings dialog, so resize it
+			//have it try again when the animation is finished
+		    anim.onComplete.subscribe(showSettings);
+			resizeSWF();
+		}
+	}
+	
+	/**
+	 * Called when the attempted store exceeds the amount of available space for local storage
+	 */	    	
+	function onQuotaExceededError(event) 
+	{
+		alert("Storage amount requested has exceeded the allotted amount."); 
+	}
+
+
+	/**
+	 * This fires when the settings dialog can not appear due to improper size
+	 */	
+	function onInadequateDimensions(event) 
+	{
+		alert("The SWF needs to be enlarged in order to properly display any settings panels."); 
+	}
+
+	/**
+	 * Resizes the SWF to a size appropriate to display settings panels
+	 */	
+	function resizeSWF() 
+	{
+		anim.animate();
+	}
+		
+	YAHOO.util.Event.onContentReady("controls", onButtonsReady);
+	
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>
+

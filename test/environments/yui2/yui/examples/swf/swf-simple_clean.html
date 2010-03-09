@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Simple SWF Utility Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Simple SWF Utility Example</h1>
+
+<div class="exampleIntro">
+	<p>This is a simple example of the <a href="../../swf/">YUI SWF Utility's</a> features.</p>
+
+<p><strong>Note:</strong> This example of the YUI SWF Utility usage requires Flash Player 9.0.115 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="swfContainer" style="width:400px;height:200px">
+	The version of the Flash player installed on your computer is outdated. Please download and install the newest version.
+</div>
+
+<script type="text/javascript">
+    
+    // Instantiate the parameters to pass to the SWF.
+	// Note the scale and salign parameters.
+	// The scale="noscale" specifies that the swf is to 
+	// be displayed as is, without shrinking it or stretching it.
+	// salign = "TL" specifies that the content of the swf
+	// should be aligned to the top left of the viewport.
+	
+	var params = {version: 9.115,
+		          useExpressInstall: false,
+		          fixedAttributes:
+				  {scale: "noscale", salign: "TL"}
+				 };
+
+	var newswf = new YAHOO.widget.SWF("swfContainer", "assets/SWFExampleSimple.swf", params);
+
+
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

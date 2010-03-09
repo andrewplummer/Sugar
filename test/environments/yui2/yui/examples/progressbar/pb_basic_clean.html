@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Basic Features</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/slider/assets/skins/sam/slider.css" />
+<link rel="stylesheet" type="text/css" href="../../build/progressbar/assets/skins/sam/progressbar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/progressbar/progressbar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+.yui-skin-sam .yui-h-slider {
+  width:128px;
+  background:transparent url(../progressbar/assets/slider-bg.gif) no-repeat scroll 5px 0pt;
+}
+
+#valueSet,#rangeSet,#sizeSet {
+	float:left;
+	clear:left;
+	width:40%;
+}
+
+#animSet{
+	float:right;
+	width:40%;
+}
+
+#basic .yui-pb{
+	margin:0 auto;
+}
+
+/* start ie workaround */
+#basic{
+	zoom:1;
+}
+
+fieldset {
+	border: thin solid silver;
+	background-color:#F0F0F0;
+	padding:1em;
+	margin:1em;
+
+	*position: relative;
+	*margin: 0 0 1em 0;
+    *padding-top:2em;
+}
+
+#control, #easing {
+    *margin-top:1em;
+}
+
+fieldset p {
+	margin:0 1em;
+}
+
+legend {
+	font-weight:bold;
+	margin:0 0.5em;
+	padding:0 0.2em;
+
+	*position:absolute;
+    *top: -.5em;
+    *left: .5em;
+}
+/* end ie workaround */
+
+.disabled {
+	color:silver;
+}
+
+.dp-highlighter th, .dp-highlighter td {
+	border:0;
+	padding:0;
+}
+.dp-highlighter .line1, .dp-highlighter  .line2 {
+	padding-left:10px;
+	white-space:nowrap;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Basic Features</h1>
+
+<div class="exampleIntro">
+	<p>This example shows the simplest ProgressBar with the default "Sam" skin. Use the controls below to change various settings.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="basic" ></div>
+<fieldset id="control">
+	<legend>Control</legend>
+	<fieldset id="valueSet">
+		<legend>Value</legend>
+		<div id="sliderValue" class="yui-h-slider" tabindex="-1" title="Value slider">
+			<div id="sliderValueThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-n.gif"></div>
+		</div>
+		<p>
+			<label>Set: <span id="value">50</span> </label> &nbsp;
+			<label> Actual <span id="actualValue">50</span></label>
+		</p>
+	</fieldset>
+
+	<fieldset id="rangeSet">
+		<legend>Range</legend>
+		<div id="sliderRange" class="yui-h-slider" title="Range slider">
+			<div id="sliderRangeMinThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-e.gif"></div>
+			<div id="sliderRangeMaxThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-w.gif"></div>
+		</div>
+		<p>
+			<label>Min: <span id="minValue">-50</span> </label>  &nbsp;
+			<label> Max: <span id="maxValue">50</span></label>
+		</p>
+	</fieldset>
+
+	<fieldset id="sizeSet">
+		<legend>Size</legend>
+
+		Width<div id="sliderWidth" class="yui-h-slider" tabindex="-1" title="Width slider">
+			<div id="sliderWidthThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-n.gif"></div>
+		</div>
+		Height
+		<div id="sliderHeight" class="yui-h-slider" tabindex="-1" title="Height slider">
+			<div id="sliderHeightThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-n.gif"></div>
+		</div>
+		<p><label>Width: <span id="width">200</span>px </label></p>
+		<p><label> Height: <span id="height">20</span>px</label></p>
+	</fieldset>
+	<fieldset id="animationSet" class="disabled">
+		<legend>Animation</legend>
+		<p style="color:black;"><input type="checkbox" id="anim" /> Enable animation</p>
+		Duration<div id="sliderDuration" class="yui-h-slider" tabindex="-1" title="Duration slider">
+			<div id="sliderDurationThumb" class="yui-slider-thumb"><img src="../progressbar/assets/thumb-n.gif"></div>
+		</div>
+		<p>
+			<label>Duration <span id="duration">200</span> second(s)</label>
+		</p>
+		<fieldset id="easing">
+			<legend>Easing</legend>
+			<input type="radio" name="easing" value="easeNone" id="easeNone"/> easeNone<br/>
+			<input type="radio" name="easing" value="backBoth" /> backBoth<br/>
+			<input type="radio" name="easing" value="backIn" /> backIn<br/>
+			<input type="radio" name="easing" value="backOut" /> backOut<br/>
+			<input type="radio" name="easing" value="bounceBoth" /> bounceBoth<br/>
+			<input type="radio" name="easing" value="bounceIn" /> bounceIn<br/>
+			<input type="radio" name="easing" value="bounceOut" /> bounceOut<br/>
+			<input type="radio" name="easing" value="easeBoth" /> easeBoth<br/>
+			<input type="radio" name="easing" value="easeBothStrong" /> easeBothStrong<br/>
+			<input type="radio" name="easing" value="easeIn" /> easeIn<br/>
+			<input type="radio" name="easing" value="easeInStrong" /> easeInStrong<br/>
+			<input type="radio" name="easing" value="easeOut" /> easeOut<br/>
+			<input type="radio" name="easing" value="easeOutStrong" /> easeOutStrong<br/>
+			<input type="radio" name="easing" value="elasticBoth" /> elasticBoth<br/>
+			<input type="radio" name="easing" value="elasticIn" /> elasticIn<br/>
+			<input type="radio" name="easing" value="elasticOut" /> elasticOut<br/>
+		</fieldset>
+	</fieldset>
+
+</fieldset>
+
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady( function () {
+	var Dom = YAHOO.util.Dom,
+		Event = YAHOO.util.Event;
+
+	var pb = new YAHOO.widget.ProgressBar({value:0,minValue:-50,maxValue:50}).render('basic');
+
+	var valueSlider = YAHOO.widget.Slider.getHorizSlider('sliderValue',
+        'sliderValueThumb', 0, 100, 0
+	);
+	valueSlider.animate = false;
+	valueSlider.setValue(50);
+
+	valueSlider.subscribe("change", function(offsetFromStart) {
+		var value = offsetFromStart   - 50;
+		Dom.get('value').innerHTML = value;
+	});
+
+	valueSlider.subscribe("slideEnd", function() {
+		var value = valueSlider.getValue()  - 50;
+		pb.set('value',value);
+		var actual = pb.get('value');
+		Dom.get('actualValue').innerHTML = actual;
+		if (actual != value) {
+			window.setTimeout(function() {
+				valueSlider.setValue(actual + 50,true,true,true); // make sure it doesn't fire the event again.
+			},1);
+		}
+	});
+
+	var rangeSlider = YAHOO.widget.Slider.getHorizDualSlider("sliderRange",
+        "sliderRangeMinThumb", "sliderRangeMaxThumb",
+        100, 0, [0,100]
+	);
+	rangeSlider.animate = false;
+	rangeSlider.subscribe('change', function() {
+		var value = Math.round(this.minVal  - 50);
+		Dom.get('minValue').innerHTML = value;
+		value = Math.round(this.maxVal  - 50);
+		Dom.get('maxValue').innerHTML = value;
+	});
+	rangeSlider.subscribe('slideEnd', function() {
+		var value = Math.round(this.minVal - 50);
+		pb.set('minValue',value);
+		value = Math.round(this.maxVal - 50);
+		pb.set('maxValue',value);
+	});
+
+	var widthSlider = YAHOO.widget.Slider.getHorizSlider('sliderWidth',
+        'sliderWidthThumb', 0, 100, 0
+	);
+	widthSlider.animate = false;
+	widthSlider.setValue(100);
+	widthSlider.subscribe("change", function(offsetFromStart) {
+		var value = offsetFromStart * 2;
+		Dom.get('width').innerHTML = value;
+	});
+	widthSlider.subscribe("slideEnd", function() {
+		var value = widthSlider.getValue() * 2;
+		pb.set('width',value);
+	});
+
+
+	var heightSlider = YAHOO.widget.Slider.getHorizSlider('sliderHeight',
+        'sliderHeightThumb', 0, 100, 0
+	);
+	heightSlider.animate = false;
+	heightSlider.setValue(50);
+	heightSlider.subscribe("change", function(offsetFromStart) {
+		var value = Math.round(offsetFromStart / 2.5);
+		Dom.get('height').innerHTML = value;
+	});
+	heightSlider.subscribe("slideEnd", function() {
+		var value = Math.round(heightSlider.getValue() / 2.5);
+		pb.set('height',value);
+	});
+
+	Dom.get('anim').checked = false;
+	Event.on('anim','click',function(ev) {
+		var checked = Event.getTarget(ev).checked;
+		pb.set('anim',checked);
+		if (checked) {
+			Dom.removeClass('animationSet','disabled');
+		} else {
+			Dom.addClass('animationSet','disabled');
+		}
+	});
+
+	var durationSlider = YAHOO.widget.Slider.getHorizSlider('sliderDuration',
+        'sliderDurationThumb', 0, 100, 0
+	);
+	durationSlider.animate = false;
+	durationSlider.setValue(20);
+	durationSlider.subscribe("change", function(offsetFromStart) {
+		var value = offsetFromStart / 20;
+		Dom.get('duration').innerHTML = value;
+	});
+	durationSlider.subscribe("slideEnd", function() {
+		var value = durationSlider.getValue() / 20;
+		var anim = pb.get('anim');
+		if (anim) { anim.duration = value; }
+	});
+
+	Dom.get('easeNone').checked = true;
+	Event.on('easing','click',function(ev) {
+		var anim = pb.get('anim');
+		if (!anim) { return; }
+		var input = Event.getTarget(ev);
+		if (input.tagName.toUpperCase() != 'INPUT') { return; }
+		anim.method = YAHOO.util.Easing[input.value];
+	});
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

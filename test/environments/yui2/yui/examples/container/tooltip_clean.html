@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Simple Tooltip Example</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Simple Tooltip Example</h1>
+
+<div class="exampleIntro">
+	<p>Hover over the orange box and the link to see their Tooltips.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+	#ctx { background:orange;width:200px;height:200px; }
+</style>
+
+<p id="ctx">Hover over me to see a Tooltip!</p>
+
+<p><a id="link" href="http://www.yahoo.com/" title="Do You Yahoo?">Hover over me to see a Tooltip!</a></p>
+
+<script type="text/javascript">
+	YAHOO.namespace("example.container");
+	YAHOO.example.container.tt1 = new YAHOO.widget.Tooltip("tt1", { context:"ctx", text:"My text was set using the 'text' configuration property" });
+	YAHOO.example.container.tt1.beforeShowEvent.subscribe(function(){YAHOO.log("Tooltip one is appearing.","info","example");});
+	YAHOO.example.container.tt2 = new YAHOO.widget.Tooltip("tt2", { context:"link" });
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

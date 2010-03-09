@@ -1,0 +1,625 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: animation   Anim.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>animation&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_animation.html" title="animation">animation</a>
+                
+                 &gt; Anim.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="o">(</span><span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+
+<span class="k">var</span> <span class="nx">Y</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">;</span>
+
+<span class="c">/*</span>
+<span class="c">Copyright (c) 2006, Yahoo! Inc. All rights reserved.</span>
+<span class="c">Code licensed under the BSD License:</span>
+<span class="c">http://developer.yahoo.net/yui/license.txt</span>
+<span class="c">*/</span>
+
+<span class="c">/**</span>
+<span class="c"> * The animation module provides allows effects to be added to HTMLElements.</span>
+<span class="c"> * @module animation</span>
+<span class="c"> * @requires yahoo, event, dom</span>
+<span class="c"> */</span>
+
+<span class="c">/**</span>
+<span class="c"> *</span>
+<span class="c"> * Base animation class that provides the interface for building animated effects.</span>
+<span class="c"> * &lt;p&gt;Usage: var myAnim = new YAHOO.util.Anim(el, { width: { from: 10, to: 100 } }, 1, YAHOO.util.Easing.easeOut);&lt;/p&gt;</span>
+<span class="c"> * @class Anim</span>
+<span class="c"> * @namespace YAHOO.util</span>
+<span class="c"> * @requires YAHOO.util.AnimMgr</span>
+<span class="c"> * @requires YAHOO.util.Easing</span>
+<span class="c"> * @requires YAHOO.util.Dom</span>
+<span class="c"> * @requires YAHOO.util.Event</span>
+<span class="c"> * @requires YAHOO.util.CustomEvent</span>
+<span class="c"> * @constructor</span>
+<span class="c"> * @param {String | HTMLElement} el Reference to the element that will be animated</span>
+<span class="c"> * @param {Object} attributes The attribute(s) to be animated.  </span>
+<span class="c"> * Each attribute is an object with at minimum a &quot;to&quot; or &quot;by&quot; member defined.  </span>
+<span class="c"> * Additional optional members are &quot;from&quot; (defaults to current value), &quot;units&quot; (defaults to &quot;px&quot;).  </span>
+<span class="c"> * All attribute names use camelCase.</span>
+<span class="c"> * @param {Number} duration (optional, defaults to 1 second) Length of animation (frames or seconds), defaults to time-based</span>
+<span class="c"> * @param {Function} method (optional, defaults to YAHOO.util.Easing.easeNone) Computes the values that are applied to the attributes per frame (generally a YAHOO.util.Easing method)</span>
+<span class="c"> */</span>
+
+<span class="k">var</span> <span class="nx">Anim</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">,</span> <span class="nx">duration</span><span class="o">,</span> <span class="nx">method</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="nx">el</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;element required to create Anim instance&#39;</span><span class="o">,</span> <span class="s1">&#39;error&#39;</span><span class="o">,</span> <span class="s1">&#39;Anim&#39;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">this</span><span class="o">.</span><span class="nx">init</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">,</span> <span class="nx">duration</span><span class="o">,</span> <span class="nx">method</span><span class="o">);</span> 
+<span class="o">};</span>
+
+<span class="nx">Anim</span><span class="o">.</span><span class="nx">NAME</span> <span class="o">=</span> <span class="s1">&#39;Anim&#39;</span><span class="o">;</span>
+
+<span class="nx">Anim</span><span class="o">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="c">/**</span>
+<span class="c">     * Provides a readable name for the Anim instance.</span>
+<span class="c">     * @method toString</span>
+<span class="c">     * @return {String}</span>
+<span class="c">     */</span>
+    <span class="nx">toString</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getEl</span><span class="o">()</span> <span class="o">||</span> <span class="o">{};</span>
+        <span class="k">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">el</span><span class="o">.</span><span class="nx">id</span> <span class="o">||</span> <span class="nx">el</span><span class="o">.</span><span class="nx">tagName</span><span class="o">;</span>
+        <span class="k">return</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">NAME</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="o">);</span>
+    <span class="o">},</span>
+    
+    <span class="nx">patterns</span><span class="o">:</span> <span class="o">{</span> <span class="c">// cached for performance</span>
+<span class="c"></span>        <span class="nx">noNegatives</span><span class="o">:</span>        <span class="sr">/width|height|opacity|padding/i</span><span class="o">,</span> <span class="c">// keep at zero or above</span>
+<span class="c"></span>        <span class="nx">offsetAttribute</span><span class="o">:</span>  <span class="sr">/^((width|height)|(top|left))$/</span><span class="o">,</span> <span class="c">// use offsetValue as default</span>
+<span class="c"></span>        <span class="nx">defaultUnit</span><span class="o">:</span>        <span class="sr">/width|height|top$|bottom$|left$|right$/i</span><span class="o">,</span> <span class="c">// use &#39;px&#39; by default</span>
+<span class="c"></span>        <span class="nx">offsetUnit</span><span class="o">:</span>         <span class="sr">/\d+(em|%|en|ex|pt|in|cm|mm|pc)$/i</span> <span class="c">// IE may return these, so convert these to offset</span>
+<span class="c"></span>    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Returns the value computed by the animation&#39;s &quot;method&quot;.</span>
+<span class="c">     * @method doMethod</span>
+<span class="c">     * @param {String} attr The name of the attribute.</span>
+<span class="c">     * @param {Number} start The value this attribute should start from for this animation.</span>
+<span class="c">     * @param {Number} end  The value this attribute should end at for this animation.</span>
+<span class="c">     * @return {Number} The Value to be applied to the attribute.</span>
+<span class="c">     */</span>
+    <span class="nx">doMethod</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">,</span> <span class="nx">start</span><span class="o">,</span> <span class="nx">end</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">method</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">currentFrame</span><span class="o">,</span> <span class="nx">start</span><span class="o">,</span> <span class="nx">end</span> <span class="o">-</span> <span class="nx">start</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">totalFrames</span><span class="o">);</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Applies a value to an attribute.</span>
+<span class="c">     * @method setAttribute</span>
+<span class="c">     * @param {String} attr The name of the attribute.</span>
+<span class="c">     * @param {Number} val The value to be applied to the attribute.</span>
+<span class="c">     * @param {String} unit The unit (&#39;px&#39;, &#39;%&#39;, etc.) of the value.</span>
+<span class="c">     */</span>
+    <span class="nx">setAttribute</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">,</span> <span class="nx">val</span><span class="o">,</span> <span class="nx">unit</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getEl</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">patterns</span><span class="o">.</span><span class="nx">noNegatives</span><span class="o">.</span><span class="nx">test</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="nx">val</span> <span class="o">=</span> <span class="o">(</span><span class="nx">val</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">?</span> <span class="nx">val</span> <span class="o">:</span> <span class="m">0</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">attr</span> <span class="k">in</span> <span class="nx">el</span> <span class="o">&amp;&amp;</span> <span class="o">!(</span><span class="s1">&#39;style&#39;</span> <span class="k">in</span> <span class="nx">el</span> <span class="o">&amp;&amp;</span> <span class="nx">attr</span> <span class="k">in</span> <span class="nx">el</span><span class="o">.</span><span class="nx">style</span><span class="o">))</span> <span class="o">{</span>
+            <span class="nx">el</span><span class="o">[</span><span class="nx">attr</span><span class="o">]</span> <span class="o">=</span> <span class="nx">val</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">Y</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attr</span><span class="o">,</span> <span class="nx">val</span> <span class="o">+</span> <span class="nx">unit</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">},</span>                        
+    
+    <span class="c">/**</span>
+<span class="c">     * Returns current value of the attribute.</span>
+<span class="c">     * @method getAttribute</span>
+<span class="c">     * @param {String} attr The name of the attribute.</span>
+<span class="c">     * @return {Number} val The current value of the attribute.</span>
+<span class="c">     */</span>
+    <span class="nx">getAttribute</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getEl</span><span class="o">();</span>
+        <span class="k">var</span> <span class="nx">val</span> <span class="o">=</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attr</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">val</span> <span class="o">!==</span> <span class="s1">&#39;auto&#39;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">patterns</span><span class="o">.</span><span class="nx">offsetUnit</span><span class="o">.</span><span class="nx">test</span><span class="o">(</span><span class="nx">val</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nb">parseFloat</span><span class="o">(</span><span class="nx">val</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">patterns</span><span class="o">.</span><span class="nx">offsetAttribute</span><span class="o">.</span><span class="nx">exec</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">||</span> <span class="o">[];</span>
+        <span class="k">var</span> <span class="nx">pos</span> <span class="o">=</span> <span class="o">!!(</span> <span class="nx">a</span><span class="o">[</span><span class="m">3</span><span class="o">]</span> <span class="o">);</span> <span class="c">// top or left</span>
+<span class="c"></span>        <span class="k">var</span> <span class="nx">box</span> <span class="o">=</span> <span class="o">!!(</span> <span class="nx">a</span><span class="o">[</span><span class="m">2</span><span class="o">]</span> <span class="o">);</span> <span class="c">// width or height</span>
+<span class="c"></span>        
+        <span class="k">if</span> <span class="o">(</span><span class="s1">&#39;style&#39;</span> <span class="k">in</span> <span class="nx">el</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c">// use offsets for width/height and abs pos top/left</span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span> <span class="nx">box</span> <span class="o">||</span> <span class="o">(</span><span class="nx">Y</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">getStyle</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="s1">&#39;position&#39;</span><span class="o">)</span> <span class="o">==</span> <span class="s1">&#39;absolute&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">pos</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="nx">val</span> <span class="o">=</span> <span class="nx">el</span><span class="o">[</span><span class="s1">&#39;offset&#39;</span> <span class="o">+</span> <span class="nx">a</span><span class="o">[</span><span class="m">0</span><span class="o">].</span><span class="nx">charAt</span><span class="o">(</span><span class="m">0</span><span class="o">).</span><span class="nx">toUpperCase</span><span class="o">()</span> <span class="o">+</span> <span class="nx">a</span><span class="o">[</span><span class="m">0</span><span class="o">].</span><span class="nx">substr</span><span class="o">(</span><span class="m">1</span><span class="o">)];</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span> <span class="c">// default to zero for other &#39;auto&#39;</span>
+<span class="c"></span>                <span class="nx">val</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">attr</span> <span class="k">in</span> <span class="nx">el</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">val</span> <span class="o">=</span> <span class="nx">el</span><span class="o">[</span><span class="nx">attr</span><span class="o">];</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nx">val</span><span class="o">;</span>
+    <span class="o">},</span>
+    
+    <span class="c">/**</span>
+<span class="c">     * Returns the unit to use when none is supplied.</span>
+<span class="c">     * @method getDefaultUnit</span>
+<span class="c">     * @param {attr} attr The name of the attribute.</span>
+<span class="c">     * @return {String} The default unit to be used.</span>
+<span class="c">     */</span>
+    <span class="nx">getDefaultUnit</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">patterns</span><span class="o">.</span><span class="nx">defaultUnit</span><span class="o">.</span><span class="nx">test</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="s1">&#39;px&#39;</span><span class="o">;</span>
+         <span class="o">}</span>
+         
+         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">;</span>
+    <span class="o">},</span>
+        
+    <span class="c">/**</span>
+<span class="c">     * Sets the actual values to be used during the animation.  Should only be needed for subclass use.</span>
+<span class="c">     * @method setRuntimeAttribute</span>
+<span class="c">     * @param {Object} attr The attribute object</span>
+<span class="c">     * @private </span>
+<span class="c">     */</span>
+    <span class="nx">setRuntimeAttribute</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">start</span><span class="o">;</span>
+        <span class="k">var</span> <span class="nx">end</span><span class="o">;</span>
+        <span class="k">var</span> <span class="nx">attributes</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">attributes</span><span class="o">;</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="nx">runtimeAttributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">]</span> <span class="o">=</span> <span class="o">{};</span>
+        
+        <span class="k">var</span> <span class="nx">isset</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">prop</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="o">(</span><span class="k">typeof</span> <span class="nx">prop</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="o">);</span>
+        <span class="o">};</span>
+        
+        <span class="k">if</span> <span class="o">(</span> <span class="o">!</span><span class="nx">isset</span><span class="o">(</span><span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;to&#39;</span><span class="o">])</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isset</span><span class="o">(</span><span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;by&#39;</span><span class="o">])</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span> <span class="c">// note return; nothing to animate to</span>
+<span class="c"></span>        <span class="o">}</span>
+        
+        <span class="nx">start</span> <span class="o">=</span> <span class="o">(</span> <span class="nx">isset</span><span class="o">(</span><span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;from&#39;</span><span class="o">])</span> <span class="o">)</span> <span class="o">?</span> <span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;from&#39;</span><span class="o">]</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">getAttribute</span><span class="o">(</span><span class="nx">attr</span><span class="o">);</span>
+
+        <span class="c">// To beats by, per SMIL 2.1 spec</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span> <span class="nx">isset</span><span class="o">(</span><span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;to&#39;</span><span class="o">])</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="nx">end</span> <span class="o">=</span> <span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;to&#39;</span><span class="o">];</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span> <span class="nx">isset</span><span class="o">(</span><span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;by&#39;</span><span class="o">])</span> <span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">start</span><span class="o">.</span><span class="nx">constructor</span> <span class="o">==</span> <span class="nb">Array</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">end</span> <span class="o">=</span> <span class="o">[];</span>
+                <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">start</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="o">;</span> <span class="o">++</span><span class="nx">i</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">end</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">=</span> <span class="nx">start</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">+</span> <span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;by&#39;</span><span class="o">][</span><span class="nx">i</span><span class="o">]</span> <span class="o">*</span> <span class="m">1</span><span class="o">;</span> <span class="c">// times 1 to cast &quot;by&quot; </span>
+<span class="c"></span>                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nx">end</span> <span class="o">=</span> <span class="nx">start</span> <span class="o">+</span> <span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;by&#39;</span><span class="o">]</span> <span class="o">*</span> <span class="m">1</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        
+        <span class="k">this</span><span class="o">.</span><span class="nx">runtimeAttributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">].</span><span class="nx">start</span> <span class="o">=</span> <span class="nx">start</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">runtimeAttributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">].</span><span class="nx">end</span> <span class="o">=</span> <span class="nx">end</span><span class="o">;</span>
+
+        <span class="c">// set units if needed</span>
+<span class="c"></span>        <span class="k">this</span><span class="o">.</span><span class="nx">runtimeAttributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">].</span><span class="nx">unit</span> <span class="o">=</span> <span class="o">(</span> <span class="nx">isset</span><span class="o">(</span><span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">].</span><span class="nx">unit</span><span class="o">)</span> <span class="o">)</span> <span class="o">?</span>
+                <span class="nx">attributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">][</span><span class="s1">&#39;unit&#39;</span><span class="o">]</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">getDefaultUnit</span><span class="o">(</span><span class="nx">attr</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">},</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Constructor for Anim instance.</span>
+<span class="c">     * @method init</span>
+<span class="c">     * @param {String | HTMLElement} el Reference to the element that will be animated</span>
+<span class="c">     * @param {Object} attributes The attribute(s) to be animated.  </span>
+<span class="c">     * Each attribute is an object with at minimum a &quot;to&quot; or &quot;by&quot; member defined.  </span>
+<span class="c">     * Additional optional members are &quot;from&quot; (defaults to current value), &quot;units&quot; (defaults to &quot;px&quot;).  </span>
+<span class="c">     * All attribute names use camelCase.</span>
+<span class="c">     * @param {Number} duration (optional, defaults to 1 second) Length of animation (frames or seconds), defaults to time-based</span>
+<span class="c">     * @param {Function} method (optional, defaults to YAHOO.util.Easing.easeNone) Computes the values that are applied to the attributes per frame (generally a YAHOO.util.Easing method)</span>
+<span class="c">     */</span> 
+    <span class="nx">init</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">,</span> <span class="nx">duration</span><span class="o">,</span> <span class="nx">method</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c">/**</span>
+<span class="c">         * Whether or not the animation is running.</span>
+<span class="c">         * @property isAnimated</span>
+<span class="c">         * @private</span>
+<span class="c">         * @type Boolean</span>
+<span class="c">         */</span>
+        <span class="k">var</span> <span class="nx">isAnimated</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * A Date object that is created when the animation begins.</span>
+<span class="c">         * @property startTime</span>
+<span class="c">         * @private</span>
+<span class="c">         * @type Date</span>
+<span class="c">         */</span>
+        <span class="k">var</span> <span class="nx">startTime</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * The number of frames this animation was able to execute.</span>
+<span class="c">         * @property actualFrames</span>
+<span class="c">         * @private</span>
+<span class="c">         * @type Int</span>
+<span class="c">         */</span>
+        <span class="k">var</span> <span class="nx">actualFrames</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> 
+
+        <span class="c">/**</span>
+<span class="c">         * The element to be animated.</span>
+<span class="c">         * @property el</span>
+<span class="c">         * @private</span>
+<span class="c">         * @type HTMLElement</span>
+<span class="c">         */</span>
+        <span class="nx">el</span> <span class="o">=</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">el</span><span class="o">);</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * The collection of attributes to be animated.  </span>
+<span class="c">         * Each attribute must have at least a &quot;to&quot; or &quot;by&quot; defined in order to animate.  </span>
+<span class="c">         * If &quot;to&quot; is supplied, the animation will end with the attribute at that value.  </span>
+<span class="c">         * If &quot;by&quot; is supplied, the animation will end at that value plus its starting value. </span>
+<span class="c">         * If both are supplied, &quot;to&quot; is used, and &quot;by&quot; is ignored. </span>
+<span class="c">         * Optional additional member include &quot;from&quot; (the value the attribute should start animating from, defaults to current value), and &quot;unit&quot; (the units to apply to the values).</span>
+<span class="c">         * @property attributes</span>
+<span class="c">         * @type Object</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">attributes</span> <span class="o">=</span> <span class="nx">attributes</span> <span class="o">||</span> <span class="o">{};</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * The length of the animation.  Defaults to &quot;1&quot; (second).</span>
+<span class="c">         * @property duration</span>
+<span class="c">         * @type Number</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">duration</span> <span class="o">=</span> <span class="o">!</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isUndefined</span><span class="o">(</span><span class="nx">duration</span><span class="o">)</span> <span class="o">?</span> <span class="nx">duration</span> <span class="o">:</span> <span class="m">1</span><span class="o">;</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * The method that will provide values to the attribute(s) during the animation. </span>
+<span class="c">         * Defaults to &quot;YAHOO.util.Easing.easeNone&quot;.</span>
+<span class="c">         * @property method</span>
+<span class="c">         * @type Function</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">method</span> <span class="o">=</span> <span class="nx">method</span> <span class="o">||</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">Easing</span><span class="o">.</span><span class="nx">easeNone</span><span class="o">;</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Whether or not the duration should be treated as seconds.</span>
+<span class="c">         * Defaults to true.</span>
+<span class="c">         * @property useSeconds</span>
+<span class="c">         * @type Boolean</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">useSeconds</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span> <span class="c">// default to seconds</span>
+<span class="c"></span>        
+        <span class="c">/**</span>
+<span class="c">         * The location of the current animation on the timeline.</span>
+<span class="c">         * In time-based animations, this is used by AnimMgr to ensure the animation finishes on time.</span>
+<span class="c">         * @property currentFrame</span>
+<span class="c">         * @type Int</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">currentFrame</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * The total number of frames to be executed.</span>
+<span class="c">         * In time-based animations, this is used by AnimMgr to ensure the animation finishes on time.</span>
+<span class="c">         * @property totalFrames</span>
+<span class="c">         * @type Int</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">totalFrames</span> <span class="o">=</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">AnimMgr</span><span class="o">.</span><span class="nx">fps</span><span class="o">;</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Changes the animated element</span>
+<span class="c">         * @method setEl</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">setEl</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">element</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">el</span> <span class="o">=</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="nx">element</span><span class="o">);</span>
+        <span class="o">};</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Returns a reference to the animated element.</span>
+<span class="c">         * @method getEl</span>
+<span class="c">         * @return {HTMLElement}</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">getEl</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="nx">el</span><span class="o">;</span> <span class="o">};</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Checks whether the element is currently animated.</span>
+<span class="c">         * @method isAnimated</span>
+<span class="c">         * @return {Boolean} current value of isAnimated.     </span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">isAnimated</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">isAnimated</span><span class="o">;</span>
+        <span class="o">};</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Returns the animation start time.</span>
+<span class="c">         * @method getStartTime</span>
+<span class="c">         * @return {Date} current value of startTime.      </span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">getStartTime</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">startTime</span><span class="o">;</span>
+        <span class="o">};</span>        
+        
+        <span class="k">this</span><span class="o">.</span><span class="nx">runtimeAttributes</span> <span class="o">=</span> <span class="o">{};</span>
+        
+        <span class="k">var</span> <span class="nx">logger</span> <span class="o">=</span> <span class="o">{};</span>
+        <span class="nx">logger</span><span class="o">.</span><span class="nx">log</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">.</span><span class="nx">apply</span><span class="o">(</span><span class="nb">window</span><span class="o">,</span> <span class="nx">arguments</span><span class="o">)};</span>
+        
+        <span class="nx">logger</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;creating new instance of &#39;</span> <span class="o">+</span> <span class="k">this</span><span class="o">);</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Starts the animation by registering it with the animation manager. </span>
+<span class="c">         * @method animate  </span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">animate</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">isAnimated</span><span class="o">()</span> <span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">currentFrame</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">totalFrames</span> <span class="o">=</span> <span class="o">(</span> <span class="k">this</span><span class="o">.</span><span class="nx">useSeconds</span> <span class="o">)</span> <span class="o">?</span> <span class="nb">Math</span><span class="o">.</span><span class="nx">ceil</span><span class="o">(</span><span class="nx">Y</span><span class="o">.</span><span class="nx">AnimMgr</span><span class="o">.</span><span class="nx">fps</span> <span class="o">*</span> <span class="k">this</span><span class="o">.</span><span class="nx">duration</span><span class="o">)</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">duration</span><span class="o">;</span>
+    
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">duration</span> <span class="o">===</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="nx">useSeconds</span><span class="o">)</span> <span class="o">{</span> <span class="c">// jump to last frame if zero second duration </span>
+<span class="c"></span>                <span class="k">this</span><span class="o">.</span><span class="nx">totalFrames</span> <span class="o">=</span> <span class="m">1</span><span class="o">;</span> 
+            <span class="o">}</span>
+            <span class="nx">Y</span><span class="o">.</span><span class="nx">AnimMgr</span><span class="o">.</span><span class="nx">registerElement</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">};</span>
+          
+        <span class="c">/**</span>
+<span class="c">         * Stops the animation.  Normally called by AnimMgr when animation completes.</span>
+<span class="c">         * @method stop</span>
+<span class="c">         * @param {Boolean} finish (optional) If true, animation will jump to final frame.</span>
+<span class="c">         */</span> 
+        <span class="k">this</span><span class="o">.</span><span class="nx">stop</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">finish</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">isAnimated</span><span class="o">())</span> <span class="o">{</span> <span class="c">// nothing to stop</span>
+<span class="c"></span>                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">finish</span><span class="o">)</span> <span class="o">{</span>
+                 <span class="k">this</span><span class="o">.</span><span class="nx">currentFrame</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">totalFrames</span><span class="o">;</span>
+                 <span class="k">this</span><span class="o">.</span><span class="nx">_onTween</span><span class="o">.</span><span class="nx">fire</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="nx">Y</span><span class="o">.</span><span class="nx">AnimMgr</span><span class="o">.</span><span class="nx">stop</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="o">};</span>
+        
+        <span class="k">var</span> <span class="nx">onStart</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>            
+            <span class="k">this</span><span class="o">.</span><span class="nx">onStart</span><span class="o">.</span><span class="nx">fire</span><span class="o">();</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">runtimeAttributes</span> <span class="o">=</span> <span class="o">{};</span>
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">attr</span> <span class="k">in</span> <span class="k">this</span><span class="o">.</span><span class="nx">attributes</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">setRuntimeAttribute</span><span class="o">(</span><span class="nx">attr</span><span class="o">);</span>
+            <span class="o">}</span>
+            
+            <span class="nx">isAnimated</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="nx">actualFrames</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+            <span class="nx">startTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="o">();</span> 
+        <span class="o">};</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Feeds the starting and ending values for each animated attribute to doMethod once per frame, then applies the resulting value to the attribute(s).</span>
+<span class="c">         * @private</span>
+<span class="c">         */</span>
+         
+        <span class="k">var</span> <span class="nx">onTween</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="nx">duration</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="o">()</span> <span class="o">-</span> <span class="k">this</span><span class="o">.</span><span class="nx">getStartTime</span><span class="o">(),</span>
+                <span class="nx">currentFrame</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">currentFrame</span>
+            <span class="o">};</span>
+            
+            <span class="nx">data</span><span class="o">.</span><span class="nx">toString</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="o">(</span>
+                    <span class="s1">&#39;duration: &#39;</span> <span class="o">+</span> <span class="nx">data</span><span class="o">.</span><span class="nx">duration</span> <span class="o">+</span>
+                    <span class="s1">&#39;, currentFrame: &#39;</span> <span class="o">+</span> <span class="nx">data</span><span class="o">.</span><span class="nx">currentFrame</span>
+                <span class="o">);</span>
+            <span class="o">};</span>
+            
+            <span class="k">this</span><span class="o">.</span><span class="nx">onTween</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">data</span><span class="o">);</span>
+            
+            <span class="k">var</span> <span class="nx">runtimeAttributes</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">runtimeAttributes</span><span class="o">;</span>
+            
+            <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">attr</span> <span class="k">in</span> <span class="nx">runtimeAttributes</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">setAttribute</span><span class="o">(</span><span class="nx">attr</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">doMethod</span><span class="o">(</span><span class="nx">attr</span><span class="o">,</span> <span class="nx">runtimeAttributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">].</span><span class="nx">start</span><span class="o">,</span> <span class="nx">runtimeAttributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">].</span><span class="nx">end</span><span class="o">),</span> <span class="nx">runtimeAttributes</span><span class="o">[</span><span class="nx">attr</span><span class="o">].</span><span class="nx">unit</span><span class="o">);</span> 
+            <span class="o">}</span>
+            
+            <span class="nx">actualFrames</span> <span class="o">+=</span> <span class="m">1</span><span class="o">;</span>
+        <span class="o">};</span>
+        
+        <span class="k">var</span> <span class="nx">onComplete</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">actual_duration</span> <span class="o">=</span> <span class="o">(</span><span class="k">new</span> <span class="nb">Date</span><span class="o">()</span> <span class="o">-</span> <span class="nx">startTime</span><span class="o">)</span> <span class="o">/</span> <span class="m">1000</span> <span class="o">;</span>
+            
+            <span class="k">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="nx">duration</span><span class="o">:</span> <span class="nx">actual_duration</span><span class="o">,</span>
+                <span class="nx">frames</span><span class="o">:</span> <span class="nx">actualFrames</span><span class="o">,</span>
+                <span class="nx">fps</span><span class="o">:</span> <span class="nx">actualFrames</span> <span class="o">/</span> <span class="nx">actual_duration</span>
+            <span class="o">};</span>
+            
+            <span class="nx">data</span><span class="o">.</span><span class="nx">toString</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="o">(</span>
+                    <span class="s1">&#39;duration: &#39;</span> <span class="o">+</span> <span class="nx">data</span><span class="o">.</span><span class="nx">duration</span> <span class="o">+</span>
+                    <span class="s1">&#39;, frames: &#39;</span> <span class="o">+</span> <span class="nx">data</span><span class="o">.</span><span class="nx">frames</span> <span class="o">+</span>
+                    <span class="s1">&#39;, fps: &#39;</span> <span class="o">+</span> <span class="nx">data</span><span class="o">.</span><span class="nx">fps</span>
+                <span class="o">);</span>
+            <span class="o">};</span>
+            
+            <span class="nx">isAnimated</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="nx">actualFrames</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="nx">onComplete</span><span class="o">.</span><span class="nx">fire</span><span class="o">(</span><span class="nx">data</span><span class="o">);</span>
+        <span class="o">};</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Custom event that fires after onStart, useful in subclassing</span>
+<span class="c">         * @private</span>
+<span class="c">         */</span>    
+        <span class="k">this</span><span class="o">.</span><span class="nx">_onStart</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s1">&#39;_start&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Custom event that fires when animation begins</span>
+<span class="c">         * Listen via subscribe method (e.g. myAnim.onStart.subscribe(someFunction)</span>
+<span class="c">         * @event onStart</span>
+<span class="c">         */</span>    
+        <span class="k">this</span><span class="o">.</span><span class="nx">onStart</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s1">&#39;start&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Custom event that fires between each frame</span>
+<span class="c">         * Listen via subscribe method (e.g. myAnim.onTween.subscribe(someFunction)</span>
+<span class="c">         * @event onTween</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">onTween</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s1">&#39;tween&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Custom event that fires after onTween</span>
+<span class="c">         * @private</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">_onTween</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s1">&#39;_tween&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Custom event that fires when animation ends</span>
+<span class="c">         * Listen via subscribe method (e.g. myAnim.onComplete.subscribe(someFunction)</span>
+<span class="c">         * @event onComplete</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">onComplete</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s1">&#39;complete&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        <span class="c">/**</span>
+<span class="c">         * Custom event that fires after onComplete</span>
+<span class="c">         * @private</span>
+<span class="c">         */</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">_onComplete</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">CustomEvent</span><span class="o">(</span><span class="s1">&#39;_complete&#39;</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+        <span class="k">this</span><span class="o">.</span><span class="nx">_onStart</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="nx">onStart</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">_onTween</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="nx">onTween</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="nx">_onComplete</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="nx">onComplete</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">};</span>
+
+    <span class="nx">Y</span><span class="o">.</span><span class="nx">Anim</span> <span class="o">=</span> <span class="nx">Anim</span><span class="o">;</span>
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.Anim.html" title="YAHOO.util.Anim">YAHOO.util.Anim</a></li>
+                                <li class=""><a href="YAHOO.util.AnimMgr.html" title="YAHOO.util.AnimMgr">YAHOO.util.AnimMgr</a></li>
+                                <li class=""><a href="YAHOO.util.Bezier.html" title="YAHOO.util.Bezier">YAHOO.util.Bezier</a></li>
+                                <li class=""><a href="YAHOO.util.ColorAnim.html" title="YAHOO.util.ColorAnim">YAHOO.util.ColorAnim</a></li>
+                                <li class=""><a href="YAHOO.util.Easing.html" title="YAHOO.util.Easing">YAHOO.util.Easing</a></li>
+                                <li class=""><a href="YAHOO.util.Motion.html" title="YAHOO.util.Motion">YAHOO.util.Motion</a></li>
+                                <li class=""><a href="YAHOO.util.Scroll.html" title="YAHOO.util.Scroll">YAHOO.util.Scroll</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="Anim.js.html" title="Anim.js">Anim.js</a></li>
+                                <li class=""><a href="AnimMgr.js.html" title="AnimMgr.js">AnimMgr.js</a></li>
+                                <li class=""><a href="Bezier.js.html" title="Bezier.js">Bezier.js</a></li>
+                                <li class=""><a href="ColorAnim.js.html" title="ColorAnim.js">ColorAnim.js</a></li>
+                                <li class=""><a href="Easing.js.html" title="Easing.js">Easing.js</a></li>
+                                <li class=""><a href="Motion.js.html" title="Motion.js">Motion.js</a></li>
+                                <li class=""><a href="Scroll.js.html" title="Scroll.js">Scroll.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.util.Anim", "name": "actualFrames", "url": "YAHOO.util.Anim.html#property_actualFrames", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "animate", "url": "YAHOO.util.Anim.html#method_animate", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "attributes", "url": "YAHOO.util.Anim.html#property_attributes", "type": "property"}, {"access": "", "host": "YAHOO.util.Easing", "name": "backBoth", "url": "YAHOO.util.Easing.html#method_backBoth", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "backIn", "url": "YAHOO.util.Easing.html#method_backIn", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "backOut", "url": "YAHOO.util.Easing.html#method_backOut", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "bounceBoth", "url": "YAHOO.util.Easing.html#method_bounceBoth", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "bounceIn", "url": "YAHOO.util.Easing.html#method_bounceIn", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "bounceOut", "url": "YAHOO.util.Easing.html#method_bounceOut", "type": "method"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "correctFrame", "url": "YAHOO.util.AnimMgr.html#method_correctFrame", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "currentFrame", "url": "YAHOO.util.Anim.html#property_currentFrame", "type": "property"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "delay", "url": "YAHOO.util.AnimMgr.html#property_delay", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "doMethod", "url": "YAHOO.util.Anim.html#method_doMethod", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "duration", "url": "YAHOO.util.Anim.html#property_duration", "type": "property"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeBoth", "url": "YAHOO.util.Easing.html#method_easeBoth", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeBothStrong", "url": "YAHOO.util.Easing.html#method_easeBothStrong", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeIn", "url": "YAHOO.util.Easing.html#method_easeIn", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeInStrong", "url": "YAHOO.util.Easing.html#method_easeInStrong", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeNone", "url": "YAHOO.util.Easing.html#method_easeNone", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeOut", "url": "YAHOO.util.Easing.html#method_easeOut", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeOutStrong", "url": "YAHOO.util.Easing.html#method_easeOutStrong", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "el", "url": "YAHOO.util.Anim.html#property_el", "type": "property"}, {"access": "", "host": "YAHOO.util.Easing", "name": "elasticBoth", "url": "YAHOO.util.Easing.html#method_elasticBoth", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "elasticIn", "url": "YAHOO.util.Easing.html#method_elasticIn", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "elasticOut", "url": "YAHOO.util.Easing.html#method_elasticOut", "type": "method"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "fps", "url": "YAHOO.util.AnimMgr.html#property_fps", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getAttribute", "url": "YAHOO.util.Anim.html#method_getAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getDefaultUnit", "url": "YAHOO.util.Anim.html#method_getDefaultUnit", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getEl", "url": "YAHOO.util.Anim.html#method_getEl", "type": "method"}, {"access": "", "host": "YAHOO.util.Bezier", "name": "getPosition", "url": "YAHOO.util.Bezier.html#method_getPosition", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getStartTime", "url": "YAHOO.util.Anim.html#method_getStartTime", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "init", "url": "YAHOO.util.Anim.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "isAnimated", "url": "YAHOO.util.Anim.html#property_isAnimated", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "isAnimated", "url": "YAHOO.util.Anim.html#method_isAnimated", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "method", "url": "YAHOO.util.Anim.html#property_method", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onComplete", "url": "YAHOO.util.Anim.html#property__onComplete", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onComplete", "url": "YAHOO.util.Anim.html#event_onComplete", "type": "event"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onStart", "url": "YAHOO.util.Anim.html#property__onStart", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onStart", "url": "YAHOO.util.Anim.html#event_onStart", "type": "event"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onTween", "url": "YAHOO.util.Anim.html#property__onTween", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "onTween", "url": "YAHOO.util.Anim.html#method_onTween", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onTween", "url": "YAHOO.util.Anim.html#event_onTween", "type": "event"}, {"access": "", "host": "YAHOO.util.ColorAnim", "name": "parseColor", "url": "YAHOO.util.ColorAnim.html#method_parseColor", "type": "method"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "queue", "url": "YAHOO.util.AnimMgr.html#property_queue", "type": "property"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "registerElement", "url": "YAHOO.util.AnimMgr.html#method_registerElement", "type": "method"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "run", "url": "YAHOO.util.AnimMgr.html#method_run", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "setAttribute", "url": "YAHOO.util.Anim.html#method_setAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "setEl", "url": "YAHOO.util.Anim.html#method_setEl", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "setRuntimeAttribute", "url": "YAHOO.util.Anim.html#method_setRuntimeAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "start", "url": "YAHOO.util.AnimMgr.html#method_start", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "startTime", "url": "YAHOO.util.Anim.html#property_startTime", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "stop", "url": "YAHOO.util.Anim.html#method_stop", "type": "method"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "stop", "url": "YAHOO.util.AnimMgr.html#method_stop", "type": "method"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "thread", "url": "YAHOO.util.AnimMgr.html#property_thread", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "toString", "url": "YAHOO.util.Anim.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "totalFrames", "url": "YAHOO.util.Anim.html#property_totalFrames", "type": "property"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "tweenCount", "url": "YAHOO.util.AnimMgr.html#property_tweenCount", "type": "property"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "unRegister", "url": "YAHOO.util.AnimMgr.html#method_unRegister", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "useSeconds", "url": "YAHOO.util.Anim.html#property_useSeconds", "type": "property"}];
+</script>
+</body>
+</html>

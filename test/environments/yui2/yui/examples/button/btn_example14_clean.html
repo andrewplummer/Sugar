@@ -1,0 +1,351 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Slider Button</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/slider/assets/skins/sam/slider.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    /*
+        Margin and padding on body element
+        can introduce errors in determining
+        element position and are not recommended;
+        we turn them off as a foundation for YUI
+        CSS treatments.
+    */
+    
+    body {
+    
+        margin: 0;
+        padding: 0;
+    
+    }
+
+    #example {
+    
+        padding: 1em;
+    
+    }
+
+    #photo {
+    
+        border: solid 1px #000;
+    
+    }
+
+
+    /*
+        Set the "zoom" property to "normal" since it is set to "1" by the 
+        ".example-container .bd" rule in yui.css and this causes a Menu
+        instance's width to expand to 100% of the browser viewport.
+    */
+    
+    div.yuimenu .bd {
+    
+        zoom: normal;
+    
+    }
+    
+
+    /* Style the <div> element containing the Button instance */
+    
+    #opacitycontrols {
+    
+        border-top: solid 1px #000;
+        padding: .5em .25em;
+        margin-top: .5em;
+    
+    }
+
+
+    /* Style the Slider instance */
+
+    #slider-bg {
+    
+        position: relative;
+        background: url(../button/assets/bg-fader.gif) 7px 12px no-repeat;
+        height: 28px;
+        width: 217px; 
+
+    }
+
+    #slider-thumb {
+
+        cursor: default;
+        position: absolute;
+        top: 4px;
+
+    }
+
+    
+    /*
+        Give the <em> element wrapping the Button instance's text label a 
+        fixed width so that the Button doesn't grow or shrink as the 
+        text label is updated.
+    */
+
+    #opacitybutton-currentopacity {
+
+        width: 3em;
+        font-style: normal;
+        display: block;
+        text-align: left;
+
+    }
+
+	#opacitybutton  {
+	
+		vertical-align: middle;
+		
+	}
+
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Slider Button</h1>
+
+<div class="exampleIntro">
+	<p>
+This example demonstrates how to combine a Split Button with a Slider to 
+create an opacity slider button, similar to that found in Adobe Photoshop.
+</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+    (function() {
+
+        var Event = YAHOO.util.Event;
+
+    
+        Event.onContentReady("example", function () {
+
+            var Dom = YAHOO.util.Dom,
+                oSlider;
+
+
+            /*
+                Create a <div> element to house a Button instance and its 
+                corresponding <label> element.
+            */
+
+            var oDIV = document.createElement("div")
+
+            oDIV.id = "opacitycontrols";
+            oDIV.innerHTML = "<label for=\"opacitybutton-button\">Opacity:</label>";
+
+            Dom.get("example").appendChild(oDIV);
+
+
+            /*
+                Create a Menu instance whose body element will house a 
+                Slider instance.
+            */
+
+            var oOpacityMenu = new YAHOO.widget.Menu("opacitymenu", { width: "220px" });
+
+
+            /*
+                Create a new Button instance, wrapping the label in an 
+                <em> element.  The <em> element will be used to give the 
+                Button instance a fixed width to prevent it from growing
+                and shrinking as the text label is updated.
+            */
+
+            var oButton = new YAHOO.widget.Button({ 
+                                                type: "menu", 
+                                                id: "opacitybutton", 
+                                                label: "<em id=\"opacitybutton-currentopacity\">100%</em>", 
+                                                menu: oOpacityMenu,  
+                                                container: "opacitycontrols" });
+
+
+            /*
+                Maintain a reference to the <em> element inside the label
+                so that its text can easily be updated in response to the firing
+                of the Slider instance's "change" event.
+            */
+
+            var oCurrentOpacity;
+
+
+			oButton.on("appendTo", function () {
+			
+                // Add Slider markup to the Menu instance's body element
+
+                oOpacityMenu.setBody("<div id=\"slider-bg\" tabindex=\"1\" title=\"Slider\"><div id=\"slider-thumb\"><img src=\"../button/assets/thumb-n.gif\"></div></div>");
+
+
+                /*
+                     Render the Menu instance into the element specified as the 
+                     Button instance's container
+                */
+
+                oOpacityMenu.render(this.get("container"));			
+			
+				oCurrentOpacity = Dom.get("opacitybutton-currentopacity");
+			
+			});
+            
+
+            /*
+                Give the Button instance's <button> element an id so that 
+                clicking its corresponding <label> element will result in the 
+                Button instance receiving focus.
+            */
+
+            var oHTMLButton = oButton.get("element").getElementsByTagName("button")[0];
+            
+            oHTMLButton.id = "opacitybutton-button";
+
+
+
+            /*
+                Add a "beforeShow" event handler to the Menu instance that 
+                will instantiate the Slider.
+            */
+
+			var onMenuBeforeShow = function () {
+
+                // Instantiate the Slider
+
+                oSlider = YAHOO.widget.Slider.getHorizSlider("slider-bg", "slider-thumb", 0, 200, 1);
+                
+
+                // Set the initial value of the Slider instance
+
+                oSlider.setValue(200, true);
+        
+
+                // Maintain a reference to the Slider instance's root element
+
+                var oSliderEl = Dom.get("slider-bg");
+
+        
+                // Subscribe to the Slider instance's "change" event
+        
+                oSlider.subscribe("change", function() {
+        
+                    /*
+                        Divide the pixel offset in half to get a value between 
+                        0 and 100 - used to convey the current opacity via the
+                        Button instance's label. 
+                    */
+                    
+                    var nValue = (Math.round(oSlider.getValue() * .5)),
+
+                        /*
+                             Divide by 100 in order to set provide a compatible
+                             value for the CSS "opacity" property. 
+                        */
+
+                        nOpacity = (nValue * .01);
+        
+
+                    /*
+                         Update the title attribute of the Slider instance's 
+                         root element.  This helps assistive technology to 
+                         communicate the state change.
+                    */
+
+                    oSliderEl.title = "slider value = " + Math.round(nOpacity);
+                    
+
+
+
+                    // Set the opacity of the photo
+
+                    Dom.setStyle("photo", "opacity", nOpacity);
+
+
+
+
+                    // Update the text label of the Button instance
+
+                    oCurrentOpacity.innerHTML = (nValue + "%");
+        
+                });
+
+
+                var focusSlider = function () {
+
+                    if ((YAHOO.env.ua.ie || YAHOO.env.ua.gecko) && oSliderEl) {
+    
+                        window.setTimeout(function () {                    
+
+                            oSliderEl.focus();
+                        
+                        }, 0);
+                    
+                    }                    
+                
+                };
+
+
+				focusSlider();
+
+
+                // Focus the Slider instance each time it is made visible
+
+                oOpacityMenu.subscribe("show", focusSlider);
+                
+
+                // Unsubscribe from the "beforeShow" event, since we only need to initialize the 
+                // Slider once.
+                
+            	oOpacityMenu.unsubscribe("beforeShow", onMenuBeforeShow);
+            
+            };
+
+
+            oOpacityMenu.subscribe("beforeShow", onMenuBeforeShow);
+
+        });
+        
+    })();
+
+</script>
+
+<div id="example"><a href="http://www.flickr.com/photos/toddlr/477993821/" title="Photo Sharing"><img id="photo" src="http://farm1.static.flickr.com/198/477993821_0079194851.jpg" width="500" height="375" alt="Ella - A Shih Tzu + Maltese Mix Puppy"></a></div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

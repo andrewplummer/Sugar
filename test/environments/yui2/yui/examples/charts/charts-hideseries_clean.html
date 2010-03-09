@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Hide series in a chart.</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		width: 500px;
+		height: 350px;
+		margin-bottom: 10px;
+	}
+	.yui-dt-table {width: 500px;}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Hide series in a chart.</h1>
+
+<div class="exampleIntro">
+	<p>A <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> allows you to dynamically change series styles. In this example, we will allow for the hiding of each series.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">Bi-Monthly Numbers</span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<table>
+	<tr>
+		<td>Show Expenses Data:</td>
+		<td><input id="checkbutton1" type="checkbox" name="series1" value="1" checked="true" onclick='mychart.setSeriesStylesByIndex(0,{visibility:this.checked?"visible":"hidden"});'></td>
+	</tr>
+	<tr>
+ 		<td>Show Revenue Data:</td>
+		<td><input id="checkbutton2" type="checkbox" name="series2" value="2" checked="true" onclick='mychart.setSeriesStylesByIndex(1,{visibility:this.checked?"visible":"hidden"});'></td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+	//--- data
+
+		var sampleData =
+		{
+			"Results":
+			[
+				{"date":"5/1/2008", "revenue":"856.00", "expenses":"838.00"},
+				{"date":"5/15/2008", "revenue":"888.00", "expenses":"873.00"},
+				{"date":"6/1/2008", "revenue":"817.00", "expenses":"891.00"},
+				{"date":"6/15/2008", "revenue":"810.00", "expenses":"849.00"},
+				{"date":"7/1/2008", "revenue":"854.00", "expenses":"802.00"},
+				{"date":"7/15/2008", "revenue":"881.00", "expenses":"858.00"},
+				{"date":"8/1/2008", "revenue":"859.00", "expenses":"828.00"},
+				{"date":"8/15/2008", "revenue":"859.00", "expenses":"807.00"},
+				{"date":"9/1/2008", "revenue":"874.00", "expenses":"857.00"},
+				{"date":"9/15/2008", "revenue":"847.00", "expenses":"820.00"},
+				{"date":"10/1/2008", "revenue":"871.00", "expenses":"817.00"},
+				{"date":"10/15/2008", "revenue":"806.00", "expenses":"801.00"},
+				{"date":"11/1/2008", "revenue":"832.00", "expenses":"872.00"},
+				{"date":"11/15/2008", "revenue":"872.00", "expenses":"885.00"},
+				{"date":"12/1/2008", "revenue":"861.00", "expenses":"833.00"},
+				{"date":"12/15/2008", "revenue":"807.00", "expenses":"874.00"},
+				{"date":"1/1/2009", "revenue":"813.00", "expenses":"887.00"},
+				{"date":"1/15/2009", "revenue":"857.00", "expenses":"858.00"},
+				{"date":"2/1/2009", "revenue":"823.00", "expenses":"893.00"},
+				{"date":"2/15/2009", "revenue":"858.00", "expenses":"854.00"},
+				{"date":"3/1/2009", "revenue":"808.00", "expenses":"853.00"},
+				{"date":"3/15/2009", "revenue":"877.00", "expenses":"868.00"},
+				{"date":"4/1/2009", "revenue":"846.00", "expenses":"855.00"},
+				{"date":"4/15/2009", "revenue":"852.00", "expenses":"821.00"}
+			]
+		};
+
+		//data source
+		var jsonData = new YAHOO.util.DataSource( sampleData );
+		jsonData.responseType = YAHOO.util.DataSource.TYPE_JSON;
+		jsonData.responseSchema =
+		{
+			resultsList: "Results",
+			fields: [
+					"date",
+					{key:"revenue", parser:"number"},
+					{key:"expenses", parser:"number"}
+				]
+		};
+
+		var seriesDef = [
+			{displayName:"Revenue", yField:"revenue", style:{color:0xffcc66}},
+			{displayName:"Expenses", yField:"expenses", style:{color:0xa1c3e1}}
+		];
+
+
+		YAHOO.example.formatTimeData = function(value, major)
+		{
+			var formattedData = YAHOO.util.Date.format(new Date(value), {format:"%b, %Y"});
+			return formattedData.toString();
+		}
+
+		YAHOO.example.formatCurrencyAxisLabel = function( value )
+		{
+			return YAHOO.util.Number.format( value,
+			{
+				prefix: "$",
+				thousandsSeparator: ",",
+				decimalPlaces: 2
+			});
+		}
+
+		YAHOO.example.formatDataTipText = function(item, index, series)
+		{
+			var str =  "Date: " + item.date;
+			str += "\n" + series.displayName + ": " + YAHOO.example.formatCurrencyAxisLabel(item[series.yField]);
+			return str;
+		}
+
+		//Create a TimeAxis
+		var myTimeAxis = new YAHOO.widget.TimeAxis();
+		myTimeAxis.labelFunction = YAHOO.example.formatTimeData;
+		myTimeAxis.majorTimeUnit = "month";
+
+		//Create a NumericAxis
+		myCurrencyAxis = new YAHOO.widget.NumericAxis();
+		myCurrencyAxis.alwaysShowZero = false;
+		myCurrencyAxis.labelFunction = YAHOO.example.formatCurrencyAxisLabel;
+
+		var styleDef = 
+		{
+			padding:0, 
+			border:{size:4, color:0x8899dd},
+			background:{color:0xd5d5d5},
+			xAxis:
+			{
+				labelRotation:-90, 
+				majorTicks:{display:"inside", length:6}, 
+				minorTicks:{display:"inside", size:1}, 
+				padding:5
+			}, 
+			yAxis:
+			{
+				zeroGridLine:{size:5, color:0xff0000}, 
+				labelRotation:0, 
+				minorTicks:{display:"none", length:12}
+			}
+		};
+		
+		var mychart = new YAHOO.widget.LineChart("chart", jsonData,
+		{
+			series: seriesDef,
+			style: styleDef,
+			xField: "date",
+			xAxis: myTimeAxis,
+			yAxis: myCurrencyAxis,
+			dataTipFunction:YAHOO.example.formatDataTipText
+		});
+		
+		mychart.on("contentReady", updateForm);
+		function updateForm()
+		{
+			var series = mychart.get("series");
+			var check1 = document.getElementById("checkbutton1");
+			var check2 = document.getElementById("checkbutton2");
+			if(series[0] && series[0].style && series[0].style.visibility && series[0].style.visibility == "hidden")
+			{
+				check1.checked = false;
+			}
+			else
+			{
+				check1.checked = true;
+			}
+			if(series[1] && series[1].style && series[1].style.visibility && series[1].style.visibility == "hidden")
+			{
+				check2.checked = false;
+			}
+			else
+			{
+				check2.checked = true;
+			}
+		}		
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

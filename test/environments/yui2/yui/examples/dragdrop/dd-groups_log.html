@@ -1,0 +1,648 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: Drag &amp; Drop: Using Interaction Groups</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-debug.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+.slot { border:2px solid #aaaaaa; background-color:#dddddd; color:#666666; text-align:center; position: absolute; width:60px; height:60px; }
+.player { border:2px solid #bbbbbb; color:#eeeeee; text-align:center; position: absolute; width:60px; height:60px; }
+.target { border:2px solid #574188; background-color:#cccccc; text-align:center; position: absolute; width:60px; height:60px; }
+
+#t1 { left: 10px; top: 0px; }
+#t2 { left: 378px; top: 0px; }
+#b1 { left: 84px; top: 50px; }
+#b2 { left: 158px; top: 50px; }
+#b3 { left: 232px; top: 50px; }
+#b4 { left: 306px; top: 50px; }
+
+#pt1 { background-color:#7E695E; left: 84px; top: 150px; }
+#pt2 { background-color:#7E695E; left: 84px; top: 230px; }
+#pb1 { background-color:#416153; left: 195px; top: 150px; }
+#pb2 { background-color:#416153; left: 195px; top: 230px; }
+#pboth1 { background-color:#552E37; left: 306px; top: 150px; }
+#pboth2 { background-color:#552E37; left: 306px; top: 230px; }
+
+#usercontrols {
+    top: -36px;
+}
+
+#workarea {
+    position: relative;
+    height: 300px;
+}
+</style>
+<?php
+if (!$clean) {
+?>
+<style>
+    #usercontrols {
+        position: absolute;
+    }
+</style>
+<?php
+}
+?>
+
+<!--end custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: Drag &amp; Drop: Using Interaction Groups</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+    
+	<div class="promo">
+	<h1>Drag &amp; Drop: Using Interaction Groups</h1>
+	
+	<div class="exampleIntro">
+	<p>Using interaction groups, this example demonstrates how to 
+tie into the <a href="http://developer.yahoo.com/yui/dragdrop/">Drag &amp; Drop Utility</a>'s interesting moments to provide visual 
+affordances for the current drag operation.</p>
+			
+	</div>	
+					
+	<div class="example-container module ">
+			<div class="hd exampleHd">
+			<p class="newWindowButton yui-skin-sam"><!--<span id="newWindowLinkx"><span class="first-child">--><a href="dd-groups_clean.html" target="_blank">View example in new window.</a><!--</span></span>-->		
+		</div>		<div id="example-canvas" class="bd">
+	
+		
+	<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+	
+	<div id="usercontrols">
+Interaction Mode:
+<select id="ddmode" >
+  <option value="0" selected>Point</option>
+  <option value="1">Intersect</option>
+</select>
+</div>
+<div id="workarea">
+
+<div class="slot" id="t1" >1</div>
+<div class="slot" id="t2" >2</div>
+<div class="slot" id="b1" >3</div>
+<div class="slot" id="b2" >4</div>
+<div class="slot" id="b3" >5</div>
+<div class="slot" id="b4" >6</div>
+
+<div class="player" id="pt1" >1</div>
+<div class="player" id="pt2" >2</div>
+<div class="player" id="pb1" >3</div>
+<div class="player" id="pb2" >4</div>
+<div class="player" id="pboth1" >5</div>
+<div class="player" id="pboth2" >6</div>
+
+</div>
+
+<script type="text/javascript">
+(function() {
+
+YAHOO.example.DDPlayer = function(id, sGroup, config) {
+    YAHOO.example.DDPlayer.superclass.constructor.apply(this, arguments);
+    this.initPlayer(id, sGroup, config);
+};
+
+YAHOO.extend(YAHOO.example.DDPlayer, YAHOO.util.DDProxy, {
+
+    TYPE: "DDPlayer",
+
+    initPlayer: function(id, sGroup, config) {
+        if (!id) { 
+            return; 
+        }
+
+        var el = this.getDragEl()
+        YAHOO.util.Dom.setStyle(el, "borderColor", "transparent");
+        YAHOO.util.Dom.setStyle(el, "opacity", 0.76);
+
+        // specify that this is not currently a drop target
+        this.isTarget = false;
+
+        this.originalStyles = [];
+
+        this.type = YAHOO.example.DDPlayer.TYPE;
+        this.slot = null;
+
+        this.startPos = YAHOO.util.Dom.getXY( this.getEl() );
+        YAHOO.log(id + " startpos: " + this.startPos, "info", "example");
+    },
+
+    startDrag: function(x, y) {
+        YAHOO.log(this.id + " startDrag", "info", "example");
+        var Dom = YAHOO.util.Dom;
+
+        var dragEl = this.getDragEl();
+        var clickEl = this.getEl();
+
+        dragEl.innerHTML = clickEl.innerHTML;
+        dragEl.className = clickEl.className;
+
+        Dom.setStyle(dragEl, "color",  Dom.getStyle(clickEl, "color"));
+        Dom.setStyle(dragEl, "backgroundColor", Dom.getStyle(clickEl, "backgroundColor"));
+
+        Dom.setStyle(clickEl, "opacity", 0.1);
+
+        var targets = YAHOO.util.DDM.getRelated(this, true);
+        YAHOO.log(targets.length + " targets", "info", "example");
+        for (var i=0; i<targets.length; i++) {
+            
+            var targetEl = this.getTargetDomRef(targets[i]);
+
+            if (!this.originalStyles[targetEl.id]) {
+                this.originalStyles[targetEl.id] = targetEl.className;
+            }
+
+            targetEl.className = "target";
+        }
+    },
+
+    getTargetDomRef: function(oDD) {
+        if (oDD.player) {
+            return oDD.player.getEl();
+        } else {
+            return oDD.getEl();
+        }
+    },
+
+    endDrag: function(e) {
+        // reset the linked element styles
+        YAHOO.util.Dom.setStyle(this.getEl(), "opacity", 1);
+
+        this.resetTargets();
+    },
+
+    resetTargets: function() {
+
+        // reset the target styles
+        var targets = YAHOO.util.DDM.getRelated(this, true);
+        for (var i=0; i<targets.length; i++) {
+            var targetEl = this.getTargetDomRef(targets[i]);
+            var oldStyle = this.originalStyles[targetEl.id];
+            if (oldStyle) {
+                targetEl.className = oldStyle;
+            }
+        }
+    },
+
+    onDragDrop: function(e, id) {
+        // get the drag and drop object that was targeted
+        var oDD;
+        
+        if ("string" == typeof id) {
+            oDD = YAHOO.util.DDM.getDDById(id);
+        } else {
+            oDD = YAHOO.util.DDM.getBestMatch(id);
+        }
+
+        var el = this.getEl();
+
+        // check if the slot has a player in it already
+        if (oDD.player) {
+            // check if the dragged player was already in a slot
+            if (this.slot) {
+                // check to see if the player that is already in the
+                // slot can go to the slot the dragged player is in
+                // YAHOO.util.DDM.isLegalTarget is a new method
+                if ( YAHOO.util.DDM.isLegalTarget(oDD.player, this.slot) ) {
+                    YAHOO.log("swapping player positions", "info", "example");
+                    YAHOO.util.DDM.moveToEl(oDD.player.getEl(), el);
+                    this.slot.player = oDD.player;
+                    oDD.player.slot = this.slot;
+                } else {
+                    YAHOO.log("moving player in slot back to start", "info", "example");
+                    YAHOO.util.Dom.setXY(oDD.player.getEl(), oDD.player.startPos);
+                    this.slot.player = null;
+                    oDD.player.slot = null
+                }
+            } else {
+                // the player in the slot will be moved to the dragged
+                // players start position
+                oDD.player.slot = null;
+                YAHOO.util.DDM.moveToEl(oDD.player.getEl(), el);
+            }
+        } else {
+            // Move the player into the emply slot
+            // I may be moving off a slot so I need to clear the player ref
+            if (this.slot) {
+                this.slot.player = null;
+            }
+        }
+
+        YAHOO.util.DDM.moveToEl(el, oDD.getEl());
+        this.resetTargets();
+
+        this.slot = oDD;
+        this.slot.player = this;
+    },
+
+    swap: function(el1, el2) {
+        var Dom = YAHOO.util.Dom;
+        var pos1 = Dom.getXY(el1);
+        var pos2 = Dom.getXY(el2);
+        Dom.setXY(el1, pos2);
+        Dom.setXY(el2, pos1);
+    },
+
+    onDragOver: function(e, id) {
+    },
+
+    onDrag: function(e, id) {
+    }
+
+});
+
+var slots = [], players = [],
+    Event = YAHOO.util.Event, DDM = YAHOO.util.DDM;
+
+Event.onDOMReady(function() { 
+    // slots
+    slots[0] = new YAHOO.util.DDTarget("t1", "topslots");
+    slots[1] = new YAHOO.util.DDTarget("t2", "topslots");
+    slots[2] = new YAHOO.util.DDTarget("b1", "bottomslots");
+    slots[3] = new YAHOO.util.DDTarget("b2", "bottomslots");
+    slots[4] = new YAHOO.util.DDTarget("b3", "bottomslots");
+    slots[5] = new YAHOO.util.DDTarget("b4", "bottomslots");
+    
+    // players
+    players[0] = new YAHOO.example.DDPlayer("pt1", "topslots");
+    players[1] = new YAHOO.example.DDPlayer("pt2", "topslots");
+    players[2] = new YAHOO.example.DDPlayer("pb1", "bottomslots");
+    players[3] = new YAHOO.example.DDPlayer("pb2", "bottomslots");
+    players[4] = new YAHOO.example.DDPlayer("pboth1", "topslots");
+    players[4].addToGroup("bottomslots");
+    players[5] = new YAHOO.example.DDPlayer("pboth2", "topslots");
+    players[5].addToGroup("bottomslots");
+
+    DDM.mode = document.getElementById("ddmode").selectedIndex;
+
+    Event.on("ddmode", "change", function(e) {
+            YAHOO.util.DDM.mode = this.selectedIndex;
+        });
+});
+
+})();
+</script>
+	
+	<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<h2 class="first">Drag and Drop Interaction Groups and Affordances</h2>
+
+<p>The <a href="http://developer.yahoo.com/yui/dragdrop/">YUI Drag &amp; Drop Utility</a> lets you make HTML elements draggable.</p>
+
+<p>All drag and drop instances are assigned to an interaction group.  If a group is not
+specified in the constuctor, it is assigned to the <code>default</code> group.  A given instance
+can belong to more than one group.
+</p>
+<p>In this example, we have two interaction groups, <code>topslots</code> and <code>bottomslots</code>.  The grey
+squares are the "slots", so #1 and #2 are the <code>topslots</code> and the others are the <code>bottomslots</code>.
+These are <code>YAHOO.util.DDTarget</code> instances, which means they can be targeted, but
+not dragged.
+</p>
+<p>The colored "player" squares below are draggable.  #1 and #2 are in the <code>topslots </code>group,
+#3 and #4 are in the <code>bottomslots</code> group, and #5 and #6 are assigned to both groups.
+When the drag starts, we use the highlight the slots that can be targeted by checking the group
+information.
+    </p>
+
+<p>Markup:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+
+<div class="slot" id="t1" >1</div>
+<div class="slot" id="t2" >2</div>
+<div class="slot" id="b1" >3</div>
+<div class="slot" id="b2" >4</div>
+<div class="slot" id="b3" >5</div>
+<div class="slot" id="b4" >6</div>
+
+<div class="player" id="pt1" >1</div>
+<div class="player" id="pt2" >2</div>
+<div class="player" id="pb1" >3</div>
+<div class="player" id="pb2" >4</div>
+<div class="player" id="pboth1" >5</div>
+<div class="player" id="pboth2" >6</div>
+
+</textarea>
+
+<p>Code:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+
+<script type="text/javascript">
+
+(function() {
+
+YAHOO.example.DDPlayer = function(id, sGroup, config) {
+    YAHOO.example.DDPlayer.superclass.constructor.apply(this, arguments);
+    this.initPlayer(id, sGroup, config);
+};
+
+YAHOO.extend(YAHOO.example.DDPlayer, YAHOO.util.DDProxy, {
+
+    TYPE: "DDPlayer",
+
+    initPlayer: function(id, sGroup, config) {
+        if (!id) { 
+            return; 
+        }
+
+        var el = this.getDragEl()
+        YAHOO.util.Dom.setStyle(el, "borderColor", "transparent");
+        YAHOO.util.Dom.setStyle(el, "opacity", 0.76);
+
+        // specify that this is not currently a drop target
+        this.isTarget = false;
+
+        this.originalStyles = [];
+
+        this.type = YAHOO.example.DDPlayer.TYPE;
+        this.slot = null;
+
+        this.startPos = YAHOO.util.Dom.getXY( this.getEl() );
+        YAHOO.log(id + " startpos: " + this.startPos, "info", "example");
+    },
+
+    startDrag: function(x, y) {
+        YAHOO.log(this.id + " startDrag", "info", "example");
+        var Dom = YAHOO.util.Dom;
+
+        var dragEl = this.getDragEl();
+        var clickEl = this.getEl();
+
+        dragEl.innerHTML = clickEl.innerHTML;
+        dragEl.className = clickEl.className;
+
+        Dom.setStyle(dragEl, "color",  Dom.getStyle(clickEl, "color"));
+        Dom.setStyle(dragEl, "backgroundColor", Dom.getStyle(clickEl, "backgroundColor"));
+
+        Dom.setStyle(clickEl, "opacity", 0.1);
+
+        var targets = YAHOO.util.DDM.getRelated(this, true);
+        YAHOO.log(targets.length + " targets", "info", "example");
+        for (var i=0; i<targets.length; i++) {
+            
+            var targetEl = this.getTargetDomRef(targets[i]);
+
+            if (!this.originalStyles[targetEl.id]) {
+                this.originalStyles[targetEl.id] = targetEl.className;
+            }
+
+            targetEl.className = "target";
+        }
+    },
+
+    getTargetDomRef: function(oDD) {
+        if (oDD.player) {
+            return oDD.player.getEl();
+        } else {
+            return oDD.getEl();
+        }
+    },
+
+    endDrag: function(e) {
+        // reset the linked element styles
+        YAHOO.util.Dom.setStyle(this.getEl(), "opacity", 1);
+
+        this.resetTargets();
+    },
+
+    resetTargets: function() {
+
+        // reset the target styles
+        var targets = YAHOO.util.DDM.getRelated(this, true);
+        for (var i=0; i<targets.length; i++) {
+            var targetEl = this.getTargetDomRef(targets[i]);
+            var oldStyle = this.originalStyles[targetEl.id];
+            if (oldStyle) {
+                targetEl.className = oldStyle;
+            }
+        }
+    },
+
+    onDragDrop: function(e, id) {
+        // get the drag and drop object that was targeted
+        var oDD;
+        
+        if ("string" == typeof id) {
+            oDD = YAHOO.util.DDM.getDDById(id);
+        } else {
+            oDD = YAHOO.util.DDM.getBestMatch(id);
+        }
+
+        var el = this.getEl();
+
+        // check if the slot has a player in it already
+        if (oDD.player) {
+            // check if the dragged player was already in a slot
+            if (this.slot) {
+                // check to see if the player that is already in the
+                // slot can go to the slot the dragged player is in
+                // YAHOO.util.DDM.isLegalTarget is a new method
+                if ( YAHOO.util.DDM.isLegalTarget(oDD.player, this.slot) ) {
+                    YAHOO.log("swapping player positions", "info", "example");
+                    YAHOO.util.DDM.moveToEl(oDD.player.getEl(), el);
+                    this.slot.player = oDD.player;
+                    oDD.player.slot = this.slot;
+                } else {
+                    YAHOO.log("moving player in slot back to start", "info", "example");
+                    YAHOO.util.Dom.setXY(oDD.player.getEl(), oDD.player.startPos);
+                    this.slot.player = null;
+                    oDD.player.slot = null
+                }
+            } else {
+                // the player in the slot will be moved to the dragged
+                // players start position
+                oDD.player.slot = null;
+                YAHOO.util.DDM.moveToEl(oDD.player.getEl(), el);
+            }
+        } else {
+            // Move the player into the emply slot
+            // I may be moving off a slot so I need to clear the player ref
+            if (this.slot) {
+                this.slot.player = null;
+            }
+        }
+
+        YAHOO.util.DDM.moveToEl(el, oDD.getEl());
+        this.resetTargets();
+
+        this.slot = oDD;
+        this.slot.player = this;
+    },
+
+    swap: function(el1, el2) {
+        var Dom = YAHOO.util.Dom;
+        var pos1 = Dom.getXY(el1);
+        var pos2 = Dom.getXY(el2);
+        Dom.setXY(el1, pos2);
+        Dom.setXY(el2, pos1);
+    },
+
+    onDragOver: function(e, id) {
+    },
+
+    onDrag: function(e, id) {
+    }
+
+});
+
+var slots = [], players = [],
+    Event = YAHOO.util.Event, DDM = YAHOO.util.DDM;
+
+Event.onDOMReady(function() { 
+    // slots
+    slots[0] = new YAHOO.util.DDTarget("t1", "topslots");
+    slots[1] = new YAHOO.util.DDTarget("t2", "topslots");
+    slots[2] = new YAHOO.util.DDTarget("b1", "bottomslots");
+    slots[3] = new YAHOO.util.DDTarget("b2", "bottomslots");
+    slots[4] = new YAHOO.util.DDTarget("b3", "bottomslots");
+    slots[5] = new YAHOO.util.DDTarget("b4", "bottomslots");
+    
+    // players
+    players[0] = new YAHOO.example.DDPlayer("pt1", "topslots");
+    players[1] = new YAHOO.example.DDPlayer("pt2", "topslots");
+    players[2] = new YAHOO.example.DDPlayer("pb1", "bottomslots");
+    players[3] = new YAHOO.example.DDPlayer("pb2", "bottomslots");
+    players[4] = new YAHOO.example.DDPlayer("pboth1", "topslots");
+    players[4].addToGroup("bottomslots");
+    players[5] = new YAHOO.example.DDPlayer("pboth2", "topslots");
+    players[5].addToGroup("bottomslots");
+
+    DDM.mode = document.getElementById("ddmode").selectedIndex;
+
+    Event.on("ddmode", "change", function(e) {
+            YAHOO.util.DDM.mode = this.selectedIndex;
+        });
+});
+
+})();
+</script></textarea>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?dragdrop&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+						<div id="loggerModule" class="yui-skin-sam">
+						<h3 class="firstContent">YUI Logger Output:</h3>
+								<div id="loggerDiv"></div>
+							<div id="loggerGloss">
+								<p><strong>Note:</strong> You are viewing this example in debug mode with logging enabled.  This can significantly slow performance.</p>
+	
+								<p class="loggerButton"><span id="loggerLink"><span class="first-child"><a href="dd-groups.html">Reload with logging<br />and debugging disabled.</a></span></span></p>
+							</div>
+						</div>
+					
+				
+					<div id="examples">
+						<h3>Drag &amp; Drop Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../dragdrop/dd-basic.html'>Basic Drag and Drop</a></li><li><a href='../dragdrop/dd-handles.html'>Using Handles</a></li><li><a href='../dragdrop/dd-ontop.html'>Dragged Element on Top</a></li><li><a href='../dragdrop/dd-proxy.html'>Using a Proxy Element</a></li><li><a href='../dragdrop/dd-reorder.html'>Reordering a List</a></li><li class='selected'><a href='../dragdrop/dd-groups.html'>Using Interaction Groups</a></li><li><a href='../dragdrop/dd-circle.html'>Custom Click Validator</a></li><li><a href='../dragdrop/dd-region.html'>Staying in a Region</a></li><li><a href='../dragdrop/dd-shim.html'>Using the Drag Shim</a></li><li><a href='../datatable/dt_ddrows.html'>Reorder Rows with Drag and Drop (included with examples for DataTable Control)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More Drag &amp; Drop Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/dragdrop/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_dragdrop.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/dragdrop.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="item"><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="selected "><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

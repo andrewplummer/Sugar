@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using addClass</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#foo {
+    margin-bottom:1em;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using addClass</h1>
+
+<div class="exampleIntro">
+	<p>Clicking the button will use Dom's <code>addClass</code> method to add the class <code>baz</code> to the element.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="foo" class="bar">foo</div>
+<button id="demo-run">run</button>
+
+<script type="text/javascript">
+(function() {
+    var addClass = function(e) {
+        YAHOO.util.Dom.addClass('foo', 'baz');
+        alert(YAHOO.util.Dom.get('foo').className);
+    };
+
+    YAHOO.util.Event.on('demo-run', 'click', addClass);
+
+    YAHOO.log("The example has finished loading; as you interact with it, you'll see log messages appearing here.", "info", "example");
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

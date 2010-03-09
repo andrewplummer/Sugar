@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Cell Selection</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* custom styles for this example */
+.yui-skin-sam .yui-dt-body { cursor:pointer; } /* when cells are selectable */
+#cellrange, #singlecell { margin-top:2em; }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Cell Selection</h1>
+
+<div class="exampleIntro">
+	<p>These examples demonstrate "cellblock", "cellrange", and "singlecell"
+selection modes.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="cellblock"></div>
+<div id="cellrange"></div>
+<div id="singlecell"></div>
+
+<script type="text/javascript" src="assets/js/data.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    YAHOO.example.CellSelection = function() {
+        var myColumnDefs = [
+            {key:"col1", sortable:true},
+            {key:"col2", sortable:true},
+            {key:"col3", sortable:true},
+            {key:"col4", sortable:true}
+        ];
+
+        var myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.webstats);
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+        myDataSource.responseSchema = {
+            fields: ["col0","col1","col2","col3","col4"]
+        };
+
+        var cellBlockSelectDataTable = new YAHOO.widget.DataTable("cellblock",
+                myColumnDefs, myDataSource, {
+                    caption:"Cell-Block Selection Mode with Support for Modifier Keys",
+                    selectionMode:"cellblock"
+                });
+
+        // Subscribe to events for cell selection
+        cellBlockSelectDataTable.subscribe("cellMouseoverEvent", cellBlockSelectDataTable.onEventHighlightCell);
+        cellBlockSelectDataTable.subscribe("cellMouseoutEvent", cellBlockSelectDataTable.onEventUnhighlightCell);
+        cellBlockSelectDataTable.subscribe("cellClickEvent", cellBlockSelectDataTable.onEventSelectCell);
+        cellBlockSelectDataTable.subscribe("cellSelectEvent", cellBlockSelectDataTable.clearTextSelection);
+
+        var cellRangeSelectDataTable = new YAHOO.widget.DataTable("cellrange",
+                myColumnDefs, myDataSource, {
+                    caption:"Example: Cell-Range Selection Mode Support for Modifier Keys",
+                    selectionMode:"cellrange"
+                });
+
+        // Subscribe to events for cell selection
+        cellRangeSelectDataTable.subscribe("cellMouseoverEvent", cellRangeSelectDataTable.onEventHighlightCell);
+        cellRangeSelectDataTable.subscribe("cellMouseoutEvent", cellRangeSelectDataTable.onEventUnhighlightCell);
+        cellRangeSelectDataTable.subscribe("cellClickEvent", cellRangeSelectDataTable.onEventSelectCell);
+        cellRangeSelectDataTable.subscribe("cellSelectEvent", cellRangeSelectDataTable.clearTextSelection);
+
+        var singleCellSelectDataTable = new YAHOO.widget.DataTable("singlecell",
+                myColumnDefs, myDataSource, {
+                    caption:"Single-Cell Selection Mode with Modifier Keys Disabled",
+                    selectionMode:"singlecell"
+                });
+
+        // Subscribe to events for cell selection
+        singleCellSelectDataTable.subscribe("cellMouseoverEvent", singleCellSelectDataTable.onEventHighlightCell);
+        singleCellSelectDataTable.subscribe("cellMouseoutEvent", singleCellSelectDataTable.onEventUnhighlightCell);
+        singleCellSelectDataTable.subscribe("cellClickEvent", singleCellSelectDataTable.onEventSelectCell);
+        singleCellSelectDataTable.subscribe("cellSelectEvent", singleCellSelectDataTable.clearTextSelection);
+        
+        return {
+            oDS: myDataSource,
+            oDTCellBlockSelect: cellBlockSelectDataTable,
+            oDTCellRangeSelect: cellRangeSelectDataTable,
+            oDTSingleCellSelect: singleCellSelectDataTable
+        };
+    }();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

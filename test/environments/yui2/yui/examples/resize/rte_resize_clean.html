@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Custom resizing for the Rich Text Editor</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/resize/assets/skins/sam/resize.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/simpleeditor.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/resize/resize-min.js"></script>
+<script type="text/javascript" src="../../build/editor/simpleeditor-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Custom resizing for the Rich Text Editor</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to customize the Resize Utility for things like the <a href="http://developer.yahoo.com/yui/editor/">Rich Text Editor Control</a>.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+#editor_container .yui-resize-handle-br {
+    height: 11px;
+    width: 11px;
+    background-position: -20px -60px;
+    background-color: transparent;
+}
+</style>
+
+<textarea id="editor">
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse justo nibh,
+pharetra at, adipiscing ullamcorper, rutrum ac, enim. Nullam pretium interdum metus.
+Ut in neque. Vivamus ut lorem vitae turpis porttitor tempor. Nam consectetuer est quis lacus.
+</textarea>
+
+
+<script>
+
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        editor = null,
+        resize = null;
+
+    Event.onDOMReady(function() {
+        editor = new YAHOO.widget.SimpleEditor('editor', {
+            height: '300px',
+            width: '522px',
+            dompath: true,
+            animate: true
+        });
+        editor.on('editorContentLoaded', function() {
+            resize = new YAHOO.util.Resize(editor.get('element_cont').get('element'), {
+                handles: ['br'],
+                autoRatio: true,
+                status: true,
+                proxy: true,
+                setSize: false //This is where the magic happens
+            });
+            resize.on('startResize', function() {
+                this.hide();
+                this.set('disabled', true);
+            }, editor, true);
+            resize.on('resize', function(args) {
+                var h = args.height;
+                var th = (this.toolbar.get('element').clientHeight + 2); //It has a 1px border..
+                var dh = (this.dompath.clientHeight + 1); //It has a 1px top border..
+                var newH = (h - th - dh);
+                this.set('width', args.width + 'px');
+                this.set('height', newH + 'px');
+                this.set('disabled', false);
+                this.show();
+            }, editor, true);
+        });
+        editor.render();
+    });
+
+})();
+
+
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

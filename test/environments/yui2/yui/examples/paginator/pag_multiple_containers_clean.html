@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Rendering controls into multiple containers</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/paginator/assets/skins/sam/paginator.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/paginator/paginator-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* override some skin styles */
+.yui-skin-sam span.yui-pg-container {
+    display: inline;
+}
+.yui-skin-sam .yui-pg-current {
+    margin: 0;
+}
+.yui-skin-sam #demo .yui-pg-container a:link,
+.yui-skin-sam #demo .yui-pg-container a:active,
+.yui-skin-sam #demo .yui-pg-container a:visited,
+.yui-skin-sam #demo .yui-pg-container a:hover,
+.yui-skin-sam #demo .yui-pg-container span.yui-pg-previous,
+.yui-skin-sam #demo .yui-pg-container span.yui-pg-next {
+    background: #fde;
+    color: #f3c;
+    text-decoration: none;
+    border: 3px solid #f9c;
+    padding: 0 3px;
+    font-size: 130%;
+    font-weight: bold;
+}
+.yui-skin-sam #demo .yui-pg-container span.yui-pg-previous,
+.yui-skin-sam #demo .yui-pg-container span.yui-pg-next {
+    background: #eee;
+    color: #a6a6a6;
+    border: 3px double #ccc;
+}
+.yui-skin-sam #demo .yui-pg-container a:hover {
+    background: #f9c;
+    color: #fff;
+}
+
+/* demo specific styles */
+#demo h2 {
+    border: none;
+    border-bottom: 1ex solid #aaa;
+    color: #333;
+    font-size: 1.5em;
+    line-height: 65%;
+    margin-top: 0;
+}
+#content {
+    margin: 0 0 0 4em;
+    padding-top: 1em;
+}
+#content li {
+    color: #f6c;
+    font: bold italic 200%/.5 Arial, sans-serif;
+    padding: 1px 0;
+    margin: 0;
+}
+#content li p {
+    color: #555;
+    font: normal 50% Arial, sans-serif;
+    margin: 0;
+    line-height: 2;
+}
+
+#p_container {
+    text-align: center;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Rendering controls into multiple containers</h1>
+
+<div class="exampleIntro">
+	<p>In this example, we will add pagination to an ordered list.  Some things to note:</p>
+<ul>
+    <li>Pagination controls are added in a <code>&lt;span&gt;</code> as well as in a <code>&lt;p&gt;</code>.</li>
+    <li>All included pagination controls use inline elements, so the containers needn't be block elements.</li>
+    <li>A custom skin treatment has been applied.</li>
+    <li>State changes made to the Paginator propagate to all controls in all containers.</li>
+</ul>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo">
+    <h2>1987 US Billboard Top 40!</h2>
+
+    <p>
+        Random content with pagination controls embedded inline.
+        Suspendisse vestibulum dignissim quam. Integer vel augue.
+        Phasellus nulla purus, interdum ac, and here they are.
+        <span id="span_container"></span>
+        and now back to random content habitant morbi tristique
+        senectus et netus et malesuada fames ac turpis egestas.
+    </p>
+
+    <ol id="content" start="1">
+        <!-- the paginated content will go here -->
+    </ol>
+
+    <p id="p_container"></p>
+</div>
+<script type="text/javascript" src="assets/top40.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+// Place code in the YAHOO.example namespace
+var Ex = YAHOO.namespace('example');
+
+Ex.content = YAHOO.util.Dom.get('content');
+
+Ex.handlePagination = function (state) {
+    // Gather the content for the requested page
+    var startIndex = state.recordOffset,
+        recs = Ex.data.top40.slice(startIndex, startIndex + state.rowsPerPage);
+
+    // Update the content UI
+    Ex.content.start = startIndex + 1;
+    Ex.content.innerHTML = '<li><p>'+recs.join('</p></li><li><p>')+'</p></li>';
+
+    // Confirm state change with the Paginator
+    Ex.paginator.setState(state);
+};
+
+Ex.paginator = new YAHOO.widget.Paginator({
+    rowsPerPage : 10,
+    totalRecords : Ex.data.top40.length,
+    containers : ['span_container','p_container'],
+
+    template : "{PreviousPageLink} {CurrentPageReport} {NextPageLink}",
+    previousPageLinkLabel : "&lt;",
+    nextPageLinkLabel : "&gt;",
+    pageReportTemplate : "{startRecord} - {endRecord} of the Top {totalRecords}"
+});
+
+
+Ex.paginator.subscribe('changeRequest', Ex.handlePagination);
+
+Ex.paginator.render();
+
+Ex.handlePagination(Ex.paginator.getState());
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

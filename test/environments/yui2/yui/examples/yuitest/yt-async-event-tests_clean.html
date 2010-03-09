@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Asynchronous Event Testing</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/logger/assets/skins/sam/logger.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/yuitest/assets/skins/sam/yuitest.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../build/yuitest/yuitest-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Asynchronous Event Testing</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to create an asynchronous test with the YUI Test framework for testing browser-based JavaScript code. 
+  A <a href="/yui/yuitest/#testcase"><code>TestCase</code></a> object is created to test the
+  <a href="/yui/docs/YAHOO.util.Anim.html"><code>Anim</code></a> object. The test waits until the animation is complete
+  before checking the settings of the animated element.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="testLogger"></div>
+<div id="testDiv" style="position:absolute;width:10px;height:10px"></div>
+<script type="text/javascript">
+
+    YAHOO.namespace("example.yuitest");
+    
+    YAHOO.example.yuitest.AsyncTestCase = new YAHOO.tool.TestCase({
+    
+        //name of the test case - if not provided, one is auto-generated
+        name : "Animation Tests",        
+                
+        //---------------------------------------------------------------------
+        // Test methods - names must begin with "test"
+        //---------------------------------------------------------------------
+        
+        testAnimation : function (){
+            var Assert = YAHOO.util.Assert;
+            var YUD = YAHOO.util.Dom;
+            
+            //animate width to 400px
+            var myAnim = new YAHOO.util.Anim('testDiv', { width: { to: 400 } }, 3, YAHOO.util.Easing.easeOut);
+            
+            //assign oncomplete handler
+            myAnim.onComplete.subscribe(function(){
+            
+                //tell the TestRunner to resume
+                this.resume(function(){
+                
+                    Assert.areEqual(YUD.get("testDiv").offsetWidth, 400, "Width of the DIV should be 400.");
+                
+                });
+            
+            }, this, true);
+
+            //start the animation
+            myAnim.animate();
+            
+            //wait until something happens
+            this.wait();
+        
+        }
+                    
+    });
+     
+    YAHOO.util.Event.onDOMReady(function (){
+        //create the logger
+        var logger = new YAHOO.tool.TestLogger("testLogger");
+        YAHOO.tool.TestRunner.add(YAHOO.example.yuitest.AsyncTestCase);
+
+        //run the tests
+        YAHOO.tool.TestRunner.run();
+    });
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

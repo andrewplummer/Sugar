@@ -1,0 +1,445 @@
+<html>
+<head>
+<title>YUI Tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css" />     
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />     
+
+<style type="text/css">
+    #xframe {
+        position: absolute;
+        visibility: hidden;
+    }
+</style>
+
+<script type="text/javascript">
+
+var g_modules=[];
+
+var YAHOO_config = {
+    listener: function(info) {
+        g_modules.push(info.name);
+    }
+};
+</script>
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+
+</head>
+<body>
+<iframe name="xframe" id="xframe" src="assets/xframe.html"></iframe>
+<h1>YAHOO test page</h1>
+<p>This page contains tests being run by yuitest, the results of which<br />
+are output in the logger to the right. <br />View the source to see how it's done.</p>
+<p><input type="button" value="Run Tests" id="btnRun" /></p>
+<script type="text/javascript">
+
+(function() {
+
+    var Dom=YAHOO.util.Dom,
+        Assert=YAHOO.util.Assert,
+        ObjectAssert=YAHOO.util.ObjectAssert,
+        ArrayAssert=YAHOO.util.ArrayAssert, 
+        suite=new YAHOO.tool.TestSuite("yuisuite");
+    
+    suite.add(new YAHOO.tool.TestCase({
+        
+        //name of the test case
+        name : "yahoo",
+    
+        //extra information about tests
+        _should : {
+        
+            //tests with these names should fail
+            fail : { test_to_fail: true },
+            
+            //tests with these names should throw an error
+            error : { },
+            
+            //ignore these tests
+            ignore : { }
+        },
+
+        test_config: function() {
+            ArrayAssert.itemsAreEqual(["yahoo", "dom", "event", "logger", "yuitest"], g_modules);
+        },
+
+        test_create_namespace: function () {
+
+            // set up YAHOO.my.namespace
+            var ns = YAHOO.namespace("my.namespace");
+
+            // use the returned reference, assign a value
+            ns.test = "yahoo_my_namespace_test";
+
+            // check for the assigned value using the full path
+            Assert.areEqual(YAHOO.my.namespace.test, "yahoo_my_namespace_test", "The namespace was not set up correctly");
+
+            // assign a value to my to test that it doesn't get wiped out
+            YAHOO.my.test = "yahoo_my_test";
+
+            // create another namespace on my
+            var ns2 = YAHOO.namespace("my.namespace2");
+
+            // make sure my stays the same
+            Assert.areEqual(YAHOO.my.test, "yahoo_my_test", "The namespace was obliterated");
+        },
+
+        test_is_array: function() {
+            Assert.isTrue(YAHOO.lang.isArray([1, 2]), "Array literals are arrays");
+            Assert.isFalse(YAHOO.lang.isArray({"one": "two"}), "Object literals are not arrays");
+
+            var a = new Array();
+            a["one"] = "two";
+            Assert.isTrue(YAHOO.lang.isArray(a), "Associative array are arrays");
+
+            Assert.isFalse(YAHOO.lang.isArray(document.getElementsByTagName("body")),
+                    "Element collections are array-like, but not arrays");
+
+            Assert.isFalse(YAHOO.lang.isArray(null), "null is not an array");
+            Assert.isFalse(YAHOO.lang.isArray(''), "'' is not an array");
+            Assert.isFalse(YAHOO.lang.isArray(undefined), "undefined is not an array");
+
+            Assert.isTrue(YAHOO.lang.isArray(xframe.arr), "Cross frame array failure");
+            Assert.isFalse(YAHOO.lang.isArray(xframe.far), "Cross frame fake array failure");
+            Assert.isFalse(YAHOO.lang.isArray(xframe.obj), "Cross frame object failure");
+            Assert.isFalse(YAHOO.lang.isArray(xframe.fun), "Cross frame function failure");
+            Assert.isFalse(YAHOO.lang.isArray(xframe.boo), "Cross frame boolean failure");
+            Assert.isFalse(YAHOO.lang.isArray(xframe.str), "Cross frame string failure");
+            Assert.isFalse(YAHOO.lang.isArray(xframe.nul), "Cross frame null failure");
+            Assert.isFalse(YAHOO.lang.isArray(xframe.und), "Cross frame undefined failure");
+        
+            // alert(xframe.arr.constructor.prototype == Array.prototype);
+            // alert(xframe.arr.constructor.prototype == xframe.Array.prototype);
+        },
+
+        test_is_boolean: function() {
+            Assert.isTrue(YAHOO.lang.isBoolean(false), "false failed boolean check");
+            Assert.isFalse(YAHOO.lang.isBoolean(1), "the number 1 is not a boolean");
+            Assert.isFalse(YAHOO.lang.isBoolean("true"), "the string 'true' is not a boolean");
+        },
+
+        test_is_function: function() {
+            Assert.isTrue(YAHOO.lang.isFunction(function(){}), "a function is a function");
+            Assert.isFalse(YAHOO.lang.isFunction({foo: "bar"}), "an object is not a function");
+
+            Assert.isTrue(YAHOO.lang.isFunction(xframe.fun), "Cross frame function failure");
+            Assert.isFalse(YAHOO.lang.isFunction(xframe.arr), "Cross frame array failure");
+            Assert.isFalse(YAHOO.lang.isFunction(xframe.obj), "Cross frame object failure");
+            Assert.isFalse(YAHOO.lang.isFunction(xframe.boo), "Cross frame boolean failure");
+            Assert.isFalse(YAHOO.lang.isFunction(xframe.str), "Cross frame string failure");
+            Assert.isFalse(YAHOO.lang.isFunction(xframe.nul), "Cross frame null failure");
+            Assert.isFalse(YAHOO.lang.isFunction(xframe.und), "Cross frame undefined failure");
+
+        },
+    
+        test_is_null: function() {
+            Assert.isTrue(YAHOO.lang.isNull(null), "null is null");
+            Assert.isFalse(YAHOO.lang.isNull(undefined), "undefined is not null");
+            Assert.isFalse(YAHOO.lang.isNull(""), "empty string is not null");
+        },
+    
+        test_is_number: function() {
+            Assert.isTrue(YAHOO.lang.isNumber(0), "0 is a number");
+            Assert.isTrue(YAHOO.lang.isNumber(123.123), "123.123 is a number");
+            Assert.isFalse(YAHOO.lang.isNumber('123.123'), "the string '123.123' is not a number, even though it can be cast into one");
+            Assert.isFalse(YAHOO.lang.isNumber(1/0), "undefined numbers and infinity are not numbers we want to use");
+        },
+    
+        test_is_object: function() {
+            Assert.isTrue(YAHOO.lang.isObject({}), "an object is an object");
+            Assert.isTrue(YAHOO.lang.isObject(function(){}), "a function is an object");
+            Assert.isTrue(YAHOO.lang.isObject([]), "an array is an object");
+            Assert.isFalse(YAHOO.lang.isObject(1), "numbers are not objects");
+            Assert.isFalse(YAHOO.lang.isObject(true), "boolean values are not objects");
+            Assert.isFalse(YAHOO.lang.isObject("{}"), "strings are not objects");
+            Assert.isFalse(YAHOO.lang.isObject(null), "null should return false even though it technically is an object");
+
+            Assert.isTrue(YAHOO.lang.isObject(xframe.obj), "Cross frame object failure");
+            Assert.isTrue(YAHOO.lang.isObject(xframe.fun), "Cross frame function failure");
+            Assert.isTrue(YAHOO.lang.isObject(xframe.arr), "Cross frame array failure");
+            Assert.isFalse(YAHOO.lang.isObject(xframe.boo), "Cross frame boolean failure");
+            Assert.isFalse(YAHOO.lang.isObject(xframe.str), "Cross frame string failure");
+            Assert.isFalse(YAHOO.lang.isObject(xframe.nul), "Cross frame null failure");
+            Assert.isFalse(YAHOO.lang.isObject(xframe.und), "Cross frame undefined failure");
+
+        },
+    
+        test_is_string: function() {
+            Assert.isTrue(YAHOO.lang.isString("{}"), "a string is a string");
+            Assert.isFalse(YAHOO.lang.isString({foo: "bar"}), "an object is not a string");
+            Assert.isFalse(YAHOO.lang.isString(123), "a number is not a string");
+            Assert.isFalse(YAHOO.lang.isString(true), "boolean values are not strings");
+        },
+
+        test_is_undefined: function() {
+            Assert.isTrue(YAHOO.lang.isUndefined(undefined), "undefined is undefined");
+            Assert.isFalse(YAHOO.lang.isUndefined(false), "boolean false is not undefined");
+            Assert.isFalse(YAHOO.lang.isUndefined(null), "null is not undefined");
+        },
+
+        test_trim: function() {
+            Assert.areEqual(YAHOO.lang.trim("  My String"), "My String");
+            Assert.areEqual(YAHOO.lang.trim("My String  "), "My String");
+            Assert.areEqual(YAHOO.lang.trim("  My String  "), "My String");
+            Assert.areEqual(YAHOO.lang.trim(null), null);
+            Assert.areEqual(YAHOO.lang.trim(undefined), undefined);
+            Assert.areEqual(YAHOO.lang.trim({}), "[object Object]");
+        },
+
+        test_isValue: function() {
+            Assert.isFalse(YAHOO.lang.isValue(null), "null should be false");
+            Assert.isFalse(YAHOO.lang.isValue(undefined), "undefined should be false");
+            Assert.isFalse(YAHOO.lang.isValue(parseInt("adsf", 10)), "NaN should be false");
+            Assert.isFalse(YAHOO.lang.isValue(1/0), "undefined numbers and infinity should be false");
+            Assert.isTrue(YAHOO.lang.isValue(new Date()), "date should be true");
+            Assert.isTrue(YAHOO.lang.isValue(""), "Empty string should be true");
+            Assert.isTrue(YAHOO.lang.isValue(false), "false should be true");
+        },
+
+        test_merge: function() {
+            var o1 = { one: "one" }, 
+                o2 = { two: "two" },
+                o3 = { two: "twofromthree", three: "three" },
+                o4 = { one: "one", two: "twofromthree", three: "three" }, 
+                o123 = YAHOO.lang.merge(o1, o2, o3);
+
+            ObjectAssert.propertiesAreEqual(o123, o4);
+            Assert.areEqual(o123.two, o4.two);
+        },
+
+        test_dump: function() {
+            Assert.areEqual("0", YAHOO.lang.dump(0));
+            Assert.areEqual("null", YAHOO.lang.dump(null));
+            Assert.areEqual("false", YAHOO.lang.dump(false));
+            // Other types tested in substitute
+        },
+
+        test_substitute: function() {
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+            var param = {domain: 'valvion.com', 
+                         media: 'http://media.{domain}/', /* nested */
+                         contextdomain: { context1: 'context{domain}', context2: 'yahoo.com' },  /* the value is an object, we will use a custom function to extract the correct data */
+                         contextmedia: 'http://contextmedia.{contextdomain context1}/'};
+            var url, l=YAHOO.lang;
+
+            // standard replace, nested
+            url = l.substitute("{media}logo.gif", param);
+            Assert.areEqual(url, "http://media.valvion.com/logo.gif");
+
+            
+            // If the replacement value is an object, use the meta info as a key to extract the
+            // correct data.  Otherwise just return the value.
+            function multipleChoice(key, val, meta) {
+                return (l.isObject(val)) ? val[meta] : val;
+            }
+
+            // "random data" is not used since the value for the contextmedia key is a string.  
+            // contextdomain uses "context1" as a key to expand the string correctly
+            url = l.substitute("{contextmedia random data}logo.gif", param, multipleChoice);
+            Assert.areEqual(url, "http://contextmedia.contextvalvion.com/logo.gif");
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+            var obj = {
+                level1_1: 1.1,
+                level1_2: 1.2,
+                level1_3: {
+                    level2_1: 2.1,
+                    level2_2: 2.2,
+                    level2_3: {
+                        level3_1: 3.1,
+                        level3_2: 3.2,
+                        level3_3: 3.3,
+                        level3_4: 3.4
+                    },
+                    level2_4: 2.4
+                },
+                level1_4: 1.4
+            };
+
+
+            Assert.areEqual(
+                l.substitute("{testobj 0}", { testobj: obj }), 
+                "{level1_1 => 1.1, level1_2 => 1.2, level1_3 => {...}, level1_4 => 1.4}",
+                "failed one level object dump"
+            );
+
+            Assert.areEqual(
+                l.substitute("{testobj 1}", { testobj: obj }), 
+                "{level1_1 => 1.1, level1_2 => 1.2, level1_3 => {level2_1 => 2.1, level2_2 => 2.2, level2_3 => {...}, level2_4 => 2.4}, level1_4 => 1.4}",
+                "failed two level object dump"
+            );
+
+            Assert.areEqual(
+                l.substitute(
+                    "{testobj 10}", { testobj: obj }), 
+                "{level1_1 => 1.1, level1_2 => 1.2, level1_3 => {level2_1 => 2.1, level2_2 => 2.2, level2_3 => {level3_1 => 3.1, level3_2 => 3.2, level3_3 => 3.3, level3_4 => 3.4}, level2_4 => 2.4}, level1_4 => 1.4}",
+                "failed deep object dump"
+            );
+
+            var arr = [
+                1.1,
+                1.2,
+                [
+                    2.1,
+                    2.2,
+                    [
+                        3.1,
+                        3.2,
+                        3.3,
+                        3.4
+                    ],
+                    2.4
+                ],
+                1.4
+            ];
+
+            Assert.areEqual(
+                l.substitute("{testarr 1}", { testarr: arr }), 
+                "[1.1, 1.2, [2.1, 2.2, {...}, 2.4], 1.4]",
+                "failed two level array dump"
+            );
+
+            var mix = [
+                1.1,
+                new Date(),
+                {
+                    level2_1: 2.1,
+                    level2_2: 2.2,
+                    level2_3: [
+                        3.1,
+                        3.2,
+                        3.3,
+                        3.4
+                    ],
+                    level2_4: 2.4
+                },
+                1.4,
+                function(){}
+            ];
+
+            var result = l.substitute("{testmix 1}", { testmix: mix });
+
+            Assert.isTrue(
+                (result.indexOf("GMT" > -1)) ? true : false,
+                "failed two level mixed object with a date (date should have produced an output with GMT in it"
+            );
+
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+            var tostr = {
+                custom1_1: 1.1,
+                custom1_2: 1.2,
+                custom1_3: {
+                    custom2_1: 2.1,
+                    custom2_2: 2.2,
+                    custom2_3: {
+                        custom3_1: 3.1,
+                        custom3_2: 3.2,
+                        custom3_3: 3.3,
+                        custom3_4: 3.4
+                    },
+                    custom2_4: 2.4
+                },
+                custom1_4: 1.4,
+                toString: function() {
+                    return "custom toString executed";
+                }
+            };
+
+            Assert.areEqual(
+                l.substitute("{customtostr 1}", { customtostr:  tostr }), 
+                "custom toString executed",
+                "failed: custom toString should have been used"
+            );
+
+            Assert.areEqual(
+                l.substitute("{customtostr dump 1}", { customtostr:  tostr }), 
+                "{custom1_1 => 1.1, custom1_2 => 1.2, custom1_3 => {custom2_1 => 2.1, custom2_2 => 2.2, custom2_3 => {...}, custom2_4 => 2.4}, custom1_4 => 1.4, toString => f(){...}}",
+                "failed: custom toString should NOT have been used because the dump keyword should override it"
+            );
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+        },
+
+        test_extend: function() {
+        },
+
+        test_augmentObject: function() {
+
+            var a = {
+                'bool' : false,
+                'num'  : 0,
+                'nul' : null,
+                'undef': undefined,
+                'T'    : 'blabber'
+            };
+
+            var b = {
+                'bool' : 'oops',
+                'num'  : 'oops',
+                'nul' : 'oops',
+                'undef': 'oops',
+                'T'    : 'oops'
+            };
+
+            YAHOO.lang.augmentObject(a,b,false);
+
+            Assert.isFalse((a.bool === 'oops'));
+            Assert.isFalse((a.num === 'oops'));
+            Assert.isFalse((a.nul === 'oops'));
+            Assert.isFalse((a.undef === 'oops'));
+            Assert.isFalse((a.T === 'oops'));
+
+            YAHOO.lang.augmentObject(a,b,true);
+            Assert.isTrue((a.bool === 'oops'));
+            Assert.isTrue((a.num === 'oops'));
+            Assert.isTrue((a.nul === 'oops'));
+            Assert.isTrue((a.undef === 'oops'));
+            Assert.isTrue((a.T === 'oops'));
+
+        },
+
+        test_augmentProto: function() {
+        },
+
+        test_to_fail : function (){
+            Assert.isNull("not null");;
+        }
+        
+    }));
+     
+    function runTests(){
+        YAHOO.tool.TestRunner.run();
+    }
+
+    // YAHOO.util.Event.onDomReady(function (){ // need to wait for the frame to load
+    YAHOO.util.Event.on(window, "load", function (){
+        //create the logger
+        var logger = new YAHOO.tool.TestLogger();
+        
+        //add the tests
+        YAHOO.tool.TestRunner.add(suite);
+        
+        //add event handler
+        YAHOO.util.Event.addListener("btnRun", "click", runTests);
+
+        if (parent && parent != window) {
+            YAHOO.tool.TestManager.load();
+        } else {
+            YAHOO.tool.TestRunner.run();
+        }
+    });
+    
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: charts   Chart.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>Charts Widget&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_charts.html" title="charts">charts</a>
+                
+                 &gt; Chart.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * The Charts widget provides a Flash control for displaying data</span>
+<span class="c"> * graphically by series across A-grade browsers with Flash Player installed.</span>
+<span class="c"> *</span>
+<span class="c"> * @module charts</span>
+<span class="c"> * @requires yahoo, dom, event, datasource</span>
+<span class="c"> * @title Charts Widget</span>
+<span class="c"> * @experimental</span>
+<span class="c"> */</span>
+ 
+<span class="c">/****************************************************************************/</span>
+<span class="c">/****************************************************************************/</span>
+<span class="c">/****************************************************************************/</span>
+
+<span class="c">/**</span>
+<span class="c"> * Chart class for the YUI Charts widget.</span>
+<span class="c"> *</span>
+<span class="c"> * @namespace YAHOO.widget</span>
+<span class="c"> * @class Chart</span>
+<span class="c"> * @uses YAHOO.util.AttributeProvider</span>
+<span class="c"> * @constructor</span>
+<span class="c"> * @param type {String} The char type. May be &quot;line&quot;, &quot;column&quot;, &quot;bar&quot;, or &quot;pie&quot;</span>
+<span class="c"> * @param containerId {HTMLElement} Container element for the Flash Player instance.</span>
+<span class="c"> * @param dataSource {YAHOO.util.DataSource} DataSource instance.</span>
+<span class="c"> * @param attributes {object} (optional) Object literal of configuration values.</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">containerId</span><span class="o">,</span> <span class="nx">dataSource</span><span class="o">,</span> <span class="nx">configurationAttributes</span><span class="o">)</span>
+<span class="o">{</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">_type</span> <span class="o">=</span> <span class="nx">type</span><span class="o">;</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span> <span class="o">=</span> <span class="nx">dataSource</span><span class="o">;</span>
+		
+	<span class="k">var</span> <span class="nx">possibleParams</span> <span class="o">=</span> <span class="o">{</span><span class="nx">align</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">allowNetworking</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">allowScriptAccess</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">base</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">bgcolor</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">menu</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">name</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">quality</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">salign</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">scale</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">tabindex</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">,</span> <span class="nx">wmode</span><span class="o">:</span><span class="s2">&quot;&quot;</span><span class="o">};</span>
+	<span class="k">var</span> <span class="nx">attributes</span> <span class="o">=</span> <span class="o">{</span><span class="nx">fixedAttributes</span><span class="o">:{</span><span class="nx">allowScriptAccess</span><span class="o">:</span><span class="s2">&quot;always&quot;</span><span class="o">},</span> <span class="nx">flashVars</span><span class="o">:{</span><span class="nx">allowedDomain</span> <span class="o">:</span> <span class="nb">document</span><span class="o">.</span><span class="nx">location</span><span class="o">.</span><span class="nx">hostname</span><span class="o">},</span> <span class="nx">backgroundColor</span><span class="o">:</span><span class="s2">&quot;#ffffff&quot;</span><span class="o">,</span> <span class="nx">host</span><span class="o">:</span><span class="k">this</span><span class="o">,</span> <span class="nx">version</span><span class="o">:</span><span class="m">9</span><span class="o">.</span><span class="m">045</span><span class="o">};</span>
+	
+	<span class="k">for</span><span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">configurationAttributes</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="nx">possibleParams</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">i</span><span class="o">))</span>
+		<span class="o">{</span>
+			<span class="nx">attributes</span><span class="o">.</span><span class="nx">fixedAttributes</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">=</span> <span class="nx">configurationAttributes</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+		<span class="o">}</span>
+		<span class="k">else</span>
+		<span class="o">{</span>
+			<span class="nx">attributes</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">=</span> <span class="nx">configurationAttributes</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="k">this</span><span class="o">.</span><span class="nx">_id</span> <span class="o">=</span> <span class="nx">attributes</span><span class="o">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">attributes</span><span class="o">.</span><span class="nx">id</span> <span class="o">||</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">generateId</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="s2">&quot;yuigen&quot;</span><span class="o">);</span>
+	
+	<span class="k">if</span><span class="o">(</span><span class="nx">attributes</span><span class="o">.</span><span class="nx">version</span> <span class="o">&amp;&amp;</span> <span class="nx">attributes</span><span class="o">.</span><span class="nx">version</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nx">attributes</span><span class="o">.</span><span class="nx">version</span> <span class="o">!=</span> <span class="kc">undefined</span> <span class="o">&amp;&amp;</span> <span class="nx">attributes</span><span class="o">.</span><span class="nx">version</span> <span class="o">!=</span> <span class="s2">&quot;undefined&quot;</span><span class="o">)</span>
+	<span class="o">{</span> 
+		<span class="k">var</span> <span class="nx">version</span> <span class="o">=</span> <span class="o">(</span><span class="sr">/\w*.\w*/</span><span class="o">.</span><span class="nx">exec</span><span class="o">(((</span><span class="nx">attributes</span><span class="o">.</span><span class="nx">version</span><span class="o">).</span><span class="nx">toString</span><span class="o">()).</span><span class="nx">replace</span><span class="o">(</span><span class="sr">/.0./g</span><span class="o">,</span> <span class="s2">&quot;.&quot;</span><span class="o">))).</span><span class="nx">toString</span><span class="o">();</span>
+		<span class="k">var</span> <span class="nx">verSplit</span> <span class="o">=</span> <span class="nx">version</span><span class="o">.</span><span class="nx">split</span><span class="o">(</span><span class="s2">&quot;.&quot;</span><span class="o">);</span>
+		<span class="nx">version</span> <span class="o">=</span> <span class="nx">verSplit</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="o">;</span>
+		<span class="nx">switch</span><span class="o">((</span><span class="nx">verSplit</span><span class="o">[</span><span class="m">1</span><span class="o">].</span><span class="nx">toString</span><span class="o">()).</span><span class="nx">length</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="nx">case</span> <span class="m">1</span><span class="o">:</span> 
+				<span class="nx">version</span> <span class="o">+=</span> <span class="s2">&quot;00&quot;</span><span class="o">;</span>
+			<span class="k">break</span><span class="o">;</span>
+			<span class="nx">case</span> <span class="m">2</span><span class="o">:</span>
+				<span class="nx">version</span> <span class="o">+=</span> <span class="s2">&quot;0&quot;</span><span class="o">;</span>
+			<span class="k">break</span><span class="o">;</span>	
+		<span class="o">}</span> 
+		<span class="nx">version</span> <span class="o">+=</span> <span class="nx">verSplit</span><span class="o">[</span><span class="m">1</span><span class="o">];</span>
+		<span class="nx">attributes</span><span class="o">.</span><span class="nx">version</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="o">(</span><span class="nx">version</span><span class="o">);</span> 
+	<span class="o">}</span>
+	
+	<span class="k">this</span><span class="o">.</span><span class="nx">_swfURL</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">SWFURL</span><span class="o">;</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">_containerID</span> <span class="o">=</span> <span class="nx">containerId</span><span class="o">;</span>
+	
+	<span class="k">this</span><span class="o">.</span><span class="nx">_attributes</span> <span class="o">=</span> <span class="nx">attributes</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">_swfEmbed</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">SWF</span><span class="o">(</span><span class="nx">containerId</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">SWFURL</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">);</span>
+	
+	<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_swfEmbed</span><span class="o">.</span><span class="nx">swf</span><span class="o">;</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">_swfEmbed</span><span class="o">.</span><span class="nx">subscribe</span><span class="o">(</span><span class="s2">&quot;swfReady&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_eventHandler</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+			
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the SWF is initialized and communication is possible.</span>
+<span class="c">	 * @event contentReady</span>
+<span class="c">	 */</span>
+	<span class="c">//Fix for iframe cross-domain issue with FF2x </span>
+<span class="c"></span>	<span class="k">try</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;contentReady&quot;</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">catch</span><span class="o">(</span><span class="nx">e</span><span class="o">){}</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the user moves the mouse over the bounds of an item renderer in the chart.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event itemMouseOverEvent</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.item {Object} The data displayed by the renderer</span>
+<span class="c">	 * @param event.index {Number} The position within the series that the item appears.</span>
+<span class="c">	 * @param event.seriesIndex {Number} The position within the series definition that the series appears.</span>
+<span class="c">	 * @param event.x {Number} The horizontal position of the mouse, relative to the SWF.</span>
+<span class="c">	 * @param event.y {Number} The vertical position of the mouse, relative to the SWF.</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;itemMouseOverEvent&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the user moves the mouse out of the bounds of an item renderer in the chart.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event itemMouseOutEvent</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.item {Object} The data displayed by the renderer</span>
+<span class="c">	 * @param event.index {Number} The position within the series that the item appears.</span>
+<span class="c">	 * @param event.seriesIndex {Number} The position within the series definition that the series appears.</span>
+<span class="c">	 * @param event.x {Number} The horizontal position of the mouse, relative to the SWF.</span>
+<span class="c">	 * @param event.y {Number} The vertical position of the mouse, relative to the SWF.</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;itemMouseOutEvent&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the user clicks an item renderer in the chart with the mouse.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event itemClickEvent</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.item {Object} The data displayed by the renderer</span>
+<span class="c">	 * @param event.index {Number} The position within the series that the item appears.</span>
+<span class="c">	 * @param event.seriesIndex {Number} The position within the series definition that the series appears.</span>
+<span class="c">	 * @param event.x {Number} The horizontal position of the mouse, relative to the SWF.</span>
+<span class="c">	 * @param event.y {Number} The vertical position of the mouse, relative to the SWF.</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;itemClickEvent&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the user double-clicks an item renderer in the chart with the mouse.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event itemDoubleClickEvent</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.item {Object} The data displayed by the renderer</span>
+<span class="c">	 * @param event.index {Number} The position within the series that the item appears.</span>
+<span class="c">	 * @param event.seriesIndex {Number} The position within the series definition that the series appears.</span>
+<span class="c">	 * @param event.x {Number} The horizontal position of the mouse, relative to the SWF.</span>
+<span class="c">	 * @param event.y {Number} The vertical position of the mouse, relative to the SWF.</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;itemDoubleClickEvent&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the user presses the mouse down on an item to initiate a drag action.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event itemDragStartEvent</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.item {Object} The data displayed by the renderer</span>
+<span class="c">	 * @param event.index {Number} The position within the series that the item appears.</span>
+<span class="c">	 * @param event.seriesIndex {Number} The position within the series definition that the series appears.</span>
+<span class="c">	 * @param event.x {Number} The horizontal position of the mouse, relative to the SWF.</span>
+<span class="c">	 * @param event.y {Number} The vertical position of the mouse, relative to the SWF.</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;itemDragStartEvent&quot;</span><span class="o">);</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the user moves the mouse during a drag action.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event itemDragEvent</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.item {Object} The data displayed by the renderer</span>
+<span class="c">	 * @param event.index {Number} The position within the series that the item appears.</span>
+<span class="c">	 * @param event.seriesIndex {Number} The position within the series definition that the series appears.</span>
+<span class="c">	 * @param event.x {Number} The horizontal position of the mouse, relative to the SWF.</span>
+<span class="c">	 * @param event.y {Number} The vertical position of the mouse, relative to the SWF.</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;itemDragEvent&quot;</span><span class="o">);</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Fires when the user releases the mouse during a drag action.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @event itemDragEndEvent</span>
+<span class="c">	 * @param event.type {String} The event type</span>
+<span class="c">	 * @param event.item {Object} The data displayed by the renderer</span>
+<span class="c">	 * @param event.index {Number} The position within the series that the item appears.</span>
+<span class="c">	 * @param event.seriesIndex {Number} The position within the series definition that the series appears.</span>
+<span class="c">	 * @param event.x {Number} The horizontal position of the mouse, relative to the SWF.</span>
+<span class="c">	 * @param event.y {Number} The vertical position of the mouse, relative to the SWF.</span>
+<span class="c">	 */</span>
+	<span class="k">this</span><span class="o">.</span><span class="nx">createEvent</span><span class="o">(</span><span class="s2">&quot;itemDragEndEvent&quot;</span><span class="o">);</span>
+<span class="o">};</span>
+
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">,</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">AttributeProvider</span><span class="o">,</span>
+<span class="o">{</span>
+	<span class="c">/**</span>
+<span class="c">	 * The type of this chart instance.</span>
+<span class="c">	 * @property _type</span>
+<span class="c">	 * @type String</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_type</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * The id returned from the DataSource&#39;s setInterval function.</span>
+<span class="c">	 * @property _pollingID</span>
+<span class="c">	 * @type Number</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_pollingID</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * The time, in ms, between requests for data.</span>
+<span class="c">	 * @property _pollingInterval</span>
+<span class="c">	 * @type Number</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_pollingInterval</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Stores a reference to the dataTipFunction created by</span>
+<span class="c">	 * YAHOO.widget.Chart.createProxyFunction()</span>
+<span class="c">	 * @property _dataTipFunction</span>
+<span class="c">	 * @type String</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_dataTipFunction</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Stores a reference to the legendLabelFunction created by</span>
+<span class="c">	 * YAHOO.widget.Chart.createProxyFunction()</span>
+<span class="c">	 * @property _legendLabelFunction</span>
+<span class="c">	 * @type String</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_legendLabelFunction</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>	
+	
+	<span class="c">/**</span>
+<span class="c">	 * Stores references to series function values created by</span>
+<span class="c">	 * YAHOO.widget.Chart.createProxyFunction()</span>
+<span class="c">	 * @property _seriesFunctions</span>
+<span class="c">	 * @type Array</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_seriesFunctions</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Public accessor to the unique name of the Chart instance.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method toString</span>
+<span class="c">	 * @return {String} Unique name of the Chart instance.</span>
+<span class="c">	 */</span>
+	<span class="nx">toString</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="s2">&quot;Chart &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">_id</span><span class="o">;</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Sets a single style value on the Chart instance.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method setStyle</span>
+<span class="c">	 * @param name {String} Name of the Chart style value to change.</span>
+<span class="c">	 * @param value {Object} New value to pass to the Chart style.</span>
+<span class="c">	 */</span>
+	<span class="nx">setStyle</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="c">//we must jsonify this because Flash Player versions below 9.0.60 don&#39;t handle</span>
+<span class="c"></span>		<span class="c">//complex ExternalInterface parsing correctly</span>
+<span class="c"></span>		<span class="nx">value</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">JSON</span><span class="o">.</span><span class="nx">stringify</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setStyle</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">value</span><span class="o">);</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Resets all styles on the Chart instance.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method setStyles</span>
+<span class="c">	 * @param styles {Object} Initializer for all Chart styles.</span>
+<span class="c">	 */</span>
+	<span class="nx">setStyles</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">styles</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="c">//we must jsonify this because Flash Player versions below 9.0.60 don&#39;t handle</span>
+<span class="c"></span>		<span class="c">//complex ExternalInterface parsing correctly</span>
+<span class="c"></span>		<span class="nx">styles</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">JSON</span><span class="o">.</span><span class="nx">stringify</span><span class="o">(</span><span class="nx">styles</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setStyles</span><span class="o">(</span><span class="nx">styles</span><span class="o">);</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Sets the styles on all series in the Chart.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method setSeriesStyles</span>
+<span class="c">	 * @param styles {Array} Initializer for all Chart series styles.</span>
+<span class="c">	 */</span>
+	<span class="nx">setSeriesStyles</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">styles</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="c">//we must jsonify this because Flash Player versions below 9.0.60 don&#39;t handle</span>
+<span class="c"></span>		<span class="c">//complex ExternalInterface parsing correctly</span>
+<span class="c"></span>		<span class="k">for</span><span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">styles</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span>
+		<span class="o">{</span>
+			<span class="nx">styles</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">JSON</span><span class="o">.</span><span class="nx">stringify</span><span class="o">(</span><span class="nx">styles</span><span class="o">[</span><span class="nx">i</span><span class="o">]);</span>	
+		<span class="o">}</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setSeriesStyles</span><span class="o">(</span><span class="nx">styles</span><span class="o">);</span>
+	<span class="o">},</span>
+	
+	<span class="nx">destroy</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="c">//stop polling if needed</span>
+<span class="c"></span>		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_pollingID</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+			<span class="o">{</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span><span class="o">.</span><span class="nx">clearInterval</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_pollingID</span><span class="o">);</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_pollingID</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		
+		<span class="c">//remove proxy functions</span>
+<span class="c"></span>		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_dataTipFunction</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">removeProxyFunction</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_dataTipFunction</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_legendLabelFunction</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">removeProxyFunction</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_legendLabelFunction</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="c">//kill the Flash Player instance</span>
+<span class="c"></span>		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_containerID</span><span class="o">);</span>
+			<span class="nx">container</span><span class="o">.</span><span class="nx">removeChild</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="k">var</span> <span class="nx">instanceName</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_id</span><span class="o">;</span>
+		
+		<span class="c">//null out properties</span>
+<span class="c"></span>		<span class="k">for</span><span class="o">(</span><span class="k">var</span> <span class="nx">prop</span> <span class="k">in</span> <span class="k">this</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">prop</span><span class="o">))</span>
+			<span class="o">{</span>
+				<span class="k">this</span><span class="o">[</span><span class="nx">prop</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Initializes the attributes.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _initAttributes</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_initAttributes</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">attributes</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="c">//YAHOO.widget.Chart.superclass._initAttributes.call(this, attributes);</span>
+<span class="c"></span>		<span class="c">/**</span>
+<span class="c">		 * @attribute wmode</span>
+<span class="c">		 * @description Sets the window mode of the Flash Player control. May be</span>
+<span class="c">		 *		&quot;window&quot;, &quot;opaque&quot;, or &quot;transparent&quot;. Only available in the constructor</span>
+<span class="c">		 *		because it may not be set after Flash Player has been embedded in the page.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>
+		 
+		<span class="c">/**</span>
+<span class="c">		 * @attribute expressInstall</span>
+<span class="c">		 * @description URL pointing to a SWF file that handles Flash Player&#39;s express</span>
+<span class="c">		 *		install feature. Only available in the constructor because it may not be</span>
+<span class="c">		 *		set after Flash Player has been embedded in the page.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>
+
+		<span class="c">/**</span>
+<span class="c">		 * @attribute version</span>
+<span class="c">		 * @description Minimum required version for the SWF file. Only available in the constructor because it may not be</span>
+<span class="c">		 *		set after Flash Player has been embedded in the page.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>
+
+		<span class="c">/**</span>
+<span class="c">		 * @attribute backgroundColor</span>
+<span class="c">		 * @description The background color of the SWF. Only available in the constructor because it may not be</span>
+<span class="c">		 *		set after Flash Player has been embedded in the page.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>
+		 
+		<span class="c">/**</span>
+<span class="c">		 * @attribute altText</span>
+<span class="c">		 * @description The alternative text to provide for screen readers and other assistive technology.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;altText&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setAltText</span><span class="o">,</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getAltText</span>
+			
+		<span class="o">});</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * @attribute swfURL</span>
+<span class="c">		 * @description Absolute or relative URL to the SWF displayed by the Chart. Only available in the constructor because it may not be</span>
+<span class="c">		 *		set after Flash Player has been embedded in the page.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;swfURL&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getSWFURL</span>
+		<span class="o">});</span>		
+
+		<span class="c">/**</span>
+<span class="c">		 * @attribute request</span>
+<span class="c">		 * @description Request to be sent to the Chart&#39;s DataSource.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;request&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setRequest</span><span class="o">,</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getRequest</span>
+		<span class="o">});</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * @attribute dataSource</span>
+<span class="c">		 * @description The DataSource instance to display in the Chart.</span>
+<span class="c">		 * @type DataSource</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;dataSource&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setDataSource</span><span class="o">,</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getDataSource</span>
+		<span class="o">});</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * @attribute series</span>
+<span class="c">		 * @description Defines the series to be displayed by the Chart.</span>
+<span class="c">		 * @type Array</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;series&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setSeriesDefs</span><span class="o">,</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getSeriesDefs</span>
+		<span class="o">});</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * @attribute categoryNames</span>
+<span class="c">		 * @description Defines the names of the categories to be displayed in the Chart..</span>
+<span class="c">		 * @type Array</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;categoryNames&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isArray</span><span class="o">,</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setCategoryNames</span><span class="o">,</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getCategoryNames</span>
+		<span class="o">});</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * @attribute dataTipFunction</span>
+<span class="c">		 * @description The string representation of a globally-accessible function</span>
+<span class="c">		 * that may be called by the SWF to generate the datatip text for a Chart&#39;s item.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;dataTipFunction&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setDataTipFunction</span><span class="o">,</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getDataTipFunction</span>
+		<span class="o">});</span>
+		
+		<span class="c">/**</span>
+<span class="c">		 * @attribute legendLabelFunction</span>
+<span class="c">		 * @description The string representation of a globally-accessible function</span>
+<span class="c">		 * that may be called by the SWF to format the labels of a Chart&#39;s legend.</span>
+<span class="c">		 * @type String</span>
+<span class="c">		 */</span>	
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;legendLabelFunction&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setLegendLabelFunction</span><span class="o">,</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_legendLabelFunction</span>
+		<span class="o">});</span>
+
+		<span class="c">/**</span>
+<span class="c">		 * @attribute polling</span>
+<span class="c">		 * @description A numeric value indicating the number of milliseconds between</span>
+<span class="c">		 * polling requests to the DataSource.</span>
+<span class="c">		 * @type Number</span>
+<span class="c">		 */</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributeConfig</span><span class="o">(</span><span class="s2">&quot;polling&quot;</span><span class="o">,</span>
+		<span class="o">{</span>
+			<span class="nx">method</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_setPolling</span><span class="o">,</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_getPolling</span>
+		<span class="o">});</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Handles swfReady event from SWF.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _eventHandler</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_eventHandler</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">event</span><span class="o">)</span>
+	<span class="o">{</span> 
+		<span class="k">if</span><span class="o">(</span><span class="nx">event</span><span class="o">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;swfReady&quot;</span><span class="o">)</span>
+		<span class="o">{</span>
+   			<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_swfEmbed</span><span class="o">.</span><span class="nx">_swf</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_loadHandler</span><span class="o">();</span>
+   			<span class="k">this</span><span class="o">.</span><span class="nx">fireEvent</span><span class="o">(</span><span class="s2">&quot;contentReady&quot;</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">},</span>	
+	
+	<span class="c">/**</span>
+<span class="c">	 * Called when the SWF is ready for communication. Sets the type, initializes</span>
+<span class="c">	 * the styles, and sets the DataSource.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _loadHandler</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_loadHandler</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="c">//the type is set separately because it must be first!</span>
+<span class="c"></span>		<span class="k">if</span><span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">_swf</span> <span class="o">||</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setType</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setType</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_type</span><span class="o">);</span>
+
+
+		<span class="c">//set initial styles</span>
+<span class="c"></span>		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_attributes</span><span class="o">.</span><span class="nx">style</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">var</span> <span class="nx">style</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_attributes</span><span class="o">.</span><span class="nx">style</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">setStyles</span><span class="o">(</span><span class="nx">style</span><span class="o">);</span>		
+		<span class="o">}</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">_initialized</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">_initAttributes</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_attributes</span><span class="o">);</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">setAttributes</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_attributes</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+		<span class="k">this</span><span class="o">.</span><span class="nx">_initialized</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">set</span><span class="o">(</span><span class="s2">&quot;dataSource&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">},</span>	
+
+	<span class="c">/**</span>
+<span class="c">	 * Sends (or resends) the request to the DataSource.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method refreshData</span>
+<span class="c">	 */</span>
+	<span class="nx">refreshData</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">if</span><span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="nx">_initialized</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">return</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_pollingID</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+			<span class="o">{</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span><span class="o">.</span><span class="nx">clearInterval</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_pollingID</span><span class="o">);</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_pollingID</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+			<span class="o">}</span>
+			
+			<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_pollingInterval</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span>
+			<span class="o">{</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_pollingID</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span><span class="o">.</span><span class="nx">setInterval</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_pollingInterval</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_request</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_loadDataHandler</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span><span class="o">.</span><span class="nx">sendRequest</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_request</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="nx">_loadDataHandler</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Called when the DataSource receives new data. The series definitions are used</span>
+<span class="c">	 * to build a data provider for the SWF chart.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _loadDataHandler</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_loadDataHandler</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">request</span><span class="o">,</span> <span class="nx">response</span><span class="o">,</span> <span class="nx">error</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="nx">error</span><span class="o">)</span>
+			<span class="o">{</span>
+				<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Unable to load data.&quot;</span><span class="o">,</span> <span class="s2">&quot;error&quot;</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="k">else</span>
+			<span class="o">{</span>
+				<span class="k">var</span> <span class="nx">i</span><span class="o">;</span>
+				<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_seriesFunctions</span><span class="o">)</span>
+				<span class="o">{</span>
+					<span class="k">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_seriesFunctions</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+					<span class="k">for</span><span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">count</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span>
+					<span class="o">{</span>
+						<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">removeProxyFunction</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_seriesFunctions</span><span class="o">[</span><span class="nx">i</span><span class="o">]);</span>
+					<span class="o">}</span>
+					<span class="k">this</span><span class="o">.</span><span class="nx">_seriesFunctions</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+				<span class="o">}</span>
+				<span class="k">this</span><span class="o">.</span><span class="nx">_seriesFunctions</span> <span class="o">=</span> <span class="o">[];</span>
+
+				<span class="c">//make a copy of the series definitions so that we aren&#39;t</span>
+<span class="c"></span>				<span class="c">//editing them directly.</span>
+<span class="c"></span>				<span class="k">var</span> <span class="nx">dataProvider</span> <span class="o">=</span> <span class="o">[];</span>	
+				<span class="k">var</span> <span class="nx">seriesCount</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+				<span class="k">var</span> <span class="nx">currentSeries</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+				<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_seriesDefs</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+				<span class="o">{</span>
+					<span class="nx">seriesCount</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_seriesDefs</span><span class="o">.</span><span class="nx">length</span><span class="o">;</span>
+					<span class="k">for</span><span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">seriesCount</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span>
+					<span class="o">{</span>
+						<span class="nx">currentSeries</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_seriesDefs</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+						<span class="k">var</span> <span class="nx">clonedSeries</span> <span class="o">=</span> <span class="o">{};</span>
+						<span class="k">for</span><span class="o">(</span><span class="k">var</span> <span class="nx">prop</span> <span class="k">in</span> <span class="nx">currentSeries</span><span class="o">)</span>
+						<span class="o">{</span>
+							<span class="k">if</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">,</span> <span class="nx">prop</span><span class="o">))</span>
+							<span class="o">{</span>
+								<span class="k">if</span><span class="o">(</span><span class="nx">prop</span> <span class="o">==</span> <span class="s2">&quot;style&quot;</span><span class="o">)</span>
+								<span class="o">{</span>
+									<span class="k">if</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">style</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+									<span class="o">{</span>
+										<span class="nx">clonedSeries</span><span class="o">.</span><span class="nx">style</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">JSON</span><span class="o">.</span><span class="nx">stringify</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">style</span><span class="o">);</span>
+									<span class="o">}</span>
+								<span class="o">}</span>
+
+								<span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="nx">prop</span> <span class="o">==</span> <span class="s2">&quot;labelFunction&quot;</span><span class="o">)</span>
+								<span class="o">{</span>
+									<span class="k">if</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">labelFunction</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+									<span class="o">{</span>	
+										<span class="nx">clonedSeries</span><span class="o">.</span><span class="nx">labelFunction</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">getFunctionReference</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">labelFunction</span><span class="o">);</span>
+										<span class="k">this</span><span class="o">.</span><span class="nx">_seriesFunctions</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">clonedSeries</span><span class="o">.</span><span class="nx">labelFunction</span><span class="o">);</span>
+									<span class="o">}</span>
+								<span class="o">}</span>
+
+								<span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="nx">prop</span> <span class="o">==</span> <span class="s2">&quot;dataTipFunction&quot;</span><span class="o">)</span>
+								<span class="o">{</span>
+									<span class="k">if</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">dataTipFunction</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+									<span class="o">{</span>
+										<span class="nx">clonedSeries</span><span class="o">.</span><span class="nx">dataTipFunction</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">getFunctionReference</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">dataTipFunction</span><span class="o">);</span>
+										<span class="k">this</span><span class="o">.</span><span class="nx">_seriesFunctions</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">clonedSeries</span><span class="o">.</span><span class="nx">dataTipFunction</span><span class="o">);</span>
+									<span class="o">}</span>	
+								<span class="o">}</span>
+								
+								<span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="nx">prop</span> <span class="o">==</span> <span class="s2">&quot;legendLabelFunction&quot;</span><span class="o">)</span>
+								<span class="o">{</span>
+									<span class="k">if</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">legendLabelFunction</span> <span class="o">!==</span> <span class="kc">null</span><span class="o">)</span>
+									<span class="o">{</span>
+										<span class="nx">clonedSeries</span><span class="o">.</span><span class="nx">legendLabelFunction</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">getFunctionReference</span><span class="o">(</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">legendLabelFunction</span><span class="o">);</span>
+										<span class="k">this</span><span class="o">.</span><span class="nx">_seriesFunctions</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">clonedSeries</span><span class="o">.</span><span class="nx">legendLabelFunction</span><span class="o">);</span> 
+									<span class="o">}</span>	
+								<span class="o">}</span>								
+
+								<span class="k">else</span>
+								<span class="o">{</span>
+									<span class="nx">clonedSeries</span><span class="o">[</span><span class="nx">prop</span><span class="o">]</span> <span class="o">=</span> <span class="nx">currentSeries</span><span class="o">[</span><span class="nx">prop</span><span class="o">];</span>
+								<span class="o">}</span>
+							<span class="o">}</span>
+						<span class="o">}</span>
+						<span class="nx">dataProvider</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">clonedSeries</span><span class="o">);</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+
+				<span class="k">if</span><span class="o">(</span><span class="nx">seriesCount</span> <span class="o">&gt;</span> <span class="m">0</span><span class="o">)</span>
+				<span class="o">{</span>
+					<span class="k">for</span><span class="o">(</span><span class="nx">i</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">seriesCount</span><span class="o">;</span> <span class="nx">i</span><span class="o">++)</span>
+					<span class="o">{</span>
+						<span class="nx">currentSeries</span> <span class="o">=</span> <span class="nx">dataProvider</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+						<span class="k">if</span><span class="o">(!</span><span class="nx">currentSeries</span><span class="o">.</span><span class="nx">type</span><span class="o">)</span>
+						<span class="o">{</span>
+							<span class="nx">currentSeries</span><span class="o">.</span><span class="nx">type</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">_type</span><span class="o">;</span>
+						<span class="o">}</span>
+						<span class="nx">currentSeries</span><span class="o">.</span><span class="nx">dataProvider</span> <span class="o">=</span> <span class="nx">response</span><span class="o">.</span><span class="nx">results</span><span class="o">;</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+				<span class="k">else</span>
+				<span class="o">{</span>
+					<span class="k">var</span> <span class="nx">series</span> <span class="o">=</span> <span class="o">{</span><span class="nx">type</span><span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="nx">_type</span><span class="o">,</span> <span class="nx">dataProvider</span><span class="o">:</span> <span class="nx">response</span><span class="o">.</span><span class="nx">results</span><span class="o">};</span>
+					<span class="nx">dataProvider</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">series</span><span class="o">);</span>
+				<span class="o">}</span>
+				<span class="k">try</span>
+				<span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setDataProvider</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setDataProvider</span><span class="o">(</span><span class="nx">dataProvider</span><span class="o">);</span>
+				<span class="o">}</span>
+				<span class="k">catch</span><span class="o">(</span><span class="nx">e</span><span class="o">)</span>
+				<span class="o">{</span>
+					<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setDataProvider</span><span class="o">(</span><span class="nx">dataProvider</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Storage for the request attribute.</span>
+<span class="c">	 * </span>
+<span class="c">	 * @property _request</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_request</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="o">,</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Getter for the request attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _getRequest</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_getRequest</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_request</span><span class="o">;</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Setter for the request attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _setRequest</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_setRequest</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_request</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">refreshData</span><span class="o">();</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Storage for the dataSource attribute.</span>
+<span class="c">	 * </span>
+<span class="c">	 * @property _dataSource</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_dataSource</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Getter for the dataSource attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _getDataSource</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_getDataSource</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span><span class="o">;</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Setter for the dataSource attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _setDataSource</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_setDataSource</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>	
+		<span class="k">this</span><span class="o">.</span><span class="nx">_dataSource</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">refreshData</span><span class="o">();</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Storage for the series attribute.</span>
+<span class="c">	 * </span>
+<span class="c">	 * @property _seriesDefs</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_seriesDefs</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Getter for the series attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _getSeriesDefs</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_getSeriesDefs</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_seriesDefs</span><span class="o">;</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Setter for the series attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _setSeriesDefs</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_setSeriesDefs</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_seriesDefs</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">refreshData</span><span class="o">();</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Getter for the categoryNames attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _getCategoryNames</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_getCategoryNames</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">getCategoryNames</span><span class="o">();</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Setter for the categoryNames attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _setCategoryNames</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_setCategoryNames</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setCategoryNames</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Setter for the dataTipFunction attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _setDataTipFunction</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_setDataTipFunction</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_dataTipFunction</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">removeProxyFunction</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_dataTipFunction</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="k">if</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_dataTipFunction</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">getFunctionReference</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setDataTipFunction</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Setter for the legendLabelFunction attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _setLegendLabelFunction</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_setLegendLabelFunction</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_legendLabelFunction</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">removeProxyFunction</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_legendLabelFunction</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="k">if</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="nx">_legendLabelFunction</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">getFunctionReference</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setLegendLabelFunction</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Getter for the polling attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _getPolling</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_getPolling</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_pollingInterval</span><span class="o">;</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Setter for the polling attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _setPolling</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_setPolling</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">_pollingInterval</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="nx">refreshData</span><span class="o">();</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * The javascript wrapper for the swf object</span>
+<span class="c">	 *</span>
+<span class="c">	 * @property _swfEmbed</span>
+<span class="c">	 * @type swf</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_swfEmbed</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * The URL of the SWF file.</span>
+<span class="c">	 * @property _swfURL</span>
+<span class="c">	 * @type String</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_swfURL</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * The ID of the containing DIV.</span>
+<span class="c">	 * @property _containerID</span>
+<span class="c">	 * @type String</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_containerID</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * A reference to the embedded SWF file.</span>
+<span class="c">	 * @property _swf</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_swf</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * The id of this instance.</span>
+<span class="c">	 * @property _id</span>
+<span class="c">	 * @type String</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_id</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Indicates whether the SWF has been initialized and is ready</span>
+<span class="c">	 * to communicate with JavaScript</span>
+<span class="c">	 * @property _initialized</span>
+<span class="c">	 * @type Boolean</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_initialized</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * The initializing attributes are stored here until the SWF is ready.</span>
+<span class="c">	 * @property _attributes</span>
+<span class="c">	 * @type Object</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_attributes</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span> <span class="c">//the intializing attributes</span>
+<span class="c"></span>	
+	<span class="nx">set</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">name</span><span class="o">,</span> <span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="c">//save all the attributes in case the swf reloads</span>
+<span class="c"></span>		<span class="c">//so that we can pass them in again</span>
+<span class="c"></span>		<span class="k">this</span><span class="o">.</span><span class="nx">_attributes</span><span class="o">[</span><span class="nx">name</span><span class="o">]</span> <span class="o">=</span> <span class="nx">value</span><span class="o">;</span>
+		<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">set</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">name</span><span class="o">,</span> <span class="nx">value</span><span class="o">);</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Getter for swfURL attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _getSWFURL</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_getSWFURL</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_swfURL</span><span class="o">;</span>
+	<span class="o">},</span>
+	
+	<span class="c">/**</span>
+<span class="c">	 * Getter for altText attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _getAltText</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_getAltText</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">getAltText</span><span class="o">();</span>
+	<span class="o">},</span>
+
+	<span class="c">/**</span>
+<span class="c">	 * Setter for altText attribute.</span>
+<span class="c">	 *</span>
+<span class="c">	 * @method _setAltText</span>
+<span class="c">	 * @private</span>
+<span class="c">	 */</span>
+	<span class="nx">_setAltText</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+	<span class="o">{</span>
+	 	<span class="k">this</span><span class="o">.</span><span class="nx">_swf</span><span class="o">.</span><span class="nx">setAltText</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">});</span>
+
+<span class="c">/**</span>
+<span class="c"> * The number of proxy functions that have been created.</span>
+<span class="c"> * @static</span>
+<span class="c"> * @private</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">proxyFunctionCount</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+
+<span class="c">/**</span>
+<span class="c"> * Creates a globally accessible function that wraps a function reference.</span>
+<span class="c"> * Returns the proxy function&#39;s name as a string for use by the SWF through</span>
+<span class="c"> * ExternalInterface.</span>
+<span class="c"> *</span>
+<span class="c"> * @method YAHOO.widget.Chart.createProxyFunction</span>
+<span class="c"> * @static</span>
+<span class="c"> * @private</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">createProxyFunction</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">func</span><span class="o">,</span> <span class="nx">scope</span><span class="o">)</span>
+<span class="o">{</span>
+	<span class="k">var</span> <span class="nx">scope</span> <span class="o">=</span> <span class="nx">scope</span> <span class="o">||</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="k">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">proxyFunctionCount</span><span class="o">;</span>
+	<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">[</span><span class="s2">&quot;proxyFunction&quot;</span> <span class="o">+</span> <span class="nx">index</span><span class="o">]</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span>
+	<span class="o">{</span>
+		<span class="k">return</span> <span class="nx">func</span><span class="o">.</span><span class="nx">apply</span><span class="o">(</span><span class="nx">scope</span><span class="o">,</span> <span class="nx">arguments</span><span class="o">);</span>
+	<span class="o">};</span>
+	<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">proxyFunctionCount</span><span class="o">++;</span>
+	<span class="k">return</span> <span class="s2">&quot;YAHOO.widget.Chart.proxyFunction&quot;</span> <span class="o">+</span> <span class="nx">index</span><span class="o">.</span><span class="nx">toString</span><span class="o">();</span>
+<span class="o">};</span>
+
+<span class="c">/**</span>
+<span class="c"> * Uses YAHOO.widget.Chart.createProxyFunction to return string</span>
+<span class="c"> * reference to a function. </span>
+<span class="c"> *</span>
+<span class="c"> * @method YAHOO.widget.Chart.getFunctionReference</span>
+<span class="c"> * @static</span>
+<span class="c"> * @private</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">getFunctionReference</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">value</span><span class="o">)</span>
+<span class="o">{</span>
+	<span class="k">if</span><span class="o">(</span><span class="k">typeof</span> <span class="nx">value</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="nx">value</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">createProxyFunction</span><span class="o">(</span><span class="nx">value</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="nx">value</span><span class="o">.</span><span class="nx">func</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">value</span><span class="o">.</span><span class="nx">func</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="o">[</span><span class="nx">value</span><span class="o">.</span><span class="nx">func</span><span class="o">];</span>
+		<span class="k">if</span><span class="o">(</span><span class="nx">value</span><span class="o">.</span><span class="nx">scope</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">value</span><span class="o">.</span><span class="nx">scope</span> <span class="o">==</span> <span class="s2">&quot;object&quot;</span><span class="o">)</span>
+		<span class="o">{</span>
+			<span class="nx">args</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">value</span><span class="o">.</span><span class="nx">scope</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="nx">value</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">createProxyFunction</span><span class="o">.</span><span class="nx">apply</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">args</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="nx">value</span><span class="o">;</span>	
+<span class="o">}</span>
+
+<span class="c">/**</span>
+<span class="c"> * Removes a function created with createProxyFunction()</span>
+<span class="c"> * </span>
+<span class="c"> * @method YAHOO.widget.Chart.removeProxyFunction</span>
+<span class="c"> * @static</span>
+<span class="c"> * @private</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">removeProxyFunction</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">funcName</span><span class="o">)</span>
+<span class="o">{</span>
+	<span class="c">//quick error check</span>
+<span class="c"></span>	<span class="k">if</span><span class="o">(!</span><span class="nx">funcName</span> <span class="o">||</span> <span class="nx">funcName</span><span class="o">.</span><span class="nx">indexOf</span><span class="o">(</span><span class="s2">&quot;YAHOO.widget.Chart.proxyFunction&quot;</span><span class="o">)</span> <span class="o">&lt;</span> <span class="m">0</span><span class="o">)</span>
+	<span class="o">{</span>
+		<span class="k">return</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="nx">funcName</span> <span class="o">=</span> <span class="nx">funcName</span><span class="o">.</span><span class="nx">substr</span><span class="o">(</span><span class="m">26</span><span class="o">);</span>
+	<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">[</span><span class="nx">funcName</span><span class="o">]</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">};</span>
+
+<span class="c">/**</span>
+<span class="c"> * Storage for the dataTipFunction attribute.</span>
+<span class="c"> *</span>
+<span class="c"> * @property Chart.SWFURL</span>
+<span class="c"> * @private</span>
+<span class="c"> * @static</span>
+<span class="c"> * @final</span>
+<span class="c"> * @default &quot;assets/charts.swf&quot;</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Chart</span><span class="o">.</span><span class="nx">SWFURL</span> <span class="o">=</span> <span class="s2">&quot;assets/charts.swf&quot;</span><span class="o">;</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class="selected"><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.widget.Axis.html" title="YAHOO.widget.Axis">YAHOO.widget.Axis</a></li>
+                                <li class=""><a href="YAHOO.widget.BarChart.html" title="YAHOO.widget.BarChart">YAHOO.widget.BarChart</a></li>
+                                <li class=""><a href="YAHOO.widget.BarSeries.html" title="YAHOO.widget.BarSeries">YAHOO.widget.BarSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.CartesianChart.html" title="YAHOO.widget.CartesianChart">YAHOO.widget.CartesianChart</a></li>
+                                <li class=""><a href="YAHOO.widget.CartesianSeries.html" title="YAHOO.widget.CartesianSeries">YAHOO.widget.CartesianSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.CategoryAxis.html" title="YAHOO.widget.CategoryAxis">YAHOO.widget.CategoryAxis</a></li>
+                                <li class=""><a href="YAHOO.widget.Chart.html" title="YAHOO.widget.Chart">YAHOO.widget.Chart</a></li>
+                                <li class=""><a href="YAHOO.widget.ColumnChart.html" title="YAHOO.widget.ColumnChart">YAHOO.widget.ColumnChart</a></li>
+                                <li class=""><a href="YAHOO.widget.ColumnSeries.html" title="YAHOO.widget.ColumnSeries">YAHOO.widget.ColumnSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.LineChart.html" title="YAHOO.widget.LineChart">YAHOO.widget.LineChart</a></li>
+                                <li class=""><a href="YAHOO.widget.LineSeries.html" title="YAHOO.widget.LineSeries">YAHOO.widget.LineSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.NumericAxis.html" title="YAHOO.widget.NumericAxis">YAHOO.widget.NumericAxis</a></li>
+                                <li class=""><a href="YAHOO.widget.PieChart.html" title="YAHOO.widget.PieChart">YAHOO.widget.PieChart</a></li>
+                                <li class=""><a href="YAHOO.widget.PieSeries.html" title="YAHOO.widget.PieSeries">YAHOO.widget.PieSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.Series.html" title="YAHOO.widget.Series">YAHOO.widget.Series</a></li>
+                                <li class=""><a href="YAHOO.widget.StackedBarChart.html" title="YAHOO.widget.StackedBarChart">YAHOO.widget.StackedBarChart</a></li>
+                                <li class=""><a href="YAHOO.widget.StackedBarSeries.html" title="YAHOO.widget.StackedBarSeries">YAHOO.widget.StackedBarSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.StackedColumnChart.html" title="YAHOO.widget.StackedColumnChart">YAHOO.widget.StackedColumnChart</a></li>
+                                <li class=""><a href="YAHOO.widget.StackedColumnSeries.html" title="YAHOO.widget.StackedColumnSeries">YAHOO.widget.StackedColumnSeries</a></li>
+                                <li class=""><a href="YAHOO.widget.TimeAxis.html" title="YAHOO.widget.TimeAxis">YAHOO.widget.TimeAxis</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Axis.js.html" title="Axis.js">Axis.js</a></li>
+                                <li class=""><a href="CartesianChart.js.html" title="CartesianChart.js">CartesianChart.js</a></li>
+                                <li class=""><a href="CategoryAxis.js.html" title="CategoryAxis.js">CategoryAxis.js</a></li>
+                                <li class="selected"><a href="Chart.js.html" title="Chart.js">Chart.js</a></li>
+                                <li class=""><a href="ChartTypes.js.html" title="ChartTypes.js">ChartTypes.js</a></li>
+                                <li class=""><a href="NumericAxis.js.html" title="NumericAxis.js">NumericAxis.js</a></li>
+                                <li class=""><a href="PieChart.js.html" title="PieChart.js">PieChart.js</a></li>
+                                <li class=""><a href="Series.js.html" title="Series.js">Series.js</a></li>
+                                <li class=""><a href="TimeAxis.js.html" title="TimeAxis.js">TimeAxis.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.widget.NumericAxis", "name": "adjustMaximumByMajorUnit", "url": "YAHOO.widget.NumericAxis.html#property_adjustMaximumByMajorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "adjustMinimumByMajorUnit", "url": "YAHOO.widget.NumericAxis.html#property_adjustMinimumByMajorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "altText", "url": "YAHOO.widget.Chart.html#config_altText", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "altTextChange", "url": "YAHOO.widget.Chart.html#event_altTextChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "alwaysShowZero", "url": "YAHOO.widget.NumericAxis.html#property_alwaysShowZero", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_attributes", "url": "YAHOO.widget.Chart.html#property__attributes", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianSeries", "name": "axis", "url": "YAHOO.widget.CartesianSeries.html#property_axis", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "backgroundColor", "url": "YAHOO.widget.Chart.html#config_backgroundColor", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "backgroundColorChange", "url": "YAHOO.widget.Chart.html#event_backgroundColorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeAltTextChange", "url": "YAHOO.widget.Chart.html#event_beforeAltTextChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeBackgroundColorChange", "url": "YAHOO.widget.Chart.html#event_beforeBackgroundColorChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "beforeCategoryFieldChange", "url": "YAHOO.widget.PieChart.html#event_beforeCategoryFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeCategoryNamesChange", "url": "YAHOO.widget.Chart.html#event_beforeCategoryNamesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeConstrainViewportChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeConstrainViewportChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "beforeDataFieldChange", "url": "YAHOO.widget.PieChart.html#event_beforeDataFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeDataSourceChange", "url": "YAHOO.widget.Chart.html#event_beforeDataSourceChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeDataTipFunctionChange", "url": "YAHOO.widget.Chart.html#event_beforeDataTipFunctionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeExpressInstallChange", "url": "YAHOO.widget.Chart.html#event_beforeExpressInstallChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeLegendLabelFunctionChange", "url": "YAHOO.widget.Chart.html#event_beforeLegendLabelFunctionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforePollingChange", "url": "YAHOO.widget.Chart.html#event_beforePollingChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeRequestChange", "url": "YAHOO.widget.Chart.html#event_beforeRequestChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeSeriesChange", "url": "YAHOO.widget.Chart.html#event_beforeSeriesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeSwfURLChange", "url": "YAHOO.widget.Chart.html#event_beforeSwfURLChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeVersionChange", "url": "YAHOO.widget.Chart.html#event_beforeVersionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "beforeWmodeChange", "url": "YAHOO.widget.Chart.html#event_beforeWmodeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeXAxesChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeXAxesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeXAxisChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeXAxisChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeXFieldChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeXFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeYAxesChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeYAxesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeYAxisChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeYAxisChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "beforeYFieldChange", "url": "YAHOO.widget.CartesianChart.html#event_beforeYFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "calculateByLabelSize", "url": "YAHOO.widget.TimeAxis.html#property_calculateByLabelSize", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "calculateByLabelSize", "url": "YAHOO.widget.NumericAxis.html#property_calculateByLabelSize", "type": "property"}, {"access": "", "host": "YAHOO.widget.CategoryAxis", "name": "calculateCategoryCount", "url": "YAHOO.widget.CategoryAxis.html#property_calculateCategoryCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "categoryField", "url": "YAHOO.widget.PieChart.html#config_categoryField", "type": "config"}, {"access": "", "host": "YAHOO.widget.PieSeries", "name": "categoryField", "url": "YAHOO.widget.PieSeries.html#property_categoryField", "type": "property"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "categoryFieldChange", "url": "YAHOO.widget.PieChart.html#event_categoryFieldChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CategoryAxis", "name": "categoryNames", "url": "YAHOO.widget.CategoryAxis.html#property_categoryNames", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "categoryNames", "url": "YAHOO.widget.Chart.html#config_categoryNames", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "categoryNamesChange", "url": "YAHOO.widget.Chart.html#event_categoryNamesChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "Chart.SWFURL", "url": "YAHOO.widget.Chart.html#property_Chart.SWFURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "constrainViewport", "url": "YAHOO.widget.CartesianChart.html#config_constrainViewport", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "constrainViewportChange", "url": "YAHOO.widget.CartesianChart.html#event_constrainViewportChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_containerID", "url": "YAHOO.widget.Chart.html#property__containerID", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "contentReady", "url": "YAHOO.widget.Chart.html#event_contentReady", "type": "event"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "dataField", "url": "YAHOO.widget.PieChart.html#config_dataField", "type": "config"}, {"access": "", "host": "YAHOO.widget.PieSeries", "name": "dataField", "url": "YAHOO.widget.PieSeries.html#property_dataField", "type": "property"}, {"access": "", "host": "YAHOO.widget.PieChart", "name": "dataFieldChange", "url": "YAHOO.widget.PieChart.html#event_dataFieldChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_dataSource", "url": "YAHOO.widget.Chart.html#property__dataSource", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "dataSource", "url": "YAHOO.widget.Chart.html#config_dataSource", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "dataSourceChange", "url": "YAHOO.widget.Chart.html#event_dataSourceChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_dataTipFunction", "url": "YAHOO.widget.Chart.html#property__dataTipFunction", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "dataTipFunction", "url": "YAHOO.widget.Chart.html#config_dataTipFunction", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "dataTipFunctionChange", "url": "YAHOO.widget.Chart.html#event_dataTipFunctionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Series", "name": "displayName", "url": "YAHOO.widget.Series.html#property_displayName", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_eventHandler", "url": "YAHOO.widget.Chart.html#method__eventHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "expressInstall", "url": "YAHOO.widget.Chart.html#config_expressInstall", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "expressInstallChange", "url": "YAHOO.widget.Chart.html#event_expressInstallChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_getAltText", "url": "YAHOO.widget.Chart.html#method__getAltText", "type": "method"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_getCategoryField", "url": "YAHOO.widget.PieChart.html#method__getCategoryField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_getCategoryNames", "url": "YAHOO.widget.Chart.html#method__getCategoryNames", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_getClonedAxis", "url": "YAHOO.widget.CartesianChart.html#method__getClonedAxis", "type": "method"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_getDataField", "url": "YAHOO.widget.PieChart.html#method__getDataField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_getDataSource", "url": "YAHOO.widget.Chart.html#method__getDataSource", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_getPolling", "url": "YAHOO.widget.Chart.html#method__getPolling", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_getRequest", "url": "YAHOO.widget.Chart.html#method__getRequest", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_getSeriesDefs", "url": "YAHOO.widget.Chart.html#method__getSeriesDefs", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_getSWFURL", "url": "YAHOO.widget.Chart.html#method__getSWFURL", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_getXField", "url": "YAHOO.widget.CartesianChart.html#method__getXField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_getYField", "url": "YAHOO.widget.CartesianChart.html#method__getYField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_id", "url": "YAHOO.widget.Chart.html#property__id", "type": "property"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_initAttributes", "url": "YAHOO.widget.PieChart.html#method__initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_initAttributes", "url": "YAHOO.widget.CartesianChart.html#method__initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_initAttributes", "url": "YAHOO.widget.Chart.html#method__initAttributes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_initialized", "url": "YAHOO.widget.Chart.html#property__initialized", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "itemClickEvent", "url": "YAHOO.widget.Chart.html#event_itemClickEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "itemDoubleClickEvent", "url": "YAHOO.widget.Chart.html#event_itemDoubleClickEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "itemDragEndEvent", "url": "YAHOO.widget.Chart.html#event_itemDragEndEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "itemDragEvent", "url": "YAHOO.widget.Chart.html#event_itemDragEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "itemDragStartEvent", "url": "YAHOO.widget.Chart.html#event_itemDragStartEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "itemMouseOutEvent", "url": "YAHOO.widget.Chart.html#event_itemMouseOutEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "itemMouseOverEvent", "url": "YAHOO.widget.Chart.html#event_itemMouseOverEvent", "type": "event"}, {"access": "", "host": "YAHOO.widget.PieSeries", "name": "labelFunction", "url": "YAHOO.widget.PieSeries.html#property_labelFunction", "type": "property"}, {"access": "", "host": "YAHOO.widget.Axis", "name": "labelFunction", "url": "YAHOO.widget.Axis.html#property_labelFunction", "type": "property"}, {"access": "", "host": "YAHOO.widget.Axis", "name": "labelSpacing", "url": "YAHOO.widget.Axis.html#property_labelSpacing", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_legendLabelFunction", "url": "YAHOO.widget.Chart.html#property__legendLabelFunction", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "legendLabelFunction", "url": "YAHOO.widget.Chart.html#config_legendLabelFunction", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "legendLabelFunctionChange", "url": "YAHOO.widget.Chart.html#event_legendLabelFunctionChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_loadDataHandler", "url": "YAHOO.widget.Chart.html#method__loadDataHandler", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_loadHandler", "url": "YAHOO.widget.Chart.html#method__loadHandler", "type": "method"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "majorTimeUnit", "url": "YAHOO.widget.TimeAxis.html#property_majorTimeUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "majorUnit", "url": "YAHOO.widget.TimeAxis.html#property_majorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "majorUnit", "url": "YAHOO.widget.NumericAxis.html#property_majorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "maximum", "url": "YAHOO.widget.TimeAxis.html#property_maximum", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "maximum", "url": "YAHOO.widget.NumericAxis.html#property_maximum", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "minimum", "url": "YAHOO.widget.TimeAxis.html#property_minimum", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "minimum", "url": "YAHOO.widget.NumericAxis.html#property_minimum", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "minorUnit", "url": "YAHOO.widget.NumericAxis.html#property_minorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "polling", "url": "YAHOO.widget.Chart.html#config_polling", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "pollingChange", "url": "YAHOO.widget.Chart.html#event_pollingChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_pollingID", "url": "YAHOO.widget.Chart.html#property__pollingID", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_pollingInterval", "url": "YAHOO.widget.Chart.html#property__pollingInterval", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "position", "url": "YAHOO.widget.NumericAxis.html#property_position", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "proxyFunctionCount", "url": "YAHOO.widget.Chart.html#property_proxyFunctionCount", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "refreshData", "url": "YAHOO.widget.Chart.html#method_refreshData", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_removeAxisFunctions", "url": "YAHOO.widget.CartesianChart.html#method__removeAxisFunctions", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_request", "url": "YAHOO.widget.Chart.html#property__request", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "request", "url": "YAHOO.widget.Chart.html#config_request", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "requestChange", "url": "YAHOO.widget.Chart.html#event_requestChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Axis", "name": "reverse", "url": "YAHOO.widget.Axis.html#property_reverse", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "roundMajorUnit", "url": "YAHOO.widget.NumericAxis.html#property_roundMajorUnit", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "scale", "url": "YAHOO.widget.NumericAxis.html#property_scale", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "series", "url": "YAHOO.widget.Chart.html#config_series", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "seriesChange", "url": "YAHOO.widget.Chart.html#event_seriesChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_seriesDefs", "url": "YAHOO.widget.Chart.html#property__seriesDefs", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_seriesFunctions", "url": "YAHOO.widget.Chart.html#property__seriesFunctions", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_setAltText", "url": "YAHOO.widget.Chart.html#method__setAltText", "type": "method"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_setCategoryField", "url": "YAHOO.widget.PieChart.html#method__setCategoryField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_setCategoryNames", "url": "YAHOO.widget.Chart.html#method__setCategoryNames", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setConstrainViewport", "url": "YAHOO.widget.CartesianChart.html#method__setConstrainViewport", "type": "method"}, {"access": "private", "host": "YAHOO.widget.PieChart", "name": "_setDataField", "url": "YAHOO.widget.PieChart.html#method__setDataField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_setDataSource", "url": "YAHOO.widget.Chart.html#method__setDataSource", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_setDataTipFunction", "url": "YAHOO.widget.Chart.html#method__setDataTipFunction", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_setLegendLabelFunction", "url": "YAHOO.widget.Chart.html#method__setLegendLabelFunction", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_setPolling", "url": "YAHOO.widget.Chart.html#method__setPolling", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_setRequest", "url": "YAHOO.widget.Chart.html#method__setRequest", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_setSeriesDefs", "url": "YAHOO.widget.Chart.html#method__setSeriesDefs", "type": "method"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "setSeriesStyles", "url": "YAHOO.widget.Chart.html#method_setSeriesStyles", "type": "method"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "setSeriesStylesByIndex", "url": "YAHOO.widget.CartesianChart.html#method_setSeriesStylesByIndex", "type": "method"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "setStyle", "url": "YAHOO.widget.Chart.html#method_setStyle", "type": "method"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "setStyles", "url": "YAHOO.widget.Chart.html#method_setStyles", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setXAxes", "url": "YAHOO.widget.CartesianChart.html#method__setXAxes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setXAxis", "url": "YAHOO.widget.CartesianChart.html#method__setXAxis", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setXField", "url": "YAHOO.widget.CartesianChart.html#method__setXField", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setYAxes", "url": "YAHOO.widget.CartesianChart.html#method__setYAxes", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setYAxis", "url": "YAHOO.widget.CartesianChart.html#method__setYAxis", "type": "method"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_setYField", "url": "YAHOO.widget.CartesianChart.html#method__setYField", "type": "method"}, {"access": "", "host": "YAHOO.widget.CartesianSeries", "name": "showInLegend", "url": "YAHOO.widget.CartesianSeries.html#property_showInLegend", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "snapToUnits", "url": "YAHOO.widget.TimeAxis.html#property_snapToUnits", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "snapToUnits", "url": "YAHOO.widget.NumericAxis.html#property_snapToUnits", "type": "property"}, {"access": "", "host": "YAHOO.widget.TimeAxis", "name": "stackingEnabled", "url": "YAHOO.widget.TimeAxis.html#property_stackingEnabled", "type": "property"}, {"access": "", "host": "YAHOO.widget.NumericAxis", "name": "stackingEnabled", "url": "YAHOO.widget.NumericAxis.html#property_stackingEnabled", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_swf", "url": "YAHOO.widget.Chart.html#property__swf", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_swfEmbed", "url": "YAHOO.widget.Chart.html#property__swfEmbed", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_swfURL", "url": "YAHOO.widget.Chart.html#property__swfURL", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "swfURL", "url": "YAHOO.widget.Chart.html#config_swfURL", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "swfURLChange", "url": "YAHOO.widget.Chart.html#event_swfURLChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Axis", "name": "title", "url": "YAHOO.widget.Axis.html#property_title", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "toString", "url": "YAHOO.widget.Chart.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.widget.Series", "name": "type", "url": "YAHOO.widget.Series.html#property_type", "type": "property"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "_type", "url": "YAHOO.widget.Chart.html#property__type", "type": "property"}, {"access": "", "host": "YAHOO.widget.Axis", "name": "type", "url": "YAHOO.widget.Axis.html#property_type", "type": "property"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "version", "url": "YAHOO.widget.Chart.html#config_version", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "versionChange", "url": "YAHOO.widget.Chart.html#event_versionChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "wmode", "url": "YAHOO.widget.Chart.html#config_wmode", "type": "config"}, {"access": "", "host": "YAHOO.widget.Chart", "name": "wmodeChange", "url": "YAHOO.widget.Chart.html#event_wmodeChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xAxes", "url": "YAHOO.widget.CartesianChart.html#config_xAxes", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xAxesChange", "url": "YAHOO.widget.CartesianChart.html#event_xAxesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xAxis", "url": "YAHOO.widget.CartesianChart.html#config_xAxis", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xAxisChange", "url": "YAHOO.widget.CartesianChart.html#event_xAxisChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_xAxisLabelFunctions", "url": "YAHOO.widget.CartesianChart.html#property__xAxisLabelFunctions", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianSeries", "name": "xField", "url": "YAHOO.widget.CartesianSeries.html#property_xField", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xField", "url": "YAHOO.widget.CartesianChart.html#config_xField", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "xFieldChange", "url": "YAHOO.widget.CartesianChart.html#event_xFieldChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "YAHOO.widget.Chart.createProxyFunction", "url": "YAHOO.widget.Chart.html#method_YAHOO.widget.Chart.createProxyFunction", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "YAHOO.widget.Chart.getFunctionReference", "url": "YAHOO.widget.Chart.html#method_YAHOO.widget.Chart.getFunctionReference", "type": "method"}, {"access": "private", "host": "YAHOO.widget.Chart", "name": "YAHOO.widget.Chart.removeProxyFunction", "url": "YAHOO.widget.Chart.html#method_YAHOO.widget.Chart.removeProxyFunction", "type": "method"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yAxes", "url": "YAHOO.widget.CartesianChart.html#config_yAxes", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yAxesChange", "url": "YAHOO.widget.CartesianChart.html#event_yAxesChange", "type": "event"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yAxis", "url": "YAHOO.widget.CartesianChart.html#config_yAxis", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yAxisChange", "url": "YAHOO.widget.CartesianChart.html#event_yAxisChange", "type": "event"}, {"access": "private", "host": "YAHOO.widget.CartesianChart", "name": "_yAxisLabelFunctions", "url": "YAHOO.widget.CartesianChart.html#property__yAxisLabelFunctions", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianSeries", "name": "yField", "url": "YAHOO.widget.CartesianSeries.html#property_yField", "type": "property"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yField", "url": "YAHOO.widget.CartesianChart.html#config_yField", "type": "config"}, {"access": "", "host": "YAHOO.widget.CartesianChart", "name": "yFieldChange", "url": "YAHOO.widget.CartesianChart.html#event_yFieldChange", "type": "event"}];
+</script>
+</body>
+</html>

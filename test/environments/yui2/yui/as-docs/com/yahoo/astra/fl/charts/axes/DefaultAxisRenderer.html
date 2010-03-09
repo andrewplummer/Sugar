@@ -1,0 +1,566 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../../../../print.css" type="text/css" media="print">
+<meta content="DefaultAxisRenderer,com.yahoo.astra.fl.charts.axes.DefaultAxisRenderer,contentBounds,length,majorUnitSetByUser,minorTicks,orientation,outerTickOffset,position,ticks,title,updateAxis" name="keywords">
+<title>com.yahoo.astra.fl.charts.axes.DefaultAxisRenderer</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'DefaultAxisRenderer - YUI Flash Component Documentation';
+				var baseRef = '../../../../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">YUI Flash Component Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../../../../all-classes.html')" href="../../../../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../../../all-classes.html')" href="../../../../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../../../../index-list.html')" href="../../../../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../../../../index.html?com/yahoo/astra/fl/charts/axes/DefaultAxisRenderer.html&amp;com/yahoo/astra/fl/charts/axes/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;DefaultAxisRenderer</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#propertySummary">Properties</a>&nbsp;| <a href="#methodSummary">Methods</a>&nbsp;| <a href="#styleSummary">Styles</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class DefaultAxisRenderer"); titleBar_setSubNav(false,true,true,false,false,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">com.yahoo.astra.fl.charts.axes</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class DefaultAxisRenderer</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Inheritance</td><td class="inheritanceList">DefaultAxisRenderer <img class="inheritArrow" alt="Inheritance" title="Inheritance" src="../../../../../../images/inherit-arrow.gif"> fl.core.UIComponent</td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Implements</td><td><a href="ICartesianAxisRenderer.html">ICartesianAxisRenderer</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Subclasses</td><td><a href="../axes/HorizontalAxisRenderer.html">HorizontalAxisRenderer</a>, <a href="../axes/VerticalAxisRenderer.html">VerticalAxisRenderer</a></td>
+</tr>
+</table>
+<p></p>
+  The base axis renderer for a cartesian chart.
+  
+     <p>This class is not meant to be instantiated directly! It is an abstract base class.</p>
+       <p></p>
+<p>
+<span class="classHeaderTableLabel">See also</span>
+</p>
+<div class="seeAlso">
+<a href="../../charts/CartesianChart.html" target="">com.yahoo.astra.fl.charts.CartesianChart</a>
+</div>
+<br>
+<hr>
+</div>
+<a name="propertySummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Properties</div>
+<table id="summaryTableProperty" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Property</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#contentBounds">contentBounds</a> : Rectangle<div class="summaryTableDescription">[read-only]
+   
+   Represents the area where content should be drawn within the axis.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#length">length</a> : Number<div class="summaryTableDescription">[read-only]
+   
+   The total length of the axis renderer, in pixels.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#majorUnitSetByUser">majorUnitSetByUser</a> : Boolean<div class="summaryTableDescription">
+   Indicates whether the major unit is user-defined or generated by the axis.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#minorTicks">minorTicks</a> : Array<div class="summaryTableDescription">
+   
+   An Array of AxisData objects specifying the positions of the minor ticks.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#orientation">orientation</a> : String<div class="summaryTableDescription">
+   
+   Determines if the axis is displayed vertically or horizontally.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#outerTickOffset">outerTickOffset</a> : Number<div class="summaryTableDescription"></div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#position">position</a> : String<div class="summaryTableDescription">
+   Indicates alignment of axis
+   </div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#ticks">ticks</a> : Array<div class="summaryTableDescription">
+   
+   An Array of AxisData objects specifying the positions of the ticks.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#title">title</a> : String<div class="summaryTableDescription">
+   
+   The title text to display on the axis.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+</table>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#DefaultAxisRenderer()">DefaultAxisRenderer</a>()</div>
+<div class="summaryTableDescription">
+   Constructor.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#updateAxis()">updateAxis</a>():void</div>
+<div class="summaryTableDescription">
+   
+   Calculates the <code>contentBounds</code> value for the axis renderer.</div>
+</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+</table>
+</div>
+<a name="styleSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Styles</div>
+<table id="summaryTableStyle" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Style</th><th>Description</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:axisColor"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">axisColor</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>uint<br>
+  The line color for the axis.
+  
+   The default value is <code>#888a85</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:axisWeight"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">axisWeight</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>int<br>
+  The line weight, in pixels, for the axis.
+  
+   The default value is <code>1</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:hideOverlappingLabels"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">hideOverlappingLabels</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br> 
+  If true, labels that overlap previously drawn labels on the axis will be
+  hidden. The first and last labels on the axis will always be drawn.
+  
+   The default value is <code>true</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:labelDistance"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">labelDistance</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+  The distance, in pixels, between a label and the axis.
+  
+   The default value is <code>2</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:labelRotation"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">labelRotation</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br> 
+  The angle, in degrees, of the labels on the axis. May be a value
+  between <code>-90</code> and <code>90</code>. 
+  
+   The default value is <code>0</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:minorTickColor"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">minorTickColor</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>uint<br>
+  The line color for the minor ticks on the axis.
+  
+   The default value is <code>#888a85</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:minorTickLength"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">minorTickLength</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+  The length of the minor ticks on the axis.
+  
+   The default value is <code>3</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:minorTickPosition"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">minorTickPosition</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>String<br>
+  The position of the minor ticks on the axis.
+  
+   The default value is <code>"outside"</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:minorTickWeight"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">minorTickWeight</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>int<br>
+  The line weight, in pixels, for the minor ticks on the axis.
+  
+   The default value is <code>1</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:showAxis"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">showAxis</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br>
+  If false, the axis is not drawn. Titles, labels, ticks, and grid
+  lines may still be drawn, however, so you must specifically hide each
+  item if nothing should be drawn.
+  
+   The default value is <code>true</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:showLabels"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">showLabels</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br>
+  If true, labels will be displayed on the axis.
+  
+   The default value is <code>true</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:showMinorTicks"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">showMinorTicks</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br>
+  If true, ticks will be displayed on the axis at minor positions.
+  
+   The default value is <code>true</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:showTicks"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">showTicks</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br>
+  If true, ticks will be displayed on the axis.
+  
+   The default value is <code>true</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:showTitle"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">showTitle</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Boolean<br>
+  If true, the axis title will be displayed.
+  
+   The default value is <code>2</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:tickColor"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">tickColor</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>uint<br>
+  The line color for the ticks on the axis.
+  
+   The default value is <code>#888a85</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:tickLength"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">tickLength</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+  The length, in pixels, of the ticks on the axis.
+  
+   The default value is <code>4</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:tickPosition"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">tickPosition</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>String<br>
+  The position of the ticks on the axis.
+  
+   The default value is <code>"cross"</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:tickWeight"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">tickWeight</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>int<br>
+  The line weight, in pixels, for the ticks on the axis.
+  
+   The default value is <code>1</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:titleDistance"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">titleDistance</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br>
+  The distance, in pixels, between a title and the axis labels.
+  
+   The default value is <code>2</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:titleRotation"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">titleRotation</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>Number<br> 
+  The angle, in degrees, of the title on the axis. May be a value
+  between <code>-90</code> and <code>90</code>. 
+  
+   The default value is <code>0</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol"><a name="style:titleTextFormat"></a>&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<span class="signatureLink">titleTextFormat</span>
+</div>
+</td><td class="summaryTableDescription"><span class="label">Type: </span>TextFormat<br>
+  The TextFormat object to use to render the axis title label.
+           The default value is <code>TextFormat("_sans", 11, 0x000000, false, false, false, '', '', TextFormatAlign.LEFT, 0, 0, 0, 0)</code>.</td><td class="summaryTableOwnerCol">DefaultAxisRenderer</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="propertyDetail"></a>
+<div class="detailSectionHeader">Property detail</div>
+<a name="contentBounds"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">contentBounds</td><td class="detailHeaderType">property</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>contentBounds:Rectangle</code>&nbsp;&nbsp;[read-only]<p>
+   
+   Represents the area where content should be drawn within the axis.
+   This value is used to determine the containing chart's own
+   <code>contentBounds</code> property.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get contentBounds():Rectangle</code>
+<br>
+</div>
+<a name="length"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">length</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>length:Number</code>&nbsp;&nbsp;[read-only]<p>
+   
+   The total length of the axis renderer, in pixels.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get length():Number</code>
+<br>
+</div>
+<a name="majorUnitSetByUser"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">majorUnitSetByUser</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>majorUnitSetByUser:Boolean</code>&nbsp;&nbsp;[read-write]<p>
+   Indicates whether the major unit is user-defined or generated by the axis.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get majorUnitSetByUser():Boolean</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set majorUnitSetByUser(value:Boolean):void</code>
+<br>
+</div>
+<a name="minorTicks"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">minorTicks</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>minorTicks:Array</code>&nbsp;&nbsp;[read-write]<p>
+   
+   An Array of AxisData objects specifying the positions of the minor ticks.
+   
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get minorTicks():Array</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set minorTicks(value:Array):void</code>
+<br>
+</div>
+<a name="orientation"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">orientation</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>orientation:String</code>&nbsp;&nbsp;[read-write]<p>
+   
+   Determines if the axis is displayed vertically or horizontally.
+   
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get orientation():String</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set orientation(value:String):void</code>
+<br>
+</div>
+<a name="outerTickOffset"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">outerTickOffset</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>outerTickOffset:Number</code>&nbsp;&nbsp;[read-write]<span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get outerTickOffset():Number</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set outerTickOffset(value:Number):void</code>
+<br>
+</div>
+<a name="position"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">position</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>position:String</code>&nbsp;&nbsp;[read-write]<p>
+   Indicates alignment of axis
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get position():String</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set position(value:String):void</code>
+<br>
+</div>
+<a name="ticks"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">ticks</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>ticks:Array</code>&nbsp;&nbsp;[read-write]<p>
+   
+   An Array of AxisData objects specifying the positions of the ticks.
+   
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get ticks():Array</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set ticks(value:Array):void</code>
+<br>
+</div>
+<a name="title"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">title</td><td class="detailHeaderType">property</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>title:String</code>&nbsp;&nbsp;[read-write]<p>
+   
+   The title text to display on the axis.
+   </p><span class="label">Implementation</span>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function get title():String</code>
+<br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;public function set title(value:String):void</code>
+<br>
+</div>
+<a name="constructorDetail"></a>
+<div class="detailSectionHeader">Constructor detail</div>
+<a name="DefaultAxisRenderer()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DefaultAxisRenderer</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">constructor</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function DefaultAxisRenderer()</code><p>
+   Constructor.
+   </p></div>
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="updateAxis()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">updateAxis</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public function updateAxis():void</code><p>
+   
+   Calculates the <code>contentBounds</code> value for the axis renderer.
+   Seperating this function from the draw method optimizes processing time,
+   and it allows the chart to synchronize its axes.
+   </p></div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright"> 
+</center>
+</div>
+</body>
+</html>
+<!-- -->

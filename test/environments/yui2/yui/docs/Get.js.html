@@ -1,0 +1,907 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: get   Get.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>get&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_get.html" title="get">get</a>
+                
+                 &gt; Get.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="c">/**</span>
+<span class="c"> * Provides a mechanism to fetch remote resources and</span>
+<span class="c"> * insert them into a document</span>
+<span class="c"> * @module get</span>
+<span class="c"> * @requires yahoo</span>
+<span class="c"> */</span>
+
+<span class="c">/**</span>
+<span class="c"> * Fetches and inserts one or more script or link nodes into the document </span>
+<span class="c"> * @namespace YAHOO.util</span>
+<span class="c"> * @class YAHOO.util.Get</span>
+<span class="c"> */</span>
+<span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Get</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="c">/**</span>
+<span class="c">     * hash of queues to manage multiple requests</span>
+<span class="c">     * @property queues</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">queues</span><span class="o">={},</span> 
+        
+    <span class="c">/**</span>
+<span class="c">     * queue index used to generate transaction ids</span>
+<span class="c">     * @property qidx</span>
+<span class="c">     * @type int</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+        <span class="nx">qidx</span><span class="o">=</span><span class="m">0</span><span class="o">,</span> 
+        
+    <span class="c">/**</span>
+<span class="c">     * node index used to generate unique node ids</span>
+<span class="c">     * @property nidx</span>
+<span class="c">     * @type int</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+        <span class="nx">nidx</span><span class="o">=</span><span class="m">0</span><span class="o">,</span> 
+
+        <span class="c">// ridx=0,</span>
+<span class="c"></span>
+        <span class="c">// sandboxFrame=null,</span>
+<span class="c"></span>
+    <span class="c">/**</span>
+<span class="c">     * interal property used to prevent multiple simultaneous purge </span>
+<span class="c">     * processes</span>
+<span class="c">     * @property purging</span>
+<span class="c">     * @type boolean</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+        <span class="nx">purging</span><span class="o">=</span><span class="kc">false</span><span class="o">,</span>
+
+        <span class="nx">ua</span><span class="o">=</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">env</span><span class="o">.</span><span class="nx">ua</span><span class="o">,</span> 
+        
+        <span class="nx">lang</span><span class="o">=</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">;</span>
+    
+    <span class="c">/** </span>
+<span class="c">     * Generates an HTML element, this is not appended to a document</span>
+<span class="c">     * @method _node</span>
+<span class="c">     * @param type {string} the type of element</span>
+<span class="c">     * @param attr {string} the attributes</span>
+<span class="c">     * @param win {Window} optional window to create the element in</span>
+<span class="c">     * @return {HTMLElement} the generated node</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_node</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">attr</span><span class="o">,</span> <span class="nx">win</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">w</span> <span class="o">=</span> <span class="nx">win</span> <span class="o">||</span> <span class="nb">window</span><span class="o">,</span> <span class="nx">d</span><span class="o">=</span><span class="nx">w</span><span class="o">.</span><span class="nb">document</span><span class="o">,</span> <span class="nx">n</span><span class="o">=</span><span class="nx">d</span><span class="o">.</span><span class="nx">createElement</span><span class="o">(</span><span class="nx">type</span><span class="o">);</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">attr</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">lang</span><span class="o">.</span><span class="nx">hasOwnProperty</span><span class="o">(</span><span class="nx">attr</span><span class="o">,</span> <span class="nx">i</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nx">n</span><span class="o">.</span><span class="nx">setAttribute</span><span class="o">(</span><span class="nx">i</span><span class="o">,</span> <span class="nx">attr</span><span class="o">[</span><span class="nx">i</span><span class="o">]);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nx">n</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Generates a link node</span>
+<span class="c">     * @method _linkNode</span>
+<span class="c">     * @param url {string} the url for the css file</span>
+<span class="c">     * @param win {Window} optional window to create the node in</span>
+<span class="c">     * @return {HTMLElement} the generated node</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_linkNode</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="nx">win</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="o">{</span>
+            <span class="nx">id</span><span class="o">:</span>   <span class="s2">&quot;yui__dyn_&quot;</span> <span class="o">+</span> <span class="o">(</span><span class="nx">nidx</span><span class="o">++),</span>
+            <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;text/css&quot;</span><span class="o">,</span>
+            <span class="nx">rel</span><span class="o">:</span>  <span class="s2">&quot;stylesheet&quot;</span><span class="o">,</span>
+            <span class="nx">href</span><span class="o">:</span> <span class="nx">url</span>
+        <span class="o">};</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">attributes</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">lang</span><span class="o">.</span><span class="nx">augmentObject</span><span class="o">(</span><span class="nx">o</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nx">_node</span><span class="o">(</span><span class="s2">&quot;link&quot;</span><span class="o">,</span> <span class="nx">o</span><span class="o">,</span> <span class="nx">win</span><span class="o">);</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Generates a script node</span>
+<span class="c">     * @method _scriptNode</span>
+<span class="c">     * @param url {string} the url for the script file</span>
+<span class="c">     * @param win {Window} optional window to create the node in</span>
+<span class="c">     * @return {HTMLElement} the generated node</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_scriptNode</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="nx">win</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">o</span> <span class="o">=</span> <span class="o">{</span>
+            <span class="nx">id</span><span class="o">:</span>   <span class="s2">&quot;yui__dyn_&quot;</span> <span class="o">+</span> <span class="o">(</span><span class="nx">nidx</span><span class="o">++),</span>
+            <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;text/javascript&quot;</span><span class="o">,</span>
+            <span class="nx">src</span><span class="o">:</span>  <span class="nx">url</span>
+        <span class="o">};</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">attributes</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">lang</span><span class="o">.</span><span class="nx">augmentObject</span><span class="o">(</span><span class="nx">o</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nx">_node</span><span class="o">(</span><span class="s2">&quot;script&quot;</span><span class="o">,</span> <span class="nx">o</span><span class="o">,</span> <span class="nx">win</span><span class="o">);</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Returns the data payload for callback functions</span>
+<span class="c">     * @method _returnData</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_returnData</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">q</span><span class="o">,</span> <span class="nx">msg</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="o">{</span>
+                <span class="nx">tId</span><span class="o">:</span> <span class="nx">q</span><span class="o">.</span><span class="nx">tId</span><span class="o">,</span>
+                <span class="nx">win</span><span class="o">:</span> <span class="nx">q</span><span class="o">.</span><span class="nx">win</span><span class="o">,</span>
+                <span class="nx">data</span><span class="o">:</span> <span class="nx">q</span><span class="o">.</span><span class="nx">data</span><span class="o">,</span>
+                <span class="nx">nodes</span><span class="o">:</span> <span class="nx">q</span><span class="o">.</span><span class="nx">nodes</span><span class="o">,</span>
+                <span class="nx">msg</span><span class="o">:</span> <span class="nx">msg</span><span class="o">,</span>
+                <span class="nx">purge</span><span class="o">:</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nx">_purge</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">tId</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">};</span>
+    <span class="o">};</span>
+
+    <span class="k">var</span> <span class="nx">_get</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">nId</span><span class="o">,</span> <span class="nx">tId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">tId</span><span class="o">],</span>
+            <span class="nx">n</span> <span class="o">=</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">nId</span><span class="o">))</span> <span class="o">?</span> <span class="nx">q</span><span class="o">.</span><span class="nx">win</span><span class="o">.</span><span class="nb">document</span><span class="o">.</span><span class="nx">getElementById</span><span class="o">(</span><span class="nx">nId</span><span class="o">)</span> <span class="o">:</span> <span class="nx">nId</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nx">n</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">_fail</span><span class="o">(</span><span class="nx">tId</span><span class="o">,</span> <span class="s2">&quot;target node not found: &quot;</span> <span class="o">+</span> <span class="nx">nId</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nx">n</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="c">/*</span>
+<span class="c">     * The request failed, execute fail handler with whatever</span>
+<span class="c">     * was accomplished.  There isn&#39;t a failure case at the</span>
+<span class="c">     * moment unless you count aborted transactions</span>
+<span class="c">     * @method _fail</span>
+<span class="c">     * @param id {string} the id of the request</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_fail</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">msg</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;get failure: &quot;</span> <span class="o">+</span> <span class="nx">msg</span><span class="o">,</span> <span class="s2">&quot;warn&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+        <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">id</span><span class="o">];</span>
+        <span class="c">// execute failure callback</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">onFailure</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">sc</span><span class="o">=</span><span class="nx">q</span><span class="o">.</span><span class="nx">scope</span> <span class="o">||</span> <span class="nx">q</span><span class="o">.</span><span class="nx">win</span><span class="o">;</span>
+            <span class="nx">q</span><span class="o">.</span><span class="nx">onFailure</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="nx">sc</span><span class="o">,</span> <span class="nx">_returnData</span><span class="o">(</span><span class="nx">q</span><span class="o">,</span> <span class="nx">msg</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * The request is complete, so executing the requester&#39;s callback</span>
+<span class="c">     * @method _finish</span>
+<span class="c">     * @param id {string} the id of the request</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_finish</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Finishing transaction &quot;</span> <span class="o">+</span> <span class="nx">id</span><span class="o">);</span>
+        <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">id</span><span class="o">];</span>
+        <span class="nx">q</span><span class="o">.</span><span class="nx">finished</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">aborted</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="s2">&quot;transaction &quot;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot; was aborted&quot;</span><span class="o">;</span>
+            <span class="nx">_fail</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">msg</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c">// execute success callback</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">onSuccess</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">sc</span><span class="o">=</span><span class="nx">q</span><span class="o">.</span><span class="nx">scope</span> <span class="o">||</span> <span class="nx">q</span><span class="o">.</span><span class="nx">win</span><span class="o">;</span>
+            <span class="nx">q</span><span class="o">.</span><span class="nx">onSuccess</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="nx">sc</span><span class="o">,</span> <span class="nx">_returnData</span><span class="o">(</span><span class="nx">q</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Timeout detected</span>
+<span class="c">     * @method _timeout</span>
+<span class="c">     * @param id {string} the id of the request</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_timeout</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Timeout &quot;</span> <span class="o">+</span> <span class="nx">id</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;get&quot;</span><span class="o">);</span>
+        <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">id</span><span class="o">];</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">onTimeout</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">sc</span><span class="o">=</span><span class="nx">q</span><span class="o">.</span><span class="nx">scope</span> <span class="o">||</span> <span class="nx">q</span><span class="o">;</span>
+            <span class="nx">q</span><span class="o">.</span><span class="nx">onTimeout</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="nx">sc</span><span class="o">,</span> <span class="nx">_returnData</span><span class="o">(</span><span class="nx">q</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Loads the next item for a given request</span>
+<span class="c">     * @method _next</span>
+<span class="c">     * @param id {string} the id of the request</span>
+<span class="c">     * @param loaded {string} the url that was just loaded, if any</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_next</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">loaded</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;_next: &quot;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;, loaded: &quot;</span> <span class="o">+</span> <span class="nx">loaded</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+        <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">id</span><span class="o">];</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">timer</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c">// Y.log(&#39;cancel timer&#39;);</span>
+<span class="c"></span>            <span class="nx">q</span><span class="o">.</span><span class="nx">timer</span><span class="o">.</span><span class="nx">cancel</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">aborted</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="s2">&quot;transaction &quot;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot; was aborted&quot;</span><span class="o">;</span>
+            <span class="nx">_fail</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">msg</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">loaded</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">q</span><span class="o">.</span><span class="nx">url</span><span class="o">.</span><span class="nx">shift</span><span class="o">();</span> 
+            <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">.</span><span class="nx">shift</span><span class="o">();</span> 
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="c">// This is the first pass: make sure the url is an array</span>
+<span class="c"></span>            <span class="nx">q</span><span class="o">.</span><span class="nx">url</span> <span class="o">=</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">url</span><span class="o">))</span> <span class="o">?</span> <span class="o">[</span><span class="nx">q</span><span class="o">.</span><span class="nx">url</span><span class="o">]</span> <span class="o">:</span> <span class="nx">q</span><span class="o">.</span><span class="nx">url</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">q</span><span class="o">.</span><span class="nx">varName</span> <span class="o">=</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">))</span> <span class="o">?</span> <span class="o">[</span><span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">]</span> <span class="o">:</span> <span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">var</span> <span class="nx">w</span><span class="o">=</span><span class="nx">q</span><span class="o">.</span><span class="nx">win</span><span class="o">,</span> <span class="nx">d</span><span class="o">=</span><span class="nx">w</span><span class="o">.</span><span class="nb">document</span><span class="o">,</span> <span class="nx">h</span><span class="o">=</span><span class="nx">d</span><span class="o">.</span><span class="nx">getElementsByTagName</span><span class="o">(</span><span class="s2">&quot;head&quot;</span><span class="o">)[</span><span class="m">0</span><span class="o">],</span> <span class="nx">n</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">url</span><span class="o">.</span><span class="nx">length</span> <span class="o">===</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c">// Safari 2.x workaround - There is no way to know when </span>
+<span class="c"></span>            <span class="c">// a script is ready in versions of Safari prior to 3.x.</span>
+<span class="c"></span>            <span class="c">// Adding an extra node reduces the problem, but doesn&#39;t</span>
+<span class="c"></span>            <span class="c">// eliminate it completely because the browser executes</span>
+<span class="c"></span>            <span class="c">// them asynchronously. </span>
+<span class="c"></span>            <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;script&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&amp;&amp;</span> <span class="nx">ua</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&lt;</span> <span class="m">420</span> <span class="o">&amp;&amp;</span> 
+                    <span class="o">!</span><span class="nx">q</span><span class="o">.</span><span class="nx">finalpass</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c">// Add another script node.  This does not guarantee that the</span>
+<span class="c"></span>                <span class="c">// scripts will execute in order, but it does appear to fix the</span>
+<span class="c"></span>                <span class="c">// problem on fast connections more effectively than using an</span>
+<span class="c"></span>                <span class="c">// arbitrary timeout.  It is possible that the browser does</span>
+<span class="c"></span>                <span class="c">// block subsequent script execution in this case for a limited</span>
+<span class="c"></span>                <span class="c">// time.</span>
+<span class="c"></span>                <span class="k">var</span> <span class="nx">extra</span> <span class="o">=</span> <span class="nx">_scriptNode</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="nx">q</span><span class="o">.</span><span class="nx">win</span><span class="o">,</span> <span class="nx">q</span><span class="o">.</span><span class="nx">attributes</span><span class="o">);</span>
+                <span class="nx">extra</span><span class="o">.</span><span class="nx">innerHTML</span><span class="o">=</span><span class="s1">&#39;YAHOO.util.Get._finalize(&quot;&#39;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s1">&#39;&quot;);&#39;</span><span class="o">;</span>
+                <span class="nx">q</span><span class="o">.</span><span class="nx">nodes</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">extra</span><span class="o">);</span> <span class="nx">h</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">extra</span><span class="o">);</span>
+
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="nx">_finish</span><span class="o">(</span><span class="nx">id</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span> 
+
+
+        <span class="k">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">q</span><span class="o">.</span><span class="nx">url</span><span class="o">[</span><span class="m">0</span><span class="o">];</span>
+
+        <span class="c">// if the url is undefined, this is probably a trailing comma problem in IE</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(!</span><span class="nx">url</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">q</span><span class="o">.</span><span class="nx">url</span><span class="o">.</span><span class="nx">shift</span><span class="o">();</span> 
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;skipping empty url&#39;</span><span class="o">);</span>
+            <span class="k">return</span> <span class="nx">_next</span><span class="o">(</span><span class="nx">id</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;attempting to load &quot;</span> <span class="o">+</span> <span class="nx">url</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">timeout</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c">// Y.log(&#39;create timer&#39;);</span>
+<span class="c"></span>            <span class="nx">q</span><span class="o">.</span><span class="nx">timer</span> <span class="o">=</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">later</span><span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">timeout</span><span class="o">,</span> <span class="nx">q</span><span class="o">,</span> <span class="nx">_timeout</span><span class="o">,</span> <span class="nx">id</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;script&quot;</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">n</span> <span class="o">=</span> <span class="nx">_scriptNode</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="nx">w</span><span class="o">,</span> <span class="nx">q</span><span class="o">.</span><span class="nx">attributes</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">n</span> <span class="o">=</span> <span class="nx">_linkNode</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="nx">w</span><span class="o">,</span> <span class="nx">q</span><span class="o">.</span><span class="nx">attributes</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c">// track this node&#39;s load progress</span>
+<span class="c"></span>        <span class="nx">_track</span><span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">type</span><span class="o">,</span> <span class="nx">n</span><span class="o">,</span> <span class="nx">id</span><span class="o">,</span> <span class="nx">url</span><span class="o">,</span> <span class="nx">w</span><span class="o">,</span> <span class="nx">q</span><span class="o">.</span><span class="nx">url</span><span class="o">.</span><span class="nx">length</span><span class="o">);</span>
+
+        <span class="c">// add the node to the queue so we can return it to the user supplied callback</span>
+<span class="c"></span>        <span class="nx">q</span><span class="o">.</span><span class="nx">nodes</span><span class="o">.</span><span class="nx">push</span><span class="o">(</span><span class="nx">n</span><span class="o">);</span>
+
+        <span class="c">// add it to the head or insert it before &#39;insertBefore&#39;</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="nx">_get</span><span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">,</span> <span class="nx">id</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">s</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">s</span><span class="o">.</span><span class="nx">parentNode</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">(</span><span class="nx">n</span><span class="o">,</span> <span class="nx">s</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">h</span><span class="o">.</span><span class="nx">appendChild</span><span class="o">(</span><span class="nx">n</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Appending node: &quot;</span> <span class="o">+</span> <span class="nx">url</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+
+        <span class="c">// FireFox does not support the onload event for link nodes, so there is</span>
+<span class="c"></span>        <span class="c">// no way to make the css requests synchronous. This means that the css </span>
+<span class="c"></span>        <span class="c">// rules in multiple files could be applied out of order in this browser</span>
+<span class="c"></span>        <span class="c">// if a later request returns before an earlier one.  Safari too.</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">((</span><span class="nx">ua</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">||</span> <span class="nx">ua</span><span class="o">.</span><span class="nx">gecko</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="nx">q</span><span class="o">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;css&quot;</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">_next</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">url</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Removes processed queues and corresponding nodes</span>
+<span class="c">     * @method _autoPurge</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_autoPurge</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">purging</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nx">purging</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">queues</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">autopurge</span> <span class="o">&amp;&amp;</span> <span class="nx">q</span><span class="o">.</span><span class="nx">finished</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">_purge</span><span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">tId</span><span class="o">);</span>
+                <span class="nx">delete</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="nx">purging</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Removes the nodes for the specified queue</span>
+<span class="c">     * @method _purge</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_purge</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">tId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">queues</span><span class="o">[</span><span class="nx">tId</span><span class="o">])</span> <span class="o">{</span>
+
+            <span class="k">var</span> <span class="nx">q</span>     <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">tId</span><span class="o">],</span>
+                <span class="nx">nodes</span> <span class="o">=</span> <span class="nx">q</span><span class="o">.</span><span class="nx">nodes</span><span class="o">,</span> 
+                <span class="nx">l</span>     <span class="o">=</span> <span class="nx">nodes</span><span class="o">.</span><span class="nx">length</span><span class="o">,</span> 
+                <span class="nx">d</span>     <span class="o">=</span> <span class="nx">q</span><span class="o">.</span><span class="nx">win</span><span class="o">.</span><span class="nb">document</span><span class="o">,</span> 
+                <span class="nx">h</span>     <span class="o">=</span> <span class="nx">d</span><span class="o">.</span><span class="nx">getElementsByTagName</span><span class="o">(</span><span class="s2">&quot;head&quot;</span><span class="o">)[</span><span class="m">0</span><span class="o">],</span>
+                <span class="nx">sib</span><span class="o">,</span> <span class="nx">i</span><span class="o">,</span> <span class="nx">node</span><span class="o">,</span> <span class="nx">attr</span><span class="o">;</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">sib</span> <span class="o">=</span> <span class="nx">_get</span><span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">,</span> <span class="nx">tId</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">sib</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">h</span> <span class="o">=</span> <span class="nx">sib</span><span class="o">.</span><span class="nx">parentNode</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="nx">i</span><span class="o">=</span><span class="m">0</span><span class="o">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">l</span><span class="o">;</span> <span class="nx">i</span><span class="o">=</span><span class="nx">i</span><span class="o">+</span><span class="m">1</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">node</span> <span class="o">=</span> <span class="nx">nodes</span><span class="o">[</span><span class="nx">i</span><span class="o">];</span>
+                <span class="k">if</span> <span class="o">(</span><span class="nx">node</span><span class="o">.</span><span class="nx">clearAttributes</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">node</span><span class="o">.</span><span class="nx">clearAttributes</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="k">for</span> <span class="o">(</span><span class="nx">attr</span> <span class="k">in</span> <span class="nx">node</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nx">delete</span> <span class="nx">node</span><span class="o">[</span><span class="nx">attr</span><span class="o">];</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+
+                <span class="nx">h</span><span class="o">.</span><span class="nx">removeChild</span><span class="o">(</span><span class="nx">node</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="nx">q</span><span class="o">.</span><span class="nx">nodes</span> <span class="o">=</span> <span class="o">[];</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Saves the state for the request and begins loading</span>
+<span class="c">     * the requested urls</span>
+<span class="c">     * @method queue</span>
+<span class="c">     * @param type {string} the type of node to insert</span>
+<span class="c">     * @param url {string} the url to load</span>
+<span class="c">     * @param opts the hash of options for this request</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_queue</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">url</span><span class="o">,</span> <span class="nx">opts</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="k">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="s2">&quot;q&quot;</span> <span class="o">+</span> <span class="o">(</span><span class="nx">qidx</span><span class="o">++);</span>
+        <span class="nx">opts</span> <span class="o">=</span> <span class="nx">opts</span> <span class="o">||</span> <span class="o">{};</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">qidx</span> <span class="o">%</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Get</span><span class="o">.</span><span class="nx">PURGE_THRESH</span> <span class="o">===</span> <span class="m">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">_autoPurge</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="nx">queues</span><span class="o">[</span><span class="nx">id</span><span class="o">]</span> <span class="o">=</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">merge</span><span class="o">(</span><span class="nx">opts</span><span class="o">,</span> <span class="o">{</span>
+            <span class="nx">tId</span><span class="o">:</span> <span class="nx">id</span><span class="o">,</span>
+            <span class="nx">type</span><span class="o">:</span> <span class="nx">type</span><span class="o">,</span>
+            <span class="nx">url</span><span class="o">:</span> <span class="nx">url</span><span class="o">,</span>
+            <span class="nx">finished</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+            <span class="nx">aborted</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+            <span class="nx">nodes</span><span class="o">:</span> <span class="o">[]</span>
+        <span class="o">});</span>
+
+        <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">id</span><span class="o">];</span>
+        <span class="nx">q</span><span class="o">.</span><span class="nx">win</span> <span class="o">=</span> <span class="nx">q</span><span class="o">.</span><span class="nx">win</span> <span class="o">||</span> <span class="nb">window</span><span class="o">;</span>
+        <span class="nx">q</span><span class="o">.</span><span class="nx">scope</span> <span class="o">=</span> <span class="nx">q</span><span class="o">.</span><span class="nx">scope</span> <span class="o">||</span> <span class="nx">q</span><span class="o">.</span><span class="nx">win</span><span class="o">;</span>
+        <span class="nx">q</span><span class="o">.</span><span class="nx">autopurge</span> <span class="o">=</span> <span class="o">(</span><span class="s2">&quot;autopurge&quot;</span> <span class="k">in</span> <span class="nx">q</span><span class="o">)</span> <span class="o">?</span> <span class="nx">q</span><span class="o">.</span><span class="nx">autopurge</span> <span class="o">:</span> 
+                      <span class="o">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;script&quot;</span><span class="o">)</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nx">opts</span><span class="o">.</span><span class="nx">charset</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">q</span><span class="o">.</span><span class="nx">attributes</span> <span class="o">=</span> <span class="nx">q</span><span class="o">.</span><span class="nx">attributes</span> <span class="o">||</span> <span class="o">{};</span>
+            <span class="nx">q</span><span class="o">.</span><span class="nx">attributes</span><span class="o">.</span><span class="nx">charset</span> <span class="o">=</span> <span class="nx">opts</span><span class="o">.</span><span class="nx">charset</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nx">lang</span><span class="o">.</span><span class="nx">later</span><span class="o">(</span><span class="m">0</span><span class="o">,</span> <span class="nx">q</span><span class="o">,</span> <span class="nx">_next</span><span class="o">,</span> <span class="nx">id</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="o">{</span>
+            <span class="nx">tId</span><span class="o">:</span> <span class="nx">id</span>
+        <span class="o">};</span>
+    <span class="o">};</span>
+
+    <span class="c">/**</span>
+<span class="c">     * Detects when a node has been loaded.  In the case of</span>
+<span class="c">     * script nodes, this does not guarantee that contained</span>
+<span class="c">     * script is ready to use.</span>
+<span class="c">     * @method _track</span>
+<span class="c">     * @param type {string} the type of node to track</span>
+<span class="c">     * @param n {HTMLElement} the node to track</span>
+<span class="c">     * @param id {string} the id of the request</span>
+<span class="c">     * @param url {string} the url that is being loaded</span>
+<span class="c">     * @param win {Window} the targeted window</span>
+<span class="c">     * @param qlength the number of remaining items in the queue,</span>
+<span class="c">     * including this one</span>
+<span class="c">     * @param trackfn {Function} function to execute when finished</span>
+<span class="c">     * the default is _next</span>
+<span class="c">     * @private</span>
+<span class="c">     */</span>
+    <span class="k">var</span> <span class="nx">_track</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">type</span><span class="o">,</span> <span class="nx">n</span><span class="o">,</span> <span class="nx">id</span><span class="o">,</span> <span class="nx">url</span><span class="o">,</span> <span class="nx">win</span><span class="o">,</span> <span class="nx">qlength</span><span class="o">,</span> <span class="nx">trackfn</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">trackfn</span> <span class="o">||</span> <span class="nx">_next</span><span class="o">;</span>
+
+        <span class="c">// IE supports the readystatechange event for script and css nodes</span>
+<span class="c"></span>        <span class="k">if</span> <span class="o">(</span><span class="nx">ua</span><span class="o">.</span><span class="nx">ie</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">n</span><span class="o">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">var</span> <span class="nx">rs</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">readyState</span><span class="o">;</span>
+                <span class="k">if</span> <span class="o">(</span><span class="s2">&quot;loaded&quot;</span> <span class="o">===</span> <span class="nx">rs</span> <span class="o">||</span> <span class="s2">&quot;complete&quot;</span> <span class="o">===</span> <span class="nx">rs</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot; onload &quot;</span> <span class="o">+</span> <span class="nx">url</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+                    <span class="nx">n</span><span class="o">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                    <span class="nx">f</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">url</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">};</span>
+
+        <span class="c">// webkit prior to 3.x is problemmatic</span>
+<span class="c"></span>        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">ua</span><span class="o">.</span><span class="nx">webkit</span><span class="o">)</span> <span class="o">{</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;script&quot;</span><span class="o">)</span> <span class="o">{</span>
+
+                <span class="c">// Safari 3.x supports the load event for script nodes (DOM2)</span>
+<span class="c"></span>                <span class="k">if</span> <span class="o">(</span><span class="nx">ua</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&gt;=</span> <span class="m">420</span><span class="o">)</span> <span class="o">{</span>
+
+                    <span class="nx">n</span><span class="o">.</span><span class="nx">addEventListener</span><span class="o">(</span><span class="s2">&quot;load&quot;</span><span class="o">,</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot; DOM2 onload &quot;</span> <span class="o">+</span> <span class="nx">url</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+                        <span class="nx">f</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">url</span><span class="o">);</span>
+                    <span class="o">});</span>
+
+                <span class="c">// Nothing can be done with Safari &lt; 3.x except to pause and hope</span>
+<span class="c"></span>                <span class="c">// for the best, particularly after last script is inserted. The</span>
+<span class="c"></span>                <span class="c">// scripts will always execute in the order they arrive, not</span>
+<span class="c"></span>                <span class="c">// necessarily the order in which they were inserted.  To support</span>
+<span class="c"></span>                <span class="c">// script nodes with complete reliability in these browsers, script</span>
+<span class="c"></span>                <span class="c">// nodes either need to invoke a function in the window once they</span>
+<span class="c"></span>                <span class="c">// are loaded or the implementer needs to provide a well-known</span>
+<span class="c"></span>                <span class="c">// property that the utility can poll for.</span>
+<span class="c"></span>                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="c">// Poll for the existence of the named variable, if it</span>
+<span class="c"></span>                    <span class="c">// was supplied.</span>
+<span class="c"></span>                    <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">id</span><span class="o">];</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">var</span> <span class="nx">freq</span><span class="o">=</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Get</span><span class="o">.</span><span class="nx">POLL_FREQ</span><span class="o">;</span>
+                        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Polling for &quot;</span> <span class="o">+</span> <span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">[</span><span class="m">0</span><span class="o">]);</span>
+                        <span class="nx">q</span><span class="o">.</span><span class="nx">maxattempts</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Get</span><span class="o">.</span><span class="nx">TIMEOUT</span><span class="o">/</span><span class="nx">freq</span><span class="o">;</span>
+                        <span class="nx">q</span><span class="o">.</span><span class="nx">attempts</span> <span class="o">=</span> <span class="m">0</span><span class="o">;</span>
+                        <span class="nx">q</span><span class="o">.</span><span class="nx">_cache</span> <span class="o">=</span> <span class="nx">q</span><span class="o">.</span><span class="nx">varName</span><span class="o">[</span><span class="m">0</span><span class="o">].</span><span class="nx">split</span><span class="o">(</span><span class="s2">&quot;.&quot;</span><span class="o">);</span>
+                        <span class="nx">q</span><span class="o">.</span><span class="nx">timer</span> <span class="o">=</span> <span class="nx">lang</span><span class="o">.</span><span class="nx">later</span><span class="o">(</span><span class="nx">freq</span><span class="o">,</span> <span class="nx">q</span><span class="o">,</span> <span class="k">function</span><span class="o">(</span><span class="nx">o</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="k">var</span> <span class="nx">a</span><span class="o">=</span><span class="k">this</span><span class="o">.</span><span class="nx">_cache</span><span class="o">,</span> <span class="nx">l</span><span class="o">=</span><span class="nx">a</span><span class="o">.</span><span class="nx">length</span><span class="o">,</span> <span class="nx">w</span><span class="o">=</span><span class="k">this</span><span class="o">.</span><span class="nx">win</span><span class="o">,</span> <span class="nx">i</span><span class="o">;</span>
+                            <span class="k">for</span> <span class="o">(</span><span class="nx">i</span><span class="o">=</span><span class="m">0</span><span class="o">;</span> <span class="nx">i</span><span class="o">&lt;</span><span class="nx">l</span><span class="o">;</span> <span class="nx">i</span><span class="o">=</span><span class="nx">i</span><span class="o">+</span><span class="m">1</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="nx">w</span> <span class="o">=</span> <span class="nx">w</span><span class="o">[</span><span class="nx">a</span><span class="o">[</span><span class="nx">i</span><span class="o">]];</span>
+                                <span class="k">if</span> <span class="o">(!</span><span class="nx">w</span><span class="o">)</span> <span class="o">{</span>
+                                    <span class="c">// if we have exausted our attempts, give up</span>
+<span class="c"></span>                                    <span class="k">this</span><span class="o">.</span><span class="nx">attempts</span><span class="o">++;</span>
+                                    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">attempts</span><span class="o">++</span> <span class="o">&gt;</span> <span class="k">this</span><span class="o">.</span><span class="nx">maxattempts</span><span class="o">)</span> <span class="o">{</span>
+                                        <span class="k">var</span> <span class="nx">msg</span> <span class="o">=</span> <span class="s2">&quot;Over retry limit, giving up&quot;</span><span class="o">;</span>
+                                        <span class="nx">q</span><span class="o">.</span><span class="nx">timer</span><span class="o">.</span><span class="nx">cancel</span><span class="o">();</span>
+                                        <span class="nx">_fail</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">msg</span><span class="o">);</span>
+                                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                                        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="nx">a</span><span class="o">[</span><span class="nx">i</span><span class="o">]</span> <span class="o">+</span> <span class="s2">&quot; failed, retrying&quot;</span><span class="o">);</span>
+                                    <span class="o">}</span>
+                                    <span class="k">return</span><span class="o">;</span>
+                                <span class="o">}</span>
+                            <span class="o">}</span>
+                            
+                            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Safari poll complete&quot;</span><span class="o">);</span>
+
+                            <span class="nx">q</span><span class="o">.</span><span class="nx">timer</span><span class="o">.</span><span class="nx">cancel</span><span class="o">();</span>
+                            <span class="nx">f</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">url</span><span class="o">);</span>
+
+                        <span class="o">},</span> <span class="kc">null</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="nx">lang</span><span class="o">.</span><span class="nx">later</span><span class="o">(</span><span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">.</span><span class="nx">Get</span><span class="o">.</span><span class="nx">POLL_FREQ</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="nx">f</span><span class="o">,</span> <span class="o">[</span><span class="nx">id</span><span class="o">,</span> <span class="nx">url</span><span class="o">]);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span> 
+
+        <span class="c">// FireFox and Opera support onload (but not DOM2 in FF) handlers for</span>
+<span class="c"></span>        <span class="c">// script nodes.  Opera, but not FF, supports the onload event for link</span>
+<span class="c"></span>        <span class="c">// nodes.</span>
+<span class="c"></span>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span> 
+            <span class="nx">n</span><span class="o">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+                <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot; onload &quot;</span> <span class="o">+</span> <span class="nx">url</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+                <span class="nx">f</span><span class="o">(</span><span class="nx">id</span><span class="o">,</span> <span class="nx">url</span><span class="o">);</span>
+            <span class="o">};</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="k">return</span> <span class="o">{</span>
+
+        <span class="c">/**</span>
+<span class="c">         * The default poll freqency in ms, when needed</span>
+<span class="c">         * @property POLL_FREQ</span>
+<span class="c">         * @static</span>
+<span class="c">         * @type int</span>
+<span class="c">         * @default 10</span>
+<span class="c">         */</span>
+        <span class="nx">POLL_FREQ</span><span class="o">:</span> <span class="m">10</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">         * The number of request required before an automatic purge.</span>
+<span class="c">         * property PURGE_THRESH</span>
+<span class="c">         * @static</span>
+<span class="c">         * @type int</span>
+<span class="c">         * @default 20</span>
+<span class="c">         */</span>
+        <span class="nx">PURGE_THRESH</span><span class="o">:</span> <span class="m">20</span><span class="o">,</span>
+
+        <span class="c">/**</span>
+<span class="c">         * The length time to poll for varName when loading a script in</span>
+<span class="c">         * Safari 2.x before the transaction fails.</span>
+<span class="c">         * property TIMEOUT</span>
+<span class="c">         * @static</span>
+<span class="c">         * @type int</span>
+<span class="c">         * @default 2000</span>
+<span class="c">         */</span>
+        <span class="nx">TIMEOUT</span><span class="o">:</span> <span class="m">2000</span><span class="o">,</span>
+        
+        <span class="c">/**</span>
+<span class="c">         * Called by the the helper for detecting script load in Safari</span>
+<span class="c">         * @method _finalize</span>
+<span class="c">         * @param id {string} the transaction id</span>
+<span class="c">         * @private</span>
+<span class="c">         */</span>
+        <span class="nx">_finalize</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">id</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot; finalized &quot;</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+            <span class="nx">lang</span><span class="o">.</span><span class="nx">later</span><span class="o">(</span><span class="m">0</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="nx">_finish</span><span class="o">,</span> <span class="nx">id</span><span class="o">);</span>
+        <span class="o">},</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Abort a transaction</span>
+<span class="c">         * @method abort</span>
+<span class="c">         * @param {string|object} either the tId or the object returned from</span>
+<span class="c">         * script() or css()</span>
+<span class="c">         */</span>
+        <span class="nx">abort</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">o</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="o">(</span><span class="nx">lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">o</span><span class="o">))</span> <span class="o">?</span> <span class="nx">o</span> <span class="o">:</span> <span class="nx">o</span><span class="o">.</span><span class="nx">tId</span><span class="o">;</span>
+            <span class="k">var</span> <span class="nx">q</span> <span class="o">=</span> <span class="nx">queues</span><span class="o">[</span><span class="nx">id</span><span class="o">];</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">q</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s2">&quot;Aborting &quot;</span> <span class="o">+</span> <span class="nx">id</span><span class="o">,</span> <span class="s2">&quot;info&quot;</span><span class="o">,</span> <span class="s2">&quot;Get&quot;</span><span class="o">);</span>
+                <span class="nx">q</span><span class="o">.</span><span class="nx">aborted</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">},</span> 
+
+        <span class="c">/**</span>
+<span class="c">         * Fetches and inserts one or more script nodes into the head</span>
+<span class="c">         * of the current document or the document in a specified window.</span>
+<span class="c">         *</span>
+<span class="c">         * @method script</span>
+<span class="c">         * @static</span>
+<span class="c">         * @param url {string|string[]} the url or urls to the script(s)</span>
+<span class="c">         * @param opts {object} Options: </span>
+<span class="c">         * &lt;dl&gt;</span>
+<span class="c">         * &lt;dt&gt;onSuccess&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;</span>
+<span class="c">         * callback to execute when the script(s) are finished loading</span>
+<span class="c">         * The callback receives an object back with the following</span>
+<span class="c">         * data:</span>
+<span class="c">         * &lt;dl&gt;</span>
+<span class="c">         * &lt;dt&gt;win&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the window the script(s) were inserted into&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;data&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the data object passed in when the request was made&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;nodes&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;An array containing references to the nodes that were</span>
+<span class="c">         * inserted&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;purge&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;A function that, when executed, will remove the nodes</span>
+<span class="c">         * that were inserted&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;</span>
+<span class="c">         * &lt;/dl&gt;</span>
+<span class="c">         * &lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;onFailure&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;</span>
+<span class="c">         * callback to execute when the script load operation fails</span>
+<span class="c">         * The callback receives an object back with the following</span>
+<span class="c">         * data:</span>
+<span class="c">         * &lt;dl&gt;</span>
+<span class="c">         * &lt;dt&gt;win&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the window the script(s) were inserted into&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;data&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the data object passed in when the request was made&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;nodes&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;An array containing references to the nodes that were</span>
+<span class="c">         * inserted successfully&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;purge&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;A function that, when executed, will remove any nodes</span>
+<span class="c">         * that were inserted&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;</span>
+<span class="c">         * &lt;/dl&gt;</span>
+<span class="c">         * &lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;onTimeout&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;</span>
+<span class="c">         * callback to execute when a timeout occurs.</span>
+<span class="c">         * The callback receives an object back with the following</span>
+<span class="c">         * data:</span>
+<span class="c">         * &lt;dl&gt;</span>
+<span class="c">         * &lt;dt&gt;win&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the window the script(s) were inserted into&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;data&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the data object passed in when the request was made&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;nodes&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;An array containing references to the nodes that were</span>
+<span class="c">         * inserted&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;purge&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;A function that, when executed, will remove the nodes</span>
+<span class="c">         * that were inserted&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;</span>
+<span class="c">         * &lt;/dl&gt;</span>
+<span class="c">         * &lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;scope&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the execution context for the callbacks&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;win&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;a window other than the one the utility occupies&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;autopurge&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;</span>
+<span class="c">         * setting to true will let the utilities cleanup routine purge </span>
+<span class="c">         * the script once loaded</span>
+<span class="c">         * &lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;data&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;</span>
+<span class="c">         * data that is supplied to the callback when the script(s) are</span>
+<span class="c">         * loaded.</span>
+<span class="c">         * &lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;varName&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;</span>
+<span class="c">         * variable that should be available when a script is finished</span>
+<span class="c">         * loading.  Used to help Safari 2.x and below with script load </span>
+<span class="c">         * detection.  The type of this property should match what was</span>
+<span class="c">         * passed into the url parameter: if loading a single url, a</span>
+<span class="c">         * string can be supplied.  If loading multiple scripts, you</span>
+<span class="c">         * must supply an array that contains the variable name for</span>
+<span class="c">         * each script.</span>
+<span class="c">         * &lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;insertBefore&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;node or node id that will become the new node&#39;s nextSibling&lt;/dd&gt;</span>
+<span class="c">         * &lt;/dl&gt;</span>
+<span class="c">         * &lt;dt&gt;charset&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;Node charset, deprecated, use &#39;attributes&#39;&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;attributes&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;A hash of attributes to apply to dynamic nodes.&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;timeout&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;Number of milliseconds to wait before aborting and firing the timeout event&lt;/dd&gt;</span>
+<span class="c">         * &lt;pre&gt;</span>
+<span class="c">         * // assumes yahoo, dom, and event are already on the page</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;YAHOO.util.Get.script(</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;[&quot;http://yui.yahooapis.com/2.7.0/build/dragdrop/dragdrop-min.js&quot;,</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&quot;http://yui.yahooapis.com/2.7.0/build/animation/animation-min.js&quot;], &amp;#123;</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;onSuccess: function(o) &amp;#123;</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;YAHOO.log(o.data); // foo</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;new YAHOO.util.DDProxy(&quot;dd1&quot;); // also new o.reference(&quot;dd1&quot;); would work</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;this.log(&quot;won&#39;t cause error because YAHOO is the scope&quot;);</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;this.log(o.nodes.length === 2) // true</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;// o.purge(); // optionally remove the script nodes immediately</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;#125;,</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;onFailure: function(o) &amp;#123;</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;YAHOO.log(&quot;transaction failed&quot;);</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;#125;,</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;data: &quot;foo&quot;,</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;timeout: 10000, // 10 second timeout</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;scope: YAHOO,</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;// win: otherframe // target another window/frame</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;autopurge: true // allow the utility to choose when to remove the nodes</span>
+<span class="c">         * &amp;nbsp;&amp;nbsp;&amp;#125;);</span>
+<span class="c">         * &lt;/pre&gt;</span>
+<span class="c">         * @return {tId: string} an object containing info about the transaction</span>
+<span class="c">         */</span>
+        <span class="nx">script</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="nx">opts</span><span class="o">)</span> <span class="o">{</span> <span class="k">return</span> <span class="nx">_queue</span><span class="o">(</span><span class="s2">&quot;script&quot;</span><span class="o">,</span> <span class="nx">url</span><span class="o">,</span> <span class="nx">opts</span><span class="o">);</span> <span class="o">},</span>
+
+        <span class="c">/**</span>
+<span class="c">         * Fetches and inserts one or more css link nodes into the </span>
+<span class="c">         * head of the current document or the document in a specified</span>
+<span class="c">         * window.</span>
+<span class="c">         * @method css</span>
+<span class="c">         * @static</span>
+<span class="c">         * @param url {string} the url or urls to the css file(s)</span>
+<span class="c">         * @param opts Options: </span>
+<span class="c">         * &lt;dl&gt;</span>
+<span class="c">         * &lt;dt&gt;onSuccess&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;</span>
+<span class="c">         * callback to execute when the css file(s) are finished loading</span>
+<span class="c">         * The callback receives an object back with the following</span>
+<span class="c">         * data:</span>
+<span class="c">         * &lt;dl&gt;win&lt;/dl&gt;</span>
+<span class="c">         * &lt;dd&gt;the window the link nodes(s) were inserted into&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;data&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the data object passed in when the request was made&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;nodes&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;An array containing references to the nodes that were</span>
+<span class="c">         * inserted&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;purge&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;A function that, when executed, will remove the nodes</span>
+<span class="c">         * that were inserted&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;</span>
+<span class="c">         * &lt;/dl&gt;</span>
+<span class="c">         * &lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;scope&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;the execution context for the callbacks&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;win&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;a window other than the one the utility occupies&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;data&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;</span>
+<span class="c">         * data that is supplied to the callbacks when the nodes(s) are</span>
+<span class="c">         * loaded.</span>
+<span class="c">         * &lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;insertBefore&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;node or node id that will become the new node&#39;s nextSibling&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;charset&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;Node charset, deprecated, use &#39;attributes&#39;&lt;/dd&gt;</span>
+<span class="c">         * &lt;dt&gt;attributes&lt;/dt&gt;</span>
+<span class="c">         * &lt;dd&gt;A hash of attributes to apply to dynamic nodes.&lt;/dd&gt;</span>
+<span class="c">         * &lt;/dl&gt;</span>
+<span class="c">         * &lt;pre&gt;</span>
+<span class="c">         *      YAHOO.util.Get.css(&quot;http://yui.yahooapis.com/2.7.0/build/menu/assets/skins/sam/menu.css&quot;);</span>
+<span class="c">         * &lt;/pre&gt;</span>
+<span class="c">         * &lt;pre&gt;</span>
+<span class="c">         *      YAHOO.util.Get.css([&quot;http://yui.yahooapis.com/2.7.0/build/menu/assets/skins/sam/menu.css&quot;,</span>
+<span class="c">         *                          &quot;http://yui.yahooapis.com/2.7.0/build/logger/assets/skins/sam/logger.css&quot;]);</span>
+<span class="c">         * &lt;/pre&gt;</span>
+<span class="c">         * @return {tId: string} an object containing info about the transaction</span>
+<span class="c">         */</span>
+        <span class="nx">css</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="nx">opts</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nx">_queue</span><span class="o">(</span><span class="s2">&quot;css&quot;</span><span class="o">,</span> <span class="nx">url</span><span class="o">,</span> <span class="nx">opts</span><span class="o">);</span> 
+        <span class="o">}</span>
+    <span class="o">};</span>
+<span class="o">}();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class="selected"><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.Get.html" title="YAHOO.util.Get">YAHOO.util.Get</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="Get.js.html" title="Get.js">Get.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "", "host": "YAHOO.util.Get", "name": "abort", "url": "YAHOO.util.Get.html#method_abort", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_autoPurge", "url": "YAHOO.util.Get.html#method__autoPurge", "type": "method"}, {"access": "", "host": "YAHOO.util.Get", "name": "css", "url": "YAHOO.util.Get.html#method_css", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_finalize", "url": "YAHOO.util.Get.html#method__finalize", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_finish", "url": "YAHOO.util.Get.html#method__finish", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_linkNode", "url": "YAHOO.util.Get.html#method__linkNode", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_next", "url": "YAHOO.util.Get.html#method__next", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "nidx", "url": "YAHOO.util.Get.html#property_nidx", "type": "property"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_node", "url": "YAHOO.util.Get.html#method__node", "type": "method"}, {"access": "", "host": "YAHOO.util.Get", "name": "POLL_FREQ", "url": "YAHOO.util.Get.html#property_POLL_FREQ", "type": "property"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_purge", "url": "YAHOO.util.Get.html#method__purge", "type": "method"}, {"access": "", "host": "YAHOO.util.Get", "name": "PURGE_THRESH", "url": "YAHOO.util.Get.html#property_PURGE_THRESH", "type": "property"}, {"access": "private", "host": "YAHOO.util.Get", "name": "purging", "url": "YAHOO.util.Get.html#property_purging", "type": "property"}, {"access": "private", "host": "YAHOO.util.Get", "name": "qidx", "url": "YAHOO.util.Get.html#property_qidx", "type": "property"}, {"access": "private", "host": "YAHOO.util.Get", "name": "queue", "url": "YAHOO.util.Get.html#method_queue", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "queues", "url": "YAHOO.util.Get.html#property_queues", "type": "property"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_returnData", "url": "YAHOO.util.Get.html#method__returnData", "type": "method"}, {"access": "", "host": "YAHOO.util.Get", "name": "script", "url": "YAHOO.util.Get.html#method_script", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_scriptNode", "url": "YAHOO.util.Get.html#method__scriptNode", "type": "method"}, {"access": "", "host": "YAHOO.util.Get", "name": "TIMEOUT", "url": "YAHOO.util.Get.html#property_TIMEOUT", "type": "property"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_timeout", "url": "YAHOO.util.Get.html#method__timeout", "type": "method"}, {"access": "private", "host": "YAHOO.util.Get", "name": "_track", "url": "YAHOO.util.Get.html#method__track", "type": "method"}];
+</script>
+</body>
+</html>

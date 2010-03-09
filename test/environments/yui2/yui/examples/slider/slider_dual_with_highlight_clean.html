@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Dual-thumb Slider with range highlight</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/slider/assets/skins/sam/slider.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+    #demo_bg {
+        position: relative;
+        background: url(../slider/assets/dual_thumb_bg.gif) 0 5px no-repeat;
+        height: 28px;
+        width: 310px;
+    }
+
+    #demo_bg div {
+        position: absolute;
+        cursor: default;
+        top: 4px;
+    }
+
+    #demo_bg span {
+        position: absolute;
+        background: url(../slider/assets/dual_thumb_highlight.gif) 0 0 repeat-x;
+        _font-size: 5px; /* prevent IE6 expanding the box height to font-size */
+        top: 10px;
+        left: 12px;
+        height: 13px;
+        width: 288px;
+    }
+
+    #demo_bg .caution {
+        background-position: 0 -13px;
+    }
+    #demo_bg .boom,
+    #demo_bg .danger {
+        background-position: 0 -26px;
+    }
+    p .ok {
+        color: #3a3;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    p .caution {
+        background: #ff3;
+        color: #770;
+        font-weight: bold;
+        font-style: italic;
+        padding: 0 1ex;
+        text-transform: uppercase;
+    }
+    p .danger {
+        color: #f33;
+        font-weight: bold;
+        text-decoration: blink;
+        text-transform: uppercase;
+    }
+    p .boom {
+        color: #fff;
+        background: #000;
+        padding: 0 1ex;
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Dual-thumb Slider with range highlight</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates a horizontal dual-thumb Slider with custom code to add a highlight to the bounded range.  Some characteristics to note include the following:</p>
+<ul>
+    <li>The thumbs are set on a slide bar with a 300 pixel range.</li>
+    <li>The thumbs are configured with a 12 pixel tick size.</li>
+    <li>Clicking on the background will animate the nearest thumb.</li>
+</ul>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="demo_bg" title="Range slider">
+    <span id="demo_highlight"></span>
+    <div id="demo_min_thumb"><img src="assets/l-thumb-round.gif"></div>
+    <div id="demo_max_thumb"><img src="assets/r-thumb-round.gif"></div>
+</div>
+<p>Range offsets: <span id="demo_range">0 - 300</span></p>
+<p>Status: <span id="demo_value" class="ok">ok</span></p>
+
+<script type="text/javascript">
+(function () {
+    YAHOO.namespace('example');
+
+    var Dom = YAHOO.util.Dom;
+
+    // Slider has a range of 300 pixels
+    var range = 300;
+
+    // Set up 12 pixel ticks
+    var tickSize = 12;
+
+    // Some arbitrary ranges to cue status changes
+    var caution_range = 150,
+        danger_range  = 75,
+        boom_range    = 13;
+
+    YAHOO.util.Event.onDOMReady(function () {
+        var reportSpan     = Dom.get("demo_range");
+        var calculatedSpan = Dom.get("demo_value");
+
+        // Create the DualSlider
+        var slider = YAHOO.widget.Slider.getHorizDualSlider("demo_bg",
+            "demo_min_thumb", "demo_max_thumb",
+            range, tickSize);
+        
+        // Decorate the DualSlider instance with some new properties and
+        // methods to maintain the highlight element
+        YAHOO.lang.augmentObject(slider, {
+            _status : 'ok',
+            _highlight : Dom.get("demo_highlight"),
+
+            getStatus : function () { return this._status; },
+
+            updateHighlight : function () {
+                var delta = this.maxVal - this.minVal,
+                    newStatus = 'ok';
+                
+                if (delta < boom_range) {
+                    newStatus = 'boom';
+                } else if (delta < danger_range) {
+                    newStatus = 'danger';
+                } else if (delta < caution_range) {
+                    newStatus = 'caution';
+                }
+
+                if (this._status !== newStatus) {
+                    // Update the highlight class if status is changed
+                    Dom.replaceClass(this._highlight,this._status,newStatus);
+                    this._status = newStatus;
+                }
+                if (this.activeSlider === this.minSlider) {
+                    // If the min thumb moved, move the highlight's left edge
+                    Dom.setStyle(this._highlight,'left', (this.minVal + 12) + 'px');
+                }
+                // Adjust the width of the highlight to match inner boundary
+                Dom.setStyle(this._highlight,'width', Math.max(delta - 12,0) + 'px');
+            }
+        },true);
+
+        // Attach the highlight method to the slider's change event
+        slider.subscribe('change',slider.updateHighlight,slider,true);
+
+        // Create an event callback to update some display fields
+        var report = function () {
+            reportSpan.innerHTML = slider.minVal + ' - ' + slider.maxVal;
+            // Call our conversion function
+            calculatedSpan.innerHTML =
+            calculatedSpan.className = slider.getStatus();
+        };
+
+        // Subscribe to the slider's change event to report the status.
+        slider.subscribe('change',report);
+
+        // Attach the slider to the YAHOO.example namespace for public probing
+        YAHOO.example.slider = slider;
+    });
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

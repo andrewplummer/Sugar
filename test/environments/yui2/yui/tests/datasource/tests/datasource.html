@@ -1,0 +1,687 @@
+<html>
+<head>
+<title>YUI DataSource Tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css" />
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />
+<style type="text/css">
+    .yui-skin-sam .yui-log {
+        padding: 2.5em 1em 1em;
+        height: 90%;
+    }
+    .yui-skin-sam .yui-log .yui-log-bd {
+        width: auto;
+        height: 100%;
+    }
+</style>
+
+</head>
+<body class="yui-skin-sam">
+<h1>DataSource Tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" disabled="true" /></p>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/connection/connection.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+<script type="text/javascript" src="../../../build/get/get.js"></script>
+<script type="text/javascript" src="../../../build/json/json.js"></script>
+<script type="text/javascript" src="../../../build/datasource/datasource.js"></script>
+
+<!-- for cloneobject method -->
+<script type="text/javascript" src="../../../build/element/element.js"></script>
+<script type="text/javascript" src="../../../build/datatable/datatable.js"></script>
+<script type="text/javascript">
+
+(function() {
+var Dom=YAHOO.util.Dom,
+    Assert=YAHOO.util.Assert,
+    ObjectAssert=YAHOO.util.ObjectAssert,
+    ArrayAssert=YAHOO.util.ArrayAssert,
+    DateAssert=YAHOO.util.DateAssert,
+    UserAction=YAHOO.util.UserAction,
+    TestCase = YAHOO.tool.TestCase,
+    TestLogger = YAHOO.tool.TestLogger,
+    TestRunner = YAHOO.tool.TestRunner,
+    TestSuite = YAHOO.tool.TestSuite,
+    lang = YAHOO.lang,
+
+    DS = YAHOO.util.DataSourceBase,
+    LocalDS = YAHOO.util.LocalDataSource,
+    XHRDS = YAHOO.util.XHRDataSource,
+    ScriptNodeDS = YAHOO.util.ScriptNodeDataSource,
+    FunctionDS = YAHOO.util.FunctionDataSource,
+    DataSource = YAHOO.util.DataSource;   
+
+var XMLDocument = function(rootTagName, namespaceURL) {
+    if (!rootTagName) rootTagName = "";
+    if (!namespaceURL) namespaceURL = "";
+    
+    if (document.implementation && document.implementation.createDocument) {
+        // This is the W3C standard way to do it
+        return document.implementation.createDocument(namespaceURL,
+                                                      rootTagName, null);
+    }
+    else { // This is the IE way to do it
+        // Create an empty document as an ActiveX object
+        // If there is no root element, this is all we have to do
+        var doc = new ActiveXObject("MSXML2.DOMDocument");
+
+        // If there is a root tag, initialize the document
+        if (rootTagName) {
+            // Look for a namespace prefix
+            var prefix = "";
+            var tagname = rootTagName;
+            var p = rootTagName.indexOf(':');
+            if (p != -1) {
+                prefix = rootTagName.substring(0, p);
+                tagname = rootTagName.substring(p+1);
+            }
+
+            // If we have a namespace, we must have a namespace prefix
+            // If we don't have a namespace, we discard any prefix
+            if (namespaceURL) {
+                if (!prefix) prefix = "a0"; // What Firefox uses
+            }
+            else prefix = "";
+
+            // Create the root element (with optional namespace) as a
+            // string of text
+            var text = "<" + (prefix?(prefix+":"):"") +  tagname +
+                (namespaceURL
+                 ?(" xmlns:" + prefix + '="' + namespaceURL +'"')
+                 :"") +
+                "/>";
+            // And parse that text into the empty document
+            doc.loadXML(text);
+        }
+        return doc;
+    }
+};        
+
+/**
+ *
+ *
+ * LocalDataSource Tests
+ *
+ *
+ */
+ var dsLocalTestCase = new TestCase({
+    name: "LocalDataSource Test Case",
+    
+    testLocalContruction: function() {
+        var data = ["a","b","c"];
+        var ds = new LocalDS(data);
+        ArrayAssert.itemsAreSame(data, ds.liveData, "Simple Array");
+        Assert.areSame(DS.TYPE_LOCAL, ds.dataType, "Simple Array");
+        Assert.areSame(DS.TYPE_JSARRAY, ds.responseType, "Simple Array");
+        delete data;
+        delete ds;
+        
+        data = [["a","b","c"],["1","2","3"],["one","two","three"]];
+        ds = new LocalDS(data);
+        ArrayAssert.itemsAreSame(data, ds.liveData, "Complex Array");
+        Assert.areSame(DS.TYPE_LOCAL, ds.dataType, "Complex Array");
+        Assert.areSame(DS.TYPE_JSARRAY, ds.responseType, "Complex Array");
+        delete data;
+        delete ds;
+        
+        data = [{a:"1",b:"2",c:"3"}, {a:"one",b:"two",c:"three"}, {a:"uno",b:"dos",c:"tres"}];
+        ds = new LocalDS(data);
+        ArrayAssert.itemsAreSame(data, ds.liveData, "Object Array");
+        Assert.areSame(DS.TYPE_LOCAL, ds.dataType, "Object Array");
+        Assert.areSame(DS.TYPE_JSARRAY, ds.responseType, "Object Array");
+        delete data;
+        delete ds;
+        
+        data = {items: [{a:"1",b:"2",c:"3"}, {a:"one",b:"two",c:"three"}, {a:"uno",b:"dos",c:"tres"}]};
+        ds = new LocalDS(data);
+        ObjectAssert.propertiesAreEqual(data, ds.liveData, "JSON");
+        Assert.areSame(DS.TYPE_LOCAL, ds.dataType, "JSON");
+        Assert.areSame(DS.TYPE_JSON, ds.responseType, "JSON");
+        delete data;
+        delete ds;
+        
+        data = document.createElement("table");
+        ds = new LocalDS(data);
+        Assert.areSame(data.nodeName, ds.liveData.nodeName, "HTML TABLE");
+        Assert.areSame(DS.TYPE_LOCAL, ds.dataType, "HTML TABLE");
+        Assert.areSame(DS.TYPE_HTMLTABLE, ds.responseType, "HTML TABLE");
+        delete data;
+        delete ds;
+        
+        data =new XMLDocument("myRoot");
+        ds = new LocalDS(data);
+        Assert.areSame(data.nodeType, ds.liveData.nodeType, "XML");
+        Assert.areSame(DS.TYPE_LOCAL, ds.dataType, "XML");
+        Assert.areSame(DS.TYPE_XML, ds.responseType, "XML");
+        delete data;
+        delete ds;
+        
+        data = null;
+        ds = new LocalDS(data);
+        ArrayAssert.itemsAreSame([], ds.liveData, "null");
+        Assert.areSame(DS.TYPE_LOCAL, ds.dataType, "null");
+        Assert.areSame(DS.TYPE_JSARRAY, ds.responseType, "null");
+        delete data;
+        delete ds;
+    },
+
+    testLocalSendReqeust: function(){
+        var ds = new LocalDS(["a","b","c","d"]);
+        ds.sendRequest("a", {success:function(request,response) {
+            ArrayAssert.itemsAreSame(["a","b","c","d"], response.results, "Expected live array.");
+        }});                
+
+        new LocalDS('{"items":[{"foo":1},{"foo":2}]}', {
+            responseType: DS.TYPE_JSON,
+            responseSchema: {
+                resultsList:'items',
+                fields:['foo']
+            }
+        }).sendRequest(null,{ success: function (req, res) {
+                Assert.isArray(res.results, "Expected results array");
+                Assert.areEqual(res.results.length, 2, "Expected 2 records");
+            }
+        });
+
+        new LocalDS('{"items":[{"foo":1},{"foo":2}]}', {
+            parseJSONArgs: function (k,v) { return v * 3 },
+            responseType: DS.TYPE_JSON,
+            responseSchema: {
+                resultsList:'items',
+                fields:['foo']
+            }
+        }).sendRequest(null,{ success: function (req, res) {
+                Assert.isArray(res.results, "Expected results array");
+                Assert.areEqual(res.results.length, 2, "Expected 2 records");
+                Assert.areEqual(3, res.results[0].foo, "Reviver function did not alter JSON during parse");
+            }
+        });
+    }
+ });
+ 
+/**
+ *
+ *
+ * FunctionDataSource Tests
+ *
+ *
+ */
+ var dsFunctionTestCase = new TestCase({
+    name: "FunctionDataSource Test Case",
+    
+    testFunctionContruction: function() {
+        var data = function(query) {
+            return ["a","b","c"]
+        };
+        var ds = new FunctionDS(data);
+        Assert.isFunction(ds.liveData);
+        Assert.areSame(DS.TYPE_JSFUNCTION, ds.dataType);
+        Assert.areSame(DS.TYPE_UNKNOWN, ds.responseType);
+        delete data;
+        delete ds;
+
+        data = null;
+        ds = new FunctionDS(data);
+        Assert.isFunction(ds.liveData);
+        Assert.areSame(DS.TYPE_JSFUNCTION, ds.dataType);
+        Assert.areSame(DS.TYPE_UNKNOWN, ds.responseType);
+        delete data;
+        delete ds;
+    }
+ });
+
+/**
+ *
+ *
+ * XHRDataSource Tests
+ *
+ *
+ */
+ var dsXHRTestCase = new TestCase({
+    name: "XHRDataSource Test Case",
+    
+    testXHRContruction: function() {
+        var data = "path/to/server";
+        var ds = new XHRDS(data);
+        Assert.isString(ds.liveData);
+        Assert.areSame(DS.TYPE_XHR, ds.dataType);
+        Assert.areSame(DS.TYPE_UNKNOWN, ds.responseType);
+        delete data;
+        delete ds;
+
+        data = null;
+        ds = new XHRDS(data);
+        Assert.isString(ds.liveData);
+        Assert.areSame(DS.TYPE_XHR, ds.dataType);
+        Assert.areSame(DS.TYPE_UNKNOWN, ds.responseType);
+        delete data;
+        delete ds;
+    },
+
+    testXHRSendRequest: function() {
+        var ds = new XHRDS("php/proxy_ylocal.php?query=madonna&output=json&results=10");
+        ds.responseType = DS.TYPE_JSON;
+        ds.responseSchema = {
+            resultsList: "ResultSet.Result",
+            fields: ["Title"]
+        };
+        ds.sendRequest(null, {
+            success: function(request,response) {
+                this.resume(function() {
+                    Assert.isNull(request, "Expected null request.");
+                    Assert.isObject(response, "Expected response object.");
+                    ObjectAssert.propertiesAreEqual({tId:null,meta:null,results:null}, response, "Expected all properties.");
+                });
+            },
+            failure: function(request, response) {
+                this.resume(function() {
+                    Assert.fail("XHR failure case.");
+                });
+            },
+            scope: this
+        });                
+
+        this.wait(5000); // On a slow connection: this.wait(5000);
+    },
+
+    testXHRHTMLTable: function () {
+        var ds = new XHRDS("php/xhr_table.php?cols=4",{
+            responseType: DS.TYPE_HTMLTABLE,
+            responseSchema: {
+                fields: ['Col0','Col1','Col2','Col3']
+            }
+        });
+
+        ds.sendRequest(null, {
+            success: function (req,res) {
+                this.resume(function () {
+                    Assert.isObject(res, "Expected Response object");
+                    Assert.isArray(res.results, "Expected results list");
+                    ObjectAssert.hasProperty("Col0", res.results[0], "Malformed result record");
+                });
+            },
+            failure: function (req,res) {
+                this.resume(function () {
+                    Assert.fail("XHR failure case");
+                });
+            },
+            scope: this
+        });
+
+        this.wait(5000);
+    }
+ });
+
+/**
+ *
+ *
+ * ScriptNodeDataSource Tests
+ *
+ *
+ */
+ var dsScriptNodeTestCase = new TestCase({
+    name: "ScriptNodeDataSource Test Case",
+    
+    testScriptNodeContruction: function() {
+        var data = "path/to/server";
+        var ds = new ScriptNodeDS(data);
+        Assert.isString(ds.liveData);
+        Assert.areSame(DS.TYPE_SCRIPTNODE, ds.dataType);
+        Assert.areSame(DS.TYPE_UNKNOWN, ds.responseType);
+        delete data;
+        delete ds;
+
+        data = null;
+        ds = new ScriptNodeDS(data);
+        Assert.isString(ds.liveData);
+        Assert.areSame(DS.TYPE_SCRIPTNODE, ds.dataType);
+        Assert.areSame(DS.TYPE_UNKNOWN, ds.responseType);
+        delete data;
+        delete ds;
+    }
+ });
+
+/**
+ *
+ *
+ * DataSource Tests
+ *
+ *
+ */
+ var dsTestCase = new TestCase({
+    name: "DataSource Test Case",
+    
+    testDataSourceContruction: function() {
+        var data = ["a","b","c"];
+        var ds = new DataSource(data);
+        Assert.areSame(true, ds instanceof LocalDS);
+        delete data;
+        delete ds;
+
+        data = function(query) {
+            return ["a","b","c"]
+        };
+        ds = new DataSource(data);
+        Assert.areSame(true, ds instanceof FunctionDS);
+        delete data;
+        delete ds;
+
+        data = "path/to/server";
+        ds = new DataSource(data);
+        Assert.areSame(true, ds instanceof XHRDS);
+        delete data;
+        delete ds;
+
+        data = null;
+        ds = new DataSource(data, {dataType:DS.TYPE_LOCAL});
+        Assert.areSame(true, ds instanceof LocalDS);
+        delete data;
+        delete ds;
+
+        data = null;
+        ds = new DataSource(data, {dataType:DS.TYPE_JSFUNCTION});
+        Assert.areSame(true, ds instanceof FunctionDS);
+        delete data;
+        delete ds;
+
+        data = null;
+        ds = new DataSource(data, {dataType:DS.TYPE_XHR});
+        Assert.areSame(true, ds instanceof XHRDS);
+        delete data;
+        delete ds;
+
+        data = null;
+        ds = new DataSource(data, {dataType:DS.TYPE_SCRIPTNODE});
+        Assert.areSame(true, ds instanceof ScriptNodeDS);
+        delete data;
+        delete ds;
+    }
+ });
+ 
+ /**
+ *
+ *
+ * DataSourceBase Tests
+ *
+ *
+ */
+ var dsBaseTestCase = new TestCase({
+    name: "DataSourceBase Test Case",
+    
+    testCustomEvents: function() {
+        var data = ["a","b","c"];
+        var ds = new DS(data);
+        ObjectAssert.hasProperty("cacheFlushEvent", ds.__yui_events);
+        ObjectAssert.hasProperty("cacheRequestEvent", ds.__yui_events);
+        ObjectAssert.hasProperty("cacheResponseEvent", ds.__yui_events);
+        ObjectAssert.hasProperty("dataErrorEvent", ds.__yui_events);
+        ObjectAssert.hasProperty("requestEvent", ds.__yui_events);
+        ObjectAssert.hasProperty("responseCacheEvent", ds.__yui_events);
+        ObjectAssert.hasProperty("responseEvent", ds.__yui_events);
+        ObjectAssert.hasProperty("responseParseEvent", ds.__yui_events);
+        delete data;
+        delete ds;
+    },
+
+     testCache: function() {
+        var data = ["a","b","c"];
+        var ds = new DS(data);
+        Assert.areSame(null, ds._aCache);
+        delete data;
+        delete ds;
+        
+        data = ["a","b","c"];
+        ds = new DS(data, {maxCacheEntries:5});
+        Assert.areSame(null, ds._aCache);
+        var ds = ds;
+        ds.sendRequest("a", function() {
+            Assert.isArray(ds._aCache);       
+            Assert.areSame(1, ds._aCache.length, "Cache should have one item");
+                                  
+            ds.flushCache();
+            Assert.areSame(0, ds._aCache.length, "Cache should be empty");                   
+        });
+        delete data;
+        delete ds;
+        
+        data = ["a","b","c"];
+        ds = new DS(data);
+        ds.maxCacheEntries = 5
+        Assert.areSame(null, ds._aCache);
+        var ds = ds;
+        ds.sendRequest("a", function() {
+            Assert.isArray(ds._aCache);       
+            Assert.areSame(1, ds._aCache.length, "Cache should have one item");
+                                  
+            ds.maxCacheEntries = 0;
+            Assert.areSame(1, ds._aCache.length, "Cache should still have one item");                   
+
+            ds.sendRequest("a", function() {
+                Assert.isNull(ds._aCache, "Cache should be destroyed");            
+            });
+        });
+        delete data;
+        delete ds;
+    }
+});
+
+ /**
+ *
+ *
+ * JSON Tests
+ *
+ *
+ */
+ var dsJSONTestCase = new TestCase({
+    name: "JSON Test Case",
+    
+    testJSONParse: function() {
+        var data =  {"ResultSet":{
+                "totalResultsAvailable":506,
+                "totalResultsReturned":10,
+                "first Result Position":1,
+                "ResultSetMapUrl":"http:\/\/maps.yahoo.com\/broadband\/?q1=Sunnyvale%2C+CA+94089&tt=pizza&tp=1",
+                "Result":[
+                    {Title:"Giovannis Pizzeria",MyArray:["1127 N Lawrence Expy"],"Hy-phenated":"Sunnyvale","Hy-phenated2":"Mountain View","State":"CA","Array Index":[408,734,4221],"for":"37.397058","Longitude":"-121.996017","Nested":{"Average-Rating":"4","Total Ratings":"54","TotalReviews":"36",MyArray:["1201994139"]},"Distance":"0.62","Url":"http:\/\/local.yahoo.com\/details?id=21341983"},
+                    {Title:"Gumbas Cafe Italian Restaurant & Pizzeria",MyArray:["176 S Murphy Ave"],"Hy-phenated":"Sunnyvale","Hy-phenated2":"Mountain View","State":"CA","Array Index":[408,737,8384],"for":"37.376442","Longitude":"-122.030102","Nested":{"Average-Rating":"4","Total Ratings":"38","TotalReviews":"26",MyArray:["1199489524"]},"Distance":"2.05","Url":"http:\/\/local.yahoo.com\/details?id=21337886"}
+                ]}};
+        var ds = new DS(data);
+        ds.responseSchema = {
+            resultsList: "ResultSet.Result",
+            fields: ["Title","MyArray[0]","Hy-phenated",'["Hy-phenated2"]',"Array Index","for"]
+        };
+        var oCallback = {
+            success:function(oRequest, oResponse, oPayload) {
+                Assert.areSame(data.ResultSet.Result[0]["Title"], oResponse.results[0]["Title"], "Incorrect parsing of String");
+                Assert.areSame(data.ResultSet.Result[0]["MyArray"][0], oResponse.results[0]["MyArray[0]"], "Incorrect parsing of Array index");
+                Assert.areSame(data.ResultSet.Result[0]["Hy-phenated2"], oResponse.results[0]['["Hy-phenated2"]'], "Incorrect parsing of valid hyphenated identifier");
+                Assert.areSame(data.ResultSet.Result[0]["for"], oResponse.results[0]["for"], "Incorrect parsing of reserved word");
+
+                // Verify invalids didn't parse
+                Assert.isUndefined(oResponse.results[0]["Hy-phenated"], "Incorrect parsing of invalid dot syntax key with dash");
+                Assert.isUndefined(oResponse.results[0]["Array Index"], "Incorrect parsing of invalid dot syntax key with empty space");
+            },
+            scope:this
+        };
+        ds.sendRequest(null,oCallback);
+
+
+        // Nested schema
+        ds.responseSchema.fields = ["Nested.TotalReviews","Nested.Average-Rating","Nested.Total Ratings","Nested.MyArray[0]"];
+        var oCallback = {
+            success:function(oRequest, oResponse, oPayload) {
+                Assert.areSame(data.ResultSet.Result[0]["Nested"]["TotalReviews"], oResponse.results[0]["Nested.TotalReviews"], "Incorrect parsing of nested String");
+                ArrayAssert.itemsAreSame(data.ResultSet.Result[0]["Nested"]["MyArray"][0], oResponse.results[0]["Nested.MyArray[0]"], "Incorrect parsing of nested Array index");
+
+                // Verify invalids didn't parse
+                Assert.isUndefined(oResponse.results[0]["Nested.Average-Rating"], "Incorrect parsing of invalid nested key containing hyphen");
+                Assert.isUndefined(oResponse.results[0]["Nested.Total Ratings"], "Incorrect parsing of invalid dot syntax key containing empty space");
+            },
+            scope:this
+        };
+        ds.sendRequest(null,oCallback);
+        
+        delete data;
+        delete ds;
+    }
+});
+
+ /**
+ *
+ *
+ * Number Tests
+ *
+ *
+ */
+ var dsNumberTestCase = new TestCase({
+    name: "Number Test Case",
+    
+    testParse: function() {
+        var myNumber = 1;
+        var number = DS.parseNumber("1");
+        Assert.areSame(number, myNumber, "Incorrect number from String.");
+
+        number = DataSource.parseNumber(1);
+        Assert.areSame(number, myNumber, "Incorrect number from Number.");
+    },
+
+
+    testFormat: function() {
+        output = YAHOO.util.Number.format("1");
+        Assert.areSame("1", output, "Incorrect output from String.");
+
+        output = YAHOO.util.Number.format(1);
+        Assert.areSame("1", output, "Incorrect output from Number.");
+        
+        output = YAHOO.util.Number.format(0);
+        Assert.areSame("0", output, "Incorrect output from zero.");
+
+        output = YAHOO.util.Number.format(-1);
+        Assert.areSame("-1", output, "Incorrect output from negative Number.");
+
+        output = YAHOO.util.Number.format(123, {prefix:"$"});
+        Assert.areSame("$123", output, "Incorrect prefix");
+
+        output = YAHOO.util.Number.format(123, {suffix:" items"});
+        Assert.areSame("123 items", output, "Incorrect suffix");
+
+        output = YAHOO.util.Number.format(123.123, {decimalPlaces:5});
+        Assert.areSame("123.12300", output, "Incorrect decimal rounding: expected 5 places");
+
+        output = YAHOO.util.Number.format(123, {decimalPlaces:5});
+        Assert.areSame("123.00000", output, "Incorrect decimal padding: expected 5 places");
+
+        output = YAHOO.util.Number.format(123.123, {decimalPlaces:4});
+        Assert.areSame("123.1230", output, "Incorrect decimal rounding: expected 4 places");
+
+        output = YAHOO.util.Number.format(123.123, {decimalPlaces:3});
+        Assert.areSame("123.123", output, "Incorrect decimal rounding: expected 3 places");
+
+        output = YAHOO.util.Number.format(123.127, {decimalPlaces:2});
+        Assert.areSame("123.13", output, "Incorrect decimal rounding: expected rounded to 2 places");
+
+        output = YAHOO.util.Number.format(123.123, {decimalPlaces:2});
+        Assert.areSame("123.12", output, "Incorrect decimal rounding: expected 2 places");
+
+        output = YAHOO.util.Number.format(123.123, {decimalPlaces:1});
+        Assert.areSame("123.1", output, "Incorrect decimal rounding: expected 1 place");
+
+        output = YAHOO.util.Number.format(123.123, {decimalPlaces:0});
+        Assert.areSame("123", output, "Incorrect decimal rounding: expected 0 places");
+
+        output = YAHOO.util.Number.format(123.123, {decimalPlaces:-1});
+        Assert.areSame("120", output, "Incorrect decimal rounding: expected -1 places");
+
+        output = YAHOO.util.Number.format("123123123", {thousandsSeparator:","});
+        Assert.areSame("123,123,123", output, "Incorrect thousands separation");
+
+        output = YAHOO.util.Number.format(-123123123);
+        Assert.areSame("-123123123", output, "Incorrect default negative format");
+
+        output = YAHOO.util.Number.format(-123123123, {negativeFormat:"--#"});
+        Assert.areSame("--123123123", output, "Incorrect negative format indicator");
+
+        output = YAHOO.util.Number.format("-123123123.176",{
+                prefix: "&#165;",
+                decimalPlaces:2,
+                thousandsSeparator:".",
+                decimalSeparator:",",
+                negativeFormat:"# (neg)"
+            });
+        Assert.areSame("&#165;123.123.123,18 (neg)", output, "Incorrect Yen formatting");
+    }
+});
+
+ /**
+ *
+ *
+ * Date Tests
+ *
+ *
+ */
+ var dsDateTestCase = new TestCase({
+    name: "Date Test Case",
+    
+    testParse: function() {
+        var myDate = new Date(2001,0,14); // January 14, 2001
+        var date = DataSource.parseDate("1/14/2001");
+        DateAssert.datesAreEqual(date, myDate, "Incorrect date from String.");
+
+        date = DataSource.parseDate(myDate);
+        DateAssert.datesAreEqual(date, myDate, "Incorrect date from Date");
+        
+        date = DataSource.parseDate(979459200000);
+        DateAssert.datesAreEqual(date, myDate, "Incorrect date from Number.");
+    },
+
+    testFormat: function() {
+        var myDate = new Date(2001,0,14); // January 14, 2001
+        var date = YAHOO.util.Date.format(myDate);
+        Assert.areSame("01/14/2001", date, "Incorrect default format.");
+
+        date = YAHOO.util.Date.format(myDate, {format:"%m/%d/%Y"});
+        Assert.areSame("01/14/2001", date, "Incorrect %m/%d/%Y");
+    }
+});
+
+/**
+ *
+ *
+ * Runs tests.
+ *
+ *
+ */
+YAHOO.util.Event.addListener(window, "load", function() {
+    var logger = new TestLogger();
+
+    var dsTestSuite = new TestSuite("DataSource Test Suite");
+    dsTestSuite.add(dsLocalTestCase);
+    dsTestSuite.add(dsFunctionTestCase);
+    dsTestSuite.add(dsXHRTestCase);
+    dsTestSuite.add(dsScriptNodeTestCase);
+    dsTestSuite.add(dsTestCase);
+    dsTestSuite.add(dsBaseTestCase);
+    dsTestSuite.add(dsJSONTestCase);
+    dsTestSuite.add(dsNumberTestCase);
+    dsTestSuite.add(dsDateTestCase);
+
+    TestRunner.add(dsTestSuite);
+
+    YAHOO.util.Event.addListener("btnRun", "click", function(){TestRunner.run();});
+    YAHOO.util.Dom.get("btnRun").disabled = false;
+
+    if (parent && parent != window) {
+        YAHOO.tool.TestManager.load();
+    }
+    
+    TestRunner.run();
+});
+
+
+})();
+</script>
+</body>
+</html>

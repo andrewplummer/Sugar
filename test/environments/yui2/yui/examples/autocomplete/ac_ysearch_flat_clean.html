@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Subset Matching</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* custom styles for multiple stacked instances  */
+#example1 { z-index:9001; } /* z-index needed on top instances for ie & sf absolute inside relative issue */
+#example2 { z-index:9000; } /* z-index needed on top instances for ie & sf absolute inside relative issue */
+.autocomplete { padding-bottom:2em;width:40%; }/* set width of widget here*/
+label {color:#E76300;}
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Subset Matching</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates AutoComplete's <code>queryMatchSubset</code> property. The first instance of AutoComplete has <code>queryMatchSubset</code> enabled for maximum cache performance such that as you type, the query is searched within previously cached results. For best results, the DataSource should return a complete set of results when a single letter is queried such that subset matching will also return a complete set of results.</p>
+
+<p>The second AutoComplete instance does not enable <code>queryMatchSubset</code>
+so each typed letter results in a new request to the server.</p>
+
+<p>Note the custom CSS that is needed for stacking AutoComplete instances.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="autocomplete_examples">
+    <p><strong>Note:</strong> The flat-file database accessed here has a limited number of terms; for best results, type one-letter at at time and let the AutoComplete instance return &mdash; if you type a full, highly-specifc phrase (such as your name) you'll probably get no results from the small dataset.</p>
+	<label for="ysearchinput1">First AutoComplete instance enables queryMatchSubset:</label>
+	<div id="example1" class="autocomplete">
+		<input id="ysearchinput1" type="text">
+		<div id="ysearchcontainer1"></div>
+	</div>
+	<label for="ysearchinput2">Second AutoComplete instance does not enable queryMatchSubset:</label>
+	<div id="example2" class="autocomplete">
+		<input id="ysearchinput2" type="text">
+		<div id="ysearchcontainer2"></div>
+	</div>
+</div>
+	
+<script type="text/javascript">
+YAHOO.example.QueryMatchSubset = function(){        
+    var myDataSource = new YAHOO.util.XHRDataSource("assets/php/ysearch_flat.php");
+    myDataSource.responseSchema = {
+         recordDelim: "\n",
+         fieldDelim: "\t"
+    };
+    myDataSource.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+    myDataSource.maxCacheEntries = 60;
+
+    // First AutoComplete
+    var myAutoComp1 = new YAHOO.widget.AutoComplete("ysearchinput1","ysearchcontainer1",myDataSource);
+    myAutoComp1.queryMatchSubset = true;
+
+    // Second AutoComplete
+    var myAutoComp2 = new YAHOO.widget.AutoComplete('ysearchinput2','ysearchcontainer2', myDataSource);
+    
+    return {
+        oDS: myDataSource,
+        oAC1: myAutoComp1,
+        oAC2: myAutoComp2
+    }
+}();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

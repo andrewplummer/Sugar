@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Icon Insertion</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/editor/editor-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Icon Insertion</h1>
+
+<div class="exampleIntro">
+	<p>This example adds a button to the Rich Text Editor's Toolbar that displays an <a href="http://developer.yahoo.com/yui/container/overlay/">Overlay Control</a> with a list of icon images.</p>
+
+<p>Click the Icon button (<img src="assets/suits_default.gif">) in the toolbar to display the Overlay.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+    .yui-skin-sam .yui-toolbar-container .yui-toolbar-inserticon span.yui-toolbar-icon {
+        background-image: url( assets/suits_default.gif );
+        background-position: 1px 0px;
+        left: 5px;
+    }
+    .yui-skin-sam .yui-toolbar-container .yui-button-insertdate-selected span.yui-toolbar-icon {
+        background-image: url( assets/suits_active.gif );
+        background-position: 1px 0px;
+        left: 5px;
+    }
+    #inserticon {
+        border:1px solid #808080;
+        padding:5px;
+        background-color: #F2F2F2;
+    }
+    #inserticon a {
+        display: block;
+        float: left;
+        border: 1px solid #F2F2F2;
+    }
+    #inserticon a:hover {
+        border: 1px solid #808080;
+    }
+</style>
+<style>
+.yui-toolbar-group-insertitem {
+    *width: auto;
+}
+</style>
+
+<form method="post" action="#" id="form1">
+<textarea id="editor" name="editor" rows="20" cols="75">
+This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>
+</textarea>
+</form>
+
+<script>
+(function() {
+    var myConfig = {
+        height: '300px',
+        width: '600px',
+        animate: true,
+        dompath: true,
+        focusAtStart: true
+    };
+    YAHOO.log('Editor created..', 'info', 'example');
+    myEditor = new YAHOO.widget.Editor('editor', myConfig);
+
+    YAHOO.util.Event.onAvailable('iconMenu', function() {
+        YAHOO.log('onAvailable: (#iconMenu)', 'info', 'example');
+        YAHOO.util.Event.on('iconMenu', 'click', function(ev) {
+            var tar = YAHOO.util.Event.getTarget(ev);
+            if (tar.tagName.toLowerCase() == 'img') {
+                var img = tar.getAttribute('src', 2);
+                YAHOO.log('Found an icon, fire inserticonClick Event', 'info', 'example');
+                var _button = this.toolbar.getButtonByValue('inserticon');
+                _button._menu.hide();
+                this.toolbar.fireEvent('inserticonClick', { type: 'inserticonClick', icon: img });
+            }
+            YAHOO.util.Event.stopEvent(ev);
+        }, myEditor, true);
+    });
+
+
+    myEditor.on('toolbarLoaded', function() { 
+        YAHOO.log('Editor Toolbar Loaded..', 'info', 'example');
+       
+        var imgConfig = {
+            type: 'push', label: 'Insert Icon', value: 'inserticon',
+            menu: function() {
+                var menu = new YAHOO.widget.Overlay('inserticon', { width: '165px', height: '210px', visible: false });
+                var str = '';
+                for (var a = 0; a < 9; a++) {
+                    for (var i = 1; i < 9; i++) {
+                        str += '<a href="#"><img src="assets/suit' + i + '.gif" border="0"></a>';
+                    }
+                }
+                menu.setBody('<div id="iconMenu">' + str + '</div>');
+                menu.beforeShowEvent.subscribe(function() {
+                    menu.cfg.setProperty('context', [myEditor.toolbar.getButtonByValue('inserticon').get('element'), 'tl', 'bl']);
+                });            
+                menu.render(document.body);
+                menu.element.style.visibility = 'hidden';
+                return menu;
+            }()
+        };
+        YAHOO.log('Create the (inserticon) Button', 'info', 'example');
+        myEditor.toolbar.addButtonToGroup(imgConfig, 'insertitem');
+
+        myEditor.toolbar.on('inserticonClick', function(ev) {
+            YAHOO.log('inserticonClick Event Fired: ' + YAHOO.lang.dump(ev), 'info', 'example');
+            var icon = '';
+            this._focusWindow();
+            if (ev.icon) {
+                icon = ev.icon;
+            }
+            this.execCommand('inserthtml', '<img src="' + icon + '" border="0">');
+            return false;
+        }, myEditor, true);
+
+    });
+    myEditor.render();
+})();
+</script>
+
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

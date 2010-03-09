@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Skinning via Progressive Enhancement using the Event Utility and the YUILoader</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+	.yui-checkboxes-loading #checkboxes {
+		display: none;
+	}
+
+</style>
+
+<script type="text/javascript">
+
+	//	Hide the checkboxes if JavaScript is enabled to prevent 
+	//	the user from seeing a flash of unstyled content while
+	//	the JavaScript for the checkboxes is being loaded.
+	document.documentElement.className = "yui-checkboxes-loading";
+
+</script>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Skinning via Progressive Enhancement using the Event Utility and the YUILoader</h1>
+
+<div class="exampleIntro">
+	<p>
+Using Progressive Enhancement to skin checkboxes with the help of the YUILoader 
+and the Event Utility's <code>focus</code> and <code>blur</code> events and the 
+<code>delegate</code> method.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="checkboxes">
+	<div>
+		<label for="field-1">Field 1: </label>
+		<span>
+			<span>
+				<input type="checkbox" id="field-1" name="field-1" value="1">
+			</span>
+		</span>
+	</div>
+	<div>
+		<label for="field-2">Field 2: </label>
+		<span>
+			<span>
+				<input type="checkbox" id="field-2" name="field-2" value="2">
+			</span>
+		</span>
+	</div>
+	<div>
+		<label for="field-3">Field 3: </label>
+		<span>
+			<span>
+				<input type="checkbox" id="field-3" name="field-3" value="3">
+			</span>
+		</span>
+	</div>			
+</div>
+
+<script type="text/javascript">
+
+	(function () {
+
+		//	Use the YUILoader to load the JavaScript and CSS required for 
+		//	skinning the checkboxes.
+
+		var loader = new YAHOO.util.YUILoader({
+		
+		    require: ["event-delegate"],
+		    loadOptional: true,
+			base: '../../build/',
+		    timeout: 10000,
+			onFailure: function () {
+
+				//	Show the checkboxes if the loader failed that way the original 
+				//	unskinned checkboxes will be visible so that the user can
+				//	interact with them either way.		
+
+				document.documentElement.className = "";
+				
+			}
+		
+		});
+
+		loader.addModule({		
+			name: 'checkboxstyles',
+			type: 'css',
+			varName: "CheckboxCSS",
+			fullpath: 'assets/checkbox.css'
+		});
+
+		loader.addModule({		
+			name: 'checkboxjs',
+			type: 'js',
+			varName: "CheckboxJS", 
+			fullpath: 'assets/checkbox.js'
+		});
+
+	    loader.require(["checkboxstyles", "checkboxjs"]);
+		
+		loader.insert();
+		
+	}());
+
+</script>
+
+
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

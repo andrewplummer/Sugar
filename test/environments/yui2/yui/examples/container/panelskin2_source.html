@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Skinning a Panel with Custom CSS: Advanced</title>
+
+	<style type="text/css">
+	/*margin and padding on body element
+	  can introduce errors in determining
+	  element position and are not recommended;
+	  we turn them off as a foundation for YUI
+	  CSS treatments. */
+	body {
+		margin:0;
+		padding:0;
+	}
+	</style>
+
+	<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+
+	<!-- 
+             Since we're completely re-doing the skin, start with container-core.css as the base, so we 
+             don't need to reverse rules introduced by container-skin.css 
+        -->
+	<link rel="stylesheet" type="text/css" href="../../build/container/assets/container-core.css" />
+
+	<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+	<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+	<style type="text/css">
+	#example {height:20em;}
+
+	/* XP Panel Skin CSS */
+
+	/* Skin default elements */
+	#panel1_c.yui-panel-container.shadow .underlay {
+		left:3px;
+		right:-3px;
+		top:3px;
+		bottom:-3px;
+		position:absolute;
+		background-color:#000;
+		opacity:0.12;
+		filter:alpha(opacity=12);
+	}
+
+	/* Apply the border to the right side */
+	#panel1.yui-panel {
+		border:none;
+		overflow:visible;
+		background:transparent url(assets/img/xp-brdr-rt.gif) no-repeat top right;
+	}
+
+	/* Style the close icon */
+	#panel1.yui-panel .container-close {
+		position:absolute;
+		top:5px;
+		right:8px;
+		height:21px;
+		width:21px;
+		background:url(assets/img/xp-close.gif) no-repeat;
+	}
+
+	/* Style the header with its associated corners */
+	#panel1.yui-panel .hd {
+		padding:0;
+		border:none;
+		background:url(assets/img/xp-hd.gif) repeat-x;
+		color:#FFF;
+		height:30px;
+		margin-left:8px;
+		margin-right:8px;
+		text-align:left;
+		vertical-align:middle;
+		overflow:visible;
+	}
+
+	/* Style the body with the left border */
+	#panel1.yui-panel .bd {
+		overflow:hidden;
+		padding:10px;
+		border:none;
+		background:#FFF url(assets/img/xp-brdr-lt.gif) repeat-y; 
+		margin:0 4px 0 0;
+	}
+
+	/* Style the footer with the bottom corner images */
+	#panel1.yui-panel .ft {
+		background:url(assets/img/xp-ft.gif) repeat-x;
+		font-size:11px;
+		height:26px;
+		padding:0px 10px;
+		border:none
+	}
+
+	/* Skin custom elements */
+	#panel1.yui-panel .hd span {
+		line-height:30px;
+		vertical-align:middle;
+		font-weight:bold;
+	}
+	#panel1.yui-panel .hd .tl {
+		width:8px;
+		height:29px;
+		top:1px;
+		left:0;
+		background:url(assets/img/xp-tl.gif) no-repeat;
+		position:absolute;
+	}
+	#panel1.yui-panel .hd .tr {
+		width:8px;
+		height:29px;
+		top:1px;
+		right:0;
+		background:url(assets/img/xp-tr.gif) no-repeat; 
+		position:absolute;
+	}
+
+	#panel1.yui-panel .ft span {
+		line-height:22px;
+		vertical-align:middle;
+	}
+	#panel1.yui-panel .ft .bl {
+		width:8px;
+		height:26px;
+		bottom:0;
+		left:0;
+		background:url(assets/img/xp-bl.gif) no-repeat;
+		position:absolute;
+	}
+	#panel1.yui-panel .ft .br {
+		width:8px;
+		height:26px;
+		bottom:0;
+		right:0;
+		background:url(assets/img/xp-br.gif) no-repeat;
+		position:absolute;
+	}
+
+	/* Aqua Panel Skin CSS */
+
+	/* Skin default Panel elements */
+	#panel2_c.yui-panel-container.shadow .underlay {
+		position:absolute;
+		background-color:#000;
+		opacity:0.12;
+		filter:alpha(opacity=12);
+		left:3px;
+		right:-3px;
+		bottom:-3px;
+		top:3px;
+	}
+	#panel2.yui-panel {
+		border:none;
+		overflow:visible;
+		background-color:transparent;
+	}
+
+	/* Apply styles to the close icon to anchor it to the left side of the header */
+	#panel2.yui-panel .container-close {
+		position:absolute;
+		top:3px;
+		left:4px;
+		height:18px;
+		width:17px;
+		background:url(assets/img/aqua-hd-close.gif) no-repeat;
+	}
+	/* span:hover not supported on IE6 */
+	#panel2.yui-panel .container-close:hover {
+		background:url(assets/img/aqua-hd-close-over.gif) no-repeat;
+	}
+
+	/* Style the header and apply the rounded corners, center the text */
+	#panel2.yui-panel .hd {
+		padding:0;
+		border:none;
+		background:url(assets/img/aqua-hd-bg.gif) repeat-x;
+		color:#000;
+		height:22px;
+		margin-left:7px;
+		margin-right:7px;
+		text-align:center;
+		overflow:visible;
+	}
+	/* Style the body and footer */
+	#panel2.yui-panel .bd {
+		overflow:hidden;
+		padding:4px;
+		border:1px solid #aeaeae;
+		background-color:#FFF;
+	}
+	#panel2.yui-panel .ft {
+		font-size:75%;
+		color:#666;
+		padding:2px;
+		overflow:hidden;
+		border:1px solid #aeaeae;
+		border-top:none;
+		background-color:#dfdfdf;
+	}
+
+	/* Skin custom elements */
+	#panel2.yui-panel .hd span {
+		vertical-align:middle;
+		line-height:22px;
+		font-weight:bold;
+	}
+	#panel2.yui-panel .hd .tl {
+		width:7px;
+		height:22px;
+		top:0;
+		left:0;
+		background:url(assets/img/aqua-hd-lt.gif) no-repeat;
+		position:absolute;
+	}
+	#panel2.yui-panel .hd .tr {
+		width:7px;
+		height:22px;
+		top:0;
+		right:0;
+		background:url(assets/img/aqua-hd-rt.gif) no-repeat;
+		position:absolute;
+	}
+	</style>
+
+	<script>
+	YAHOO.namespace("example.container");
+
+	YAHOO.util.Event.onDOMReady(function () {
+		YAHOO.example.container.panel1 = new YAHOO.widget.Panel("panel1", { width:"300px", visible:false, constraintoviewport:true } );
+		YAHOO.example.container.panel1.render();
+
+		YAHOO.example.container.panel2 = new YAHOO.widget.Panel("panel2", { width:"300px", visible:false, constraintoviewport:true } );
+		YAHOO.example.container.panel2.setHeader("<div class='tl'></div><span>Panel #2 from Script</span><div class='tr'></div>");
+		YAHOO.example.container.panel2.setBody("This is a dynamically generated Panel.");
+		YAHOO.example.container.panel2.setFooter("<span>End of Panel #2</span>");
+		YAHOO.example.container.panel2.render("container");
+
+		YAHOO.util.Event.addListener("show1", "click", YAHOO.example.container.panel1.show, YAHOO.example.container.panel1, true);
+		YAHOO.util.Event.addListener("hide1", "click", YAHOO.example.container.panel1.hide, YAHOO.example.container.panel1, true);
+
+		YAHOO.util.Event.addListener("show2", "click", YAHOO.example.container.panel2.show, YAHOO.example.container.panel2, true);
+		YAHOO.util.Event.addListener("hide2", "click", YAHOO.example.container.panel2.hide, YAHOO.example.container.panel2, true);
+
+	});
+</script>
+</head>
+<body>
+	<h1>Skinning a Panel with Custom CSS: Advanced</h1>
+
+	<div class="exampleIntro">
+		<p>In this example, we move beyond the basic skinning steps demonstrated in <a href="panelskin1">the introductory skinning example</a> 
+		and show more advanced techniques 	with multiple styled Panel Control instances on the same page.  Use the buttons below to show and hide the styled panels.
+		</p>			
+	</div>
+
+	<div id="container"></div>
+
+	<div>
+		<button id="show1">Show panel1</button>
+		<button id="hide1">Hide panel1</button>
+	</div>
+
+	<div id="panel1">
+		<div class="hd"><div class="tl"></div><span>Panel #1 from Markup</span><div class="tr"></div></div>
+		<div class="bd">This is a Panel that was marked up in the document.</div>
+		<div class="ft"><div class="bl"></div><span>End of Panel #1</span><div class="br"></div></div>
+	</div>
+
+	<div>
+		<button id="show2">Show panel2</button>
+		<button id="hide2">Hide panel2</button>
+	</div>
+</body>
+</html>

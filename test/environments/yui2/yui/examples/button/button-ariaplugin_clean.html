@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using the Button ARIA Plugin</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    #button-example-form fieldset {
+        border: 2px groove #ccc;
+        margin: .5em;
+        padding: .5em;
+    }
+
+	/*
+		The Menu ARIA Plugin removes the "href" attribute from the <A> element of each MenuItem
+		if the value of the "href" is set to "#", resulting in the focus outline no longer be 
+		rendered in Gecko-based browsers when the <A> element is focused.  For this reason, 
+		it is necessary to restore the focus outline for the <A>. 
+	*/
+	a[role=menuitem]:focus {
+		outline: dotted 1px #000;
+	}
+	
+</style>
+
+<script type="text/javascript" src="../container/assets/containerariaplugin.js"></script>
+<script type="text/javascript" src="../menu/assets/menuariaplugin.js"></script>
+<script type="text/javascript" src="../button/assets/buttonariaplugin.js"></script>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using the Button ARIA Plugin</h1>
+
+<div class="exampleIntro">
+	<p>
+The Button ARIA Plugin makes it easy to use the 
+<a href="http://www.w3.org/TR/wai-aria/">WAI-ARIA Roles and States</a> with the Button
+and ButtonGroup controls.
+Using the ARIA plugin, Buttons are more interoperable with assistive technologies (AT),
+such as screen readers, making them more accessible to users with disabilities.
+</p>
+<p>
+<a href="http://video.yahoo.com/watch/3608716/9955201">Watch a screen cast of this example 
+running in Firefox 3 with the NVDA screen reader</a>, to see immediately the benefits that 
+ARIA provides, or 
+<a href="http://www.nvda-project.org/wiki/Snapshots">download the latest development snapshot of 
+NVDA</a> to test this example for yourself.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+    (function () {
+    	
+    	var Event = YAHOO.util.Event,
+    		Button = YAHOO.widget.Button,
+    		UA = YAHOO.env.ua;
+
+		Event.onContentReady("checkboxbutton-example", function () {		
+
+			var oCheckButton1 = new Button("checkbutton1", { label: "Cheese" });
+			var oCheckButton2 = new Button("checkbutton2", { label: "Mushrooms" });
+			var oCheckButton3 = new Button("checkbutton3", { label: "Peperoni" });
+			var oCheckButton4 = new Button("checkbutton4", { label: "Olives" });
+		
+		});
+
+		Event.onContentReady("radiobutton-example", function () {
+
+			//	Only apply the WAI-ARIA Roles and States for FF 3 and IE 8 since those
+			//	are the only browsers that currently support ARIA.
+		
+			if ((UA.gecko && UA.gecko >= 1.9) || (UA.ie && UA.ie >= 8)) {
+
+				// Remove the "for" attribute in favor of using the aria-labelledby attribute
+				YAHOO.util.Dom.get("buttongroup-label").removeAttribute(YAHOO.env.ua.ie ? "htmlFor" : "for");
+
+			}
+
+			var oButtonGroup = new YAHOO.widget.ButtonGroup("buttongroup", { labelledby: "buttongroup-label" });
+		
+		});
+
+		Event.onContentReady("menubutton-example", function () {
+
+			var oMenuButton = new Button("menubutton-1", { type: "menu", menu: "menubutton-1-menu" });
+		
+		});
+
+		Event.onContentReady("splitbutton-example", function () {
+
+			var oMenuButton = new Button("splitbutton-1", { type: "split", menu: "splitbutton-1-menu" });
+		
+		});
+
+    }());
+
+</script>
+
+<form id="button-example-form" name="button-example-form" method="post">
+
+	<fieldset id="checkboxbutton-example">
+		<legend>Pizza Toppings</legend>
+
+		<input id="checkbutton1" type="checkbox" name="checkboxfield1" value="1" checked>
+		<input id="checkbutton2" type="checkbox" name="checkboxfield1" value="2">
+		<input id="checkbutton3" type="checkbox" name="checkboxfield1" value="3">
+		<input id="checkbutton4" type="checkbox" name="checkboxfield1" value="4">
+		
+	</fieldset>
+
+	<fieldset id="radiobutton-example">
+		<legend>Radio Buttons</legend>
+
+		<div id="buttongroup" class="yui-buttongroup">
+			<label for="radio1" id="buttongroup-label">Size</label>
+			<input id="radio1" type="radio" name="radiofield1" value="Small" checked>
+			<input id="radio2" type="radio" name="radiofield1" value="Medium">
+			<input id="radio3" type="radio" name="radiofield1" value="Large">
+		</div>		
+
+	</fieldset>
+
+	<fieldset id="menubutton-example">
+		<legend>Menu Button</legend>
+		<input type="button" id="menubutton-1" name="menubutton-1" value="Move To">
+		<select id="menubutton-1-menu" name="menubutton-1-menu">
+			<option value="0">Archive</option>
+			<option value="1">Favorites</option>
+			<option value="2">Trash</option>                
+		</select>
+	</fieldset>
+
+	<fieldset id="splitbutton-example">
+		<legend>Split Button</legend>	
+		<input type="button" id="splitbutton-1" name="splitbutton-1" value="Reply">
+		<select id="splitbutton-1-menu" name="splitbutton-1-menu">
+			<option value="0">Reply To Sender</option>
+			<option value="1">Reply To All</option> 
+		</select>
+	</fieldset>
+
+</form>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

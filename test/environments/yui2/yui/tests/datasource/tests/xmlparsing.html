@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Test</title>
+
+<style type="text/css">
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../../build/datasource/datasource-debug.js"></script>
+<script type="text/javascript" src="../../../build/datatable/datatable-debug.js"></script>
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+</style>
+
+<!--end custom header content for this example-->
+</head>
+
+<body class="yui-skin-sam">
+
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+<div id="container"></div>
+
+<div id="container2"></div>
+
+</div>
+
+
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    YAHOO.example.Test = function() {
+        var simpletext="<bookstore>"
+        simpletext=simpletext+"<book>";
+        simpletext=simpletext+"<empty1/>";
+        simpletext=simpletext+"<title>Everyday Italian</title>";
+        simpletext=simpletext+"<empty2/>";
+        simpletext=simpletext+"<author>Giada De Laurentiis</author>";
+        simpletext=simpletext+"<year>2005</year>";
+        simpletext=simpletext+"<empty3/>";
+        simpletext=simpletext+"</book>";
+        simpletext=simpletext+"</bookstore>";
+        
+        var complextext = "<myroot rootatt='5'><top>topvalue</top><second nested='nestedsecond' /><allitems><livehere><item type='foo'><name type='nametype0'>Abc</name><rank>0</rank><subitem><name type='subnametype0'>subABC</name><age>10</age></subitem></item><item type='bar'><name type='nametype1'>Def</name><rank>1</rank><subitem><name type='subnametype1'>subDEF</name><age>11</age></subitem></item><item type='bat'><name type='nametype2'>Ghi</name><rank>2</rank><subitem><name type='subnametype2'>subGHI</name><age>12</age></subitem></item></livehere></allitems></myroot>";
+        
+        var getXmlDoc = function(text) {
+            var xmlDoc;
+            try { //Firefox, Mozilla, Opera, etc.
+                parser=new DOMParser();
+                xmlDoc=parser.parseFromString(text,"text/xml");
+            }
+            catch(e) {
+                alert(e.message);
+                try {//Internet Explorer
+                    xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+                    xmlDoc.async="false";
+                    xmlDoc.loadXML(text);
+                }
+                catch(e) {
+                    alert(e.message);
+                }
+            }
+            return xmlDoc;
+        };
+        
+        var myColumnDefs = [
+            {key:"empty1"},
+            {key:"title"},
+            {key:"empty2"},
+            {key:"author"},
+            {key:"year"},
+            {key:"empty3"}
+        ];
+
+        var myDataSource = new YAHOO.util.DataSource(getXmlDoc(simpletext));
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_XML;
+        myDataSource.responseSchema = {
+            resultNode: "book",
+            fields: ["empty1","title","empty2","author","year","empty3"]
+        };
+
+        var myColumnDefs2 = [
+            {key:"type"},
+            {key:"rank"},
+            {key:"subnameatt"},
+            {key:"age"},
+            {key:"name"}
+        ];
+
+        var myDataTable = new YAHOO.widget.DataTable("container", myColumnDefs, myDataSource);
+
+        var myDataSource2 = new YAHOO.util.DataSource(getXmlDoc(complextext));
+        myDataSource2.responseType = YAHOO.util.DataSource.TYPE_XML;
+        myDataSource2.useXPath = true;
+        myDataSource2.responseSchema = {
+            metaFields: {rootatt:"/myroot/@rootatt", topnode:"//top", nestedatt:"//second/@nested"},
+            resultNode: "item",
+            fields: [{key:"type", locator:"@type"}, {key:"rank", parser:"number"}, "name", {key:"subnameatt", locator:"subitem/name/@type"}, {key:"age", locator:"subitem/age", parser:"number"}]
+        };
+
+        var myDataTable2 = new YAHOO.widget.DataTable("container2", myColumnDefs2, myDataSource2);
+
+        return {
+            ds: [myDataSource],
+            dt: [myDataTable]
+        };
+    }();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+
+</body>
+</html>
+

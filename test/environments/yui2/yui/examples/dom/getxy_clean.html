@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using getXY</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#foo {
+    background-color:#00f;
+    height:10px;
+    width:10px;
+}
+#bar {
+    background-color:#f00;
+    height:100px;
+    width:100px;
+    margin:0 100px 1em;
+}
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using getXY</h1>
+
+<div class="exampleIntro">
+	<p>Clicking the button will use Dom's <code>getXY</code> method to get the position of the red element and pass it to the <code>setXY</code> method, which will move the blue element to that position.</p>
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="foo"></div>
+<div id="bar"></div>
+<button id="demo-run">run</button>
+
+<script type="text/javascript">
+(function() {
+    var move = function() {
+        var xy = YAHOO.util.Dom.getXY('bar');
+        YAHOO.util.Dom.setXY('foo', xy);
+    };
+
+    YAHOO.util.Event.on('demo-run', 'click', move);
+
+    YAHOO.log("The example has finished loading; as you interact with it, you'll see log messages appearing here.", "info", "example");
+
+})();
+
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

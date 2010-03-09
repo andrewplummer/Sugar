@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Simple Application - Layout Example</title>
+<link rel="stylesheet" type="text/css" href="../../build/reset-fonts-grids/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<link rel="stylesheet" type="text/css" href="../../build/resize/assets/skins/sam/resize.css" />
+<link rel="stylesheet" type="text/css" href="../../build/layout/assets/skins/sam/layout.css" />
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+
+body {
+	margin:0;
+	padding:0;
+}
+#demo .yui-resize-handle-br {
+    height: 11px;
+    width: 11px;
+    background-position: -20px -60px;
+    background-color: transparent;
+}
+#demo .yui-calcontainer,
+#demo .yui-editor-container {
+    border: none;
+}
+#demo .yui-layout {
+    background-color: transparent;
+}
+#status img {
+    padding: 4px;
+    float: left;
+}
+#demo textarea {
+    visibility: hidden;
+}
+#demo .yui-toolbar .bd {
+    padding: 0;
+    border: none;
+    background-color: #fff;
+}
+
+</style>
+<script type="text/javascript" src="../../build/utilities/utilities.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+<script type="text/javascript" src="../../build/resize/resize-min.js"></script>
+<script type="text/javascript" src="../../build/editor/simpleeditor-min.js"></script>
+<script type="text/javascript" src="../../build/layout/layout-min.js"></script>
+</head>
+<body class=" yui-skin-sam">
+
+<div id="demo"></div>
+
+<script>
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        layout = null,
+        cal = null,
+        editor = null,
+        conn = null,
+        panel = null,
+        dateSelected = null,
+        editorData = {};
+
+    panel = new YAHOO.widget.Panel('demo', {
+        width: '700px',
+        underlay: 'none',
+        close: false,
+        xy: [100, 100]
+    });
+    panel.setHeader('Editor');
+    panel.setBody('<div id="layout"></div>');
+    panel.renderEvent.subscribe(function() {
+        Event.onAvailable('layout', function() {
+            layout = new YAHOO.widget.Layout('layout', {
+                height: 400,
+                units: [
+                    { position: 'top', height: 25, header: 'Date Editor', gutter: '2' },
+                    { position: 'left', width: 205, body: '', gutter: '0 5 0 2' },
+                    { position: 'bottom', height: 25, id: 'status', body: 'Status', gutter: '2' },
+                    { position: 'center', body: 'Select a date..', gutter: '0 2 0 0' }
+                ]
+            });
+            
+            layout.on('render', function() {
+                var c = layout.getUnitByPosition('center');
+                c.set('body', '<textarea id="caleditor"></textarea>');
+                editor = new YAHOO.widget.SimpleEditor('caleditor', {
+                    height: '305px',
+                    width: c.get('width') + 'px',
+                    dompath: false,
+                    animate: false,
+                    focusAtStart: true,
+                    toolbar: {
+                        grouplabels: false,
+                        buttons: [
+                            { group: 'textstyle', label: 'Font Style',
+                                buttons: [
+                                    { type: 'select', label: 'Arial', value: 'fontname', disabled: true,
+                                        menu: [
+                                            { text: 'Arial', checked: true },
+                                            { text: 'Arial Black' },
+                                            { text: 'Comic Sans MS' },
+                                            { text: 'Courier New' },
+                                            { text: 'Lucida Console' },
+                                            { text: 'Tahoma' },
+                                            { text: 'Times New Roman' },
+                                            { text: 'Trebuchet MS' },
+                                            { text: 'Verdana' }
+                                        ]
+                                    },
+                                    { type: 'spin', label: '13', value: 'fontsize', range: [ 9, 75 ], disabled: true },
+                                    { type: 'separator' },
+                                    { type: 'push', label: 'Bold', value: 'bold' },
+                                    { type: 'push', label: 'Italic', value: 'italic' },
+                                    { type: 'push', label: 'Underline', value: 'underline' },
+                                    { type: 'separator' },
+                                    { type: 'color', label: 'Font Color', value: 'forecolor', disabled: true },
+                                    { type: 'color', label: 'Background Color', value: 'backcolor', disabled: true }
+                                ]
+                            }
+                        ]
+                    }
+                });
+                editor.on('editorContentLoaded', function() {
+                    var d = new Date();
+                    var today = d.getMonth() + 1 + '/' + d.getDate() + '/' + d.getFullYear();
+                    dateSelected = [today];
+                    layout.getUnitByPosition('top').set('header', 'Editing Date: ' + today);
+                    cal.cfg.setProperty('selected', today);
+                    cal.render();
+                });
+                editor.render();
+                var l = layout.getUnitByPosition('left');
+                var el = document.createElement('div');
+                l.body.appendChild(el);
+                cal = new YAHOO.widget.Calendar(el);
+                cal.selectEvent.subscribe(function(ev, args) {
+                    if (dateSelected) {
+                        //Connection Manager
+                        layout.getUnitByPosition('bottom').set('body', '<img src="assets/progress.gif"> Sending Data...');
+                        var html = editor.getEditorHTML();
+                        var url = 'assets/post4.php?html=' + html;
+                        editorData[dateSelected] = html;
+                        conn = YAHOO.util.Connect.asyncRequest('POST', url, {
+                            success: function() {
+                                layout.getUnitByPosition('bottom').set('body', 'Data Saved..');
+                            },
+                            failure: function() {
+                            }
+                        });
+                        editor.setEditorHTML('&nbsp;');
+                    }
+                    var d = args[0][0];
+                    dateSelected = d[1] + '/' + d[2] + '/' + d[0];
+                    layout.getUnitByPosition('top').set('header', 'Editing Date: ' + d[1] + '/' + d[2] + '/' + d[0]);
+                    if (dateSelected && editorData[dateSelected]) {
+                        editor.setEditorHTML(editorData[dateSelected]);
+                    }
+
+                    var dates = [dateSelected];
+                    for (var i in editorData) {
+                        dates[dates.length] = i;
+                    }
+                    cal.cfg.setProperty('selected', dates.join(','));
+                    cal.render();
+                });
+                cal.render();
+                resize = new YAHOO.util.Resize('demo', {
+                    handles: ['br'],
+                    autoRatio: true,
+                    status: true,
+                    proxy: true,
+                    useShim: true,
+                    minWidth: 700,
+                    minHeight: 400
+                });
+                resize.on('resize', function(args) {
+                    var h = args.height;
+                    var hh = this.header.clientHeight;
+                    var padding = ((10 * 2) + 2); //Sam's skin applied a 10px padding and a 1 px border to the element..
+                    var bh = (h - hh - padding);
+                    Dom.setStyle(this.body, 'height', bh + 'px');
+                    layout.set('height', bh);
+                    layout.set('width', (args.width - padding));
+                    layout.resize();
+
+                    //Editor Resize
+                    var th = (editor.toolbar.get('element').clientHeight + 2); //It has a 1px border..
+                    var eH = (h - th);
+                    editor.set('width', args.width + 'px');
+                    editor.set('height', eH + 'px');
+                }, panel, true);
+                resize.on('endResize', function() {
+                    //Fixing IE's calculations
+                    this.innerElement.style.height = '';
+                    //Focus the Editor so they can type.
+                    editor._focusWindow();
+                }, panel, true);
+            });
+            layout.render();
+        });
+    });
+    panel.render(document.body);
+    
+})();
+</script>
+</body>
+</html>

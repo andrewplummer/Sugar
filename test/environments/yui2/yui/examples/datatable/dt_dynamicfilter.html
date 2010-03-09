@@ -1,0 +1,356 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Library Examples: DataTable Control: Filtering of Dynamic Data</title>
+    
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    	<link rel="stylesheet" type="text/css" href="../../assets/yui.css" >
+
+<style>
+/*Supplemental CSS for the YUI distribution*/
+#custom-doc { width: 95%; min-width: 950px; }
+#pagetitle {background-image: url(../../assets/bg_hd.gif);}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../assets/dpSyntaxHighlighter.css">
+<!--Script and CSS includes for YUI dependencies on this page-->
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<script type="text/javascript" src="../../build/yuiloader/yuiloader-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+
+<script type="text/javascript">
+//enable passthrough of errors from YUI Event:
+if ((typeof YAHOO !== "undefined") && (YAHOO.util) && (YAHOO.util.Event)) {
+	YAHOO.util.Event.throwErrors = true;
+}
+</script>
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<div id="custom-doc" class="yui-t2">
+<div id="hd">
+	<div id="ygunav">
+		<p><em><a href="http://developer.yahoo.com/yui/">YUI Library Home</a></em></p>
+		<form action="http://search.yahoo.com/search" id="sitesearchform">
+		<input name="vs" type="hidden" value="developer.yahoo.com">
+		<input name="vs" type="hidden" value="yuiblog.com">
+		<div id="sitesearch">
+			<label for="searchinput">Site Search (YDN &amp; YUIBlog): </label>
+			<input type="text" id="searchinput" name="p">
+			<input type="submit" value="Search" id="searchsubmit" class="ygbt">
+		</div>
+		</form>	</div>
+	<div id="ygma"><a href="../../"><img src="../../assets/yui.gif"  border="0" height="38"></a></div>
+	<div id="pagetitle"><h1>YUI Library Examples: DataTable Control: Filtering of Dynamic Data</h1></div>
+</div>
+<div id="bd">
+	
+	<div id="yui-main">
+		<div class="yui-b">
+		  <div class="yui-ge">
+			  <div class="yui-u first example">
+
+            <cite class="byline">This example was contributed by Wayne Fincher (a.k.a. Floydian), proprietor of <a href="http://phphorizons.com">PHP Horizons</a>.</cite>
+    
+	<div class="promo">
+	<h1>DataTable Control: Filtering of Dynamic Data</h1>
+	
+	<div class="exampleIntro">
+	<!-- Introductory text -->
+<p>This example, which uses server-side dynamic data, demonstrates how to filter data into a DataTable using <a href="http://developer.yahoo.com/yui/button/">Menu Buttons</a> and custom-generated query strings.</p>
+<p>This example also shows how to keep the Paginator in sync with the data loaded into the DataTable.</p>
+			
+	</div>	
+					
+	<div class="example-container module  newWindow">
+			<div id="example-canvas" class="bd">
+	
+		<p class="newWindowButton yui-skin-sam"><span id="newWindowLink"><span class="first-child"><a href="dt_dynamicfilter_source.html" target="_blank">View example in new window.</a></span></span>		
+	
+		
+		</div>
+		
+	
+	</div>			
+	</div>
+		
+	<p>When complex filtering of dynamic data is required, a custom <a href="http://developer.yahoo.com/yui/docs/YAHOO.widget.DataTable.html#config_generateRequest"><code>generateRequest</code></a> function is used to generate customized requests which are passed into <a href="http://developer.yahoo.com/yui/datasource/">DataSource</a>'s <a href="http://developer.yahoo.com/yui/docs/YAHOO.util.DataSourceBase.html#method_sendRequest"><code>sendRequest</code></a> method to populate the DataTable.</p>
+
+<p>Sample Data:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">{
+    "recordsReturned": 25,
+    "totalRecords": 209,
+    "startIndex": 0,
+    "records": [
+        {
+            "name": "Total population: Total",
+            "state1": "12419293",
+            "state2": "9938444",
+            "state3": "8186453"
+        },
+        {
+            "name": "Total population: Male",
+            "state1": "6080336",
+            "state2": "4873095",
+            "state3": "4027113"
+        },
+        ...
+    ]
+}
+</textarea>
+
+<p>CSS:</p>
+
+<textarea name="code" class="CSS" cols="60" rows="1">
+	.yui-skin-sam .yui-dt table {
+		width: 100%;
+	}
+	.yui-skin-sam .yui-dt th.yui-dt-col-name {
+		width: 301px;
+	}
+	.yui-skin-sam .yui-dt .yui-dt-col-state1,
+	.yui-skin-sam .yui-dt .yui-dt-col-state2,
+	.yui-skin-sam .yui-dt .yui-dt-col-state3 {
+		width: 133px;
+		text-align: right;
+	}
+	#containerContainer {
+		width: 100%;
+		height: 64px;
+		padding: 8px 0;
+	}
+	#genderRadioContainer {
+		float: left;
+		width: 301px;
+	}
+	#stateSelectContainer {
+		float: left;
+		width: 399px;
+	}
+	#stateSelectContainer .yui-button button{
+		width: 123px;
+		*width: 121px;
+		_width: 118px;
+		font-size: 85%;
+		line-height: 1.5;
+	}
+	#statePaginator {
+		text-align: center;
+	}
+</textarea>
+
+<p>Markup:</p>
+
+<textarea name="code" class="HTML" cols="60" rows="1"><div id="genderRadioContainer">
+	<p>Select a gender filter.</p>
+	<input type="radio" name="gender" value="Both" checked>
+	<input type="radio" name="gender" value="Female">
+	<input type="radio" name="gender" value="Male">
+</div>
+<div id="stateSelectContainer">
+	<p>Select states to compare.</p>
+	<input type="button" class="menuButton" id="state1" value="State 1">
+	<select id="state1Select">
+		<option value="04000US01">Alabama</option>
+		<option value="04000US02">Alaska</option>
+		...
+	</select>
+	
+	<input type="button" class="menuButton" id="state2" value="State 2">
+	<select id="state2Select">
+		<option value="04000US01">Alabama</option>
+		<option value="04000US02">Alaska</option>
+		...
+	</select>
+	
+	<input type="button" class="menuButton" id="state3" value="State 3">
+	<select id="state3Select">
+		<option value="04000US01">Alabama</option>
+		<option value="04000US02">Alaska</option>
+		...
+	</select>
+</div>
+
+<div id="statePaginator"><!-- The Paginator widget is rendered here --></div>
+
+<div id="stateTable"><!-- The DataTable widget is rendered here --></div>
+</textarea>
+
+<h2 id="generateRequest">Customizing the <code>generateRequest</code> Function</h2>
+
+<p>DataTable has a default <a href="http://developer.yahoo.com/yui/docs/YAHOO.widget.DataTable.html#config_generateRequest"><code>generateRequest</code></a> function which needs to be overridden in order to create a custom query string. Keep in mind that DataTable's if column sorting is enabled, this state also needs to be taken into account. Although this example does not use enable DataTable's column sorting, the comments in the code indicate integration points for that feature. Here we define a custom function, <code>this.requestBuilder</code>, to generate requests to our server that reflect the user's filtration settings:</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+	requestBuilder: function (oState, oSelf) {
+		/* We aren't initializing sort and dir variables. If you are
+		using column sorting built into the DataTable, use this
+		set of variable initializers.
+		var sort, dir, startIndex, results; */
+		
+		var startIndex, results;
+		
+		oState = oState || {pagination: null, sortedBy: null};
+        
+		/* If using column sorting built into DataTable, these next two lines
+		will properly set the current _sortedBy_ column and the _sortDirection_
+		sort = (oState.sortedBy) ? oState.sortedBy.key : oSelf.getColumnSet().keys[0].getKey();
+		dir = (oState.sortedBy && oState.sortedBy.dir === DataTable.CLASS_DESC) ? "desc" : "asc"; */
+		
+		startIndex = (oState.pagination) ? oState.pagination.recordOffset : 0;
+		results = (oState.pagination) ? oState.pagination.rowsPerPage : null;
+		
+		return  "&results=" 	+ results +
+				"&startIndex=" 	+ startIndex +
+			    "&state[1]=" 	+ CF.settings.state1 +
+			    "&state[2]=" 	+ CF.settings.state2 +
+			    "&state[3]=" 	+ CF.settings.state3 +
+			    "&gender=" 		+ CF.settings.gender;
+	},
+</textarea>
+
+<p>The custom function <code>this.requestBuilder</code> is then passed in as the <code>generateRequest</code></a> value.</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+	// Set the DataTable configuration
+	myConfigs = {
+		generateRequest: this.requestBuilder
+		... more config settings ...
+	};
+</textarea>
+
+<h2 id="fireDT">Sending Requests</h2>
+<p>When the user interacts with the <a href="http://developer.yahoo.com/yui/button/">MenuButton</a> controls to trigger requests for filtered data, our custom <code>generateRequest</code></a> function provides the proper request string to <a href="http://developer.yahoo.com/yui/datasource/">DataSource</a>'s <a href="http://developer.yahoo.com/yui/docs/YAHOO.util.DataSourceBase.html#method_sendRequest"><code>sendRequest</code></a> method, which also requires a <code>callback</code> object.</p>
+
+<p>This callback accepts four properties that are very important here.
+	<dl>
+		<dt><em>success</em></dt>
+		<dt><em>failure</em></dt>
+		<dd>There are four methods built into DataTable for handling the success and failure events. Please refer to
+		<a href="http://developer.yahoo.com/yui/datatable/#data">Loading Data at Runtime</a> for a list of the four methods
+		and a description of each. It should suffice to say that, for this example, <a href="http://developer.yahoo.com/yui/docs/YAHOO.widget.DataTable.html#method_onDataReturnSetRows"><code>onDataReturnSetRows</code></a> is what is required.</dd>
+		
+		<dt><em>argument</em></dt>
+		<dd>The DataTable's state -- the return value from <a href="http://developer.yahoo.com/yui/docs/YAHOO.widget.DataTable.html#method_getState"><code>getState()</code></a> -- is passed as the argument value. If any changes to the Paginator UI need to be done, those changes should to be reflected in this state object. For example, if the page needs to be reset to 1, set that here and the Paginator will be updated to reflect that value when the data is returned.</dd>
+		
+		<dt><em>scope</em></dt>
+		<dd>Pass in your instance of the DataTable.</dd>
+	</dl>
+
+</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+	fireDT: function (resetRecordOffset) {
+        var oState = CF.myDataTable.getState(),
+        	request,
+        	oCallback;
+    	
+		/* We don't always want to reset the recordOffset.
+		If we want the Paginator to be set to the first page,
+		pass in a value of true to this method. Otherwise, pass in
+		false or anything falsy and the Paginator will remain at the
+		page it was set at before.*/
+        if (resetRecordOffset) {
+        	oState.pagination.recordOffset = 0;
+        }
+		
+		/* If the column sort direction needs to be updated, that may be done here.
+		It is beyond the scope of this example, but the DataTable::sortColumn() method
+		has code that can be used with some modification. */
+        
+		/*
+		This example uses onDataReturnSetRows because that method
+		will clear out the old data in the DataTable, making way for
+		the new data.*/
+		oCallback = {
+		    success : CF.myDataTable.onDataReturnSetRows,
+		    failure : CF.myDataTable.onDataReturnSetRows,
+            argument : oState,
+		    scope : CF.myDataTable
+		};
+        
+		// Generate a query string
+        request = CF.myDataTable.get("generateRequest")(oState, CF.myDataTable);
+		
+		// Fire off a request for new data.
+		CF.myDataSource.sendRequest(request, oCallback);
+	}
+</textarea>
+
+<h2 id="handleDataReturnPayload">Handling the Response</h2>
+<p>In order to update the Paginator's <a href="http://developer.yahoo.com/yui/docs/YAHOO.widget.Paginator.html#config_totalRecords"><code>totalRecords</code></a> value as the data is returned, override the DataTable's <a href="http://developer.yahoo.com/yui/docs/YAHOO.widget.DataTable.html#method_handleDataReturnPayload"><code>handleDataReturnPayload</code></a> method. This will enable the Paginator to calculate how many pages of data have been returned for each request at runtime. The rest of the work is done for us automatically through the <code>oCallback</code> object set in our <code>sendRequest</code> method call.</p>
+
+<textarea name="code" class="JScript" cols="60" rows="1">
+	myDataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+		oPayload.totalRecords = oResponse.meta.totalRecords;
+		return oPayload;
+	}
+</textarea>
+
+<h2>Configuration for This Example</h2>
+
+<p>You can load the necessary JavaScript and CSS for this example from Yahoo's servers.  <a href="http://developer.yahoo.com/yui/articles/hosting/?&MIN#configure">Click here to load the YUI Dependency Configurator with all of this example's dependencies preconfigured</a>.</p>
+
+				</div>
+				<div class="yui-u">
+					
+				
+					<div id="examples">
+						<h3 class='firstContent'>DataTable Control Examples:</h3>
+	
+						<div id="exampleToc">
+							<ul>
+								<li><a href='../datatable/dt_basic.html'>Basic Example</a></li><li><a href='../datatable/dt_enhanced.html'>Progressive Enhancement</a></li><li><a href='../datatable/dt_formatting.html'>Custom Cell Formatting</a></li><li><a href='../datatable/dt_row_coloring.html'>Conditional row coloring</a></li><li><a href='../datatable/dt_nestedheaders.html'>Nested Headers</a></li><li><a href='../datatable/dt_xhrjson.html'>JSON Data Over XHR</a></li><li><a href='../datatable/dt_xhrpostxml.html'>XML Data Over XHR With POST</a></li><li><a href='../datatable/dt_xpath.html'>XML Data with XPath</a></li><li><a href='../datatable/dt_xhrtext.html'>Textual Data Over XHR</a></li><li><a href='../datatable/dt_polling.html'>Polling the DataSource</a></li><li><a href='../datatable/dt_rowdatamod.html'>Adding, Updating, and Deleting Rows</a></li><li><a href='../datatable/dt_clientpagination.html'>Client-side Pagination</a></li><li><a href='../datatable/dt_clientsorting.html'>Client-side Sorting</a></li><li><a href='../datatable/dt_dynamicdata.html'>Server-side Pagination and Sorting for Dynamic Data</a></li><li><a href='../datatable/dt_bhm.html'>Integrating Browser History Manager with Server-side Pagination and Sorting</a></li><li><a href='../datatable/dt_fixedscroll.html'>XY-scrolling, Y-scrolling, and X-scrolling</a></li><li><a href='../datatable/dt_rowselect.html'>Row Selection</a></li><li><a href='../datatable/dt_cellselect.html'>Cell Selection</a></li><li><a href='../datatable/dt_cellediting.html'>Inline Cell Editing</a></li><li><a href='../datatable/dt_colshowhide.html'>Showing, Hiding, and Reordering Columns.</a></li><li><a href='../datatable/dt_highlighting.html'>Highlighting Cells, Rows, or Columns</a></li><li><a href='../datatable/dt_ddrows.html'>Reorder Rows with Drag and Drop</a></li><li><a href='../datatable/dt_rowexp_basic.html'>Row Expansion</a></li><li><a href='../datatable/dt_contextmenu.html'>Context Menu Integration</a></li><li><a href='../paginator/pag_configuration.html'>Configuring the Paginator (included with examples for Paginator)</a></li><li><a href='../datatable/dt_tabview.html'>TabView Integration</a></li><li><a href='../datatable/dt_complex.html'>Complex Example of Multiple Features</a></li><li><a href='../datatable/dt_localfilter.html'>Client-side Filtering of Local Data</a></li><li class='selected'><a href='../datatable/dt_dynamicfilter.html'>Filtering of Dynamic Data</a></li><li><a href='../datatable/dt_autocomplete.html'>Datatable with Autocomplete</a></li><li><a href='../datatable/dt_skinning.html'>Skinning Model</a></li><li><a href='../progressbar/pb_ratings.html'>Ratings (included with examples for ProgressBar Control)</a></li><li><a href='../datasource/datasource_yql.html'>YQLDataSource (included with examples for DataSource Utility)</a></li><li><a href='../layout/adv_layout.html'>Complex Application (included with examples for Layout Manager)</a></li>							</ul>
+						</div>
+					</div>
+					
+					<div id="module">
+						<h3>More DataTable Control Resources:</h3>
+						<ul>
+							<li><a href="http://developer.yahoo.com/yui/datatable/">User's Guide</a> (external)</li>
+						<li><a href="../../docs/module_datatable.html">API Documentation</a></li>
+                            
+                            
+							<li><a href="http://yuiblog.com/assets/pdf/cheatsheets/datatable.pdf">Cheat Sheet PDF</a> (external)</li></ul>
+					</div>
+			  </div>
+		</div>
+		
+		</div>
+	</div>
+
+
+<div class="yui-b" id="tocWrapper">
+<!-- TABLE OF CONTENTS -->
+<div id="toc">
+	
+<ul>
+<li class="sect first">Yahoo! UI Library</li><li class="item"><a title="The Yahoo! User Interface Library (YUI)" href="http://developer.yahoo.com/yui/">Home (external)</a></li><li class="item"><a title="The Yahoo! User Interface Blog" href="http://yuiblog.com">YUIBlog (external)</a></li><li class="item"><a title="YUILibrary.com hosts the YUI community forums" href="http://yuilibrary.com/forum/">YUI Discussion Forum (external)</a></li><li class="item"><a title="The YUI Library source can be checked out from GitHub" href="http://github.com/yui/">YUI on GitHub</a></li><li class="item"><a title="Instantly searchable API documentation for the entire YUI library." href="../../docs/index.html">API Documentation</a></li><li class="item"><a title="Examples of every YUI utility and control in action" href="../../examples/">Functional Examples</a></li><li class="item"><a title="Videos and podcasts from the YUI Team and from the Yahoo! frontend engineering community." href="http://developer.yahoo.com/yui/theater/">YUI Theater (external)</a></li><li class="item"><a title="YUI is free and open, offered under a BSD license." href="http://developer.yahoo.com/yui/license.html">YUI License (external)</a></li><li class="sect">YUI Functional Examples</li><li class="item"><a title="The YUI Animation Utility - Functional Examples" href="../../examples/animation/index.html">Animation</a></li><li class="item"><a title="The YUI AutoComplete Control - Functional Examples" href="../../examples/autocomplete/index.html">AutoComplete</a></li><li class="item"><a title="The YUI Browser History Manager - Functional Examples" href="../../examples/history/index.html">Browser History Manager</a></li><li class="item"><a title="The YUI Button Control - Functional Examples" href="../../examples/button/index.html">Button</a></li><li class="item"><a title="The YUI Calendar Control - Functional Examples" href="../../examples/calendar/index.html">Calendar</a></li><li class="item"><a title="The YUI Carousel Control - Functional Examples" href="../../examples/carousel/index.html">Carousel</a></li><li class="item"><a title="The YUI Charts Control - Functional Examples" href="../../examples/charts/index.html">Charts</a></li><li class="item"><a title="The YUI Color Picker Control - Functional Examples" href="../../examples/colorpicker/index.html">Color Picker</a></li><li class="item"><a title="The YUI Cookie Utility - Functional Examples" href="../../examples/cookie/index.html">Cookie</a></li><li class="item"><a title="The YUI Connection Manager (AJAX) - Functional Examples" href="../../examples/connection/index.html">Connection Manager</a></li><li class="item"><a title="The YUI Container Family (Module, Overlay, Tooltip, Panel, Dialog, SimpleDialog) - Functional Examples" href="../../examples/container/index.html">Container</a></li><li class="selected "><a title="The YUI DataTable Control - Functional Examples" href="../../examples/datatable/index.html">DataTable</a></li><li class="item"><a title="The YUI Dom Collection - Functional Examples" href="../../examples/dom/index.html">Dom</a></li><li class="item"><a title="The YUI Drag &amp; Drop Utility - Functional Examples" href="../../examples/dragdrop/index.html">Drag &amp; Drop</a></li><li class="item"><a title="The YUI Event Utility - Functional Examples" href="../../examples/event/index.html">Event</a></li><li class="item"><a title="The YUI Get Utility - Functional Examples" href="../../examples/get/index.html">Get</a></li><li class="item"><a title="The YUI ImageCropper Control - Functional Examples" href="../../examples/imagecropper/index.html">ImageCropper</a></li><li class="item"><a title="The YUI ImageLoader Utility - Functional Examples" href="../../examples/imageloader/index.html">ImageLoader</a></li><li class="item"><a title="The YUI JSON Utility - Functional Examples" href="../../examples/json/index.html">JSON</a></li><li class="item"><a title="The YUI Layout Manager - Functional Examples" href="../../examples/layout/index.html">Layout Manager</a></li><li class="item"><a title="The YUI Logger Control - Functional Examples" href="../../examples/logger/index.html">Logger</a></li><li class="item"><a title="The YUI Menu Control - Functional Examples" href="../../examples/menu/index.html">Menu</a></li><li class="item"><a title="The YUI Paginator - Functional Examples" href="../../examples/paginator/index.html">Paginator</a></li><li class="item"><a title="The YUI Profiler Utility - Functional Examples" href="../../examples/profiler/index.html">Profiler</a></li><li class="item"><a title="The YUI ProfileViewer Control - Functional Examples" href="../../examples/profilerviewer/index.html">ProfilerViewer</a></li><li class="item"><a title="The YUI ProgressBar Control - Functional Examples" href="../../examples/progressbar/index.html">ProgressBar</a></li><li class="item"><a title="The YUI Resize Utility - Functional Examples" href="../../examples/resize/index.html">Resize</a></li><li class="item"><a title="The YUI Rich Text Editor - Functional Examples" href="../../examples/editor/index.html">Rich Text Editor</a></li><li class="item"><a title="The YUI Selector Utility - Functional Examples" href="../../examples/selector/index.html">Selector</a></li><li class="item"><a title="The YUI Slider Control - Functional Examples" href="../../examples/slider/index.html">Slider</a></li><li class="item"><a title="The YUI Storage Utility - Functional Examples" href="../../examples/storage/index.html">Storage</a></li><li class="item"><a title="The YUI SWF Utility - Functional Examples" href="../../examples/swf/index.html">SWF</a></li><li class="item"><a title="The YUI SWFStore Utility - Functional Examples" href="../../examples/swfstore/index.html">SWFStore</a></li><li class="item"><a title="The YUI Stylesheet Utility - Functional Examples" href="../../examples/stylesheet/index.html">Stylesheet</a></li><li class="item"><a title="The YUI TabView Control - Functional Examples" href="../../examples/tabview/index.html">TabView</a></li><li class="item"><a title="The YUI TreeView Control - Functional Examples" href="../../examples/treeview/index.html">TreeView</a></li><li class="item"><a title="The YUI Uploader Utility - Functional Examples" href="../../examples/uploader/index.html">Uploader (experimental)</a></li><li class="item"><a title="The YUI YAHOO Global Object - Functional Examples" href="../../examples/yahoo/index.html">YAHOO Global Object</a></li><li class="item"><a title="The YUI Loader Utility - Functional Examples" href="../../examples/yuiloader/index.html">YUI Loader</a></li><li class="item"><a title="The YUI Test Utility - Functional Examples" href="../../examples/yuitest/index.html">YUI Test</a></li><li class="item"><a title="YUI Reset CSS - Functional Examples" href="../../examples/reset/index.html">Reset CSS</a></li><li class="item"><a title="YUI Base CSS - Functional Examples" href="../../examples/base/index.html">Base CSS</a></li><li class="item"><a title="YUI Fonts CSS - Functional Examples" href="../../examples/fonts/index.html">Fonts CSS</a></li><li class="item"><a title="YUI Grids CSS - Functional Examples" href="../../examples/grids/index.html">Grids CSS</a></li><li class="sect">YUI Articles on the YUI Website</li><li class="item"><a title="Answers to Frequently Asked Questions about the YUI Library" href="http://developer.yahoo.com/yui/articles/faq/">YUI FAQ (external)</a></li><li class="item"><a title="Yahoo!'s philosophy of Graded Browser Support" href="http://developer.yahoo.com/yui/articles/gbs/">Graded Browser Support (external)</a></li><li class="item"><a title="Reporting Bugs and Making Feature Requests for YUI Components" href="http://developer.yahoo.com/yui/articles/reportingbugs/">Bug Reports/Feature Requests (external)</a></li><li class="item"><a title="Serve YUI source files from Yahoo! -- free, fast, and simple" href="http://developer.yahoo.com/yui/articles/hosting/">Serving YUI Files from Yahoo! (external)</a></li><li class="item"><a title="Best practices for working with web services while protecting user privacy" href="http://developer.yahoo.com/security/">Security Best Practices (external)</a></li></ul>
+</div>
+</div>
+	</div><!--closes bd-->
+
+	<div id="ft">
+        <p class="first">Copyright &copy; 2009 Yahoo! Inc. All rights reserved.</p>
+        <p><a href="http://privacy.yahoo.com/privacy/us/devel/index.html">Privacy Policy</a> - 
+            <a href="http://docs.yahoo.com/info/terms/">Terms of Service</a> - 
+            <a href="http://docs.yahoo.com/info/copyright/copyright.html">Copyright Policy</a> - 
+            <a href="http://careers.yahoo.com/">Job Openings</a></p>
+	</div>
+</div>
+<script src="../../assets/dpSyntaxHighlighter.js"></script>
+<script language="javascript"> 
+dp.SyntaxHighlighter.HighlightAll('code'); 
+</script>
+
+<script src='../../assets/YUIexamples.js'></script>
+
+
+</body>
+</html>

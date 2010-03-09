@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Listening For Menu Events</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    /*
+        Set the "zoom" property to "normal" since it is set to "1" by the 
+        ".example-container .bd" rule in yui.css and this causes a Menu
+        instance's width to expand to 100% of the browser viewport.
+    */
+    
+    div.yuimenu .bd {
+    
+        zoom: normal;
+    
+    }
+    
+
+    /*
+        Overrides for the ".example-container a:visited" in the 
+        the yui.css file.
+    */
+
+    div.yuimenu a.yuimenuitemlabel-disabled:visited {
+    
+            color: #A6A6A6;
+    
+    }
+
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Listening For Menu Events</h1>
+
+<div class="exampleIntro">
+	<p>
+This example demonstrates how to listen for DOM-related events.  Interaction 
+with the Menu will result in event information being output to the console.  
+<em>Please note</em>: Disabled MenuItem instances do not fire DOM events.  This 
+is demonstrated with the MenuItem named "MenuItem 2."
+</p>
+<p id="clicknote">
+<em>Note:</em> By default clicking outside of a Menu instance will hide it.  
+Additionally, MenuItem instances without a submenu or a URL to navigate to will 
+hide their parent Menu instance when clicked.  Click the "Show Menu" button 
+below to make the Menu instance visible if it is hidden.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+    /*
+         Initialize and render the Menu when the element it is to be 
+         rendered into is ready to be scripted.
+    */
+
+    YAHOO.util.Event.onAvailable("rendertarget", function () {
+
+        /*
+             Generic event handler used to log info about the DOM events for 
+             the Menu instance.
+        */
+        
+        function onMenuEvent(p_sType, p_aArgs) {
+        
+            var oDOMEvent = p_aArgs[0];
+
+            YAHOO.log(("Id: " + this.id + ", " +
+                       "Custom Event Type: " + p_sType + ", " +                  
+                       "DOM Event Type: " + oDOMEvent.type), 
+                       "info", "example10");
+        }
+
+
+        /*
+             Generic event handler used to log info about the DOM events for 
+             each MenuItem instance.
+        */
+
+        function onMenuItemEvent(p_sType, p_aArgs) {
+
+            var oDOMEvent = p_aArgs[0];
+
+            YAHOO.log(("Index: " + this.index + ", " +
+                       "Group Index: " + this.groupIndex + ", " +
+                       "Custom Event Type: " + p_sType + ", " +                  
+                       "DOM Event Type: " + oDOMEvent.type
+                       ), "info", "example10");
+            
+        }
+
+
+        /*
+			Instantiate a Menu:  The first argument passed to the constructor
+			is the id for the Menu element to be created, the second is an 
+			object literal of configuration properties.
+        */
+
+        var oMenu = new YAHOO.widget.Menu("basicmenu", { fixedcenter: true });
+
+
+        // Subscribe to the Menu instance's "itemAdded" event
+
+        oMenu.subscribe("itemAdded", function (p_sType, p_aArgs) {
+        
+            var oMenuItem = p_aArgs[0];
+            
+            /*
+                 Subscribe to each MenuItem instance's DOM events as they
+                 are added to the Menu instance.
+            */
+        
+            oMenuItem.subscribe("mouseover", onMenuItemEvent);
+            oMenuItem.subscribe("mouseout", onMenuItemEvent);
+            oMenuItem.subscribe("mousedown", onMenuItemEvent);
+            oMenuItem.subscribe("mouseup", onMenuItemEvent);
+            oMenuItem.subscribe("click", onMenuItemEvent);
+            oMenuItem.subscribe("keydown", onMenuItemEvent);
+            oMenuItem.subscribe("keyup", onMenuItemEvent);
+            oMenuItem.subscribe("keypress", onMenuItemEvent);
+        
+        });
+
+
+        //  Subscribe to every DOM event for the Menu instance.
+
+        oMenu.subscribe("mouseover", onMenuEvent);
+        oMenu.subscribe("mouseout", onMenuEvent);
+        oMenu.subscribe("mousedown", onMenuEvent);
+        oMenu.subscribe("mouseup", onMenuEvent);
+        oMenu.subscribe("click", onMenuEvent);
+        oMenu.subscribe("keydown", onMenuEvent);
+        oMenu.subscribe("keyup", onMenuEvent);
+        oMenu.subscribe("keypress", onMenuEvent);
+
+
+        /*
+            Add items to the Menu instance by passing an array of object literals 
+            (each of which represents a set of YAHOO.widget.MenuItem 
+            configuration properties) to the "addItems" method.
+        */
+
+        oMenu.addItems([
+        
+                "MenuItem 0",
+
+                "MenuItem 1",
+
+                /*
+                     Add a disabled menu item to demonstrate that disabled 
+                     items do not respond to DOM events.
+                */
+                { text: "MenuItem 2", disabled: true },
+
+                "MenuItem 3",
+
+                "MenuItem 4"
+
+            ]);
+
+
+        /*
+            Since this Menu instance is built completely from script, call the 
+            "render" method passing in the DOM element that it should be 
+            appended to.
+        */
+
+        oMenu.render("rendertarget");
+
+
+        YAHOO.util.Event.addListener("menutoggle", "click", oMenu.show, null, oMenu);
+    
+    });
+    
+</script>
+
+<button id="menutoggle" type="button">Show Menu</button>
+<div id="rendertarget"></div>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

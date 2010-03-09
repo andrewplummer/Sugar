@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Chart with DataSource Polling</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#chart
+	{
+		width: 500px;
+		height: 350px;
+	}
+	
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Chart with DataSource Polling</h1>
+
+<div class="exampleIntro">
+	<p>The <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> provides built-in support for iterative polling for data over XHR using an XHR <a href="http://developer.yahoo.com/yui/datasource/">DataSource</a> instance.  In the example below, iterative polling causes the chart to refresh every several seconds and animate its display to represent the new data.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title"></span>
+<div id="chart">Unable to load Flash content. The YUI Charts Control requires Flash Player 9.0.45 or higher. You can download the latest version of Flash Player from the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p></div>
+
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+//--- data
+
+	var jsonData = new YAHOO.util.DataSource( "assets/generatedata.php?" );
+	//use POST so that IE doesn't cache the data
+	jsonData.connMethodPost = true;
+	jsonData.responseType = YAHOO.util.DataSource.TYPE_JSON;
+	jsonData.responseSchema =
+	{
+			resultsList: "Results",
+			fields: ["Name","Value"]
+	};
+//--- chart
+
+	var yAxis = new YAHOO.widget.NumericAxis();
+	yAxis.minimum = 0;
+	yAxis.maximum = 100;
+
+	var mychart = new YAHOO.widget.ColumnChart( "chart", jsonData,
+	{
+		xField: "Name",
+		yField: "Value",
+		yAxis: yAxis,
+		polling: 2000,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

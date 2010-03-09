@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Charts in a TabView</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/tabview/assets/skins/sam/tabview.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/swf/swf-min.js"></script>
+<script type="text/javascript" src="../../build/charts/charts-min.js"></script>
+<script type="text/javascript" src="../../build/tabview/tabview-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	.chart
+	{
+		width: 500px;
+		height: 350px;
+		margin-bottom: 10px;
+	}
+
+	.chart_title
+	{
+		display: block;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin-bottom: 0.4em;
+	}
+
+	#tabContainer
+	{
+		width: 520px;
+	}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Charts in a TabView</h1>
+
+<div class="exampleIntro">
+	<p>This example uses the <a href="http://developer.yahoo.com/yui/charts/">YUI Charts Control</a> and the <a href="http://developer.yahoo.com/yui/tabview/">TabView Control</a> to display different views of the same <a href="http://developer.yahoo.com/yui/datasource/">DataSource</a>.</p>
+<p>Please note: The YUI Charts Control requires Flash Player 9.0.45 or higher. The latest version of Flash Player is available at the <a href="http://www.adobe.com/go/getflashplayer">Adobe Flash Player Download Center</a>.</p>
+
+
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<span class="chart_title">Monthly Expenses</span>
+<div id="tabContainer"></div>
+<script type="text/javascript">
+
+	YAHOO.widget.Chart.SWFURL = "../../build/charts/assets/charts.swf";
+
+//--- DataSource
+
+	YAHOO.example.monthlyExpenses =
+	[
+		{ month: "January", rent: 880.00, utilities: 894.68 },
+		{ month: "February", rent: 880.00, utilities: 901.35 },
+		{ month: "March", rent: 880.00, utilities: 889.32 },
+		{ month: "April", rent: 880.00, utilities: 884.71 },
+		{ month: "May", rent: 910.00, utilities: 879.811 },
+		{ month: "June", rent: 910.00, utilities: 897.95 }
+	];
+
+	var myDataSource = new YAHOO.util.DataSource( YAHOO.example.monthlyExpenses );
+	myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	myDataSource.responseSchema =
+	{
+		fields: [ "month", "rent", "utilities" ]
+	};
+
+//--- tabView
+
+	//Create a TabView
+	var tabView = new YAHOO.widget.TabView();
+
+	//Add a tab for the Bar Chart
+	tabView.addTab( new YAHOO.widget.Tab({
+			label: 'Bar Chart',
+			content: '<span class="chart_title">Bar Chart</span><div class="chart" id="barchart"></div>',
+			active: true
+	}));
+
+	//Add a tab for the Line Chart
+	tabView.addTab( new YAHOO.widget.Tab({
+			label: 'Line Chart',
+			content: '<span class="chart_title">Line Chart</span><div class="chart" id="linechart"></div>'
+	}));
+
+	//Add a tab for the Column Chart
+	tabView.addTab( new YAHOO.widget.Tab({
+			label: 'Column Chart',
+			content: '<span class="chart_title">Column Chart</span><div class="chart" id="columnchart"></div>'
+	}));
+
+	//Append TabView to its container div
+	tabView.appendTo('tabContainer');
+
+
+//--- chart
+
+	//series definition for Column and Line Charts
+	var seriesDef =
+	[
+		{ displayName: "Rent", yField: "rent" },
+		{ displayName: "Utilities", yField: "utilities" }
+	];
+
+	//series definition for Bar Chart
+	var barChartSeriesDef =
+	[
+		{ displayName: "Rent", xField: "rent" },
+		{ displayName: "Utilities", xField: "utilities" }
+	];
+
+	//format currency
+	YAHOO.example.formatCurrencyAxisLabel = function( value )
+	{
+		return YAHOO.util.Number.format( value,
+		{
+			prefix: "$",
+			thousandsSeparator: ",",
+			decimalPlaces: 2
+		});
+	}
+
+	//return the formatted text
+	YAHOO.example.getDataTipText = function( item, index, series, axisField )
+	{
+		var toolTipText = series.displayName + " for " + item.month;
+		toolTipText += "\n" + YAHOO.example.formatCurrencyAxisLabel( item[series[axisField]] );
+		return toolTipText;
+	}
+
+	//DataTip function for the Line Chart and Column Chart
+	YAHOO.example.getYAxisDataTipText = function( item, index, series )
+	{
+		return YAHOO.example.getDataTipText(item, index, series, "yField");
+	}
+
+	//DataTip function for the Bar Chart
+	YAHOO.example.getXAxisDataTipText = function( item, index, series )
+	{
+		return YAHOO.example.getDataTipText(item, index, series, "xField");
+	}
+
+	//create a Numeric Axis for displaying dollars
+	var currencyAxis = new YAHOO.widget.NumericAxis();
+	currencyAxis.minimum = 800;
+	currencyAxis.labelFunction = YAHOO.example.formatCurrencyAxisLabel;
+
+	//Create Line Chart
+	var lineChart = new YAHOO.widget.LineChart( "linechart", myDataSource,
+	{
+		series: seriesDef,
+		xField: "month",
+		yAxis: currencyAxis,
+		dataTipFunction: YAHOO.example.getYAxisDataTipText,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+
+	//Create Bar Chart
+	var barChart = new YAHOO.widget.BarChart( "barchart", myDataSource,
+	{
+		series:barChartSeriesDef,
+		yField: "month",
+		xAxis: currencyAxis,
+		dataTipFunction: YAHOO.example.getXAxisDataTipText,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+
+	//Create Column Chart
+	var columnChart = new YAHOO.widget.ColumnChart( "columnchart", myDataSource,
+	{
+		series: seriesDef,
+		xField: "month",
+		yAxis: currencyAxis,
+		dataTipFunction: YAHOO.example.getYAxisDataTipText,
+		//only needed for flash player express install
+		expressInstall: "assets/expressinstall.swf"
+	});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

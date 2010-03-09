@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using Paginator with Carousel</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/carousel/assets/skins/sam/carousel.css" />
+<link rel="stylesheet" type="text/css" href="../../build/paginator/assets/skins/sam/paginator.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/carousel/carousel-min.js"></script>
+<script type="text/javascript" src="../../build/paginator/paginator-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+#container {
+    border: none;
+    background: #e2edfa;
+    margin: 0 auto;
+    -moz-border-radius: 6px;
+    padding: 8px 16px 4px;
+}
+
+#spotlight {
+    border: 1px solid #ccc;
+    height: 180px;
+    margin: 10px auto;
+    padding: 1px;
+    width: 240px;
+}
+
+#pagination {
+    font: 13px Arial, Helvetica, sans-serif;
+    margin: 10px auto;
+    padding: 1px;
+    text-align: center;
+    width: 240px;
+}
+
+.yui-skin-sam .yui-pg-page {
+    background: #fff;
+    border: 1px solid #cbcbcb;
+    margin: 0 1px;
+    padding: 2px 6px;
+}
+
+/* Always be sure to give your carousel items a width and a height */
+.yui-carousel-element li {
+    height: 75px;
+    opacity: 0.6;
+    width: 75px;
+}
+
+.yui-carousel-element .yui-carousel-item-selected {
+    opacity: 1;
+}
+
+.yui-carousel-nav {
+    display: none;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using Paginator with Carousel</h1>
+
+<div class="exampleIntro">
+	<p>
+    This example demonstrates the use of <a href="http://developer.yahoo.com/yui/pagination/">YUI Paginator Control</a> for navigating the <a href="http://developer.yahoo.com/yui/carousel/">YUI Carousel Control</a>.
+</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<!-- The Carousel container -->
+<div id="container">
+    <ol id="carousel">
+        <li>
+            <img src="http://farm1.static.flickr.com/135/342099636_7b05b7cde5_s.jpg">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/136/342099938_fdef3ca3b5_s.jpg">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/147/342099522_3827eaa929_s.jpg">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/143/342100011_ec4d338c71_s.jpg">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/161/342100080_0fe4f9ccb0_s.jpg">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/153/342100324_82589c0ebe_s.jpg">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/147/342100376_d0336252a7_s.jpg">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/156/342100472_b9bc985fa4_s.jpg">
+        </li>
+        <li>
+            <img src="http://farm1.static.flickr.com/133/342100566_39dae4698f_s.jpg">
+        </li>
+    </ol>
+</div>
+<!-- The pagination container -->
+<div id="pagination"></div>
+<!-- The spotlight container -->
+<div id="spotlight"></div>
+
+<style type="text/css">
+#container {
+    border: none;
+    background: #e2edfa;
+    -moz-border-radius: 6px;
+    padding: 8px 16px 4px;
+}
+
+#spotlight {
+    border: 1px solid #ccc;
+    height: 180px;
+    margin: 10px auto;
+    padding: 1px;
+    width: 240px;
+}
+
+#pagination {
+    font: 13px Arial, Helvetica, sans-serif;
+    margin: 10px auto;
+    padding: 1px;
+    text-align: center;
+    width: 240px;
+}
+
+.yui-skin-sam .yui-pg-page {
+    background: #fff;
+    border: 1px solid #cbcbcb;
+    margin: 0 1px;
+    padding: 2px 6px;
+}
+
+.yui-carousel-element li {
+    opacity: 0.6;
+}
+
+.yui-carousel-element .yui-carousel-item-selected {
+    opacity: 1;
+}
+
+.yui-carousel-nav {
+    display: none;
+}
+</style>
+<script>
+    (function () {
+        // Get the image link from within its (parent) container.
+        function getImage(parent) {
+            var el = parent.firstChild;
+                    
+            while (el) { // walk through till as long as there's an element
+                if (el.nodeName.toUpperCase() == "IMG") { // found an image
+                    // flickr uses "_s" suffix for small, and "_m" for big
+                    // images respectively
+                    return el.src.replace(/_s\.jpg$/, "_m.jpg");
+                }
+                el = el.nextSibling;
+            }
+            
+            return "";
+        }
+                
+        YAHOO.util.Event.onDOMReady(function (ev) {
+            var spotlight  = YAHOO.util.Dom.get("spotlight"),
+                carousel   = new YAHOO.widget.Carousel("container"),
+                numItems   = carousel.get("numItems"),
+                numVisible = carousel.get("numVisible"),
+                paginator;
+                       
+            carousel.on("itemSelected", function (index) {
+                // item has the reference to the Carousel's item
+                var item = carousel.getElementForItem(index);
+
+                if (item) {
+                    spotlight.innerHTML = "<img src=\""+getImage(item)+"\">";
+                }
+            });
+            
+            carousel.render();
+            carousel.show();
+                
+            paginator     = new YAHOO.widget.Paginator({
+                    containers   : "pagination",
+                    rowsPerPage  : 1,
+                    template     : "{PreviousPageLink} "  +
+                                   "{PageLinks} " +
+                                   "{NextPageLink}",
+                    totalRecords : Math.ceil(numItems / numVisible)
+            });
+
+            paginator.subscribe("changeRequest", function (state) {
+                carousel.set("selectedItem", (state.page - 1) * numVisible);
+                paginator.setState(state);
+            });
+
+            carousel.on("pageChange", function (page) {
+                // Paginator's page begins from 1
+                // Also, we need to suppress this triggering a changeRequest
+                // event.
+                paginator.setPage(page + 1, true);
+            });
+            
+            paginator.render();
+        });
+    })();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Handling Menu Click Events</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+    /*
+        Set the "zoom" property to "normal" since it is set to "1" by the 
+        ".example-container .bd" rule in yui.css and this causes a Menu
+        instance's width to expand to 100% of the browser viewport.
+    */
+    
+    div.yuimenu .bd {
+    
+        zoom: normal;
+    
+    }
+
+</style>
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Handling Menu Click Events</h1>
+
+<div class="exampleIntro">
+	<p>
+This example demonstrates how to register a "click" event handler for a 
+MenuItem instance.
+</p>
+<p id="clicknote">
+<em>Note:</em> By default clicking outside of a Menu instance will hide it.  
+Additionally, MenuItem instances without a submenu or a URL to navigate to will 
+hide their parent Menu instance when clicked.  Click the "Show Menu" button 
+below to make the Menu instance visible if it is hidden.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+
+    /*
+         Initialize and render the Menu when the element it is to be 
+         rendered into is ready to be scripted.
+    */
+
+    YAHOO.util.Event.onAvailable("rendertarget", function () {
+
+        /*
+            "click" event handler for the Menu instance - used to keep the Menu 
+            instance visible when clicked, since by default a Menu instance 
+            will hide when clicked.
+        */
+
+        function onMenuClick(p_sType, p_aArgs, p_oValue) {
+
+            this.show();
+
+        }
+
+
+        /*
+             "click" event handler for each MenuItem instance - used to log 
+             info about the MenuItem that was clicked.
+        */
+
+        function onMenuItemClick(p_sType, p_aArgs, p_oValue) {
+
+            YAHOO.log(("index: " + this.index + 
+                       ", text: " + this.cfg.getProperty("text") + 
+                       ", value: " + p_oValue), "info", "example9");
+        
+        }
+
+
+        /*
+			Instantiate a Menu:  The first argument passed to the constructor
+			is the id for the Menu element to be created, the second is an 
+			object literal of configuration properties.
+        */
+
+        var oMenu = new YAHOO.widget.Menu("mymenu", { fixedcenter: true });
+
+
+        /*
+            Add items to the Menu instance by passing an array of object literals 
+            (each of which represents a set of YAHOO.widget.MenuItem 
+            configuration properties) to the "addItems" method.
+        */
+
+        oMenu.addItems([
+
+            //  Register a "click" event handler for the first item.
+
+            { text: "Item One", onclick: { fn: onMenuItemClick } },
+
+
+            /*
+                 Register a "click" event handler for the second item, 
+                 passing a string arguemnt ("foo") to the event handler.
+            */
+            { text: "Item Two", onclick: { fn: onMenuItemClick, obj: "foo" } },
+
+
+            /*
+                 Register a "click" event handler for the third item and
+                 passing and array as an argument to the event handler.
+            */
+            { text: "Item Three", onclick: { fn: onMenuItemClick, obj: ["foo", "bar"] } }
+
+        ]);
+
+
+        oMenu.subscribe("click", onMenuClick);
+
+
+        /*
+            Since this Menu instance is built completely from script, call the 
+            "render" method passing in the DOM element that it should be 
+            appended to.
+        */
+
+        oMenu.render("rendertarget");
+
+
+        YAHOO.util.Event.addListener("menutoggle", "click", oMenu.show, null, oMenu);
+    
+    });
+    
+</script>
+
+<button id="menutoggle" type="button">Show Menu</button>
+<div id="rendertarget"></div>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

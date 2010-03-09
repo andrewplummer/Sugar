@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Element Test Suite</title>
+
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">     
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/event-simulate/event-simulate-min.js"></script>	
+<script type="text/javascript" src="../../../build/dom/dom.js"></script> 
+<script type="text/javascript" src="../../../build/element/element.js"></script> 
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+
+<style type="text/css">
+#foo {
+    background:#ccc;
+    height:100px;
+    width:100px;
+}
+</style>
+
+<script type="text/javascript">
+(function() {
+    var Y = YAHOO.util,
+        tool = YAHOO.tool,
+        suite = new tool.TestSuite("yuisuite");
+
+    Y.Event.onDOMReady(function() {
+        var Assert = YAHOO.util.Assert,
+            ArrayAssert = YAHOO.util.ArrayAssert;
+
+        var logger = new YAHOO.tool.TestLogger(null, { height: '80%' });
+
+        Y.Element.prototype.initAttributes = function() {
+            this.setAttributeConfig('foo', {
+                validator: YAHOO.lang.isString,
+                method: function() {
+                   this.addClass('test-method');
+                }
+            });
+
+            this.setAttributeConfig('href', {
+                validator: YAHOO.lang.isString
+            });
+
+            this.setAttributeConfig('wrap', {
+                writeOnce: true,
+                validator: YAHOO.lang.isBoolean
+            });
+
+            this.setAttributeConfig('custom', {
+                setter: function(val, name) {
+                    return 'from setter';
+                },
+
+                getter: function(name, val) {
+                    Assert.areEqual(val, this._configs[name].value, "getter: function(name, val)");
+                    return 'from getter';
+                },
+
+                value: 'default'
+            });
+        };
+
+        var foo = new Y.Element('foo', { foo: 0, href: 2, wrap: true });
+        var bar = new Y.Element('bar', { href: 'http://www.yahoo.com/', foo: 'foo' });
+
+        var elFoo = document.getElementById('foo');
+
+        suite.add( new tool.TestCase({
+            name: 'YAHOO.util.Element',
+
+            test_getElement: function() {
+                Assert.areEqual(elFoo, foo.get('element'), 'incorrect element');
+            },            
+
+            test_get: function() {
+                var ta = new YAHOO.util.Element('test-textarea');//, { wrap: false });
+                ta.set('wrap', true);
+            },            
+
+            test_setHTMLAttr: function() {
+                var innerHTML = 'updated';
+                foo.set('innerHTML', innerHTML);
+                Assert.areEqual(innerHTML, foo.get('innerHTML'), 'incorrect innerHTML');
+            },            
+
+            test_getHTMLAttr: function() {
+                foo.set('title', 'foo title');
+                Assert.areEqual('foo title', foo.get('title'), 'foo.get("title")');    
+
+                elFoo.title = 'new foo title';
+                Assert.areEqual('new foo title', foo.get('title'), 'foo.get("title") - from DOM');    
+            },            
+
+            test_onChange: function() {
+                var pass = false;
+                var handler = function() {
+                    pass = true;
+                };
+                foo.on('titleChange', handler);
+                foo.set('title', 'foo title');
+                Assert.isTrue(pass, 'titleChange event failed to fire');
+            },            
+
+            test_DomEvent: function() {
+                var pass = false;
+                var handler = function() {
+                    pass = true;
+                };
+                foo.on('click', handler);
+                YAHOO.util.UserAction.click('foo');
+                Assert.isTrue(pass, 'click handler failed to be called');
+            },            
+
+            test_customEvent: function() {
+                var pass = false;
+                var handler = function() {
+                    pass = true;
+                };
+                foo.on('foo', handler);
+                foo.fireEvent('foo');
+                Assert.isTrue(pass, 'foo handler failed to be called');
+          },
+
+            test_attribute: function() {
+                foo.setAttributeConfig('fontname', {
+                    value: 'tahoma',
+                    method: function(val) {
+                        foo.setStyle('font-family', val);
+                    }
+                });
+
+                foo.set('fontname', 'tahoma');
+                Assert.areEqual(Y.Dom.getStyle('foo', 'font-family'), 'tahoma', 'attribConfig');
+                foo.set('fontname', 'verdana');
+                foo.resetValue('fontname');
+
+                var dyn = new YAHOO.util.Element(document.createElement('div'), {
+                    id: 'dyn-el',
+                    title: 'test title',
+                    onclick: function(e) {
+                        alert(e.type);
+                    },
+                    innerHTML: 'baz',
+                    fake: 'fake'
+                });
+
+                dyn.appendTo(document.body);
+                Assert.areEqual(dyn.get('element').id, dyn.get('id'), "dyn.get('id')");
+                Assert.areEqual(dyn.get('element').title, dyn.get('title'), "dyn.get('title')");
+                Assert.isNull(dyn.get('fake'), "dyn.get('fake')");
+            },
+
+            test_validator: function() {
+                Assert.isNull(foo.get('foo'), 'foo.get("foo")');
+                Assert.areEqual('http://www.yahoo.com/', bar.get('href'), 'bar.get("href")');
+
+                foo.setAttributeConfig('foobar', {
+                    validator: YAHOO.lang.isString 
+                });
+
+                foo.set('foobar', 3);
+                Assert.areEqual(undefined, foo.get('foobar'), 'foo.get("foobar")');
+
+                Assert.areEqual(null, foo.get('foo'), 'foo.get("foo")');
+                Assert.areEqual(null, foo.get('href'), 'foo.get("foo")');
+
+                bar.set('href', 3);
+                Assert.areEqual('http://www.yahoo.com/', bar.get('href'), 'bar.get("href")');
+
+            },            
+
+            test_method: function() {
+                Assert.isFalse(foo.hasClass('test-method'), 'call method only on valid set');
+                Assert.isTrue(bar.hasClass('test-method'), 'call method on init valid value');
+            },
+
+            test_getter: function() {
+                Assert.areEqual(foo.get('custom'), 'from getter', 'getter failed to use return');
+            },
+
+            test_setter: function() {
+                foo.set('custom', 'customVal');
+                Assert.areEqual('from setter', foo._configs.custom.value, 'setter failed to use return');
+                Assert.areEqual('from getter', foo.get('custom'), 'getter failed to use return');
+            },
+
+            test_dom_method: function() {
+                Assert.isTrue(foo.hasChildNodes(), 'foo.hasChildNodes()');
+            },
+
+            test_dom_event: function() {
+                foo.on('click', function(e) { alert('click'); });
+                var baz = new Y.Element('baz');
+                baz.on('click', function(e) { alert('click'); });
+            },
+
+            test_destroy: function() {
+                foo.destroy();
+                Assert.isNull(foo.get('element'), 'foo.destroy - null element');
+                Assert.isNull(foo.get('parent'), 'foo.destroy - null parent');
+            }
+
+        })); 
+        tool.TestRunner.add(suite);
+
+        if (parent && parent != window) {
+            tool.TestManager.load();
+        } else {
+            tool.TestRunner.run();
+        }
+    }); 
+})();
+</script>
+<style type="text/css">
+
+</style>
+</head>
+<body class="yui-skin-sam">
+    <div id="doc">
+        <div id="foo">foo</div>
+        <a id="bar">foo</a>
+    </div>
+    <textarea id="test-textarea"></textarea>
+</body>
+</html>

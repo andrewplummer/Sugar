@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>XML Data Over XHR With POST</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>XML Data Over XHR With POST</h1>
+
+<div class="exampleIntro">
+	<p>This examples makes a POST query to the Yahoo! Local webservice to populate
+a DataTable.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="xml"></div>
+
+<script type="text/javascript">
+YAHOO.util.Event.addListener(window, "load", function() {
+    YAHOO.example.XHR_XML = function() {
+        var formatUrl = function(elCell, oRecord, oColumn, sData) {
+            elCell.innerHTML = "<a href='" + oRecord.getData("ClickUrl") + "' target='_blank'>" + sData + "</a>";
+        };
+
+        var myColumnDefs = [
+            {key:"Title", label:"Name", sortable:true, formatter:formatUrl},
+            {key:"Phone"},
+            {key:"City"},
+            {key:"AverageRating", label:"Rating",formatter:YAHOO.widget.DataTable.formatNumber, sortable:true}
+        ];
+
+        var myDataSource = new YAHOO.util.DataSource("assets/php/ylocal_proxy.php?");
+        myDataSource.connMethodPost = true;
+        myDataSource.responseType = YAHOO.util.DataSource.TYPE_XML;
+        myDataSource.responseSchema = {
+            resultNode: "Result",
+            fields: ["Title","Phone","City",{key:"AverageRating",parser:"number"},"ClickUrl"]
+        };
+
+        var myDataTable = new YAHOO.widget.DataTable("xml", myColumnDefs,
+                myDataSource, {initialRequest:"query=pizza&zip=94089&results=10"});
+
+        return {
+            oDS: myDataSource,
+            oDT: myDataTable
+        };
+    }();
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

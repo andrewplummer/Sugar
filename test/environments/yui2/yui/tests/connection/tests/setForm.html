@@ -1,0 +1,635 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/paginator/assets/skins/sam/paginator.css">
+    <style type="text/css" class="highlight-ignore">
+        h1 {
+            font: normal 125%/1.4 Arial, sans-serif;
+        }
+        .yui-log {
+            display: inline;
+            float: right;
+            position: relative;
+        }
+        .yui-log-container {
+            width: 300px;
+        }
+        .yui-log .yui-log-bd {
+            height: 525px;
+        }
+        .yui-log .yui-log-ft {
+            position: static;
+        }
+        .highlight-example {
+            display: inline;
+            float: left;
+            width: 650px;
+        }
+        .highlight-example h2 {
+            display: none;
+        }
+        .yui-log-bd h3 {
+            border-bottom: 1px solid #ccc;
+            color: #900;
+            margin: 0;
+            padding: 1em 0 0 1ex;
+        }
+        #frm {
+            height: 50px;
+            overflow: auto;
+        }
+        #frm label {
+            display: block;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<h1>Tests</h1>
+<div id="testbed"></div>
+<form id="frm" action="submitReporter.php">
+    <input type="text" name="foo" value="bar">
+
+    <input type="checkbox" name="c0[]">
+    <input type="checkbox" name="c0[]">
+    <input type="checkbox" name="c0[]">
+
+    <input type="checkbox" name="c1[]" checked="checked">
+    <input type="checkbox" name="c1[]">
+    <input type="checkbox" name="c1[]">
+
+    <input type="checkbox" name="c2[]" value="C2.1" checked="checked">
+    <input type="checkbox" name="c2[]" value="C2.2">
+    <input type="checkbox" name="c2[]" value="C2.3">
+
+    <input type="checkbox" name="c3[]" value="C3.1" checked="checked">
+    <input type="checkbox" name="c3[]" value="C3.2" checked="checked">
+    <input type="checkbox" name="c3[]" value="C3.3" checked="checked">
+
+    <label for="c4.1"><input type="checkbox" id="c4.1" name="c4[]"> C4.1</label>
+    <label for="c4.2"><input type="checkbox" id="c4.2" name="c4[]" checked="checked"> C4.2</label>
+    <label for="c4.3"><input type="checkbox" id="c4.3" name="c4[]"> C4.3</label>
+
+    <input type="radio" name="r0">
+    <input type="radio" name="r0">
+    <input type="radio" name="r0">
+
+    <input type="radio" name="r1">
+    <input type="radio" name="r1" checked="checked">
+    <input type="radio" name="r1">
+
+    <input type="radio" name="r2" value="R2.1">
+    <input type="radio" name="r2" value="R2.2" checked="checked">
+    <input type="radio" name="r2" value="R2.3">
+
+    <label for="r3.1"><input type="radio" id="r3.1" name="r3"> R3.1</label>
+    <label for="r3.2"><input type="radio" id="r3.2" name="r3" checked="checked"> R3.2</label>
+    <label for="r3.3"><input type="radio" id="r3.3" name="r3"> R3.3</label>
+
+    <label for="r4.1"><input type="radio" id="r4.1" name="r4" value="R4.1"> lblR4.1</label>
+    <label for="r4.2"><input type="radio" id="r4.2" name="r4" value="R4.2" checked="checked"> lblR4.2</label>
+    <label for="r4.3"><input type="radio" id="r4.3" name="r4" value="R4.3"> lblR4.3</label>
+
+    <label><select name="s0">
+        <option value="A">a</option>
+        <option value="B">b</option>
+        <option value="C">c</option>
+    </select> (s0) Single select, all values, no selected via js</label>
+
+    <label><select name="s1">
+        <option>a</option>
+        <option>b</option>
+        <option>c</option>
+    </select> (s1) Single select, no values, no selected</label>
+
+    <label><select name="s2">
+        <option value="A">a</option>
+        <option value="B">b</option>
+        <option value="C">c</option>
+    </select> (s2) Single select, all values, no selected</label>
+
+    <label><select name="s3">
+        <option>a</option>
+        <option>b</option>
+        <option value="C">c</option>
+    </select> (s3) Single select, some values, no selected</label>
+
+    <label><select name="s4">
+        <option>a</option>
+        <option selected="selected">b</option>
+        <option>c</option>
+    </select> (s4) Single select, no values, selected</label>
+
+    <label><select name="s5">
+        <option value="A">a</option>
+        <option value="B" selected="selected">b</option>
+        <option value="C">c</option>
+    </select> (s5) Single select, all values, selected</label>
+
+    <label><select name="s6">
+        <option>a</option>
+        <option selected="selected">b</option>
+        <option value="C">c</option>
+    </select> (s6) Single select, some values, non-val selected</label>
+
+    <label><select name="s7">
+        <option>a</option>
+        <option>b</option>
+        <option value="C" selected="selected">c</option>
+    </select> (s7) Single select, some values, val selected</label>
+
+    <label><select name="s8"></select> (s8) Single select, no options</label>
+
+
+    <label><select name="m1[]" multiple="multiple">
+        <option>a</option>
+        <option>b</option>
+        <option>c</option>
+    </select> (m1) Multiple select, no values, no selected</label>
+
+    <label><select name="m2[]" multiple="multiple">
+        <option value="A">a</option>
+        <option value="B">b</option>
+        <option value="C">c</option>
+    </select> (m2) Multiple select, all values, no selected</label>
+
+    <label><select name="m3[]" multiple="multiple">
+        <option>a</option>
+        <option>b</option>
+        <option value="C">c</option>
+    </select> (m3) Multiple select, some values, no selected</label>
+
+    <label><select name="m4[]" multiple="multiple">
+        <option>a</option>
+        <option selected="selected">b</option>
+        <option>c</option>
+    </select> (m4) Multiple select, no values, 1 selected</label>
+
+    <label><select name="m5[]" multiple="multiple">
+        <option value="A">a</option>
+        <option value="B" selected="selected">b</option>
+        <option value="C">c</option>
+    </select> (m5) Multiple select, all values, selected</label>
+
+    <label><select name="m6[]" multiple="multiple">
+        <option>a</option>
+        <option selected="selected">b</option>
+        <option value="C">c</option>
+    </select> (m6) Multiple select, some values, non-val selected</label>
+
+    <label><select name="m7[]" multiple="multiple">
+        <option>a</option>
+        <option>b</option>
+        <option value="C" selected="selected">c</option>
+    </select> (m7) Multiple select, some values, val selected</label>
+
+    <label><select name="m8[]" multiple="multiple">
+        <option>a</option>
+        <option selected="selected">b</option>
+        <option selected="selected">c</option>
+    </select> (m8) Multiple select, no values, 2 selected</label>
+
+    <label><select name="m9[]" multiple="multiple">
+        <option value="A">a</option>
+        <option value="B" selected="selected">b</option>
+        <option value="C" selected="selected">c</option>
+    </select> (m9) Multiple select, all values, 2 selected</label>
+
+    <label><select name="m10[]" multiple="multiple">
+        <option selected="selected">a</option>
+        <option selected="selected">b</option>
+        <option value="C">c</option>
+    </select> (m10) Multiple select, some values, 2 non-val selected</label>
+
+    <label><select name="m11[]" multiple="multiple">
+        <option>a</option>
+        <option value="B" selected="selected">b</option>
+        <option value="C" selected="selected">c</option>
+    </select> (m11) Multiple select, some values, 2 val selected</label>
+
+    <label><select name="m12[]" multiple="multiple">
+        <option>a</option>
+        <option selected="selected">b</option>
+        <option value="C" selected="selected">c</option>
+    </select> (m12) Multiple select, some values, 1 val, 1 non-val selected</label>
+
+    <label><select name="m13[]" multiple="multiple"></select> (m13) Multiple select, no options</label>
+    <input type="submit" name="submit" value="Submit">
+</form>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+<script type="text/javascript" src="../../../build/connection/connection.js"></script>
+<script type="text/javascript" src="../../../build/json/json.js"></script>
+<script type="text/javascript">
+(function () {
+
+var t = YAHOO.tool,
+    u = YAHOO.util,
+    w = YAHOO.widget,
+    TestSuite   = t.TestSuite,
+    TestCase    = t.TestCase,
+    TestLogger  = t.TestLogger,
+    TestRunner  = t.TestRunner,
+    Event       = u.Event,
+    Dom         = u.Dom,
+    Assert      = u.Assert,
+    AAssert     = u.ArrayAssert,
+    OAssert     = u.ObjectAssert,
+    FormAssert,
+    frm         = Dom.get('frm'),
+    suite;
+
+FormAssert = {
+    fieldValueIs : function (field,values,message) {
+        var pass = true,opt,i,x,vals,f,v;
+
+        switch (field.type || field[0].type) {
+            case 'checkbox' :
+                if (typeof values === 'object') {
+                    vals = {};
+                    for (i=field.length-1; i>=0; --i) {
+                        if (field[i].checked) { vals[field[i].value] = true; }
+                    }
+
+                    for (i=values.length-1; i>=0; --i) {
+                        // received value not checked in the element
+                        if (!(values[i] in vals)) {
+                            pass = false;
+                            break;
+                        }
+                        delete vals[values[i]];
+                    }
+                    if (pass) {
+                        // Unaccounted for value(s)
+                        for (v in vals) {
+                            if (vals.hasOwnProperty(v)) {
+                                pass = false;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    if ((field[i].value === values && !field[i].checked) ||
+                        (field[i].value !== values && field[i].checked)) {
+                        pass = false;
+                        break;
+                    }
+                }
+                break;
+
+            case 'radio' :
+                for (i=field.length-1; i >= 0; --i) {
+                    if ((field[i].value === values && !field[i].checked) ||
+                        (field[i].value !== values && field[i].checked)) {
+                        pass = false;
+                    }
+                }
+                break;
+            case 'select-one':
+                if (field.selectedIndex > -1) {
+                    opt = field.options[field.selectedIndex],
+                    v = (opt.attributes.value &&
+                         opt.attributes.value.specified) ? opt.value : opt.text;
+                    pass = (v == values);
+                } else {
+                    pass = false;
+                }
+                break;
+            case 'select-multiple':
+                vals = {};
+                for (i=field.options.length-1; i>=0; --i) {
+                    if (field.options[i].selected) {
+                        opt = field.options[i],
+                        v = (opt.attributes.value &&
+                             opt.attributes.value.specified) ?
+                                opt.value : opt.text;
+                        vals[v] = true;
+                    }
+                }
+
+                for (i=values.length-1; i>=0; --i) {
+                    // received value not selected in the element
+                    if (!(values[i] in vals)) {
+                        pass = false;
+                        break;
+                    }
+                    delete vals[values[i]];
+                }
+                if (pass) {
+                    // Unaccounted for value(s)
+                    for (v in vals) {
+                        if (vals.hasOwnProperty(v)) {
+                            pass = false;
+                            break;
+                        }
+                    }
+                }
+                break;
+            case 'submit': 
+            case 'text':
+                pass = (field.value === values);
+                break;
+
+            // ignore other input types (file,reset,button)
+        }
+                    
+        if (!pass) {
+            throw new YAHOO.util.AssertionError(Assert._formatMessage(message, "Form field name:values do not match.\n"+(field.name||field[0].name) + "\n" + YAHOO.lang.dump(values)));
+        }
+    }
+};
+
+suite = new TestSuite("Tests");
+
+suite.add(new TestCase({
+    name : "setForm",
+
+    setUp : function () {
+        var t = this;
+        function handler(o) {
+            t.response = o;
+            t.resume(t.verify);
+        }
+        this.uri = "submitReporter.php";
+        this.callback = {
+            success : handler,
+            failure : handler,
+            timeout : 3000
+        };
+
+        //TODO: create the form in testbed and destroy it in tearDown
+        frm.foo.value = "bar";
+
+        frm["c0[]"][0].checked =
+        frm["c0[]"][1].checked =
+        frm["c0[]"][2].checked =
+
+        frm["c1[]"][1].checked =
+        frm["c1[]"][2].checked =
+
+        frm["c2[]"][1].checked =
+        frm["c2[]"][2].checked =
+
+        frm["c4[]"][0].checked =
+        frm["c4[]"][2].checked =
+
+        frm.r0[0].checked =
+        frm.r0[1].checked =
+        frm.r0[2].checked =
+
+        frm.r1[0].checked =
+        frm.r1[2].checked =
+
+        frm.r2[0].checked =
+        frm.r2[2].checked =
+
+        frm.r3[0].checked =
+        frm.r3[2].checked =
+
+        frm.r4[0].checked =
+        frm.r4[2].checked = false;
+
+        frm["c1[]"][0].checked =
+
+        frm["c2[]"][0].checked =
+
+        frm["c3[]"][0].checked =
+        frm["c3[]"][1].checked =
+        frm["c3[]"][2].checked =
+
+        frm["c4[]"][1].checked =
+
+        frm.r1[0].checked =
+
+        frm.r2[0].checked =
+
+        frm.r3[0].checked =
+
+        frm.r4[0].checked = true;
+
+        frm.s0.options[0].selected =
+        frm.s0.options[1].selected =
+        frm.s0.options[2].selected =
+
+        frm.s1.options[0].selected =
+        frm.s1.options[1].selected =
+        frm.s1.options[2].selected =
+
+        frm.s2.options[0].selected =
+        frm.s2.options[1].selected =
+        frm.s2.options[2].selected =
+
+        frm.s3.options[0].selected =
+        frm.s3.options[1].selected =
+        frm.s3.options[2].selected =
+
+        frm.s4.options[0].selected =
+        frm.s4.options[2].selected =
+
+        frm.s5.options[0].selected =
+        frm.s5.options[2].selected =
+
+        frm.s6.options[0].selected =
+        frm.s6.options[2].selected =
+
+        frm.s7.options[0].selected =
+        frm.s7.options[1].selected =
+
+        frm["m1[]"].options[0].selected =
+        frm["m1[]"].options[1].selected =
+        frm["m1[]"].options[2].selected =
+
+        frm["m2[]"].options[0].selected =
+        frm["m2[]"].options[1].selected =
+        frm["m2[]"].options[2].selected =
+
+        frm["m3[]"].options[0].selected =
+        frm["m3[]"].options[1].selected =
+        frm["m3[]"].options[2].selected =
+
+        frm["m4[]"].options[0].selected =
+        frm["m4[]"].options[2].selected =
+
+        frm["m5[]"].options[0].selected =
+        frm["m5[]"].options[2].selected =
+
+        frm["m6[]"].options[0].selected =
+        frm["m6[]"].options[2].selected =
+
+        frm["m7[]"].options[0].selected =
+        frm["m7[]"].options[1].selected =
+
+        frm["m8[]"].options[0].selected =
+
+        frm["m9[]"].options[0].selected =
+
+        frm["m10[]"].options[2].selected =
+
+        frm["m11[]"].options[0].selected =
+
+        frm["m12[]"].options[0].selected = false;
+
+
+        frm.s4.options[1].selected =
+
+        frm.s5.options[1].selected =
+
+        frm.s6.options[1].selected =
+
+        frm.s7.options[2].selected =
+
+        frm["m4[]"].options[1].selected =
+
+        frm["m5[]"].options[1].selected =
+
+        frm["m6[]"].options[1].selected =
+
+        frm["m7[]"].options[2].selected =
+
+        frm["m8[]"].options[1].selected =
+        frm["m8[]"].options[2].selected =
+
+        frm["m9[]"].options[1].selected =
+        frm["m9[]"].options[2].selected =
+
+        frm["m10[]"].options[0].selected =
+        frm["m10[]"].options[1].selected =
+
+        frm["m11[]"].options[1].selected =
+        frm["m11[]"].options[2].selected =
+
+        frm["m12[]"].options[1].selected =
+        frm["m12[]"].options[2].selected = true;
+    },
+    tearDown : function () {
+        delete this.response;
+    },
+
+    // TODO: add test using post to iframe (server responds with text/plain
+    // JSON) then compare the parsed content.
+    test_setForm_basic_GET : function () {
+        var io = YAHOO.util.Connect,
+            t  = this;
+
+        io.setForm('frm');
+        io.asyncRequest('GET',this.uri,this.callback);
+
+        this.verify = function () {
+            var o = t.response;
+            Assert.areSame(200,o.status,"Response status not 200");
+
+            try {
+                YAHOO.log(o.responseText,"info","TestLogger");
+                o = YAHOO.lang.JSON.parse(o.responseText);
+            }
+            catch (e) {
+                t.fail("JSON parse error: " + e);
+            }
+
+            FormAssert.fieldValueIs(frm.foo,o.GET.foo);
+
+            Assert.isUndefined(o.GET.c0);
+            FormAssert.fieldValueIs(frm["c1[]"],o.GET.c1);
+            FormAssert.fieldValueIs(frm["c2[]"],o.GET.c2);
+            FormAssert.fieldValueIs(frm["c3[]"],o.GET.c3);
+            FormAssert.fieldValueIs(frm["c4[]"],o.GET.c4);
+
+            Assert.isUndefined(o.GET.r0);
+            //FormAssert.fieldValueIs(frm.r1,o.GET.r1); // radios all have "on"
+            FormAssert.fieldValueIs(frm.r2,o.GET.r2);
+            //FormAssert.fieldValueIs(frm.r3,o.GET.r3); // radios all have "on"
+            FormAssert.fieldValueIs(frm.r4,o.GET.r4);
+
+            // FF defaults selectedIndex 0, Safari leaves -1
+            if (frm.s0.selectedIndex > -1) {
+                YAHOO.log("s0.selectedIndex defaulted to "+frm.s0.selectedIndex,"warn","TestRunner");
+                FormAssert.fieldValueIs(frm.s0,o.GET.s0);
+            } else {
+                YAHOO.log("s0.selectedIndex not defaulted (-1)","warn","TestRunner");
+                Assert.isUndefined(o.GET.s0);
+            }
+
+            if (frm.s1.selectedIndex > -1) {
+                YAHOO.log("s1.selectedIndex defaulted to "+frm.s1.selectedIndex,"warn","TestRunner");
+                FormAssert.fieldValueIs(frm.s1,o.GET.s1);
+            } else {
+                YAHOO.log("s1.selectedIndex not defaulted (-1)","warn","TestRunner");
+                Assert.isUndefined(o.GET.s1);
+            }
+
+            if (frm.s2.selectedIndex > -1) {
+                YAHOO.log("s2.selectedIndex defaulted to "+frm.s2.selectedIndex,"warn","TestRunner");
+                FormAssert.fieldValueIs(frm.s2,o.GET.s2);
+            } else {
+                YAHOO.log("s2.selectedIndex not defaulted (-1)","warn","TestRunner");
+                Assert.isUndefined(o.GET.s2);
+            }
+
+            if (frm.s3.selectedIndex > -1) {
+                YAHOO.log("s3.selectedIndex defaulted to "+frm.s3.selectedIndex,"warn","TestRunner");
+                FormAssert.fieldValueIs(frm.s3,o.GET.s3);
+            } else {
+                YAHOO.log("s3.selectedIndex not defaulted (-1)","warn","TestRunner");
+                Assert.isUndefined(o.GET.s3);
+            }
+
+            FormAssert.fieldValueIs(frm.s4,o.GET.s4);
+            FormAssert.fieldValueIs(frm.s5,o.GET.s5);
+            FormAssert.fieldValueIs(frm.s6,o.GET.s6);
+            FormAssert.fieldValueIs(frm.s7,o.GET.s7);
+
+            Assert.isUndefined(o.GET.m1);
+            Assert.isUndefined(o.GET.m2);
+            Assert.isUndefined(o.GET.m3);
+            FormAssert.fieldValueIs(frm['m4[]'],o.GET.m4);
+            FormAssert.fieldValueIs(frm['m5[]'],o.GET.m5);
+            FormAssert.fieldValueIs(frm['m5[]'],o.GET.m5);
+            FormAssert.fieldValueIs(frm['m6[]'],o.GET.m6);
+            FormAssert.fieldValueIs(frm['m7[]'],o.GET.m7);
+            FormAssert.fieldValueIs(frm['m8[]'],o.GET.m8);
+            FormAssert.fieldValueIs(frm['m9[]'],o.GET.m9);
+            FormAssert.fieldValueIs(frm['m10[]'],o.GET.m10);
+            FormAssert.fieldValueIs(frm['m11[]'],o.GET.m11);
+            FormAssert.fieldValueIs(frm['m12[]'],o.GET.m12);
+        };
+
+        this.wait(null,3000);
+    }
+}));
+
+Event.onDOMReady(function () {
+
+    var logger = new TestLogger("log");
+    logger.hideCategory('info');
+    logger.showCategory('warn');
+    logger.formatMsg = function (e) {
+        if (e.category === 'section') {
+            return "<h3>"+e.msg+"</h3>";
+        } else if (e.category === "break") {
+            return "<br>";
+        } else {
+            return TestLogger.prototype.formatMsg.call(this,e);
+        }
+    };
+
+    YAHOO.log("Tests","section","TestRunner");
+
+    TestRunner.add(suite);
+
+    TestRunner.run();
+    
+});
+
+})();
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js"></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

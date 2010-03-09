@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Multi-Select Calendar</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Multi-Select Calendar</h1>
+
+<div class="exampleIntro">
+	<p>By default the Calendar control is setup for single-select mode, allowing only a single date to be selected at a time. This example shows how you can easily configure the Calendar to support multiple date selections.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="cal1Container"></div>
+
+<script type="text/javascript">
+	YAHOO.namespace("example.calendar");
+
+	YAHOO.example.calendar.init = function() {
+		YAHOO.example.calendar.cal1 =
+			new YAHOO.widget.Calendar("cal1","cal1Container", { MULTI_SELECT: true } );
+
+		YAHOO.example.calendar.cal1.render();
+	}
+
+	YAHOO.util.Event.onDOMReady(YAHOO.example.calendar.init);
+</script>
+
+<div style="clear:both" ></div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Editor Data Post with Connection Manager</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<link rel="stylesheet" type="text/css" href="../../build/editor/assets/skins/sam/editor.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/editor/editor-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Editor Data Post with Connection Manager</h1>
+
+<div class="exampleIntro">
+	<p>This example demonstrates how to use <a href="http://developer.yahoo.com/yui/connection/">Connection Manager</a> to post data to the server, filter it and return it to the Editor.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+    #submitEditor {
+        margin: 1em;
+    }
+    #status {
+        margin: 2em;
+        border: 1px solid black;
+        background-color: #ccc;
+        height: 4em;
+    }
+</style>
+
+<form method="post" action="#" id="form1">
+<textarea id="editor" name="editor" rows="20" cols="75">
+This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>This is some more test text.<br>
+</textarea>
+<input type="checkbox" id="filter" checked> <label for="filter">Filter editor data on server.</label><br>
+
+<button type="button" id="submitEditor">Submit Form</button><br>
+
+<div id="status"></div>
+</form>
+
+<script>
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        status = null;
+
+        var handleSuccess = function(o) {
+            YAHOO.log('Post success', 'info', 'example');
+            var json = o.responseText.substring(o.responseText.indexOf('{'), o.responseText.lastIndexOf('}') + 1);
+            var data = eval('(' + json + ')');
+            status.innerHTML = 'Status: ' + data.Results.status + '<br>Filter: ' + data.Results.filter + '<br>' + (new Date().toString());
+            myEditor.setEditorHTML(data.Results.data);
+        }
+        var handleFailure = function(o) {
+            YAHOO.log('Post failed', 'info', 'example');
+            var json = o.responseText.substring(o.responseText.indexOf('{'), o.responseText.lastIndexOf('}') + 1);
+            var data = eval('(' + json + ')');
+            status.innerHTML = 'Status: ' + data.Results.status + '<br>';
+        }
+
+        var callback = {
+            success: handleSuccess,
+            failure: handleFailure
+        };
+
+    
+    YAHOO.log('Create Button Control (#toggleEditor)', 'info', 'example');
+    var _button = new YAHOO.widget.Button('submitEditor');
+
+    var myConfig = {
+        height: '300px',
+        width: '600px',
+        animate: true,
+        dompath: true
+    };
+
+    YAHOO.log('Create the Editor..', 'info', 'example');
+    var myEditor = new YAHOO.widget.Editor('editor', myConfig);
+    myEditor.render();
+
+    _button.on('click', function(ev) {
+        YAHOO.log('Button clicked, initiate transaction', 'info', 'example');
+        Event.stopEvent(ev);
+        myEditor.saveHTML();
+        window.setTimeout(function() {
+            var sUrl = "assets/post.php";
+            var data = 'filter=' + ((Dom.get('filter').checked) ? 'yes' : 'no') + '&editor_data=' + encodeURIComponent(myEditor.get('textarea').value);
+            var request = YAHOO.util.Connect.asyncRequest('POST', sUrl, callback, data);
+        }, 200);
+    });
+
+
+    Event.onDOMReady(function() {
+        status = Dom.get('status');
+    });
+})();
+</script>
+
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

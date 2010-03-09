@@ -1,0 +1,283 @@
+<html>
+<head>
+<title>YUI AutoComplete Tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css" />
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />
+<link type="text/css" rel="stylesheet" href="../../../build/autocomplete/assets/autocomplete.css" />
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo-min.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom-min.js"></script>
+<script type="text/javascript" src="../../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+<script type="text/javascript" src="../../../build/datasource/datasource.js"></script>
+<script type="text/javascript" src="../../../build/autocomplete/autocomplete.js"></script>
+</head>
+<body>
+<h1>AutoComplete Tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" disabled="true" /></p>
+
+<script type="text/javascript">
+
+(function() {
+    
+    var Dom=YAHOO.util.Dom,
+        Assert=YAHOO.util.Assert,
+        ObjectAssert=YAHOO.util.ObjectAssert,
+        ArrayAssert=YAHOO.util.ArrayAssert,
+        DateAssert=YAHOO.util.DateAssert,
+        UserAction=YAHOO.util.UserAction,
+        TestCase = YAHOO.tool.TestCase,
+        TestLogger = YAHOO.tool.TestLogger,
+        TestRunner = YAHOO.tool.TestRunner,
+        TestSuite = YAHOO.tool.TestSuite,
+
+        DS = YAHOO.util.DataSource,
+        AutoComplete = YAHOO.widget.AutoComplete;
+        
+
+    var AutoCompleteTestCase = function (template) {
+        AutoCompleteTestCase.superclass.constructor.call(this, template);
+    };
+    YAHOO.lang.extend(AutoCompleteTestCase, TestCase);
+
+    AutoCompleteTestCase.prototype.setUp = function() {
+        this.count = 0;
+        this.wrappers = [];
+        this.inputs = [];
+        this.containers = [];
+        this.instances = [];
+        this.data = ["aaa","abc","axyz"];
+
+        
+    };
+
+     AutoCompleteTestCase.prototype.tearDown = function() {
+        if (this.wrappers != null && (this.wrappers.length > 0)) {
+            for(var i=0; i<this.wrappers.length; i++) {
+                YAHOO.util.Event.purgeElement(this.wrappers[i], true);
+                document.body.removeChild(this.wrappers[i]);
+            }
+        }
+
+        delete this.datasource;
+        delete this.containers;
+        delete this.inputs;
+        delete this.wrappers;
+        delete this.instances;
+    };
+        
+    AutoCompleteTestCase.prototype.createInstance = function(oConfig) {
+        this.datasource = new DS(this.data);
+        
+        var nCount = this.count;
+        this.count++;
+        this.wrappers[nCount] = document.createElement("div");
+        this.wrappers[nCount].id = "acWrapper"+nCount;
+        document.body.appendChild(this.wrappers[nCount]);
+
+        this.inputs[nCount] = document.createElement("input");
+        this.inputs[nCount].id = "acInput"+nCount;
+        this.wrappers[nCount].appendChild(this.inputs[nCount]);
+
+        this.containers[nCount] = document.createElement("div");
+        this.containers[nCount].id = "acContainer"+nCount;
+        this.wrappers[nCount].appendChild(this.containers[nCount]);
+
+        this.instances[nCount] = new AutoComplete(this.inputs[nCount], this.containers[nCount], this.datasource, oConfig);
+        return this.instances[nCount];
+    };
+    
+    var acApiTemplate = {
+        name: "AutoComplete API Test Case",
+        
+        testConstruction: function() {
+            var ac = this.createInstance();
+            Assert.isObject(ac, "Failed to create basic instance");
+            Assert.isInstanceOf(AutoComplete, ac, "Failed to create basic instance");
+        },
+
+        testDestroy: function() {
+            var ac = this.createInstance();
+            ac.destroy();
+            Assert.isNull(ac.dataSource, "Expected datasource to be null");
+            Assert.isNull(ac._elContainer, "Expected container to be null");
+            Assert.isNull(ac._elTextbox, "Expected textbox to be null");
+        },
+
+        testSetHeader: function() {
+            var ac = this.createInstance();
+            ac.setHeader("header");
+            var el = YAHOO.util.Dom.getElementsByClassName("yui-ac-hd", "div", this.container)[0];
+            Assert.areSame("header", el.innerHTML, "Expected header content to be \"header\"");
+        },
+
+        testSetBody: function() {
+            var ac = this.createInstance();
+            ac.setBody("body");
+            var el = YAHOO.util.Dom.getElementsByClassName("yui-ac-bd", "div", this.container)[0];
+            Assert.areSame("body", el.innerHTML, "Expected body content to be \"body\"");
+        },
+
+        testSetFooter: function() {
+            var ac = this.createInstance();
+            ac.setFooter("footer");
+            var el = YAHOO.util.Dom.getElementsByClassName("yui-ac-ft", "div", this.container)[0];
+            Assert.areSame("footer", el.innerHTML, "Expected footer content to be \"footer\"");
+        },
+
+        testGetListEl: function() {
+            var ac = this.createInstance();
+            ac.sendQuery("a");
+            var el = ac.getListEl();
+            Assert.areSame(el.tagName.toLowerCase(), "ul", "Expected UL element");
+        },
+
+        testExpandCollapseContainer: function() {
+            var ac = this.createInstance();
+            ac.setBody("BODY");
+            Assert.areSame(ac._elContent.style.display, "none", "Expected container to be closed");
+            ac.expandContainer();
+            Assert.areNotSame(ac._elContent.style.display, "none", "Expected container to be open");
+            ac.collapseContainer();
+            Assert.areSame(ac._elContent.style.display, "none", "Expected container to be closed again");
+        },
+
+        testClearList: function() {
+            var ac = this.createInstance();
+            ac.sendQuery("a");
+            
+            var els = ac.getListItems();
+            for(var i=0; i<3; i++) {
+                Assert.areNotSame(els[i].style.display, "none", "Expected suggestion items to be displayed");
+            }
+            for(i=3; i<els.length; i++) {
+                Assert.areSame(els[i].style.display, "none", "Expected rest of the list to not be displayed");
+            }
+            ac.clearList();
+            for(i=0; i<els.length; i++) {
+                Assert.areSame(els[i].style.display, "none", "Expected no items to be displayed");
+            }
+        },
+
+        testGetListItems: function() { // deprecated
+            var ac = this.createInstance();
+            ac.sendQuery("a");
+            var els = ac.getListItems();
+            ArrayAssert.itemsAreSame(els, ac.getListEl().childNodes, "Expected LI elements");
+        },
+
+        testGetListItemData: function() {
+            var ac = this.createInstance();
+            ac.sendQuery("a");
+            var data = ac.getListItemData(ac.getListItems()[0]); // deprecated
+            ArrayAssert.itemsAreSame(["aaa"], data, "Expected data");
+
+            ac.sendQuery("a");
+            data = ac.getListItemData(ac.getListEl().firstChild);
+            ArrayAssert.itemsAreSame(["aaa"], data, "Expected data");
+
+            ac.resultTypeList = false;
+            ac.sendQuery("a");
+            data = ac.getListItemData(ac.getListEl().firstChild);
+            ArrayAssert.itemsAreSame("aaa", data, "Expected data");
+        },
+        
+        testGetListItemDataObject: function() {
+            this.data = [{name:"aaa",id:1},{name:"abc",id:2},{name:"axyz",id:3}]
+            var ac = this.createInstance();
+            ac.dataSource.responseSchema = {fields:["name", "id"]};
+            ac.resultTypeList = false;
+            ac.sendQuery("a");
+            var data = ac.getListItemData(ac.getListEl().firstChild);
+            Assert.areSame("aaa", data.name, "Expected data");
+            Assert.areSame(1, data.id, "Expected data");
+
+            ac.sendQuery("axyz");
+            data = ac.getListItemData(ac.getListEl().firstChild);
+            Assert.areSame("ax", data.name, "Expected data");
+            Assert.areSame(3, data.id, "Expected data");
+        },
+
+        testGetListItemIndex: function() {
+            var ac = this.createInstance();
+            ac.sendQuery("a");
+            var index = ac.getListItemIndex(ac.getListEl().firstChild);
+            Assert.areSame(0, index, "Expected index");
+        },
+        
+        testGetListItemMatch: function() {
+            var ac = this.createInstance();
+            ac.sendQuery("a");
+            var data = ac.getListItemMatch(ac.getListEl().firstChild);
+            Assert.areSame("aaa", data, "Expected match");
+        },
+
+        testFormatResult: function() {
+            var ac = this.createInstance();
+            ac.formatResult = function(oResultData, sQuery, sResultMatch) {           
+                ArrayAssert.itemsAreSame(["aaa"], oResultData);
+                Assert.areSame("aa", sQuery);
+                Assert.areSame("aaa", sResultMatch);
+            };
+            ac.sendQuery("aa"); // query for only one result
+        },
+        
+        testGetListItemDataObject: function() {
+            this.data = [{name:"aaa",id:1},{name:"abc",id:2},{name:"axyz",id:3}]
+            var ac = this.createInstance();
+            ac.dataSource.responseSchema = {fields:["name", "id"]};
+            ac.resultTypeList = false;
+            ac.formatResult = function(oResultData, sQuery, sResultMatch) {           
+                Assert.areSame("axyz", oResultData.name);
+                Assert.areSame(3, oResultData.id);
+                Assert.areSame("ax", sQuery);
+                Assert.areSame("axyz", sResultMatch);
+            };
+            ac.sendQuery("ax"); // query for only one result
+        },
+
+        testGenerateRequestXHR: function() {
+            this.data = "http://path/to/server";
+            var ac = this.createInstance();
+            var request = ac.generateRequest("abc");
+            Assert.areSame("?query=abc", request);
+            
+            ac.dataSource.scriptQueryAppend = "foo=bar"; // backward compatibility
+            request = ac.generateRequest("abc");
+            Assert.areSame("?query=abc&foo=bar", request);
+            
+            ac.dataSource.scriptQueryParam = "search"; // backward compatibility
+            request = ac.generateRequest("abc");
+            Assert.areSame("?search=abc&foo=bar", request);
+
+            ac.queryQuestionMark = false;
+            ac.dataSource.liveData = "http://path/to/server?";
+            request = ac.generateRequest("abc");
+            Assert.areSame("search=abc&foo=bar", request);            
+        }
+    };
+    var acApiTest = new AutoCompleteTestCase(acApiTemplate);
+
+    YAHOO.util.Event.addListener(window, "load", function() {
+        var logger = new TestLogger();
+        
+        var acsuite = new TestSuite("AutoComplete Test Suite");
+        acsuite.add(acApiTest);
+
+        TestRunner.add(acsuite);
+
+        YAHOO.util.Event.addListener("btnRun", "click", function(){TestRunner.run();});
+        YAHOO.util.Dom.get("btnRun").disabled = false;
+
+        if (parent && parent != window) {
+            YAHOO.tool.TestManager.load();
+        }
+        
+        TestRunner.run();
+    });
+})();
+
+</script>
+</body>
+</html>

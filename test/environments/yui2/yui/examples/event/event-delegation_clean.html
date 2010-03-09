@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Using Event Utility and Event Delegation to Improve Performance</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/selector/selector-min.js"></script>
+<script type="text/javascript" src="../../build/event-delegate/event-delegate-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+
+#list li { 
+	cursor: pointer;
+}
+
+#list li.selected {
+	background-color: red;	
+}
+
+#list li.hover {
+	background-color: yellow;
+}
+
+</style>
+
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Using Event Utility and Event Delegation to Improve Performance</h1>
+
+<div class="exampleIntro">
+	<p>
+Event delegation is a technique whereby you use a single event handler on a 
+parent element to listen for interactions that affect the parent's descendant 
+elements; because events on the descendant elements will bubble up to the 
+parent, this can be a reliable and extremely efficient mitigation strategy for 
+reducing the number of resource-consuming event handlers you have on any given 
+page. (<a href="http://yuiblog.com/blog/2007/01/17/event-plan/">You can read 
+more about Event Delegation in this YUIBlog article</a>.)
+</p>
+<p>
+In the example below, mousing over an item in the list will change its 
+background color to yellow.  Clicking an item will change its 
+background color to red.  Because we're using event delegation, only one event 
+listener is needed for each type of event (<code>click</code>, 
+<code>mouseover</code>, and <code>mouseout</code>), regardless of the size of 
+the list.  To illustrate this point, click the "Add Item" button to append more 
+items to list.  An infinite number of items can be added to the list, and still 
+just one <code>click</code>, <code>mouseover</code>, and <code>mouseout</code> 
+event handler is required to highlight the items.
+</p>			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="container">
+	<ul id="list">
+		<li id="li-1">List Item 1</li>
+		<li id="li-2">List Item 2</li>
+		<li id="li-3">List Item 3</li>
+		<li id="li-4">List Item 4</li>
+		<li id="li-5">List Item 5</li>
+	</ul>
+</div>
+<button id="add-item">Add Item</button>
+
+<script type="text/javascript">
+
+(function() {
+
+var Dom = YAHOO.util.Dom,
+	Event = YAHOO.util.Event;
+
+var onLIClick = function (event, matchedEl, container) {
+
+	if (Dom.hasClass(matchedEl, "selected")) {
+		Dom.removeClass(matchedEl, "selected");		
+	}
+	else {
+		Dom.addClass(matchedEl, "selected");
+	}
+
+};
+
+//	Use the "delegate" method to attach a "click" event listener to the 
+//	container (<div id="container">).  The listener will only be called if the 
+//	target of the click event matches the element specified via the CSS 
+//	selector passed as the fourth argument to the delegate method.
+
+Event.delegate("container", "click", onLIClick, "li");
+
+var onLIMouseOver = function (event, matchedEl, container) {
+
+	Dom.addClass(matchedEl, "hover");
+};
+
+var onLIMouseOut = function (event, matchedEl, container) {
+
+	Dom.removeClass(matchedEl, "hover");
+	
+};
+
+
+//	Use the "delegate" method to attach a mouseover and mouseout event listener 
+//	to the container (<div id="container">).  The listener will only be called  
+//	if the target of the click event matches the element specified via the CSS 
+//	selector passed as the fourth argument to the delegate method.
+
+Event.delegate("container", "mouseover", onLIMouseOver, "li");
+Event.delegate("container", "mouseout", onLIMouseOut, "li");
+
+
+//	Add a click event listener to the button that will add new items to the list
+//	to illustrate that new items can be added and the existing click, mouseover,
+//	and mouseout event listeners will apply to them as well.
+
+Event.on("add-item", "click", function (event) {
+
+	var list = Dom.get("list"),
+		items = Dom.getChildren(list),
+ 		nItemNumber = (items.length + 1),
+ 		fragment = Dom.get("container").ownerDocument.createElement("div");
+	
+	fragment.innerHTML = '<li id ="li-'+ nItemNumber +'">List Item ' + nItemNumber + '</li>';
+
+	list.appendChild(fragment.firstChild);
+	
+});
+
+})();
+
+</script>
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

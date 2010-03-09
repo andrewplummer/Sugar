@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>YQLDataSource</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/get/get-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css" class="highlight-ignore">
+    #demo table {
+        border: 1px solid #aaa;
+        border-collapse: collapse;
+        font-size: 80%;
+    }
+    #demo caption {
+        margin-top: 1em;
+        padding: .5ex 0;
+        font-size: 130%;
+        color: #369;
+    }
+    #demo td {
+        border: 1px solid #aaa;
+        padding: .5ex 1ex;
+    }
+    #demo th {
+        background: #ccc;
+        border: 1px solid #aaa;
+        padding: .5ex 1ex;
+    }
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>YQLDataSource</h1>
+
+<div class="exampleIntro">
+	<p>Inspired by Jonathan LeBlanc's <a href="http://www.yuiblog.com/blog/2009/06/17/yui-and-yql/">article on the YUI Blog</a>, the YQLDataSource class makes it easier to use YQL data in <a href="http://developer.yahoo.com/yui/datatable/">DataTable</a>, <a href="http://developer.yahoo.com/yui/charts/">Charts</a>, or <a href="http://developer.yahoo.com/yui/autocomplete/">AutoComplete</a>. The DataTable below is built using the YQLDataSource class.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="Container"></div>
+
+<script type="text/javascript">
+YAHOO.util.YQLDataSource = function (oLiveData, oConfigs) {
+	oLiveData = oLiveData || 'http://query.yahooapis.com/v1/public/yql?format=json&q=';
+	YAHOO.util.YQLDataSource.superclass.constructor.call(this, oLiveData, oConfigs);
+};
+
+YAHOO.lang.extend(YAHOO.util.YQLDataSource, YAHOO.util.ScriptNodeDataSource, {
+	responseType:YAHOO.util.DataSource.TYPE_JSON,
+	parseJSONData: function  ( oRequest , oFullResponse ) {
+		var i,q = oFullResponse.query.results,
+			rSch = this.responseSchema,
+			fs = {};
+
+		if ('fields' in rSch  && rSch.fields.length) {
+			for (i = 0;i < rSch.fields.length;i++) {
+				fs[rSch.fields[i].key || rSch.fields[i]] = i;
+			}
+		} else {
+			rSch.fields = [];
+		}
+		var pushFields = function(node,prefix) {
+			if (prefix) {
+				prefix += '.';
+			} else {
+				prefix = '';
+			}
+			for (var field in node) {
+				if (node.hasOwnProperty(field) && !(field in fs)) {
+					if (YAHOO.lang.isObject(node[field])) {
+						pushFields(node[field],prefix + field);
+					} else {
+						rSch.fields.push(prefix + field);
+					}
+				}
+			}
+		};
+
+		for (var list in q) {
+			if (q.hasOwnProperty(list)) {
+				rSch.resultsList = rSch.resultsList || 'query.results.' + list;
+				pushFields(q[list][0]);
+				return YAHOO.util.YQLDataSource.superclass.parseJSONData.apply(this,arguments);
+			}
+		}
+	},
+	makeConnection : function(oRequest, oCallback, oCaller) {
+		YAHOO.util.YQLDataSource.superclass.makeConnection.call(this,encodeURIComponent(oRequest),oCallback,oCaller);
+	}
+});
+
+YAHOO.lang.augmentObject(YAHOO.util.YQLDataSource, YAHOO.util.DataSourceBase);
+
+YAHOO.util.Event.onDOMReady(function () {
+	(new YAHOO.widget.DataTable(
+		'Container',
+		[
+			{key:"id",label:"ID",resizeable:true},
+			{key:"owner",label:"Owner",resizeable:true},
+			{key:"title",label:"Title",resizeable:true},
+			{key:"img",label:"Photo", formatter: function(elCell, oRecord, oColumn, oData) {
+				elCell.innerHTML = YAHOO.lang.substitute(
+					'<img src="http://farm3.static.flickr.com/{server}/{id}_{secret}.jpg?v=0" width="80" height="80" />',
+					oRecord.getData()
+				);
+			}}
+		],
+		new YAHOO.util.YQLDataSource(),
+		{
+			initialRequest:'select * from flickr.photos.search where text = "YDN"'
+		}
+	));
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

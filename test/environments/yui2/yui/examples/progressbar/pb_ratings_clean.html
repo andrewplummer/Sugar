@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Ratings</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/datatable/assets/skins/sam/datatable.css" />
+<link rel="stylesheet" type="text/css" href="../../build/progressbar/assets/skins/sam/progressbar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/get/get-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/datatable/datatable-min.js"></script>
+<script type="text/javascript" src="../../build/progressbar/progressbar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+.yui-skin-sam .ratings {
+	background: transparent url(../progressbar/assets/star-bg.png) repeat-x 0 0;
+	border:0;
+}
+.yui-skin-sam .ratings .yui-pb-mask {
+	border:0;
+}
+.yui-skin-sam .ratings .yui-pb-bar  {
+	background: transparent url(../progressbar/assets/star.png) repeat-x 0 0;
+}
+
+/* Just a little decoration for the page, not relevant to the usage of the progress bar */
+
+.dp-highlighter th, .dp-highlighter td {
+	border:0;
+	padding:0;
+}
+.dp-highlighter .line1, .dp-highlighter  .line2 {
+	padding-left:10px;
+	white-space:nowrap;
+}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Ratings</h1>
+
+<div class="exampleIntro">
+	<p>The ProgressBar can be used within other widgets. Here we are using Yahoo! Query Language, <a href="http://developer.yahoo.com/yql/">YQL</a>, to find sushi restaurants in San Francisco, CA and display the information in a <a href="http://developer.yahoo.com/yui/datatable/">DataTable</a>. We are showing most of the fields as plain text, but the restaurant ratings are displayed using the ProgressBar.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="Container"></div>
+
+<script type="text/javascript" src="assets/YQLDataSource.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+	YAHOO.util.Event.onDOMReady(function () {
+		var pbs = [];
+		var ratingFormatter = function (elLiner, oRecord, oColumn, oData) {
+			var pb = new YAHOO.widget.ProgressBar({
+				width:'90px',
+				height:'18px',
+				maxValue:5,
+				className:'ratings',
+				value:oData
+			}).render(elLiner);
+			pbs.push(pb);
+		};
+
+		var dt = new YAHOO.widget.DataTable(
+			'Container',
+			[
+				{key:"Title",sortable:true},
+				{key:"Address",sortable:true},
+				{key:"Phone",sortable:true},
+				{key:"Rating.AverageRating",label:"Rating",	sortable:true, formatter:ratingFormatter}
+			],
+			new YAHOO.util.YQLDataSource(null, {responseSchema:{fields:[{key:"Rating.AverageRating",parser:"number"}]}}),
+			{
+				initialRequest:'select Title,Address,Phone, Rating.AverageRating from local.search where query="sushi" and location="san francisco, ca"'
+			}
+		);
+		dt.on('beforeRenderEvent',function() {
+			for (var i = 0; i<pbs.length; i++) {
+				pbs[i].destroy();
+			}
+			pbs = [];
+		});
+    });
+});
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

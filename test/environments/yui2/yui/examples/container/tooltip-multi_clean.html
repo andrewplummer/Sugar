@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>One Tooltip, Many Context Elements</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	.ttGroup {
+		float:left;
+		margin:10px;
+	}
+
+	.ttGroup .grphd  {
+		font-weight:bold;
+		background-color:#ccc;
+		border:1px solid #000;
+		padding:2px;
+	}
+
+	.ttGroup .grpbd {
+		padding:10px;
+	}
+
+	#ttGroupB:after {
+		content:".";
+		display:block;
+		clear:left;
+		visibilty:hidden
+	 	height:0;
+		width:0;	
+	}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>One Tooltip, Many Context Elements</h1>
+
+<div class="exampleIntro">
+	<p>In the example below, a single Tooltip instance is used to display tooltips for multiple context elements.</p>
+<ol>
+	<li>For one set of links <em>(Group A)</em>, the Tooltip text is provided by the title attribute of the link</li>
+	<li>For the other set <em>(Group B)</em>, we'll use context related events to set the text property
+	    just before the the tooltip is displayed for each link</li> 
+</ol>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div class="ttGroup" id="ttGroupA">
+	<div class="grphd">Group A: Single Tooltip, text set using title</div>
+	<div class="grpbd" id="containerA"></div>
+</div>
+<div class="ttGroup" id="ttGroupB">
+	<div class="grphd">Group B: Single Tootip, text set using events</div>
+	<div class="grpbd" id="containerB"></div>
+</div>
+
+<script type="text/javascript">
+	YAHOO.namespace("example.container");
+
+	YAHOO.example.container.init = function() {
+
+		// CREATE LINKS FOR EXAMPLE
+
+		function createLink(i, container, title) {
+			var a = document.createElement("a");
+			a.href = "http://www.yahoo.com/";
+			a.innerHTML = i + ".  Hover over me to see my Tooltip";
+
+			if (title) {
+				a.title = title;
+			}
+
+			container.appendChild(a);
+			container.appendChild(document.createElement("br"));
+			container.appendChild(document.createElement("br"));
+			return a;
+		}
+
+		function createTitledLinks() {
+			var ids = [];
+			var container = YAHOO.util.Dom.get("containerA");
+			for (var i = 1; i <= 5; i++) {
+				// NOTE: We're setting up titles for these links
+				var a = createLink(i, container, "Tooltip for link A" + i + ", set through title");
+				a.id = "A" + i;
+				ids.push(a.id);
+			}
+			return ids;
+		}
+
+		function createUntitledLinks() {
+			var ids = [];
+			var container = YAHOO.util.Dom.get("containerB");
+			for (var i = 1; i <= 5; i++) {
+
+				// NOTE: We're not setting up titles for these links
+				var a = createLink(i, container, null);
+				a.id = "B" + i;
+				ids.push(a.id);
+
+				// Change standard text for the 3rd link, to reflect
+				// that we'll disable the tooltip for it.
+				if ( i == 3 ) {
+					a.innerHTML = i + ". Tooltip display prevented";
+				} 
+			}
+			return ids;
+		}
+
+		var groupAIds = createTitledLinks();
+		var groupBIds = createUntitledLinks();
+
+		// TOOLTIP CODE
+
+		// For links in group A which all have titles, this is all we need.
+		// The tooltip text for each context element will be set from the title attribute
+
+		// We'll also setup Tooltip A to use the FADE ContainerEffect
+		var ttA = new YAHOO.widget.Tooltip("ttA", { 
+			context:groupAIds,
+			effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.20}
+		});
+
+		// For links in group B, we'll set the tooltip text dynamically, 
+		// right before the tooltip is triggered, using the id of the triggering context.
+		// We'll also prevent the tooltip from being displayed for link B3.
+
+		var ttB = new YAHOO.widget.Tooltip("ttB", { 
+			context:groupBIds
+		});
+
+		// Stop the tooltip from being displayed for link B3.
+		ttB.contextMouseOverEvent.subscribe(
+			function(type, args) {
+				var context = args[0];
+				if (context && context.id == "B3") {
+					return false;
+				} else {
+					return true;
+				}	
+			}
+		);
+
+		// Set the text for the tooltip just before we display it.
+		ttB.contextTriggerEvent.subscribe(
+			function(type, args) {
+				var context = args[0];
+				this.cfg.setProperty("text", "Tooltip for " + context.id + ", set using contextTriggerEvent");
+			}
+		);
+	};
+
+	YAHOO.util.Event.addListener(window, "load", YAHOO.example.container.init);
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

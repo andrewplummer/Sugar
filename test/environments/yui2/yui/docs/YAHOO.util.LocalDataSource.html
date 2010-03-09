@@ -1,0 +1,426 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: datasource  YAHOO.util.LocalDataSource   (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>DataSource Utility&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_datasource.html" title="datasource">datasource</a>
+                 &gt; YAHOO.util.LocalDataSource 
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <h2>
+                        
+
+                        
+                        
+                            Class <b property="yui:name">YAHOO.util.LocalDataSource</b>
+                        <span class="extends">
+                           - extends <a href="YAHOO.util.DataSourceBase.html" title="YAHOO.util.DataSourceBase">YAHOO.util.DataSourceBase</a>
+                        </span>
+
+                    </h2>
+                    <!-- class tree goes here -->
+                    
+                
+  
+
+                    <div class="summary description" property="yui:description">
+                        LocalDataSource class for in-memory data structs including JavaScript arrays,
+JavaScript object literals (JSON), XML documents, and HTML tables.
+                    </div>
+
+                        <div class="section constructor details" rel="yui:constructor" resource="#constructor">
+                        <h3 id="constructor">Constructor</h3>
+                        <div class="content">
+                            <div class="detail">
+                                <strong property="yui:name">YAHOO.util.LocalDataSource</strong>
+                                <code>
+                                    (
+  
+                                        
+                                                
+                                                oLiveData
+
+                                                , 
+                                                oConfigs
+                                    )
+                                </code>
+                                <div class="description">
+                                        <dl rel="yui:parameters">
+                                            <dt>Parameters:</dt>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">oLiveData</span>
+                                                    &lt;<span property="yui:type">HTMLElement</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">   Pointer to live data.</span>
+                                                </dd>
+                                                <dd rel="yui:parameter">
+                                                    <code><span property="yui:name">oConfigs</span>
+                                                    &lt;<span property="yui:type">object</span>&gt;
+                                                    </code>
+                                                    <span property="yui:description">  (optional) Object literal of configuration values.</span>
+                                                </dd>
+                                        </dl>
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div rel="yui:properties" resource="#properties">
+
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.DataSourceBase.html">
+                            <h4>Properties inherited from <a href="YAHOO.util.DataSourceBase.html" property="yui:name" title="YAHOO.util.DataSourceBase">YAHOO.util.DataSourceBase</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property__aCache">
+                                        <a class="private" href="YAHOO.util.DataSourceBase.html#property__aCache" property="yui:name" title="_aCache">_aCache</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property__aIntervals">
+                                        <a class="private" href="YAHOO.util.DataSourceBase.html#property__aIntervals" property="yui:name" title="_aIntervals">_aIntervals</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property__oQueue">
+                                        <a class="private" href="YAHOO.util.DataSourceBase.html#property__oQueue" property="yui:name" title="_oQueue">_oQueue</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property__sName">
+                                        <a class="private" href="YAHOO.util.DataSourceBase.html#property__sName" property="yui:name" title="_sName">_sName</a><span class="private">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_dataType">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_dataType" property="yui:name" title="dataType">dataType</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_ERROR_DATAINVALID">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_ERROR_DATAINVALID" property="yui:name" title="ERROR_DATAINVALID">ERROR_DATAINVALID</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_ERROR_DATANULL">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_ERROR_DATANULL" property="yui:name" title="ERROR_DATANULL">ERROR_DATANULL</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_liveData">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_liveData" property="yui:name" title="liveData">liveData</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_maxCacheEntries">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_maxCacheEntries" property="yui:name" title="maxCacheEntries">maxCacheEntries</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_parseJSONArgs">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_parseJSONArgs" property="yui:name" title="parseJSONArgs">parseJSONArgs</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_responseSchema">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_responseSchema" property="yui:name" title="responseSchema">responseSchema</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_responseType">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_responseType" property="yui:name" title="responseType">responseType</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_HTMLTABLE">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_HTMLTABLE" property="yui:name" title="TYPE_HTMLTABLE">TYPE_HTMLTABLE</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_JSARRAY">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_JSARRAY" property="yui:name" title="TYPE_JSARRAY">TYPE_JSARRAY</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_JSFUNCTION">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_JSFUNCTION" property="yui:name" title="TYPE_JSFUNCTION">TYPE_JSFUNCTION</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_JSON">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_JSON" property="yui:name" title="TYPE_JSON">TYPE_JSON</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_LOCAL">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_LOCAL" property="yui:name" title="TYPE_LOCAL">TYPE_LOCAL</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_SCRIPTNODE">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_SCRIPTNODE" property="yui:name" title="TYPE_SCRIPTNODE">TYPE_SCRIPTNODE</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_TEXT">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_TEXT" property="yui:name" title="TYPE_TEXT">TYPE_TEXT</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_UNKNOWN">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_UNKNOWN" property="yui:name" title="TYPE_UNKNOWN">TYPE_UNKNOWN</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_XHR">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_XHR" property="yui:name" title="TYPE_XHR">TYPE_XHR</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_TYPE_XML">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_TYPE_XML" property="yui:name" title="TYPE_XML">TYPE_XML</a><span class="">,</span>
+                                        </span>
+                                    
+                                        <span rel="yui:property" resource="YAHOO.util.DataSourceBase.html#property_useXPath">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#property_useXPath" property="yui:name" title="useXPath">useXPath</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:methods" resource="#methods">
+
+                        <div rel="yui:inheritance">                    
+                            <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.DataSourceBase.html">
+                                <h4>Methods inherited from <a href="YAHOO.util.DataSourceBase.html" property="yui:name" title="YAHOO.util.DataSourceBase">YAHOO.util.DataSourceBase</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_addToCache">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_addToCache" property="yui:name" title="addToCache">addToCache</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_clearAllIntervals">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_clearAllIntervals" property="yui:name" title="clearAllIntervals">clearAllIntervals</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_clearInterval">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_clearInterval" property="yui:name" title="clearInterval">clearInterval</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_doBeforeCallback">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_doBeforeCallback" property="yui:name" title="doBeforeCallback">doBeforeCallback</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_doBeforeParseData">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_doBeforeParseData" property="yui:name" title="doBeforeParseData">doBeforeParseData</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_flushCache">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_flushCache" property="yui:name" title="flushCache">flushCache</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_getCachedResponse">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_getCachedResponse" property="yui:name" title="getCachedResponse">getCachedResponse</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_handleResponse">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_handleResponse" property="yui:name" title="handleResponse">handleResponse</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_isCacheHit">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_isCacheHit" property="yui:name" title="isCacheHit">isCacheHit</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_makeConnection">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_makeConnection" property="yui:name" title="makeConnection">makeConnection</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_parseArrayData">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_parseArrayData" property="yui:name" title="parseArrayData">parseArrayData</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_parseData">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_parseData" property="yui:name" title="parseData">parseData</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_parseHTMLTableData">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_parseHTMLTableData" property="yui:name" title="parseHTMLTableData">parseHTMLTableData</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_parseJSONData">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_parseJSONData" property="yui:name" title="parseJSONData">parseJSONData</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_parseTextData">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_parseTextData" property="yui:name" title="parseTextData">parseTextData</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_parseXMLData">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_parseXMLData" property="yui:name" title="parseXMLData">parseXMLData</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_parseXMLResult">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_parseXMLResult" property="yui:name" title="parseXMLResult">parseXMLResult</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_sendRequest">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_sendRequest" property="yui:name" title="sendRequest">sendRequest</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_setInterval">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_setInterval" property="yui:name" title="setInterval">setInterval</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="YAHOO.util.DataSourceBase.html#method_toString">                                        
+                                            <a class="" href="YAHOO.util.DataSourceBase.html#method_toString" property="yui:name" title="toString">toString</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:events" resource="#events">
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="YAHOO.util.DataSourceBase.html">
+                            <h4>Events inherited from <a href="YAHOO.util.DataSourceBase.html" property="yui:name" title="YAHOO.util.DataSourceBase">YAHOO.util.DataSourceBase</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="YAHOO.util.DataSourceBase.html#event_cacheFlushEvent">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#event_cacheFlushEvent" property="yui:name" title="cacheFlushEvent">cacheFlushEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.DataSourceBase.html#event_cacheRequestEvent">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#event_cacheRequestEvent" property="yui:name" title="cacheRequestEvent">cacheRequestEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.DataSourceBase.html#event_cacheResponseEvent">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#event_cacheResponseEvent" property="yui:name" title="cacheResponseEvent">cacheResponseEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.DataSourceBase.html#event_dataErrorEvent">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#event_dataErrorEvent" property="yui:name" title="dataErrorEvent">dataErrorEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.DataSourceBase.html#event_requestEvent">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#event_requestEvent" property="yui:name" title="requestEvent">requestEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.DataSourceBase.html#event_responseCacheEvent">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#event_responseCacheEvent" property="yui:name" title="responseCacheEvent">responseCacheEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.DataSourceBase.html#event_responseEvent">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#event_responseEvent" property="yui:name" title="responseEvent">responseEvent</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="YAHOO.util.DataSourceBase.html#event_responseParseEvent">
+                                        <a class="" href="YAHOO.util.DataSourceBase.html#event_responseParseEvent" property="yui:name" title="responseParseEvent">responseParseEvent</a><span class="">,</span>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div rel="yui:attributes" resource="#configattributes">
+
+                    </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class="selected"><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.DataSource.html" title="YAHOO.util.DataSource">YAHOO.util.DataSource</a></li>
+                                <li class=""><a href="YAHOO.util.DataSourceBase.html" title="YAHOO.util.DataSourceBase">YAHOO.util.DataSourceBase</a></li>
+                                <li class=""><a href="YAHOO.util.Date.html" title="YAHOO.util.Date">YAHOO.util.Date</a></li>
+                                <li class=""><a href="YAHOO.util.DateLocale.html" title="YAHOO.util.DateLocale">YAHOO.util.DateLocale</a></li>
+                                <li class=""><a href="YAHOO.util.FunctionDataSource.html" title="YAHOO.util.FunctionDataSource">YAHOO.util.FunctionDataSource</a></li>
+                                <li class="selected"><a href="YAHOO.util.LocalDataSource.html" title="YAHOO.util.LocalDataSource">YAHOO.util.LocalDataSource</a></li>
+                                <li class=""><a href="YAHOO.util.Number.html" title="YAHOO.util.Number">YAHOO.util.Number</a></li>
+                                <li class=""><a href="YAHOO.util.ScriptNodeDataSource.html" title="YAHOO.util.ScriptNodeDataSource">YAHOO.util.ScriptNodeDataSource</a></li>
+                                <li class=""><a href="YAHOO.util.XHRDataSource.html" title="YAHOO.util.XHRDataSource">YAHOO.util.XHRDataSource</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="DataSource.js.html" title="DataSource.js">DataSource.js</a></li>
+                                <li class=""><a href="Type.js.html" title="Type.js">Type.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_aCache", "url": "YAHOO.util.DataSourceBase.html#property__aCache", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "addToCache", "url": "YAHOO.util.DataSourceBase.html#method_addToCache", "type": "method"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_aIntervals", "url": "YAHOO.util.DataSourceBase.html#property__aIntervals", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "cacheFlushEvent", "url": "YAHOO.util.DataSourceBase.html#event_cacheFlushEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "cacheRequestEvent", "url": "YAHOO.util.DataSourceBase.html#event_cacheRequestEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "cacheResponseEvent", "url": "YAHOO.util.DataSourceBase.html#event_cacheResponseEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "clearAllIntervals", "url": "YAHOO.util.DataSourceBase.html#method_clearAllIntervals", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "clearInterval", "url": "YAHOO.util.DataSourceBase.html#method_clearInterval", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "dataErrorEvent", "url": "YAHOO.util.DataSourceBase.html#event_dataErrorEvent", "type": "event"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase._nIndex", "url": "YAHOO.util.DataSourceBase.html#property_DataSourceBase._nIndex", "type": "property"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase._nTransactionId", "url": "YAHOO.util.DataSourceBase.html#property_DataSourceBase._nTransactionId", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase.parseDate", "url": "YAHOO.util.DataSourceBase.html#method_DataSourceBase.parseDate", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase.parseNumber", "url": "YAHOO.util.DataSourceBase.html#method_DataSourceBase.parseNumber", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "DataSourceBase.parseString", "url": "YAHOO.util.DataSourceBase.html#method_DataSourceBase.parseString", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "DataSource.Parser", "url": "YAHOO.util.DataSourceBase.html#property_DataSource.Parser", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "dataType", "url": "YAHOO.util.DataSourceBase.html#property_dataType", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "doBeforeCallback", "url": "YAHOO.util.DataSourceBase.html#method_doBeforeCallback", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "doBeforeParseData", "url": "YAHOO.util.DataSourceBase.html#method_doBeforeParseData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "ERROR_DATAINVALID", "url": "YAHOO.util.DataSourceBase.html#property_ERROR_DATAINVALID", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "ERROR_DATANULL", "url": "YAHOO.util.DataSourceBase.html#property_ERROR_DATANULL", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "flushCache", "url": "YAHOO.util.DataSourceBase.html#method_flushCache", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "getCachedResponse", "url": "YAHOO.util.DataSourceBase.html#method_getCachedResponse", "type": "method"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_getLocationValue", "url": "YAHOO.util.DataSourceBase.html#method__getLocationValue", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "handleResponse", "url": "YAHOO.util.DataSourceBase.html#method_handleResponse", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "isCacheHit", "url": "YAHOO.util.DataSourceBase.html#method_isCacheHit", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "issueCallback", "url": "YAHOO.util.DataSourceBase.html#method_issueCallback", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "liveData", "url": "YAHOO.util.DataSourceBase.html#property_liveData", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "makeConnection", "url": "YAHOO.util.DataSourceBase.html#method_makeConnection", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "maxCacheEntries", "url": "YAHOO.util.DataSourceBase.html#property_maxCacheEntries", "type": "property"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_oQueue", "url": "YAHOO.util.DataSourceBase.html#property__oQueue", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseArrayData", "url": "YAHOO.util.DataSourceBase.html#method_parseArrayData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseData", "url": "YAHOO.util.DataSourceBase.html#method_parseData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseHTMLTableData", "url": "YAHOO.util.DataSourceBase.html#method_parseHTMLTableData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseJSONArgs", "url": "YAHOO.util.DataSourceBase.html#property_parseJSONArgs", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseJSONData", "url": "YAHOO.util.DataSourceBase.html#method_parseJSONData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseTextData", "url": "YAHOO.util.DataSourceBase.html#method_parseTextData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseXMLData", "url": "YAHOO.util.DataSourceBase.html#method_parseXMLData", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "parseXMLResult", "url": "YAHOO.util.DataSourceBase.html#method_parseXMLResult", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "requestEvent", "url": "YAHOO.util.DataSourceBase.html#event_requestEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseCacheEvent", "url": "YAHOO.util.DataSourceBase.html#event_responseCacheEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseEvent", "url": "YAHOO.util.DataSourceBase.html#event_responseEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseParseEvent", "url": "YAHOO.util.DataSourceBase.html#event_responseParseEvent", "type": "event"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseSchema", "url": "YAHOO.util.DataSourceBase.html#property_responseSchema", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "responseType", "url": "YAHOO.util.DataSourceBase.html#property_responseType", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "sendRequest", "url": "YAHOO.util.DataSourceBase.html#method_sendRequest", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "setInterval", "url": "YAHOO.util.DataSourceBase.html#method_setInterval", "type": "method"}, {"access": "private", "host": "YAHOO.util.DataSourceBase", "name": "_sName", "url": "YAHOO.util.DataSourceBase.html#property__sName", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "toString", "url": "YAHOO.util.DataSourceBase.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_HTMLTABLE", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_HTMLTABLE", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_JSARRAY", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_JSARRAY", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_JSFUNCTION", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_JSFUNCTION", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_JSON", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_JSON", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_LOCAL", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_LOCAL", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_SCRIPTNODE", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_SCRIPTNODE", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_TEXT", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_TEXT", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_UNKNOWN", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_UNKNOWN", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_XHR", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_XHR", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "TYPE_XML", "url": "YAHOO.util.DataSourceBase.html#property_TYPE_XML", "type": "property"}, {"access": "", "host": "YAHOO.util.DataSourceBase", "name": "useXPath", "url": "YAHOO.util.DataSourceBase.html#property_useXPath", "type": "property"}];
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Real Time Crop Feedback</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/resize/assets/skins/sam/resize.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/imagecropper/assets/skins/sam/imagecropper.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/resize/resize-min.js"></script>
+<script type="text/javascript" src="../../build/imagecropper/imagecropper-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Real Time Crop Feedback</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to use a few of the built in events to real time crop feedback.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style type="text/css" media="screen">
+    #results {
+        border: 1px solid black;
+        height: 83px;
+        width: 125px;
+        position: relative;
+        overflow: hidden;
+    }
+    #results img {
+        position: absolute;
+        top: -20px;
+        left: -20px;
+    }
+</style>
+
+<p><img src="assets/yui.jpg" id="yui_img" height="333" width="500"></p>
+
+<div id="results"><img src="assets/yui.jpg"></div>
+<ul>
+    <li>Height: (<span id="h">91</span>)</li>
+    <li>Width: (<span id="w">150</span>)</li>
+    <li>Top: (<span id="t">20</span>)</li>
+    <li>Left: (<span id="l">20</span>)</li>
+</ul>
+
+
+
+<script>
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        results = null;
+    
+    Event.onDOMReady(function() {
+            results = Dom.get('results');    
+            var crop = new YAHOO.widget.ImageCropper('yui_img', {
+                initialXY: [20, 20],
+                keyTick: 5,
+                shiftKeyTick: 50
+            });
+            crop.on('moveEvent', function() {
+                var region = crop.getCropCoords();
+                results.firstChild.style.top = '-' + region.top + 'px';
+                results.firstChild.style.left = '-' + region.left + 'px';
+                results.style.height = region.height + 'px';
+                results.style.width = region.width + 'px';
+                Dom.get('t').innerHTML = region.top;
+                Dom.get('l').innerHTML = region.left;
+                Dom.get('h').innerHTML = region.height;
+                Dom.get('w').innerHTML = region.width;
+            });
+    });
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

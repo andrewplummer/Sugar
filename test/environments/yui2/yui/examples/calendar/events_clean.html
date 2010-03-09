@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Handling Calendar Events</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+	#cal1Container {
+	   margin:1em;
+	}
+
+	#caleventlog {
+		float:left;
+		width:35em;
+		margin:1em;
+		background-color:#eee;
+		border:1px solid #000;
+	}
+	#caleventlog .bd {
+		overflow:auto;
+		height:20em;
+		padding:5px;
+	}
+	#caleventlog .hd {
+		background-color:#aaa;
+		border-bottom:1px solid #000;
+		font-weight:bold;
+		padding:2px;
+	}
+	#caleventlog .entry {
+		margin:0;	
+	}
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Handling Calendar Events</h1>
+
+<div class="exampleIntro">
+	<p>The Calendar control exposes a number of CustomEvents, so that applications can listen for and react to interesting moments in the Calendar's operation. This example demonstrates how to listen for the select and deselect events, which are fired whenever a date in the Calendar is selected or deselected.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<script type="text/javascript">
+	YAHOO.namespace("example.calendar");
+
+	YAHOO.example.calendar.init = function() {
+		var eLog = YAHOO.util.Dom.get("evtentries");
+		var eCount = 1;
+
+		function logEvent(msg) {
+			eLog.innerHTML = '<pre class="entry"><strong>' + eCount + ').</strong> ' + msg + '</pre>' + eLog.innerHTML;
+			eCount++;
+		}
+
+		function dateToLocaleString(dt, cal) {
+                	var wStr = cal.cfg.getProperty("WEEKDAYS_LONG")[dt.getDay()];
+                	var dStr = dt.getDate();
+                	var mStr = cal.cfg.getProperty("MONTHS_LONG")[dt.getMonth()];
+               	 	var yStr = dt.getFullYear();
+                	return (wStr + ", " + dStr + " " + mStr + " " + yStr);
+		}
+
+		function mySelectHandler(type,args,obj) {
+			var selected = args[0];
+			var selDate = this.toDate(selected[0]);
+			 
+			logEvent("SELECTED: " + dateToLocaleString(selDate, this));
+		};
+
+		function myDeselectHandler(type, args, obj) {
+			var deselected = args[0];
+			var deselDate = this.toDate(deselected[0]);
+
+			logEvent("DESELECTED: " + dateToLocaleString(deselDate, this));
+		};
+
+		YAHOO.example.calendar.cal1 = new YAHOO.widget.Calendar("cal1","cal1Container");
+
+		YAHOO.example.calendar.cal1.selectEvent.subscribe(mySelectHandler, YAHOO.example.calendar.cal1, true);
+		YAHOO.example.calendar.cal1.deselectEvent.subscribe(myDeselectHandler, YAHOO.example.calendar.cal1, true);
+
+		YAHOO.example.calendar.cal1.render();
+	}
+
+	YAHOO.util.Event.onDOMReady(YAHOO.example.calendar.init);
+</script>
+
+<div id="cal1Container"></div>
+<div id="caleventlog" class="eventlog">
+	<div class="hd">Select/Deselect Events</div>
+	<div id="evtentries" class="bd"></div>
+</div>
+<div style="clear:both"></div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

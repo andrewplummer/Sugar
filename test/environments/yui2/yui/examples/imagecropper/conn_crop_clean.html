@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Connection Manager assisted image crop</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/resize/assets/skins/sam/resize.css" />
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="../../build/imagecropper/assets/skins/sam/imagecropper.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/resize/resize-min.js"></script>
+<script type="text/javascript" src="../../build/imagecropper/imagecropper-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Connection Manager assisted image crop</h1>
+
+<div class="exampleIntro">
+	<p>This example shows how to use <a href="http://developer.yahoo.com/yui/connection/">Connection Manager</a> to issue an image crop request.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<style>
+    #button1 {
+        margin: 1em;
+    }
+</style>
+
+<img src="assets/yui.jpg" id="yui_img" height="333" width="500">
+<div id="button1"></div>
+<div id="results"></div>
+
+<script>
+(function() {
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        conn = null,
+        results = null;
+
+    Event.onDOMReady(function() {
+        results = Dom.get('results');
+        var callback = {
+            success: function(o) {
+                var json = o.responseText.substring(o.responseText.indexOf('{'), o.responseText.lastIndexOf('}') + 1);
+                var data = eval('(' + json + ')');                
+                results.innerHTML = '<p><strong>' + data.data + '</strong></p>';
+            },
+            failure: function() {
+                results.innerHTML = '<p><strong>An error occurred, please try again later.</strong></p>';
+            }
+        };
+        var crop = new YAHOO.widget.ImageCropper('yui_img', {
+            initialXY: [20, 20],
+            keyTick: 5,
+            shiftKeyTick: 50
+        });
+
+        var _button = new YAHOO.widget.Button({
+            id: 'cropIt',
+            container: 'button1',
+            label: 'Crop Image',
+            value: 'crop'
+        });
+
+        _button.on('click', function() {
+            var coords = crop.getCropCoords();
+            var url = 'assets/crop.php?top=' + coords.top + '&left=' + coords.left + '&height=' + coords.height + '&width=' + coords.width;
+            conn = YAHOO.util.Connect.asyncRequest('GET', url, callback);
+        });
+    });
+})();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

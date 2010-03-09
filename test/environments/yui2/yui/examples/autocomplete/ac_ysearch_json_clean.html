@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Centering AutoComplete On a Page</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/autocomplete/assets/skins/sam/autocomplete.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/animation/animation-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
+<script type="text/javascript" src="../../build/json/json-min.js"></script>
+<script type="text/javascript" src="../../build/datasource/datasource-min.js"></script>
+<script type="text/javascript" src="../../build/autocomplete/autocomplete-min.js"></script>
+
+
+<!--begin custom header content for this example-->
+<style type="text/css">
+/* custom styles for centered example */
+body, h1 { margin:0;padding:0; } /* needed for known issue with Dom.getXY() in safari for absolute elements in positioned containers */
+label { color:#E76300;font-weight:bold;}
+#ysearch { text-align:center; }
+#ysearchinput { position:static;width:20em; } /* to center, set static and explicit width: */
+#ysearchcontainer { text-align:left;width:20em; } /* to center, set left-align and explicit width: */
+</style>
+
+<!--end custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Centering AutoComplete On a Page</h1>
+
+<div class="exampleIntro">
+	<p>This example points to Yahoo! Search Web Services. Custom CSS rules have been applied to achieve the shrink-wrapped, centered search module.</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<form action="http://search.yahoo.com/search">
+    <div id="ysearch">
+		<label for="ysearchinput">Yahoo! Search: </label>
+		<input id="ysearchinput" type="text" name="p">
+		<input id="ysearchsubmit" type="submit" value="Submit Query">
+		<div id="ysearchcontainer"></div>
+    </div>
+</form>
+	
+<script type="text/javascript">
+YAHOO.example.Centered = function() {
+    var myDataSource = new YAHOO.util.XHRDataSource("assets/php/ysearch_proxy.php?output=json&");
+    myDataSource.responseSchema = {
+        resultsList: "ResultSet.Result",
+        fields: ["Title"]
+    };
+
+    // Instantiate AutoComplete
+    var myAutoComp = new YAHOO.widget.AutoComplete("ysearchinput","ysearchcontainer", myDataSource);
+    myAutoComp.queryMatchContains = true;
+    myAutoComp.queryQuestionMark = false;
+    myAutoComp.useShadow = true;
+    
+    // Keeps container centered
+    /*myAutoComp.doBeforeExpandContainer = function(oTextbox, oContainer, sQuery, aResults) {
+        var pos = YAHOO.util.Dom.getXY(oTextbox);
+        pos[1] += YAHOO.util.Dom.get(oTextbox).offsetHeight + 2;
+        YAHOO.util.Dom.setXY(oContainer,pos);
+        return true;
+    };*/
+    
+    return {
+        oDS: myDataSource,
+        oAC: myAutoComp
+    };
+}();
+</script>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>ProfileViewer: Making Use of the ProfilerViewer API while Profiling the Menu Control</title>
+
+<link rel="stylesheet" type="text/css" href="../../build/reset/reset.css"> 
+<link rel="stylesheet" type="text/css" href="../../build/base/base.css"> 
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts.css"> 
+<link rel="stylesheet" type="text/css" href="../../build/container/assets/skins/sam/container.css"> 
+<link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css"> 
+<link rel="stylesheet" type="text/css" href="../../build/profilerviewer/assets/skins/sam/profilerviewer.css"> 
+
+<script type="text/javascript" src="../../build/utilities/utilities.js"></script>
+<script type="text/javascript" src="../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../build/container/container-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu.js"></script>
+<script type="text/javascript" src="../../build/profiler/profiler-min.js"></script>
+<script type="text/javascript" src="../../build/profilerviewer/profilerviewer-min.js"></script>
+ 
+<style type="text/css">
+	body {
+		margin:1em;
+	}
+	
+	.yui-pv-null {
+		margin:2.1em;
+	}
+
+	div#profiler {
+		width:300px; 
+		position:absolute; 
+		left:450px;
+		top:10px;
+	}
+	
+	div#profiler .hd {
+		cursor:move;
+	}
+
+    div.yuimenu {
+        position: relative;
+        visibility: hidden;
+		top:300px;
+		z-index:10001;
+    }
+	
+
+    div.yuimenu .bd {
+        zoom: normal;
+    }
+	
+	#menutoggle {
+		position:absolute;
+		top:10px;
+		left:10px;
+	}
+	
+	#container {
+		position:relative;
+	}
+</style>
+
+</head>
+
+<body class="yui-skin-sam">
+
+<h1>Using the ProfilerViewer API while Profiling the Menu Control</h1>
+
+<p>In this example, we explore the ues of the <a href="http://developer.yahoo.com/yui/profilerviewer/">ProfilerViewer</a> API to customize the console slightly while taking a thorough look at the performance profile of the <a href="http://developer.yahoo.com/yui/menu/">YUI Menu Control</a>. Customizations include:</p>
+<ol>
+  <li>The console launcher is reduced in size; </li>
+  <li>The console is draggable via the header;</li>
+  <li>The height of the table and the number of functions profiled in the chart are increased;</li>
+  <li>A filter is used to show only functions that have been called at least once.</li>
+</ol>
+<p>Use the button below to show the Menu system, then launch ProfilerViewer to explore the detailed performance profile of Menu and its subcomponents. <strong>Note:</strong> Because ProfilerViewer uses the same dependencies as Menu, only the first "view" in ProfilerViewer will be isolated to Menu performance data.  After the first view, "Refresh Data" actions will begin showing performance information (on the Dom Collection, for example) reflecting both Menu's usage and ProfilerViewer's usage of that component.</p>
+
+<div id="container">
+    <div id="profiler"></div>
+  <button id="menutoggle" type="button">Show Menu</button>
+</div>
+
+<!--BEGIN MARKUP FOR PROGRESSIVELY ENHANCED MENU CONTROL-->
+
+
+<div id="productsandservices" class="yuimenu">
+    <div class="bd">
+        <ul class="first-of-type">
+            <li class="yuimenuitem">
+            
+                <a class="yuimenuitemlabel" href="#communication">Communication</a>
+
+                <div id="communication" class="yuimenu">
+                    <div class="bd">
+                        <ul>
+
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://360.yahoo.com">360&#176;</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://alerts.yahoo.com">Alerts</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://avatars.yahoo.com">Avatars</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://groups.yahoo.com">Groups</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://promo.yahoo.com/broadband/">Internet Access</a></li>
+                            <li class="yuimenuitem">
+
+                            
+                                <a class="yuimenuitemlabel" href="#pim">PIM</a>
+                            
+                                <div id="pim" class="yuimenu">
+                                    <div class="bd">
+                                        <ul class="first-of-type">
+                                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://mail.yahoo.com">Yahoo! Mail</a></li>
+                                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://addressbook.yahoo.com">Yahoo! Address Book</a></li>
+                                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://calendar.yahoo.com">Yahoo! Calendar</a></li>
+
+                                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://notepad.yahoo.com">Yahoo! Notepad</a></li>
+                                        </ul>            
+                                    </div>
+                                </div>                    
+                            
+                            </li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://members.yahoo.com">Member Directory</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://messenger.yahoo.com">Messenger</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://mobile.yahoo.com">Mobile</a></li>
+
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://www.flickr.com">Flickr Photo Sharing</a></li>
+                        </ul>
+                    </div>
+                </div>                    
+            
+            </li>
+            <li class="yuimenuitem">
+            
+                <a class="yuimenuitemlabel" href="http://shopping.yahoo.com">Shopping</a>
+
+                <div id="shopping" class="yuimenu">
+
+                    <div class="bd">                    
+                        <ul>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://auctions.shopping.yahoo.com">Auctions</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://autos.yahoo.com">Autos</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://classifieds.yahoo.com">Classifieds</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://shopping.yahoo.com/b:Flowers%20%26%20Gifts:20146735">Flowers &#38; Gifts</a></li>
+
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://realestate.yahoo.com">Real Estate</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://travel.yahoo.com">Travel</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://wallet.yahoo.com">Wallet</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://yp.yahoo.com">Yellow Pages</a></li>
+                        </ul>
+                    </div>
+                </div>                    
+            
+            </li>
+
+            <li class="yuimenuitem">
+            
+                <a class="yuimenuitemlabel" href="http://entertainment.yahoo.com">Entertainment</a>
+
+                <div id="entertainment" class="yuimenu">
+                    <div class="bd">                    
+                        <ul>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://fantasysports.yahoo.com">Fantasy Sports</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://games.yahoo.com">Games</a></li>
+
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://www.yahooligans.com">Kids</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://music.yahoo.com">Music</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://movies.yahoo.com">Movies</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://music.yahoo.com/launchcast">Radio</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://travel.yahoo.com">Travel</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://tv.yahoo.com">TV</a></li>
+
+                        </ul>                    
+                    </div>
+                </div>                                        
+            
+            </li>
+            <li class="yuimenuitem">
+            
+                <a class="yuimenuitemlabel" href="#information">Information</a>
+
+                <div id="information" class="yuimenu">
+                    <div class="bd">                                        
+                        <ul>
+
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://downloads.yahoo.com">Downloads</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://finance.yahoo.com">Finance</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://health.yahoo.com">Health</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://local.yahoo.com">Local</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://maps.yahoo.com">Maps &#38; Directions</a></li>
+
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://my.yahoo.com">My Yahoo!</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://news.yahoo.com">News</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://search.yahoo.com">Search</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://smallbusiness.yahoo.com">Small Business</a></li>
+                            <li class="yuimenuitem"><a class="yuimenuitemlabel" href="http://weather.yahoo.com">Weather</a></li>
+                        </ul>                    
+                    </div>
+
+                </div>                                        
+            
+            </li>
+        </ul>            
+    </div>
+</div>
+<!--END MARKUP FOR PROGRESSIVELY ENHANCED MENU CONTROL-->
+
+
+
+
+<script type="text/javascript">
+
+    // Instantiate and render the menu when it is available in the DOM
+    YAHOO.util.Event.onContentReady("productsandservices", function () {
+
+		// To fully profile the Menu, we want to register all the Menu
+		// and MenuItem constructors involved in Menu creation; for the
+		// purposes of this example, we'll also profile Menu's use
+		// of core YUI components like the Dom Collection and the
+		// Event Utility:
+		YAHOO.tool.Profiler.registerConstructor("YAHOO.widget.Menu");
+		YAHOO.tool.Profiler.registerConstructor("YAHOO.widget.MenuItem");
+		YAHOO.tool.Profiler.registerConstructor("YAHOO.widget.MenuManager");
+		YAHOO.tool.Profiler.registerConstructor("YAHOO.util.Config");
+		YAHOO.tool.Profiler.registerConstructor("YAHOO.widget.Module");
+		YAHOO.tool.Profiler.registerConstructor("YAHOO.widget.Overlay");
+		YAHOO.tool.Profiler.registerObject("YAHOO.util.Dom", true);
+		YAHOO.tool.Profiler.registerObject("YAHOO.util.Event", true);
+		
+		// Instantiate ProfilerViewer, using its API to customize it a bit:
+		var pv = new YAHOO.widget.ProfilerViewer("profiler", {
+			base: "../../build/",
+			visible: false, //default is false; this means only the
+							//ProfilerViewer launchbar will be displayed
+							//on initial render, and the rest of the console
+							//(including the DataTable and Chart) won't 
+							//be loaded and rendered until they're requested.
+			//here, we're going to filter the displayed functions
+			//and only show those that have been called at least once:
+			filter: function(o) {
+				return (o.calls > 0);
+			},
+			showChart: true, //default is true
+			//the chart can be hidden entirely by setting showChart to
+			//false; you can also control the number of functions
+			//measured in the chart to expand or reduce the real estate
+			//it takes up on the page:
+			maxChartFunctions:8,
+			tableHeight:"25em", //default: 15em
+			swfUrl:"../../build/charts/assets/charts.swf"
+		});
+		
+		//Just to make the instance publicly accessible via the console:
+		YAHOO.example.pv = pv;
+		
+		//You can subscribe to "interesting moments" in the ProfilerViewer
+		//just as you can with any other YUI component.  Here, we'll use
+		//the visibleChange event that accompanies any change to the PV
+		//console's "visible" attribute.  When made visible, we'll expand
+		//the console to full width; when it's minimized, we'll reduce the
+		//width of the launcher so that it takes up less screen real
+		//estate:
+		pv.subscribe("beforeVisibleChange", function(o) {
+		
+					//"this" is the ProfilerViewer instance;
+					//this.get("element") is the top-level node containing
+					//the ProfilerViewer console. 
+					var el = this.get("element");
+					
+					//In this handler, the "visible" config property is
+					//changing.  If the new value is "true", the console
+					//is becoming visible, so we'll make it wide.  If the
+					//new value is false, we'll make the launch bar skinny.
+					var width = (o.newValue) ? "950px" : "300px";
+					YAHOO.util.Dom.setStyle(el, "width", width);
+		});
+
+		//In our testing, Opera sometimes fails to repaint the screen
+		//on this example, leaving part of Flash chart showing.  This
+		//style jog forces a repaint.  It is not needed in every
+		//instance and could probably be targeted just at Opera
+		//using the YAHOO.env information:
+		pv.subscribe("visibleChange", function(o) {
+			setTimeout(function() {
+				YAHOO.util.Dom.addClass(document.body, "yui-pv-null");
+				YAHOO.util.Dom.removeClass(document.body, "yui-pv-null");
+			}, 1000);
+		});
+
+		//Here, we'll use Drag and Drop to make the ProfilerViewer
+		//console draggable.	
+		var DD = new YAHOO.util.DD("profiler");
+
+		//ProfilerViewer's API gives you access to the key container
+		//elements in the console.  Here we'll use access to the
+		//header element to make it a drag handle.
+		pv.getHeadEl().id = "profilerHead";
+		DD.setHandleElId("profilerHead");
+		
+		//The Buttons in the head should not be valid drag handles; 
+		//they are comprised of anchor elements, which DD allows us
+		//to disclude as handles.
+		DD.addInvalidHandleType("a");
+		
+		//Drag and Drop performs better when you use the dragOnly
+		//setting for elements that can be moved but that don't
+		//have any DD interactions with other page elements:
+		DD.dragOnly = true;
+
+
+        // Instantiate the menu and corresponding submenus. The first argument passed 
+        // to the constructor is the id of the element in the DOM that represents 
+        // the menu; the second is an object literal representing a set of 
+        // configuration properties for the menu.
+        var oMenu = new YAHOO.widget.Menu("productsandservices", { 
+			context: ["menutoggle", "tl", "tr"]
+		 });
+
+		// Call the "render" method with no arguments since the 
+		// markup for this Menu instance is already exists in the page.
+        oMenu.render();
+
+        // Set focus to the Menu when it is made visible
+        oMenu.subscribe("show", oMenu.focus);
+		
+		//Wire up the button to show the menu when clicked;
+        YAHOO.util.Event.addListener("menutoggle", "click", oMenu.show, null, oMenu);
+    
+    });
+</script>
+
+</body>
+</html>

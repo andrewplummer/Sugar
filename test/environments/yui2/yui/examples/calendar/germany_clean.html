@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Localization - Germany</title>
+
+<style type="text/css">
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+	margin:0;
+	padding:0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="../../build/calendar/assets/skins/sam/calendar.css" />
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/calendar/calendar-min.js"></script>
+
+<!--there is no custom header content for this example-->
+
+</head>
+
+<body class="yui-skin-sam">
+
+
+<h1>Localization - Germany</h1>
+
+<div class="exampleIntro">
+	<p>Calendar provides configuration properties that can be used to change the Calendar's various data labels, when the Calendar is used in different locales. This example shows how to provide locale specific labels for month and weekday names, as well as how to configure the expected format of any date strings passed in to the Calendar. It uses Germany as an example locale</p>
+			
+</div>
+
+<!--BEGIN SOURCE CODE FOR EXAMPLE =============================== -->
+
+<div id="cal1Container"></div>
+
+<script type="text/javascript">
+    YAHOO.namespace("example.calendar");
+
+    YAHOO.example.calendar.init = function() {
+        YAHOO.example.calendar.cal1 = new YAHOO.widget.Calendar("cal1","cal1Container", 
+                                                                    { LOCALE_WEEKDAYS:"short", 
+                                                                      START_WEEKDAY: 1,
+                                                                      MULTI_SELECT: true
+                                                                     } );
+
+        // Correct formats for Germany: dd.mm.yyyy, dd.mm, mm.yyyy
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("DATE_FIELD_DELIMITER", ".");
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_DAY_POSITION", 1);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_MONTH_POSITION", 2);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MDY_YEAR_POSITION", 3);
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("MD_DAY_POSITION", 1);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MD_MONTH_POSITION", 2);
+        
+        // Date labels for German locale
+
+        YAHOO.example.calendar.cal1.cfg.setProperty("MONTHS_SHORT",   ["Jan", "Feb", "M\u00E4r", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("MONTHS_LONG",    ["Januar", "Februar", "M\u00E4rz", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_1CHAR", ["S", "M", "D", "M", "D", "F", "S"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_SHORT", ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_MEDIUM",["Son", "Mon", "Die", "Mit", "Don", "Fre", "Sam"]);
+        YAHOO.example.calendar.cal1.cfg.setProperty("WEEKDAYS_LONG",  ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"]);
+
+        YAHOO.example.calendar.cal1.select("1.10.2009-8.10.2009");
+        YAHOO.example.calendar.cal1.cfg.setProperty("PAGEDATE", "10.2009");
+        YAHOO.example.calendar.cal1.render();
+    }
+
+    YAHOO.util.Event.onDOMReady(YAHOO.example.calendar.init);
+</script>
+
+<div style="clear:both" ></div>
+
+<!--END SOURCE CODE FOR EXAMPLE =============================== -->
+
+</body>
+</html>

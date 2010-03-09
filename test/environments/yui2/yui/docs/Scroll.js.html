@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: animation   Scroll.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>animation&nbsp; <span class="subtitle">2.8.0r4</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_animation.html" title="animation">animation</a>
+                
+                 &gt; Scroll.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight" ><pre><span class="o">(</span><span class="k">function</span><span class="o">()</span> <span class="o">{</span>
+<span class="c">/**</span>
+<span class="c"> * Anim subclass for scrolling elements to a position defined by the &quot;scroll&quot;</span>
+<span class="c"> * member of &quot;attributes&quot;.  All &quot;scroll&quot; members are arrays with x, y scroll positions.</span>
+<span class="c"> * &lt;p&gt;Usage: &lt;code&gt;var myAnim = new YAHOO.util.Scroll(el, { scroll: { to: [0, 800] } }, 1, YAHOO.util.Easing.easeOut);&lt;/code&gt;&lt;/p&gt;</span>
+<span class="c"> * @class Scroll</span>
+<span class="c"> * @namespace YAHOO.util</span>
+<span class="c"> * @requires YAHOO.util.Anim</span>
+<span class="c"> * @requires YAHOO.util.AnimMgr</span>
+<span class="c"> * @requires YAHOO.util.Easing</span>
+<span class="c"> * @requires YAHOO.util.Bezier</span>
+<span class="c"> * @requires YAHOO.util.Dom</span>
+<span class="c"> * @requires YAHOO.util.Event</span>
+<span class="c"> * @requires YAHOO.util.CustomEvent </span>
+<span class="c"> * @extends YAHOO.util.ColorAnim</span>
+<span class="c"> * @constructor</span>
+<span class="c"> * @param {String or HTMLElement} el Reference to the element that will be animated</span>
+<span class="c"> * @param {Object} attributes The attribute(s) to be animated.  </span>
+<span class="c"> * Each attribute is an object with at minimum a &quot;to&quot; or &quot;by&quot; member defined.  </span>
+<span class="c"> * Additional optional members are &quot;from&quot; (defaults to current value), &quot;units&quot; (defaults to &quot;px&quot;).  </span>
+<span class="c"> * All attribute names use camelCase.</span>
+<span class="c"> * @param {Number} duration (optional, defaults to 1 second) Length of animation (frames or seconds), defaults to time-based</span>
+<span class="c"> * @param {Function} method (optional, defaults to YAHOO.util.Easing.easeNone) Computes the values that are applied to the attributes per frame (generally a YAHOO.util.Easing method)</span>
+<span class="c"> */</span>
+    <span class="k">var</span> <span class="nx">Scroll</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">,</span> <span class="nx">duration</span><span class="o">,</span>  <span class="nx">method</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nx">el</span><span class="o">)</span> <span class="o">{</span> <span class="c">// dont break existing subclasses not using YAHOO.extend</span>
+<span class="c"></span>            <span class="nx">Scroll</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">el</span><span class="o">,</span> <span class="nx">attributes</span><span class="o">,</span> <span class="nx">duration</span><span class="o">,</span> <span class="nx">method</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="nx">Scroll</span><span class="o">.</span><span class="nx">NAME</span> <span class="o">=</span> <span class="s1">&#39;Scroll&#39;</span><span class="o">;</span>
+
+    <span class="c">// shorthand</span>
+<span class="c"></span>    <span class="k">var</span> <span class="nx">Y</span> <span class="o">=</span> <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">util</span><span class="o">;</span>
+    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">extend</span><span class="o">(</span><span class="nx">Scroll</span><span class="o">,</span> <span class="nx">Y</span><span class="o">.</span><span class="nx">ColorAnim</span><span class="o">);</span>
+    
+    <span class="k">var</span> <span class="nx">superclass</span> <span class="o">=</span> <span class="nx">Scroll</span><span class="o">.</span><span class="nx">superclass</span><span class="o">;</span>
+    <span class="k">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">Scroll</span><span class="o">.</span><span class="nx">prototype</span><span class="o">;</span>
+
+    <span class="nx">proto</span><span class="o">.</span><span class="nx">doMethod</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">,</span> <span class="nx">start</span><span class="o">,</span> <span class="nx">end</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">val</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    
+        <span class="k">if</span> <span class="o">(</span><span class="nx">attr</span> <span class="o">==</span> <span class="s1">&#39;scroll&#39;</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">val</span> <span class="o">=</span> <span class="o">[</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">method</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">currentFrame</span><span class="o">,</span> <span class="nx">start</span><span class="o">[</span><span class="m">0</span><span class="o">],</span> <span class="nx">end</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">-</span> <span class="nx">start</span><span class="o">[</span><span class="m">0</span><span class="o">],</span> <span class="k">this</span><span class="o">.</span><span class="nx">totalFrames</span><span class="o">),</span>
+                <span class="k">this</span><span class="o">.</span><span class="nx">method</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">currentFrame</span><span class="o">,</span> <span class="nx">start</span><span class="o">[</span><span class="m">1</span><span class="o">],</span> <span class="nx">end</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">-</span> <span class="nx">start</span><span class="o">[</span><span class="m">1</span><span class="o">],</span> <span class="k">this</span><span class="o">.</span><span class="nx">totalFrames</span><span class="o">)</span>
+            <span class="o">];</span>
+            
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">val</span> <span class="o">=</span> <span class="nx">superclass</span><span class="o">.</span><span class="nx">doMethod</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">attr</span><span class="o">,</span> <span class="nx">start</span><span class="o">,</span> <span class="nx">end</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="nx">val</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="nx">proto</span><span class="o">.</span><span class="nx">getAttribute</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">val</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getEl</span><span class="o">();</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">attr</span> <span class="o">==</span> <span class="s1">&#39;scroll&#39;</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">val</span> <span class="o">=</span> <span class="o">[</span> <span class="nx">el</span><span class="o">.</span><span class="nx">scrollLeft</span><span class="o">,</span> <span class="nx">el</span><span class="o">.</span><span class="nx">scrollTop</span> <span class="o">];</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">val</span> <span class="o">=</span> <span class="nx">superclass</span><span class="o">.</span><span class="nx">getAttribute</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">attr</span><span class="o">);</span>
+        <span class="o">}</span>
+        
+        <span class="k">return</span> <span class="nx">val</span><span class="o">;</span>
+    <span class="o">};</span>
+
+    <span class="nx">proto</span><span class="o">.</span><span class="nx">setAttribute</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">attr</span><span class="o">,</span> <span class="nx">val</span><span class="o">,</span> <span class="nx">unit</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="nx">getEl</span><span class="o">();</span>
+        
+        <span class="k">if</span> <span class="o">(</span><span class="nx">attr</span> <span class="o">==</span> <span class="s1">&#39;scroll&#39;</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nx">el</span><span class="o">.</span><span class="nx">scrollLeft</span> <span class="o">=</span> <span class="nx">val</span><span class="o">[</span><span class="m">0</span><span class="o">];</span>
+            <span class="nx">el</span><span class="o">.</span><span class="nx">scrollTop</span> <span class="o">=</span> <span class="nx">val</span><span class="o">[</span><span class="m">1</span><span class="o">];</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="nx">superclass</span><span class="o">.</span><span class="nx">setAttribute</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">attr</span><span class="o">,</span> <span class="nx">val</span><span class="o">,</span> <span class="nx">unit</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">};</span>
+
+    <span class="nx">Y</span><span class="o">.</span><span class="nx">Scroll</span> <span class="o">=</span> <span class="nx">Scroll</span><span class="o">;</span>
+<span class="o">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="module_animation.html" title="animation">animation</a></li>
+                                <li class=""><a href="module_autocomplete.html" title="autocomplete">autocomplete</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_calendar.html" title="calendar">calendar</a></li>
+                                <li class=""><a href="module_carousel.html" title="carousel">carousel</a></li>
+                                <li class=""><a href="module_charts.html" title="charts">charts</a></li>
+                                <li class=""><a href="module_colorpicker.html" title="colorpicker">colorpicker</a></li>
+                                <li class=""><a href="module_connection.html" title="connection">connection</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_datemath.html" title="datemath">datemath</a></li>
+                                <li class=""><a href="module_dom.html" title="dom">dom</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_editor.html" title="editor">editor</a></li>
+                                <li class=""><a href="module_element.html" title="element">element</a></li>
+                                <li class=""><a href="module_element-delegate.html" title="element-delegate">element-delegate</a></li>
+                                <li class=""><a href="module_event.html" title="event">event</a></li>
+                                <li class=""><a href="module_event-delegate.html" title="event-delegate">event-delegate</a></li>
+                                <li class=""><a href="module_event-mouseenter.html" title="event-mouseenter">event-mouseenter</a></li>
+                                <li class=""><a href="module_event-simulate.html" title="event-simulate">event-simulate</a></li>
+                                <li class=""><a href="module_get.html" title="get">get</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imagecropper.html" title="imagecropper">imagecropper</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_logger.html" title="logger">logger</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_profiler.html" title="profiler">profiler</a></li>
+                                <li class=""><a href="module_profilerviewer.html" title="profilerviewer">profilerviewer</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_selector.html" title="selector">selector</a></li>
+                                <li class=""><a href="module_slider.html" title="slider">slider</a></li>
+                                <li class=""><a href="module_storage.html" title="Storage">Storage</a></li>
+                                <li class=""><a href="module_stylesheet.html" title="stylesheet">stylesheet</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_swfdetect.html" title="swfdetect">swfdetect</a></li>
+                                <li class=""><a href="module_swfstore.html" title="swfstore">swfstore</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_uploader.html" title="uploader">uploader</a></li>
+                                <li class=""><a href="module_yahoo.html" title="yahoo">yahoo</a></li>
+                                <li class=""><a href="module_yuiloader.html" title="yuiloader">yuiloader</a></li>
+                                <li class=""><a href="module_yuitest.html" title="yuitest">yuitest</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="YAHOO.util.Anim.html" title="YAHOO.util.Anim">YAHOO.util.Anim</a></li>
+                                <li class=""><a href="YAHOO.util.AnimMgr.html" title="YAHOO.util.AnimMgr">YAHOO.util.AnimMgr</a></li>
+                                <li class=""><a href="YAHOO.util.Bezier.html" title="YAHOO.util.Bezier">YAHOO.util.Bezier</a></li>
+                                <li class=""><a href="YAHOO.util.ColorAnim.html" title="YAHOO.util.ColorAnim">YAHOO.util.ColorAnim</a></li>
+                                <li class=""><a href="YAHOO.util.Easing.html" title="YAHOO.util.Easing">YAHOO.util.Easing</a></li>
+                                <li class=""><a href="YAHOO.util.Motion.html" title="YAHOO.util.Motion">YAHOO.util.Motion</a></li>
+                                <li class=""><a href="YAHOO.util.Scroll.html" title="YAHOO.util.Scroll">YAHOO.util.Scroll</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="Anim.js.html" title="Anim.js">Anim.js</a></li>
+                                <li class=""><a href="AnimMgr.js.html" title="AnimMgr.js">AnimMgr.js</a></li>
+                                <li class=""><a href="Bezier.js.html" title="Bezier.js">Bezier.js</a></li>
+                                <li class=""><a href="ColorAnim.js.html" title="ColorAnim.js">ColorAnim.js</a></li>
+                                <li class=""><a href="Easing.js.html" title="Easing.js">Easing.js</a></li>
+                                <li class=""><a href="Motion.js.html" title="Motion.js">Motion.js</a></li>
+                                <li class="selected"><a href="Scroll.js.html" title="Scroll.js">Scroll.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2009 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+    ALL_YUI_PROPS = [{"access": "private", "host": "YAHOO.util.Anim", "name": "actualFrames", "url": "YAHOO.util.Anim.html#property_actualFrames", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "animate", "url": "YAHOO.util.Anim.html#method_animate", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "attributes", "url": "YAHOO.util.Anim.html#property_attributes", "type": "property"}, {"access": "", "host": "YAHOO.util.Easing", "name": "backBoth", "url": "YAHOO.util.Easing.html#method_backBoth", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "backIn", "url": "YAHOO.util.Easing.html#method_backIn", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "backOut", "url": "YAHOO.util.Easing.html#method_backOut", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "bounceBoth", "url": "YAHOO.util.Easing.html#method_bounceBoth", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "bounceIn", "url": "YAHOO.util.Easing.html#method_bounceIn", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "bounceOut", "url": "YAHOO.util.Easing.html#method_bounceOut", "type": "method"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "correctFrame", "url": "YAHOO.util.AnimMgr.html#method_correctFrame", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "currentFrame", "url": "YAHOO.util.Anim.html#property_currentFrame", "type": "property"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "delay", "url": "YAHOO.util.AnimMgr.html#property_delay", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "doMethod", "url": "YAHOO.util.Anim.html#method_doMethod", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "duration", "url": "YAHOO.util.Anim.html#property_duration", "type": "property"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeBoth", "url": "YAHOO.util.Easing.html#method_easeBoth", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeBothStrong", "url": "YAHOO.util.Easing.html#method_easeBothStrong", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeIn", "url": "YAHOO.util.Easing.html#method_easeIn", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeInStrong", "url": "YAHOO.util.Easing.html#method_easeInStrong", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeNone", "url": "YAHOO.util.Easing.html#method_easeNone", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeOut", "url": "YAHOO.util.Easing.html#method_easeOut", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "easeOutStrong", "url": "YAHOO.util.Easing.html#method_easeOutStrong", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "el", "url": "YAHOO.util.Anim.html#property_el", "type": "property"}, {"access": "", "host": "YAHOO.util.Easing", "name": "elasticBoth", "url": "YAHOO.util.Easing.html#method_elasticBoth", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "elasticIn", "url": "YAHOO.util.Easing.html#method_elasticIn", "type": "method"}, {"access": "", "host": "YAHOO.util.Easing", "name": "elasticOut", "url": "YAHOO.util.Easing.html#method_elasticOut", "type": "method"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "fps", "url": "YAHOO.util.AnimMgr.html#property_fps", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getAttribute", "url": "YAHOO.util.Anim.html#method_getAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getDefaultUnit", "url": "YAHOO.util.Anim.html#method_getDefaultUnit", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getEl", "url": "YAHOO.util.Anim.html#method_getEl", "type": "method"}, {"access": "", "host": "YAHOO.util.Bezier", "name": "getPosition", "url": "YAHOO.util.Bezier.html#method_getPosition", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "getStartTime", "url": "YAHOO.util.Anim.html#method_getStartTime", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "init", "url": "YAHOO.util.Anim.html#method_init", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "isAnimated", "url": "YAHOO.util.Anim.html#property_isAnimated", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "isAnimated", "url": "YAHOO.util.Anim.html#method_isAnimated", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "method", "url": "YAHOO.util.Anim.html#property_method", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onComplete", "url": "YAHOO.util.Anim.html#property__onComplete", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onComplete", "url": "YAHOO.util.Anim.html#event_onComplete", "type": "event"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onStart", "url": "YAHOO.util.Anim.html#property__onStart", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onStart", "url": "YAHOO.util.Anim.html#event_onStart", "type": "event"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "_onTween", "url": "YAHOO.util.Anim.html#property__onTween", "type": "property"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "onTween", "url": "YAHOO.util.Anim.html#method_onTween", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "onTween", "url": "YAHOO.util.Anim.html#event_onTween", "type": "event"}, {"access": "", "host": "YAHOO.util.ColorAnim", "name": "parseColor", "url": "YAHOO.util.ColorAnim.html#method_parseColor", "type": "method"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "queue", "url": "YAHOO.util.AnimMgr.html#property_queue", "type": "property"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "registerElement", "url": "YAHOO.util.AnimMgr.html#method_registerElement", "type": "method"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "run", "url": "YAHOO.util.AnimMgr.html#method_run", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "setAttribute", "url": "YAHOO.util.Anim.html#method_setAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "setEl", "url": "YAHOO.util.Anim.html#method_setEl", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "setRuntimeAttribute", "url": "YAHOO.util.Anim.html#method_setRuntimeAttribute", "type": "method"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "start", "url": "YAHOO.util.AnimMgr.html#method_start", "type": "method"}, {"access": "private", "host": "YAHOO.util.Anim", "name": "startTime", "url": "YAHOO.util.Anim.html#property_startTime", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "stop", "url": "YAHOO.util.Anim.html#method_stop", "type": "method"}, {"access": "", "host": "YAHOO.util.AnimMgr", "name": "stop", "url": "YAHOO.util.AnimMgr.html#method_stop", "type": "method"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "thread", "url": "YAHOO.util.AnimMgr.html#property_thread", "type": "property"}, {"access": "", "host": "YAHOO.util.Anim", "name": "toString", "url": "YAHOO.util.Anim.html#method_toString", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "totalFrames", "url": "YAHOO.util.Anim.html#property_totalFrames", "type": "property"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "tweenCount", "url": "YAHOO.util.AnimMgr.html#property_tweenCount", "type": "property"}, {"access": "private", "host": "YAHOO.util.AnimMgr", "name": "unRegister", "url": "YAHOO.util.AnimMgr.html#method_unRegister", "type": "method"}, {"access": "", "host": "YAHOO.util.Anim", "name": "useSeconds", "url": "YAHOO.util.Anim.html#property_useSeconds", "type": "property"}];
+</script>
+</body>
+</html>
