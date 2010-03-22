@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>MouseEnter and MouseLeave Event Tests</title>
+
+	<link rel="stylesheet" type="text/css" href="../../../build/reset/reset-min.css">
+	<link rel="stylesheet" type="text/css" href="../../../build/base/base-min.css">
+
+	<style type="text/css">
+	
+		.container {
+			background-color: #ccc;
+			padding: 20px;
+			margin: 10px 0;
+			border-width: 1px;
+			border-style: solid;
+			border-color: #ccc;
+		}
+		
+		.container.hover {
+			background-color: #fc0;
+		}
+		
+		.container ul {
+			list-style: none;
+			padding: 10px;
+			margin: 0;
+			background-color: #333;
+		}
+
+		.container ul li {
+			margin: 10px;
+			padding: 1px;
+			background-color: #999;
+			border-width: 1px;
+			border-style: solid;
+			border-color: #999;			
+		}
+		
+		.container ul li.hover {
+			background-color: #ff6;
+		}
+
+		.container ul li em {
+			display: block;
+			margin: 10px;
+			padding: 5px;
+			background-color: #666;			
+		}
+		
+		.outline,
+		.container ul li.outline {
+			border-color: #f00;
+		}		
+
+		.container.focus {
+			background-color: blue;
+		}
+	
+	</style>
+
+	<script type="text/javascript" src="../../../build/yahoo/yahoo-min.js"></script>
+	<script type="text/javascript" src="../../../build/dom/dom-min.js"></script>
+	<script type="text/javascript" src="../../../build/event/event-min.js"></script>	
+	<script type="text/javascript" src="../../../build/event-mouseenter/event-mouseenter-min.js"></script>
+	<script type="text/javascript" src="../../../build/event-delegate/event-delegate.js"></script>	
+	<script type="text/javascript" src="../../../build/selector/selector-min.js"></script>
+	<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+	<script type="text/javascript" src="../../../build/element-delegate/element-delegate-min.js"></script>
+
+</head>
+<body>
+
+	<h1>MouseEnter and MouseLeave Event Tests</h1>
+
+	<ul>
+		<li>The background color of the <code>div</code> element should turn 
+		orange and have a red outline when you move the mouse over it.</li>
+		<li>The background color of each <code>li</code> should change to yellow
+		when you mouse over it and have a red outline.</li>		
+	</ul>
+
+	<div id="container-1" class="container">
+		<ul id="ul-1">
+			<li tabindex="0"><em>Item Type One</em></li>
+			<li tabindex="0"><em>Item Type Two</em></li>
+			<li tabindex="0"><em>Item Type Three</em></li>
+		</ul>
+	</div>
+		
+	<button id="remove-listeners">Remove Listeners</button>
+
+	<script type="text/javascript">
+		
+		
+		(function () {
+
+			var Dom = YAHOO.util.Dom;
+			
+			var onContainerMouseEnter = function (event, el) {
+				this.addClass("hover");					
+			};
+			
+			var onContainerMouseLeave = function (event, el) {
+				this.removeClass("hover");
+			};
+			
+			var addContainerOutline = function (event, className) {
+				this.addClass(className);
+			};
+			
+			var removeContainerOutline = function (event, className) {
+				this.removeClass(className);
+			};
+
+			var onLIMouseEnter = function (event, matchedEl) {
+				Dom.addClass(matchedEl, "hover");
+			};
+			
+			var onLIMouseLeave = function (event, matchedEl) {
+				Dom.removeClass(matchedEl, "hover");
+			};
+
+			var addLIOutline = function (event, matchedEl, container, className) {
+				Dom.addClass(matchedEl, className);
+			};
+			
+			var removeLIOutline = function (event, matchedEl, container, className) {
+				Dom.removeClass(matchedEl, className);
+			};
+
+			var onContainerFocus = function (event) {
+				this.addClass("focus");
+			};
+			
+			var onContainerBlur = function (event) {
+				this.removeClass("focus");
+			};
+
+			var container = new YAHOO.util.Element("container-1");
+			
+			container.on("mouseenter", onContainerMouseEnter);
+			container.on("mouseleave", onContainerMouseLeave);
+			
+			container.on("mouseenter", addContainerOutline, "outline");
+			container.on("mouseleave", removeContainerOutline, "outline");
+
+			container.on("focus", onContainerFocus);
+			container.on("blur", onContainerBlur);			
+
+			container.delegate("mouseenter", onLIMouseEnter, "li");
+			container.delegate("mouseleave", onLIMouseLeave, "li");			
+
+			container.delegate("mouseenter", addLIOutline, "li", "outline");
+			container.delegate("mouseleave", removeLIOutline, "li", "outline");
+
+			
+			YAHOO.util.Event.on("remove-listeners", "click", function () {
+			
+				if (container.removeListener("mouseenter", onContainerMouseEnter) && 
+					container.removeListener("mouseleave", onContainerMouseLeave) && 
+			
+					container.removeListener("mouseenter", addContainerOutline) && 
+					container.removeListener("mouseleave", removeContainerOutline) && 
+				
+					container.removeDelegate("mouseenter", onLIMouseEnter) &&
+					container.removeDelegate("mouseleave", onLIMouseLeave) && 
+				                             
+					container.removeDelegate("mouseenter", addLIOutline) && 
+					container.removeDelegate("mouseleave", removeLIOutline) && 
+					
+					container.removeListener("focus", onContainerFocus) &&
+					container.removeListener("blur", onContainerBlur)) {
+				
+					alert("Handlers successfully removed");
+						
+				}
+				else {
+				
+					alert("Handlers not removed successfully.");
+					
+				}
+				
+			});
+			
+		}());
+ 
+	
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+<head>
+<title>Slider/ColorPicker Test Suite</title>
+
+<link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+<link type="text/css" rel="stylesheet" href="../../../build/colorpicker/assets/skins/sam/colorpicker.css">
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">     
+
+<style type="text/css" class="highlight-ignore">
+#picker-container {
+    background:#ccc;
+    height:100px;
+    width:100px;
+}
+.highlight-example {
+    margin-top: 100px;
+}
+</style>
+</head>
+<body class="yui-skin-sam">
+<div id="doc">
+    <div id="picker-container">picker</div>
+    <div id="picker-container2">picker #2</div>
+</div>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/element/element-min.js"></script> 
+<script type="text/javascript" src="../../../build/dragdrop/dragdrop-min.js"></script> 
+<script type="text/javascript" src="../../../build/slider/slider.js"></script> 
+<script type="text/javascript" src="../../../build/colorpicker/colorpicker-debug.js"></script> 
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+<script type="text/javascript">
+(function() {
+    var Event = YAHOO.util.Event,
+        Dom = YAHOO.util.Dom,
+        tool = YAHOO.tool,
+        Assert = YAHOO.util.Assert,
+        ArrayAssert = YAHOO.util.ArrayAssert,
+        UserAction = YAHOO.util.UserAction,
+        suite = new tool.TestSuite("slider_and_picker_suite");
+
+    Event.onDOMReady(function() {
+        var logger = new tool.TestLogger();
+            picker = new YAHOO.widget.ColorPicker('picker-container', {
+                    "showhsvcontrols": true,
+                    "showhexcontrols": true,
+                    images : {
+                        PICKER_THUMB : '../../../build/colorpicker/assets/picker_thumb.png',
+                        HUE_THUMB : '../../../build/colorpicker/assets/hue_thumb.png'
+                    }
+                }), 
+            elPicker = document.getElementById('picker-container');
+
+        var _verifyState = function(o) {
+                o.r && Assert.areEqual(o.r, picker.get('red'), 'incorrect R');
+                o.g && Assert.areEqual(o.g, picker.get('green'), 'incorrect G');
+                o.b && Assert.areEqual(o.b, picker.get('blue'), 'incorrect B');
+                o.h && Assert.areEqual(o.h, picker.get('hue'), 'incorrect H');
+                o.s && Assert.areEqual(o.s, picker.get('saturation'), 'incorrect S');
+                o.v && Assert.areEqual(o.v, picker.get('value'), 'incorrect V');
+                o.hex && Assert.areEqual(o.hex, picker.get('hex'), 'incorrect hex');
+                o.rgb && ArrayAssert.itemsAreEqual(o.rgb, picker.get('rgb'), 'incorrect rgb');
+                o.websafe && ArrayAssert.itemsAreEqual(o.websafe, picker.get('websafe'), 'incorrect websafe');
+            };
+
+        suite.add( new tool.TestCase({
+
+            name: 'slider_and_picker_test',
+
+            test_getElement: function() {
+                Assert.areEqual(elPicker, picker.get('element'), 'incorrect element');
+            },
+
+            test_setAttribute: function() {
+                picker.set("red", 10);
+                
+                _verifyState({
+                        r: 10, g: 255, b: 255, h: 180, s: 96, v: 100,
+                        hex: "0AFFFF", rgb: [10, 255, 255], websafe: [0, 255, 255]
+                    });
+            },            
+
+            test_updateField: function() {
+                var el = Dom.get("yui-picker-g");
+                el.value = 10;
+                UserAction.keydown(el, { 
+                        keyCode: 13
+                    });
+                
+                _verifyState({
+                        r: 10, g: 10, b: 255, h: 240, s: 96, v: 100,
+                        hex: "0A0AFF", rgb: [10, 10, 255], websafe: [0, 0, 255]
+                    });
+            },            
+
+            test_setValue: function() {
+                picker.setValue([45, 58, 42]);
+                
+                _verifyState({
+                        r: 45, g: 58, b: 42, h: 109, s: 28, v: 23,
+                        hex: "2D3A2A", rgb: [45, 58, 42], websafe: [51, 51, 51]
+                    });
+            },            
+
+            test_websafeClick: function() {
+                UserAction.click("yui-picker-websafe-swatch");
+                
+                _verifyState({
+                        r: 51, g: 51, b: 51, h: 0, s: 0, v: 20,
+                        hex: "333333", rgb: [51, 51, 51], websafe: [51, 51, 51]
+                    });
+            },
+
+            _test_pickerClick: function() {
+
+
+                UserAction.mousedown("yui-picker-bg", {
+                        clientX: 50,
+                        clientY: 50
+                    });
+
+                UserAction.mousemove("yui-picker-bg", {
+                        clientX: 55,
+                        clientY: 55
+                    });
+                
+                UserAction.mouseup("yui-picker-bg", {
+                        clientX: 60,
+                        clientY: 60
+                    });
+
+                _verifyState({
+                        r: 51, g: 51, b: 51, h: 0, s: 0, v: 20,
+                        hex: "333333", rgb: [51, 51, 51], websafe: [51, 51, 51]
+                    });
+            },
+
+            test_animateConfig : function () {
+                var picker2 = new YAHOO.widget.ColorPicker('picker-container2',{
+                    animate : false
+                });
+
+                Assert.areEqual(false,picker2.pickerSlider.animate);
+                Assert.areEqual(false,picker2.hueSlider.animate);
+            }
+
+        })); 
+
+        tool.TestRunner.add(suite);
+
+        if (parent && parent != window) {
+            tool.TestManager.load();
+        } else {
+            tool.TestRunner.run();
+        }
+    }); 
+})();
+</script>
+<script src="/assets/dpSyntaxHighlighter.js"></script>
+<script src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

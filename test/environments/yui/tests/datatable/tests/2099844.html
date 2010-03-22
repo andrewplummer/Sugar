@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/paginator/assets/skins/sam/paginator.css">
+    <style type="text/css" class="highlight-ignore">
+        h1 {
+            font: normal 125%/1.4 Arial, sans-serif;
+        }
+        .yui-log {
+            display: inline;
+            float: right;
+            position: relative;
+        }
+        .yui-log-container {
+            width: 300px;
+        }
+        .yui-log .yui-log-bd {
+            height: 525px;
+        }
+        .yui-log .yui-log-ft {
+            position: static;
+        }
+        .highlight-example {
+            display: inline;
+            float: left;
+            width: 650px;
+        }
+        .highlight-example h2 {
+            display: none;
+        }
+        .yui-log-bd h3 {
+            border-bottom: 1px solid #ccc;
+            color: #900;
+            margin: 0;
+            padding: 1em 0 0 1ex;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<h1>Tests</h1>
+<div id="testbed"></div>
+
+<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+<script type="text/javascript" src="../../../build/datasource/datasource.js"></script>
+<script type="text/javascript" src="../../../build/datatable/datatable.js"></script>
+<script type="text/javascript">
+(function () {
+
+var t = YAHOO.tool,
+    u = YAHOO.util,
+    w = YAHOO.widget,
+    TestSuite   = t.TestSuite,
+    TestCase    = t.TestCase,
+    TestLogger  = t.TestLogger,
+    TestRunner  = t.TestRunner,
+    Event       = u.Event,
+    Dom         = u.Dom,
+    Assert      = u.Assert,
+    AAssert     = u.ArrayAssert,
+    OAssert     = u.ObjectAssert,
+    DataSource  = u.DataSource,
+    DataTable   = w.DataTable,
+    testbed     = Dom.get('testbed'),
+    suite;
+
+suite = new TestSuite("Tests");
+
+suite.add(new TestCase({
+    name : "Test Case",
+
+    setUp : function () {
+        function formatText(cell,r,c,data) {
+            cell.className += ' foo';
+            DataTable.formatText(cell,r,c,data);
+        }
+        function formatDefault(cell,r,c,data) {
+            cell.className += ' bar';
+            DataTable.formatDefault(cell,r,c,data);
+        }
+
+        this.dataSource = new DataSource({ recs : [{a:'P&I', b:'PB&amp;J'}]}, {
+            responseType: DataSource.TYPE_JSON,
+            responseSchema: { resultsList: 'recs', fields : ['a','b'] }
+        });
+        
+        this.colDef = [
+            {key: 'a'},
+            {key: 'b'},
+            {key: 'a', formatter: formatText},
+            {key: 'b', formatter: formatText},
+            {key: 'a', formatter: formatDefault},
+            {key: 'b', formatter: formatDefault}
+        ]
+    },
+    tearDown : function () {
+        //this.dataTable.destroy();
+    },
+
+    testDefaultFormatter : function () {
+        this.dataTable = new DataTable(testbed,this.colDef,this.dataSource);
+
+        var cells = Dom.getElementsByClassName('yui-dt-liner','div',
+                        this.dataTable.getTbodyEl()),i;
+
+        // TODO: how to test other than by eye?
+        function ins(c) {
+            var n = document.createTextNode(c.innerHTML);
+            testbed.parentNode.insertBefore(n,testbed.nextSibling);
+        }
+
+        ins(cells[5]);
+        ins(cells[1]);
+        ins(cells[4]);
+        ins(cells[0]);
+    }
+}));
+
+Event.onDOMReady(function () {
+
+    var logger = new TestLogger("log");
+    logger.hideCategory('info');
+    logger.formatMsg = function (e) {
+        if (e.category === 'section') {
+            return "<h3>"+e.msg+"</h3>";
+        } else if (e.category === "break") {
+            return "<br>";
+        } else {
+            return TestLogger.prototype.formatMsg.call(this,e);
+        }
+    };
+
+    YAHOO.log("Tests","section","TestRunner");
+
+    TestRunner.add(suite);
+
+    TestRunner.run();
+});
+
+})();
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js"></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

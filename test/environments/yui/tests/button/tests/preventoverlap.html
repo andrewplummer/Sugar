@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <title>Button</title>
+        
+        <link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts-min.css"> 
+        <link rel="stylesheet" type="text/css" href="../../../build/menu/assets/skins/sam/menu.css"> 
+        <link rel="stylesheet" type="text/css" href="../../../build/button/assets/skins/sam/button.css"> 
+
+		<style type="text/css">
+		
+			#buttons-container {
+				width: 1000px;
+				background-color: #fc3;
+				margin: 300px 100px;
+			}
+			
+			#alignment-controls {
+				position: absolute;
+				top: 0;
+				left: 0;
+				background-color: #ccc;
+				padding: 10px;
+			}
+		
+		</style>
+
+        <script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+        <script type="text/javascript" src="../../../build/element/element-min.js"></script>
+        <script type="text/javascript" src="../../../build/container/container_core-min.js"></script>
+        <script type="text/javascript" src="../../../build/menu/menu-min.js"></script>
+        <script type="text/javascript" src="../../../build/button/button-min.js"></script>
+
+        <script type="text/javascript">
+		
+			(function () {
+				
+				var Dom = YAHOO.util.Dom,
+					Event = YAHOO.util.Event,
+					aMenuItems = [];
+
+
+				for (var i = 0; i < 25; i++) {
+					aMenuItems[i] = "Menu Item " + i;
+				}
+
+
+				Event.onDOMReady(function () {
+
+					var positionAlignmentControls = function () {
+
+						YAHOO.util.Dom.setXY("alignment-controls", [0, Dom.getDocumentScrollTop()]);
+
+					};
+
+					var setMenuAlignment = function () {
+
+						var menuCorner = Dom.get("menu-corner"),
+							buttonCorner = Dom.get("button-corner"),
+							alignment = [menuCorner.value, buttonCorner.value];
+
+						oButton1.set("menualignment", alignment);
+						oButton2.set("menualignment", alignment);
+						oButton3.set("menualignment", alignment);
+						oButton4.set("menualignment", alignment);
+						
+					};
+
+					var oButton1 = new YAHOO.widget.Button({
+						label: "Button 1",
+						type: "menu",
+						menu: aMenuItems,
+						menumaxheight: 200,
+						container: "buttons-container"
+					});
+
+					var oButton2 = new YAHOO.widget.Button({
+						label: "Button 2",
+						type: "menu",
+						menu: aMenuItems,
+						container: "buttons-container"
+					});
+
+					var oButton3 = new YAHOO.widget.Button({
+						label: "Button 3",
+						type: "menu",
+						menu: aMenuItems,				
+						menumaxheight: 200,
+						lazyloadmenu: false,
+						container: "buttons-container"
+					});
+
+					var oButton4 = new YAHOO.widget.Button({
+						label: "Button 4",
+						type: "menu",
+						menu: aMenuItems,					
+						lazyloadmenu: false,
+						container: "buttons-container"
+					});
+
+					positionAlignmentControls();
+
+					setMenuAlignment();
+
+					YAHOO.widget.Overlay.windowScrollEvent.subscribe(positionAlignmentControls);
+
+					Event.on("set-menu-alignment", "click", setMenuAlignment);
+
+				});
+				
+			}());
+
+        </script>
+
+    </head>
+    <body class="yui-skin-sam">
+	
+		<div id="buttons-container"></div>
+		<fieldset id="alignment-controls">
+			<legend>Menu Alignment Controls</legend>
+
+			<label for="menu-corner">Menu Corner</label>
+			<select id="menu-corner">
+				<option value="tl">tl<option>
+				<option value="tr">tr<option>
+				<option selected value="bl">bl<option>
+				<option value="br">br<option>
+			</select>
+
+			<label for="button-corner">Button Corner</label>
+			<select id="button-corner">
+				<option selected value="tl">tl<option>
+				<option value="tr">tr<option>
+				<option value="bl">bl<option>
+				<option value="br">br<option>
+			</select>
+
+			<button id="set-menu-alignment">Set Menu Alignment</button>
+		</fieldset>
+
+    </body>
+</html>

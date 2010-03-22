@@ -1,0 +1,274 @@
+<!doctype html public "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>YUI Tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css" />     
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />     
+
+<style type="text/css">
+
+ .dd { position:absolute; height: 100px; width: 100px; z-index:99 }
+    #ddcontainer { top:100px; left: 0px; border: 1px solid green; position:absolute; height: 500px; width: 500px; overflow:auto }
+ #dd1div { top: 100px; left: 100px; background: red; }
+ #dd2div { top: 100px; left: 300px; background: blue; }
+ .downlow { position: absolute; top: 1000px; }
+
+</style>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/dragdrop/dragdrop-debug.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+
+</head>
+<body>
+<div id="ddcontainer">
+    <div id="dd1div" class="dd">dd1</div>
+    <div id="dd2div" class="dd">dd2</div>
+    <div class="downlow">way down</div>
+</div>
+<div class="downlow">way down</div>
+
+<h1>Drag and Drop Test Page</h1>
+<script type="text/javascript">
+
+(function() {
+
+    var Dom=YAHOO.util.Dom,
+        Event=YAHOO.util.Event,
+        Assert=YAHOO.util.Assert,
+        ObjectAssert=YAHOO.util.ObjectAssert,
+        ArrayAssert=YAHOO.util.ArrayAssert, 
+        suite=new YAHOO.tool.TestSuite("yuisuite");
+
+    
+    suite.add(new YAHOO.tool.TestCase({
+        
+        //name of the test case
+        name : "dragdrop",
+    
+        //extra information about tests
+        _should : {
+        
+            //tests with these names should fail
+            fail : { test_to_fail: true },
+            
+            //tests with these names should throw an error
+            error : { },
+            
+            //ignore these tests
+            ignore : { }
+        },
+
+        test_mouseDown: function() {
+            reset();
+            dd1.handleMouseDown({ 
+                pageX: 110, 
+                pageY: 230,
+                target: dd1.getEl()
+                });
+            YAHOO.util.DDM.handleMouseUp({ pageX: 110, pageY: 210 });
+
+            Assert.areEqual(startDrag, 0, "startDrag should not have fired");
+            Assert.areEqual(mouseDown, 1, "mouseDown should have fired once");
+        },
+
+        test_mouseMiss: function() {
+            reset();
+            dd1.handleMouseDown({  // miss
+                pageX: 90, 
+                pageY: 90,
+                target: dd1.getEl()
+                });
+            YAHOO.util.DDM.handleMouseMove({ pageX: 120, pageY: 220 });
+            YAHOO.util.DDM.handleMouseUp({ pageX: 120, pageY: 220 });
+
+            // check this
+            Assert.areEqual(mouseDown, 1, "mouseDown should have fired once");
+            Assert.areEqual(startDrag, 0, "startDrag should not have fired");
+            Assert.areEqual(endDrag, 0, "endDrag should not have fired");
+            Assert.areEqual(mouseUp, 0, "mouseUp should not have fired");
+        },
+
+        test_startDrag: function() {
+            reset();
+            dd1.handleMouseDown({ 
+                pageX: 120, 
+                pageY: 230,
+                target: dd1.getEl()
+                });
+            YAHOO.util.DDM.handleMouseMove({ pageX: 120, pageY: 220 });
+            YAHOO.util.DDM.handleMouseUp({ pageX: 120, pageY: 220 });
+
+            Assert.areEqual(mouseDown, 1, "mouseDown should have fired once");
+            Assert.areEqual(startDrag, 1, "startDrag should have fired once");
+            Assert.areEqual(endDrag, 1, "endDrag should have fired once");
+            Assert.areEqual(mouseUp, 1, "mouseUp should have fired once");
+        },
+
+        test_dragOver: function() {
+            reset();
+            dd1.handleMouseDown({ 
+                pageX: 120, 
+                pageY: 230,
+                target: dd1.getEl()
+                });
+
+            for (var i=1;i<21;i=i+1) {
+                YAHOO.util.DDM.handleMouseMove({ pageX: 124+(10*i), pageY: 220 });
+            }
+            for (var i=20;i>0;i=i-1) {
+                YAHOO.util.DDM.handleMouseMove({ pageX: 124+(10*i), pageY: 220 });
+            }
+            YAHOO.util.DDM.handleMouseUp({ pageX: 120, pageY: 210 });
+
+            Assert.areEqual(startDrag, 1, "startDrag should have fired once");
+            Assert.areEqual(drag, 40, "drag should have fired 40 times");
+            Assert.areEqual(dragOver, 5, "dragOver should have fired 5 times");
+            Assert.areEqual(dragOut, 1, "dragOut should have fired once");
+            Assert.areEqual(invalidDrop, 1, "invalidDrop should have fired once");
+            Assert.areEqual(dragDrop, 0, "dragDrop should have fired once");
+        },
+
+        test_dragOnly: function() {
+            reset();
+            dd1.dragOnly = true;
+            dd1.handleMouseDown({ 
+                pageX: 120, 
+                pageY: 230,
+                target: dd1.getEl()
+                });
+
+            for (var i=1;i<21;i=i+1) {
+                YAHOO.util.DDM.handleMouseMove({ pageX: 124+(10*i), pageY: 220 });
+            }
+            for (var i=20;i>0;i=i-1) {
+                YAHOO.util.DDM.handleMouseMove({ pageX: 124+(10*i), pageY: 220 });
+            }
+            YAHOO.util.DDM.handleMouseUp({ pageX: 120, pageY: 210 });
+
+            Assert.areEqual(1, startDrag, "startDrag should have fired once");
+            Assert.areEqual(40, drag, "drag should have fired 40 times");
+            Assert.areEqual(0, dragOver, "dragOver should have fired 0 times");
+            Assert.areEqual(0, dragOut, "dragOut should have fired 0 times");
+            Assert.areEqual(0, invalidDrop, "invalidDrop should have fired 0 times");
+            Assert.areEqual(0, dragDrop, "dragDrop should have fired 0 times");
+        },
+
+         test_bodyScroll: function() {
+            window.scrollTo(0,150);
+            reset();
+            dd1.handleMouseDown({ 
+                pageX: 140, 
+                pageY: 220,
+                target: dd1.getEl()
+                });
+
+            for (var i=1;i<21;i=i+1) {
+                YAHOO.util.DDM.handleMouseMove({ pageX: 124+(10*i), pageY: 210 });
+            }
+            for (var i=20;i>0;i=i-1) {
+                YAHOO.util.DDM.handleMouseMove({ pageX: 124+(10*i), pageY: 210 });
+            }
+            YAHOO.util.DDM.handleMouseUp({ pageX: 120, pageY: 210 });
+
+            Assert.areEqual(startDrag, 1, "startDrag should have fired once");
+            Assert.areEqual(drag, 40, "drag should have fired 40 times");
+            Assert.areEqual(dragOver, 5, "dragOver should have fired 5 times");
+            Assert.areEqual(dragOut, 1, "dragOut should have fired once");
+            Assert.areEqual(invalidDrop, 1, "invalidDrop should have fired once");
+            Assert.areEqual(dragDrop, 0, "dragDrop should have fired once");
+        },
+
+        test_containerScroll: function() {
+            reset();
+            Dom.get("ddcontainer").scrollTop=150;
+            dd1.handleMouseDown({ 
+                pageX: 140, 
+                pageY: 100,
+                target: dd1.getEl()
+                });
+
+            for (var i=1;i<21;i=i+1) {
+                YAHOO.util.DDM.handleMouseMove({ pageX: 124+(10*i), pageY: 110 });
+            }
+            for (var i=20;i>0;i=i-1) {
+                YAHOO.util.DDM.handleMouseMove({ pageX: 124+(10*i), pageY: 110 });
+            }
+            YAHOO.util.DDM.handleMouseUp({ pageX: 120, pageY: 110 });
+
+            Assert.areEqual(startDrag, 1, "startDrag should have fired once");
+            Assert.areEqual(drag, 40, "drag should have fired 40 times");
+            Assert.areEqual(dragOver, 5, "dragOver should have fired 5 times");
+            Assert.areEqual(dragOut, 1, "dragOut should have fired once");
+            Assert.areEqual(invalidDrop, 1, "invalidDrop should have fired once");
+            Assert.areEqual(dragDrop, 0, "dragDrop should have fired once");
+        },
+
+        test_to_fail: function (){
+            Assert.isNull("not null");
+        }
+        
+    }));
+     
+    function runTests(){
+        YAHOO.tool.TestRunner.run();
+    }
+
+    function reset() {
+        window.scrollTo(0,0);
+        Dom.get("ddcontainer").scrollTop=0;
+        startDrag=0, mouseDown=0, endDrag=0, dragEnter=0, dragOver=0, dragOut=0,
+        drag=0, dragDrop=0, invalidDrop=0, mouseUp=0;
+        dd1.dragOnly = false;
+    }
+
+    var dd1, dd2, startDrag, mouseDown, endDrag, dragEnter, dragOver, dragOut,
+        drag, dragDrop, invalidDrop, mouseUp;
+
+    function onMouseDown(e) { mouseDown++; }
+    function startDrag(x, y) { startDrag++; }
+    function onDrag(e) { drag++; }
+    function onDragEnter(e, id) { dragEnter++; }
+    function onDragOver(e, id) { dragOver++; }
+    function onDragOut(e, id) { dragOut++; }
+    function onDragDrop(e, id) { dragDrop++; }
+    function onInvalidDrop(e) { invalidDrop++; }
+    function endDrag(e) { endDrag++; }
+    function onMouseUp(e) { mouseUp++; }
+
+    YAHOO.util.Event.on(window, "load", function (){
+        //create the logger
+        var logger = new YAHOO.tool.TestLogger();
+        
+        //add the tests
+        YAHOO.tool.TestRunner.add(suite);
+        
+        dd1 = new YAHOO.util.DD("dd1div");
+        dd1.onMouseDown= onMouseDown;
+        dd1.startDrag = startDrag;
+        dd1.onDrag= onDrag;
+        dd1.onDragEnter = onDragEnter;
+        dd1.onDragOver = onDragOver;
+        dd1.onDragOut = onDragOut;
+        dd1.onDragDrop = onDragDrop;
+        dd1.onInvalidDrop = onInvalidDrop;
+        dd1.endDrag = endDrag;
+        dd1.onMouseUp = onMouseUp;
+
+        dd2 = new YAHOO.util.DD("dd2div");
+
+        if (parent && parent != window) {
+            YAHOO.tool.TestManager.load();
+        } else {
+            YAHOO.tool.TestRunner.run();
+        }
+    });
+    
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>YUI: Node Perf</title>
+</head>
+<body>
+
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+
+<p>Create a Node instance, and append it to another Node instance.</p>
+
+<div id="results"></div>
+
+<script>
+YUI({base: '../../../build/', filter:"raw"}).use('node', function(Y) {
+
+    var start, end, 
+        n = 100,
+        body = Y.Node.get("body");
+
+    // console.profile("Base");
+    start = new Date().getTime();
+    for (i = 0; i < n; i++) {
+        body.appendChild(Y.Node.create('<div id="t' + i + '"></div>'));
+    }
+    end = new Date().getTime();
+    // console.profileEnd();
+
+    Y.Node.get("#results").set("innerHTML", "Avg Time:" + ((end-start)/n));
+});
+</script>
+</body>
+</html>

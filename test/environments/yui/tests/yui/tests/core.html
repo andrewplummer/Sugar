@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>YUI Core Tests</title>
+</head>
+
+<body class="yui-skin-sam">
+<h1>Core Tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" disabled="true" /></p>
+
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+<script type="text/javascript">
+
+(function() {
+    YUI({
+        base: "../../../build/",
+        filter: "debug",
+        useConsole: true,
+        logExclude: {Dom: true, Selector: true, Node: true, attribute: true, base: true, event: true, widget: true}
+    }).use("dump", "test", "console", "event-custom", function(Y) {
+
+        var button = Y.get('#btnRun');
+
+        // Set up the page
+        button.set("disabled", false);
+        Y.on("click", function() {
+            Y.Test.Runner.run();
+        }, button);
+
+        // var myConsole = new Y.Console().render();
+
+        var testCore = new Y.Test.Case({
+            name: "Core tests",
+        
+            'cached functions should execute only once per input': function() {
+
+                var r1 = "", r2 = "", r3 = "";
+
+                var f1 = function(a) {
+                    r1 += a;
+                };
+                var c1 = Y.cached(f1);
+
+                c1('a');
+                c1('b');
+                c1('a');
+                c1('b');
+                c1('a');
+                c1('b');
+
+                Y.Assert.areEqual('ab', r1);
+
+                var f2 = function(a, b) {
+                    r2 += (a + b);
+                };
+                var c2 = Y.cached(f2);
+
+                c2('a', 'b');
+                c2('c', 'd');
+                c2('a', 'b');
+                c2('c', 'd');
+                c2('a', 'b');
+                c2('c', 'd');
+
+                var o = new Y.EventTarget();
+                o.foo = 1;
+
+                var f3 = function(a) {
+                    Y.Assert.areEqual(1, this.foo);
+                    r3 += a;
+                };
+
+                var c3 = Y.cached(Y.bind(f3, o), {
+                    a: 'z'
+                });
+
+                c3('a');
+                c3('b');
+                c3('a');
+                c3('b');
+                c3('a');
+                c3('b');
+
+                Y.Assert.areEqual('b', r3);
+            }
+        });
+        
+        Y.Test.Runner.add(testCore);
+        Y.Test.Runner.run();
+    });
+})();
+</script>
+</body>
+</html>

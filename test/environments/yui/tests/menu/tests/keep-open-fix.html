@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Menu keepopen Configuration Property Test</title>
+
+    <link type="text/css" rel="stylesheet" href="../../../build/menu/assets/skins/sam/menu.css">
+
+    <script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script type="text/javascript" src="../../../build/container/container_core-min.js"></script>
+    <script type="text/javascript" src="../../../build/menu/menu.js"></script>
+
+	<script type="text/javascript">
+
+	    /*
+	         Initialize and render the Menu when the element it is to be 
+	         rendered into is ready to be scripted.
+	    */
+
+	    YAHOO.util.Event.onAvailable("rendertarget", function () {
+
+	        /*
+				Instantiate a Menu:  The first argument passed to the constructor
+				is the id for the Menu element to be created, the second is an 
+				object literal of configuration properties.
+	        */
+
+	        var oMenu = new YAHOO.widget.Menu("basicmenu", { fixedcenter: true, keepopen: true });
+
+
+	        /*
+	            Add items to the Menu instance by passing an array of object literals 
+	            (each of which represents a set of YAHOO.widget.MenuItem 
+	            configuration properties) to the "addItems" method.
+	        */
+
+	        oMenu.addItems([
+
+	                { text: "MenuItem 1", submenu: { 
+		 				
+							id: "submenu-1", itemdata: [
+								"MenuItem 1",
+								"MenuItem 2",
+								"MenuItem 3",
+								"MenuItem 4",																								
+							]
+			
+						} },
+	                "MenuItem 2",
+	                "MenuItem 3",
+	                "MenuItem 4"
+
+	            ]);
+
+
+	        /*
+	            Since this Menu instance is built completely from script, call the 
+	            "render" method passing in the DOM element that it should be 
+	            appended to.
+	        */
+
+	        oMenu.render("rendertarget");
+
+
+	        YAHOO.util.Event.addListener("menutoggle", "click", oMenu.show, null, oMenu);
+
+	    });
+
+	</script>
+
+
+
+</head>
+<body class="yui-skin-sam">
+
+	<h1>Menu keepopen Configuration Property Test</h1>
+	<p>Test case to demonstrate fix for <a href="http://yuilibrary.com/projects/yui2/ticket/2512349">bug 2512349</a>.</p>
+	
+	<button id="menutoggle" type="button">Show Menu</button>
+
+	<div id="rendertarget"></div>
+
+</body>
+</html>

@@ -1,0 +1,286 @@
+<html>
+<head>
+<title>array assert tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logreader/assets/skins/sam/logreader.css" />
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+</head>
+<body class="yui-skin-sam">
+    <h1>Array Assert Tests</h1>
+    <div id="c"></div>
+<script type="text/javascript">  
+    
+YUI({
+    base: '../../../build/',
+    filter: "debug",
+    logInclude: { TestRunner: true }
+}).use('test', 'console', function (Y) {
+
+    Y.namespace("Tests");
+    
+    Y.Tests.ArrayAssert = (function(){
+    
+        var Assert          = Y.Assert,
+            ArrayAssert     = Y.ArrayAssert;
+        
+        //-------------------------------------------------------------------------
+        // Base Test Suite
+        //-------------------------------------------------------------------------
+        
+        var suite = new Y.Test.Suite("Array Assert Tests");
+        
+        //-------------------------------------------------------------------------
+        // Test Case for contains()
+        //-------------------------------------------------------------------------
+        
+        suite.add(new Y.Test.Case({
+        
+            name: "Contains Assert Tests",
+            
+            _should: {
+                fail: {
+                    "contains() should fail when a similar item exists": new Y.Assert.Error("Value 1 (number) not found in array [1,0,false,text]."),
+                    "contains() should throw a custom error message during failure": new Y.Assert.Error("True should not be there: Value 1 (number) not found in array [1,0,false,text]."),
+                    "contains() should fail when the item doesn't exist": new Y.Assert.Error("Value true (boolean) not found in array [1,0,false,text].")
+                }
+            },
+            
+            setUp: function(){
+                this.testArray = ["1", 0, false, "text"];
+            },
+            
+            tearDown: function(){
+                delete this.testArray;
+            },
+            
+            "contains() should pass when the given item exists": function () {
+                ArrayAssert.contains("1", this.testArray);
+            },
+            
+            "contains() should fail when a similar item exists": function () {
+                ArrayAssert.contains(1, this.testArray);
+            },
+            
+            "contains() should fail when the item doesn't exist": function() {
+                ArrayAssert.contains(true, this.testArray);
+            },
+            
+            "contains() should throw a custom error message during failure": function(){
+                ArrayAssert.contains(true, this.testArray, "True should not be there: {message}");
+            }
+        }));        
+        
+        //-------------------------------------------------------------------------
+        // Test Case for contains()
+        //-------------------------------------------------------------------------
+            
+        suite.add(new Y.Test.Case({
+        
+            name: "ContainsItems Assert Tests",
+            
+            _should: {
+                fail: {
+                    testSimilarItems: new Y.Assert.Error("Value 1 (number) not found in array [1,0,false,text]."),
+                    testNonExistingItems: new Y.Assert.Error("Value true (boolean) not found in array [1,0,false,text].")
+                }
+            },
+            
+            setUp: function(){
+                this.testArray = ["1", 0, false, "text"];
+            },
+            
+            tearDown: function(){
+                delete this.testArray;
+            },
+            
+            testExistingItems: function () {
+                ArrayAssert.containsItems(["1",0], this.testArray);
+            },
+            
+            testSimilarItems: function () {
+                ArrayAssert.containsItems([1,0], this.testArray);
+            },
+            
+            testNonExistingItems: function() {
+                ArrayAssert.containsItems([true], this.testArray);
+            }
+        }));
+        
+        //-------------------------------------------------------------------------
+        // Test Case for containsMatch()
+        //-------------------------------------------------------------------------
+        
+        suite.add(new Y.Test.Case({
+        
+            name: "ContainsMatch Assert Tests",
+            
+            _should: {
+                fail: {
+                    testNonExistingItems: new Y.Assert.Error("No match found in array [1,0,false,text].")
+                }
+            },
+            
+            setUp: function(){
+                this.testArray = ["1", 0, false, "text"];
+            },
+            
+            tearDown: function(){
+                delete this.testArray;
+            },
+            
+            testExistingItems: function () {
+                ArrayAssert.containsMatch(function(value){
+                    return Y.Lang.isString(value);
+                }, this.testArray);
+            },
+            
+            testNonExistingItems: function() {
+                ArrayAssert.containsMatch(function(value){
+                    return Y.Lang.isObject(value);
+                }, this.testArray);
+            }
+        }));
+        
+        //-------------------------------------------------------------------------
+        // Test Case for itemsAreSame()
+        //-------------------------------------------------------------------------
+        
+        suite.add(new Y.Test.Case({
+        
+            name: "itemsAreSame Assert Tests",
+            
+            _should: {
+                fail: {
+                    testMissingItem: new Y.Assert.Error("Values in position 3 are not the same."),
+                    testArrayAgainstObject: new Y.Assert.Error("Values in position 0 are not the same.")
+                }
+            },
+            
+            setUp: function(){
+                this.testArray = ["1", 0, false, "text"];
+            },
+            
+            tearDown: function(){
+                delete this.testArray;
+            },
+            
+            testItemsAreSame: function () {
+                ArrayAssert.itemsAreSame(this.testArray,["1", 0, false, "text"]);
+            },
+            
+            testMissingItem: function() {
+                ArrayAssert.itemsAreSame(this.testArray, ["1", 0, false]);
+            },
+            
+            testArrayAgainstObject: function(){
+                ArrayAssert.itemsAreSame(this.testArray, {});
+            }
+        }));
+        
+        //-------------------------------------------------------------------------
+        // Test Case for itemsAreEqual()
+        //-------------------------------------------------------------------------
+        
+        suite.add(new Y.Test.Case({
+        
+            name: "itemsAreEqual Assert Tests",
+            
+            _should: {
+                fail: {
+                    testMissingItem: new Y.Assert.Error("Values in position 3 are not equal."),
+                    testArrayAgainstObject: new Y.Assert.Error("Values in position 0 are not equal.")
+                }
+            },
+            
+            setUp: function(){
+                this.testArray = ["1", 0, false, "text"];
+            },
+            
+            tearDown: function(){
+                delete this.testArray;
+            },
+            
+            testItemsAreEqual: function () {
+                ArrayAssert.itemsAreEqual(this.testArray,["1", 0, false, "text"]);
+            },
+            
+            testMissingItem: function() {
+                ArrayAssert.itemsAreEqual(this.testArray, ["1", 0, false]);
+            },
+            
+            testArrayAgainstObject: function(){
+                ArrayAssert.itemsAreEqual(this.testArray, {});
+            }
+        }));  
+      
+        //-------------------------------------------------------------------------
+        // Test Case for itemsAreEquivalent()
+        //-------------------------------------------------------------------------
+      
+        suite.add(new Y.Test.Case({
+        
+            name: "itemsAreEquivalent Assert Tests",
+            
+            _should: {
+                fail: {
+                    testMissingItem: new Y.Assert.Error("Values in position 3 are not equal."),
+                    testArrayAgainstObject: new Y.Assert.Error("Values in position 0 are not equal.")
+                }
+            },
+            
+            setUp: function(){
+                this.testArray = ["1", 0, false, "text"];
+                this.comparator = function(a,b){
+                    return a == b;
+                };
+            },
+            
+            tearDown: function(){
+                delete this.testArray;
+                delete this.comparator;
+            },
+            
+            testItemsAreEqual: function () {
+                ArrayAssert.itemsAreEquivalent(this.testArray,["1", 0, false, "text"], this.comparator);
+            },
+            
+            testMissingItem: function() {
+                ArrayAssert.itemsAreEquivalent(this.testArray, ["1", 0, false], this.comparator);
+            },
+            
+            testArrayAgainstObject: function(){
+                ArrayAssert.itemsAreEquivalent(this.testArray, {}, this.comparator);
+            }
+        }));   
+              
+    
+        //return it
+        return suite;
+    
+    })();
+
+    
+    var r = new Y.Console({
+        verbose : true,
+        //consoleLimit : 10,
+        newestOnTop : false
+    });
+    
+    r.render('#c');
+    
+    
+    //add to the testrunner and run
+    Y.Test.Runner.add(Y.Tests.ArrayAssert);
+    Y.Test.Runner.run();
+
+    /*if (parent && parent != window) {
+        YAHOO.tool.TestManager.load();
+    } else {
+        YAHOO.tool.TestRunner.run();
+    }*/
+ 
+});
+
+
+</script>
+</body>
+</html>

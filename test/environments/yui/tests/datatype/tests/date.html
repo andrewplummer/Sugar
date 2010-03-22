@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>DataType.Date Tests</title>
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+<script type="text/javascript" src="../../../build/datatype/datatype-debug.js"></script>
+</head>
+
+<body class="yui-skin-sam">
+<h1>DataType.Date Tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" disabled=true></p>
+
+<script type="text/javascript">
+
+(function() {
+    YUI({
+        base: "../../../build/",
+        //filter: "debug",
+        logInclude:{"TestRunner":true},
+        useConsole: true
+    }).use("console", "test", "dump", "datatype-date", function(Y) {
+        
+        // Set up the page
+        var LANG = Y.Lang,
+            ASSERT = Y.Assert,
+            ARRAYASSERT = Y.ArrayAssert,
+            btnRun = Y.get("#btnRun"),
+            myConsole = new Y.Console().render();
+            
+        btnRun.set("disabled", false);
+        Y.on("click", function(){
+            Y.Test.Runner.run();
+        }, btnRun);
+
+
+        var testParse = new Y.Test.Case({
+            name: "Date Parse Tests",
+        
+            testUndefined: function() {
+                var date = Y.DataType.Date.parse();
+                ASSERT.isNull(date, "Expected null.");
+            },
+
+            testNull: function() {
+                var date = Y.DataType.Date.parse(null);
+                ASSERT.isTrue(LANG.isDate(date), "Expected date.");
+            },
+            
+            testParse: function() {
+                var date = Y.DataType.Date.parse("December 17, 1995 03:24:00");
+                ASSERT.isTrue(LANG.isDate(date), "Expected date.");
+
+                date = Y.DataType.Date.parse(1995,11,17);
+                ASSERT.isTrue(LANG.isDate(date), "Expected date.");
+
+                date = Y.DataType.Date.parse(1995,11,17,3,24,0);
+                ASSERT.isTrue(LANG.isDate(date), "Expected date.");
+
+                date = Y.DataType.Date.parse(948548583);
+                ASSERT.isTrue(LANG.isDate(date), "Expected date.");
+            }
+        });
+        
+        var testFormat = new Y.Test.Case({
+            name: "Date Format Tests",
+
+            testUndefined: function() {
+                var output = Y.DataType.Date.format();
+                ASSERT.areSame("", output, "Expected empty string.");
+            },
+
+            testNull: function() {
+                var output = Y.DataType.Date.format(null);
+                ASSERT.areSame("", output, "Expected empty string.");
+            },
+            
+            testFormats: function() {
+                var date = new Date(819199440000),
+                    output;
+                
+                output = Y.DataType.Date.format(date);
+                ASSERT.areSame("1995-12-17", output, "Expected default format (%F)");
+
+                output = Y.DataType.Date.format(date, {format:"%D"});
+                ASSERT.areSame("12/17/95", output, "Expected %D format.");
+
+                output = Y.DataType.Date.format(date, {format:"%a %A"});
+                ASSERT.areSame("Sun Sunday", output, "Expected %a %A format.");
+
+                output = Y.DataType.Date.format(date, {format:"%b %B"});
+                ASSERT.areSame("Dec December", output, "Expected %b %B format.");
+
+                output = Y.DataType.Date.format(date, {format:"%r"});
+                ASSERT.areSame("03:24:00 AM", output, "Expected %r format.");
+
+                output = Y.DataType.Date.format(date, {format:"%R"});
+                ASSERT.areSame("03:24", output, "Expected %r format.");
+            }
+        });
+            
+        var testFormatLocales = new Y.Test.Case({
+            name: "Date Format Locale Tests",
+
+            testUndefined: function() {
+                Y.DataType.Date.Locale['fr'] = Y.merge(Y.DataType.Date.Locale, {
+                	a: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+                	A: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                	b: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jui', 'Aoû', 'Sep', 'Cct', 'Nov', 'Déc'],
+                	B: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                	c: '%a %d %b %Y %T %Z',
+                	p: ['', ''],
+                	P: ['', ''],
+                	x: '%d.%m.%Y',
+                	X: '%T'
+                });
+
+                Y.DataType.Date.Locale['fr-CH'] = Y.merge(Y.DataType.Date.Locale['fr'], { x: '%d. %m. %y' }, true);
+                
+                var date = new Date(819199440000),
+                    output;
+
+                output = Y.DataType.Date.format(date);
+                ASSERT.areSame("1995-12-17", output, "Expected default format (%F).");
+
+                output = Y.DataType.Date.format(date, {format:"%a %A", locale:"fr"});
+                ASSERT.areSame("Dim Dimanche", output, "Expected %a %A format.");
+
+                output = Y.DataType.Date.format(date, {format:"%b %B", locale:"fr"});
+                ASSERT.areSame("Déc Décembre", output, "Expected %b %B format.");
+
+                output = Y.DataType.Date.format(date, {format:"%x", locale:"fr"});
+                ASSERT.areSame("17.12.1995", output, "Expected %x format.");
+
+                output = Y.DataType.Date.format(date, {format:"%x", locale:"fr-CH"});
+                ASSERT.areSame("17. 12. 95", output, "Expected %x format for fr-CH.");
+            }
+        });
+
+        Y.Test.Runner.add(testParse);
+        Y.Test.Runner.add(testFormat);
+        Y.Test.Runner.add(testFormatLocales);
+        Y.Test.Runner.run();
+    });
+})();
+</script>
+</body>
+</html>

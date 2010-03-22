@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>YUI OOP Tests</title>
+</head>
+
+<body class="yui-skin-sam">
+<h1 id="header1">OOP Tests</h1>
+<p><input type="button" value="Run Tests" id="btnRun" disabled="true" /></p>
+
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+<script type="text/javascript">
+
+(function() {
+    YUI({
+        base: "../../../build/",
+        filter: "debug",
+        useConsole: true,
+        // logInclude: ['event', 'test']
+        //logExclude: ['Dom', 'Selector', 'Node', 'attribute']
+        logExclude: {Dom:true, Selector:true, Node:true, attribute:true, event:true, base:true}
+    }).use("dump", "test", "console", function(Y) {
+
+        var button = Y.get('#btnRun'),
+            Assert = Y.Assert,
+            ObjectAssert = Y.ObjectAssert;
+
+        // Set up the page
+        button.set("disabled", false);
+        Y.on("click", function() {
+            Y.Test.Runner.run();
+        }, button);
+
+        // var myConsole = new Y.Console().render();
+ 
+        var testOOP= new Y.Test.Case({
+            name: "OOP tests",
+        
+
+            testExtend: function() {
+
+                var firedbase = false;
+                var firedextended = false;
+
+                var Base = function() {
+                    Y.log('Base constructor executed');
+                    arguments.callee.superclass.constructor.apply(this, arguments);
+
+                    // bind by string in order to allow the subclass
+                    this.on('testStringFn', Y.bind('base', this));
+                };
+
+                Y.extend(Base, Y.EventTarget, {
+                    base: function() {
+                        Y.log('base function');
+                        firedbase = true;
+                    }
+                });
+
+                var Extended = function() {
+                    Y.log('Extended constructor executed');
+                    arguments.callee.superclass.constructor.apply(this, arguments);
+                };
+
+                Y.extend(Extended, Base, {
+                    base: function() {
+                        Y.log('extended function');
+                        firedextended = true;
+                    }
+                });
+
+                var b = new Extended();
+                b.fire('testStringFn', 1, 2);
+
+                Y.Assert.isFalse(firedbase);
+                Y.Assert.isTrue(firedextended);
+            },
+
+            test_merge: function() {
+                var o1 = { one: "one" }, 
+                    o2 = { two: "two" },
+                    o3 = { two: "twofromthree", three: "three" },
+                    o4 = { one: "one", two: "twofromthree", three: "three" }, 
+                    o123 = Y.merge(o1, o2, o3);
+
+                ObjectAssert.areEqual(o123, o4);
+                Assert.areEqual(o123.two, o4.two);
+            },
+            
+            test_mix: function() {
+
+                var a = {
+                    'bool' : false,
+                    'num'  : 0,
+                    'nul' : null,
+                    'undef': undefined,
+                    'T'    : 'blabber'
+                };
+
+                var b = {
+                    'bool' : 'oops',
+                    'num'  : 'oops',
+                    'nul' : 'oops',
+                    'undef': 'oops',
+                    'T'    : 'oops'
+                };
+
+                Y.mix(a, b, false);
+
+                Assert.isFalse((a.bool === 'oops'));
+                Assert.isFalse((a.num === 'oops'));
+                Assert.isFalse((a.nul === 'oops'));
+                Assert.isFalse((a.undef === 'oops'));
+                Assert.isFalse((a.T === 'oops'));
+
+                Y.mix(a, b, true);
+                Assert.isTrue((a.bool === 'oops'));
+                Assert.isTrue((a.num === 'oops'));
+                Assert.isTrue((a.nul === 'oops'));
+                Assert.isTrue((a.undef === 'oops'));
+                Assert.isTrue((a.T === 'oops'));
+
+            },
+
+            test_clone: function() {
+
+                var a = {
+                    'bool' : false,
+                    'num'  : 0,
+                    'nul' : null,
+                    'undef': undefined,
+                    'T'    : 'blabber'
+                };
+
+                Assert.isTrue((a.T === 'blabber'));
+
+                var b = Y.clone(a);
+
+                var c = function() {
+
+                    var _c = 3;
+
+                    return {
+                        a: 1,
+                        b: 2,
+                        c: function() {
+                            return _c;
+                        }
+                    }
+                }();
+
+                var d = Y.clone(c);
+
+                Assert.isTrue((d.a === 1));
+                Assert.isTrue((d.c() === 3));
+
+            },
+
+            test_clone_node: function() {
+
+                var a = {
+                    node: Y.one('#header1'),
+                    y: Y,
+                    el: document.getElementById('header1')
+                };
+
+                var b = Y.clone(a);
+                b.node.foo = 'bar';
+
+                Assert.isFalse(b.node.foo === a.node.foo);
+
+            }
+
+        });
+            
+
+        Y.Test.Runner.add(testOOP);
+        Y.Test.Runner.run();
+    });
+})();
+</script>
+</body>
+</html>

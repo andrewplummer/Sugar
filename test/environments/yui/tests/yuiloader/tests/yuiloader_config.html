@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>yuiloader test</title>
+
+<script type="text/javascript">
+
+(function() {
+
+    var logger, suite, page_modules=[]; 
+
+    function log(msg) {
+
+        if (logger) {
+            YAHOO.log(msg);
+        } else if (typeof console !== "undefined" && console.debug) {
+            console.debug(msg);
+        } else {
+            var d=document, b=d.body, n=d.createElement("div");
+            if (b) {
+                n.appendChild(d.createTextNode(msg));
+                b.appendChild(n);
+            }
+        }
+    }
+
+    YAHOO_config = {
+        listener: function(minfo) {
+            var n = minfo.name;
+            page_modules.push(n);
+            log("page load listener: " + n);
+        }, 
+        load: {
+            require: ['yuitest'],
+            //filter: 'DEBUG',
+            base: '../../../build/',
+            allowRollup: false,
+
+            onLoadComplete: function(loader) {
+
+                YAHOO.widget.Logger.enableBrowserConsole();
+                logger = new YAHOO.tool.TestLogger();
+                log("onLoadComplete");
+
+                suite=new YAHOO.tool.TestSuite("yuisuite");
+
+                suite.add(new YAHOO.tool.TestCase({
+                    name : "yuiloader",
+                    test_page_modules: function() {
+                        YAHOO.util.ArrayAssert.itemsAreEqual(
+                            // the page-level listener fires after the onLoadComplete
+                            // fires, so yuitest will not be in the list yet
+                            ["yahoo", "event", "dom", "logger"], 
+                            page_modules);
+                    },
+
+                    test_logger_css: function() {
+                        var el = YAHOO.util.Dom.getElementsByClassName("error")[0];
+                        YAHOO.util.Assert.areEqual("rgb(227, 47, 11)", 
+                            YAHOO.util.Dom.getStyle(el, "background-color"),
+                                "An element with the error class is not red");
+                    }
+                }));
+                 
+                YAHOO.tool.TestRunner.add(suite);
+                YAHOO.tool.TestRunner.run();
+            }
+        }
+    };
+
+})();
+
+</script>
+
+<script type="text/javascript" src="../../../build/yuiloader/yuiloader.js"></script>
+
+</head>
+<body id="yahoo-com" class="yui-skin-sam">
+<h1>YUI Loader</h1>
+<p>yuiloader is loading the test library, so if it fails the test probably won't run at all</p>
+</body>
+</html>

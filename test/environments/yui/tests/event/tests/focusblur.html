@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Focus and Blur Test</title>
+
+	<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css">
+	
+	<script type="text/javascript" src="../../../build/yahoo/yahoo-min.js"></script>
+	<script type="text/javascript" src="../../../build/dom/dom-min.js"></script>
+	<script type="text/javascript" src="../../../build/event/event-min.js"></script>
+	<script type="text/javascript" src="../../../build/dragdrop/dragdrop-min.js"></script>
+	<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+
+	<script type="text/javascript">
+	
+	(function () {
+	
+		var Event = YAHOO.util.Event;
+
+		var onButtonFocus = function (event) {
+			YAHOO.log("focus");
+		};
+
+		var onButtonBlur = function (event) {
+			YAHOO.log("blur");
+		};
+
+		Event.onFocus("container-1", onButtonFocus);
+		Event.onBlur("container-1", onButtonBlur);
+
+		Event.onDOMReady(function () {
+
+			var logReader = new YAHOO.widget.LogReader();
+			
+		});
+		
+	}());		
+	
+	</script>
+	
+</head>
+<body class="yui-skin-sam">
+
+	<h1>Focus and Blur Test</h1>
+	
+	<ul>
+		<li>Test subscribing to the capture mode-based focus and blur event 
+		using the built-in onAvailable (this didn't work in YUI 2.7 and 
+		versions prior)</li>
+		<li>For Opera: Test being able to use capture mode-based focus and 
+		blur event handlers to listen for focus and blur events on a single 
+		element (this didn't work in YUI 2.7 and versions prior)</li>
+	</ul>		
+	
+	<div id="container-1">
+		<button id="button-1">Click Me!</button>
+	</div>
+
+</body>
+</html>

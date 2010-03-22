@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Event Delegation Test</title>
+
+	<script type="text/javascript" src="../../../build/yuiloader/yuiloader-min.js"></script>
+	<script type="text/javascript">
+
+		(function () {
+
+			// Instantiate and configure Loader:
+			var loader = new YAHOO.util.YUILoader({
+
+			    require: ["event-delegate"],
+
+				base: '../../../build/',
+
+			    loadOptional: true,
+
+
+			    onSuccess: function() {
+
+					if (YAHOO.util.Event.delegate) {
+						alert("Loading of the delegate submodule was successful");
+					}
+
+			    },
+
+
+			    onProgress: function(o) {
+
+			        alert("progress:" + o.name);
+
+			    },
+
+
+			    onFailure: function(msg, xhrobj) {
+
+					alert("Failed to load the delegate submodule was successful");
+					
+			    },
+
+			    timeout: 10000
+
+			});
+
+			loader.insert();
+			
+		}());
+	
+	</script>
+
+</head>
+<body>
+
+</body>
+</html>

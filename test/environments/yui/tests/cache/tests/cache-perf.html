@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Cache Tests</title>
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+</head>
+
+<body class="yui-skin-sam">
+<h1>Cache Performance Tests</h1>
+<p><select id="testSelector"></select> <input type="button" value="Run Test" id="btnRun" disabled=true></p>
+
+<script type="text/javascript">
+(function() {
+    YUI({
+        base: "../../../build/",
+        filter: "debug",
+        logInclude:{"perf":true, "cache":true},
+        useConsole: true
+    }).use("console", "profiler", "dump", "cache", function(Y) {
+        
+        // Set up the page
+        var BTNRUN = Y.get("#btnRun"),
+            myConsole = new Y.Console().render();
+            
+
+        BTNRUN.set("disabled", false);
+        Y.on("click", function(e){
+            Y.example.Perf.run();
+        }, BTNRUN);
+        
+        Y.namespace("example").Perf = function() {
+            var selectNode = Y.get("#testSelector"),
+                allTests = [];
+                
+            return {
+                init: function() {
+                    this.register("Test 'max' upper boundary", function() {
+                        var max = 100,
+                            cache = new Y.Cache({max:max}),
+                            i = 0;
+
+                        while(i<max) {
+                            cache.add(i, i+"");
+                            i++;
+                        }
+
+                        i = 0;
+                        while(i<max) {
+                            cache.retrieve(i);
+                            i++;
+                        }
+                    });
+                    
+                    this.register("Test large item size", function() {
+                        var max = 5,
+                            cache = new Y.Cache({max:max}),
+                            i = 0,
+                            item = "Lorem ipsum dolor sit amet consectetuer mus ut consequat consequat eget. Sed arcu mi Nam In Curabitur elit quis vitae tortor faucibus. Nunc faucibus ullamcorper orci mattis ornare ac ipsum laoreet Nam Quisque. Convallis mus sit tellus facilisis faucibus vitae leo nibh ante vel. Leo et mauris eu In Vivamus Sed pede Suspendisse nibh convallis. Eros interdum et wisi condimentum auctor felis augue id senectus parturient. At ipsum consequat Vivamus pellentesque molestie Quisque id sit leo auctor. Leo dictum consequat auctor consequat nibh est a ut vitae sem. Auctor laoreet Nunc cursus elit Nam malesuada laoreet Morbi Phasellus arcu. Nam Phasellus tellus tellus a eu nisl nec vel Vestibulum dictumst. Ut id nascetur magnis ullamcorper cursus elit vestibulum Morbi risus ut. Et molestie tincidunt condimentum ornare pede id mauris est Quisque mollis. Pellentesque wisi et nec nec at Nunc Ut wisi et nonummy. Ac nec nonummy lacus laoreet netus odio orci amet Aenean justo. Curabitur nibh Curabitur quis Donec morbi rhoncus id elit mollis Quisque. Nunc nibh ante ligula rutrum convallis quis natoque eu et nec. Ac egestas diam auctor id nisl eget lobortis Sed dignissim nibh. Diam pellentesque neque at pretium felis sit Sed In Pellentesque ante. Ut Nam nonummy et orci condimentum leo hendrerit velit faucibus nulla. Cursus In odio laoreet sollicitudin quis auctor dapibus nisl condimentum quis. Ante Curabitur Aenean pellentesque tortor Suspendisse tincidunt nunc arcu Pellentesque eu. Vestibulum turpis congue laoreet lacinia felis felis adipiscing orci eu Ut. Aenean Nam fringilla consectetuer Integer facilisis Vivamus non id ut sollicitudin. Congue et ullamcorper ipsum Fusce metus wisi dictum porta Donec dolor. Nunc justo vel justo In nibh sollicitudin netus non dui pede. Nulla leo Aenean et mauris justo nec congue enim eget nisl. Cursus vitae diam ipsum Curabitur laoreet vitae leo.Lorem ipsum dolor sit amet consectetuer mus ut consequat consequat eget. Sed arcu mi Nam In Curabitur elit quis vitae tortor faucibus. Nunc faucibus ullamcorper orci mattis ornare ac ipsum laoreet Nam Quisque. Convallis mus sit tellus facilisis faucibus vitae leo nibh ante vel. Leo et mauris eu In Vivamus Sed pede Suspendisse nibh convallis. Eros interdum et wisi condimentum auctor felis augue id senectus parturient. At ipsum consequat Vivamus pellentesque molestie Quisque id sit leo auctor. Leo dictum consequat auctor consequat nibh est a ut vitae sem. Auctor laoreet Nunc cursus elit Nam malesuada laoreet Morbi Phasellus arcu. Nam Phasellus tellus tellus a eu nisl nec vel Vestibulum dictumst. Ut id nascetur magnis ullamcorper cursus elit vestibulum Morbi risus ut. Et molestie tincidunt condimentum ornare pede id mauris est Quisque mollis. Pellentesque wisi et nec nec at Nunc Ut wisi et nonummy. Ac nec nonummy lacus laoreet netus odio orci amet Aenean justo. Curabitur nibh Curabitur quis Donec morbi rhoncus id elit mollis Quisque. Nunc nibh ante ligula rutrum convallis quis natoque eu et nec. Ac egestas diam auctor id nisl eget lobortis Sed dignissim nibh. Diam pellentesque neque at pretium felis sit Sed In Pellentesque ante. Ut Nam nonummy et orci condimentum leo hendrerit velit faucibus nulla. Cursus In odio laoreet sollicitudin quis auctor dapibus nisl condimentum quis. Ante Curabitur Aenean pellentesque tortor Suspendisse tincidunt nunc arcu Pellentesque eu. Vestibulum turpis congue laoreet lacinia felis felis adipiscing orci eu Ut. Aenean Nam fringilla consectetuer Integer facilisis Vivamus non id ut sollicitudin. Congue et ullamcorper ipsum Fusce metus wisi dictum porta Donec dolor. Nunc justo vel justo In nibh sollicitudin netus non dui pede. Nulla leo Aenean et mauris justo nec congue enim eget nisl. Cursus vitae diam ipsum Curabitur laoreet vitae leo.Lorem ipsum dolor sit amet consectetuer mus ut consequat consequat eget. Sed arcu mi Nam In Curabitur elit quis vitae tortor faucibus. Nunc faucibus ullamcorper orci mattis ornare ac ipsum laoreet Nam Quisque. Convallis mus sit tellus facilisis faucibus vitae leo nibh ante vel. Leo et mauris eu In Vivamus Sed pede Suspendisse nibh convallis. Eros interdum et wisi condimentum auctor felis augue id senectus parturient. At ipsum consequat Vivamus pellentesque molestie Quisque id sit leo auctor. Leo dictum consequat auctor consequat nibh est a ut vitae sem. Auctor laoreet Nunc cursus elit Nam malesuada laoreet Morbi Phasellus arcu. Nam Phasellus tellus tellus a eu nisl nec vel Vestibulum dictumst. Ut id nascetur magnis ullamcorper cursus elit vestibulum Morbi risus ut. Et molestie tincidunt condimentum ornare pede id mauris est Quisque mollis. Pellentesque wisi et nec nec at Nunc Ut wisi et nonummy. Ac nec nonummy lacus laoreet netus odio orci amet Aenean justo. Curabitur nibh Curabitur quis Donec morbi rhoncus id elit mollis Quisque. Nunc nibh ante ligula rutrum convallis quis natoque eu et nec. Ac egestas diam auctor id nisl eget lobortis Sed dignissim nibh. Diam pellentesque neque at pretium felis sit Sed In Pellentesque ante. Ut Nam nonummy et orci condimentum leo hendrerit velit faucibus nulla. Cursus In odio laoreet sollicitudin quis auctor dapibus nisl condimentum quis. Ante Curabitur Aenean pellentesque tortor Suspendisse tincidunt nunc arcu Pellentesque eu. Vestibulum turpis congue laoreet lacinia felis felis adipiscing orci eu Ut. Aenean Nam fringilla consectetuer Integer facilisis Vivamus non id ut sollicitudin. Congue et ullamcorper ipsum Fusce metus wisi dictum porta Donec dolor. Nunc justo vel justo In nibh sollicitudin netus non dui pede. Nulla leo Aenean et mauris justo nec congue enim eget nisl. Cursus vitae diam ipsum Curabitur laoreet vitae leo.Lorem ipsum dolor sit amet consectetuer mus ut consequat consequat eget. Sed arcu mi Nam In Curabitur elit quis vitae tortor faucibus. Nunc faucibus ullamcorper orci mattis ornare ac ipsum laoreet Nam Quisque. Convallis mus sit tellus facilisis faucibus vitae leo nibh ante vel. Leo et mauris eu In Vivamus Sed pede Suspendisse nibh convallis. Eros interdum et wisi condimentum auctor felis augue id senectus parturient. At ipsum consequat Vivamus pellentesque molestie Quisque id sit leo auctor. Leo dictum consequat auctor consequat nibh est a ut vitae sem. Auctor laoreet Nunc cursus elit Nam malesuada laoreet Morbi Phasellus arcu. Nam Phasellus tellus tellus a eu nisl nec vel Vestibulum dictumst. Ut id nascetur magnis ullamcorper cursus elit vestibulum Morbi risus ut. Et molestie tincidunt condimentum ornare pede id mauris est Quisque mollis. Pellentesque wisi et nec nec at Nunc Ut wisi et nonummy. Ac nec nonummy lacus laoreet netus odio orci amet Aenean justo. Curabitur nibh Curabitur quis Donec morbi rhoncus id elit mollis Quisque. Nunc nibh ante ligula rutrum convallis quis natoque eu et nec. Ac egestas diam auctor id nisl eget lobortis Sed dignissim nibh. Diam pellentesque neque at pretium felis sit Sed In Pellentesque ante. Ut Nam nonummy et orci condimentum leo hendrerit velit faucibus nulla. Cursus In odio laoreet sollicitudin quis auctor dapibus nisl condimentum quis. Ante Curabitur Aenean pellentesque tortor Suspendisse tincidunt nunc arcu Pellentesque eu. Vestibulum turpis congue laoreet lacinia felis felis adipiscing orci eu Ut. Aenean Nam fringilla consectetuer Integer facilisis Vivamus non id ut sollicitudin. Congue et ullamcorper ipsum Fusce metus wisi dictum porta Donec dolor. Nunc justo vel justo In nibh sollicitudin netus non dui pede. Nulla leo Aenean et mauris justo nec congue enim eget nisl. Cursus vitae diam ipsum Curabitur laoreet vitae leo.";
+
+                        while(i<max) {
+                            cache.add(i, item);
+                            i++;
+                        }
+
+                        i = 0;
+                        while(i<max) {
+                            cache.retrieve(i);
+                            i++;
+                        }
+                    });
+                },
+                
+                register: function(testName, testFn) {
+                    var index = allTests.length;
+                    allTests[index] = testFn;
+                    
+                    var optionEl = document.createElement("option");
+                    optionEl.innerHTML = "Test " + index + ": " + testName;
+                    selectNode.appendChild(optionEl);
+                },
+                
+                run: function() {
+                    var whichTest = selectNode.get("selectedIndex");
+                    Y.log("Starting Test " + whichTest, "info", "perf");
+                    allTests[whichTest].apply(this);
+                    Y.log("Test " + whichTest + " completed", "info", "perf");
+                }
+            }
+        }();
+        
+        Y.example.Perf.init();
+    });
+})();
+</script>
+</body>
+</html>

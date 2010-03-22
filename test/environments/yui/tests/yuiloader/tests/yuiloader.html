@@ -1,0 +1,118 @@
+<html>
+<head>
+<title>YUI Tests</title>
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css" />
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />
+
+<script type="text/javascript">
+var g_modules=[];
+
+var YAHOO_config = {
+    listener: function g_mycallback(info) {
+        g_modules.push(info.name);
+    }
+};
+</script>
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+<script type="text/javascript" src="../../../build/yuiloader/yuiloader.js"></script>
+
+</head>
+<body>
+<h1>YUILoader test page</h1>
+<p><input type="button" value="Run Tests" id="btnRun" /></p>
+<script type="text/javascript">
+
+(function() {
+
+    var Dom=YAHOO.util.Dom,
+        Assert=YAHOO.util.Assert,
+        ObjectAssert=YAHOO.util.ObjectAssert,
+        ArrayAssert=YAHOO.util.ArrayAssert, 
+        suite=new YAHOO.tool.TestSuite("yuisuite");
+    
+    suite.add(new YAHOO.tool.TestCase({
+        
+        //name of the test case
+        name : "yuiloader",
+    
+        //extra information about tests
+        _should : {
+        
+            //tests with these names should fail
+            fail : { test_to_fail: true },
+            
+            //tests with these names should throw an error
+            error : { },
+            
+            //ignore these tests
+            ignore : { }
+        },
+
+        test_calculate: function() {
+
+            loader = new YAHOO.util.YUILoader();
+            loader.require(["dragdrop"]);
+            loader.calculate();
+            //console.log(loader.sorted);
+            // yahoo dom and event are on the page
+            ArrayAssert.itemsAreEqual(["dragdrop"],  loader.sorted);
+
+            loader = new YAHOO.util.YUILoader();
+            loader.require(["menu"]);
+            loader.calculate();
+            //console.log(loader.sorted);
+            ArrayAssert.itemsAreEqual(["containercore", "menu", "skin-sam-menu"],  loader.sorted);
+
+            loader = new YAHOO.util.YUILoader();
+            loader.require("datatable", "calendar");
+            loader.calculate({force: ["yahoo"]});
+            loader.calculate();
+            //console.log(loader.sorted);
+            ArrayAssert.itemsAreEqual(
+                ["yahoo", "element", "datasource", "datatable", "calendar", 
+                "skin-sam-datatable", "skin-sam-calendar"], loader.sorted);
+            loader = new YAHOO.util.YUILoader();
+            loader.loaded = {"yahoo": true, "dom": true};
+            loader.loadOptional = true;
+            loader.require(["slider", "connection", "element"]);
+            loader.require("treeview", "skin-sam");
+            loader.calculate();
+            //console.log(loader.sorted);
+            ArrayAssert.itemsAreEqual(
+                ["dragdrop", "animation", "slider", "connection", "element", "treeview", "skin-sam"], loader.sorted);
+        },
+    // this is not a good test
+        test_config: function() {
+            loader = new YAHOO.util.YUILoader();
+            loader.require("colorpicker");
+
+            loader.insert(function() {
+                  YAHOO.util.Assert.isNotUndefined(YAHOO.widget.ColorPicker);
+            });
+            
+        }
+
+    }));
+     
+    (function (){
+        //create the logger
+        var logger = new YAHOO.tool.TestLogger();
+        
+        //add the tests
+        YAHOO.tool.TestRunner.add(suite);
+        
+        //add event handler
+        YAHOO.util.Event.addListener("btnRun", "click", YAHOO.tool.TestRunner.run);
+
+        runTests();
+    })();
+    
+})();
+
+</script>
+</body>
+</html>

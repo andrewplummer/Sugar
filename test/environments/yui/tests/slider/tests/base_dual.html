@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/slider/assets/skins/sam/slider.css">
+    <style type="text/css">
+        #log { position: absolute; top: 10px; right: 10px; }
+        span.go    { background: #090; color: #fff; }
+        span.stop  { background: #900; color: #fff; }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<div id="log"></div>
+<p>MIN: <em id="rpt_min">0</em> MAX: <em id="rpt_max">0</em></p>
+<div class="markup">
+    <div id="bg" class="yui-h-slider" tabindex="-1">
+        <div id="min" class="yui-slider-thumb">
+            <img src="../../../build/slider/assets/left-thumb.png" alt="slider thumb">
+        </div>
+        <div id="max" class="yui-slider-thumb">
+            <img src="../../../build/slider/assets/right-thumb.png" alt="slider thumb">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/dragdrop/dragdrop.js"></script>
+<script type="text/javascript" src="../../../build/slider/slider-debug.js"></script>
+<script type="text/javascript" src="../../../build/animation/animation.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+var log = new YAHOO.widget.LogReader('log',{ newestOnTop: false }),
+    $ = function (id) { return document.getElementById(id); },
+    slider,
+    startCount = 1,
+    endCount = 1;
+
+log.hideCategory('info');
+log.hideCategory('warn');
+log.hideCategory('error');
+log.hideCategory('time');
+log.hideCategory('window');
+log.hideSource('global');
+log.hideSource('LogReader');
+
+function report() {
+    $('rpt_min').innerHTML = this.minVal;
+    $('rpt_max').innerHTML = this.maxVal;
+}
+
+
+slider = YAHOO.widget.Slider.getHorizDualSlider('bg','min','max',200);//,null,[30,150]);
+//slider.minSlider.backgroundEnabled = false;
+//slider.maxSlider.backgroundEnabled = false;
+
+slider.subscribe('ready',report);
+
+slider.subscribe('slideStart', function (s) {
+    YAHOO.log(s.thumb.getEl().id + 'Slider slideStart: ' + (startCount++),'GO','debug');
+});
+
+slider.subscribe('change', report);
+
+slider.subscribe('slideEnd', function (s) {
+    YAHOO.log(s.thumb.getEl().id + 'Slider slideEnd: ' + (endCount++),'STOP','debug');
+});
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js" ></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

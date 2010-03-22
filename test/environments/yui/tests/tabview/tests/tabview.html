@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>TabView Test Suite</title>
+
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">     
+<link type="text/css" rel="stylesheet" href="../../../build/tabview/assets/skins/sam/tabview.css">     
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script> 
+<script type="text/javascript" src="../../../build/element/element.js"></script>
+<script type="text/javascript" src="../../../build/tabview/tabview.js"></script> 
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+
+<script type="text/javascript">
+(function() {
+    var Y = YAHOO.util,
+        tool = YAHOO.tool,
+        suite = new tool.TestSuite("yuisuite");
+
+    Y.Event.onDOMReady(function() {
+        var logger = new YAHOO.tool.TestLogger(null, { height: '80%' });
+
+        var tabview = new YAHOO.widget.TabView('demo', {
+            'activeIndex': 1 
+        });
+
+        suite.add( new tool.TestCase({
+            name: 'YAHOO.widget.TabView',
+
+            test_getActiveIndex: function() {
+                Y.Assert.areEqual(1, tabview.get('activeIndex'), "tabview.get('activeIndex'),");
+                Y.Assert.isTrue(Y.Dom.hasClass('tab-bar', 'selected'), "Y.Dom.hasClass('tab-bar', 'selected')");
+            },            
+
+            test_setActiveIndex: function() {
+                tabview.set('activeIndex', 1);
+
+                Y.Assert.areEqual(1, tabview.get('activeIndex'), 'incorrect activeIndex');
+                Y.Assert.areEqual(tabview.get('tabs')[1], tabview.get('activeTab'),  'incorrect activeTab');
+            },            
+
+            test_setActiveTab: function() {
+                tabview.set('activeTab', tabview.get('tabs')[2]);
+
+                Y.Assert.areEqual(2, tabview.get('activeIndex'), 'incorrect activeTab');
+                Y.Assert.areEqual(tabview.get('tabs')[2], tabview.get('activeTab'),  'incorrect activeTab');
+
+                tabview.selectTab(1);
+                Y.Assert.areEqual(1, tabview.get('activeIndex'), 'tabview.selectTab(1);');
+                tabview.deselectTab(1);
+                Y.Assert.areEqual(null, tabview.get('activeIndex'), 'tabview.selectTab(1);');
+            },            
+
+            test_addTab: function() {
+                var tab = new YAHOO.widget.Tab({ label: 'new tab', content: 'new tab content' });
+                tabview.addTab(tab);
+
+                var tabs = tabview.get('tabs');
+                Y.Assert.areEqual(tab, tabview.getTab(tabs.length - 1), 'incorrect Tab');
+                Y.Assert.areEqual(tabs.length - 1, tabview.getTabIndex(tab),  'incorrect Tab');
+            },            
+
+            test_removeTab: function() {
+                var tab = tabview.getTab(0);
+                tabview.removeTab(tab);
+
+                Y.Assert.areEqual(null, tabview.getTabIndex(tab), 'incorrect Tab');
+            },            
+
+            test_activeTabChange: function() {
+                var pass = false;
+                tabview.on('activeTabChange', function() { pass = true; });
+                tabview.set('activeTab', tabview.getTab(0));
+                Y.Assert.isTrue(pass, 'activeTabChange not fired');
+
+                pass = false;
+                tabview.set('activeIndex', 2);
+                Y.Assert.isTrue(pass, 'activeTabChange not fired');
+
+            },
+
+            test_label: function() {
+                tabview.getTab(0).set('labelEl', 'alt-label');
+                Y.Assert.areEqual(Y.Dom.get('alt-label').innerHTML, tabview.getTab(0).get('label'), 'set labelEl');
+
+                tabview.getTab(1).set('label', 'updated label');
+                Y.Assert.areEqual('updated label', tabview.getTab(1).get('label'), 'set label');
+            },
+
+            test_content: function() {
+                tabview.getTab(0).set('contentEl', 'alt-content');
+                Y.Assert.areEqual(Y.Dom.get('alt-content').innerHTML, tabview.getTab(0).get('content'), 'set contentEl');
+
+                tabview.getTab(1).set('content', 'updated content');
+                Y.Assert.areEqual('updated content', tabview.getTab(1).get('content'), 'set content');
+            }
+
+        })); 
+        tool.TestRunner.add(suite);
+
+        if (parent && parent != window) {
+            tool.TestManager.load();
+        } else {
+            tool.TestRunner.run();
+        }
+
+    }); 
+})();
+</script>
+<style type="text/css">
+
+</style>
+</head>
+<body class="yui-skin-sam">
+    <div id="doc">
+        <div id="demo" class="yui-navset">
+            <ul class="yui-nav">
+                <li class="selected"><a href="#foo"><em>foo</em></a></li>
+                <li id="tab-bar"><a href="#bar"><em>bar</em></a></li>
+                <li><a href="#baz"><em>baz</em></a></li>
+            </ul>
+            <div class="yui-content">
+                <div id="foo">foo content</div>
+                <div id="bar">bar content</div>
+                <div id="baz">baz content</div>
+            </div>
+        </div>
+        <em id="alt-label">alternate label</em>
+        <div id="alt-content">alternate content</div>
+    </div>
+</body>
+</html>

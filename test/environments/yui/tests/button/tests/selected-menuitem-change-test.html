@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<title>YUI Button Test Case</title>
+	
+	<link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts.css">
+	<link rel="stylesheet" type="text/css" href="../../../build/button/assets/skins/sam/button.css">	
+	<link rel="stylesheet" type="text/css" href="../../../build/menu/assets/skins/sam/menu.css">		
+	
+	<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../../build/container/container_core-min.js"></script>
+	<script type="text/javascript" src="../../../build/menu/menu-min.js"></script>
+	<script type="text/javascript" src="../../../build/element/element-min.js"></script>
+	<script type="text/javascript" src="../../../build/button/button-min.js"></script>
+		
+</head>
+<body class="yui-skin-sam">
+
+	<h1>YUI Button Test Case</h1>
+
+	<p>Test case for <a href="http://yuilibrary.com/projects/yui2/ticket/2527968" title="#2527968 Opening a menu button menu fires a selectedMenuItemChange :: YUI 2.x :: YUI Library">Bug 2527968</a>.  Clicking on the Menu Button below should NOT result in an alert popping up when the Menu is made visible.</p>
+
+	<input type="button" class="menuButton" id="state1" value="State 1">
+	<select id="state1Select">
+		<option value="04000US01">Alabama</option>
+		<option value="04000US02">Alaska</option>
+		<option value="04000US04">Arizona</option>
+		<option value="04000US05">Arkansas</option>
+		<option value="04000US06">California</option>
+		<option value="04000US08">Colorado</option>
+		<option value="04000US09">Connecticut</option>
+		<option value="04000US10">Delaware</option>
+		<option value="04000US11">DC</option>
+		<option value="04000US12">Florida</option>
+		<option value="04000US13">Georgia</option>
+		<option value="04000US15">Hawaii</option>
+		<option value="04000US16">Idaho</option>
+		<option value="04000US17">Illinois</option>
+		<option value="04000US18">Indiana</option>
+		<option value="04000US19">Iowa</option>
+		<option value="04000US20">Kansas</option>
+		<option value="04000US21">Kentucky</option>
+		<option value="04000US22">Louisiana</option>
+		<option value="04000US23">Maine</option>
+		<option value="04000US24">Maryland</option>
+		<option value="04000US25">Massachusetts</option>
+		<option value="04000US26">Michigan</option>
+		<option value="04000US27">Minnesota</option>
+		<option value="04000US28">Mississippi</option>
+		<option value="04000US29">Missouri</option>
+		<option value="04000US30">Montana</option>
+		<option value="04000US31">Nebraska</option>
+		<option value="04000US32">Nevada</option>
+		<option value="04000US33">New Hampshire</option>
+		<option value="04000US34">New Jersey</option>
+		<option value="04000US35">New Mexico</option>
+		<option value="04000US36">New York</option>
+		<option value="04000US37">North Carolina</option>
+		<option value="04000US38">North Dakota</option>
+		<option value="04000US39">Ohio</option>
+		<option value="04000US40">Oklahoma</option>
+		<option value="04000US41">Oregon</option>
+		<option value="04000US42">Pennsylvania</option>
+		<option value="04000US72">Puerto Rico</option>
+		<option value="04000US44">Rhode Island</option>
+		<option value="04000US45">South Carolina</option>
+		<option value="04000US46">South Dakota</option>
+		<option value="04000US47">Tennessee</option>
+		<option value="04000US48">Texas</option>
+		<option value="04000US49">Utah</option>
+		<option value="04000US50">Vermont</option>
+		<option value="04000US51">Virginia</option>
+		<option value="04000US53">Washington</option>
+		<option value="04000US54">West Virginia</option>
+		<option value="04000US55">Wisconsin</option>
+		<option value="04000US56">Wyoming</option>
+	</select>
+
+	<script type="text/javascript">
+
+		(function () {
+
+			var oButton = new YAHOO.widget.Button("state1", { type: "menu", menu: "state1Select" });
+
+			oButton.on("selectedMenuItemChange", function (event) {
+		
+				alert(event.type);
+			
+			});
+
+		}());
+
+	</script>
+
+</body>
+</html>

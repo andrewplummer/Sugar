@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>Widget Class</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../build/cssreset/reset.css" />
+    <link rel="stylesheet" type="text/css" href="../../../build/cssfonts/fonts.css" />
+
+    <script type="text/javascript" src="../../../build/yui/yui.js"></script>
+
+    <style>
+        body {
+            padding:0;
+            margin:0;
+        }
+
+        .hideme {
+            width:30em;
+            display:block;
+        }
+
+        .yui-overlay {
+            border:1px solid #000;
+            background-color:#eee;
+            padding:5px;
+        }
+
+        .yui-overlay .yui-overlay-content {
+            border:2px solid #000000;
+            padding:2px;
+        }
+
+        .yui-overlay .yui-widget-stdmod span {
+            background-color:#000;
+            color:#fff;
+        }
+
+        .yui-overlay .yui-widget-stdmod .yui-widget-hd {
+            border:2px solid red;
+            background-color:#cc0000;
+            color:#fff;
+            padding:2px;
+        }
+
+        .yui-overlay .yui-widget-stdmod .yui-widget-bd {
+            font-family:monospace;
+            border:2px solid blue;
+            padding:2px;
+        }
+
+        .yui-overlay .yui-widget-stdmod .yui-widget-ft {
+            border:2px solid green;
+            background-color:#00cc00;
+            color:#fff;
+            padding:2px;
+        }
+
+        .sels {
+            position:absolute;
+        }
+
+        #fromMarkup {
+            z-index:10;
+        }
+
+        #align {
+            opacity:.5;
+            filter:alpha(opacity=50);
+            position:relative;
+            z-index:6;
+            top:20px;
+            left:400px;
+            width:300px;
+            height:250px;
+            border:1px solid black;
+            background-color:#cc0000;
+        }
+    </style>
+</head>
+<body class="yui-skin-sam">
+
+    <div class="sels">
+       <button id="control-run" type="button">run</button>    
+       <button id="control-show" type="button">show</button>
+       <button id="control-hide" type="button">hide</button>
+
+        <div style="overflow:auto;width:20em;height:5em">
+            <div style="height:200em"></div>
+        </div>
+
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+        <select class="hideme"><option>Foo</option></select>
+    </div>
+
+    <div id="align">
+        Align Here
+    </div>
+
+    <div class="foo" id="foobar"></div>
+
+    <div id="fromMarkup">
+        <div class="yui-widget-hd">
+            <span>Header From Markup</span>
+        </div>
+        <div class="yui-widget-bd">
+            <span>Body From Markup</span>
+        </div>
+        <div id="fourth" class="yui-widget-ft">
+            <span>Footer From Markup</span>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var widget, widget2;
+
+        YUI({filter:"raw"}).use("async-queue", "overlay", function(Y) {
+
+                widget = new Y.Overlay({ 
+                    width:"12em",
+                    align:{node:'#align', points:["tr", "tl"]}, 
+                    zIndex:5,
+                    headerContent:"Overlay Header",
+                    bodyContent:"width:12em, #align, tr, tl, zIndex:5",
+                    footerContent:"Overlay Footer"
+                });
+                widget.render("#foobar");
+
+                widget.after("xyChange", function(e) {
+                    Y.log(e.newVal);
+                });
+
+                widget.after("contentUpdate", function() {
+                    Y.log("Content Updated");
+                });
+
+                widget2 = new Y.Overlay({
+                    contentBox: "#fromMarkup",
+                    width:200,
+                    height:200,
+                    xy: [800,200],
+                    footerContent: "Footer Content - was in markup, but got over-ridden in constructor"
+                });
+                widget2.render();
+
+                var stepDelay = 2000;
+
+                var fns = [
+                    function() {
+                        widget.move(0,0);
+                        widget.set("bodyContent", "move(0,0)");
+                    },
+                    function() {
+                        widget.set("height", "12em");
+                        widget.set("bodyContent", "height, 12em");
+                    },
+                    function() {
+                        widget.set("align", {node:"#align", points:["lc", "rc"]});
+                        widget.set("bodyContent", "#align, lc, rc");
+                    },
+                    function() {
+                        widget.set("centered", "#align");
+                        widget.set("bodyContent", "#align, centered");
+                    },
+                    function() {
+                        widget.set("zIndex", 7);
+                        widget.set("bodyContent", "zIndex, 7");
+                    },
+                    function() {
+                        widget.set("align", {points:["rc", "rc"]});
+                        widget.set("bodyContent", "viewport, rc, rc");
+                    },
+                    function() {
+                        widget.set("centered", true);
+                        widget.set("bodyContent", "viewport, centered");
+                    },
+                    function() {
+                        widget.move(0, 0);
+                        widget.set("bodyContent", "move(0,0)");
+                    },
+                    function() {
+                        widget.set("width", "20em");
+                        widget.set("bodyContent", "width, 20em");
+                    },
+                    function() {
+                        widget.set("height", "20em");
+                        widget.set("bodyContent", "height, 20em");
+                    },
+                    function() {
+                        widget.set("fillHeight", "header");
+                        widget.set("bodyContent", "fillHeight, header");
+                    },
+                    function() {
+                        widget.set("fillHeight", "footer");
+                        widget.set("bodyContent", "fillHeight, footer");
+                    },
+                    function() {
+                        widget.set("fillHeight", null);
+                        widget.set("bodyContent", "fillHeight, false");
+                    },
+                    function() {
+                        widget.set("fillHeight", "body");
+                        widget.set("bodyContent", "fillHeight, body");
+                    },
+                    function() {
+                        widget.set("shim", false);
+                        widget.set("bodyContent", "shim, false");
+                    },
+                    function() {
+                        widget.set("shim", true);
+                        widget.set("bodyContent", "shim, true");
+                    },
+                    function() {
+                        widget.hide();
+                    },
+                    function() {
+                        widget.show();
+                        widget.set("bodyContent", "hide, followed by show");
+                    },
+                    function() {
+                        widget.setStdModContent(Y.WidgetStdMod.HEADER, Y.Node.create("<p>Insert Before Header Content</p>"), Y.WidgetStdMod.BEFORE);
+                        widget.setStdModContent(Y.WidgetStdMod.FOOTER, Y.Node.create("<p>Append After Footer Content</p>"), Y.WidgetStdMod.AFTER);
+                        widget.setStdModContent(Y.WidgetStdMod.BODY, "Replaced Body - DONE!", Y.WidgetStdMod.REPLACE);
+                    }
+                ];
+
+                var q = new Y.AsyncQueue();
+                for (var i = 0; i < fns.length; i++){
+                    q.add({
+                        timeout:stepDelay,
+                        fn:fns[i]
+                    });
+                }
+                // q.run();
+
+                Y.on('click', Y.bind(widget.show, widget), Y.Node.get('#control-show'));
+                Y.on('click', Y.bind(widget.hide, widget), Y.Node.get('#control-hide'));
+                Y.on('click', Y.bind(q.run, q), Y.Node.get('#control-run'));
+
+            });
+    </script>
+</body>
+</html>

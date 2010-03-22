@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>SWFDetect & SWF Test Page</title>
+</head>
+<body>
+<h1>SWFDetect Tests</h1>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/yahoo-dom-event/yahoo-dom-event.js"></script> 
+<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/element/element-min.js"></script>
+<script type="text/javascript" src="swfdetect.js"></script>
+<script type="text/javascript" src="swf.js"></script>
+<script type="text/javascript">
+// don't use document.write ever! Ever, ever, ever. But don't replace it with alert, or you'll have to get a new Mac.
+// Dude, you're getting a Dell!
+document.write("Current content of env.ua.flash: " + YAHOO.env.ua.flash);
+document.write("<br/>");
+document.write("Current flash version: " + YAHOO.util.SWFDetect.getFlashVersion());
+document.write("<br/>");
+document.write("Is Flash version >= 9.115? " + YAHOO.util.SWFDetect.isFlashVersionAtLeast(9.115));
+document.write("<br/><br/>");
+</script>
+<h1>SWF Test</h1>
+<div id="testdiv" style="height:400px;width:550px">
+one two three
+</div>
+<script>
+var params = {version: 9.115,
+	          useExpressInstall: false,
+	          fixedAttributes:
+			  {allowScriptAccess:"always", allowNetworking:"all", width:50},
+			  flashVars:
+			  {flashvar1: "One word", flashvar2: "A word & another", flashvar3: "Three words - 100% done & done"}
+			 };
+
+var newswf = new YAHOO.widget.SWF("testdiv", "YUIBridgeProject.swf", params);
+newswf.addListener("swfReady", testFlash);
+
+
+function testFlash () {
+	newswf.callSWF("addText", ["Hello world\n"]);
+}
+
+
+</script>
+
+</body>
+</html>

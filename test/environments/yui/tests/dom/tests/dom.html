@@ -1,0 +1,594 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>DOM Test Suite</title>
+
+<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css">
+<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css">     
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom-min.js"></script> 
+<script type="text/javascript" src="../../../build/element/element.js"></script> 
+<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+
+<style>
+#doc {
+    border:5px solid #000;
+    margin:10px;
+    padding:10px;
+}
+
+#hd {
+    background:#ccc;
+}
+
+#foo {
+    float:left; /* required for getStyle test */
+}
+
+#computed-test {
+    left:-10em;
+    border-top:2px solid red;
+    position:relative;
+    width:10em;
+}
+
+#computed-wrap {
+    background:#ccc;
+    color:#fff;
+}
+</style>
+
+</head>
+<body>
+    <em class="my.class our(class" id="class-regex-one">lorem</em> 
+    <em class="my-class" id="class-regex-two">ipsum</em>
+    <em class="yiv-integer:([{1,30}])^$?*+\|" id="class-regex-three">dolor</em> 
+    <div id="computed-wrap">
+        <div id="computed-test">test computed style</div>
+    </div>
+    <div id="doc">
+        <div id="hd">
+            <h1>Page Header</h1>
+        </div>
+        <div id="bd">
+            <div id="main" class="main">
+                <h2>Section Header</h2>
+                <em class="lorem ipsum ipsum" id="lorem-ipsum">lorem ipsum</em>
+                <div class="mod" id="foo">
+                    <div class="hd foo" id="yui-gen1">
+                        <h3>Module Header</h3>
+                    </div>
+                    <div class="bd">
+                        <p>Fusce feugiat diam. Vestibulum elementum dui in augue. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris pulvinar.</p>
+                    </div>
+                    <div class="ft"><a href="#">more</a></div>
+                </div>
+                <div class="mod">
+                    <div class="hd">
+                        <h3>Module Header</h3>
+                    </div>
+                    <div class="bd">
+                        <form action="#" method="get" id="search">
+                            <fieldset>
+                                <legend>Search</legend>
+                                    <label for="search-p">Query</label>
+                                    <input type="text" name="search-p">
+                                    <input type="text" name="search-p" id="search-p">
+                                    <input type="text" name="search-p">
+                                    <input type="text" name="id">
+                                    <input type="submit" value="search">
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="ft"><a href="http://www.developer.yahoo.com">more</a></div>
+                </div>
+            </div>
+        </div>
+        <div id="ft">
+            <p>In hac habitasse platea dictumst. Sed sit amet ligula vitae justo consequat facilisis. Integer tortor. Integer erat. In hac habitasse platea dictumst. Phasellus convallis quam vitae turpis aliquam lobortis. Aliquam scelerisque condimentum lectus. Proin semper adipiscing leo. Nulla facilisi.</p>
+        </div>
+    </div>
+<script type="text/javascript">
+(function() {
+    var Y = YAHOO.util,
+        tool = YAHOO.tool,
+        Assert = Y.Assert,
+        ArrayAssert = Y.ArrayAssert,
+        suite = new tool.TestSuite("yuisuite");
+
+    Y.Event.onDOMReady(function() {
+        var logger = new YAHOO.tool.TestLogger(null, { height: '80%' });
+
+        suite.add( new tool.TestCase({
+            name: 'Y.Dom',
+
+            test_get: function() {
+                Assert.areEqual(document.getElementById('doc'),
+                        Y.Dom.get('doc'), 'wrong node returned');
+
+                Assert.areEqual(document.getElementById('doc'),
+                        Y.Dom.get(document.getElementById('doc')), 'wrong node returned');
+
+                ArrayAssert.itemsAreEqual(
+                    [ document.getElementById('hd'), document.getElementById('bd') ],
+                    Y.Dom.get(['hd', document.getElementById('bd')]), 'wrong node returned');
+
+                Assert.areEqual(null, Y.Dom.get('dox'), 'non-existent ID');
+
+                Assert.areEqual('search-p', Y.Dom.get('search-p').id, 'false match on "name"');
+                Assert.isNull(Y.Dom.get('search-r'), 'false match on "name"');
+
+                Assert.isNull(Y.Dom.get('search-r'), 'false match on "name"');
+
+                Assert.areEqual(document.getElementById('doc'), Y.Dom.get(new Y.Element('doc')),
+                        "Y.Element('doc')");
+
+                Assert.areEqual(document.getElementById('search'), Y.Dom.get('search'),
+                        "Y.Dom.get('search')");
+            },            
+
+            test_getStyle: function() {
+                Assert.areEqual('left',
+                        Y.Dom.getStyle('foo', 'float'), 'wrong style returned');
+
+                Assert.areEqual('10px',
+                        Y.Dom.getStyle('doc', 'marginBottom'), 'wrong style returned');
+
+                Assert.areEqual('10px',
+                        Y.Dom.getStyle('doc', 'margin-bottom'), 'wrong style returned');
+
+                Assert.areEqual('5px',
+                        Y.Dom.getStyle('doc', 'borderBottomWidth'), 'wrong style returned');
+
+                Assert.areEqual('5px',
+                        Y.Dom.getStyle('doc', 'border-bottom-width'), 'wrong style returned');
+            },            
+
+            test_setStyle: function() {
+                Y.Dom.setStyle('ft', 'opacity', 0.5);
+                Assert.areEqual(Y.Dom.getStyle('ft', 'opacity'),
+                        0.5, 'wrong style returned');
+
+                Y.Dom.setStyle('main', 'float', 'none');
+                Assert.areEqual(Y.Dom.getStyle('main', 'float'),
+                        'none', 'wrong style returned');
+
+                Assert.isUndefined(Y.Dom.setStyle('fake-id', 'width', '200px'), "(Y.Dom.setStyle('fake-id', 'width', '200px')");
+                Assert.isUndefined(Y.Dom.setStyle(['fake-id'], 'width', '200px'), "(Y.Dom.setStyle(['fake-id'], 'width', '200px')");
+            },            
+
+            test_computedStyle: function() {
+                var el = Y.Dom.get('computed-test');
+                Assert.areEqual(el.offsetWidth + 'px', Y.Dom.getComputedStyle(el, 'width'), "Y.Dom.getComputedStyle(el, 'width')");
+                Assert.isTrue(Y.Dom.getComputedStyle(el, 'left').indexOf('px') > -1, "Y.Dom.getComputedStyle(el, 'left')");
+                Assert.areEqual('rgb(255, 255, 255)', Y.Dom.getComputedStyle(el, 'color'), "Y.Dom.getComputedStyle(el, 'color')");
+                Assert.areEqual('transparent', Y.Dom.getComputedStyle(el, 'backgroundColor'), "Y.Dom.getComputedStyle(el, 'backgroundColor')");
+                Assert.areEqual('rgb(255, 0, 0)', Y.Dom.getComputedStyle(el, 'borderTopColor'), "Y.Dom.getComputedStyle(el, 'borderTopColor')");
+
+            },
+
+            test_hasClass: function() {
+                Assert.isTrue(Y.Dom.hasClass('lorem-ipsum', 'lorem'),
+                        'hasClass failed with existing class');
+
+                Assert.isFalse(Y.Dom.hasClass('lorem-ipsum', 'dolor'),
+                        'hasClass failed with non-existing class');
+
+                Assert.isFalse(Y.Dom.hasClass('class-regex-two', 'my.class'), 'my.class should not match my-class'); 
+
+                Assert.isTrue(Y.Dom.hasClass('class-regex-one', 'my.class'), 'my.class should match element with my.class');       
+                Assert.isTrue(Y.Dom.hasClass('class-regex-one', 'our(class'), 'our(class should match element with our(class');       
+                Assert.isTrue(Y.Dom.hasClass('class-regex-one', /our.clas+/), '/our.clas+/ should match element with our(class');  
+                Assert.isTrue(Y.Dom.hasClass('class-regex-three', 'yiv-integer:([{1,30}])^$?*+\\|'), "special chars in className");  
+            },            
+
+            test_addClass: function() {
+                Y.Dom.addClass('ft', 'foo');
+
+                Assert.areEqual(
+                    'foo',
+                    document.getElementById('ft').className, 
+                    'addClass failed to add');
+
+                Assert.isFalse(Y.Dom.addClass('ft', 'foo'),
+                        'addClass should return false if element already hasClass');
+            },            
+
+            test_removeClass: function() {
+                Y.Dom.removeClass('lorem-ipsum', 'ipsum');
+                Assert.areEqual('lorem', Y.Dom.get('lorem-ipsum').className,
+                        'removeClass failed');
+
+                Assert.isFalse(Y.Dom.removeClass('main', 'bar'),
+                        'removeClass should return false if class not present');
+
+                Assert.isFalse(Y.Dom.removeClass('main'),
+                        'removeClass should return false if no class argument');
+            },            
+
+            test_replaceClass: function() {
+                Y.Dom.replaceClass('lorem-ipsum', 'lorem', 'ipsum');
+                Assert.areEqual('ipsum', Y.Dom.get('lorem-ipsum').className,
+                        'replaceClass failed');
+
+                Assert.isFalse(Y.Dom.replaceClass('lorem-ipsum', 'ipsum'),
+                        'replaceClass should return false if new class not specified');
+
+                Assert.isTrue(Y.Dom.replaceClass('lorem-ipsum', '', 'lorem'),
+                        'replaceClass should addClass if old class not specified');
+
+                Assert.areEqual('ipsum lorem', Y.Dom.get('lorem-ipsum').className,
+                        'replaceClass failed: should addClass if old class not specified');
+
+                Assert.isFalse(Y.Dom.replaceClass('lorem-ipsum', 'ipsum', 'ipsum'),
+                        'replaceClass should return false if new class and old are equal');
+
+                var el = document.createElement('div');
+                el.className = 'foo bar';
+                Y.Dom.replaceClass(el, 'bar', 'baz');
+                Assert.areEqual('foo baz', el.className, "Y.Dom.replaceClass(el, 'bar', 'baz')");
+
+                el.className = 'foo bar'; 
+                Y.Dom.replaceClass(el, /(?:^|\s)bar(?= |$)/g, 'baz');
+                Assert.areEqual('foo baz', el.className, "Y.Dom.replaceClass(el, /bar/, 'baz')");
+
+                el.className = 'foo bar'; 
+                Y.Dom.replaceClass(el, /bar/, 'baz');
+                Assert.areEqual('foo baz', el.className, "Y.Dom.replaceClass(el, /bar/, 'baz')");
+
+                el.className = 'yiv-required yiv-integer:[1,30]';
+                Y.Dom.replaceClass(el, new RegExp('yiv-integer:\\[1,(?:30|72|43200)\\]'), 'yiv-integer:[1]');
+                Assert.areEqual('yiv-required yiv-integer:[1]', el.className, "Y.Dom.replaceClass(el, new RegExp('yiv-integer:\\[1,(?:30|72|43200)\\]'), 'yiv-integer:[1]')");
+
+                el.className = 'satg-x';
+                Y.Dom.replaceClass(el, /satg-(x|y|z)/, 'satg-y');
+                Assert.areEqual('satg-y', el.className, "Y.Dom.replaceClass(el, /satg-(x|y|z)/, 'satg-y')");
+
+            },            
+
+            test_getElementsByClassName: function() {
+                Assert.areEqual(2, Y.Dom.getElementsByClassName('mod').length, 'getByClassName failed for .mod'); 
+                Assert.areEqual(2, Y.Dom.getElementsByClassName('mod', 'div').length, 'getByClassName failed for div.mod'); 
+                Assert.areEqual(2, Y.Dom.getElementsByClassName('mod', 'div', 'bd').length,  'getByClassName failed for #bd div.mod'); 
+                Assert.areEqual(2, Y.Dom.getElementsByClassName('mod', '', 'bd').length,'getByClassName failed for #bd .mod' ); 
+                Assert.areEqual(0, Y.Dom.getElementsByClassName('mod', 'div', 'hd').length, 'getByClassName failed for #hd .mod'); 
+                Assert.areEqual(0, Y.Dom.getElementsByClassName('moo').length, 'getByClassName failed for .moo'); 
+                Assert.areEqual(0, Y.Dom.getElementsByClassName('mod', 'div', 'fake-id').length, 'getByClassName failed for #fake-id div.mod'); 
+
+                Assert.areEqual(2, Y.Dom.getElementsByClassName('hd', 'div').length, 'getByClassName("hd") '); 
+                Assert.areEqual(3, Y.Dom.getElementsByClassName(/hd/, 'div').length, 'getByClassName("hd") '); 
+            },
+
+            test_getElementsBy: function() {
+                Assert.areEqual(2, Y.Dom.getElementsBy(function(el) { return el.className == 'mod'}).length, 'getBy failed for .mod'); 
+                Assert.areEqual(2, Y.Dom.getElementsBy(function(el) { return el.className == 'mod'}, 'div').length, 'getBy failed for div.mod'); 
+                Assert.areEqual(2, Y.Dom.getElementsBy(function(el) { return el.className == 'mod'}, 'div', 'bd').length, 'getBy failed for #bd div.mod'); 
+                Assert.areEqual(2, Y.Dom.getElementsBy(function(el) { return el.className == 'mod'}, '', 'bd').length, 'getBy failed for #bd .mod'); 
+                Assert.areEqual(0, Y.Dom.getElementsBy(function(el) { return el.className == 'mod'}, 'div', 'hd').length, 'getBy failed for #hd div.mod'); 
+                Assert.areEqual(0, Y.Dom.getElementsBy(function(el) { return el.className == 'moo'}).length, 'getBy failed for .moo'); 
+                Assert.areEqual(0, Y.Dom.getElementsBy(function(el) { return el.className == 'mod'}, 'div', 'fake-id').length, 'getBy failed for #fake-id div.mod'); 
+            },
+
+            test_getElementBy: function() {
+                Assert.areEqual('bd', Y.Dom.getElementBy(function(el) { return el.id === 'bd'; }).id, "getElementBy(function(el) { return el.id === 'bd'; })");
+
+                Assert.areEqual('main', Y.Dom.getElementBy(function(el) { return el.id === 'main'; }).id, 'bd', "getElementBy(function(el) { return el.id === 'main'; }, 'bd')");
+
+            },
+
+            test_generateId: function() {
+                var h1 = document.getElementsByTagName('h1')[0];
+                var h3 = document.getElementsByTagName('h3')[0];
+
+                Y.Dom.generateId(h1);
+                Assert.areEqual('yui-gen0', h1.id, "Y.Dom.generateId(h1)");
+
+                Y.Dom.generateId(h3);
+                Assert.areEqual('yui-gen1yui-gen2', h3.id, "Y.Dom.generateId(h3)");
+            },            
+
+            test_isAncestor: function() {
+                Assert.isFalse(Y.Dom.isAncestor(Y.Dom.get('main'), Y.Dom.get('bd')),
+                        'isAncestor failed for false case');
+
+                Assert.isFalse(Y.Dom.isAncestor('main', 'bd'),
+                        'isAncestor failed for false case');
+
+                Assert.isTrue(Y.Dom.isAncestor('bd', 'main'),
+                        'isAncestor failed for true case');
+
+                Assert.isFalse(
+                        Y.Dom.isAncestor(document.body.appendChild(document.createElement('div')), 'bd'),
+                        'isAncestor failed for false case');
+            },            
+
+            test_getRegion: function() {
+                Assert.isObject(Y.Dom.getRegion('bd'),
+                        'getRegion failed for element in document');
+
+                Assert.isFalse(Y.Dom.getRegion('xbd'),
+                        'getRegion failed for id not in document');
+
+                Assert.isFalse(Y.Dom.getRegion(document.createElement('div')),
+                        'getRegion failed for element not in document');
+
+                Assert.areEqual(document.getElementById('bd').offsetWidth, Y.Dom.getRegion('bd').width,
+                        'getRegion failed for width');
+
+                Assert.areEqual(document.getElementById('bd').offsetHeight, Y.Dom.getRegion('bd').height,
+                        'getRegion failed for height');
+
+                Assert.isTrue(Y.Dom.getRegion('bd').left > 0, 'getRegion failed for left');
+                Assert.isTrue(Y.Dom.getRegion('bd').right > 0, 'getRegion failed for right');
+                Assert.isTrue(Y.Dom.getRegion('bd').top > 0, 'getRegion failed for top');
+                Assert.isTrue(Y.Dom.getRegion('bd').bottom > 0, 'getRegion failed for bottom');
+            },            
+
+            test_point: function() {
+                var point = new Y.Point(100, 200);
+                var testX = point.left === point.right && point.x === point[0] && point[0] === point.left && point.left === 100;
+                var testY = point.top === point.bottom && point.y === point[1]  && point[1] == point.top && point.top === 200;
+                Assert.isTrue(testX && testY, 'test point with x, y constructor');
+
+                point = new Y.Point([100, 200]);
+                var testX = point.left === point.right && point.x === point[0] && point[0] === point.left && point.left === 100;
+                var testY = point.top === point.bottom && point.y === point[1]  && point[1] == point.top && point.top === 200;
+                Assert.isTrue(testX && testY, 'test point with [x, y] constructor');
+
+                Assert.areEqual(0, point.width, 'point.width');
+                Assert.areEqual(0, point.height, 'point.height');
+            },
+
+            test_inDocument: function() {
+                Assert.isTrue(Y.Dom.inDocument('main'),
+                        'inDocument failed for true ID case');
+
+                Assert.isTrue(Y.Dom.inDocument(document.body),
+                        'inDocument failed for true element case');
+
+                var el = document.createElement('div');
+                Assert.isFalse(Y.Dom.inDocument(el),
+                        'inDocument failed for false element case');
+
+                Assert.isFalse(Y.Dom.inDocument('fake-id'),
+                        'inDocument failed for false ID case');
+
+                Assert.isFalse(Y.Dom.inDocument({}),
+                        'inDocument failed for null');
+            },            
+
+            test_batch: function() {
+                var nodes = Y.Dom.batch(['hd', 'bd'], function(node) {
+                    node.title = 'foobar';
+                });
+
+                Assert.areEqual('foobar', Y.Dom.get('hd').title,
+                        'batch failed for multiple IDs');
+
+                Assert.areEqual('foobar', Y.Dom.get('bd').title,
+                        'batch failed for multiple IDs');
+
+                Y.Dom.batch('ft', function(node) { node.title = 'barbaz'; } );
+
+                Assert.areEqual('barbaz', Y.Dom.get('ft').title,
+                        'batch failed for single ID');
+
+                Y.Dom.batch(Y.Dom.get('ft'),
+                        function(node) { node.title = 'foobaz'; } );
+
+                Assert.areEqual('foobaz', Y.Dom.get('ft').title,
+                        'batch failed for single HTMLElement');
+
+                Assert.areEqual(0, Y.Dom.batch([], function() { return true; }).length,
+                        'batch failed for empty array');
+
+                Assert.isFalse(Y.Dom.batch(null), 'batch failed: node(s) required');
+                Assert.isFalse(Y.Dom.batch([]), 'batch failed: method is required');
+            },            
+
+            test_getAncestorByClassName: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getAncestorByClassName(el, 'foo'),
+                        'wrong node returned');
+                var el = Y.Dom.getAncestorByClassName(document.getElementById('foo'), 'main');
+                Assert.areEqual(document.getElementById('main'),
+                        el, 'wrong node returned');
+
+                el = Y.Dom.getAncestorByClassName(document.getElementById('foo'), 'fake-class');
+                Assert.areEqual(null,
+                        el, 'wrong node returned');
+            },            
+
+            test_getAncestorByTagName: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getAncestorByTagName(el, 'foo'),
+                        'wrong node returned');
+                var el = Y.Dom.getAncestorByTagName('foo', 'div');
+                Assert.areEqual(document.getElementById('main'),
+                        el, 'wrong node returned');
+
+                el = Y.Dom.getAncestorByTagName(document.getElementById('foo'), 'span');
+                Assert.areEqual(null,
+                        el, 'wrong node returned');
+            },            
+
+            test_getAncestorBy: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getAncestorBy(el),
+                        'wrong node returned');
+                var el = Y.Dom.getAncestorBy(document.getElementById('foo'), function(el) {
+                    return el.id === 'bd';        
+                });
+                Assert.areEqual(document.getElementById('bd'),
+                        el, 'wrong node returned');
+
+                el = Y.Dom.getAncestorBy(document.getElementById('foo'), function() { return false; });
+                Assert.areEqual(null,
+                        el, 'wrong node returned');
+            },            
+
+            test_getPreviousSiblingBy: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getPreviousSiblingBy(el),
+                        'wrong node returned');
+                var el = Y.Dom.getPreviousSiblingBy(document.getElementById('foo'),
+                    function(node) { return node.tagName == 'H2'; }
+                );
+                Assert.areEqual(document.getElementsByTagName('h2')[0],
+                        el, 'wrong node returned');
+            },            
+            test_getPreviousSibling: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getPreviousSibling(el),
+                        'wrong node returned');
+                Assert.areEqual(Y.Dom.getPreviousSibling('bd'),
+                        Y.Dom.get('hd'), 'wrong node returned');
+            },            
+
+            test_getNextSiblingBy: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getNextSiblingBy(el),
+                        'wrong node returned');
+                var el = Y.Dom.getNextSiblingBy(document.getElementById('foo'),
+                    function(node) { return node.className == 'mod'; }
+                );
+                Assert.areEqual(Y.Dom.getElementsByClassName('mod', 'div', 'main')[1],
+                        el, 'wrong node returned');
+            },            
+
+            test_getNextSibling: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getNextSibling(el),
+                        'wrong node returned');
+                Assert.areEqual(Y.Dom.getNextSibling('bd'),
+                        Y.Dom.get('ft'), 'wrong node returned');
+            },
+
+            test_getFirstChildBy: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getFirstChildBy(el),
+                        'wrong node returned');
+                var el = Y.Dom.getFirstChildBy(document.getElementById('doc'),
+                    function(node) { return node.id == 'bd'; }
+                );
+                Assert.areEqual(document.getElementById('bd'),
+                        el, 'wrong node returned');
+            },            
+
+            test_getFirstChild: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getFirstChild(el),
+                        'wrong node returned');
+                Assert.areEqual(document.getElementById('hd'),
+                        Y.Dom.getFirstChild(document.getElementById('doc')), 'wrong node returned');
+            },            
+
+            test_getLastChildBy: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getLastChildBy(el),
+                        'wrong node returned');
+                var el = Y.Dom.getLastChildBy(document.getElementById('doc'),
+                    function(node) { return node.id == 'bd'; }
+                );
+                Assert.areEqual(document.getElementById('bd'),
+                        el, 'wrong node returned');
+            },            
+
+            test_getLastChild: function() {
+                var el = document.createElement('div');
+                Assert.areEqual(null, Y.Dom.getLastChild(el),
+                        'wrong node returned');
+                Assert.areEqual(
+                    document.getElementById('ft'),
+                    Y.Dom.getLastChild(document.getElementById('doc')),
+                    'wrong node returned'
+                );
+            },            
+            test_getChildrenBy: function() {
+                var el = document.createElement('div');
+                ArrayAssert.itemsAreEqual([], Y.Dom.getChildrenBy(el),
+                        'wrong node returned');
+                var el = Y.Dom.getChildrenBy(document.getElementById('main'),
+                    function(node) { return node.className == 'mod'; }
+                );
+                ArrayAssert.itemsAreEqual(
+                    Y.Dom.getElementsByClassName('mod', 'div', 'main'),
+                    el,
+                    'wrong node returned'
+                );
+            },            
+
+            test_getChildren: function() {
+                var el = document.createElement('div');
+                ArrayAssert.itemsAreEqual([], Y.Dom.getChildrenBy(el),
+                        'wrong node returned');
+                ArrayAssert.itemsAreEqual(
+                    [ Y.Dom.get('hd'), Y.Dom.get('bd'), Y.Dom.get('ft') ],
+                    Y.Dom.getChildren('doc'),
+                    'wrong node returned'
+                );
+            },            
+            test_insertBefore: function() {
+                var el = document.createElement('div');
+                Y.Dom.insertBefore(el, 'bd');
+                Assert.areEqual(
+                    document.getElementById('bd').previousSibling,
+                    el,
+                    'insertBefore failed'
+                );
+            },
+            test_insertAfter: function() {
+                var el = document.createElement('div');
+                Y.Dom.insertAfter(el, 'bd');
+                Assert.areEqual(
+                    document.getElementById('bd').nextSibling,
+                    el,
+                    'insertAfter failed'
+                );
+            },
+
+            test_setAttribute: function() {
+                var el = document.createElement('label');
+                Y.Dom.setAttribute(el, 'for', 'foo');                
+                Y.Dom.setAttribute(el, 'class', 'bar');                
+
+                Assert.areEqual('foo', el.htmlFor, "Y.Dom.setAttribute(el, 'for', 'foo')");
+                Assert.areEqual('bar', el.className, "Y.Dom.setAttribute(el, 'class', 'bar')");
+
+                el = document.body.appendChild(document.createElement('input'));
+                Y.Dom.setAttribute(el, 'type', 'text');
+                Assert.areEqual('text', Y.Dom.getAttribute(el, 'type'), "Y.Dom.setAttribute(el, 'type', 'text')");
+                el.parentNode.removeChild(el);
+            },
+
+
+            test_getAttribute: function() {
+                var el = document.createElement('label');
+                Y.Dom.setAttribute(el, 'for', 'foo');                
+                Y.Dom.setAttribute(el, 'class', 'bar');                
+
+                Assert.areEqual('foo', Y.Dom.getAttribute(el, 'for'), "Y.Dom.getAttribute(el, 'for')");
+                Assert.areEqual('bar', Y.Dom.getAttribute(el, 'class'), "Y.Dom.setAttribute(el, 'class')");
+
+                var bodyEl = new Y.Element(Y.Dom.generateId(document.body));
+                Y.Dom.addClass(bodyEl, 'dummy');
+                Assert.isTrue(Y.Dom.hasClass(document.body, 'dummy'), 'Y.Dom.addClass(Element, "dummy")');
+            }
+
+        })); 
+        tool.TestRunner.add(suite);
+
+        if (parent && parent != window) {
+            tool.TestManager.load();
+        } else {
+            tool.TestRunner.run();
+        }
+
+    }); 
+})();
+</script>
+</body>
+</html>

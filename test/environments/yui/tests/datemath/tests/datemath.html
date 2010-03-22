@@ -1,0 +1,1385 @@
+<html>
+<head>
+	<title>YUI DateMath Tests</title>
+	<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/logger.css" />
+	<link type="text/css" rel="stylesheet" href="../../../build/yuitest/assets/testlogger.css" />
+
+	<script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+	<script type="text/javascript" src="../../../build/yuitest/yuitest.js"></script>
+	<script type="text/javascript" src="../../../build/datemath/datemath-min.js"></script>
+
+	<script type="text/javascript">
+	(function() {
+
+		var	Dom=YAHOO.util.Dom,
+			TestCase = YAHOO.tool.TestCase,
+			Assert=YAHOO.util.Assert,
+			ObjectAssert=YAHOO.util.ObjectAssert,
+			ArrayAssert=YAHOO.util.ArrayAssert,
+			UserAction=YAHOO.util.UserAction, 
+			DateAssert=YAHOO.util.DateAssert,
+			DateMath=YAHOO.widget.DateMath;
+			
+		var logger;
+
+		var dmTemplate = {
+			
+			name: "datemathtestcase",
+
+			testAdd : function() {
+
+				var dt = new Date(2007, 3, 12);
+				var resDt = DateMath.add(dt, DateMath.DAY, 4);
+				DateAssert.datesAreEqual(new Date(2007, 3, 16), resDt, "Incorrect results adding to DAY field");
+
+				dt = new Date(2008, 0, 1);
+				var resDt = DateMath.add(dt, DateMath.DAY, 127);
+				DateAssert.datesAreEqual(new Date(2008, 4, 7), resDt, "Incorrect results adding 127 to DAY field");
+
+				dt = new Date(2008, 0, 1);
+				var resDt = DateMath.add(dt, DateMath.DAY, 366); // 2008 Leap Year
+				DateAssert.datesAreEqual(new Date(2009, 0 , 1), resDt, "Incorrect results adding 366 to DAY field");
+
+				dt = new Date(2007, 3, 12);
+				resDt = DateMath.add(dt, DateMath.MONTH, 5);
+				DateAssert.datesAreEqual(new Date(2007, 8, 12), resDt, "Incorrect results adding to MONTH field");
+
+				dt = new Date(2007, 3, 12);
+				resDt = DateMath.add(dt, DateMath.YEAR, 4);
+				DateAssert.datesAreEqual(new Date(2011, 3, 12), resDt, "Incorrect results adding to YEAR field");
+
+				dt = new Date(2007, 3, 12);
+				resDt = DateMath.add(dt, DateMath.WEEK, 2);
+				DateAssert.datesAreEqual(new Date(2007, 3, 26), resDt, "Incorrect results adding to WEEK field");
+
+				dt = new Date(2007, 3, 12);
+				resDt = DateMath.add(dt, DateMath.WEEK, 52);
+				DateAssert.datesAreEqual(new Date(2008, 3, 10), resDt, "Incorrect results adding to 52 WEEKS to field");
+
+				// Rollover Tests
+				dt = new Date(2007, 3, 29);
+				resDt = DateMath.add(dt, DateMath.DAY, 5);
+				DateAssert.datesAreEqual(new Date(2007, 4, 4), resDt, "Incorrect results adding to DAYS field with rollover to valid date");
+
+				dt = new Date(2007, 0, 31);
+				resDt = DateMath.add(dt, DateMath.MONTH, 1);
+				// Feb 31st = March 3rd
+				DateAssert.datesAreEqual(new Date(2007, 2, 3), resDt, "Incorrect results adding rollover to MONTHS field with rollover to invalid date");
+
+				dt = new Date(2006, 10, 3);
+				resDt = DateMath.add(dt, DateMath.MONTH, 3);
+				DateAssert.datesAreEqual(new Date(2007, 1, 3), resDt, "Incorrect results adding rollover to MONTHS field with rollover year boundary");
+
+				dt = new Date(2006, 11, 31);
+				resDt = DateMath.add(dt, DateMath.MONTH, 2);
+				DateAssert.datesAreEqual(new Date(2007, 2, 3), resDt, "Incorrect results adding rollover to MONTHS field with rollover year boundary to invalid date");
+			},
+			
+			testSubtract : function() {
+				var dt = new Date(2007, 3, 12);
+				var resDt = DateMath.subtract(dt, DateMath.DAY, 4);
+				DateAssert.datesAreEqual(new Date(2007, 3, 8), resDt, "Incorrect results subtracting from DAY field");
+
+				dt = new Date(2008, 0, 1);
+				var resDt = DateMath.subtract(dt, DateMath.DAY, 130);
+				DateAssert.datesAreEqual(new Date(2007, 7, 24), resDt, "Incorrect results subtracting 129 from DAY field");
+
+				dt = new Date(2008, 0, 1);
+				var resDt = DateMath.subtract(dt, DateMath.DAY, 365);
+				DateAssert.datesAreEqual(new Date(2007, 0 , 1), resDt, "Incorrect results subtracting 366 from DAY field");
+
+				dt = new Date(2008, 0, 1);
+				var resDt = DateMath.subtract(dt, DateMath.DAY, 1);
+				DateAssert.datesAreEqual(new Date(2007, 11 , 31), resDt, "Incorrect results subtracting 1 from DAY field");
+
+				dt = new Date(2007, 3, 12);
+				resDt = DateMath.subtract(dt, DateMath.MONTH, 2);
+				DateAssert.datesAreEqual(new Date(2007, 1, 12), resDt, "Incorrect results subtracting from MONTH field");
+
+				dt = new Date(2007, 3, 12);
+				resDt = DateMath.subtract(dt, DateMath.YEAR, 4);
+				DateAssert.datesAreEqual(new Date(2003, 3, 12), resDt, "Incorrect results subtracting from YEAR field");
+
+				dt = new Date(2007, 3, 12);
+				resDt = DateMath.subtract(dt, DateMath.WEEK, 1);
+				DateAssert.datesAreEqual(new Date(2007, 3, 5), resDt, "Incorrect results subtracting from WEEK field");
+
+				dt = new Date(2007, 3, 12);
+				resDt = DateMath.subtract(dt, DateMath.WEEK, 52);
+				DateAssert.datesAreEqual(new Date(2006, 3, 13), resDt, "Incorrect results subtracting 52 WEEKS from field");
+
+				// Rollover Tests
+				dt = new Date(2007, 3, 3);
+				resDt = DateMath.subtract(dt, DateMath.DAY, 5);
+				DateAssert.datesAreEqual(new Date(2007, 2, 29), resDt, "Incorrect results subtracting to DAYS field with rollover to valid date");
+
+				dt = new Date(2007, 2, 31);
+				resDt = DateMath.subtract(dt, DateMath.MONTH, 1);
+				// Feb 31st = March 3rd
+				DateAssert.datesAreEqual(new Date(2007, 2, 3), resDt, "Incorrect results subtracting rollover to MONTHS field with rollover to invalid date");
+
+				dt = new Date(2007, 2, 3);
+				resDt = DateMath.subtract(dt, DateMath.MONTH, 3);
+				DateAssert.datesAreEqual(new Date(2006, 11, 3), resDt, "Incorrect results subtracting rollover to MONTHS field with rollover year boundary");
+
+				dt = new Date(2007, 0, 31);
+				resDt = DateMath.subtract(dt, DateMath.MONTH, 2);
+				// Nov 31st = Dec 1st
+				DateAssert.datesAreEqual(new Date(2006, 11, 1), resDt, "Incorrect results subtracting rollover to MONTHS field with rollover year boundary to invalid date");
+			},
+
+			testAfter : function() {
+				var dt = new Date(2007, 3, 12);
+
+				Assert.isTrue(DateMath.after(dt, new Date(2007, 3, 11)));
+				Assert.isTrue(DateMath.after(dt, new Date(2007, 2, 15)));
+				Assert.isTrue(DateMath.after(dt, new Date(2006, 5, 20)));
+
+				Assert.isFalse(DateMath.after(dt, new Date(2007, 3, 12)));
+				Assert.isFalse(DateMath.after(dt, new Date(2007, 4, 10)));
+				Assert.isFalse(DateMath.after(dt, new Date(2008, 1, 10)));
+			},
+
+			testBefore : function() {
+				var dt = new Date(2007, 3, 12);
+
+				Assert.isTrue(DateMath.before(dt, new Date(2007, 3, 13)));
+				Assert.isTrue(DateMath.before(dt, new Date(2007, 4, 10)));
+				Assert.isTrue(DateMath.before(dt, new Date(2008, 1, 10)));
+
+				Assert.isFalse(DateMath.before(dt, new Date(2007, 3, 12)));
+				Assert.isFalse(DateMath.before(dt, new Date(2007, 2, 15)));
+				Assert.isFalse(DateMath.before(dt, new Date(2006, 5, 20)));
+			},
+
+			testBetween : function() {
+				var dt = new Date(2007, 3, 12);
+
+				Assert.isTrue(DateMath.between(dt, new Date(2007, 3, 11), new Date(2007, 3, 13)));
+				Assert.isTrue(DateMath.between(dt, new Date(2006, 4, 13), new Date(2008, 2, 10)));
+				Assert.isTrue(DateMath.between(dt, new Date(2006, 1, 10), new Date(2008, 1, 10)));
+
+				Assert.isFalse(DateMath.between(dt, new Date(2007, 3, 10), new Date(2007, 3, 11)));
+				Assert.isFalse(DateMath.between(dt, new Date(2006, 4, 10), new Date(2006, 5, 10)));
+				Assert.isFalse(DateMath.between(dt, new Date(2007, 3, 13), new Date(2008, 2, 10)));
+			},
+
+			testClearTime : function() {
+				var dt = new Date(2007, 3, 12, 3, 45, 29, 300);
+				
+				var clearedDt = DateMath.clearTime(dt);
+				
+				DateAssert.datesAreEqual(new Date(2007, 3, 12), clearedDt);
+				DateAssert.timesAreEqual(new Date(2007, 3, 12, 12, 0, 0, 0), clearedDt);
+			},
+
+			testFindMonthEnd : function() {
+				var dt = new Date(2007, 3, 12);
+				var rstDt = DateMath.findMonthEnd(dt);
+				DateAssert.datesAreEqual(new Date(2007, 3, 30), rstDt);
+
+				dt = new Date(2007, 11, 15);
+				rstDt = DateMath.findMonthEnd(dt);
+				DateAssert.datesAreEqual(new Date(2007, 11, 31), rstDt);
+				
+				dt = new Date(2007, 1, 14);
+				rstDt = DateMath.findMonthEnd(dt);
+				DateAssert.datesAreEqual(new Date(2007, 1, 28), rstDt);
+
+				// Leap
+				dt = new Date(2008, 1, 14);
+				rstDt = DateMath.findMonthEnd(dt);
+				DateAssert.datesAreEqual(new Date(2008, 1, 29), rstDt);
+			},
+
+			testFindMonthStart : function() {
+				var dt = new Date(2007, 3, 12);
+				var rstDt = DateMath.findMonthStart(dt);
+				DateAssert.datesAreEqual(new Date(2007, 3, 1), rstDt);
+
+				dt = new Date(2007, 0, 15);
+				rstDt = DateMath.findMonthStart(dt);
+				DateAssert.datesAreEqual(new Date(2007, 0, 1), rstDt);
+				
+				dt = new Date(2007, 1, 14);
+				rstDt = DateMath.findMonthStart(dt);
+				DateAssert.datesAreEqual(new Date(2007, 1, 1), rstDt);
+				
+				// Leap
+				dt = new Date(2008, 2, 3);
+				rstDt = DateMath.findMonthStart(dt);
+				DateAssert.datesAreEqual(new Date(2008, 2, 1), rstDt);
+			},
+
+			testGetDayOffset : function() {
+				var dt = new Date(2007, 3, 12);
+				Assert.areEqual(101, DateMath.getDayOffset(dt, 2007));
+
+				dt = new Date(2007, 0, 1);
+				Assert.areEqual(0, DateMath.getDayOffset(dt, 2007));
+			},
+
+			testGetJan1 : function() {
+				DateAssert.datesAreEqual(new Date(2007, 0, 1), DateMath.getJan1(2007));
+				DateAssert.datesAreEqual(new Date(2008, 0, 1), DateMath.getJan1(2008));
+			},
+
+            /* ISO8601 Test Data from: http://www.merlyn.demon.co.uk/wknotest.txt */
+			testISO8601Jan1stWeekNumbers : function() {
+
+                DateMath.WEEK_ONE_JAN_DATE = 4;
+                
+                // ISO Week numbers for Jan1st, 2000 - 2030 
+                var a =[52, 01, 01, 01, 01, 53, 52, 01, 01, 01, 53, 52,
+                        52, 01, 01, 01, 53, 52, 01, 01, 01, 53, 52, 52,
+                        01, 01, 01, 53, 52, 01];
+
+                for (var i = 0; i < 30; i++) {
+                    var dt = new Date(2000 + i, 0, 1);
+                    var n = DateMath.getWeekNumber(dt, 1);
+                    Assert.areEqual(a[i], n, "Week for Jan 1, " + (2000+i) + " incorret");
+                }
+
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+			},
+
+            testISOWeekNumbersOverlapWeek : function() {
+                
+                DateMath.WEEK_ONE_JAN_DATE = 4;
+
+                   // Last and first weeks, 1999-2029
+                   var a = [52, 52, 52, 52, 52, 52, 52,
+                            1, 1, 1, 1, 1, 1, 1,
+                            52, 52, 52, 52, 52, 52, 52,
+                            1, 1, 1, 1, 1, 1, 1,
+                            52, 52, 52, 52, 52, 52, 52,
+                            1, 1, 1, 1, 1, 1, 1,
+                            52, 52, 52, 52, 52, 52, 52,
+                            1, 1, 1, 1, 1, 1, 1,
+                            52, 52, 52, 52, 52, 52, 52,
+                            1, 1, 1, 1, 1, 1, 1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            53,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            52,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1,
+                            1];
+
+                        var t = [[1999, 12, 27],
+                        [1999, 12, 28],
+                        [1999, 12, 29],
+                        [1999, 12, 30],
+                        [1999, 12, 31],
+                        [2000, 1, 1],
+                        [2000, 1, 2],
+                        [2000, 1, 3],
+                        [2000, 1, 4],
+                        [2000, 1, 5],
+                        [2000, 1, 6],
+                        [2000, 1, 7],
+                        [2000, 1, 8],
+                        [2000, 1, 9],
+                        [2000, 12, 25],
+                        [2000, 12, 26],
+                        [2000, 12, 27],
+                        [2000, 12, 28],
+                        [2000, 12, 29],
+                        [2000, 12, 30],
+                        [2000, 12, 31],
+                        [2001, 1, 1],
+                        [2001, 1, 2],
+                        [2001, 1, 3],
+                        [2001, 1, 4],
+                        [2001, 1, 5],
+                        [2001, 1, 6],
+                        [2001, 1, 7],
+                        [2001, 12, 24],
+                        [2001, 12, 25],
+                        [2001, 12, 26],
+                        [2001, 12, 27],
+                        [2001, 12, 28],
+                        [2001, 12, 29],
+                        [2001, 12, 30],
+                        [2001, 12, 31],
+                        [2002, 1, 1],
+                        [2002, 1, 2],
+                        [2002, 1, 3],
+                        [2002, 1, 4],
+                        [2002, 1, 5],
+                        [2002, 1, 6],
+                        [2002, 12, 23],
+                        [2002, 12, 24],
+                        [2002, 12, 25],
+                        [2002, 12, 26],
+                        [2002, 12, 27],
+                        [2002, 12, 28],
+                        [2002, 12, 29],
+                        [2002, 12, 30],
+                        [2002, 12, 31],
+                        [2003, 1, 1],
+                        [2003, 1, 2],
+                        [2003, 1, 3],
+                        [2003, 1, 4],
+                        [2003, 1, 5],
+                        [2003, 12, 22],
+                        [2003, 12, 23],
+                        [2003, 12, 24],
+                        [2003, 12, 25],
+                        [2003, 12, 26],
+                        [2003, 12, 27],
+                        [2003, 12, 28],
+                        [2003, 12, 29],
+                        [2003, 12, 30],
+                        [2003, 12, 31],
+                        [2004, 1, 1],
+                        [2004, 1, 2],
+                        [2004, 1, 3],
+                        [2004, 1, 4],
+                        [2004, 12, 20],
+                        [2004, 12, 21],
+                        [2004, 12, 22],
+                        [2004, 12, 23],
+                        [2004, 12, 24],
+                        [2004, 12, 25],
+                        [2004, 12, 26],
+                        [2004, 12, 27],
+                        [2004, 12, 28],
+                        [2004, 12, 29],
+                        [2004, 12, 30],
+                        [2004, 12, 31],
+                        [2005, 1, 1],
+                        [2005, 1, 2],
+                        [2005, 1, 3],
+                        [2005, 1, 4],
+                        [2005, 1, 5],
+                        [2005, 1, 6],
+                        [2005, 1, 7],
+                        [2005, 1, 8],
+                        [2005, 1, 9],
+                        [2005, 12, 26],
+                        [2005, 12, 27],
+                        [2005, 12, 28],
+                        [2005, 12, 29],
+                        [2005, 12, 30],
+                        [2005, 12, 31],
+                        [2006, 1, 1],
+                        [2006, 1, 2],
+                        [2006, 1, 3],
+                        [2006, 1, 4],
+                        [2006, 1, 5],
+                        [2006, 1, 6],
+                        [2006, 1, 7],
+                        [2006, 1, 8],
+                        [2006, 12, 25],
+                        [2006, 12, 26],
+                        [2006, 12, 27],
+                        [2006, 12, 28],
+                        [2006, 12, 29],
+                        [2006, 12, 30],
+                        [2006, 12, 31],
+                        [2007, 1, 1],
+                        [2007, 1, 2],
+                        [2007, 1, 3],
+                        [2007, 1, 4],
+                        [2007, 1, 5],
+                        [2007, 1, 6],
+                        [2007, 1, 7],
+                        [2007, 12, 24],
+                        [2007, 12, 25],
+                        [2007, 12, 26],
+                        [2007, 12, 27],
+                        [2007, 12, 28],
+                        [2007, 12, 29],
+                        [2007, 12, 30],
+                        [2007, 12, 31],
+                        [2008, 1, 1],
+                        [2008, 1, 2],
+                        [2008, 1, 3],
+                        [2008, 1, 4],
+                        [2008, 1, 5],
+                        [2008, 1, 6],
+                        [2008, 12, 22],
+                        [2008, 12, 23],
+                        [2008, 12, 24],
+                        [2008, 12, 25],
+                        [2008, 12, 26],
+                        [2008, 12, 27],
+                        [2008, 12, 28],
+                        [2008, 12, 29],
+                        [2008, 12, 30],
+                        [2008, 12, 31],
+                        [2009, 1, 1],
+                        [2009, 1, 2],
+                        [2009, 1, 3],
+                        [2009, 1, 4],
+                        [2009, 12, 21],
+                        [2009, 12, 22],
+                        [2009, 12, 23],
+                        [2009, 12, 24],
+                        [2009, 12, 25],
+                        [2009, 12, 26],
+                        [2009, 12, 27],
+                        [2009, 12, 28],
+                        [2009, 12, 29],
+                        [2009, 12, 30],
+                        [2009, 12, 31],
+                        [2010, 1, 1],
+                        [2010, 1, 2],
+                        [2010, 1, 3],
+                        [2010, 1, 4],
+                        [2010, 1, 5],
+                        [2010, 1, 6],
+                        [2010, 1, 7],
+                        [2010, 1, 8],
+                        [2010, 1, 9],
+                        [2010, 1, 10],
+                        [2010, 12, 27],
+                        [2010, 12, 28],
+                        [2010, 12, 29],
+                        [2010, 12, 30],
+                        [2010, 12, 31],
+                        [2011, 1, 1],
+                        [2011, 1, 2],
+                        [2011, 1, 3],
+                        [2011, 1, 4],
+                        [2011, 1, 5],
+                        [2011, 1, 6],
+                        [2011, 1, 7],
+                        [2011, 1, 8],
+                        [2011, 1, 9],
+                        [2011, 12, 26],
+                        [2011, 12, 27],
+                        [2011, 12, 28],
+                        [2011, 12, 29],
+                        [2011, 12, 30],
+                        [2011, 12, 31],
+                        [2012, 1, 1],
+                        [2012, 1, 2],
+                        [2012, 1, 3],
+                        [2012, 1, 4],
+                        [2012, 1, 5],
+                        [2012, 1, 6],
+                        [2012, 1, 7],
+                        [2012, 1, 8],
+                        [2012, 12, 24],
+                        [2012, 12, 25],
+                        [2012, 12, 26],
+                        [2012, 12, 27],
+                        [2012, 12, 28],
+                        [2012, 12, 29],
+                        [2012, 12, 30],
+                        [2012, 12, 31],
+                        [2013, 1, 1],
+                        [2013, 1, 2],
+                        [2013, 1, 3],
+                        [2013, 1, 4],
+                        [2013, 1, 5],
+                        [2013, 1, 6],
+                        [2013, 12, 23],
+                        [2013, 12, 24],
+                        [2013, 12, 25],
+                        [2013, 12, 26],
+                        [2013, 12, 27],
+                        [2013, 12, 28],
+                        [2013, 12, 29],
+                        [2013, 12, 30],
+                        [2013, 12, 31],
+                        [2014, 1, 1],
+                        [2014, 1, 2],
+                        [2014, 1, 3],
+                        [2014, 1, 4],
+                        [2014, 1, 5],
+                        [2014, 12, 22],
+                        [2014, 12, 23],
+                        [2014, 12, 24],
+                        [2014, 12, 25],
+                        [2014, 12, 26],
+                        [2014, 12, 27],
+                        [2014, 12, 28],
+                        [2014, 12, 29],
+                        [2014, 12, 30],
+                        [2014, 12, 31],
+                        [2015, 1, 1],
+                        [2015, 1, 2],
+                        [2015, 1, 3],
+                        [2015, 1, 4],
+                        [2015, 12, 21],
+                        [2015, 12, 22],
+                        [2015, 12, 23],
+                        [2015, 12, 24],
+                        [2015, 12, 25],
+                        [2015, 12, 26],
+                        [2015, 12, 27],
+                        [2015, 12, 28],
+                        [2015, 12, 29],
+                        [2015, 12, 30],
+                        [2015, 12, 31],
+                        [2016, 1, 1],
+                        [2016, 1, 2],
+                        [2016, 1, 3],
+                        [2016, 1, 4],
+                        [2016, 1, 5],
+                        [2016, 1, 6],
+                        [2016, 1, 7],
+                        [2016, 1, 8],
+                        [2016, 1, 9],
+                        [2016, 1, 10],
+                        [2016, 12, 26],
+                        [2016, 12, 27],
+                        [2016, 12, 28],
+                        [2016, 12, 29],
+                        [2016, 12, 30],
+                        [2016, 12, 31],
+                        [2017, 1, 1],
+                        [2017, 1, 2],
+                        [2017, 1, 3],
+                        [2017, 1, 4],
+                        [2017, 1, 5],
+                        [2017, 1, 6],
+                        [2017, 1, 7],
+                        [2017, 1, 8],
+                        [2017, 12, 25],
+                        [2017, 12, 26],
+                        [2017, 12, 27],
+                        [2017, 12, 28],
+                        [2017, 12, 29],
+                        [2017, 12, 30],
+                        [2017, 12, 31],
+                        [2018, 1, 1],
+                        [2018, 1, 2],
+                        [2018, 1, 3],
+                        [2018, 1, 4],
+                        [2018, 1, 5],
+                        [2018, 1, 6],
+                        [2018, 1, 7],
+                        [2018, 12, 24],
+                        [2018, 12, 25],
+                        [2018, 12, 26],
+                        [2018, 12, 27],
+                        [2018, 12, 28],
+                        [2018, 12, 29],
+                        [2018, 12, 30],
+                        [2018, 12, 31],
+                        [2019, 1, 1],
+                        [2019, 1, 2],
+                        [2019, 1, 3],
+                        [2019, 1, 4],
+                        [2019, 1, 5],
+                        [2019, 1, 6],
+                        [2019, 12, 23],
+                        [2019, 12, 24],
+                        [2019, 12, 25],
+                        [2019, 12, 26],
+                        [2019, 12, 27],
+                        [2019, 12, 28],
+                        [2019, 12, 29],
+                        [2019, 12, 30],
+                        [2019, 12, 31],
+                        [2020, 1, 1],
+                        [2020, 1, 2],
+                        [2020, 1, 3],
+                        [2020, 1, 4],
+                        [2020, 1, 5],
+                        [2020, 12, 21],
+                        [2020, 12, 22],
+                        [2020, 12, 23],
+                        [2020, 12, 24],
+                        [2020, 12, 25],
+                        [2020, 12, 26],
+                        [2020, 12, 27],
+                        [2020, 12, 28],
+                        [2020, 12, 29],
+                        [2020, 12, 30],
+                        [2020, 12, 31],
+                        [2021, 1, 1],
+                        [2021, 1, 2],
+                        [2021, 1, 3],
+                        [2021, 1, 4],
+                        [2021, 1, 5],
+                        [2021, 1, 6],
+                        [2021, 1, 7],
+                        [2021, 1, 8],
+                        [2021, 1, 9],
+                        [2021, 1, 10],
+                        [2021, 12, 27],
+                        [2021, 12, 28],
+                        [2021, 12, 29],
+                        [2021, 12, 30],
+                        [2021, 12, 31],
+                        [2022, 1, 1],
+                        [2022, 1, 2],
+                        [2022, 1, 3],
+                        [2022, 1, 4],
+                        [2022, 1, 5],
+                        [2022, 1, 6],
+                        [2022, 1, 7],
+                        [2022, 1, 8],
+                        [2022, 1, 9],
+                        [2022, 12, 26],
+                        [2022, 12, 27],
+                        [2022, 12, 28],
+                        [2022, 12, 29],
+                        [2022, 12, 30],
+                        [2022, 12, 31],
+                        [2023, 1, 1],
+                        [2023, 1, 2],
+                        [2023, 1, 3],
+                        [2023, 1, 4],
+                        [2023, 1, 5],
+                        [2023, 1, 6],
+                        [2023, 1, 7],
+                        [2023, 1, 8],
+                        [2023, 12, 25],
+                        [2023, 12, 26],
+                        [2023, 12, 27],
+                        [2023, 12, 28],
+                        [2023, 12, 29],
+                        [2023, 12, 30],
+                        [2023, 12, 31],
+                        [2024, 1, 1],
+                        [2024, 1, 2],
+                        [2024, 1, 3],
+                        [2024, 1, 4],
+                        [2024, 1, 5],
+                        [2024, 1, 6],
+                        [2024, 1, 7],
+                        [2024, 12, 23],
+                        [2024, 12, 24],
+                        [2024, 12, 25],
+                        [2024, 12, 26],
+                        [2024, 12, 27],
+                        [2024, 12, 28],
+                        [2024, 12, 29],
+                        [2024, 12, 30],
+                        [2024, 12, 31],
+                        [2025, 1, 1],
+                        [2025, 1, 2],
+                        [2025, 1, 3],
+                        [2025, 1, 4],
+                        [2025, 1, 5],
+                        [2025, 12, 22],
+                        [2025, 12, 23],
+                        [2025, 12, 24],
+                        [2025, 12, 25],
+                        [2025, 12, 26],
+                        [2025, 12, 27],
+                        [2025, 12, 28],
+                        [2025, 12, 29],
+                        [2025, 12, 30],
+                        [2025, 12, 31],
+                        [2026, 1, 1],
+                        [2026, 1, 2],
+                        [2026, 1, 3],
+                        [2026, 1, 4],
+                        [2026, 12, 21],
+                        [2026, 12, 22],
+                        [2026, 12, 23],
+                        [2026, 12, 24],
+                        [2026, 12, 25],
+                        [2026, 12, 26],
+                        [2026, 12, 27],
+                        [2026, 12, 28],
+                        [2026, 12, 29],
+                        [2026, 12, 30],
+                        [2026, 12, 31],
+                        [2027, 1, 1],
+                        [2027, 1, 2],
+                        [2027, 1, 3],
+                        [2027, 1, 4],
+                        [2027, 1, 5],
+                        [2027, 1, 6],
+                        [2027, 1, 7],
+                        [2027, 1, 8],
+                        [2027, 1, 9],
+                        [2027, 1, 10],
+                        [2027, 12, 27],
+                        [2027, 12, 28],
+                        [2027, 12, 29],
+                        [2027, 12, 30],
+                        [2027, 12, 31],
+                        [2028, 1, 1],
+                        [2028, 1, 2],
+                        [2028, 1, 3],
+                        [2028, 1, 4],
+                        [2028, 1, 5],
+                        [2028, 1, 6],
+                        [2028, 1, 7],
+                        [2028, 1, 8],
+                        [2028, 1, 9],
+                        [2028, 12, 25],
+                        [2028, 12, 26],
+                        [2028, 12, 27],
+                        [2028, 12, 28],
+                        [2028, 12, 29],
+                        [2028, 12, 30],
+                        [2028, 12, 31],
+                        [2029, 1, 1],
+                        [2029, 1, 2],
+                        [2029, 1, 3],
+                        [2029, 1, 4],
+                        [2029, 1, 5],
+                        [2029, 1, 6],
+                        [2029, 1, 7]]
+
+                for (j=0; j < t.length; j++) { 
+                    var d = new Date(t[j][0], t[j][1]-1, t[j][2]);
+                    var n = DateMath.getWeekNumber(d, 1);
+                    Assert.areEqual(a[j], n, "Week for " + d + " incorret");
+                }
+
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+            },
+
+            testISOWeekNumbers2008 : function() {
+                DateMath.WEEK_ONE_JAN_DATE = 4;
+                var dt = new Date(2007, 11, 31);
+                var wk = 0;
+                var endDate = new Date(2008, 11, 29);
+                while(dt.getTime() < endDate.getTime()) {
+                    wk++;
+                    var wkActual = DateMath.getWeekNumber(dt, 1);
+                    Assert.areEqual(wk, wkActual, "Week for " + dt + " incorrect");
+                    dt.setDate(dt.getDate() + 7);
+                }
+                Assert.areEqual(52, wk, "Last week incorrect");
+                Assert.areEqual(1, DateMath.getWeekNumber(dt, 1), "First week of following year: " + dt + " incorrect");
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+            },
+
+            testISOWeekNumbers2009 : function() {
+                DateMath.WEEK_ONE_JAN_DATE = 4;
+                var dt = new Date(2008, 11, 29);
+                var wk = 0;
+                var endDate = new Date(2010, 0, 4);
+                
+                while(dt.getTime() < endDate.getTime()) {
+                    wk++;
+                    var wkActual = DateMath.getWeekNumber(dt, 1);
+                    Assert.areEqual(wk, wkActual, "Week for " + dt + " incorrect");
+                    dt.setDate(dt.getDate() + 7);
+                }
+                Assert.areEqual(53, wk, "Last week incorrect");
+                Assert.areEqual(1, DateMath.getWeekNumber(dt, 1), "First week of following year: " + dt + " incorrect");
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+            },
+
+            testISOWeekNumbers2010 : function() {
+                DateMath.WEEK_ONE_JAN_DATE = 4;
+                var dt = new Date(2010, 0, 4);
+                var wk = 0;
+                var endDate = new Date(2011, 0, 3);
+                while(dt.getTime() < endDate.getTime()) {
+                    wk++;
+                    var wkActual = DateMath.getWeekNumber(dt, 1);
+                    Assert.areEqual(wk, wkActual, "Week for " + dt + " incorrect");
+                    dt.setDate(dt.getDate() + 7);
+                }
+                Assert.areEqual(52, wk, "Last week incorrect");
+                Assert.areEqual(1, DateMath.getWeekNumber(dt, 1), "First week of following year: " + dt + " incorrect");
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+            },
+
+            testISOWeekNumbers2011 : function() {
+                DateMath.WEEK_ONE_JAN_DATE = 4;
+                var dt = new Date(2011, 0, 3);
+                var wk = 0;
+                var endDate = new Date(2012, 0, 2);
+                while(dt.getTime() < endDate.getTime()) {
+                    wk++;
+                    var wkActual = DateMath.getWeekNumber(dt, 1);
+                    Assert.areEqual(wk, wkActual, "Week for " + dt + " incorrect");
+                    dt.setDate(dt.getDate() + 7);
+                }
+                Assert.areEqual(52, wk, "Last week incorrect");
+                Assert.areEqual(1, DateMath.getWeekNumber(dt, 1), "First week of following year: " + dt + " incorrect");
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+            },
+
+            testWeekNumbers2008 : function() {
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+                
+                var dt = new Date(2007, 11, 30);
+                var wk = 0;
+                var endDate = new Date(2008, 11, 28).getTime();
+                while(dt.getTime() < endDate) {
+                    wk++;
+                    var wkActual = DateMath.getWeekNumber(dt, 0);
+                    Assert.areEqual(wk, wkActual, "Week for " + dt + " incorrect");
+                    dt.setDate(dt.getDate() + 7);
+                }
+                Assert.areEqual(52, wk, "Last week incorrect");
+                Assert.areEqual(1, DateMath.getWeekNumber(dt, 0), "First week of following year: " + dt + " incorrect");
+            },
+
+            testWeekNumbers2009 : function() {
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+
+                var dt = new Date(2008, 11, 28);
+                var wk = 0;
+                var endDate = new Date(2009, 11, 27).getTime();
+
+                while(dt.getTime() < endDate) {
+                    wk++;
+                    var wkActual = DateMath.getWeekNumber(dt, 0);
+                    Assert.areEqual(wk, wkActual, "Week for " + dt + " incorrect");
+                    dt.setDate(dt.getDate() + 7);
+                }
+                
+                Assert.areEqual(52, wk, "Last week incorrect");
+                Assert.areEqual(1, DateMath.getWeekNumber(dt, 0), "First week of following year: " + dt + " incorrect");
+            },
+
+
+            testWeekNumbers2010 : function() {
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+                var dt = new Date(2009, 11, 27);
+                var wk = 0;
+                var endDate = new Date(2010, 11, 26).getTime();
+                while(dt.getTime() < endDate) {
+                    wk++;
+                    var wkActual = DateMath.getWeekNumber(dt, 0);
+                    Assert.areEqual(wk, wkActual, "Week for " + dt + " incorrect");
+                    dt.setDate(dt.getDate() + 7);
+                }
+                Assert.areEqual(52, wk, "Last week incorrect");
+                Assert.areEqual(1, DateMath.getWeekNumber(dt, 0), "First week of following year: " + dt + " incorrect");
+            },
+
+            testWeekNumbers2011 : function() {
+                DateMath.WEEK_ONE_JAN_DATE = 1;
+                var dt = new Date(2010, 11, 26);
+                var wk = 0;
+                var endDate = new Date(2012, 0, 1).getTime();
+                while(dt.getTime() < endDate) {
+                    wk++;
+                    var wkActual = DateMath.getWeekNumber(dt, 0);
+                    Assert.areEqual(wk, wkActual, "Week for " + dt + " incorrect");
+                    dt.setDate(dt.getDate() + 7);
+                }
+                Assert.areEqual(53, wk, "Last week incorrect");
+                Assert.areEqual(1, DateMath.getWeekNumber(dt, 0), "First week of following year: " + dt + " incorrect");
+            },
+
+
+			testIsMonthOverlapWeek : function() {
+				Assert.isTrue(DateMath.isMonthOverlapWeek(new Date(2007, 4, 30)));
+				Assert.isFalse(DateMath.isMonthOverlapWeek(new Date(2007, 4, 23)));
+			},
+
+			testIsYearOverlapWeek : function() {
+				Assert.isTrue(DateMath.isYearOverlapWeek(new Date(2007, 11, 30)));
+				Assert.isFalse(DateMath.isMonthOverlapWeek(new Date(2007, 11, 23)));
+			},
+
+			testGetDate: function() {
+				var dt = new Date(2007, 3, 12);
+				var getDt = DateMath.getDate(2007, 3, 12);
+				DateAssert.datesAreEqual(dt, getDt);
+				DateAssert.timesAreEqual(dt, getDt);
+
+				// Leap
+				dt = new Date(2007, 1, 29);
+				getDt = DateMath.getDate(2007, 1, 29);
+				DateAssert.datesAreEqual(dt, getDt);
+				DateAssert.timesAreEqual(dt, getDt);
+
+				// Before gregorian shift - 1582
+				dt = new Date(1500, 10, 25);
+				getDt = DateMath.getDate(1500, 10, 25);
+				DateAssert.datesAreEqual(dt, getDt);
+				DateAssert.timesAreEqual(dt, getDt);
+
+				// No date specified
+				dt = new Date(2007, 10);
+				getDt = DateMath.getDate(2007, 10);
+				DateAssert.datesAreEqual(dt, getDt);
+				DateAssert.timesAreEqual(dt, getDt);
+
+				// Rollover args
+				dt = new Date(2007, 1, 31);
+				getDt = DateMath.getDate(2007, 1, 31);
+				DateAssert.datesAreEqual(dt, getDt);
+				DateAssert.timesAreEqual(dt, getDt);
+
+				// Time cloning
+				dt = new Date(new Date(2007, 10, 25).getTime());
+				getDt = DateMath.getDate(2007, 10, 25);
+				DateAssert.datesAreEqual(dt, getDt);
+				DateAssert.timesAreEqual(dt, getDt);
+
+				dt = new Date(); // new Date(99, 10, 25) returns 25th Nov, 1999
+				dt.setFullYear(99);
+				dt.setMonth(10);
+				dt.setDate(25);
+				dt.setHours(0,0,0,0);
+				getDt = DateMath.getDate(99, 10, 25);
+				DateAssert.datesAreEqual(dt, getDt);
+				DateAssert.timesAreEqual(dt, getDt);
+
+				// 25th December 0 was a Monday 
+				//
+				// * http://www.fourmilab.ch/documents/calendar/
+				getDt = DateMath.getDate(0, 11, 25);
+				Assert.areEqual(1, getDt.getDay());
+				Assert.areEqual(0, getDt.getFullYear());
+				Assert.areEqual(11, getDt.getMonth());
+				Assert.areEqual(25, getDt.getDate());
+
+				// 23rd April 0099 was a Thursday 
+				//
+				// * http://www.fourmilab.ch/documents/calendar/
+				getDt = DateMath.getDate(99, 3, 23);
+				Assert.areEqual(4, getDt.getDay());
+				Assert.areEqual(99, getDt.getFullYear());
+				Assert.areEqual(3, getDt.getMonth());
+				Assert.areEqual(23, getDt.getDate());
+
+				// 1st Jan 0100 was a Friday
+				//
+				// * http://www.fourmilab.ch/documents/calendar/
+				getDt = DateMath.getDate(100, 0, 1);
+				Assert.areEqual(5, getDt.getDay());
+				Assert.areEqual(100, getDt.getFullYear());
+				Assert.areEqual(0, getDt.getMonth());
+				Assert.areEqual(1, getDt.getDate());
+
+				// 15th Oct 1582 was a Friday
+				// 
+				// * http://www.fourmilab.ch/documents/calendar/
+				// * http://www.ddj.com/184405350 (Historical-Date Conversions)
+				getDt = DateMath.getDate(1582, 9, 15);
+				Assert.areEqual(5, getDt.getDay());
+				Assert.areEqual(1582, getDt.getFullYear());
+				Assert.areEqual(9, getDt.getMonth());
+				Assert.areEqual(15, getDt.getDate());
+
+				// 24th November 4714 B.C. was a Monday and OnohglDhootk didn't feel like going to work
+				//
+				// * http://www.fourmilab.ch/documents/calendar/
+				// * http://www.ddj.com/184405350 (Historical-Date Conversions)
+				getDt = DateMath.getDate(-4713, 10, 24);
+				Assert.areEqual(1, getDt.getDay());
+				Assert.areEqual(-4713, getDt.getFullYear());
+				Assert.areEqual(10, getDt.getMonth());
+				Assert.areEqual(24, getDt.getDate());
+			}
+		};
+
+/*                
+*/
+		
+		var dmTestCase = new TestCase(dmTemplate);
+
+		function runTests(){
+
+			YAHOO.tool.TestRunner.run();
+		}
+
+		YAHOO.util.Event.addListener(window, "load", function() {
+			logger = new YAHOO.tool.TestLogger();
+
+			var testSuite=new YAHOO.tool.TestSuite("datemathsuite");
+			testSuite.add(dmTestCase);
+
+			logger.clearConsole();
+
+			YAHOO.tool.TestRunner.clear();
+			YAHOO.tool.TestRunner.add(testSuite);
+
+			YAHOO.util.Event.addListener("btnRun", "click", runTests);
+
+			if (parent && parent != window) {
+				YAHOO.tool.TestManager.load();
+			}
+		});
+	})();
+	</script>
+
+</head>
+<body>
+
+	<h1>YAHOO.widget.DateMath Tests</h1>
+	<p><input type="button" value="Run Tests" id="btnRun" /></p>
+
+</body>
+</html>

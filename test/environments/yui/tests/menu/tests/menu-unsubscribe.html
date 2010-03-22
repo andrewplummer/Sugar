@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <title>YUI MenuBar test</title>
+        <link rel="stylesheet" type="text/css" href="../../../build/fonts/fonts-min.css"> 
+        <link rel="stylesheet" type="text/css" href="../../../build/menu/assets/skins/sam/menu.css"> 
+    </head>
+    <body class="yui-skin-sam">
+        <div class="yuimenubar" id="h-menu">
+            <div class="bd">
+                <ul class="first-of-type">
+                    <li class="yuimenubaritem first-of-type" id="h-menu-file">
+                        <a href="#" class="yuimenubaritemlabel">File</a>
+                        <div class="yuimenu">
+                            <div class="bd">
+                                <ul class="first-of-type">
+                                    <li class="yuimenuitem first-of-type" id="h-menu-file-new">
+                                        <a href="#" class="yuimenuitemlabel">New...</a>
+                                    </li>
+                                    <li class="yuimenuitem" id="h-menu-file-open">
+                                        <a href="#" class="yuimenuitemlabel">Open...</a>
+                                    </li>
+                                    <li class="yuimenuitem" id="h-menu-file-close">
+                                        <a href="#" class="yuimenuitemlabel">Close</a>
+                                    </li>
+                                </ul>
+                                <ul>
+                                    <li class="yuimenuitem first-of-type" id="h-menu-file-save">
+                                        <a href="#" class="yuimenuitemlabel">Save</a>
+                                    </li>
+                                    <li class="yuimenuitem" id="h-menu-file-saveas">
+                                        <a href="#" class="yuimenuitemlabel">Save As...</a>
+                                    </li>
+                                </ul>
+                                <ul>
+                                    <li class="yuimenuitem first-of-type" id="h-menu-file-manage">
+                                        <a href="#" class="yuimenuitemlabel">Manage Docs...</a>
+                                    </li>
+                                    <li class="yuimenuitem" id="h-menu-file-print">
+                                        <a href="#" class="yuimenuitemlabel">Print...</a>
+                                    </li>
+                                    <li class="yuimenuitem" id="h-menu-file-email">
+                                        <a href="#" class="yuimenuitemlabel">Email...</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="yuimenubaritem" id="h-menu-searches">
+                        <a href="#h-menu-searches-submenu" class="yuimenubaritemlabel">Searches</a>
+                        <div class="yuimenu" id="h-menu-searches-submenu">
+                            <div class="bd">
+                                <ul class="first-of-type">
+                                    <li class="yuimenuitem query first-of-type">
+                                        <a target="_blank" href="http://facthotcover.corp.search.yahoo.com/search?ei=UTF-8&amp;p=la+ponderosa" class="yuimenuitemlabel">la ponderosa</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="yuimenubaritem" id="h-menu-help">
+                        <a href="#" class="yuimenubaritemlabel">Help</a>
+                        <div class="yuimenu">
+                            <div class="bd">
+                                <ul class="first-of-type">
+                                    <li class="yuimenuitem" id="h-menu-help-about">
+                                        <a target="_blank" href="http://help.yahoo.com/l/us/yahoo/search/searchpad/;_ylt=AwpIeSAU17pJtOYA6TZXNyoA" class="yuimenuitemlabel">About Search Pad</a>
+                                    </li>
+                                    <li class="yuimenuitem" id="h-menu-help-feedback">
+                                        <a target="_blank" href="http://help.yahoo.com/l/us/yahoo/search/searchpad.html;_ylt=AwpIeSAU17pJtOYA6jZXNyoA" class="yuimenuitemlabel">Send Feedback</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <form action="./" method="get" style="margin-top: 200px;">
+            <p>
+                <textarea id="log" rows="10" cols="50"></textarea>
+            </p>
+
+            <p>
+                <label>MenuBar clicks:</label>
+                <input type="button" id="add" value="Subscribe">
+                <input type="button" id="remove" value="Unsubscribe">
+            </p>
+        </form>
+
+        <script type="text/javascript" src="../../../build/yahoo-dom-event/yahoo-dom-event.js"></script> 
+        <script type="text/javascript" src="../../../build/container/container_core-min.js"></script> 
+        <script type="text/javascript" src="../../../build/menu/menu-min.js"></script>
+
+
+        <script type="text/javascript">
+            (function () {
+                function handleClick(e, args) {
+                    YAHOO.util.Dom.get('log').value += "Click: " + args[1].id + "\n";
+                }
+
+                var menubar = new YAHOO.widget.MenuBar('h-menu');
+                menubar.render();
+
+                YAHOO.util.Event.on('add', 'click', function () {
+                    menubar.subscribe('click', handleClick);
+                    YAHOO.util.Dom.get('log').value += "Subscribed to click events\n";
+                });
+
+                YAHOO.util.Event.on('remove', 'click', function () {
+                    menubar.unsubscribe('click', handleClick);
+                    YAHOO.util.Dom.get('log').value += "Unsubscribed from click events\n";
+                });
+            })();
+        </script>
+    </body>
+</html>

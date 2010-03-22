@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+    <title>Test Page</title>
+    <link type="text/css" rel="stylesheet" href="/assets/dpSyntaxHighlighter.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css">
+    <link type="text/css" rel="stylesheet" href="../../../build/slider/assets/skins/sam/slider.css">
+    <style type="text/css">
+        fieldset { border: 0 none; }
+        #log { position: absolute; top: 10px; right: 10px; }
+        span.go    { background: #090; color: #fff; }
+        span.stop  { background: #900; color: #fff; }
+        .yui-skin-sam .yui-region-slider {
+            background: #ccc;
+        }
+        .markup {
+            overflow: hidden;
+            width: 600px;
+        }
+        .ex {
+            float: left;
+            border: 3px solid #ccc;
+            margin: 1ex;
+            padding: 10px;
+            width: 250px;
+            height: 350px;
+        }
+        .h { height: 150px; }
+    </style>
+</head>
+<body class="yui-skin-sam">
+<div id="log"></div>
+<div class="markup">
+
+    <div class="ex h">
+        <h3>Horizontal</h3>
+        <p>
+            <label><input type="checkbox" checked="checked" id="bg_s1"> backgroundEnabled</label>
+            <label><input type="checkbox" checked="checked" id="anim_s1"> animate</label>
+            <label for="v_s1">Value</label>
+            <input type="text" size="3" id="v_s1" name="v" value="0">
+            <input type="button" id="go_s1" value="go">
+            <em id="rpt_s1">0</em>
+        </p>
+        <div id="rail_s1" class="yui-h-slider" tabindex="-1">
+            <div id="t_s1" class="yui-slider-thumb">
+                <img src="../../../build/slider/assets/thumb-n.gif" alt="slider thumb">
+            </div>
+        </div>
+    </div>
+
+    <div class="ex h">
+        <h3>Graduated Horizontal</h3>
+        <p>
+            <label><input type="checkbox" checked="checked" id="bg_s2"> backgroundEnabled</label>
+            <label><input type="checkbox" checked="checked" id="anim_s2"> animate</label>
+            <label for="v_s2">Value</label>
+            <input type="text" size="3" id="v_s2" name="v" value="0">
+            <input type="button" id="go_s2" value="go">
+            <em id="rpt_s2">0</em>
+        </p>
+        <div id="rail_s2" class="yui-h-slider" tabindex="-1">
+            <div id="t_s2" class="yui-slider-thumb">
+                <img src="../../../build/slider/assets/thumb-n.gif" alt="slider thumb">
+            </div>
+        </div>
+    </div>
+
+    <div class="ex">
+        <h3>Vertical</h3>
+        <p>
+            <label><input type="checkbox" checked="checked" id="bg_s3"> backgroundEnabled</label>
+            <label><input type="checkbox" checked="checked" id="anim_s3"> animate</label>
+            <label for="v_s3">Value</label>
+            <input type="text" size="3" id="v_s3" name="v" value="0">
+            <input type="button" id="go_s3" value="go">
+            <em id="rpt_s3">0</em>
+        </p>
+        <div id="rail_s3" class="yui-v-slider" tabindex="-1">
+            <div id="t_s3" class="yui-slider-thumb">
+                <img src="../../../build/slider/assets/thumb-bar.gif" alt="slider thumb">
+            </div>
+        </div>
+    </div>
+
+    <div class="ex">
+        <h3>Graduated Vertical</h3>
+        <p>
+            <label><input type="checkbox" checked="checked" id="bg_s4"> backgroundEnabled</label>
+            <label><input type="checkbox" checked="checked" id="anim_s4"> animate</label>
+            <label for="v_s4">Value</label>
+            <input type="text" size="3" id="v_s4" name="v" value="0">
+            <input type="button" id="go_s4" value="go">
+            <em id="rpt_s4">0</em>
+        </p>
+        <div id="rail_s4" class="yui-v-slider" tabindex="-1">
+            <div id="t_s4" class="yui-slider-thumb">
+                <img src="../../../build/slider/assets/thumb-bar.gif" alt="slider thumb">
+            </div>
+        </div>
+    </div>
+
+    <div class="ex">
+        <h3>Region</h3>
+        <p>
+            <label><input type="checkbox" checked="checked" id="bg_s5"> backgroundEnabled</label>
+            <label><input type="checkbox" checked="checked" id="anim_s5"> animate</label>
+            <label for="v_s5">Value</label>
+            <input type="text" size="3" id="v_s5" name="v" value="0,0">
+            <input type="button" id="go_s5" value="go">
+            <em id="rpt_s5">0,0</em>
+        </p>
+        <div id="rail_s5" class="yui-region-slider" tabindex="-1">
+            <div id="t_s5" class="yui-slider-thumb">
+                <img src="../../../build/slider/assets/thumb-n.gif" alt="slider thumb">
+            </div>
+        </div>
+    </div>
+
+    <div class="ex">
+        <h3>Graduated Region</h3>
+        <p>
+            <label><input type="checkbox" checked="checked" id="bg_s6"> backgroundEnabled</label>
+            <label><input type="checkbox" checked="checked" id="anim_s6"> animate</label>
+            <label for="v_s6">Value</label>
+            <input type="text" size="3" id="v_s6" name="v" value="0,0">
+            <input type="button" id="go_s6" value="go">
+            <em id="rpt_s6">0,0</em>
+        </p>
+        <div id="rail_s6" class="yui-region-slider" tabindex="-1">
+            <div id="t_s6" class="yui-slider-thumb">
+                <img src="../../../build/slider/assets/thumb-n.gif" alt="slider thumb">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../../build/yahoo/yahoo.js"></script>
+<script type="text/javascript" src="../../../build/dom/dom.js"></script>
+<script type="text/javascript" src="../../../build/event/event.js"></script>
+<script type="text/javascript" src="../../../build/dragdrop/dragdrop.js"></script>
+<script type="text/javascript" src="../../../build/slider/slider-debug.js"></script>
+<!--script type="text/javascript" src="http://yui.yahooapis.com/2.6.0/build/slider/slider-debug.js"></script-->
+<script type="text/javascript" src="../../../build/animation/animation.js"></script>
+<script type="text/javascript" src="../../../build/logger/logger.js"></script>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+
+var log = new YAHOO.widget.LogReader('log',{ newestOnTop: false }),
+    $ = YAHOO.util.Dom.get,
+    Event = YAHOO.util.Event,
+    horiz, vert, region, horiz_g, vert_g, region_g,
+    startCount = 1,
+    endCount = 1;
+
+YAHOO.log('','warn');
+YAHOO.log('','error');
+YAHOO.log('','time');
+YAHOO.log('','window');
+log.hideCategory('info');
+log.hideCategory('warn');
+log.hideCategory('error');
+log.hideCategory('time');
+log.hideCategory('window');
+log.hideSource('global');
+log.hideSource('LogReader');
+
+horiz    = YAHOO.widget.Slider.getHorizSlider('rail_s1','t_s1',0,200);
+horiz_g  = YAHOO.widget.Slider.getHorizSlider('rail_s2','t_s2',0,200,20);
+
+vert     = YAHOO.widget.Slider.getVertSlider('rail_s3','t_s3',0,200);
+vert_g   = YAHOO.widget.Slider.getVertSlider('rail_s4','t_s4',0,200,20);
+
+region   = YAHOO.widget.Slider.getSliderRegion('rail_s5','t_s5',0,200,0,200);
+region_g = YAHOO.widget.Slider.getSliderRegion('rail_s6','t_s6',0,200,0,200,20);
+
+function init(slider,i) {
+    slider.subscribe('slideStart', function () {
+        YAHOO.log('slideStart: ' + (startCount++),'GO','debug');
+    });
+
+    slider.subscribe('change', (slider.thumb._isRegion ?
+        function (val) {
+            $('rpt_s'+i).innerHTML = val.x + ', ' + val.y;
+        } :
+        function (val) {
+            $('rpt_s'+i).innerHTML = val;
+        }));
+
+    slider.subscribe('slideEnd', function () {
+        YAHOO.log('slideEnd: ' + (endCount++),'STOP','debug');
+    });
+
+    Event.on('bg_s'+i,'click', function (e) {
+        if (slider) {
+            slider.backgroundEnabled = this.checked;
+        }
+    });
+
+    Event.on('anim_s'+i,'click', function (e) {
+        if (slider) {
+            slider.animate = this.checked;
+        }
+    });
+
+    Event.on('go_s'+i,'click', (slider.thumb._isRegion ?
+        function () {
+            var v = $('v_s'+i).value.split(/,/);
+            slider.setRegionValue(+v[0],+v[1]);
+        } :
+        function () {
+            slider.setValue(+($('v_s'+i).value));
+        }));
+
+    slider.animate = $('anim_s'+i).checked;
+    slider.backgroundEnabled = $('bg_s'+i).checked;
+}
+
+init(horiz,1);
+init(horiz_g,2);
+init(vert,3);
+init(vert_g,4);
+init(region,5);
+init(region_g,6);
+
+});
+</script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlighter.js" ></script>
+<script type="text/javascript" src="/assets/dpSyntaxHighlightExample.js"></script>
+</body>
+</html>

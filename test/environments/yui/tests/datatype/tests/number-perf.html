@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>DataType Tests</title>
+<script type="text/javascript" src="../../../build/yui/yui.js"></script>
+</head>
+
+<body class="yui-skin-sam">
+<h1>DataType Performance Tests</h1>
+<p><select id="testSelector"></select> <input type="button" value="Run Test" id="btnRun" disabled=true></p>
+
+<script type="text/javascript">
+(function() {
+    YUI({
+        base: "../../../build/",
+        filter: "debug",
+        logInclude:{"perf":true, "datatype-number":true},
+        useConsole: true
+    }).use("console", "profiler", "dump", "datatype", function(Y) {
+        
+        // Set up the page
+        var BTNRUN = Y.get("#btnRun"),
+            myConsole = new Y.Console().render();
+            
+
+        BTNRUN.set("disabled", false);
+        Y.on("click", function(e){
+            Y.example.Perf.run();
+        }, BTNRUN);
+        
+        Y.namespace("example").Perf = function() {
+            var selectNode = Y.get("#testSelector"),
+                allTests = [];
+                
+            return {
+                init: function() {
+                    this.register("Test number parsing", function() {
+                        var i = -250,
+                            max = 250,
+                            j=0,
+                            number, string;
+                        
+                        for(; i<max; i++) {
+                            number = Y.DataType.Number.parse(i+"");
+                            string = Y.DataType.Number.format(number,
+                                {prefix:"pre",decimalPlaces:2,decimalSeparator:",",thousandsSeparator:".",suffix:"post"});
+                        }
+                    });
+
+                },
+                
+                register: function(testName, testFn) {
+                    var index = allTests.length;
+                    allTests[index] = testFn;
+
+                    var optionEl = document.createElement("option");
+                    optionEl.innerHTML = "Test " + index + ": " + testName;
+                    selectNode.appendChild(optionEl);
+                },
+
+                run: function() {
+                    var whichTest = selectNode.get("selectedIndex");
+                    Y.log("Starting Test " + whichTest, "info", "perf");
+                    allTests[whichTest].apply(this);
+                    Y.log("Test " + whichTest + " completed", "info", "perf");
+                }
+            }
+        }();
+        
+        Y.example.Perf.init();
+    });
+})();
+</script>
+</body>
+</html>

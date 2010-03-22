@@ -1,0 +1,15 @@
+YUI unit tests are labrynthine, fragile, and extremely hard to set up.
+I made an attempt at an adapter but in the end it would have required a
+LOT of hacking on either the tests or the API, which would have defeated
+the purpose of keeping track of test breakage in an agile way.
+There are even problems with running some of the tests out of the 
+box, and some appear be terminally dependent on a network connection.
+
+For the sake of efficiency I will keep the /tests and /build directory
+available here for people who are having problems and need to run the tests,
+but will only focus on integrating tests into the main test suite on an
+individual basis when/if problems are identified.
+
+I will leave a copy of yuitest.html, which seems to be the most relevant
+test at the moment, with Sugar alongside as a base reference. If other problems
+arise each unit test must include the script and be run individually.

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>MouseEnter and MouseLeave Event Tests</title>
+
+	<link type="text/css" rel="stylesheet" href="../../../build/logger/assets/skins/sam/logger.css">
+
+	<style type="text/css">
+	
+		.container {
+			background-color: #ccc;
+			padding: 20px;
+			margin: 10px 0;
+			border-width: 1px;
+			border-style: solid;
+			border-color: #ccc;
+		}
+	
+	</style>
+
+	<script type="text/javascript" src="../../../build/yahoo/yahoo-min.js"></script>
+	<script type="text/javascript" src="../../../build/dom/dom-min.js"></script>
+	<script type="text/javascript" src="../../../build/event/event-min.js"></script>	
+	<script type="text/javascript" src="../../../build/event-mouseenter/event-mouseenter-min.js"></script>
+	<script type="text/javascript" src="../../../build/dragdrop/dragdrop-min.js"></script>
+	<script type="text/javascript" src="../../../build/logger/logger-min.js"></script>
+
+	<script type="text/javascript">
+
+		(function () {
+
+			var Event = YAHOO.util.Event;
+
+			Event.onDOMReady(function () {
+
+				var logReader = new YAHOO.widget.LogReader();
+
+			});
+			
+			Event.on("add-mouseenter", "click", function () {
+
+				Event.on("container", "mouseenter", function (e) {
+
+					YAHOO.log("mouseenter listener called");
+
+				});
+
+				Event.on("container", "mouseleave", function (e) {
+
+					YAHOO.log("mouseleave listener called");
+
+				});
+				
+			});
+			
+			Event.on("add-mouseover", "click", function () {
+
+				Event.on("container", "mouseover", function (e) {
+
+					YAHOO.log("mouseover listener called");
+
+				});
+
+				Event.on("container", "mouseout", function (e) {
+
+					YAHOO.log("mouseout listener called");
+
+				});
+				
+			});
+			
+			Event.on("purge-mouseenter", "click", function () {
+				
+				YAHOO.log("Purging mouseenter & mouseleave listeners, mouseover and mouseout listeners should still be called.");
+
+				Event.purgeElement("container", false, "mouseenter");
+				Event.purgeElement("container", false, "mouseleave");
+
+			});
+			
+			Event.on("purge-mouseover", "click", function () {
+
+				YAHOO.log("Purging mouseover & mouseout listeners, mouseenter and mouseleave listeners should still be called.");
+
+				Event.purgeElement("container", false, "mouseover");
+				Event.purgeElement("container", false, "mouseout");
+
+			});			
+			
+		}());
+	
+	</script>
+
+</head>
+<body class="yui-skin-sam">
+
+	<h1>MouseEnter and MouseLeave Event Tests</h1>
+	
+	<p>Using this test:</p>
+
+	<ul>
+		<li>Purging <code>mouseover</code> and <code>mouseout</code> listeners shouldn't stop <code>mouseenter</code> and <code>mouseleave</code> events from firing.</li>
+		<li>Purging <code>mouseenter</code> and <code>mouseleave</code> listeners shouldn't stop <code>mouseover</code> and <code>mouseout</code> events from firing.</li>
+	</ul>
+
+	<p>Event listeners are added to the following list:</p>
+	
+	<div id="container" class="container">
+		<ul>
+			<li><em>Item Type One</em></li>
+			<li><em>Item Type Two</em></li>
+			<li><em>Item Type Three</em></li>
+		</ul>
+	</div>
+
+	<button id="add-mouseenter">Add MouseEnter and MouseLeave Listeners</button>
+	<button id="add-mouseover">Add MouseOver and MouseOver Listeners</button>
+	<button id="purge-mouseenter">Purge MouseEnter and MouseLeave Listeners</button>
+	<button id="purge-mouseover">Purge MouseOver and MouseOver Listeners</button>		
+
+</body>
+</html>
