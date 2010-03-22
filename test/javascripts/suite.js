@@ -24,6 +24,7 @@
     },
 
     testDone: function(name, failures, total, environment){
+      if(!module) return;
       var text,css;
       var title = '<h5>' + name + '</h5>';
       if(failures == 0){
