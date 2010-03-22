@@ -1,7 +1,0 @@
-Development master
-
-2.8.0
-    * Added support for set(selector, cssTextString)
-
-2.7.0
-    * Initial beta release

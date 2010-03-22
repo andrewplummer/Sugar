@@ -13,7 +13,7 @@ var override;
   forwardCallback('done');
 
   function forwardCallback(name){
-    if(!window.parent || !window.parent.QUnit || !window.parent.QUnit[name]) return;
+    if(!window.parent || window == window.parent || !window.parent.QUnit || !window.parent.QUnit[name]) return;
     QUnit[name] = function(){
       var args = [];
       for(var i=0;i<arguments.length;i++){ if(typeof arguments[i] != 'undefined') args.push(arguments[i]); }
@@ -23,7 +23,7 @@ var override;
   }
 
   registerEnvironment = function(){
-    if(window.parent && window.parent.registerEnvironment){
+    if(window.parent && window != window.parent && window.parent.registerEnvironment){
       environment = arguments[0];
       window.parent.registerEnvironment.apply(this, arguments);
       override = ''.sugarOverride;

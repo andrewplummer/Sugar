@@ -1,6 +1,0 @@
-DateMath Release Notes
-
-*** version 2.8.0 ***
-
-+ Extracted DateMath into a standalone module. In prior
-  versions it was included with "calendar"
