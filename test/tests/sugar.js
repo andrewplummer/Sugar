@@ -156,18 +156,124 @@ test("String", function () {
 
 
 
-  ok('hello'.startsWith('hell'), 'String#startsWith');
-  ok('HELLO'.startsWith('HELL'), 'String#startsWith');
-  ok('HELLO'.startsWith('hell'), 'String#startsWith');
-  ok('valley girls\nrock'.startsWith('valley girls'), 'String#startsWith');
+  equal('hello'.startsWith('hell'), true, 'String#startsWith');
+  equal('HELLO'.startsWith('HELL'), true, 'String#startsWith');
+  equal('HELLO'.startsWith('hell'), true, 'String#startsWith');
+  equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith');
   equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith');
 
 
-  ok('vader'.endsWith('der'), 'String#endsWith');
-  ok('VADER'.endsWith('DER'), 'String#endsWith');
-  ok('VADER'.endsWith('der'), 'String#endsWith');
-  ok('i aint your\nfather'.endsWith('father'), 'String#endsWith');
+  equal('vader'.endsWith('der'), true, 'String#endsWith');
+  equal('VADER'.endsWith('DER'), true, 'String#endsWith');
+  equal('VADER'.endsWith('der'), true, 'String#endsWith');
+  equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith');
   equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith');
+
+
+  equal(''.isEmpty(), true, 'String#isEmpty');
+  equal('mayonnaise'.isEmpty(), false, 'String#isEmpty');
+  equal('            '.isEmpty(), false, 'String#isEmpty');
+  equal('\n'.isEmpty(), false, 'String#isEmpty');
+
+
+  equal(''.isBlank(), true, 'String#isBlank');
+  equal('            '.isBlank(), true, 'String#isBlank');
+  equal('\n'.isBlank(), true, 'String#isBlank');
+  equal('\t\t\t\t'.isBlank(), true, 'String#isBlank');
+  equal('　　　　　\n　　　'.isBlank(), true, 'String#isBlank'); // Japanese space
+  equal('日本語では　「マス」　というの知ってた？'.isBlank(), false, 'String#isBlank');
+  equal('mayonnaise'.isBlank(), false, 'String#isBlank');
+
+
+  equal('foo'.has('f'), true, 'String#has');
+  equal('foo'.has('oo'), true, 'String#has');
+  equal('foo'.has(/f/), true, 'String#has');
+  equal('foo'.has(/[a-g]/), true, 'String#has');
+  equal('foo'.has(/[p-z]/), false, 'String#has');
+  equal('foo'.has(/f$/), false, 'String#has');
+
+
+  equal('five'.insert('schfifty '), 'schfifty five', 'String#insert');
+  equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert');
+  equal('spelling eror'.insert('r', -3), 'spelling error', 'String#insert');
+  equal('flack'.insert('a', 0), 'aflack', 'String#insert');
+  equal('five'.insert('schfifty', 20), 'five', 'String#insert');
+  equal('five'.insert('schfifty', -20), 'five', 'String#insert');
+  equal('five'.insert('schfifty', 4), 'fiveschfifty', 'String#insert');
+  equal('five'.insert('schfifty', 5), 'five', 'String#insert');
+
+  equal('カタカナ'.hanKaku(), 'ｶﾀｶﾅ', 'String#hankaku');
+  equal('こんにちは。ヤマダタロウです。'.hanKaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku');
+  equal('こんにちは。ＴＡＲＯ　ＹＡＭＡＤＡです。'.hanKaku(), 'こんにちは｡TARO YAMADAです｡', 'String#hankaku');
+  equal('　'.hanKaku(), ' ', 'String#hankaku');
+  equal('　'.hanKaku('p'), ' ', 'String#hankaku');
+
+
+  var barabara = 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）';
+  equal(barabara.hanKaku(), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hankaku');
+  equal(barabara.hanKaku('a'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('n'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('k'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('p'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('s'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku');
+
+  equal(barabara.hanKaku('a', 'n'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('a', 'k'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('a', 's'), 'こんにちは。タロウ　YAMADAです。１８才です！(笑)', 'String#hankaku');
+  equal(barabara.hanKaku('a', 'p'), 'こんにちは｡タロウ YAMADAです｡１８才です!（笑）', 'String#hankaku');
+
+  equal(barabara.hanKaku('alphabet'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('numbers'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('katakana'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('punctuation'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku');
+  equal(barabara.hanKaku('special'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku');
+
+
+  equal('ｶﾀｶﾅ'.zenKaku(), 'カタカナ', 'String#zenKaku');
+  equal(' '.zenKaku(), '　', 'String#zenKaku');
+  equal(' '.zenKaku('p'), '　', 'String#zenKaku');
+
+
+  barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
+
+  equal(barabara.zenKaku(), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#zenKaku');
+  equal(barabara.zenKaku('a'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('n'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('k'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('p'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('s'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenKaku');
+
+  equal(barabara.zenKaku('a', 'n'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('a', 'k'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('a', 's'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!（笑）', 'String#zenKaku');
+  equal(barabara.zenKaku('a', 'p'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。18才です！(笑)', 'String#zenKaku');
+
+  equal(barabara.zenKaku('alphabet'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('numbers'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('katakana'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenKaku');
+  equal(barabara.zenKaku('special'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenKaku');
+  equal(barabara.zenKaku('punctuation'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenKaku');
+
+
+
+
+  equal('カタカナ'.hiragana(), 'かたかな', 'String#hiragana');
+  equal('ｶﾀｶﾅ'.hiragana(), 'かたかな', 'String#hiragana');
+  equal('ｶﾀｶﾅ'.hiragana(false), 'ｶﾀｶﾅ', 'String#hiragana');
+  equal(barabara.hiragana(), 'こんにちは｡たろう YAMADAです｡18才です!(笑)', 'String#hiragana');
+  equal(barabara.zenKaku().hiragana(), 'こんにちは。たろう　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hiragana');
+  equal(barabara.hiragana(false), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hiragana');
+
+
+
+
+  equal('ひらがな'.katakana(), 'ヒラガナ', 'String#katakana');
+  equal(barabara.katakana(), 'コンニチハ｡ﾀﾛｳ YAMADAデス｡18才デス!(笑)', 'String#katakana');
+  equal(barabara.zenKaku().katakana(), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'String#katakana');
+
+
+  equal('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）'.katakana().hanKaku(), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'String#katakana');
+
 
 });
 
@@ -177,7 +283,12 @@ test("RegExp", function () {
   equals('test reg|exp', 'test reg\|exp', 'RegExp#escape');
   equals('hey there (budday)', 'hey there \(budday\)', 'RegExp#escape');
   equals('what a day...', 'what a day\.\.\.', 'RegExp#escape');
+  equals('.', '\.', 'RegExp#escape');
   equals('*.+[]{}()?|/', '\*\.\+\[\]\{\}\(\)\?\|\/', 'RegExp#escape');
+
+
+
+
 
 });
 
