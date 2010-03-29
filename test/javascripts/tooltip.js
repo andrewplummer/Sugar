@@ -10,29 +10,33 @@
   $(document).ready(function(){
     tooltip = $('#tooltip');
     arrow = $('#tooltip_arrow');
+    $('[title]').addClass('tooltip');
   });
 
-  $('[title]').live('mouseover', function(){
+  $('.tooltip,[title]').live('mouseover', function(){
+    active = $(this);
     clearTimeout(tipInTimeout);
-    active = this;
     tipInTimeout = setTimeout(showTip, 50);
   });
 
-  $('[title]').live('mouseout', function(){
+  $('.tooltip').live('mouseout', function(){
     clearTimeout(tipOutTimeout);
     tipOutTimeout = setTimeout(hideTip, 50);
   });
 
   function showTip(){
-    $('.content', tooltip).html(active.title);
+    if(active.attr('title')) active.data('title', active.attr('title'));
+    active.attr('title', '');
+    active.addClass('tooltip');
+    $('.content', tooltip).html(active.data('title'));
     tooltip.show();
-    var pos = $(active).position();
-    var end = pos.top - tooltip.height() - $(active).height();
+    var pos = active.position();
+    var end = pos.top - tooltip.height() - active.height();
     var start = end - animatedDistance;
     var left = pos.left - (tooltip.width() / 2);
     if(left < 5) left = 5;
     if(end < 5){
-      end = pos.top + $(active).height() + 10; 
+      end = pos.top + active.height() + 10; 
       start = end + animatedDistance;
     }
     tooltip.css({top: start, left: left});

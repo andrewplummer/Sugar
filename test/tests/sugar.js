@@ -302,6 +302,9 @@ test("String", function () {
   equal(barabara.zenKaku('punctuation'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenKaku');
 
 
+  equal('ガ'.hanKaku(), 'ｶﾞ', 'String#hankaku:Convert dakuten');
+  equal('ｶﾞ'.zenKaku(), 'ガ', 'String#zenkaku:Convert dakuten');
+  equal('ｶﾞ'.hiragana(), 'が', 'String#hiragana:Convert dakuten');
 
 
   equal('カタカナ'.hiragana(), 'かたかな', 'String#hiragana');
@@ -410,6 +413,27 @@ test("String", function () {
   equal('quack'.to(-3), 'qua', 'String#to');
   equal('quack'.to(-4), 'qu', 'String#to');
 
+
+  same('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate');
+  same('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate');
+  same(''.toDate().toString(), new Date('').toString(), 'String#toDate');
+  same('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate');
+
+
+  same('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize');
+  same('HOP_ON_POP'.dasherize(), 'HOP-ON-POP', 'String#dasherize');
+  same('hopOnPop'.dasherize(), 'hopOnPop', 'String#dasherize');
+  same('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize');
+  same('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize');
+  same('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize');
+  same('hop-on-pop'.camelize('lower'), 'hopOnPop', 'String#camelize');
+  same('HOP-ON-POP'.camelize('lower'), 'hopOnPop', 'String#camelize');
+  same('hop_on_pop'.camelize('lower'), 'hopOnPop', 'String#camelize');
+  same('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore');
+  same('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore');
+  same('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore');
+  same('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore');
+  same('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore');
 
 
 });
