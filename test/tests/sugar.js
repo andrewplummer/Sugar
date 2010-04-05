@@ -121,6 +121,7 @@ test("String", function () {
   same(result, ['crue', 'l wo'], 'String#each');
 
 
+  /* test each char code */
   counter = 0;
   test = [103,105,110,103,101,114];
   result = 'ginger'.bytes(function(str, i){
@@ -130,6 +131,7 @@ test("String", function () {
   equal(counter, 6, 'String#bytes');
   same(result, test, 'String#bytes');
 
+  /* test each char */
   counter = 0;
   result = 'ginger'.chars(function(str, i){
     equal(i, counter, 'String#chars');
@@ -138,6 +140,15 @@ test("String", function () {
   });
   equal(counter, 6, 'String#chars');
   same(result, ['g','i','n','g','e','r'], 'String#chars');
+
+  /* test each char collects when properly returned */
+  counter = 0;
+  result = 'ginger'.chars(function(str, i){
+    counter++;
+    return str.toUpperCase();
+  });
+  equal(counter, 6, 'String#chars');
+  same(result, ['G','I','N','G','E','R'], 'String#chars');
 
   counter = 0;
   var sentence = 'these pretzels are \n\n making me         thirsty!\n\n';
@@ -435,6 +446,11 @@ test("String", function () {
   same('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore');
   same('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore');
 
+
+  equal('what a shame of a title'.titleize(), 'What A Shame Of A Title', 'String#titleize');
+  equal('What A Shame Of A Title'.titleize(), 'What A Shame Of A Title', 'String#titleize');
+  equal(' what a shame of a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize');
+  equal(' what a shame of\n a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize');
 
 });
 
