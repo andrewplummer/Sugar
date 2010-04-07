@@ -452,6 +452,179 @@ test("String", function () {
   equal(' what a shame of a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize');
   equal(' what a shame of\n a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize');
 
+
+
+  equal('ア'.isKatakana(), true, 'String#isKatakana');
+  equal('ｱ'.isKatakana(), true, 'String#isKatakana');
+  equal('ァ'.isKatakana(), true, 'String#isKatakana');
+  equal('ah'.isKatakana(), false, 'String#isKatakana');
+  equal('アイカムインピース'.isKatakana(), true, 'String#isKatakana');
+  equal('アイカムinピース'.isKatakana(), false, 'String#isKatakana');
+  equal('アイカム イン ピース'.isKatakana(), true, 'String#isKatakana');
+
+  equal('ア'.hasKatakana(), true, 'String#hasKatakana');
+  equal('ｱ'.hasKatakana(), true, 'String#hasKatakana');
+  equal('ah'.hasKatakana(), false, 'String#hasKatakana');
+  equal('aアh'.hasKatakana(), true, 'String#hasKatakana');
+  equal('aｱh'.hasKatakana(), true, 'String#hasKatakana');
+  equal('アイカムインピース'.hasKatakana(), true, 'String#hasKatakana');
+  equal('アイカムinピース'.hasKatakana(), true, 'String#hasKatakana');
+
+
+  equal('あ'.isHiragana(), true, 'String#isHiragana');
+  equal('ぁ'.isHiragana(), true, 'String#isHiragana');
+  equal('ah'.isHiragana(), false, 'String#isHiragana');
+  equal('あいかむいんぴーす'.isHiragana(), true, 'String#isHiragana');
+  equal('あいかむinぴーす'.isHiragana(), false, 'String#isHiragana');
+  equal('あいかむ in ぴーす'.isHiragana(), false, 'String#isHiragana');
+  equal('アイカム イン ピース'.isHiragana(), false, 'String#isHiragana');
+
+
+  equal('あ'.hasHiragana(), true, 'String#hasHiragana');
+  equal('ぁ'.hasHiragana(), true, 'String#hasHiragana');
+  equal('ah'.hasHiragana(), false, 'String#hasHiragana');
+  equal('aあh'.hasHiragana(), true, 'String#hasHiragana');
+  equal('aぁh'.hasHiragana(), true, 'String#hasHiragana');
+  equal('あいかむいんぴーす'.hasHiragana(), true, 'String#hasHiragana');
+  equal('あいかむinぴーす'.hasHiragana(), true, 'String#hasHiragana');
+
+
+
+
+  equal(''.isKana(), false, 'String#isKana');
+  equal('あいうえお'.isKana(), true, 'String#isKana');
+  equal('アイウエオ'.isKana(), true, 'String#isKana');
+  equal('あうえおアイウエオ'.isKana(), true, 'String#isKana');
+  equal('あうえおaeiouアイウエオ'.isKana(), false, 'String#isKana');
+  equal('  あいうえお  '.isKana(), true, 'String#isKana');
+  equal('  アイウエオ \n '.isKana(), true, 'String#isKana');
+
+
+
+
+
+  equal(''.hasKana(), false, 'String#hasKana');
+  equal('aeiou'.hasKana(), false, 'String#hasKana');
+  equal('あいうえお'.hasKana(), true, 'String#hasKana');
+  equal('アイウエオ'.hasKana(), true, 'String#hasKana');
+  equal('あうえおアイウエオ'.hasKana(), true, 'String#hasKana');
+  equal('あうえおaeiouアイウエオ'.hasKana(), true, 'String#hasKana');
+  equal('aeiouアaeiou'.hasKana(), true, 'String#hasKana');
+  equal('aeiouaeiou'.hasKana(), false, 'String#hasKana');
+
+
+
+  equal(''.isHan(), false, 'String#isHan');
+  equal('aeiou'.isHan(), false, 'String#isHan');
+  equal('あいうえお'.isHan(), false, 'String#isHan');
+  equal('アイウエオ'.isHan(), false, 'String#isHan');
+  equal('あうえおaeiouアイウエオ'.isHan(), false, 'String#isHan');
+  equal('合コン'.isHan(), false, 'String#isHan');
+  equal('語学'.isHan(), true, 'String#isHan');
+  equal('庭には二羽鶏がいる。'.isHan(), false, 'String#isHan');
+  equal(' 語学 '.isHan(), true, 'String#isHan');
+  equal(' 語学\t '.isHan(), true, 'String#isHan');
+
+
+
+  equal(''.hasHan(), false, 'String#hasHan');
+  equal('aeiou'.hasHan(), false, 'String#hasHan');
+  equal('あいうえお'.hasHan(), false, 'String#hasHan');
+  equal('アイウエオ'.hasHan(), false, 'String#hasHan');
+  equal('あうえおaeiouアイウエオ'.hasHan(), false, 'String#hasHan');
+  equal('合コン'.hasHan(), true, 'String#hasHan');
+  equal('語学'.hasHan(), true, 'String#hasHan');
+  equal('庭には二羽鶏がいる。'.hasHan(), true, 'String#hasHan');
+  equal(' 語学 '.hasHan(), true, 'String#hasHan');
+  equal(' 語学\t '.hasHan(), true, 'String#hasHan');
+
+
+
+
+
+  equal(''.isKanji(), false, 'String#isKanji');
+  equal('aeiou'.isKanji(), false, 'String#isKanji');
+  equal('あいうえお'.isKanji(), false, 'String#isKanji');
+  equal('アイウエオ'.isKanji(), false, 'String#isKanji');
+  equal('あうえおaeiouアイウエオ'.isKanji(), false, 'String#isKanji');
+  equal('合コン'.isKanji(), false, 'String#isKanji');
+  equal('語学'.isKanji(), true, 'String#isKanji');
+  equal('庭には二羽鶏がいる。'.isKanji(), false, 'String#isKanji');
+  equal(' 語学 '.isKanji(), true, 'String#isKanji');
+  equal(' 語学\t '.isKanji(), true, 'String#isKanji');
+
+
+
+  equal(''.hasKanji(), false, 'String#hasKanji');
+  equal('aeiou'.hasKanji(), false, 'String#hasKanji');
+  equal('あいうえお'.hasKanji(), false, 'String#hasKanji');
+  equal('アイウエオ'.hasKanji(), false, 'String#hasKanji');
+  equal('あうえおaeiouアイウエオ'.hasKanji(), false, 'String#hasKanji');
+  equal('合コン'.hasKanji(), true, 'String#hasKanji');
+  equal('語学'.hasKanji(), true, 'String#hasKanji');
+  equal('庭には二羽鶏がいる。'.hasKanji(), true, 'String#hasKanji');
+  equal(' 語学 '.hasKanji(), true, 'String#hasKanji');
+  equal(' 語学\t '.hasKanji(), true, 'String#hasKanji');
+
+
+
+
+  var stripped;
+  var html =
+    '<div class="outer">' +
+      '<p>text with <a href="http://foobar.com/">links</a>, &quot;entitites&quot; and <b>bold</b> tags</p>' +
+    '</div>';
+
+  var malformed_html = '<div class="outer"><p>paragraph';
+
+
+  stripped =
+    '<div class="outer">' +
+      '<p>text with links, &quot;entitites&quot; and <b>bold</b> tags</p>' +
+    '</div>';
+  equal(html.stripTags('a'), stripped, 'String#stripTags');
+  equal(html.stripTags('a') == html, false, 'String#stripTags');
+
+
+  stripped =
+    '<div class="outer">' +
+      '<p>text with links, &quot;entitites&quot; and bold tags</p>' +
+    '</div>';
+  equal(html.stripTags('a', 'b'), stripped, 'String#stripTags');
+
+
+  stripped =
+    '<div class="outer">' +
+      'text with links, &quot;entitites&quot; and <b>bold</b> tags' +
+    '</div>';
+  equal(html.stripTags('p', 'a'), stripped, 'String#stripTags');
+
+
+  stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entitites&quot; and <b>bold</b> tags</p>';
+  equal(html.stripTags('div'), stripped, 'String#stripTags');
+
+
+  stripped = 'text with links, &quot;entitites&quot; and bold tags';
+  equal(html.stripTags(), stripped, 'String#stripTags');
+
+
+  stripped = '<p>paragraph';
+  equal(malformed_html.stripTags('div'), stripped, 'String#stripTags');
+
+  stripped = '<div class="outer">paragraph';
+  equal(malformed_html.stripTags('p'), stripped, 'String#stripTags');
+
+  stripped = 'paragraph';
+  equal(malformed_html.stripTags(), stripped, 'String#stripTags');
+
+
+
+  equal('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', 'String#stripTags');
+  equal('a < b'.stripTags(), 'a < b', 'String#stripTags');
+  equal('a > b'.stripTags(), 'a > b', 'String#stripTags');
+  equal('</foo  >>'.stripTags(), '>', 'String#stripTags');
+
+
 });
 
 test("RegExp", function () {
