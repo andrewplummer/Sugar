@@ -672,6 +672,76 @@ test("String", function () {
 
 
 
+
+  html =
+    '<div class="outer">' +
+      '<p>text with <a href="http://foobar.com/">links</a>, &quot;entitites&quot; and <b>bold</b> tags</p>' +
+    '</div>';
+  var removed;
+
+  removed =
+    '<div class="outer">' +
+      '<p>text with , &quot;entitites&quot; and <b>bold</b> tags</p>' +
+    '</div>';
+  equal(html.removeTags('a'), removed, 'String#removeTags');
+  equal(html.removeTags('a') == html, false, 'String#removeTags');
+
+
+  removed =
+    '<div class="outer">' +
+      '<p>text with , &quot;entitites&quot; and  tags</p>' +
+    '</div>';
+  equal(html.removeTags('a', 'b'), removed, 'String#removeTags');
+
+
+  removed =
+    '<div class="outer"></div>';
+  equal(html.removeTags('p', 'a'), removed, 'String#removeTags');
+
+
+  equal(html.removeTags('div'), '', 'String#removeTags');
+  equal(html.removeTags(), '', 'String#removeTags');
+
+  equal(malformed_html.removeTags('div'), malformed_html, 'String#removeTags');
+  equal(malformed_html.removeTags('p'), malformed_html, 'String#removeTags');
+  equal(malformed_html.removeTags(), malformed_html, 'String#removeTags');
+
+
+
+  equal('<b NOT BOLD</b>'.removeTags(), '<b NOT BOLD</b>', 'String#removeTags');
+  equal('a < b'.removeTags(), 'a < b', 'String#removeTags');
+  equal('a > b'.removeTags(), 'a > b', 'String#removeTags');
+  equal('</foo  >>'.removeTags(), '</foo  >>', 'String#removeTags');
+
+
+
+  /* Stipping self-closing tags */
+  equal('<input type="text" class="blech" />'.removeTags(), '', 'String#removeTags');
+
+  html =
+    '<form action="poo.php" method="post">' +
+    '<p>' +
+      '<label>label for text:</label>' +
+      '<input type="text" value="brabra" />' +
+      '<input type="submit" value="submit" />' +
+    '</p>' +
+    '</form>';
+
+  equal(html.removeTags(), '', 'String#removeTags');
+  equal(html.removeTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#removeTags');
+  equal(html.removeTags('input', 'p', 'form'), '', 'String#removeTags');
+
+  /* Stripping namespaced tags */
+  equal('<xsl:template>foobar</xsl:template>'.removeTags(), '', 'String#removeTags');
+  equal('<xsl:template>foobar</xsl:template>'.removeTags('xsl:template'), '', 'String#removeTags');
+  equal('<xsl/template>foobar</xsl/template>'.removeTags('xsl/template'), '', 'String#removeTags');
+
+
+  /* No errors on RegExp */
+  equal('<xsl(template>foobar</xsl(template>'.removeTags('xsl(template'), '', 'String#removeTags');
+
+
+
 });
 
 test("RegExp", function () {
