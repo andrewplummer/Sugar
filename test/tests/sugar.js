@@ -19,6 +19,16 @@ test("Number", function () {
 
 test("String", function () {
 
+
+
+  equals('test regexp'.escapeRegExp(), 'test regexp', 'RegExp#escape');
+  equals('test reg|exp'.escapeRegExp(), 'test reg\\|exp', 'RegExp#escape');
+  equals('hey there (budday)'.escapeRegExp(), 'hey there \\(budday\\)', 'RegExp#escape');
+  equals('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'RegExp#escape');
+  equals('.'.escapeRegExp(), '\\.', 'RegExp#escape');
+  equals('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape');
+
+
   var test;
 
   equalsWithException('reuben sandwich'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'Reuben Sandwich' }, 'String#capitalize');
@@ -567,6 +577,15 @@ test("String", function () {
   equal(' 語学\t '.hasKanji(), true, 'String#hasKanji');
 
 
+  equal('모'.isHangul(), true, 'String#isHangul');
+  equal('난 뻔데기를 싫어 한 사람 이다...너는?'.isHangul(), false, 'String#isHangul');
+  equal('안녕 하세요'.isHangul(), true, 'String#isHangul');
+  equal('ㅠブラじゃない！'.isHangul(), false, 'String#isHangul');
+
+  equal('모'.hasHangul(), true, 'String#hasHangul');
+  equal('난 뻔데기를 싫어 한 사람 이다...너는?'.hasHangul(), true, 'String#hasHangul');
+  equal('안녕 하세요.'.hasHangul(), true, 'String#hasHangul');
+  equal('ㅠブラじゃない！'.hasHangul(), false, 'String#hasHangul');
 
 
   var stripped;
@@ -625,16 +644,44 @@ test("String", function () {
   equal('</foo  >>'.stripTags(), '>', 'String#stripTags');
 
 
+
+  /* Stipping self-closing tags */
+  equal('<input type="text" class="blech" />'.stripTags(), '', 'String#stripTags');
+
+  html =
+    '<form action="poo.php" method="post">' +
+    '<p>' +
+      '<label>label for text:</label>' +
+      '<input type="text" value="brabra" />' +
+      '<input type="submit" value="submit" />' +
+    '</p>' +
+    '</form>';
+
+  equal(html.stripTags(), 'label for text:', 'String#stripTags');
+  equal(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#stripTags');
+  equal(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', 'String#stripTags');
+
+  /* Stripping namespaced tags */
+  equal('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', 'String#stripTags');
+  equal('<xsl:template>foobar</xsl:template>'.stripTags('xsl:template'), 'foobar', 'String#stripTags');
+  equal('<xsl/template>foobar</xsl/template>'.stripTags('xsl/template'), 'foobar', 'String#stripTags');
+
+
+  /* No errors on RegExp */
+  equal('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', 'String#stripTags');
+
+
+
 });
 
 test("RegExp", function () {
 
-  equals('test regexp', 'test regexp', 'RegExp#escape');
-  equals('test reg|exp', 'test reg\|exp', 'RegExp#escape');
-  equals('hey there (budday)', 'hey there \(budday\)', 'RegExp#escape');
-  equals('what a day...', 'what a day\.\.\.', 'RegExp#escape');
-  equals('.', '\.', 'RegExp#escape');
-  equals('*.+[]{}()?|/', '\*\.\+\[\]\{\}\(\)\?\|\/', 'RegExp#escape');
+    equals(RegExp.escape('test regexp'), 'test regexp', 'RegExp#escape');
+    equals(RegExp.escape('test reg|exp'), 'test reg\\|exp', 'RegExp#escape');
+    equals(RegExp.escape('hey there (budday)'), 'hey there \\(budday\\)', 'RegExp#escape');
+    equals(RegExp.escape('what a day...'), 'what a day\\.\\.\\.', 'RegExp#escape');
+    equals(RegExp.escape('.'), '\\.', 'RegExp#escape');
+    equals(RegExp.escape('*.+[]{}()?|/'), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape');
 
 
 
