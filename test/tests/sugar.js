@@ -1,23 +1,170 @@
 module("Sugar");
 
-test("Array", function () {
+test('Array', function () {
 
   equals(['a','b','c'].indexOf('b'), 1, 'Array#indexOf');
   equals(['a','b','c'].indexOf('f'), -1, 'Array#indexOf');
 
 });
 
-test("Number", function () {
+test('Number', function () {
+
+  var counter;
+  var ret;
+
+  equals((4).toNumber(), 4, 'Number#toNumber');
+  equals((10000).toNumber(), 10000, 'Number#toNumber');
+  equals((5.2345).toNumber(), 5.2345, 'Number#toNumber');
+
+
+
+  equals((5.5).ceil(), 6, 'Number#ceil');
+  equals((5.14).ceil(), 6, 'Number#ceil');
+  equals((5).ceil(), 5, 'Number#ceil');
+  equals((-5.5).ceil(), -5, 'Number#ceil');
+  equals((-5.14).ceil(), -5, 'Number#ceil');
+  equals((-5).ceil(), -5, 'Number#ceil');
+
+
+  equals((5.5).floor(), 5, 'Number#floor');
+  equals((5.14).floor(), 5, 'Number#floor');
+  equals((5.9).floor(), 5, 'Number#floor');
+  equals((5).floor(), 5, 'Number#floor');
+  equals((-5.5).floor(), -6, 'Number#floor');
+  equals((-5.14).floor(), -6, 'Number#floor');
+  equals((-5).floor(), -5, 'Number#floor');
+
+
+  equals((-5).abs(), 5, 'Number#abs');
+  equals((5).abs(), 5, 'Number#abs');
+  equals((-3.324).abs(), 3.324, 'Number#abs');
+  equals((3.324).abs(), 3.324, 'Number#abs');
+
+
+  equals((3).pow(2), 9, 'Number#pow');
+  equals((3).pow(1), 3, 'Number#pow');
+  equals((12).pow(2), 144, 'Number#pow');
+  equals((3).pow(3), 27, 'Number#pow');
+  equals(isNaN((3).pow()), true, 'Number#pow');
+
+
+  equals((3).round(), 3, 'Number#round');
+  equals((3.241).round(), 3, 'Number#round');
+  equals((3.752).round(), 4, 'Number#round');
+  equals((-3.241).round(), -3, 'Number#round');
+  equals((-3.752).round(), -4, 'Number#round');
+  equals((3.241).round(1), 3.2, 'Number#round');
+  equals((3.752).round(1), 3.8, 'Number#round');
+  equals((3.241).round(2), 3.24, 'Number#round');
+  equals((3.752).round(2), 3.75, 'Number#round');
+
+  equals((322855.241).round(-2), 322900, 'Number#round');
+  equals((322855.241).round(-3), 323000, 'Number#round');
+  equals((322855.241).round(-4), 320000, 'Number#round');
+  equals((322855.241).round(-6), 0, 'Number#round');
+  equals((722855.241).round(-6), 1000000, 'Number#round');
+  equals((722855.241).round(-8), 0, 'Number#round');
+
+
+  equals((65).chr(), 'A', 'Number#chr');
+  equals((24536).chr(), '忘', 'Number#chr');
+
+  counter = 0;
+  var dCounter = 5;
+  ret = (5).downto(1, function(i){
+    equal(i, dCounter, 'Number#downto');
+    counter++;
+    dCounter--;
+  });
+  equal(counter, 5, 'Number#downto');
+  equal(ret, 5, 'Number#downto');
+
+
+  counter = 0;
+  var dCounter = 1;
+  ret = (1).upto(5, function(i){
+    equal(i, dCounter, 'Number#upto');
+    counter++;
+    dCounter++;
+  });
+  equal(counter, 5, 'Number#upto');
+  equal(ret, 1, 'Number#upto');
+
+  counter = 0;
+  (5).downto(10, function(){});
+  equal(counter, 0, 'Number#downto');
+
+  counter = 0;
+  (5).upto(1, function(){});
+  equal(counter, 0, 'Number#downto');
+
+
+  counter = 0;
+  (5).times(function(){
+    counter++;
+  });
+  equal(counter, 5, 'Number#times');
+
+
+
+  equal((2).multipleOf(2), true, 'Number#multipleOf');
+  equal((6).multipleOf(2), true, 'Number#multipleOf');
+  equal((100).multipleOf(2), true, 'Number#multipleOf');
+  equal((2).multipleOf(100), false, 'Number#multipleOf');
+  equal((100).multipleOf(-2), true, 'Number#multipleOf');
+  equal((6).multipleOf(-2), true, 'Number#multipleOf');
+  equal((6).multipleOf(3), true, 'Number#multipleOf');
+  equal((7).multipleOf(3), false, 'Number#multipleOf');
+  equal((2.5).multipleOf(1.25), true, 'Number#multipleOf');
+
+
 
   equals((1).odd(), true, 'Number#odd');  // 1 is odd
   equals((2).odd(), false, 'Number#odd'); // 2 is not odd
 
+
+
+
   equals((1).even(), false, 'Number#even');  // 1 is not even
   equals((2).even(), true, 'Number#even');   // 2 is even
 
+
+
+  equals((1).ordinalize(), '1st', 'Number#ordinalize');
+  equals((2).ordinalize(), '2nd', 'Number#ordinalize');
+  equals((3).ordinalize(), '3rd', 'Number#ordinalize');
+  equals((4).ordinalize(), '4th', 'Number#ordinalize');
+  equals((5).ordinalize(), '5th', 'Number#ordinalize');
+  equals((6).ordinalize(), '6th', 'Number#ordinalize');
+  equals((7).ordinalize(), '7th', 'Number#ordinalize');
+  equals((8).ordinalize(), '8th', 'Number#ordinalize');
+  equals((9).ordinalize(), '9th', 'Number#ordinalize');
+  equals((10).ordinalize(), '10th', 'Number#ordinalize');
+  equals((11).ordinalize(), '11th', 'Number#ordinalize');
+  equals((12).ordinalize(), '12th', 'Number#ordinalize');
+  equals((13).ordinalize(), '13th', 'Number#ordinalize');
+  equals((14).ordinalize(), '14th', 'Number#ordinalize');
+  equals((15).ordinalize(), '15th', 'Number#ordinalize');
+  equals((20).ordinalize(), '20th', 'Number#ordinalize');
+  equals((21).ordinalize(), '21st', 'Number#ordinalize');
+  equals((22).ordinalize(), '22nd', 'Number#ordinalize');
+  equals((23).ordinalize(), '23rd', 'Number#ordinalize');
+  equals((24).ordinalize(), '24th', 'Number#ordinalize');
+  equals((25).ordinalize(), '25th', 'Number#ordinalize');
+  equals((100).ordinalize(), '100th', 'Number#ordinalize');
+  equals((101).ordinalize(), '101st', 'Number#ordinalize');
+  equals((102).ordinalize(), '102nd', 'Number#ordinalize');
+  equals((103).ordinalize(), '103rd', 'Number#ordinalize');
+  equals((104).ordinalize(), '104th', 'Number#ordinalize');
+  equals((105).ordinalize(), '105th', 'Number#ordinalize');
+
+
+  equals((24).isBlank(), false, 'Number#isBlank');
+  equals((0).isBlank(), false, 'Number#isBlank');
+
 });
 
-test("String", function () {
+test('String', function () {
 
 
 
@@ -744,7 +891,7 @@ test("String", function () {
 
 });
 
-test("RegExp", function () {
+test('RegExp', function () {
 
     equals(RegExp.escape('test regexp'), 'test regexp', 'RegExp#escape');
     equals(RegExp.escape('test reg|exp'), 'test reg\\|exp', 'RegExp#escape');
@@ -752,10 +899,6 @@ test("RegExp", function () {
     equals(RegExp.escape('what a day...'), 'what a day\\.\\.\\.', 'RegExp#escape');
     equals(RegExp.escape('.'), '\\.', 'RegExp#escape');
     equals(RegExp.escape('*.+[]{}()?|/'), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape');
-
-
-
-
 
 });
 
