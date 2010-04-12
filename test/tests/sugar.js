@@ -162,6 +162,82 @@ test('Number', function () {
   equals((24).isBlank(), false, 'Number#isBlank');
   equals((0).isBlank(), false, 'Number#isBlank');
 
+
+  equals((0).seconds(), 0, 'Number#seconds');
+  equals((1).seconds(), 1000, 'Number#seconds');
+  equals((30).seconds(), 30000, 'Number#seconds');
+  equals((60).seconds(), 60000, 'Number#seconds');
+
+
+  equals((1).minutes(), 60000, 'Number#minutes');
+  equals((10).minutes(), 600000, 'Number#minutes');
+  equals((100).minutes(), 6000000, 'Number#minutes');
+  equals((0).minutes(), 0, 'Number#minutes');
+  equals((0.5).minutes(), 30000, 'Number#minutes');
+  equals((1).minutes(), (60).seconds(), 'Number#minutes');
+
+  equals((1).hours(), 3600000, 'Number#hours');
+  equals((10).hours(), 36000000, 'Number#hours');
+  equals((100).hours(), 360000000, 'Number#hours');
+  equals((0).hours(), 0, 'Number#hours');
+  equals((0.5).hours(), 1800000, 'Number#hours');
+  equals((1).hours(), (60).minutes(), 'Number#hours');
+  equals((1).hours(), (3600).seconds(), 'Number#hours');
+
+
+  equals((1).days(), 86400000, 'Number#days');
+  equals((10).days(), 864000000, 'Number#days');
+  equals((100).days(), 8640000000, 'Number#days');
+  equals((0).days(), 0, 'Number#days');
+  equals((0.5).days(), 43200000, 'Number#days');
+  equals((1).days(), (24).hours(), 'Number#days');
+  equals((1).days(), (1440).minutes(), 'Number#days');
+  equals((1).days(), (86400).seconds(), 'Number#days');
+
+
+  /* compatibility */
+
+  equals((1).second(), 1000, 'Number#second');
+  equals((1).minute(), 60000, 'Number#minute');
+  equals((1).hour(), 3600000, 'Number#hour');
+  equals((1).day(), 86400000, 'Number#day');
+  equals((1).week(), 604800000, 'Number#week');
+  equals((1).month(), 2592000000, 'Number#month');
+  equals((1).year(), 31557600000, 'Number#year');
+
+
+  var buffer = 10; // Number of milliseconds "play" to make sure these tests pass.
+
+  function dateEquals(d, offset, message){
+    var now = new Date().getTime() + offset;
+    var max = now + buffer;
+    var min = now - buffer;
+    var time = d.getTime();
+    equals(time < max && time > min, true, message);
+  }
+
+  dateEquals((1).second().since(), 1000, 'Number#since');
+
+  dateEquals((1).second().since(), 1000, 'Number#since');
+  dateEquals((1).minute().since(), 60000, 'Number#since');
+  dateEquals((1).hour().since(), 3600000, 'Number#since');
+  dateEquals((1).day().since(), 86400000, 'Number#since');
+  dateEquals((1).week().since(), 604800000, 'Number#since');
+  dateEquals((1).month().since(), 2592000000, 'Number#since');
+  dateEquals((1).year().since(), 31557600000, 'Number#since');
+
+
+  dateEquals((1).secondAgo(), -1000, 'Number#secondAgo');
+  dateEquals((1).secondFromNow(), 1000, 'Number#secondFromNow');
+  dateEquals((5).secondsFromNow(), 5000, 'Number#secondsFromNow');
+  dateEquals((10).minutesFromNow(), 600000, 'Number#minutesFromNow');
+
+
+  dateEquals((5).minutes().since((5).minutes().ago()), 0, 'Number#minutesSince');
+  dateEquals((5).minutesSince((5).minutesAgo()), 0, 'Number#minutesSince');
+  dateEquals((10).minutesSince((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesSince');
+
+
 });
 
 test('String', function () {
