@@ -1098,6 +1098,31 @@ test('String', function () {
 
 });
 
+
+
+test('Array', function () {
+
+
+    same([1,1,3].unique(), [1,3], 'Array#unique');
+    same([0,0,0].unique(), [0], 'Array#unique');
+    same(['a','b','c'].unique(), ['a','b','c'], 'Array#unique');
+    same(['a','a','c'].unique(), ['a','c'], 'Array#unique');
+    same([{ foo: 'bar' }, { foo: 'bar' }].unique(), [{ foo: 'bar' }, { foo: 'bar' }], 'Array#unique');
+
+    same([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union');
+    same([1,1,1].union([1,2,3]), [1,2,3], 'Array#union');
+    same([0,0,0].union([1,2,3]), [0,1,2,3], 'Array#union');
+    same([0,0,0].union([0,0,0]), [0], 'Array#union');
+    same([].union([]), [], 'Array#union');
+    same([-1,-2,-3].union([-3,-4,-5]), [-1,-2,-3,-4,-5], 'Array#union');
+    same([-1,-2,-3].union([3,4,5]), [-1,-2,-3,3,4,5], 'Array#union');
+
+
+});
+
+
+
+
 test('RegExp', function () {
 
     equals(RegExp.escape('test regexp'), 'test regexp', 'RegExp#escape');
