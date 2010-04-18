@@ -159,6 +159,33 @@ test('Number', function () {
   equals((105).ordinalize(), '105th', 'Number#ordinalize');
 
 
+  equals((100).format(), '100')
+  equals((1).format(), '1')
+  equals((10).format(), '10')
+  equals((100).format(), '100')
+  equals((1000).format(), '1,000')
+  equals((10000).format(), '10,000')
+  equals((100000).format(), '100,000')
+  equals((1000000).format(), '1,000,000')
+  equals((1000000.01).format(), '1,000,000.01')
+  equals((-100).format(), '-100')
+  equals((-1).format(), '-1')
+  equals((-1000).format(), '-1,000')
+  equals((-1000000.01).format(), '-1,000,000.01')
+
+  equals((0.52).format(), '0.52')
+
+  // These discrepancies are due to floating point variable limitations.
+  equals((100046546510000.022435451).format(), '100,046,546,510,000.02')
+  equals((-100046546510000.022435451).format(), '-100,046,546,510,000.02')
+
+  equals((1000).format(' '), '1 000')
+  equals((1532587).format(' '), '1 532 587')
+  equals((1532587.5752).format(' ', ','), '1 532 587,5752')
+
+
+
+
   equals((24).isBlank(), false, 'Number#isBlank');
   equals((0).isBlank(), false, 'Number#isBlank');
 
@@ -734,6 +761,7 @@ test('String', function () {
   equal('quack'.last(4), 'uack', 'String#last');
   equal('quack'.last(10), 'quack', 'String#last');
   equal('quack'.last(-1), '', 'String#last');
+  equal('fa'.last(3), 'fa', 'String#last');
 
 
   equal('quack'.from(), 'quack', 'String#from');
