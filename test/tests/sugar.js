@@ -195,6 +195,35 @@ test('Number', function () {
   equals((1).days(), (86400).seconds(), 'Number#days');
 
 
+  equals((1).weeks(), 604800000, 'Number#weeks');
+  equals((0.5).weeks(), 302400000, 'Number#weeks');
+  equals((10).weeks(), 6048000000, 'Number#weeks');
+  equals((0).weeks(), 0, 'Number#weeks');
+  equals((1).weeks(), (7).days(), 'Number#weeks');
+  equals((1).weeks(), (24 * 7).hours(), 'Number#weeks');
+  equals((1).weeks(), (60 * 24 * 7).minutes(), 'Number#weeks');
+  equals((1).weeks(), (60 * 60 * 24 * 7).seconds(), 'Number#weeks');
+
+  equals((1).months(), 2592000000, 'Number#months');
+  equals((0.5).months(), 1296000000, 'Number#months');
+  equals((10).months(), 25920000000, 'Number#months');
+  equals((0).months(), 0, 'Number#months');
+  equals((1).months(), (30).days(), 'Number#months');
+  equals((1).months(), (24 * 30).hours(), 'Number#months');
+  equals((1).months(), (60 * 24 * 30).minutes(), 'Number#months');
+  equals((1).months(), (60 * 60 * 24 * 30).seconds(), 'Number#months');
+
+  equals((1).years(), 31557600000, 'Number#years');
+  equals((0.5).years(), 15778800000, 'Number#years');
+  equals((10).years(), 315576000000, 'Number#years');
+  equals((0).years(), 0, 'Number#years');
+  equals((1).years(), (365.25).days(), 'Number#years');
+  equals((1).years(), (24 * 365.25).hours(), 'Number#years');
+  equals((1).years(), (60 * 24 * 365.25).minutes(), 'Number#years');
+  equals((1).years(), (60 * 60 * 24 * 365.25).seconds(), 'Number#years');
+
+
+
   /* compatibility */
 
   equals((1).second(), 1000, 'Number#second');
@@ -216,7 +245,6 @@ test('Number', function () {
     equals(time < max && time > min, true, message);
   }
 
-  dateEquals((1).second().since(), 1000, 'Number#since');
 
   dateEquals((1).second().since(), 1000, 'Number#since');
   dateEquals((1).minute().since(), 60000, 'Number#since');
@@ -226,17 +254,84 @@ test('Number', function () {
   dateEquals((1).month().since(), 2592000000, 'Number#since');
   dateEquals((1).year().since(), 31557600000, 'Number#since');
 
+  dateEquals((1).second().fromNow(), 1000, 'Number#fromNow');
+  dateEquals((1).minute().fromNow(), 60000, 'Number#fromNow');
+  dateEquals((1).hour().fromNow(), 3600000, 'Number#fromNow');
+  dateEquals((1).day().fromNow(), 86400000, 'Number#fromNow');
+  dateEquals((1).week().fromNow(), 604800000, 'Number#fromNow');
+  dateEquals((1).month().fromNow(), 2592000000, 'Number#fromNow');
+  dateEquals((1).year().fromNow(), 31557600000, 'Number#fromNow');
 
-  dateEquals((1).secondAgo(), -1000, 'Number#secondAgo');
+  dateEquals((1).second().ago(), -1000, 'Number#ago');
+  dateEquals((1).minute().ago(), -60000, 'Number#ago');
+  dateEquals((1).hour().ago(), -3600000, 'Number#ago');
+  dateEquals((1).day().ago(), -86400000, 'Number#ago');
+  dateEquals((1).week().ago(), -604800000, 'Number#ago');
+  dateEquals((1).month().ago(), -2592000000, 'Number#ago');
+  dateEquals((1).year().ago(), -31557600000, 'Number#ago');
+
+  dateEquals((1).second().until(), -1000, 'Number#until');
+  dateEquals((1).minute().until(), -60000, 'Number#until');
+  dateEquals((1).hour().until(), -3600000, 'Number#until');
+  dateEquals((1).day().until(), -86400000, 'Number#until');
+  dateEquals((1).week().until(), -604800000, 'Number#until');
+  dateEquals((1).month().until(), -2592000000, 'Number#until');
+  dateEquals((1).year().until(), -31557600000, 'Number#until');
+
+
+
+  dateEquals((1).secondSince(), 1000, 'Number#secondSince');
+  dateEquals((5).secondsSince(), 5000, 'Number#secondsSince');
+  dateEquals((10).minutesSince(), 600000, 'Number#minutesSince');
+
   dateEquals((1).secondFromNow(), 1000, 'Number#secondFromNow');
   dateEquals((5).secondsFromNow(), 5000, 'Number#secondsFromNow');
   dateEquals((10).minutesFromNow(), 600000, 'Number#minutesFromNow');
+
+  dateEquals((1).secondAgo(), -1000, 'Number#secondAgo');
+  dateEquals((5).secondsAgo(), -5000, 'Number#secondAgo');
+  dateEquals((10).secondsAgo(), -10000, 'Number#secondAgo');
+
+  dateEquals((1).secondUntil(), -1000, 'Number#secondUntil');
+  dateEquals((5).secondsUntil(), -5000, 'Number#secondUntil');
+  dateEquals((10).secondsUntil(), -10000, 'Number#secondUntil');
 
 
   dateEquals((5).minutes().since((5).minutes().ago()), 0, 'Number#minutesSince');
   dateEquals((5).minutesSince((5).minutesAgo()), 0, 'Number#minutesSince');
   dateEquals((10).minutesSince((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesSince');
 
+  dateEquals((5).minutes().fromNow((5).minutes().ago()), 0, 'Number#minutesfromNow');
+  dateEquals((5).minutesFromNow((5).minutesAgo()), 0, 'Number#minutesFromNow');
+  dateEquals((10).minutesFromNow((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesFromNow');
+
+  dateEquals((5).minutes().ago((5).minutes().fromNow()), 0, 'Number#minutesAgo');
+  dateEquals((5).minutesAgo((5).minutesFromNow()), 0, 'Number#minutesAgo');
+  dateEquals((10).minutesAgo((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesAgo');
+
+  dateEquals((5).minutes().until((5).minutes().fromNow()), 0, 'Number#minutesUntil');
+  dateEquals((5).minutesUntil((5).minutesFromNow()), 0, 'Number#minutesUntil');
+  dateEquals((10).minutesUntil((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesUntil');
+
+
+  var christmas = new Date('December 25, 1965');
+  equals((5).minutesUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 60 * 1000)).getTime(), 'Number#minutesUntil');
+  equals((5).minutesSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 60 * 1000)).getTime(), 'Number#minutesSince');
+
+  equals((5).hoursUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 60 * 60 * 1000)).getTime(), 'Number#hoursUntil');
+  equals((5).hoursSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 60 * 60 * 1000)).getTime(), 'Number#hoursSince');
+
+  equals((5).daysUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 24 * 60 * 60 * 1000)).getTime(), 'Number#daysUntil');
+  equals((5).daysSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 24 * 60 * 60 * 1000)).getTime(), 'Number#daysSince');
+
+  equals((5).weeksUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 7 * 24 * 60 * 60 * 1000)).getTime(), 'Number#weeksUntil');
+  equals((5).weeksSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 7 * 24 * 60 * 60 * 1000)).getTime(), 'Number#weeksSince');
+
+  equals((5).monthsUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 30 * 24 * 60 * 60 * 1000)).getTime(), 'Number#monthsUntil');
+  equals((5).monthsSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 30 * 24 * 60 * 60 * 1000)).getTime(), 'Number#monthsSince');
+
+  equals((5).yearsUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 365.25 * 24 * 60 * 60 * 1000)).getTime(), 'Number#yearsUntil');
+  equals((5).yearsSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 365.25 * 24 * 60 * 60 * 1000)).getTime(), 'Number#yearsSince');
 
 });
 
@@ -468,6 +563,7 @@ test('String', function () {
 
 
   equal(''.isBlank(), true, 'String#isBlank');
+  equal('0'.isBlank(), false, 'String#isBlank');
   equal('            '.isBlank(), true, 'String#isBlank');
   equal('\n'.isBlank(), true, 'String#isBlank');
   equal('\t\t\t\t'.isBlank(), true, 'String#isBlank');
