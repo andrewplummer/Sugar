@@ -185,6 +185,13 @@ test('Number', function () {
 
 
 
+  equals((0).hex(), '0', 'Number#hex')
+  equals((10).hex(), 'a', 'Number#hex')
+  equals((255).hex(), 'ff', 'Number#hex')
+  equals((0.5).hex(), '0.8', 'Number#hex')
+  equals((2.5).hex(), '2.8', 'Number#hex')
+  equals((2553423).hex(), '26f64f', 'Number#hex')
+
 
   equals((24).isBlank(), false, 'Number#isBlank');
   equals((0).isBlank(), false, 'Number#isBlank');
