@@ -1,12 +1,5 @@
 module("Sugar");
 
-test('Array', function () {
-
-  equals(['a','b','c'].indexOf('b'), 1, 'Array#indexOf');
-  equals(['a','b','c'].indexOf('f'), -1, 'Array#indexOf');
-
-});
-
 test('Number', function () {
 
   var counter;
@@ -390,11 +383,10 @@ test('String', function () {
   same('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars');
 
   equal('   wasabi   '.trim(), 'wasabi', 'String#chars');
-  equal('   wasabi   '.trim('both'), 'wasabi', 'String#chars');
-  equal('   wasabi   '.trim('leading'), 'wasabi   ', 'String#trim');
-  equal('   wasabi   '.trim('left'), 'wasabi   ', 'String#trim');
-  equal('   wasabi   '.trim('trailing'), '   wasabi', 'String#trim');
-  equal('   wasabi   '.trim('right'), '   wasabi', 'String#trim');
+  equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim');
+  equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim');
+  equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim');
+  equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim');
 
   equal('wasabi'.pad(), 'wasabi', 'String#pad');
   equal('wasabi'.pad(-1), 'wasabi', 'String#pad');
@@ -1098,9 +1090,145 @@ test('String', function () {
 
 });
 
+test('Array', function () {
+
+
+});
+
 
 
 test('Array', function () {
+
+    var arr;
+    var count;
+
+    equals(['a','b','c'].indexOf('b'), 1, 'Array#indexOf');
+    equals(['a','b','c'].indexOf('b', 0), 1, 'Array#indexOf');
+    equals(['a','b','c'].indexOf('a'), 0, 'Array#indexOf');
+    equals(['a','b','c'].indexOf('f'), -1, 'Array#indexOf');
+
+    equals(['a','b','c','b'].indexOf('b'), 1, 'Array#indexOf');
+    equals(['a','b','c','b'].indexOf('b', 2), 3, 'Array#indexOf');
+
+    equals([5,2,4].indexOf(5), 0, 'Array#indexOf');
+    equals([5,2,4].indexOf(2), 1, 'Array#indexOf');
+    equals([5,2,4].indexOf(4), 2, 'Array#indexOf');
+    equals([5,2,4,4].indexOf(4, 3), 3, 'Array#indexOf');
+
+    equals([5,2,4,4].indexOf(4, 10), -1, 'Array#indexOf');
+    equals([5,2,4,4].indexOf(4, -10), 2, 'Array#indexOf');
+    equals([5,2,4,4].indexOf(4, -1), 3, 'Array#indexOf');
+
+    equals([{ foo: 'bar' }].indexOf({ foo: 'bar' }), -1, 'Array#indexOf');
+
+
+    equals(['a', 'b', 'c', 'd', 'a', 'b'].lastIndexOf('b'), 5, 'Array#lastIndexOf');
+    equals(['a', 'b', 'c', 'd', 'a', 'b'].lastIndexOf('b', 4), 1, 'Array#lastIndexOf');
+    equals(['a', 'b', 'c', 'd', 'a', 'b'].lastIndexOf('z'), -1, 'Array#lastIndexOf');
+
+    equals([1,5,6,8,8,2,5,3].lastIndexOf(3), 7, 'Array#lastIndexOf');
+    equals([1,5,6,8,8,2,5,3].lastIndexOf(3, 0), -1, 'Array#lastIndexOf');
+    equals([1,5,6,8,8,2,5,3].lastIndexOf(8), 4, 'Array#lastIndexOf');
+    equals([1,5,6,8,8,2,5,3].lastIndexOf(8, 3), 3, 'Array#lastIndexOf');
+    equals([1,5,6,8,8,2,5,3].lastIndexOf(1), 0, 'Array#lastIndexOf');
+    equals([1,5,6,8,8,2,5,3].lastIndexOf(42), -1, 'Array#lastIndexOf');
+
+    equals([2, 5, 9, 2].lastIndexOf(2), 3, 'Array#lastIndexOf');
+    equals([2, 5, 9, 2].lastIndexOf(7), -1, 'Array#lastIndexOf');
+    equals([2, 5, 9, 2].lastIndexOf(2, 3), 3, 'Array#lastIndexOf');
+    equals([2, 5, 9, 2].lastIndexOf(2, 2), 0, 'Array#lastIndexOf');
+    equals([2, 5, 9, 2].lastIndexOf(2, -2), 0, 'Array#lastIndexOf');
+    equals([2, 5, 9, 2].lastIndexOf(2, -1), 3, 'Array#lastIndexOf');
+    equals([2, 5, 9, 2].lastIndexOf(2, 10), 3, 'Array#lastIndexOf');
+    equals([2, 5, 9, 2].lastIndexOf(2, -10), -1, 'Array#lastIndexOf');
+
+    equals([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), -1, 'Array#lastIndexOf');
+
+
+
+    equals([12, 5, 8, 130, 44].every(function(el, i, a){ return el >= 10 }), false, 'Array#every');
+    equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10 }), true, 'Array#every');
+    ['a'].every(function(el, i, a){
+      same(a, ['a'], 'Array#every');
+    }, 'this');
+    ['a'].every(function(el, i, a){
+      equals(el, 'a', 'Array#every');
+    }, 'this');
+    ['a'].every(function(el, i, a){
+      equals(i, 0, 'Array#every');
+    }, 'this');
+    ['a'].every(function(el, i, a){
+      equals(this, 'this', 'Array#every');
+    }, 'this');
+
+
+    same([12,4,8,130,44].filter(function(el, i, a){ return el > 10 }), [12,130,44], 'Array#filter');
+    same([12,4,8,130,44].filter(function(el, i, a){ return el < 10 }), [4,8], 'Array#filter');
+    ['a'].filter(function(el, i, a){
+      same(a, ['a'], 'Array#filter');
+    }, 'this');
+    ['a'].filter(function(el, i, a){
+      equals(el, 'a', 'Array#filter');
+    }, 'this');
+    ['a'].filter(function(el, i, a){
+      equals(i, 0, 'Array#filter');
+    }, 'this');
+    ['a'].filter(function(el, i, a){
+      equals(this, 'this', 'Array#filter');
+    }, 'this');
+
+
+
+
+    arr = [2, 5, 9];
+    arr.forEach(function(el, i, a){
+      equals(el, arr[i], 'Array#forEach');
+    });
+    arr.forEach(function(el, i, a){
+      equals(el, a[i], 'Array#forEach');
+    });
+
+    arr = ['a', [1], { foo: 'bar' }, 352];
+    count = 0;
+    arr.forEach(function(el, i, a){
+        count++;
+    });
+    equals(count, 4, 'Array#forEach');
+
+    ['a'].forEach(function(el, i, a){
+      same(a, ['a'], 'Array#forEach');
+    }, 'this');
+    ['a'].forEach(function(el, i, a){
+      equals(el, 'a', 'Array#forEach');
+    }, 'this');
+    ['a'].forEach(function(el, i, a){
+      equals(i, 0, 'Array#forEach');
+    }, 'this');
+    ['a'].forEach(function(el, i, a){
+      equals(this, 'this', 'Array#forEach');
+    }, 'this');
+
+
+
+    same(['foot','goose','moose'].map(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#map');
+    same([1,4,9].map(Math.sqrt), [1,2,3], 'Array#map');
+    same([{ foo: 'bar' }].map(function(el){ return el['foo']; }), ['bar'], 'Array#map');
+
+    ['a'].map(function(el, i, a){
+      same(a, ['a'], 'Array#map');
+    }, 'this');
+    ['a'].map(function(el, i, a){
+      equals(el, 'a', 'Array#map');
+    }, 'this');
+    ['a'].map(function(el, i, a){
+      equals(i, 0, 'Array#map');
+    }, 'this');
+    ['a'].map(function(el, i, a){
+      equals(this, 'this', 'Array#map');
+    }, 'this');
+
+
+
 
 
     same([1,1,3].unique(), [1,3], 'Array#unique');
@@ -1114,9 +1242,8 @@ test('Array', function () {
     same([0,0,0].union([1,2,3]), [0,1,2,3], 'Array#union');
     same([0,0,0].union([0,0,0]), [0], 'Array#union');
     same([].union([]), [], 'Array#union');
-    same([-1,-2,-3].union([-3,-4,-5]), [-1,-2,-3,-4,-5], 'Array#union');
+    same([-1,-2,-3].union([-2,-4,-5]), [-1,-2,-3,-4,-5], 'Array#union');
     same([-1,-2,-3].union([3,4,5]), [-1,-2,-3,3,4,5], 'Array#union');
-
 
 });
 
