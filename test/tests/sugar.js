@@ -1209,6 +1209,32 @@ test('Array', function () {
 
 
 
+
+    arr = [2, 5, 9];
+    arr.each(function(el, i, a){
+      equals(el, arr[i], 'Array#each');
+    });
+    arr.each(function(el, i, a){
+      equals(el, a[i], 'Array#each');
+    });
+
+    arr = ['a', [1], { foo: 'bar' }, 352];
+    count = 0;
+    arr.each(function(el, i, a){
+        count++;
+    });
+    equals(count, 4, 'Array#each');
+
+    ['a'].each(function(el, i, a){
+      same(a, ['a'], 'Array#each');
+      equals(el, 'a', 'Array#each');
+      equals(i, 0, 'Array#each');
+      equals(this, 'this', 'Array#each');
+    }, 'this');
+
+
+
+
     same(['foot','goose','moose'].map(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#map');
     same([1,4,9].map(Math.sqrt), [1,2,3], 'Array#map');
     same([{ foo: 'bar' }].map(function(el){ return el['foo']; }), ['bar'], 'Array#map');
@@ -1265,6 +1291,56 @@ test('Array', function () {
     equals([1].reduceRight(function(){}), 1, 'Array#reduceRight');
 
 
+    same(['a','b','c'].find('a'), 'a', 'Array#find');
+    same(['a','b','c'].find('b'), 'b', 'Array#find');
+    same(['a','b','c'].find('c'), 'c', 'Array#find');
+    same(['a','b','c'].find('d'), null, 'Array#find');
+    same([1,2,3].find(1), 1, 'Array#find');
+    same([1,2,3].find(2), 2, 'Array#find');
+    same([1,2,3].find(3), 3, 'Array#find');
+    same([1,2,3].find(4), null, 'Array#find');
+    same([{a:1},{b:2},{c:3}].find({a:1}), {a:1}, 'Array#find');
+    same([{a:1},{b:2},{c:3}].find({c:3}), {c:3}, 'Array#find');
+    same([{a:1},{b:2},{c:3}].find({d:4}), null, 'Array#find');
+    same([{a:1},{b:2},{c:3}].find({c:4}), null, 'Array#find');
+    same([[1,2],[2,3],[4,5]].find([2,3]), [2,3], 'Array#find');
+    same([[1,2],[2,3],[4,5]].find([2,4]), null, 'Array#find');
+    same([[1,2],[2,3],[2,3]].find([2,3]), [2,3], 'Array#find');
+    same(['foo','bar'].find(/f+/), 'foo', 'Array#find');
+    same(['foo','bar'].find(/r+/), 'bar', 'Array#find');
+    same(['foo','bar'].find(/q+/), null, 'Array#find');
+    same([1,2,3].find(function(e){ return e > 0; }), 1, 'Array#find');
+    same([1,2,3].find(function(e){ return e > 2; }), 3, 'Array#find');
+    same([1,2,3].find(function(e){ return e > 3; }), null, 'Array#find');
+    same([{a:1},{b:2},{c:3}].find(function(e){ return e['a'] === 1; }), {a:1}, 'Array#find');
+    same([function(){}].find(function(e){}), null, 'Array#find');
+    same([null, null].find(null), null, 'Array#find');
+
+
+
+    same(['a','b','c'].findAll('a'), ['a'], 'Array#findAll');
+    same(['a','a','c'].findAll('a'), ['a','a'], 'Array#findAll');
+    same(['a','b','c'].findAll('q'), [], 'Array#findAll');
+    same([1,2,3].findAll(1), [1], 'Array#findAll');
+    same([2,2,3].findAll(2), [2,2], 'Array#findAll');
+    same([1,2,3].findAll(4), [], 'Array#findAll');
+    same([{a:1},{b:2},{c:3}].findAll({a:1}), [{a:1}], 'Array#findAll');
+    same([{a:1},{a:1},{c:3}].findAll({a:1}), [{a:1},{a:1}], 'Array#findAll');
+    same([{a:1},{b:2},{c:3}].findAll({d:4}), [], 'Array#findAll');
+    same([{a:1},{b:2},{c:3}].findAll({c:4}), [], 'Array#findAll');
+    same([[1,2],[2,3],[4,5]].findAll([2,3]), [[2,3]], 'Array#findAll');
+    same([[1,2],[2,3],[4,5]].findAll([2,4]), [], 'Array#findAll');
+    same([[1,2],[2,3],[2,3]].findAll([2,3]), [[2,3],[2,3]], 'Array#findAll');
+    same(['foo','bar'].findAll(/f+/), ['foo'], 'Array#findAll');
+    same(['foo','bar'].findAll(/[a-f]/), ['foo','bar'], 'Array#findAll');
+    same(['foo','bar'].findAll(/q+/), [], 'Array#findAll');
+    same([1,2,3].findAll(function(e){ return e > 0; }), [1,2,3], 'Array#findAll');
+    same([1,2,3].findAll(function(e){ return e > 1; }), [2,3], 'Array#findAll');
+    same([1,2,3].findAll(function(e){ return e > 2; }), [3], 'Array#findAll');
+    same([1,2,3].findAll(function(e){ return e > 3; }), [], 'Array#findAll');
+    same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAll');
+    same([function(){}].findAll(function(e){}), [], 'Array#findAll');
+    same([null, null].findAll(null), [null, null], 'Array#find');
 
 
 
@@ -1273,7 +1349,9 @@ test('Array', function () {
     same([0,0,0].unique(), [0], 'Array#unique');
     same(['a','b','c'].unique(), ['a','b','c'], 'Array#unique');
     same(['a','a','c'].unique(), ['a','c'], 'Array#unique');
-    same([{ foo: 'bar' }, { foo: 'bar' }].unique(), [{ foo: 'bar' }, { foo: 'bar' }], 'Array#unique');
+    same([{foo:'bar'}, {foo:'bar'}].unique(), [{foo:'bar'}], 'Array#unique');
+
+
 
     same([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union');
     same([1,1,1].union([1,2,3]), [1,2,3], 'Array#union');
@@ -1282,6 +1360,71 @@ test('Array', function () {
     same([].union([]), [], 'Array#union');
     same([-1,-2,-3].union([-2,-4,-5]), [-1,-2,-3,-4,-5], 'Array#union');
     same([-1,-2,-3].union([3,4,5]), [-1,-2,-3,3,4,5], 'Array#union');
+    same([{a:1},{b:2}].union([{b:2},{c:3}]), [{a:1},{b:2},{c:3}], 'Array#intersect');
+    same([1,2,3].union(4), [1,2,3,4], 'Array#union');
+
+
+    same([1,2,3].intersect([3,4,5]), [3], 'Array#intersect');
+    same(['a','b','c'].intersect(['c','d','e']), ['c'], 'Array#intersect');
+    same([1,2,3].intersect([1,2,3]), [1,2,3], 'Array#intersect');
+    same([1,2,3].intersect([3,2,1]), [1,2,3], 'Array#intersect');
+    same([].intersect([3]), [], 'Array#intersect');
+    same([3].intersect([]), [], 'Array#intersect');
+    same([].intersect([]), [], 'Array#intersect');
+    same([null].intersect([]), [], 'Array#intersect');
+    same([null].intersect([null]), [null], 'Array#intersect');
+    same([false].intersect([false]), [false], 'Array#intersect');
+    same([false].intersect([0]), [], 'Array#intersect');
+    same([false].intersect([null]), [], 'Array#intersect');
+    same([false].intersect([undefined]), [], 'Array#intersect');
+    same([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], 'Array#intersect');
+    same([1,1,3].intersect([1,5,6]), [1], 'Array#intersect');
+    same([1,2,3].intersect([4,5,6]), [], 'Array#intersect');
+    same([1,2,3].intersect(1), [1], 'Array#intersect');
+
+
+
+
+    same([1,2,3].add([3,4,5]), [1,2,3,3,4,5], 'Array#add');
+    same(['a','b','c'].add(['c','d','e']), ['a','b','c','c','d','e'], 'Array#add');
+    same([1,2,3].add([1,2,3]), [1,2,3,1,2,3], 'Array#add');
+    same([1,2,3].add([3,2,1]), [1,2,3,3,2,1], 'Array#add');
+    same([].add([3]), [3], 'Array#add');
+    same([3].add([]), [3], 'Array#add');
+    same([].add([]), [], 'Array#add');
+    same([null].add([]), [null], 'Array#add');
+    same([null].add([null]), [null, null], 'Array#add');
+    same([false].add([false]), [false, false], 'Array#add');
+    same([false].add([0]), [false, 0], 'Array#add');
+    same([false].add([null]), [false, null], 'Array#add');
+    same([false].add([undefined]), [false, undefined], 'Array#add');
+    same([{a:1},{b:2}].add([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#add');
+    same([1,1,3].add([1,5,6]), [1,1,3,1,5,6], 'Array#add');
+    same([1,2,3].add([4,5,6]), [1,2,3,4,5,6], 'Array#add');
+    same([1,2,3].add(1), [1,2,3,1], 'Array#add');
+
+
+
+
+    same([1,2,3].subtract([3,4,5]), [1,2], 'Array#subtract');
+    same(['a','b','c'].subtract(['c','d','e']), ['a','b'], 'Array#subtract');
+    same([1,2,3].subtract([1,2,3]), [], 'Array#subtract');
+    same([1,2,3].subtract([3,2,1]), [], 'Array#subtract');
+    same([].subtract([3]), [], 'Array#subtract');
+    same([3].subtract([]), [3], 'Array#subtract');
+    same([].subtract([]), [], 'Array#subtract');
+    same([null].subtract([]), [null], 'Array#subtract');
+    same([null].subtract([null]), [], 'Array#subtract');
+    same([false].subtract([false]), [], 'Array#subtract');
+    same([false].subtract([0]), [false], 'Array#subtract');
+    same([false].subtract([null]), [false], 'Array#subtract');
+    same([false].subtract([undefined]), [false], 'Array#subtract');
+    same([{a:1},{b:2}].subtract([{b:2},{c:3}]), [{a:1}], 'Array#subtract');
+    same([1,1,3].subtract([1,5,6]), [3], 'Array#subtract');
+    same([1,2,3].subtract([4,5,6]), [1,2,3], 'Array#subtract');
+    same([1,2,3].subtract(1), [2,3], 'Array#subtract');
+
+
 
 });
 
