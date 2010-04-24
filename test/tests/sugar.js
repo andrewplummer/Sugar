@@ -1150,30 +1150,35 @@ test('Array', function () {
     equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10 }), true, 'Array#every');
     ['a'].every(function(el, i, a){
       same(a, ['a'], 'Array#every');
-    }, 'this');
-    ['a'].every(function(el, i, a){
       equals(el, 'a', 'Array#every');
-    }, 'this');
-    ['a'].every(function(el, i, a){
       equals(i, 0, 'Array#every');
-    }, 'this');
-    ['a'].every(function(el, i, a){
       equals(this, 'this', 'Array#every');
     }, 'this');
+
+
+
+    equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el > 10 }), true, 'Array#some');
+    equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el < 10 }), true, 'Array#some');
+    equals([12, 54, 18, 130, 44].some(function(el, i, a){ return el >= 10 }), true, 'Array#some');
+    equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el < 4 }), false, 'Array#some');
+    equals([].some(function(el, i, a){ return el > 10 }), false, 'Array#some');
+    ['a'].some(function(el, i, a){
+      same(a, ['a'], 'Array#some');
+      equals(el, 'a', 'Array#some');
+      equals(i, 0, 'Array#some');
+      equals(this, 'this', 'Array#some');
+    }, 'this');
+
+
+
 
 
     same([12,4,8,130,44].filter(function(el, i, a){ return el > 10 }), [12,130,44], 'Array#filter');
     same([12,4,8,130,44].filter(function(el, i, a){ return el < 10 }), [4,8], 'Array#filter');
     ['a'].filter(function(el, i, a){
       same(a, ['a'], 'Array#filter');
-    }, 'this');
-    ['a'].filter(function(el, i, a){
       equals(el, 'a', 'Array#filter');
-    }, 'this');
-    ['a'].filter(function(el, i, a){
       equals(i, 0, 'Array#filter');
-    }, 'this');
-    ['a'].filter(function(el, i, a){
       equals(this, 'this', 'Array#filter');
     }, 'this');
 
@@ -1197,14 +1202,8 @@ test('Array', function () {
 
     ['a'].forEach(function(el, i, a){
       same(a, ['a'], 'Array#forEach');
-    }, 'this');
-    ['a'].forEach(function(el, i, a){
       equals(el, 'a', 'Array#forEach');
-    }, 'this');
-    ['a'].forEach(function(el, i, a){
       equals(i, 0, 'Array#forEach');
-    }, 'this');
-    ['a'].forEach(function(el, i, a){
       equals(this, 'this', 'Array#forEach');
     }, 'this');
 
@@ -1216,16 +1215,55 @@ test('Array', function () {
 
     ['a'].map(function(el, i, a){
       same(a, ['a'], 'Array#map');
-    }, 'this');
-    ['a'].map(function(el, i, a){
       equals(el, 'a', 'Array#map');
-    }, 'this');
-    ['a'].map(function(el, i, a){
       equals(i, 0, 'Array#map');
-    }, 'this');
-    ['a'].map(function(el, i, a){
       equals(this, 'this', 'Array#map');
     }, 'this');
+
+
+
+
+    equals([0,1,2,3,4].reduce(function(a,b){ return a + b; }), 10, 'Array#reduce');
+    same([[0,1],[2,3],[4,5]].reduce(function(a,b){ return a.concat(b); }, []), [0,1,2,3,4,5], 'Array#reduce');
+    ['a'].reduce(function(p, c, i, a){
+      equals(p, 'c', 'Array#reduce');
+      equals(c, 'a', 'Array#reduce');
+      equals(i, 0, 'Array#reduce');
+      same(a, ['a'], 'Array#reduce');
+    }, 'c');
+    [55,66].reduce(function(p, c, i, a){
+      equals(p, 55, 'Array#reduce');
+      equals(c, 66, 'Array#reduce');
+      equals(i, 1, 'Array#reduce');
+      same(a, [55,66], 'Array#reduce');
+    });
+    [1].reduce(function(p, c, i, a){
+      // This assertion should never be called.
+      equals(true, false, 'Array#reduce');
+    });
+    equals([1].reduce(function(){}), 1, 'Array#reduce');
+
+
+    equals([0,1,2,3,4].reduceRight(function(a,b){ return a + b; }), 10, 'Array#reduceRight');
+    same([[0,1],[2,3],[4,5]].reduceRight(function(a,b){ return a.concat(b); }, []), [4,5,2,3,0,1], 'Array#reduceRight');
+    ['a'].reduceRight(function(p, c, i, a){
+      equals(p, 'c', 'Array#reduceRight');
+      equals(c, 'a', 'Array#reduceRight');
+      equals(i, 0, 'Array#reduceRight');
+      same(a, ['a'], 'Array#reduceRight');
+    }, 'c');
+    [55,66].reduceRight(function(p, c, i, a){
+      equals(p, 66, 'Array#reduceRight');
+      equals(c, 55, 'Array#reduceRight');
+      equals(i, 0, 'Array#reduceRight');
+      same(a, [55,66], 'Array#reduceRight');
+    });
+    [1].reduceRight(function(p, c, i, a){
+      // This assertion should never be called.
+      equals(true, false, 'Array#reduceRight');
+    });
+    equals([1].reduceRight(function(){}), 1, 'Array#reduceRight');
+
 
 
 
