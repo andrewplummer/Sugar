@@ -1094,12 +1094,6 @@ test('String', function () {
 
 });
 
-test('Array', function () {
-
-
-});
-
-
 
 test('Array', function () {
 
@@ -1248,6 +1242,18 @@ test('Array', function () {
       equals(el, 'a', 'Array#map');
       equals(i, 0, 'Array#map');
       equals(this, 'this', 'Array#map');
+    }, 'this');
+
+
+    same(['foot','goose','moose'].collect(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#collect');
+    same([1,4,9].collect(Math.sqrt), [1,2,3], 'Array#collect');
+    same([{ foo: 'bar' }].collect(function(el){ return el['foo']; }), ['bar'], 'Array#collect');
+
+    ['a'].collect(function(el, i, a){
+      same(a, ['a'], 'Array#collect');
+      equals(el, 'a', 'Array#collect');
+      equals(i, 0, 'Array#collect');
+      equals(this, 'this', 'Array#collect');
     }, 'this');
 
 
@@ -1541,12 +1547,15 @@ test('Array', function () {
     same([null, false].median(), 0, 'Array#median');
     same([{a:1,b:5},{a:8,b:5},{a:8,b:5}].median(function(el){ return el['a']; }), 8, 'Array#median');
 
-    same([13,18,13,14,13,16,14,21,13].mode(), 13, 'Array#mode');
- //   same([2,2,2].mode(), 2, 'Array#mode');
-//    same([2,3,4].mode(), null, 'Array#mode');
- //<   same([2,3,4,2].mode(), 2, 'Array#mode');
-//    same([].mode(), null, 'Array#mode');
- //   same([null, false].mode(), null, 'Array#mode');
+    same([13,18,13,14,13,16,14,21,13].mode(), [13], 'Array#mode');
+    same([2,2,2].mode(), [2], 'Array#mode');
+    same([2,3,4].mode(), null, 'Array#mode');
+    same([2,3,4,2].mode(), [2], 'Array#mode');
+    same([2.24,3.47,4.42,2.24].mode(), [2.24], 'Array#mode');
+    same([].mode(), null, 'Array#mode');
+    same([null, false].mode(), null, 'Array#mode');
+    same([{a:1,b:5},{a:8,b:5},{a:8,b:5}].mode(function(el){ return el['a']; }), [8], 'Array#mode');
+    same([{a:1,b:5},{a:4,b:5},{a:8,b:5}].mode(function(el){ return el['a']; }), null, 'Array#mode');
 
 
 
@@ -1555,6 +1564,76 @@ test('Array', function () {
     same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].group(function(el){ return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#group');
 
 
+    same([1,2,3].compact(), [1,2,3], 'Array#compact');
+    same([1,2,null,3].compact(), [1,2,3], 'Array#compact');
+    same([1,2,undefined,3].compact(), [1,2,3], 'Array#compact');
+    same([undefined,undefined,undefined].compact(), [], 'Array#compact');
+    same([null,null,null].compact(), [], 'Array#compact');
+    same([false,false,false].compact(), [false,false,false], 'Array#compact');
+    same([0,1,2].compact(), [0,1,2], 'Array#compact');
+    same([].compact(), [], 'Array#compact');
+
+
+
+    same([1,2,2,3].count(), 4, 'Array#count');
+    same([1,2,2,3].count(2), 2, 'Array#count');
+    same(['a','b','c','c'].count(), 4, 'Array#count');
+    same(['a','b','c','c'].count('c'), 2, 'Array#count');
+    same([1,2,2,3].count(function(el){ return el % 2 == 0; }), 2, 'Array#count');
+    same([1,2,2,3].count(function(el){ return el > 2; }), 1, 'Array#count');
+    same([1,2,2,3].count(function(el){ return el > 20; }), 0, 'Array#count');
+    same([{a:1},{a:2},{a:1}].count({a:1}), 2, 'Array#count');
+
+
+
+
+
+
+    same([1,2,2,3].remove(), [], 'Array#remove');
+    same([1,2,2,3].remove(2), [1,3], 'Array#remove');
+    same(['a','b','c','c'].remove(), [], 'Array#remove');
+    same(['a','b','c','c'].remove('c'), ['a','b'], 'Array#remove');
+    same([1,2,2,3].remove(function(el){ return el % 2 == 0; }), [1,3], 'Array#remove');
+    same([1,2,2,3].remove(function(el){ return el > 2; }), [1,2,2], 'Array#remove');
+    same([1,2,2,3].remove(function(el){ return el > 20; }), [1,2,2,3], 'Array#remove');
+    same([{a:1},{a:2},{a:1}].remove({a:1}), [{a:2}], 'Array#remove');
+
+
+
+
+
+
+    arr = [1,2,2,3];
+    arr.delete();
+    same(arr, [], 'Array#delete');
+
+    arr = [1,2,2,3];
+    arr.delete(2);
+    same(arr, [1,3], 'Array#delete');
+
+    arr = ['a','b','c','c'];
+    arr.delete();
+    same(arr, [], 'Array#delete');
+
+    arr = ['a','b','c','c'];
+    arr.delete('c');
+    same(arr, ['a','b'], 'Array#delete');
+
+    arr = [1,2,2,3];
+    arr.delete(function(el){ return el % 2 == 0; });
+    same(arr, [1,3], 'Array#delete');
+
+    arr = [1,2,2,3];
+    arr.delete(function(el){ return el > 2; });
+    same(arr, [1,2,2], 'Array#delete');
+
+    arr = [1,2,2,3];
+    arr.delete(function(el){ return el > 20; });
+    same(arr, [1,2,2,3], 'Array#delete');
+
+    arr = [{a:1},{a:2},{a:1}];
+    arr.delete({a:1});
+    same(arr, [{a:2}], 'Array#delete');
 
 });
 
