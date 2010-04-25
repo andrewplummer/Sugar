@@ -751,6 +751,8 @@ test('String', function () {
   equal('quack'.first(20), 'quack', 'String#first');
   equal('quack'.first(0), '', 'String#first');
   equal('quack'.first(-1), '', 'String#first');
+  equal('quack'.first(-5), '', 'String#first');
+  equal('quack'.first(-10), '', 'String#first');
 
 
 
@@ -760,6 +762,8 @@ test('String', function () {
   equal('quack'.last(4), 'uack', 'String#last');
   equal('quack'.last(10), 'quack', 'String#last');
   equal('quack'.last(-1), '', 'String#last');
+  equal('quack'.last(-5), '', 'String#last');
+  equal('quack'.last(-10), '', 'String#last');
   equal('fa'.last(3), 'fa', 'String#last');
 
 
@@ -1423,6 +1427,132 @@ test('Array', function () {
     same([1,1,3].subtract([1,5,6]), [3], 'Array#subtract');
     same([1,2,3].subtract([4,5,6]), [1,2,3], 'Array#subtract');
     same([1,2,3].subtract(1), [2,3], 'Array#subtract');
+
+
+
+
+
+    same(['a','b','c'].at(0), 'a', 'Array#at');
+    same(['a','b','c'].at(1), 'b', 'Array#at');
+    same(['a','b','c'].at(2), 'c', 'Array#at');
+    same(['a','b','c'].at(3), null, 'Array#at');
+    same(['a','b','c'].at(-1), 'c', 'Array#at');
+    same(['a','b','c'].at(-2), 'b', 'Array#at');
+    same(['a','b','c'].at(-3), 'a', 'Array#at');
+    same(['a','b','c'].at(-4), null, 'Array#at');
+    same(['a','b','c'].at(), 'a', 'Array#at');
+    same([false].at(0), false, 'Array#at');
+    same(['a'].at(0), 'a', 'Array#at');
+    same(['a'].at(1), null, 'Array#at');
+    same(['a'].at(-1), 'a', 'Array#at');
+
+
+
+    same(['a','b','c'].from(), ['a','b','c'], 'Array#from');
+    same(['a','b','c'].from(1), ['b','c'], 'Array#from');
+    same(['a','b','c'].from(2), ['c'], 'Array#from');
+    same(['a','b','c'].from(3), [], 'Array#from');
+    same(['a','b','c'].from(4), [], 'Array#from');
+    same(['a','b','c'].from(-1), ['c'], 'Array#from');
+    same(['a','b','c'].from(-2), ['b','c'], 'Array#from');
+    same(['a','b','c'].from(-3), ['a','b','c'], 'Array#from');
+    same(['a','b','c'].from(-4), ['a','b','c'], 'Array#from');
+
+
+    same(['a','b','c'].to(), ['a','b','c'], 'Array#to');
+    same(['a','b','c'].to(1), ['a','b'], 'Array#to');
+    same(['a','b','c'].to(2), ['a','b','c'], 'Array#to');
+    same(['a','b','c'].to(3), ['a','b','c'], 'Array#to');
+    same(['a','b','c'].to(4), ['a','b','c'], 'Array#to');
+    same(['a','b','c'].to(-1), ['a','b','c'], 'Array#to');
+    same(['a','b','c'].to(-2), ['a','b'], 'Array#to');
+    same(['a','b','c'].to(-3), ['a'], 'Array#to');
+    same(['a','b','c'].to(-4), [], 'Array#to');
+
+
+
+
+    same(['a','b','c'].first(), ['a'], 'Array#first');
+    same(['a','b','c'].first(1), ['a'], 'Array#first');
+    same(['a','b','c'].first(2), ['a','b'], 'Array#first');
+    same(['a','b','c'].first(3), ['a','b','c'], 'Array#first');
+    same(['a','b','c'].first(4), ['a','b','c'], 'Array#first');
+    same(['a','b','c'].first(-1), [], 'Array#first');
+    same(['a','b','c'].first(-2), [], 'Array#first');
+    same(['a','b','c'].first(-3), [], 'Array#first');
+
+
+    same(['a','b','c'].last(), ['c'], 'Array#last');
+    same(['a','b','c'].last(1), ['c'], 'Array#last');
+    same(['a','b','c'].last(2), ['b','c'], 'Array#last');
+    same(['a','b','c'].last(3), ['a','b','c'], 'Array#last');
+    same(['a','b','c'].last(4), ['a','b','c'], 'Array#last');
+    same(['a','b','c'].last(-1), [], 'Array#last');
+    same(['a','b','c'].last(-2), [], 'Array#last');
+    same(['a','b','c'].last(-3), [], 'Array#last');
+    same(['a','b','c'].last(-4), [], 'Array#last');
+
+
+
+    same([12,87,55].min(), 12, 'Array#min');
+    same([5,5,128].min(), 5, 'Array#min');
+    same(isNaN(['a','b','c'].min()), true, 'Array#min');
+    same([].min(), Infinity, 'Array#min');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), 1, 'Array#min');
+
+
+    same([12,87,55].max(), 87, 'Array#max');
+    same([12,87,128].max(), 128, 'Array#max');
+    same(isNaN(['a','b','c'].max()), true, 'Array#max');
+    same([].max(), -Infinity, 'Array#max');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), 3, 'Array#max');
+
+
+    same([12,87,55].sum(), 154, 'Array#sum');
+    same([12,87,128].sum(), 227, 'Array#sum');
+    same([].sum(), 0, 'Array#sum');
+    same([null, false].sum(), 0, 'Array#sum');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum(function(el){ return el['a']; }), 6, 'Array#sum');
+
+    same([13,18,13,14,13,16,14,21,13].mean(), 15, 'Array#mean');
+    same([2,2,2].mean(), 2, 'Array#mean');
+    same([2,3,4].mean(), 3, 'Array#mean');
+    same([2,3,4,2].mean(), 2.75, 'Array#mean');
+    same([].mean(), 0, 'Array#mean');
+    same([null, false].mean(), 0, 'Array#mean');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].mean(function(el){ return el['a']; }), 2, 'Array#mean');
+
+    same([13,18,13,14,13,16,14,21,13].average(), 15, 'Array#average');
+    same([2,2,2].average(), 2, 'Array#average');
+    same([2,3,4].average(), 3, 'Array#average');
+    same([2,3,4,2].average(), 2.75, 'Array#average');
+    same([].average(), 0, 'Array#average');
+    same([null, false].average(), 0, 'Array#average');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average(function(el){ return el['a']; }), 2, 'Array#average');
+
+    same([13,18,13,14,13,16,14,21,13].median(), 14, 'Array#median');
+    same([2,2,2].median(), 2, 'Array#median');
+    same([2,3,4].median(), 3, 'Array#median');
+    same([2,3,4,2].median(), 2.5, 'Array#median');
+    same([].median(), null, 'Array#median');
+    same([1].median(), 1, 'Array#median');
+    same([1,1].median(), 1, 'Array#median');
+    same([1,2].median(), 1.5, 'Array#median');
+    same([null, false].median(), 0, 'Array#median');
+    same([{a:1,b:5},{a:8,b:5},{a:8,b:5}].median(function(el){ return el['a']; }), 8, 'Array#median');
+
+    same([13,18,13,14,13,16,14,21,13].mode(), 13, 'Array#mode');
+ //   same([2,2,2].mode(), 2, 'Array#mode');
+//    same([2,3,4].mode(), null, 'Array#mode');
+ //<   same([2,3,4,2].mode(), 2, 'Array#mode');
+//    same([].mode(), null, 'Array#mode');
+ //   same([null, false].mode(), null, 'Array#mode');
+
+
+
+    same([1,1,2,2,3,3,4].group(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#group');
+    same(['a','b','c','a','e','c'].group(), {'a':['a','a'],'b':['b'],'c':['c','c'],'e':['e']}, 'Array#group');
+    same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].group(function(el){ return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#group');
 
 
 
