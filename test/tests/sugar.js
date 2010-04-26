@@ -582,20 +582,14 @@ test('String', function () {
   equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith');
 
 
-  equal(''.isEmpty(), true, 'String#isEmpty');
-  equal('mayonnaise'.isEmpty(), false, 'String#isEmpty');
-  equal('            '.isEmpty(), false, 'String#isEmpty');
-  equal('\n'.isEmpty(), false, 'String#isEmpty');
-
-
-  equal(''.isBlank(), true, 'String#isBlank');
-  equal('0'.isBlank(), false, 'String#isBlank');
-  equal('            '.isBlank(), true, 'String#isBlank');
-  equal('\n'.isBlank(), true, 'String#isBlank');
-  equal('\t\t\t\t'.isBlank(), true, 'String#isBlank');
-  equal('　　　　　\n　　　'.isBlank(), true, 'String#isBlank'); // Japanese space
-  equal('日本語では　「マス」　というの知ってた？'.isBlank(), false, 'String#isBlank');
-  equal('mayonnaise'.isBlank(), false, 'String#isBlank');
+  equal(''.blank(), true, 'String#blank');
+  equal('0'.blank(), false, 'String#blank');
+  equal('            '.blank(), true, 'String#blank');
+  equal('\n'.blank(), true, 'String#blank');
+  equal('\t\t\t\t'.blank(), true, 'String#blank');
+  equal('　　　　　\n　　　'.blank(), true, 'String#blank'); // Japanese space
+  equal('日本語では　「マス」　というの知ってた？'.blank(), false, 'String#blank');
+  equal('mayonnaise'.blank(), false, 'String#blank');
 
 
   equal('foo'.has('f'), true, 'String#has');
@@ -1600,6 +1594,28 @@ test('Array', function () {
 
 
 
+    same([1,2,2,3].removeIndex(), [1,2,2,3], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(0), [2,2,3], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(1), [1,2,3], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(2), [1,2,3], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(3), [1,2,2], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(4), [1,2,2,3], 'Array#removeIndex');
+    same(['a','b','c','c'].removeIndex(), ['a','b','c','c'], 'Array#removeIndex');
+    same(['a','b','c','c'].removeIndex(0), ['b','c','c'], 'Array#removeIndex');
+    same(['a','b','c','c'].removeIndex(1), ['a','c','c'], 'Array#removeIndex');
+    same(['a','b','c','c'].removeIndex(2), ['a','b','c'], 'Array#removeIndex');
+    same(['a','b','c','c'].removeIndex(3), ['a','b','c'], 'Array#removeIndex');
+    same(['a','b','c','c'].removeIndex(4), ['a','b','c','c'], 'Array#removeIndex');
+    same([{a:1},{a:2},{a:1}].removeIndex(1), [{a:1},{a:1}], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(0,1), [2,3], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(0,2), [3], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(1,2), [1,3], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(1,5), [1], 'Array#removeIndex');
+    same([1,2,2,3].removeIndex(0,5), [], 'Array#removeIndex');
+
+
+
+
 
 
 
@@ -1634,6 +1650,126 @@ test('Array', function () {
     arr = [{a:1},{a:2},{a:1}];
     arr.delete({a:1});
     same(arr, [{a:2}], 'Array#delete');
+
+
+
+
+    arr = [1,2,2,3];
+    arr.deleteIndex();
+    same(arr, [1,2,2,3], 'Array#deleteIndex');
+
+    arr = [1,2,2,3];
+    arr.deleteIndex(0);
+    same(arr, [2,2,3], 'Array#deleteIndex');
+
+    arr = [1,2,2,3];
+    arr.deleteIndex(1);
+    same(arr, [1,2,3], 'Array#deleteIndex');
+
+    arr = ['a','b','c','c'];
+    arr.deleteIndex(0);
+    same(arr, ['b','c','c'], 'Array#deleteIndex');
+
+    arr = ['a','b','c','c'];
+    arr.deleteIndex(1);
+    same(arr, ['a','c','c'], 'Array#deleteIndex');
+
+    arr = ['a','b','c','c'];
+    arr.deleteIndex(3);
+    same(arr, ['a','b','c'], 'Array#deleteIndex');
+
+    arr = ['a','b','c','c'];
+    arr.deleteIndex(4);
+    same(arr, ['a','b','c','c'], 'Array#deleteIndex');
+
+    arr = [{a:1},{a:2},{a:1}];
+    arr.deleteIndex(2);
+    same(arr, [{a:1},{a:2}], 'Array#deleteIndex');
+
+
+
+
+    equal([1,2,3].blank(), false, 'Array#blank');
+    equal([].blank(), true, 'Array#blank');
+    equal([null].blank(), true, 'Array#blank');
+    equal([undefined].blank(), true, 'Array#blank');
+    equal([null,null].blank(), true, 'Array#blank');
+    equal([undefined,undefined].blank(), true, 'Array#blank');
+    equal([false,false].blank(), false, 'Array#blank');
+    equal([0,0].blank(), false, 'Array#blank');
+
+
+
+
+    equal([1,2,3].any(), false, 'Array#any');
+    equal([1,2,3].any(1), true, 'Array#any');
+    equal([1,2,3].any(4), false, 'Array#any');
+    equal([1,2,3].any('a'), false, 'Array#any');
+    equal(['a','b','c'].any('a'), true, 'Array#any');
+    equal(['a','b','c'].any('f'), false, 'Array#any');
+    equal(['a','b','c'].any(/[a-f]/), true, 'Array#any');
+    equal(['a','b','c'].any(/[m-z]/), false, 'Array#any');
+    equal(['a','b','c'].any(function(e){ return e.length > 1; }), false, 'Array#any');
+    equal(['a','b','c'].any(function(e){ return e.length < 2; }), true, 'Array#any');
+    equal(['a','bar','cat'].any(function(e){ return e.length < 2; }), true, 'Array#any');
+    same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any');
+    same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any');
+    same([{a:1},{a:2},{a:1}].any(function(e){ return e['a'] == 1; }), true, 'Array#any');
+    same([{a:1},{a:2},{a:1}].any(function(e){ return e['b'] == 1; }), false, 'Array#any');
+
+
+    equal([1,2,3].has(), false, 'Array#has');
+    equal([1,2,3].has(1), true, 'Array#has');
+    equal([1,2,3].has(4), false, 'Array#has');
+    equal([1,2,3].has('a'), false, 'Array#has');
+    equal(['a','b','c'].has('a'), true, 'Array#has');
+    equal(['a','b','c'].has('f'), false, 'Array#has');
+    equal(['a','b','c'].has(/[a-f]/), true, 'Array#has');
+    equal(['a','b','c'].has(/[m-z]/), false, 'Array#has');
+    equal(['a','b','c'].has(function(e){ return e.length > 1; }), false, 'Array#has');
+    equal(['a','b','c'].has(function(e){ return e.length < 2; }), true, 'Array#has');
+    equal(['a','bar','cat'].has(function(e){ return e.length < 2; }), true, 'Array#has');
+    same([{a:1},{a:2},{a:1}].has(1), false, 'Array#has');
+    same([{a:1},{a:2},{a:1}].has({a:1}), true, 'Array#has');
+    same([{a:1},{a:2},{a:1}].has(function(e){ return e['a'] == 1; }), true, 'Array#has');
+    same([{a:1},{a:2},{a:1}].has(function(e){ return e['b'] == 1; }), false, 'Array#has');
+
+
+
+    equal([1,2,3].all(), false, 'Array#all');
+    equal([1,2,3].all(1), false, 'Array#all');
+    equal([1,1,1].all(1), true, 'Array#all');
+    equal([1,2,3].all(3), false, 'Array#all');
+    equal(['a','b','c'].all('a'), false, 'Array#all');
+    equal(['a','a','a'].all('a'), true, 'Array#all');
+    equal(['a','b','c'].all('f'), false, 'Array#all');
+    equal(['a','b','c'].all(/[a-f]/), true, 'Array#all');
+    equal(['a','b','c'].all(/[a-b]/), false, 'Array#all');
+    equal(['a','b','c'].all(function(e){ return e.length > 1; }), false, 'Array#all');
+    equal(['a','b','c'].all(function(e){ return e.length < 2; }), true, 'Array#all');
+    equal(['a','bar','cat'].all(function(e){ return e.length < 2; }), false, 'Array#all');
+    same([{a:1},{a:2},{a:1}].all(1), false, 'Array#all');
+    same([{a:1},{a:2},{a:1}].all({a:1}), false, 'Array#all');
+    same([{a:1},{a:1},{a:1}].all({a:1}), true, 'Array#all');
+    same([{a:1},{a:2},{a:1}].all(function(e){ return e['a'] == 1; }), false, 'Array#all');
+    same([{a:1},{a:2},{a:1}].all(function(e){ return e['b'] == 1; }), false, 'Array#all');
+    same([{a:1},{a:1},{a:1}].all(function(e){ return e['a'] == 1; }), true, 'Array#all');
+
+
+
+    same([1,2,3].flatten(), [1,2,3], 'Array#flatten');
+    same(['a','b','c'].flatten(), ['a','b','c'], 'Array#flatten');
+    same([{a:1},{a:2},{a:1}].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
+    same([[1],[2],[3]].flatten(), [1,2,3], 'Array#flatten');
+    same([[1,2],[3]].flatten(), [1,2,3], 'Array#flatten');
+    same([[1,2,3]].flatten(), [1,2,3], 'Array#flatten');
+    same([['a'],['b'],['c']].flatten(), ['a','b','c'], 'Array#flatten');
+    same([['a','b'],['c']].flatten(), ['a','b','c'], 'Array#flatten');
+    same([['a','b','c']].flatten(), ['a','b','c'], 'Array#flatten');
+    same([[{a:1}],[{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
+    same([[{a:1},{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
+    same([[{a:1},{a:2},{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
+    same([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten');
 
 });
 
