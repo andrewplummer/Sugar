@@ -1389,27 +1389,6 @@ test('Array', function () {
 
 
 
-    same([1,2,3].add([3,4,5]), [1,2,3,3,4,5], 'Array#add');
-    same(['a','b','c'].add(['c','d','e']), ['a','b','c','c','d','e'], 'Array#add');
-    same([1,2,3].add([1,2,3]), [1,2,3,1,2,3], 'Array#add');
-    same([1,2,3].add([3,2,1]), [1,2,3,3,2,1], 'Array#add');
-    same([].add([3]), [3], 'Array#add');
-    same([3].add([]), [3], 'Array#add');
-    same([].add([]), [], 'Array#add');
-    same([null].add([]), [null], 'Array#add');
-    same([null].add([null]), [null, null], 'Array#add');
-    same([false].add([false]), [false, false], 'Array#add');
-    same([false].add([0]), [false, 0], 'Array#add');
-    same([false].add([null]), [false, null], 'Array#add');
-    same([false].add([undefined]), [false, undefined], 'Array#add');
-    same([{a:1},{b:2}].add([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#add');
-    same([1,1,3].add([1,5,6]), [1,1,3,1,5,6], 'Array#add');
-    same([1,2,3].add([4,5,6]), [1,2,3,4,5,6], 'Array#add');
-    same([1,2,3].add(1), [1,2,3,1], 'Array#add');
-
-
-
-
     same([1,2,3].subtract([3,4,5]), [1,2], 'Array#subtract');
     same(['a','b','c'].subtract(['c','d','e']), ['a','b'], 'Array#subtract');
     same([1,2,3].subtract([1,2,3]), [], 'Array#subtract');
@@ -1686,6 +1665,57 @@ test('Array', function () {
     arr.deleteIndex(2);
     same(arr, [{a:1},{a:2}], 'Array#deleteIndex');
 
+
+
+
+    same([1,2,3].add(4), [1,2,3,4], 'Array#add');
+    same(['a','b','c'].add('d'), ['a','b','c','d'], 'Array#add');
+    same([{a:1},{a:2}].add({a:3}), [{a:1},{a:2},{a:3}], 'Array#add');
+    same([1,2,3].add([3,4,5]), [1,2,3,3,4,5], 'Array#add');
+    same(['a','b','c'].add(['c','d','e']), ['a','b','c','c','d','e'], 'Array#add');
+    same([1,2,3].add([1,2,3]), [1,2,3,1,2,3], 'Array#add');
+    same([1,2,3].add([3,2,1]), [1,2,3,3,2,1], 'Array#add');
+    same([].add([3]), [3], 'Array#add');
+    same([3].add([]), [3], 'Array#add');
+    same([].add([]), [], 'Array#add');
+    same([null].add([]), [null], 'Array#add');
+    same([null].add([null]), [null, null], 'Array#add');
+    same([false].add([false]), [false, false], 'Array#add');
+    same([false].add([0]), [false, 0], 'Array#add');
+    same([false].add([null]), [false, null], 'Array#add');
+    same([false].add([undefined]), [false, undefined], 'Array#add');
+    same([{a:1},{b:2}].add([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#add');
+    same([1,1,3].add([1,5,6]), [1,1,3,1,5,6], 'Array#add');
+    same([1,2,3].add([4,5,6]), [1,2,3,4,5,6], 'Array#add');
+    same([1,2,3].add(1), [1,2,3,1], 'Array#add');
+
+
+
+
+    arr = [1,2,3];
+    arr.insert(4)
+    same(arr, [1,2,3,4], 'Array#insert');
+
+    arr = ['a','b','c'];
+    arr.insert('d')
+    same(arr, ['a','b','c','d'], 'Array#insert');
+
+    arr = [{a:1},{a:2}];
+    arr.insert({a:3})
+    same(arr, [{a:1},{a:2},{a:3}], 'Array#insert');
+
+    arr = [1,2,3];
+    arr.insert(4, 1)
+    same(arr, [1,4,2,3], 'Array#insert');
+
+    arr = ['a','b','c'];
+    arr.insert('d', 1)
+    same(arr, ['a','d','b','c'], 'Array#insert');
+
+    arr = [{a:1},{a:2}];
+    arr.insert({a:3}, 1)
+    same(arr, [{a:1},{a:3},{a:2}], 'Array#insert');
+    same(arr.insert({a:3}), {a:3}, 'Array#insert');
 
 
 
