@@ -1424,6 +1424,9 @@ test('Array', function () {
     same(['a'].at(0), 'a', 'Array#at');
     same(['a'].at(1), null, 'Array#at');
     same(['a'].at(-1), 'a', 'Array#at');
+    same(['a','b','c','d','e','f'].at(0,2,4), ['a','c','e'], 'Array#at');
+    same(['a','b','c','d','e','f'].at(1,3,5), ['b','d','f'], 'Array#at');
+    same(['a','b','c','d','e','f'].at(0,2,4,6), ['a','c','e'], 'Array#at');
 
 
 
@@ -1451,7 +1454,7 @@ test('Array', function () {
 
 
 
-    same(['a','b','c'].first(), ['a'], 'Array#first');
+    same(['a','b','c'].first(), 'a', 'Array#first');
     same(['a','b','c'].first(1), ['a'], 'Array#first');
     same(['a','b','c'].first(2), ['a','b'], 'Array#first');
     same(['a','b','c'].first(3), ['a','b','c'], 'Array#first');
@@ -1461,7 +1464,7 @@ test('Array', function () {
     same(['a','b','c'].first(-3), [], 'Array#first');
 
 
-    same(['a','b','c'].last(), ['c'], 'Array#last');
+    same(['a','b','c'].last(), 'c', 'Array#last');
     same(['a','b','c'].last(1), ['c'], 'Array#last');
     same(['a','b','c'].last(2), ['b','c'], 'Array#last');
     same(['a','b','c'].last(3), ['a','b','c'], 'Array#last');
@@ -1800,6 +1803,25 @@ test('Array', function () {
     same([[{a:1},{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
     same([[{a:1},{a:2},{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
     same([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten');
+
+
+    arr = [1,2,3,4,5,6,7,8,9,10];
+    var firsts = [];
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+    firsts.push(arr.shuffle().first());
+
+    /* Note that there is a built-in 0.00000001% chance that this test will fail */
+    equals(firsts.all(1), false, 'Array#shuffle');
+
+
 
 });
 
