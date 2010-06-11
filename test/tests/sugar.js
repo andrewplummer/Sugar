@@ -1404,6 +1404,11 @@ test('Array', function () {
     same([null, null].findAllFromIndex(1, null), [null, null], 'Array#findAllFromIndex');
 
 
+    // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
+    arr = [{name:'john',age:10,food:'sushi'},{name:'randy',age:23,food:'natto'},{name:'karen',age:32,food:'salad'}];
+    arr = [1,2,3,4,5,6,7,8,9];
+    same(arr.findAllFromIndex(4, function(n){ return n % 3 == 0; }), [6,9,3], 'Array#findAllFromIndex');
+    same(arr.reverse().findAllFromIndex(4, function(n){ return n % 3 == 0; }), [3,9,6], 'Array#findAllFromIndex reversed');
 
 
     same([1,1,3].unique(), [1,3], 'Array#unique');
