@@ -1138,8 +1138,8 @@ test('Array', function () {
 
 
 
-    equals([12, 5, 8, 130, 44].every(function(el, i, a){ return el >= 10 }), false, 'Array#every');
-    equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10 }), true, 'Array#every');
+    equals([12, 5, 8, 130, 44].every(function(el, i, a){ return el >= 10; }), false, 'Array#every');
+    equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10; }), true, 'Array#every');
     ['a'].every(function(el, i, a){
       same(a, ['a'], 'Array#every');
       equals(el, 'a', 'Array#every');
@@ -1147,7 +1147,11 @@ test('Array', function () {
       equals(this, 'this', 'Array#every');
     }, 'this');
 
+    equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10; }), true, 'Array#every');
 
+    same([{name:'john',age:25},{name:'fred',age:85}].every('age'), true, 'Array#every');
+    same([{name:'john',age:25},{name:'fred',age:85}].every('name'), true, 'Array#every');
+    same([{name:'john',age:25},{name:'fred',age:85}].every('cupsize'), false, 'Array#every');
 
     equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el > 10 }), true, 'Array#some');
     equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el < 10 }), true, 'Array#some');
@@ -1161,6 +1165,12 @@ test('Array', function () {
       equals(this, 'this', 'Array#some');
     }, 'this');
 
+    same([{name:'john',age:25},{name:'fred',age:85}].some('age'), true, 'Array#some');
+    same([{name:'john',age:25},{name:'fred',age:85}].some('name'), true, 'Array#some');
+    same([{name:'john',age:25},{name:'fred',age:85}].some('cupsize'), false, 'Array#some');
+    same([{name:'john',age:25},{name:'fred'}].some('age'), true, 'Array#some');
+    same([{name:'john',age:25},{name:'fred'}].some('cupsize'), false, 'Array#some');
+
 
 
 
@@ -1173,6 +1183,10 @@ test('Array', function () {
       equals(i, 0, 'Array#filter');
       equals(this, 'this', 'Array#filter');
     }, 'this');
+
+    same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [{name:'john',age:25},{name:'fred',age:85}], 'Array#filter');
+    same([{name:'john',age:25},{name:'fred',age:85}].filter('cupsize'), [], 'Array#filter');
+    same([{name:'john',age:25},{name:'fred'}].filter('age'), [{name:'john',age:25}], 'Array#filter');
 
 
 
@@ -1238,6 +1252,12 @@ test('Array', function () {
       equals(this, 'this', 'Array#map');
     }, 'this');
 
+
+    same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map');
+    same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map');
+    same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map');
+    same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map');
+    same([].map('name'), [], 'Array#map');
 
     same(['foot','goose','moose'].collect(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#collect');
     same([1,4,9].collect(Math.sqrt), [1,2,3], 'Array#collect');
