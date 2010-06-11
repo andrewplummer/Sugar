@@ -1364,7 +1364,44 @@ test('Array', function () {
     same([1,2,3].findAll(function(e){ return e > 3; }), [], 'Array#findAll');
     same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAll');
     same([function(){}].findAll(function(e){}), [], 'Array#findAll');
-    same([null, null].findAll(null), [null, null], 'Array#find');
+    same([null, null].findAll(null), [null, null], 'Array#findAll');
+
+
+
+    same(['a','b','c'].findAllFromIndex(0, 'a'), ['a'], 'Array#findAllFromIndex');
+    same(['a','a','c'].findAllFromIndex(0, 'a'), ['a','a'], 'Array#findAllFromIndex');
+    same(['a','b','c'].findAllFromIndex(0, 'q'), [], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(0, 1), [1], 'Array#findAllFromIndex');
+    same([2,2,3].findAllFromIndex(0, 2), [2,2], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(0, 4), [], 'Array#findAllFromIndex');
+    same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {a:1}), [{a:1}], 'Array#findAllFromIndex');
+    same([{a:1},{a:1},{c:3}].findAllFromIndex(0, {a:1}), [{a:1},{a:1}], 'Array#findAllFromIndex');
+    same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {d:4}), [], 'Array#findAllFromIndex');
+    same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {c:4}), [], 'Array#findAllFromIndex');
+    same([[1,2],[2,3],[4,5]].findAllFromIndex(0, [2,3]), [[2,3]], 'Array#findAllFromIndex');
+    same([[1,2],[2,3],[4,5]].findAllFromIndex(0, [2,4]), [], 'Array#findAllFromIndex');
+    same([[1,2],[2,3],[2,3]].findAllFromIndex(0, [2,3]), [[2,3],[2,3]], 'Array#findAllFromIndex');
+    same(['foo','bar'].findAllFromIndex(0, /f+/), ['foo'], 'Array#findAllFromIndex');
+    same(['foo','bar'].findAllFromIndex(0, /[a-f]/), ['foo','bar'], 'Array#findAllFromIndex');
+    same(['foo','bar'].findAllFromIndex(1, /[a-f]/), ['bar','foo'], 'Array#findAllFromIndex');
+    same(['foo','bar'].findAllFromIndex(0, /q+/), [], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(0, function(e){ return e > 0; }), [1,2,3], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(1, function(e){ return e > 0; }), [2,3,1], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(2, function(e){ return e > 0; }), [3,1,2], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(3, function(e){ return e > 0; }), [1,2,3], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(0, function(e){ return e > 1; }), [2,3], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(1, function(e){ return e > 1; }), [2,3], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(2, function(e){ return e > 1; }), [3,2], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(0, function(e){ return e > 2; }), [3], 'Array#findAllFromIndex');
+    same([1,2,3].findAllFromIndex(0, function(e){ return e > 3; }), [], 'Array#findAllFromIndex');
+
+    same([{a:10},{a:8},{a:3}].findAllFromIndex(0, function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAllFromIndex');
+    same([{a:10},{a:8},{a:3}].findAllFromIndex(1, function(e){ return e['a'] > 5; }), [{a:8},{a:10}], 'Array#findAllFromIndex');
+    same([{a:10},{a:8},{a:3}].findAllFromIndex(2, function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAllFromIndex');
+    same([function(){}].findAllFromIndex(0, function(e){}), [], 'Array#findAllFromIndex');
+    same([function(){}].findAllFromIndex(1, function(e){}), [], 'Array#findAllFromIndex');
+    same([null, null].findAllFromIndex(0, null), [null, null], 'Array#findAllFromIndex');
+    same([null, null].findAllFromIndex(1, null), [null, null], 'Array#findAllFromIndex');
 
 
 
@@ -1493,6 +1530,9 @@ test('Array', function () {
     same(['a','b','c'].last(-2), [], 'Array#last');
     same(['a','b','c'].last(-3), [], 'Array#last');
     same(['a','b','c'].last(-4), [], 'Array#last');
+
+
+
 
 
 
