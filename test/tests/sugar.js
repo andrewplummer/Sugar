@@ -1961,6 +1961,22 @@ test('Array', function () {
     same([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten');
 
 
+
+
+
+    arr = ['more','fun','for','everyone!','bring','the','whole','family'];
+    same(arr.sortBy('length'), ['fun','for','the','more','bring','whole','family','everyone!'], 'Array#sortBy');
+    same(arr.sortBy('length', true), ['everyone!','family','bring','whole','more','fun','for','the'], 'Array#sortBy');
+
+    arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
+    same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy');
+    same(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy');
+
+
+
+
+
+
     arr = [1,2,3,4,5,6,7,8,9,10];
     var firsts = [];
     firsts.push(arr.shuffle().first());
