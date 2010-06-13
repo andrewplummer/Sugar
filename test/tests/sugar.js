@@ -504,6 +504,7 @@ test('String', function () {
   equal(counter, 6, 'String#chars');
   same(result, ['G','I','N','G','E','R'], 'String#chars');
 
+  /*
   counter = 0;
   var sentence = 'these pretzels are \n\n making me         thirsty!\n\n';
   test = ['these', 'pretzels', 'are', 'making', 'me', 'thirsty!'];
@@ -513,11 +514,14 @@ test('String', function () {
   });
   equal(counter, 6, 'String#words');
   same(result, test, 'String#words');
+  */
 
   counter = 0;
   var paragraph = 'these\npretzels\nare\n\nmaking\nme\n         thirsty!\n\n\n\n';
   test = ['these', 'pretzels', 'are', '', 'making', 'me', '         thirsty!'];
+  console.info(paragraph);
   result = paragraph.lines(function(str, i){
+      console.info(i, str, test[i])
     equal(str, test[i], 'String#lines');
     counter ++;
   });
@@ -1113,6 +1117,12 @@ test('Array', function () {
 
     equals([{ foo: 'bar' }].indexOf({ foo: 'bar' }), -1, 'Array#indexOf');
 
+    ['a'].indexOf(function(el, i, a){
+      same(a, ['a'], 'Array#indexOf');
+      equals(el, 'a', 'Array#indexOf');
+      equals(i, 0, 'Array#indexOf');
+      equals(this, 'this', 'Array#indexOf');
+    }, 'this');
 
     equals(['a', 'b', 'c', 'd', 'a', 'b'].lastIndexOf('b'), 5, 'Array#lastIndexOf');
     equals(['a', 'b', 'c', 'd', 'a', 'b'].lastIndexOf('b', 4), 1, 'Array#lastIndexOf');
@@ -1135,6 +1145,13 @@ test('Array', function () {
     equals([2, 5, 9, 2].lastIndexOf(2, -10), -1, 'Array#lastIndexOf');
 
     equals([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), -1, 'Array#lastIndexOf');
+
+    ['a'].lastIndexOf(function(el, i, a){
+      same(a, ['a'], 'Array#lastIndexOf');
+      equals(el, 'a', 'Array#lastIndexOf');
+      equals(i, 0, 'Array#lastIndexOf');
+      equals(this, 'this', 'Array#lastIndexOf');
+    }, 'this');
 
 
 
@@ -1685,6 +1702,55 @@ test('Array', function () {
     same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].group(function(el){ return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#group');
     same(people.group(function(p){ return p.age; }), {27: [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#group');
 
+    /*
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(1), [[1,2,3,4,5,6,7,8,9,10]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(2), [[1,2,3,4,5],[6,7,8,9,10]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(3), [[1,2,3,4],[5,6,7,8],[9,10]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(4), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(5), [[1,2],[3,4],[5,6],[7,8],[9,10]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(6), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(7), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null]], 'Array#inGroupsOf');
+
+    */
+
+    same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8,9].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7].inGroupsOf(3), [[1,2,3],[4,5,6],[7]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6].inGroupsOf(3), [[1,2,3],[4,5,6]], 'Array#inGroupsOf');
+    same([1,2,3,4,5].inGroupsOf(3), [[1,2,3],[4,5]], 'Array#inGroupsOf');
+    same([1,2,3,4].inGroupsOf(3), [[1,2,3],[4]], 'Array#inGroupsOf');
+    same([1,2,3].inGroupsOf(3), [[1,2,3]], 'Array#inGroupsOf');
+    same([1,2].inGroupsOf(3), [[1,2]], 'Array#inGroupsOf');
+    same([1].inGroupsOf(3), [[1]], 'Array#inGroupsOf');
+
+    same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9],[10, null, null]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8,9].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7,8].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8, null]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6,7].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7, null, null]], 'Array#inGroupsOf');
+    same([1,2,3,4,5,6].inGroupsOf(3, null), [[1,2,3],[4,5,6]], 'Array#inGroupsOf');
+    same([1,2,3,4,5].inGroupsOf(3, null), [[1,2,3],[4,5,null]], 'Array#inGroupsOf');
+    same([1,2,3,4].inGroupsOf(3, null), [[1,2,3],[4,null,null]], 'Array#inGroupsOf');
+    same([1,2,3].inGroupsOf(3, null), [[1,2,3]], 'Array#inGroupsOf');
+    same([1,2].inGroupsOf(3, null), [[1,2,null]], 'Array#inGroupsOf');
+    same([1].inGroupsOf(3, null), [[1,null,null]], 'Array#inGroupsOf');
+
+    same([1].inGroupsOf(3, ' '), [[1,' ',' ']], 'Array#inGroupsOf');
+    same([1].inGroupsOf(3, true), [[1,true,true]], 'Array#inGroupsOf');
+    same([1].inGroupsOf(3, false), [[1,false,false]], 'Array#inGroupsOf');
+
+    same([1].inGroupsOf(), [[1]], 'Array#inGroupsOf');
+    same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf');
+
+    same([1].inGroupsOf(0), [1], 'Array#inGroupsOf');
+    same([1].inGroupsOf(0, null), [1], 'Array#inGroupsOf');
+
+    same([1].inGroupsOf(3, null), [[1, null, null]], 'Array#inGroupsOf');
+    same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf');
+    same([].inGroupsOf(3), [], 'Array#inGroupsOf');
+    same([].inGroupsOf(3, null), [], 'Array#inGroupsOf');
+    same([null].inGroupsOf(3), [[null]], 'Array#inGroupsOf');
+    same([null].inGroupsOf(3, null), [[null,null,null]], 'Array#inGroupsOf');
 
 
 
@@ -1757,7 +1823,11 @@ test('Array', function () {
 
 
 
+    /* DELETE IS A RESERVED WORD IN IE!! */
+    /*
     arr = [1,2,2,3];
+    console.info('wuts')
+    console.info(arr)
     arr.delete();
     same(arr, [], 'Array#delete');
 
@@ -1789,6 +1859,7 @@ test('Array', function () {
     arr.delete({a:1});
     same(arr, [{a:2}], 'Array#delete');
 
+    */
 
 
 
