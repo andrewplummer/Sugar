@@ -519,9 +519,7 @@ test('String', function () {
   counter = 0;
   var paragraph = 'these\npretzels\nare\n\nmaking\nme\n         thirsty!\n\n\n\n';
   test = ['these', 'pretzels', 'are', '', 'making', 'me', '         thirsty!'];
-  console.info(paragraph);
   result = paragraph.lines(function(str, i){
-      console.info(i, str, test[i])
     equal(str, test[i], 'String#lines');
     counter ++;
   });
@@ -2069,6 +2067,68 @@ test('Array', function () {
     // These tests are a bit more complicated and are designed to flesh out desired behavior
     var ids = [11235,11211,11235,43248,55232,11456];
 
+
+
+
+
+
+    // Thanks to Steven Levitah (http://stevenlevithan.com/demo/split.cfm) for inspiration and information here.
+
+    same(''.split() , [''] , 'Array#split complex regex splitting');
+    same(''.split(/./) , [''] , 'Array#split complex regex splitting');
+    same(''.split(/.?/) , [] , 'Array#split complex regex splitting');
+    same(''.split(/.??/) , [] , 'Array#split complex regex splitting');
+    same('ab'.split(/a*/) , ['', 'b'] , 'Array#split complex regex splitting');
+    same('ab'.split(/a*?/) , ['a', 'b'] , 'Array#split complex regex splitting');
+    same('ab'.split(/(?:ab)/) , ['', ''] , 'Array#split complex regex splitting');
+    same('ab'.split(/(?:ab)*/) , ['', ''] , 'Array#split complex regex splitting');
+    same('ab'.split(/(?:ab)*?/) , ['a', 'b'] , 'Array#split complex regex splitting');
+    same('test'.split('') , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
+    same('test'.split() , ['test'] , 'Array#split complex regex splitting');
+    same('111'.split(1) , ['', '', '', ''] , 'Array#split complex regex splitting');
+    same('test'.split(/(?:)/, 2) , ['t', 'e'] , 'Array#split complex regex splitting');
+    same('test'.split(/(?:)/, -1) , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
+    same('test'.split(/(?:)/, undefined) , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
+    same('test'.split(/(?:)/, null) , [] , 'Array#split complex regex splitting');
+    same('test'.split(/(?:)/, NaN) , [] , 'Array#split complex regex splitting');
+    same('test'.split(/(?:)/, true) , ['t'] , 'Array#split complex regex splitting');
+    same('test'.split(/(?:)/, '2') , ['t', 'e'] , 'Array#split complex regex splitting');
+    same('test'.split(/(?:)/, 'two') , [] , 'Array#split complex regex splitting');
+    same('a'.split(/-/) , ['a'] , 'Array#split complex regex splitting');
+    same('a'.split(/-?/) , ['a'] , 'Array#split complex regex splitting');
+    same('a'.split(/-??/) , ['a'] , 'Array#split complex regex splitting');
+    same('a'.split(/a/) , ['', ''] , 'Array#split complex regex splitting');
+    same('a'.split(/a?/) , ['', ''] , 'Array#split complex regex splitting');
+    same('a'.split(/a??/) , ['a'] , 'Array#split complex regex splitting');
+    same('ab'.split(/-/) , ['ab'] , 'Array#split complex regex splitting');
+    same('ab'.split(/-?/) , ['a', 'b'] , 'Array#split complex regex splitting');
+    same('ab'.split(/-??/) , ['a', 'b'] , 'Array#split complex regex splitting');
+    same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split complex regex splitting');
+    same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split complex regex splitting');
+    same('a-b'.split(/-??/) , ['a', '-', 'b'] , 'Array#split complex regex splitting');
+    same('a--b'.split(/-/) , ['a', '', 'b'] , 'Array#split complex regex splitting');
+    same('a--b'.split(/-?/) , ['a', '', 'b'] , 'Array#split complex regex splitting');
+    same('a--b'.split(/-??/) , ['a', '-', '-', 'b'] , 'Array#split complex regex splitting');
+    same(''.split(/()()/) , [] , 'Array#split complex regex splitting');
+    same('.'.split(/()()/) , ['.'] , 'Array#split complex regex splitting');
+    same('.'.split(/(.?)(.?)/) , ['', '.', '', ''] , 'Array#split complex regex splitting');
+    same('.'.split(/(.??)(.??)/) , ['.'] , 'Array#split complex regex splitting');
+    same('.'.split(/(.)?(.)?/) , ['', '.', undefined, ''] , 'Array#split complex regex splitting');
+    same('tesst'.split(/(s)*/) , ['t', undefined, 'e', 's', 't'] , 'Array#split complex regex splitting');
+    same('tesst'.split(/(s)*?/) , ['t', undefined, 'e', undefined, 's', undefined, 's', undefined, 't'] , 'Array#split complex regex splitting');
+    same('tesst'.split(/(s*)/) , ['t', '', 'e', 'ss', 't'] , 'Array#split complex regex splitting');
+    same('tesst'.split(/(s*?)/) , ['t', '', 'e', '', 's', '', 's', '', 't'] , 'Array#split complex regex splitting');
+    same('tesst'.split(/(?:s)*/) , ['t', 'e', 't'] , 'Array#split complex regex splitting');
+    same('tesst'.split(/(?=s+)/) , ['te', 's', 'st'] , 'Array#split complex regex splitting');
+    same('test'.split('t') , ['', 'es', ''] , 'Array#split complex regex splitting');
+    same('test'.split('es') , ['t', 't'] , 'Array#split complex regex splitting');
+    same('test'.split(/t/) , ['', 'es', ''] , 'Array#split complex regex splitting');
+    same('test'.split(/es/) , ['t', 't'] , 'Array#split complex regex splitting');
+    same('test'.split(/(t)/) , ['', 't', 'es', 't', ''] , 'Array#split complex regex splitting');
+    same('test'.split(/(es)/) , ['t', 'es', 't'] , 'Array#split complex regex splitting');
+    same('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split complex regex splitting');
+    same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split complex regex splitting');
+    same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split complex regex splitting');
 
 
 
