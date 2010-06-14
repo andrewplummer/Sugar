@@ -1641,13 +1641,16 @@ test('Array', function () {
     same(people.most(true, function(person){ return person.age; }).length, 2, 'Array#most');
 
 
+    people = people.sortBy('age');
 
-    same(people.least(function(person){ return person.age; }), 52, 'Array#least');
-    same(people.least(true, function(person){ return person.age; }), [{name:'mary',age:52,hair:'blonde'}], 'Array#least');
-    same(people.least(true, true, function(person){ return person.age; }), [[{name:'mary',age:52,hair:'blonde'}],[{name:'ronnie',age:13,hair:'brown'}]], 'Array#least');
+    same(people.least(function(person){ return person.age; }), 13, 'Array#least');
+    same(people.least(true, function(person){ return person.age; }), [{name:'ronnie',age:13,hair:'brown'}], 'Array#least');
+    same(people.least(true, true, function(person){ return person.age; }), [[{name:'ronnie',age:13,hair:'brown'}],[{name:'mary',age:52,hair:'blonde'}]], 'Array#least');
+
+
     same(people.least(function(person){ return person.hair; }), 'brown', 'Array#least');
-    same(people.least(true, function(person){ return person.hair; }), [{name:'jim',age:27,hair:'brown'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least');
-    same(people.least(true, true, function(person){ return person.hair; }), [[{name:'jim',age:27,hair:'brown'},{name:'ronnie',age:13,hair:'brown'}],[{name:'mary',age:52,hair:'blonde'},{name:'edmund',age:27,hair:'blonde'}]], 'Array#least');
+    same(people.least(true, function(person){ return person.hair; }), [{name:'ronnie',age:13,hair:'brown'},{name:'jim',age:27,hair:'brown'}], 'Array#least');
+    same(people.least(true, true, function(person){ return person.hair; }), [[{name:'ronnie',age:13,hair:'brown'},{name:'jim',age:27,hair:'brown'}],[{name:'edmund',age:27,hair:'blonde'},{name:'mary',age:52,hair:'blonde'}]], 'Array#least');
 
     same([].least(), null, 'Array#least');
     same([1,2,3].least(), 1, 'Array#least');
@@ -1698,7 +1701,10 @@ test('Array', function () {
     same([1,1,2,2,3,3,4].group(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#group');
     same(['a','b','c','a','e','c'].group(), {'a':['a','a'],'b':['b'],'c':['c','c'],'e':['e']}, 'Array#group');
     same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].group(function(el){ return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#group');
-    same(people.group(function(p){ return p.age; }), {27: [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#group');
+
+
+    people = people.sortBy('hair');
+    same(people.group(function(p){ return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#group');
 
     /*
     same([1,2,3,4,5,6,7,8,9,10].inGroups(1), [[1,2,3,4,5,6,7,8,9,10]], 'Array#inGroupsOf');
@@ -2033,9 +2039,9 @@ test('Array', function () {
 
 
 
-    arr = ['more','fun','for','everyone!','bring','the','whole','family'];
-    same(arr.sortBy('length'), ['fun','for','the','more','bring','whole','family','everyone!'], 'Array#sortBy');
-    same(arr.sortBy('length', true), ['everyone!','family','bring','whole','more','fun','for','the'], 'Array#sortBy');
+    arr = ['more','everyone!','bring','the','family'];
+    same(arr.sortBy('length'), ['the','more','bring','family','everyone!'], 'Array#sortBy');
+    same(arr.sortBy('length', true), ['everyone!','family','bring','more','the'], 'Array#sortBy');
 
     arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
     same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy');
@@ -2074,61 +2080,86 @@ test('Array', function () {
 
     // Thanks to Steven Levitah (http://stevenlevithan.com/demo/split.cfm) for inspiration and information here.
 
+
+    same('a,b,c,d,e'.split(',') , ['a','b','c','d','e'] , 'Array#split complex regex splitting');
+    same('a|b|c|d|e'.split(',') , ['a|b|c|d|e'] , 'Array#split complex regex splitting');
+    same('a|b|c|d|e'.split('|') , ['a','b','c','d','e'] , 'Array#split complex regex splitting');
+    same('a,b,c,d,e'.split(/,/) , ['a','b','c','d','e'] , 'Array#split complex regex splitting');
+    same('a|b|c|d|e'.split(/\|/) , ['a','b','c','d','e'] , 'Array#split complex regex splitting');
+    same('a|b|c|d|e'.split(/[,|]/) , ['a','b','c','d','e'] , 'Array#split complex regex splitting');
+    same('a|b|c|d|e'.split(/[a-z]/) , ['','|','|','|','|',''] , 'Array#split complex regex splitting');
+    same('a|b|c|d|e'.split(/\|*/) , ['a','b','c','d','e'] , 'Array#split complex regex splitting');
+    same('a|b|c|d|e'.split(/\|?/) , ['a','b','c','d','e'] , 'Array#split complex regex splitting');
+
+
+    same('a|||b|c|d|e'.split('|') , ['a', '', '', 'b','c','d','e'] , 'Array#split complex regex splitting');
+    same('a|||b|c|d|e'.split(/\|/) , ['a', '', '', 'b','c','d','e'] , 'Array#split complex regex splitting');
+
+    same('paragraph one\n\nparagraph two\n\n\n'.split(/\n/) , ['paragraph one', '', 'paragraph two','','',''] , 'Array#split complex regex splitting');
     same(''.split() , [''] , 'Array#split complex regex splitting');
     same(''.split(/./) , [''] , 'Array#split complex regex splitting');
     same(''.split(/.?/) , [] , 'Array#split complex regex splitting');
-    same(''.split(/.??/) , [] , 'Array#split complex regex splitting');
-    same('ab'.split(/a*/) , ['', 'b'] , 'Array#split complex regex splitting');
-    same('ab'.split(/a*?/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('ab'.split(/(?:ab)/) , ['', ''] , 'Array#split complex regex splitting');
-    same('ab'.split(/(?:ab)*/) , ['', ''] , 'Array#split complex regex splitting');
-    same('ab'.split(/(?:ab)*?/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('test'.split('') , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
-    same('test'.split() , ['test'] , 'Array#split complex regex splitting');
-    same('111'.split(1) , ['', '', '', ''] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, 2) , ['t', 'e'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, -1) , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, undefined) , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, null) , [] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, NaN) , [] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, true) , ['t'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, '2') , ['t', 'e'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, 'two') , [] , 'Array#split complex regex splitting');
+
+    same('a'.split(/./) , ['',''] , 'Array#split complex regex splitting');
     same('a'.split(/-/) , ['a'] , 'Array#split complex regex splitting');
-    same('a'.split(/-?/) , ['a'] , 'Array#split complex regex splitting');
-    same('a'.split(/-??/) , ['a'] , 'Array#split complex regex splitting');
-    same('a'.split(/a/) , ['', ''] , 'Array#split complex regex splitting');
-    same('a'.split(/a?/) , ['', ''] , 'Array#split complex regex splitting');
-    same('a'.split(/a??/) , ['a'] , 'Array#split complex regex splitting');
-    same('ab'.split(/-/) , ['ab'] , 'Array#split complex regex splitting');
-    same('ab'.split(/-?/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('ab'.split(/-??/) , ['a', 'b'] , 'Array#split complex regex splitting');
     same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split complex regex splitting');
     same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('a-b'.split(/-??/) , ['a', '-', 'b'] , 'Array#split complex regex splitting');
-    same('a--b'.split(/-/) , ['a', '', 'b'] , 'Array#split complex regex splitting');
-    same('a--b'.split(/-?/) , ['a', '', 'b'] , 'Array#split complex regex splitting');
-    same('a--b'.split(/-??/) , ['a', '-', '-', 'b'] , 'Array#split complex regex splitting');
-    same(''.split(/()()/) , [] , 'Array#split complex regex splitting');
-    same('.'.split(/()()/) , ['.'] , 'Array#split complex regex splitting');
-    same('.'.split(/(.?)(.?)/) , ['', '.', '', ''] , 'Array#split complex regex splitting');
-    same('.'.split(/(.??)(.??)/) , ['.'] , 'Array#split complex regex splitting');
-    same('.'.split(/(.)?(.)?/) , ['', '.', undefined, ''] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(s)*/) , ['t', undefined, 'e', 's', 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(s)*?/) , ['t', undefined, 'e', undefined, 's', undefined, 's', undefined, 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(s*)/) , ['t', '', 'e', 'ss', 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(s*?)/) , ['t', '', 'e', '', 's', '', 's', '', 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(?:s)*/) , ['t', 'e', 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(?=s+)/) , ['te', 's', 'st'] , 'Array#split complex regex splitting');
-    same('test'.split('t') , ['', 'es', ''] , 'Array#split complex regex splitting');
-    same('test'.split('es') , ['t', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/t/) , ['', 'es', ''] , 'Array#split complex regex splitting');
-    same('test'.split(/es/) , ['t', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/(t)/) , ['', 't', 'es', 't', ''] , 'Array#split complex regex splitting');
-    same('test'.split(/(es)/) , ['t', 'es', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split complex regex splitting');
-    same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split complex regex splitting');
-    same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split complex regex splitting');
+
+
+
+
+   // same(''.split(/.??/) , [] , 'Array#split complex regex splitting');
+   // same('ab'.split(/a*/) , ['', 'b'] , 'Array#split complex regex splitting');
+   // same('ab'.split(/a*?/) , ['a', 'b'] , 'Array#split complex regex splitting');
+   // same('ab'.split(/(?:ab)/) , ['', ''] , 'Array#split complex regex splitting');
+   // same('ab'.split(/(?:ab)*/) , ['', ''] , 'Array#split complex regex splitting');
+   // same('ab'.split(/(?:ab)*?/) , ['a', 'b'] , 'Array#split complex regex splitting');
+   // same('test'.split('') , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
+   // same('test'.split() , ['test'] , 'Array#split complex regex splitting');
+   // same('111'.split(1) , ['', '', '', ''] , 'Array#split complex regex splitting');
+   // same('test'.split(/(?:)/, 2) , ['t', 'e'] , 'Array#split complex regex splitting');
+   // same('test'.split(/(?:)/, -1) , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
+   // same('test'.split(/(?:)/, undefined) , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
+   // same('test'.split(/(?:)/, null) , [] , 'Array#split complex regex splitting');
+   // same('test'.split(/(?:)/, NaN) , [] , 'Array#split complex regex splitting');
+   // same('test'.split(/(?:)/, true) , ['t'] , 'Array#split complex regex splitting');
+   // same('test'.split(/(?:)/, '2') , ['t', 'e'] , 'Array#split complex regex splitting');
+   // same('test'.split(/(?:)/, 'two') , [] , 'Array#split complex regex splitting');
+   // same('a'.split(/-/) , ['a'] , 'Array#split complex regex splitting');
+   // same('a'.split(/-?/) , ['a'] , 'Array#split complex regex splitting');
+   // same('a'.split(/-??/) , ['a'] , 'Array#split complex regex splitting');
+   // same('a'.split(/a/) , ['', ''] , 'Array#split complex regex splitting');
+   // same('a'.split(/a?/) , ['', ''] , 'Array#split complex regex splitting');
+   // same('a'.split(/a??/) , ['a'] , 'Array#split complex regex splitting');
+   // same('ab'.split(/-/) , ['ab'] , 'Array#split complex regex splitting');
+   // same('ab'.split(/-?/) , ['a', 'b'] , 'Array#split complex regex splitting');
+   // same('ab'.split(/-??/) , ['a', 'b'] , 'Array#split complex regex splitting');
+   // same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split complex regex splitting');
+   // same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split complex regex splitting');
+   // same('a-b'.split(/-??/) , ['a', '-', 'b'] , 'Array#split complex regex splitting');
+   // same('a--b'.split(/-/) , ['a', '', 'b'] , 'Array#split complex regex splitting');
+   // same('a--b'.split(/-?/) , ['a', '', 'b'] , 'Array#split complex regex splitting');
+   // same('a--b'.split(/-??/) , ['a', '-', '-', 'b'] , 'Array#split complex regex splitting');
+   // same(''.split(/()()/) , [] , 'Array#split complex regex splitting');
+   // same('.'.split(/()()/) , ['.'] , 'Array#split complex regex splitting');
+   // same('.'.split(/(.?)(.?)/) , ['', '.', '', ''] , 'Array#split complex regex splitting');
+   // same('.'.split(/(.??)(.??)/) , ['.'] , 'Array#split complex regex splitting');
+   // same('.'.split(/(.)?(.)?/) , ['', '.', undefined, ''] , 'Array#split complex regex splitting');
+   // same('tesst'.split(/(s)*/) , ['t', undefined, 'e', 's', 't'] , 'Array#split complex regex splitting');
+   // same('tesst'.split(/(s)*?/) , ['t', undefined, 'e', undefined, 's', undefined, 's', undefined, 't'] , 'Array#split complex regex splitting');
+   // same('tesst'.split(/(s*)/) , ['t', '', 'e', 'ss', 't'] , 'Array#split complex regex splitting');
+   // same('tesst'.split(/(s*?)/) , ['t', '', 'e', '', 's', '', 's', '', 't'] , 'Array#split complex regex splitting');
+   // same('tesst'.split(/(?:s)*/) , ['t', 'e', 't'] , 'Array#split complex regex splitting');
+   // same('tesst'.split(/(?=s+)/) , ['te', 's', 'st'] , 'Array#split complex regex splitting');
+   // same('test'.split('t') , ['', 'es', ''] , 'Array#split complex regex splitting');
+   // same('test'.split('es') , ['t', 't'] , 'Array#split complex regex splitting');
+   // same('test'.split(/t/) , ['', 'es', ''] , 'Array#split complex regex splitting');
+   // same('test'.split(/es/) , ['t', 't'] , 'Array#split complex regex splitting');
+   // same('test'.split(/(t)/) , ['', 't', 'es', 't', ''] , 'Array#split complex regex splitting');
+   // same('test'.split(/(es)/) , ['t', 'es', 't'] , 'Array#split complex regex splitting');
+   // same('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split complex regex splitting');
+   // same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split complex regex splitting');
+   // same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split complex regex splitting');
 
 
 
