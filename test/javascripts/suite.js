@@ -11,7 +11,7 @@
   QUnit = {
     log: function(result, message, environment){
       if(!result){
-        failedAssertions += '<p class="fail">'+message+'</p>';
+        failedAssertions += '<p class="fail">'+message.replace(/(&nbsp;)+/g, ' ') +'</p>';
       } else {
         totalAssertions++;
       }
