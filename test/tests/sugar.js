@@ -2255,6 +2255,11 @@ test('Array', function () {
 
 
 
+test('Date', function () {
+
+
+});
+
 
 test('RegExp', function () {
 
@@ -2266,4 +2271,6 @@ test('RegExp', function () {
     equals(RegExp.escape('*.+[]{}()?|/'), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape');
 
 });
+
+
 
