@@ -70,7 +70,7 @@ test('Number', function () {
     dCounter--;
   });
   equal(counter, 5, 'Number#downto');
-  equal(ret, 5, 'Number#downto');
+  equal(ret, [5,4,3,2,1], 'Number#downto');
 
 
   counter = 0;
@@ -81,15 +81,17 @@ test('Number', function () {
     dCounter++;
   });
   equal(counter, 5, 'Number#upto');
-  equal(ret, 1, 'Number#upto');
+  equal(ret, [1,2,3,4,5], 'Number#upto');
 
   counter = 0;
-  (5).downto(10, function(){});
+  ret = (5).downto(10, function(){});
   equal(counter, 0, 'Number#downto');
+  equal(ret, [], 'Number#downto');
 
   counter = 0;
-  (5).upto(1, function(){});
+  ret = (5).upto(1, function(){});
   equal(counter, 0, 'Number#downto');
+  equal(ret, [], 'Number#downto');
 
 
   counter = 0;
@@ -177,6 +179,12 @@ test('Number', function () {
   equals((1532587.5752).format(' ', ','), '1 532 587,5752')
 
 
+  equals((9999999.99).format(),                     '9,999,999.99');     // standard
+  equals((9999999.99).format('.',','),              '9.999.999,99');     // euro style!
+  equals((9999999.99).format(',','.', 2),           '9,99,99,99.99');    // not sure if this is used, but...
+  equals((9999999.99).format(',','.', [3,2]),       '99,99,999.99');     // Indian style!
+  equals((999999999.99).format(',','.', [1,2,1,4]), '9,9999,9,99,9.99'); // Nothing I've ever heard of!
+
 
   equals((0).hex(), '0', 'Number#hex')
   equals((10).hex(), 'a', 'Number#hex')
@@ -186,8 +194,8 @@ test('Number', function () {
   equals((2553423).hex(), '26f64f', 'Number#hex')
 
 
-  equals((24).isBlank(), false, 'Number#isBlank');
-  equals((0).isBlank(), false, 'Number#isBlank');
+  equals((24).blank(), false, 'Number#blank');
+  equals((0).blank(), false, 'Number#blank');
 
 
   equals((0).seconds(), 0, 'Number#seconds');
@@ -580,6 +588,8 @@ test('String', function () {
   equal('vader'.endsWith('der'), true, 'String#endsWith');
   equal('VADER'.endsWith('DER'), true, 'String#endsWith');
   equal('VADER'.endsWith('der'), true, 'String#endsWith');
+  equal('VADER'.endsWith('DER', true), true, 'String#endsWith');
+  equal('VADER'.endsWith('der', true), false, 'String#endsWith');
   equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith');
   equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith');
 
@@ -722,6 +732,8 @@ test('String', function () {
   equal('the rain in     spain    falls mainly   on     the        plain'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact');
   equal('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact');
   equal('\n\n\n\n           \t\t\t\t          \n\n      \t'.compact(), '', 'String#compact');
+  equal('　　　日本語　　　　　の　　　　　スペース　　　　　も　　'.compact(), '日本語　の　スペース　も', 'String#compact');
+
 
 
 
@@ -1467,6 +1479,7 @@ test('Array', function () {
 
 
     same([1,2,3].subtract([3,4,5]), [1,2], 'Array#subtract');
+    same([1,1,2,2,3,3,4,4,5,5].subtract([2,3,4]), [1,1,2,2,5,5], 'Array#subtract');
     same(['a','b','c'].subtract(['c','d','e']), ['a','b'], 'Array#subtract');
     same([1,2,3].subtract([1,2,3]), [], 'Array#subtract');
     same([1,2,3].subtract([3,2,1]), [], 'Array#subtract');
@@ -1562,19 +1575,28 @@ test('Array', function () {
 
 
     same([12,87,55].min(), 12, 'Array#min');
-    same([12,87,55].min(true), 12, 'Array#min');
+    same([12,87,55].min(true), [12], 'Array#min');
     same([-12,-87,-55].min(), -87, 'Array#min');
-    same([-12,-87,-55].min(true), -87, 'Array#min');
+    same([-12,-87,-55].min(true), [-87], 'Array#min');
     same([5,5,128].min(), 5, 'Array#min');
+    same([5,5,128].min(true), [5], 'Array#min');
     same([5,5,5].min(), 5, 'Array#min');
+    same([5,5,5].min(true), [5], 'Array#min');
     same([5,5,128].min(true), 5, 'Array#min');
     same(['a','b','c'].min(), null, 'Array#min');
+    same(['a','b','c'].min(true), [], 'Array#min');
     same([].min(), null, 'Array#min');
+    same([].min(true), [], 'Array#min');
     same([null].min(), null, 'Array#min');
+    same([null].min(true), [], 'Array#min');
     same([undefined].min(), null, 'Array#min');
+    same([undefined].min(true), [], 'Array#min');
     same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), {a:1,b:5}, 'Array#min');
     same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), {a:3,b:3}, 'Array#min');
+    same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min');
+    same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#min');
     same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), {a:-1,b:-5}, 'Array#min');
+    same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(true, function(el){ return el['b']; }), [{a:-1,b:-5}], 'Array#min');
     same(['short','and', 'mort'].min(function(el){ return el.length; }), 'and', 'Array#min');
     same(['short','and', 'mort'].min(true, function(el){ return el.length; }), ['and'], 'Array#min');
     same(['short','and', 'mort', 'fat'].min(function(el){ return el.length; }), 'and', 'Array#min');
@@ -1582,19 +1604,27 @@ test('Array', function () {
 
 
     same([12,87,55].max(), 87, 'Array#max');
-    same([12,87,55].max(true), 87, 'Array#max');
+    same([12,87,55].max(true), [87], 'Array#max');
     same([-12,-87,-55].max(), -12, 'Array#max');
-    same([-12,-87,-55].max(true), -12, 'Array#max');
+    same([-12,-87,-55].max(true), [-12], 'Array#max');
     same([5,5,128].max(), 128, 'Array#max');
-    same([5,128,128].max(true), 128, 'Array#max');
-    same([128,128,128].max(true), 128, 'Array#max');
+    same([5,128,128].max(true), [128], 'Array#max');
+    same([128,128,128].max(true), [128], 'Array#max');
     same(['a','b','c'].max(), null, 'Array#max');
-    same([].max(), null, 'Array#max');
+    same(['a','b','c'].max(true), [], 'Array#max');
+    same([].max(), [], 'Array#max');
+    same([].max(true), [], 'Array#max');
     same([null].max(), null, 'Array#max');
+    same([null].max(true), [], 'Array#max');
     same([undefined].max(), null, 'Array#max');
+    same([undefined].max(true), [], 'Array#max');
     same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), {a:3,b:5}, 'Array#max');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(true, function(el){ return el['a']; }), [{a:3,b:5}], 'Array#max');
     same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), {a:1,b:5}, 'Array#max');
+    same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:5}], 'Array#max');
+    same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max');
     same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), {a:-3,b:-3}, 'Array#max');
+    same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(true, function(el){ return el['b']; }), [{a:-3,b:-3}], 'Array#max');
     same(['short','and', 'mort'].max(function(el){ return el.length; }), 'short', 'Array#max');
     same(['short','and', 'mort'].max(true, function(el){ return el.length; }), ['short'], 'Array#max');
     same(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), 'short', 'Array#max');
@@ -1697,6 +1727,11 @@ test('Array', function () {
     same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average(function(el){ return el['a']; }), 2, 'Array#average');
 
 
+    same(people.average('age'), 29.75, 'Array#average');
+    same(people.average(function(p){ return p.age; }), 29.75, 'Array#average');
+    same(isNaN(people.average(function(p){ return p.hair; })), true, 'Array#average');
+
+
 
     same([1,1,2,2,3,3,4].group(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#group');
     same(['a','b','c','a','e','c'].group(), {'a':['a','a'],'b':['b'],'c':['c','c'],'e':['e']}, 'Array#group');
@@ -1756,6 +1791,10 @@ test('Array', function () {
     same([null].inGroupsOf(3), [[null]], 'Array#inGroupsOf');
     same([null].inGroupsOf(3, null), [[null,null,null]], 'Array#inGroupsOf');
 
+
+
+    // Emulating example of Enumerable#each_slice
+    same((1).upto(10).inGroupsOf(3).each(function(g){ return g[1]; }), [2,5,8], 'Array#inGroupsOf');
 
 
     same([1,2,3,4,5].split(3), [[1,2],[4,5]], 'Array#split');
@@ -2000,6 +2039,28 @@ test('Array', function () {
 
 
 
+    // None is the reverse of any
+
+    equal([1,2,3].none(), true, 'Array#none');
+    equal([1,2,3].none(1), false, 'Array#none');
+    equal([1,2,3].none(4), true, 'Array#none');
+    equal([1,2,3].none('a'), true, 'Array#none');
+    equal(['a','b','c'].none('a'), false, 'Array#none');
+    equal(['a','b','c'].none('f'), true, 'Array#none');
+    equal(['a','b','c'].none(/[a-f]/), false, 'Array#none');
+    equal(['a','b','c'].none(/[m-z]/), true, 'Array#none');
+    equal(['a','b','c'].none(function(e){ return e.length > 1; }), true, 'Array#none');
+    equal(['a','b','c'].none(function(e){ return e.length < 2; }), false, 'Array#none');
+    equal(['a','bar','cat'].none(function(e){ return e.length < 2; }), false, 'Array#none');
+    same([{a:1},{a:2},{a:1}].none(1), true, 'Array#none');
+    same([{a:1},{a:2},{a:1}].none({a:1}), false, 'Array#none');
+    same([{a:1},{a:2},{a:1}].none(function(e){ return e['a'] == 1; }), false, 'Array#none');
+    same([{a:1},{a:2},{a:1}].none(function(e){ return e['b'] == 1; }), true, 'Array#none');
+
+
+
+
+
     equal([1,2,3].all(), false, 'Array#all');
     equal([1,2,3].all(1), false, 'Array#all');
     equal([1,1,1].all(1), true, 'Array#all');
@@ -2043,6 +2104,9 @@ test('Array', function () {
     same(arr.sortBy('length'), ['the','more','bring','family','everyone!'], 'Array#sortBy');
     same(arr.sortBy('length', true), ['everyone!','family','bring','more','the'], 'Array#sortBy');
 
+    same(arr.sortBy(function(a){ return a.length; }), ['the','more','bring','family','everyone!'], 'Array#sortBy');
+    same(arr.sortBy(function(a){ return a.length; }, true), ['everyone!','family','bring','more','the'], 'Array#sortBy');
+
     arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
     same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy');
     same(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy');
@@ -2051,6 +2115,26 @@ test('Array', function () {
 
 
 
+
+    arr = [1,2,3,4,5,6,7,8,9,10];
+    var firsts = [];
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+    firsts.push(arr.randomize().first());
+
+    /* Note that there is a built-in 0.00000001% chance that this test will fail */
+    equals(firsts.all(1), false, 'Array#randomize');
+
+
+
+    // Shuffle is an alias
 
     arr = [1,2,3,4,5,6,7,8,9,10];
     var firsts = [];
@@ -2067,6 +2151,7 @@ test('Array', function () {
 
     /* Note that there is a built-in 0.00000001% chance that this test will fail */
     equals(firsts.all(1), false, 'Array#shuffle');
+
 
 
 
