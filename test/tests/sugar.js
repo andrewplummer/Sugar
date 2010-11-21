@@ -185,8 +185,8 @@ test('Number', function () {
   equals((0.52).format(), '0.52')
 
   // These discrepancies are due to floating point variable limitations.
-  equals((100046546510000.022435451).format(), '100,046,546,510,000.02')
-  equals((-100046546510000.022435451).format(), '-100,046,546,510,000.02')
+  equals((100046546510000.022435451).format().replace(/\.\d+$/, ''), '100,046,546,510,000')
+  equals((-100046546510000.022435451).format().replace(/\.\d+$/, ''), '-100,046,546,510,000')
 
   equals((1000).format(' '), '1 000', 'Number#format 1000')
   equals((1532587).format(' '), '1 532 587', 'Number#format larger number')
