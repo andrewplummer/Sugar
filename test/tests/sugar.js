@@ -1,5 +1,19 @@
 module("Sugar");
 
+
+var dateEquals = function(d, offset, message){
+  var buffer = 10; // Number of milliseconds of "play" to make sure these tests pass.
+  var now = new Date().getTime() + offset;
+  var max = now + buffer;
+  var min = now - buffer;
+  var time = d.getTime();
+  equals(time < max && time > min, true, message);
+}
+
+var contains = function(actual, expected, message){
+  equals(expected.any(actual), true, message);
+}
+
 test('Number', function () {
 
   var counter;
@@ -70,7 +84,7 @@ test('Number', function () {
     dCounter--;
   });
   equal(counter, 5, 'Number#downto');
-  equal(ret, [5,4,3,2,1], 'Number#downto');
+  same(ret, [5,4,3,2,1], 'Number#downto');
 
 
   counter = 0;
@@ -81,17 +95,17 @@ test('Number', function () {
     dCounter++;
   });
   equal(counter, 5, 'Number#upto');
-  equal(ret, [1,2,3,4,5], 'Number#upto');
+  same(ret, [1,2,3,4,5], 'Number#upto');
 
   counter = 0;
   ret = (5).downto(10, function(){});
   equal(counter, 0, 'Number#downto');
-  equal(ret, [], 'Number#downto');
+  same(ret, [], 'Number#downto');
 
   counter = 0;
   ret = (5).upto(1, function(){});
   equal(counter, 0, 'Number#downto');
-  equal(ret, [], 'Number#downto');
+  same(ret, [], 'Number#downto');
 
 
   counter = 0;
@@ -174,16 +188,11 @@ test('Number', function () {
   equals((100046546510000.022435451).format(), '100,046,546,510,000.02')
   equals((-100046546510000.022435451).format(), '-100,046,546,510,000.02')
 
-  equals((1000).format(' '), '1 000')
-  equals((1532587).format(' '), '1 532 587')
-  equals((1532587.5752).format(' ', ','), '1 532 587,5752')
-
-
-  equals((9999999.99).format(),                     '9,999,999.99');     // standard
-  equals((9999999.99).format('.',','),              '9.999.999,99');     // euro style!
-  equals((9999999.99).format(',','.', 2),           '9,99,99,99.99');    // not sure if this is used, but...
-  equals((9999999.99).format(',','.', [3,2]),       '99,99,999.99');     // Indian style!
-  equals((999999999.99).format(',','.', [1,2,1,4]), '9,9999,9,99,9.99'); // Nothing I've ever heard of!
+  equals((1000).format(' '), '1 000', 'Number#format 1000')
+  equals((1532587).format(' '), '1 532 587', 'Number#format larger number')
+  equals((1532587.5752).format(' ', ','), '1 532 587,5752', 'Number#format larger number with decimal')
+  equals((9999999.99).format(),                     '9,999,999.99', 'Number#format Standard');
+  equals((9999999.99).format('.',','),              '9.999.999,99', 'Number#format Euro style!');
 
 
   equals((0).hex(), '0', 'Number#hex')
@@ -270,24 +279,13 @@ test('Number', function () {
   equals((1).year(), 31557600000, 'Number#year');
 
 
-  var buffer = 10; // Number of milliseconds "play" to make sure these tests pass.
-
-  function dateEquals(d, offset, message){
-    var now = new Date().getTime() + offset;
-    var max = now + buffer;
-    var min = now - buffer;
-    var time = d.getTime();
-    equals(time < max && time > min, true, message);
-  }
-
-
-  dateEquals((1).second().since(), 1000, 'Number#since');
-  dateEquals((1).minute().since(), 60000, 'Number#since');
-  dateEquals((1).hour().since(), 3600000, 'Number#since');
-  dateEquals((1).day().since(), 86400000, 'Number#since');
-  dateEquals((1).week().since(), 604800000, 'Number#since');
-  dateEquals((1).month().since(), 2592000000, 'Number#since');
-  dateEquals((1).year().since(), 31557600000, 'Number#since');
+  dateEquals((1).second().since(), 1000, 'Number#since 1 second since');
+  dateEquals((1).minute().since(), 60000, 'Number#since 1 minute since');
+  dateEquals((1).hour().since(), 3600000, 'Number#since 1 hour since');
+  dateEquals((1).day().since(), 86400000, 'Number#since 1 day since');
+  dateEquals((1).week().since(), 604800000, 'Number#since 1 week since');
+  dateEquals((1).month().since(), 2592000000, 'Number#since 1 month since');
+  dateEquals((1).year().since(), 31557600000, 'Number#since 1 year since');
 
   dateEquals((1).second().fromNow(), 1000, 'Number#fromNow');
   dateEquals((1).minute().fromNow(), 60000, 'Number#fromNow');
@@ -437,7 +435,7 @@ test('String', function () {
     counter++;
   });
   equal(counter, 2, 'String#each');
-  same(result, ['g','g'], 'String#each foundya');
+  same(result, ['g','g'], 'String#each');
 
   counter = 0;
   test = ['g','i','g','e'];
@@ -1479,7 +1477,7 @@ test('Array', function () {
 
 
     same([1,2,3].subtract([3,4,5]), [1,2], 'Array#subtract');
-    same([1,1,2,2,3,3,4,4,5,5].subtract([2,3,4]), [1,1,2,2,5,5], 'Array#subtract');
+    same([1,1,2,2,3,3,4,4,5,5].subtract([2,3,4]), [1,1,5,5], 'Array#subtract');
     same(['a','b','c'].subtract(['c','d','e']), ['a','b'], 'Array#subtract');
     same([1,2,3].subtract([1,2,3]), [], 'Array#subtract');
     same([1,2,3].subtract([3,2,1]), [], 'Array#subtract');
@@ -1582,7 +1580,6 @@ test('Array', function () {
     same([5,5,128].min(true), [5], 'Array#min');
     same([5,5,5].min(), 5, 'Array#min');
     same([5,5,5].min(true), [5], 'Array#min');
-    same([5,5,128].min(true), 5, 'Array#min');
     same(['a','b','c'].min(), null, 'Array#min');
     same(['a','b','c'].min(true), [], 'Array#min');
     same([].min(), null, 'Array#min');
@@ -1612,7 +1609,7 @@ test('Array', function () {
     same([128,128,128].max(true), [128], 'Array#max');
     same(['a','b','c'].max(), null, 'Array#max');
     same(['a','b','c'].max(true), [], 'Array#max');
-    same([].max(), [], 'Array#max');
+    same([].max(), null, 'Array#max');
     same([].max(true), [], 'Array#max');
     same([null].max(), null, 'Array#max');
     same([null].max(true), [], 'Array#max');
@@ -1622,7 +1619,8 @@ test('Array', function () {
     same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(true, function(el){ return el['a']; }), [{a:3,b:5}], 'Array#max');
     same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), {a:1,b:5}, 'Array#max');
     same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:5}], 'Array#max');
-    same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max');
+    same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max');
+    same([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max');
     same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), {a:-3,b:-3}, 'Array#max');
     same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(true, function(el){ return el['b']; }), [{a:-3,b:-3}], 'Array#max');
     same(['short','and', 'mort'].max(function(el){ return el.length; }), 'short', 'Array#max');
@@ -1640,73 +1638,57 @@ test('Array', function () {
       { name: 'edmund', age: 27, hair: 'blonde' }
     ];
 
-    same(people.most(function(person){ return person.age; }), 27, 'Array#most');
+    equal(people.most(function(person){ return person.age; }).age, 27, 'Array#most');
+    same(people.most(function(person){ return person.age; }), {name:'jim',age:27,hair:'brown'}, 'Array#most');
     same(people.most(true, function(person){ return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most');
-    same(people.most(true, true, function(person){ return person.age; }), [[{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}]], 'Array#most');
-    same(people.most(function(person){ return person.hair; }), 'brown', 'Array#most');
-    same(people.most(true, function(person){ return person.hair; }), [{name:'jim',age:27,hair:'brown'},{name:'ronnie',age:13,hair:'brown'}], 'Array#most');
-    same(people.most(true, true, function(person){ return person.hair; }), [[{name:'jim',age:27,hair:'brown'},{name:'ronnie',age:13,hair:'brown'}],[{name:'mary',age:52,hair:'blonde'},{name:'edmund',age:27,hair:'blonde'}]], 'Array#most');
+
+    same(people.most(function(person){ return person.hair; }), null, 'Array#most');
+    same(people.most(true, function(person){ return person.hair; }), [], 'Array#most');
 
     same([].most(), null, 'Array#most');
-    same([1,2,3].most(), 1, 'Array#most');
-    same([1,2,3].most(true), [1], 'Array#most');
-    same([1,2,3].most(true, true), [[1],[2],[3]], 'Array#most');
+    same([1,2,3].most(), null, 'Array#most');
+    same([1,2,3].most(true), [], 'Array#most');
     same([1,2,3,3].most(), 3, 'Array#most');
-    same([1,2,3,3].most(true), [3,3], 'Array#most');
-    same([1,2,3,3].most(true, true), [[3,3]], 'Array#most');
+    same([1,2,3,3].most(true), [3], 'Array#most');
     same([1,1,2,3,3].most(), 1, 'Array#most');
-    same([1,1,2,3,3].most(true), [1,1], 'Array#most');
-    same([1,1,2,3,3].most(true, true), [[1,1],[3,3]], 'Array#most');
-    same(['a','b','c'].most(), 'a', 'Array#most');
-    same(['a','b','c'].most(true), ['a'], 'Array#most');
-    same(['a','b','c'].most(true, true), [['a'],['b'],['c']], 'Array#most');
+    same([1,1,2,3,3].most(true), [1,3], 'Array#most');
+    same(['a','b','c'].most(), null, 'Array#most');
+    same(['a','b','c'].most(true), [], 'Array#most');
     same(['a','b','c','c'].most(), 'c', 'Array#most');
-    same(['a','b','c','c'].most(true), ['c','c'], 'Array#most');
-    same(['a','b','c','c'].most(true, true), [['c','c']], 'Array#most');
+    same(['a','b','c','c'].most(true), ['c'], 'Array#most');
     same(['a','a','b','c','c'].most(), 'a', 'Array#most');
-    same(['a','a','b','c','c'].most(true), ['a','a'], 'Array#most');
-    same(['a','a','b','c','c'].most(true, true), [['a','a'],['c','c']], 'Array#most');
+    same(['a','a','b','c','c'].most(true), ['a','c'], 'Array#most');
 
     // Leaving this here as a reference for how to collect the actual number of occurences.
-    same(people.most(true, function(person){ return person.age; }).length, 2, 'Array#most');
+    equal(people.most(true, function(person){ return person.age; }).length, 2, 'Array#most');
 
 
-    people = people.sortBy('age');
-
-    same(people.least(function(person){ return person.age; }), 13, 'Array#least');
-    same(people.least(true, function(person){ return person.age; }), [{name:'ronnie',age:13,hair:'brown'}], 'Array#least');
-    same(people.least(true, true, function(person){ return person.age; }), [[{name:'ronnie',age:13,hair:'brown'}],[{name:'mary',age:52,hair:'blonde'}]], 'Array#least');
+    contains(people.least(function(person){ return person.age; }).age, [52,13], 'Array#least');
+    contains(people.least(function(person){ return person.age; }), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least');
+    same(people.least(true, function(person){ return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least');
 
 
-    same(people.least(function(person){ return person.hair; }), 'brown', 'Array#least');
-    same(people.least(true, function(person){ return person.hair; }), [{name:'ronnie',age:13,hair:'brown'},{name:'jim',age:27,hair:'brown'}], 'Array#least');
-    same(people.least(true, true, function(person){ return person.hair; }), [[{name:'ronnie',age:13,hair:'brown'},{name:'jim',age:27,hair:'brown'}],[{name:'edmund',age:27,hair:'blonde'},{name:'mary',age:52,hair:'blonde'}]], 'Array#least');
+    same(people.least(function(person){ return person.hair; }), null, 'Array#least');
+    same(people.least(true, function(person){ return person.hair; }), [], 'Array#least');
 
     same([].least(), null, 'Array#least');
-    same([1,2,3].least(), 1, 'Array#least');
-    same([1,2,3].least(true), [1], 'Array#least');
-    same([1,2,3].least(true, true), [[1],[2],[3]], 'Array#least');
+    same([1,2,3].least(), null, 'Array#least');
+    same([1,2,3].least(true), [], 'Array#least');
     same([1,2,3,3].least(), 1, 'Array#least');
-    same([1,2,3,3].least(true), [1], 'Array#least');
-    same([1,2,3,3].least(true, true), [[1],[2]], 'Array#least');
+    same([1,2,3,3].least(true), [1,2], 'Array#least');
     same([1,1,2,3,3].least(), 2, 'Array#least');
     same([1,1,2,3,3].least(true), [2], 'Array#least');
-    same([1,1,2,3,3].least(true, true), [[2]], 'Array#least');
     same([1,1,1,2,2,3,3,3].least(), 2, 'Array#least');
-    same([1,1,1,2,2,3,3,3].least(true), [2,2], 'Array#least');
-    same([1,1,1,2,2,3,3,3].least(true, true), [[2,2]], 'Array#least');
-    same(['a','b','c'].least(), 'a', 'Array#least');
-    same(['a','b','c'].least(true), ['a'], 'Array#least');
-    same(['a','b','c'].least(true, true), [['a'],['b'],['c']], 'Array#least');
+    same([1,1,1,2,2,3,3,3].least(true), [2], 'Array#least');
+    same(['a','b','c'].least(), null, 'Array#least');
+    same(['a','b','c'].least(true), [], 'Array#least');
     same(['a','b','c','c'].least(), 'a', 'Array#least');
-    same(['a','b','c','c'].least(true), ['a'], 'Array#least');
-    same(['a','b','c','c'].least(true, true), [['a'],['b']], 'Array#least');
+    same(['a','b','c','c'].least(true), ['a','b'], 'Array#least');
     same(['a','a','b','c','c'].least(), 'b', 'Array#least');
     same(['a','a','b','c','c'].least(true), ['b'], 'Array#least');
-    same(['a','a','b','c','c'].least(true, true), [['b']], 'Array#least');
 
     // Leaving this here as a reference for how to collect the actual number of occurences.
-    same(people.least(true, function(person){ return person.age; }).length, 1, 'Array#least');
+    same(people.least(true, function(person){ return person.age; }).length, 2, 'Array#least');
 
 
 
@@ -1741,16 +1723,26 @@ test('Array', function () {
     people = people.sortBy('hair');
     same(people.group(function(p){ return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#group');
 
-    /*
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(1), [[1,2,3,4,5,6,7,8,9,10]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(2), [[1,2,3,4,5],[6,7,8,9,10]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(3), [[1,2,3,4],[5,6,7,8],[9,10]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(4), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(5), [[1,2],[3,4],[5,6],[7,8],[9,10]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(6), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(7), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null]], 'Array#inGroupsOf');
 
-    */
+
+
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(1), [[1,2,3,4,5,6,7,8,9,10]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(2), [[1,2,3,4,5],[6,7,8,9,10]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(3), [[1,2,3,4],[5,6,7,8],[9,10]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(4), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(5), [[1,2],[3,4],[5,6],[7,8],[9,10]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(6), [[1,2],[3,4],[5,6],[7,8],[9,10],[]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(7), [[1,2],[3,4],[5,6],[7,8],[9,10],[],[]], 'Array#inGroups');
+
+
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(3, null), [[1,2,3,4],[5,6,7,8],[9,10,null,null]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(4, null), [[1,2,3],[4,5,6],[7,8,9],[10,null,null]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(5, null), [[1,2],[3,4],[5,6],[7,8],[9,10]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(6, null), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null]], 'Array#inGroups');
+    same([1,2,3,4,5,6,7,8,9,10].inGroups(7, null), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null],[null,null]], 'Array#inGroups');
+
+
+
 
     same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroupsOf');
     same([1,2,3,4,5,6,7,8,9].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf');
@@ -1794,7 +1786,7 @@ test('Array', function () {
 
 
     // Emulating example of Enumerable#each_slice
-    same((1).upto(10).inGroupsOf(3).each(function(g){ return g[1]; }), [2,5,8], 'Array#inGroupsOf');
+    same((1).upto(10).inGroupsOf(3).map(function(g){ return g[1]; }).compact(), [2,5,8], 'Array#inGroupsOf');
 
 
     same([1,2,3,4,5].split(3), [[1,2],[4,5]], 'Array#split');
@@ -2257,6 +2249,8 @@ test('Array', function () {
 
 test('Date', function () {
 
+
+  dateEquals(new Date('today'), new Date(), 'Date#constructor');
 
 });
 
