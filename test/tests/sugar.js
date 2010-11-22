@@ -1492,6 +1492,7 @@ test('Array', function () {
     same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 1), ['c'], 'Array#findAllFromIndex with stop');
     same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 2), ['c','a'], 'Array#findAllFromIndex with stop');
     same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 3), ['c','a','n'], 'Array#findAllFromIndex with stop');
+    same(['c','a','n','d','y'].findAllFromIndex(3, function(c){ return c.length == 1; }, 3), ['d','y','c'], 'Array#findAllFromIndex with stop');
 
     // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
     arr = [{name:'john',age:10,food:'sushi'},{name:'randy',age:23,food:'natto'},{name:'karen',age:32,food:'salad'}];
@@ -1779,13 +1780,14 @@ test('Array', function () {
 
 
 
-    same([1,1,2,2,3,3,4].group(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#group');
-    same(['a','b','c','a','e','c'].group(), {'a':['a','a'],'b':['b'],'c':['c','c'],'e':['e']}, 'Array#group');
-    same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].group(function(el){ return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#group');
+    same([1,1,2,2,3,3,4].groupBy(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#groupBy');
+    same(['a','b','c','a','e','c'].groupBy(), {'a':['a','a'],'b':['b'],'c':['c','c'],'e':['e']}, 'Array#groupBy');
+    same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy('a'), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy');
+    same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy(function(el){ return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy');
 
 
     people = people.sortBy('hair');
-    same(people.group(function(p){ return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#group');
+    same(people.groupBy(function(p){ return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy');
 
 
 
