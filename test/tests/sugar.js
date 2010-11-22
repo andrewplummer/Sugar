@@ -1410,6 +1410,48 @@ test('Array', function () {
 
 
 
+
+    same(['a','b','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex');
+    same(['a','a','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex');
+    same(['a','b','c'].findFromIndex(0, 'q'), null, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(0, 1), 1, 'Array#findFromIndex');
+    same([2,2,3].findFromIndex(0, 2), 2, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(0, 4), null, 'Array#findFromIndex');
+    same([{a:1},{b:2},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex');
+    same([{a:1},{a:1},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex');
+    same([{a:1},{b:2},{c:3}].findFromIndex(0, {d:4}), null, 'Array#findFromIndex');
+    same([{a:1},{b:2},{c:3}].findFromIndex(0, {c:4}), null, 'Array#findFromIndex');
+    same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex');
+    same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,4]), null, 'Array#findFromIndex');
+    same([[1,2],[2,3],[2,3]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex');
+    same(['foo','bar'].findFromIndex(0, /f+/), 'foo', 'Array#findFromIndex');
+    same(['foo','bar'].findFromIndex(0, /[a-f]/), 'foo', 'Array#findFromIndex');
+    same(['foo','bar'].findFromIndex(1, /[a-f]/), 'bar', 'Array#findFromIndex');
+    same(['foo','bar'].findFromIndex(0, /q+/), null, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(0, function(e){ return e > 0; }), 1, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(1, function(e){ return e > 0; }), 2, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(2, function(e){ return e > 0; }), 3, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(3, function(e){ return e > 0; }), 1, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(0, function(e){ return e > 1; }), 2, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(1, function(e){ return e > 1; }), 2, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(2, function(e){ return e > 1; }), 3, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(0, function(e){ return e > 2; }), 3, 'Array#findFromIndex');
+    same([1,2,3].findFromIndex(0, function(e){ return e > 3; }), null, 'Array#findFromIndex');
+
+    same([{a:10},{a:8},{a:3}].findFromIndex(0, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex');
+    same([{a:10},{a:8},{a:3}].findFromIndex(1, function(e){ return e['a'] > 5; }), {a:8}, 'Array#findFromIndex');
+    same([{a:10},{a:8},{a:3}].findFromIndex(2, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex');
+    same([function(){}].findFromIndex(0, function(e){}), null, 'Array#findFromIndex');
+    same([function(){}].findFromIndex(1, function(e){}), null, 'Array#findFromIndex');
+    same([null, null].findFromIndex(0, null), null, 'Array#findFromIndex');
+    same([null, null].findFromIndex(1, null), null, 'Array#findFromIndex');
+    same([undefined, undefined].findFromIndex(0, undefined), undefined, 'Array#findFromIndex');
+    same([undefined, undefined].findFromIndex(1, undefined), undefined, 'Array#findFromIndex');
+    same([undefined, 'a'].findFromIndex(1, undefined), 'a', 'Array#findFromIndex');
+    same([null, null].findFromIndex(1, undefined), null, 'Array#findFromIndex');
+
+
+
     same(['a','b','c'].findAllFromIndex(0, 'a'), ['a'], 'Array#findAllFromIndex');
     same(['a','a','c'].findAllFromIndex(0, 'a'), ['a','a'], 'Array#findAllFromIndex');
     same(['a','b','c'].findAllFromIndex(0, 'q'), [], 'Array#findAllFromIndex');
@@ -1445,6 +1487,11 @@ test('Array', function () {
     same([null, null].findAllFromIndex(0, null), [null, null], 'Array#findAllFromIndex');
     same([null, null].findAllFromIndex(1, null), [null, null], 'Array#findAllFromIndex');
 
+    // Find all from index also implements a "stop" parameter to stop after
+    // n number of matches
+    same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 1), ['c'], 'Array#findAllFromIndex with stop');
+    same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 2), ['c','a'], 'Array#findAllFromIndex with stop');
+    same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 3), ['c','a','n'], 'Array#findAllFromIndex with stop');
 
     // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
     arr = [{name:'john',age:10,food:'sushi'},{name:'randy',age:23,food:'natto'},{name:'karen',age:32,food:'salad'}];
@@ -1952,6 +1999,7 @@ test('Array', function () {
     same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any');
     same([{a:1},{a:2},{a:1}].any(function(e){ return e['a'] == 1; }), true, 'Array#any');
     same([{a:1},{a:2},{a:1}].any(function(e){ return e['b'] == 1; }), false, 'Array#any');
+    equal([0].any(0), true, 'Array#any');
 
 
     equal([1,2,3].has(), false, 'Array#has');
