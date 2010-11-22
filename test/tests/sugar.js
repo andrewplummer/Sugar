@@ -723,6 +723,17 @@ test('String', function () {
   equal('0.1e6'.toNumber(), 100000, 'String#toNumber');
 
 
+  // This should handle hexadecimal, etc
+  equal('ff'.toNumber(16), 255, 'String#toNumber');
+  equal('00'.toNumber(16), 0, 'String#toNumber');
+  equal('33'.toNumber(16), 51, 'String#toNumber');
+  equal('66'.toNumber(16), 102, 'String#toNumber');
+  equal('99'.toNumber(16), 153, 'String#toNumber');
+  equal('bb'.toNumber(16), 187, 'String#toNumber');
+
+
+
+
   equal('spoon'.reverse(), 'noops', 'String#reverse');
   equal('amanaplanacanalpanama'.reverse(), 'amanaplanacanalpanama', 'String#reverse');
 
@@ -748,6 +759,7 @@ test('String', function () {
   equal('foop'.at(-5), null, 'String#at');
   equal('foop'.at(-1224), null, 'String#at');
 
+  same('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at');
 
 
   equal('quack'.first(), 'q', 'String#first');
@@ -1097,6 +1109,11 @@ test('String', function () {
   equal('<xsl(template>foobar</xsl(template>'.removeTags('xsl(template'), '', 'String#removeTags');
 
 
+
+  same('foo=bar&moo=car'.toObject(), {foo:'bar',moo:'car'}, 'String#keyValue');
+  same('foo=bar&moo=3'.toObject(), {foo:'bar',moo:3}, 'String#keyValue');
+  same('foo=bar&moo=true'.toObject(), {foo:'bar',moo:true}, 'String#keyValue');
+  same('foo=bar&moo=false'.toObject(), {foo:'bar',moo:false}, 'String#keyValue');
 
 });
 
@@ -1507,7 +1524,7 @@ test('Array', function () {
     same(['a','b','c'].at(-2), 'b', 'Array#at');
     same(['a','b','c'].at(-3), 'a', 'Array#at');
     same(['a','b','c'].at(-4), null, 'Array#at');
-    same(['a','b','c'].at(), 'a', 'Array#at');
+    same(['a','b','c'].at(), null, 'Array#at');
     same([false].at(0), false, 'Array#at');
     same(['a'].at(0), 'a', 'Array#at');
     same(['a'].at(1), null, 'Array#at');
@@ -2263,6 +2280,37 @@ test('RegExp', function () {
     equals(RegExp.escape('what a day...'), 'what a day\\.\\.\\.', 'RegExp#escape');
     equals(RegExp.escape('.'), '\\.', 'RegExp#escape');
     equals(RegExp.escape('*.+[]{}()?|/'), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape');
+
+});
+
+test('window', function () {
+
+  if(window && window.parent){
+
+    // We're in an iframe here, so...
+    var win = window.parent;
+    var query = win.location.search.replace(/^\?/, '');
+
+    equal(typeof win.location.params === 'object', true, 'Window params object has been set up');
+
+
+    if(query && query.match(/=/)){
+      var split = query.split('&');
+      split.each(function(e){
+        var s = e.split('=');
+        var key   = s[0];
+        var value = s[1];
+        if(parseInt(value)){
+          value = parseInt(value);
+        } else if(value === 'true'){
+          value = true;
+        } else if(value === 'false'){
+          value = false;
+        }
+        equal(win.location.params[key], value, 'Window params are being properly set');
+      });
+    }
+  }
 
 });
 
