@@ -1,13 +1,39 @@
 module("Sugar");
 
 
-var dateEquals = function(d, offset, message){
+var dateEquals = function(a, b, message){
   var buffer = 10; // Number of milliseconds of "play" to make sure these tests pass.
-  var now = new Date().getTime() + offset;
-  var max = now + buffer;
-  var min = now - buffer;
-  var time = d.getTime();
-  equals(time < max && time > min, true, message);
+  if(typeof b == 'number'){
+    var d = new Date();
+    d.setTime(d.getTime() + b);
+    b = d;
+  }
+  var offset = Math.abs(a.getTime() - b.getTime());
+  equals(offset < buffer, true, message + ' (offset is '+offset+')');
+}
+
+var getDate = function(year, month, day, hours, minutes, seconds, milliseconds){
+  var d = new Date();
+  d.setFullYear(year || 0);
+  d.setMonth((month - 1) || 0);
+  d.setDate(day || 0);
+  d.setHours(hours || 0);
+  d.setMinutes(minutes || 0);
+  d.setSeconds(seconds || 0);
+  d.setMilliseconds(milliseconds || 0);
+  return d;
+}
+
+var getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds){
+  var d = new Date();
+  d.setUTCFullYear(year || 0);
+  d.setUTCMonth((month - 1) || 0);
+  d.setUTCDate(day || 0);
+  d.setUTCHours(hours || 0);
+  d.setUTCMinutes(minutes || 0);
+  d.setUTCSeconds(seconds || 0);
+  d.setUTCMilliseconds(milliseconds || 0);
+  return d;
 }
 
 var contains = function(actual, expected, message){
@@ -2241,7 +2267,12 @@ test('Array', function () {
 test('Date', function () {
 
 
-  dateEquals(new Date('today'), new Date(), 'Date#constructor');
+  dateEquals(Date.create('today'), 0, 'Date#constructor');
+
+  dateEquals(Date.create('2010-11-22'), getUTCDate(2010,11,22), 'Date#create');
+  dateEquals(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create');
+
+
 
 });
 
@@ -2257,7 +2288,7 @@ test('RegExp', function () {
 
 });
 
-test('window', function () {
+test('Window', function () {
 
   if(window && window.parent){
 
