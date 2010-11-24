@@ -2457,11 +2457,24 @@ test('Date', function () {
 
 
   dateEquals(Date.create('2010-11-22T22:59Z'), getDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
-  dateEquals(Date.create('1997-07-16T19:20+01:00'), getDate(1997, 7, 16, 19, 20), 'Date#create | ISO8601 | minutes with timezone'); // TODO TIMEZONES???
-  dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getDate(1997, 7, 16, 19, 20, 30), 'Date#create | ISO8601 | seconds with timezone'); // TODO TIMEZONES???
-  dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getDate(1997, 7, 16, 19, 20, 30, 45), 'Date#create | ISO8601 | milliseconds with timezone'); // TODO TIMEZONES???
-  dateEquals(Date.create('1994-11-05T08:15:30-05:00'), getDate(1994, 11, 5, 8, 15, 30), 'Date#create | ISO8601 | Full example 1'); // TODO TIMEZONES???
-  dateEquals(Date.create('1994-11-05T13:15:30Z'), getDate(1994, 11, 5, 8, 15, 30), 'Date#create | ISO8601 | Full example 1'); // TODO TIMEZONES???
+  dateEquals(Date.create('1997-07-16T19:20+01:00'), getDate(1997, 7, 16, 18, 20), 'Date#create | ISO8601 | minutes with timezone');
+  dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getDate(1997, 7, 16, 18, 20, 30), 'Date#create | ISO8601 | seconds with timezone');
+  dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getDate(1997, 7, 16, 18, 20, 30, 450), 'Date#create | ISO8601 | milliseconds with timezone');
+  dateEquals(Date.create('1994-11-05T08:15:30-05:00'), getDate(1994, 11, 5, 13, 15, 30), 'Date#create | ISO8601 | Full example 1');
+  dateEquals(Date.create('1994-11-05T13:15:30Z'), getDate(1994, 11, 5, 13, 15, 30), 'Date#create | ISO8601 | Full example 1');
+
+  dateEquals(Date.create('1776-05-23T02:45:08-08:30'), getDate(1776, 5, 23, 11, 15, 08), 'Date#create | ISO8601 | Full example 3');
+  dateEquals(Date.create('1776-05-23T02:45:08+08:30'), getDate(1776, 5, 22, 18, 15, 08), 'Date#create | ISO8601 | Full example 4');
+  dateEquals(Date.create('1776-05-23T02:45:08-0830'), getDate(1776, 5, 23, 11, 15, 08), 'Date#create | ISO8601 | Full example 5');
+  dateEquals(Date.create('1776-05-23T02:45:08+0830'), getDate(1776, 5, 22, 18, 15, 08), 'Date#create | ISO8601 | Full example 6');
+
+  // No limit on the number of millisecond decimals, so....
+  dateEquals(Date.create('1997-07-16T19:20:30.4+01:00'), getDate(1997, 7, 16, 18, 20, 30, 400), 'Date#create | ISO8601 | milliseconds have no limit 1');
+  dateEquals(Date.create('1997-07-16T19:20:30.46+01:00'), getDate(1997, 7, 16, 18, 20, 30, 460), 'Date#create | ISO8601 | milliseconds have no limit 2');
+  dateEquals(Date.create('1997-07-16T19:20:30.462+01:00'), getDate(1997, 7, 16, 18, 20, 30, 462), 'Date#create | ISO8601 | milliseconds have no limit 3');
+  dateEquals(Date.create('1997-07-16T19:20:30.4628+01:00'), getDate(1997, 7, 16, 18, 20, 30, 463), 'Date#create | ISO8601 | milliseconds have no limit 4');
+  dateEquals(Date.create('1997-07-16T19:20:30.46284+01:00'), getDate(1997, 7, 16, 18, 20, 30, 463), 'Date#create | ISO8601 | milliseconds have no limit 5');
+
 
   // These are all the same moment...
   dateEquals(Date.create('2001-04-03T18:30Z'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 1');
