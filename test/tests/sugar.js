@@ -9,7 +9,7 @@ var dateEquals = function(a, b, message){
     b = d;
   }
   var offset = Math.abs(a.getTime() - b.getTime());
-  equals(offset < buffer, true, message + ' (offset is '+offset+')');
+  equals(offset < buffer, true, message + ' | offset is '+offset);
 }
 
 var getDate = function(year, month, day, hours, minutes, seconds, milliseconds){
@@ -2283,108 +2283,117 @@ test('Date', function () {
   //dateEquals(Date.create('June'), getDate(null, 6), 'Date#create | Just the month');
 
   // Slashes (American style)
-  dateEquals(Date.create('08/25'), getDate(null,8, 25), 'Date#create | American style slashes mm/dd');
-  dateEquals(Date.create('8/25'), getDate(null, 8, 25), 'Date#create | American style slashes m/dd');
-  dateEquals(Date.create('08/25/1978'), getDate(1978, 8, 25), 'Date#create | American style slashes mm/dd/yyyy');
-  dateEquals(Date.create('08/25/0001'), getDate(1, 8, 25), 'Date#create | American style slashes mm/dd/yyyy year is 1');
-  dateEquals(Date.create('8/25/1978'), getDate(1978, 8, 25), 'Date#create | American style slashes /m/dd/yyyy');
-  dateEquals(Date.create('8/25/78'), getDate(1978, 8, 25), 'Date#create | American style slashes m/dd/yy');
-  dateEquals(Date.create('8/25/01'), getDate(2001, 8, 25), 'Date#create | American style slashes m/dd/yy year is 01');
-  dateEquals(Date.create('8/25/49'), getDate(2049, 8, 25), 'Date#create | American style slashes m/dd/yy year is 49');
-  dateEquals(Date.create('8/25/50'), getDate(1950, 8, 25), 'Date#create | American style slashes m/dd/yy year is 50');
+  dateEquals(Date.create('08/25'), getDate(null,8, 25), 'Date#create | American style slashes | mm/dd');
+  dateEquals(Date.create('8/25'), getDate(null, 8, 25), 'Date#create | American style slashes | m/dd');
+  dateEquals(Date.create('08/25/1978'), getDate(1978, 8, 25), 'Date#create | American style slashes | mm/dd/yyyy');
+  dateEquals(Date.create('08/25/0001'), getDate(1, 8, 25), 'Date#create | American style slashes | mm/dd/0001');
+  dateEquals(Date.create('8/25/1978'), getDate(1978, 8, 25), 'Date#create | American style slashes | /m/dd/yyyy');
+  dateEquals(Date.create('8/25/78'), getDate(1978, 8, 25), 'Date#create | American style slashes | m/dd/yy');
+  dateEquals(Date.create('08/25/78'), getDate(1978, 8, 25), 'Date#create | American style slashes | mm/dd/yy');
+  dateEquals(Date.create('8/25/01'), getDate(2001, 8, 25), 'Date#create | American style slashes | m/dd/01');
+  dateEquals(Date.create('8/25/49'), getDate(2049, 8, 25), 'Date#create | American style slashes | m/dd/49');
+  dateEquals(Date.create('8/25/50'), getDate(1950, 8, 25), 'Date#create | American style slashes | m/dd/50');
 
   // Dashes (American style)
-  dateEquals(Date.create('08-25-1978'), getDate(1978, 8, 25), 'Date#create | American style dashes');
-  dateEquals(Date.create('8-25-1978'), getDate(1978, 8, 25), 'Date#create | American style dashes');
+  dateEquals(Date.create('08-25-1978'), getDate(1978, 8, 25), 'Date#create | American style dashes | mm-dd-yyyy');
+  dateEquals(Date.create('8-25-1978'), getDate(1978, 8, 25), 'Date#create | American style dashes | m-dd-yyyy');
 
   // dd-dd-dd is NOT American style as it is a reserved ISO8601 date format
   dateEquals(Date.create('08-05-05'), getDate(2008, 5, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
-  console.log(Date.create('08-05-05'), getDate(2008, 5, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
 
   // Dots (American style)
-  dateEquals(Date.create('08.25.1978'), getDate(1978, 8, 25), 'Date#create | American style dots');
-  dateEquals(Date.create('8.25.1978'), getDate(1978, 8, 25), 'Date#create | American style dots');
+  dateEquals(Date.create('08.25.1978'), getDate(1978, 8, 25), 'Date#create | American style dots | mm.dd.yyyy');
+  dateEquals(Date.create('8.25.1978'), getDate(1978, 8, 25), 'Date#create | American style dots | m.dd.yyyy');
 
 
+  dateEquals(Date.create('08/10', true), getDate(null, 10, 8), 'Date#create | European style slashes | dd/mm');
   // Slashes (European style)
-  dateEquals(Date.create('08/10', true), getDate(null, 10, 8), 'Date#create | European style slashes');
-  dateEquals(Date.create('8/10', true), getDate(null, 10, 8), 'Date#create | European style slashes');
-  dateEquals(Date.create('08/10/1978', true), getDate(1978, 10, 8), 'Date#create | European style slashes');
-  dateEquals(Date.create('8/10/1978', true), getDate(1978, 10, 8), 'Date#create | European style slashes');
-  dateEquals(Date.create('8/10/78', true), getDate(1978, 10, 8), 'Date#create | European style slashes');
-  dateEquals(Date.create('8/10/01', true), getDate(2001, 10, 8), 'Date#create | European style slashes');
-  dateEquals(Date.create('8/10/49', true), getDate(2049, 10, 8), 'Date#create | European style slashes');
-  dateEquals(Date.create('8/10/50', true), getDate(1950, 10, 8), 'Date#create | European style slashes');
+  dateEquals(Date.create('8/10', true), getDate(null, 10, 8), 'Date#create | European style slashes | d/mm');
+  dateEquals(Date.create('08/10/1978', true), getDate(1978, 10, 8), 'Date#create | European style slashes | dd/mm/yyyy');
+  dateEquals(Date.create('8/10/1978', true), getDate(1978, 10, 8), 'Date#create | European style slashes | d/mm/yyyy');
+  dateEquals(Date.create('8/10/78', true), getDate(1978, 10, 8), 'Date#create | European style slashes | d/mm/yy');
+  dateEquals(Date.create('08/10/78', true), getDate(1978, 10, 8), 'Date#create | European style slashes | dd/mm/yy');
+  dateEquals(Date.create('8/10/01', true), getDate(2001, 10, 8), 'Date#create | European style slashes | d/mm/01');
+  dateEquals(Date.create('8/10/49', true), getDate(2049, 10, 8), 'Date#create | European style slashes | d/mm/49');
+  dateEquals(Date.create('8/10/50', true), getDate(1950, 10, 8), 'Date#create | European style slashes | d/mm/50');
 
   // Dashes (European style) 
-  dateEquals(Date.create('08-10-1978', true), getDate(1978, 10, 8), 'Date#create | European style dashes');
-  dateEquals(Date.create('8-10-1978', true), getDate(1978, 10, 8), 'Date#create | European style dashes');
+  dateEquals(Date.create('08-10-1978', true), getDate(1978, 10, 8), 'Date#create | European style dashes | dd-dd-dd is an ISO8601 format');
 
   // Dots (European style)
-  dateEquals(Date.create('08.10.1978', true), getDate(1978, 10, 8), 'Date#create | European style dots');
-  dateEquals(Date.create('8.10.1978', true), getDate(1978, 10, 8), 'Date#create | European style dots');
+  dateEquals(Date.create('08.10.1978', true), getDate(1978, 10, 8), 'Date#create | European style dots | dd.mm.yyyy');
+  dateEquals(Date.create('8.10.1978', true), getDate(1978, 10, 8), 'Date#create | European style dots | d.mm.yyyy');
 
   // dd-dd-dd defaults as European style, but it is in UTC time as it is an ISO8601 format!
-  dateEquals(Date.create('08-05-05'), getUTCDate(8, 5, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
+  dateEquals(Date.create('08-05-05'), getUTCDate(2008, 5, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
 
 
 
 
   // Reverse slashes
-  dateEquals(Date.create('1978/08/25'), getDate(1978, 8, 25), 'Date#create | Reverse slashes');
-  dateEquals(Date.create('1978/8/25'), getDate(1978, 8, 25), 'Date#create | Reverse slashes');
-  dateEquals(Date.create('1978/08'), getDate(1978, 8), 'Date#create | Reverse slashes');
-  dateEquals(Date.create('1978/8'), getDate(1978, 8), 'Date#create | Reverse slashes');
+  dateEquals(Date.create('1978/08/25'), getDate(1978, 8, 25), 'Date#create | Reverse slashes | yyyy/mm/dd');
+  dateEquals(Date.create('1978/8/25'), getDate(1978, 8, 25), 'Date#create | Reverse slashes | yyyy/m/dd');
+  dateEquals(Date.create('1978/08'), getDate(1978, 8), 'Date#create | Reverse slashes | yyyy/mm');
+  dateEquals(Date.create('1978/8'), getDate(1978, 8), 'Date#create | Reverse slashes | yyyy/m');
 
   // Reverse dashes
-  dateEquals(Date.create('1978-08-25'), getDate(1978, 8, 25), 'Date#create | Reverse dashes');
-  dateEquals(Date.create('1978-08'), getDate(1978, 8), 'Date#create | Reverse dashes');
-  dateEquals(Date.create('1978-8'), getDate(1978, 8), 'Date#create | Reverse dashes');
+  dateEquals(Date.create('1978-08-25'), getDate(1978, 8, 25), 'Date#create | Reverse dashes | yyyy-mm-dd');
+  dateEquals(Date.create('1978-08'), getDate(1978, 8), 'Date#create | Reverse dashes | yyyy-mm');
+  dateEquals(Date.create('1978-8'), getDate(1978, 8), 'Date#create | Reverse dashes | yyyy-m');
 
   // Reverse dots
-  dateEquals(Date.create('1978.08.25'), getDate(1978, 8, 25), 'Date#create | Reverse dots');
-  dateEquals(Date.create('1978.08'), getDate(1978, 8), 'Date#create | Reverse dots');
-  dateEquals(Date.create('1978.8'), getDate(1978, 8), 'Date#create | Reverse dots');
-  dateEquals(Date.create('2001-1-1'), getDate(2001, 1, 1), 'Date#create | Reverse dots');
-  dateEquals(Date.create('2001-01-1'), getDate(2001, 1, 1), 'Date#create | Reverse dots');
-  dateEquals(Date.create('2001-01-01'), getDate(2001, 1, 1), 'Date#create | Reverse dots');
+  dateEquals(Date.create('1978.08.25'), getDate(1978, 8, 25), 'Date#create | Reverse dots | yyyy.mm.dd');
+  dateEquals(Date.create('1978.08'), getDate(1978, 8), 'Date#create | Reverse dots | yyyy.mm');
+  dateEquals(Date.create('1978.8'), getDate(1978, 8), 'Date#create | Reverse dots | yyyy.m');
+
+  // Abbreviated reverse slash format yy/mm/dd cannot exist because it clashes with forward
+  // slash format dd/mm/yy (with european variant). This rule however, doesn't follow for dashes,
+  // which is abbreviated ISO8601 format: yy-mm-dd
+  dateEquals(Date.create('01/02/03'), getDate(2003, 1, 2), 'Date#create | Ambiguous 2 digit format mm/dd/yy');
+  dateEquals(Date.create('01/02/03', true), getDate(2003, 2, 1), 'Date#create | Ambiguous 2 digit European variant dd/mm/yy');
+  dateEquals(Date.create('01-02-03'), getDate(2001, 2, 3), 'Date#create | Ambiguous 2 digit ISO variant yy-mm-dd');
+  dateEquals(Date.create('01-02-03', true), getDate(2001, 2, 3), 'Date#create | Ambiguous 2 digit ISO variant has NO European variant of its own');
 
 
   // Text based formats
-  dateEquals(Date.create('June 2008'), getDate(2008, 6), 'Date#create | Full text');
-  dateEquals(Date.create('June-2008'), getDate(2008, 6), 'Date#create | Full text');
-  dateEquals(Date.create('June.2008'), getDate(2008, 6), 'Date#create | Full text');
-  dateEquals(Date.create('June 1st, 2008'), getDate(2008, 6, 1), 'Date#create | Full text');
-  dateEquals(Date.create('June 2nd, 2008'), getDate(2008, 6, 2), 'Date#create | Full text');
-  dateEquals(Date.create('June 3rd, 2008'), getDate(2008, 6, 3), 'Date#create | Full text');
-  dateEquals(Date.create('June 4th, 2008'), getDate(2008, 6, 4), 'Date#create | Full text');
-  dateEquals(Date.create('June 15th, 2008'), getDate(2008, 6, 15), 'Date#create | Full text');
-  dateEquals(Date.create('June 1st 2008'), getDate(2008, 6, 1), 'Date#create | Full text');
-  dateEquals(Date.create('June 2nd 2008'), getDate(2008, 6, 2), 'Date#create | Full text');
-  dateEquals(Date.create('June 3rd 2008'), getDate(2008, 6, 3), 'Date#create | Full text');
-  dateEquals(Date.create('June 4th 2008'), getDate(2008, 6, 4), 'Date#create | Full text');
-  dateEquals(Date.create('June 15, 2008'), getDate(2008, 6, 15), 'Date#create | Full text');
-  dateEquals(Date.create('June 15 2008'), getDate(2008, 6, 15), 'Date#create | Full text');
-  dateEquals(Date.create('15 July, 2008'), getDate(2008, 6, 15), 'Date#create | Full text');
+  dateEquals(Date.create('June 2008'), getDate(2008, 6), 'Date#create | Full text | Month yyyy');
+  dateEquals(Date.create('June-2008'), getDate(2008, 6), 'Date#create | Full text | Month-yyyy');
+  dateEquals(Date.create('June.2008'), getDate(2008, 6), 'Date#create | Full text | Month.yyyy');
+  dateEquals(Date.create('June 1st, 2008'), getDate(2008, 6, 1), 'Date#create | Full text | Month 1st, yyyy');
+  dateEquals(Date.create('June 2nd, 2008'), getDate(2008, 6, 2), 'Date#create | Full text | Month 2nd, yyyy');
+  dateEquals(Date.create('June 3rd, 2008'), getDate(2008, 6, 3), 'Date#create | Full text | Month 3rd, yyyy');
+  dateEquals(Date.create('June 4th, 2008'), getDate(2008, 6, 4), 'Date#create | Full text | Month 4th, yyyy');
+  dateEquals(Date.create('June 15th, 2008'), getDate(2008, 6, 15), 'Date#create | Full text | Month 15th, yyyy');
+  dateEquals(Date.create('June 1st 2008'), getDate(2008, 6, 1), 'Date#create | Full text | Month 1st yyyy');
+  dateEquals(Date.create('June 2nd 2008'), getDate(2008, 6, 2), 'Date#create | Full text | Month 2nd yyyy');
+  dateEquals(Date.create('June 3rd 2008'), getDate(2008, 6, 3), 'Date#create | Full text | Month 3rd yyyy');
+  dateEquals(Date.create('June 4th 2008'), getDate(2008, 6, 4), 'Date#create | Full text | Month 4th yyyy');
+  dateEquals(Date.create('June 15, 2008'), getDate(2008, 6, 15), 'Date#create | Full text | Month dd, yyyy');
+  dateEquals(Date.create('June 15 2008'), getDate(2008, 6, 15), 'Date#create | Full text | dd Month, yyyy');
+  dateEquals(Date.create('15 July, 2008'), getDate(2008, 6, 15), 'Date#create | Full text | dd Month, yyyy');
+  dateEquals(Date.create('15 July 2008'), getDate(2008, 6, 15), 'Date#create | Full text | dd Month yyyy');
 
 
   // Abbreviated formats
-  dateEquals(Date.create('Dec 1st, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated');
-  dateEquals(Date.create('Dec. 1st, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated');
-  dateEquals(Date.create('1 Dec. 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated');
-  dateEquals(Date.create('1 Dec., 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated');
-  dateEquals(Date.create('1 Dec, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated');
+  dateEquals(Date.create('Dec 1st, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | without dot');
+  dateEquals(Date.create('Dec. 1st, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | with dot');
+  dateEquals(Date.create('1 Dec. 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | reversed with dot');
+  dateEquals(Date.create('1 Dec., 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | reversed with dot and comma');
+  dateEquals(Date.create('1 Dec, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | reversed with comma and no dot');
 
 
   // ISO 8601
-  dateEquals(Date.create('2010-11-22'), getUTCDate(2010,11,22), 'Date#create | ISO8601');
-  dateEquals(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create | ISO8601');
-  dateEquals(Date.create('20101122'), getUTCDate(2010,11,22), 'Date#create | ISO8601');
-  dateEquals(Date.create('-0002-07-26'), getUTCDate(-2, 7, 26), 'Date#create | ISO8601'); // BC
-  dateEquals(Date.create('+1978-04-17'), getUTCDate(1978, 4, 17), 'Date#create | ISO8601'); // AD
-  dateEquals(Date.create('1997-07-16T19:20+01:00'), getUTCDate(1997, 7, 16, 19, 20), 'Date#create | ISO8601'); // TODO TIMEZONES???
-  dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getUTCDate(1997, 7, 16, 19, 20, 30), 'Date#create | ISO8601'); // TODO TIMEZONES???
-  dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getUTCDate(1997, 7, 16, 19, 20, 30, 45), 'Date#create | ISO8601'); // TODO TIMEZONES???
+  dateEquals(Date.create('2001-1-1'), getDate(2001, 1, 1), 'Date#create | ISO8601 | not padded');
+  dateEquals(Date.create('2001-01-1'), getDate(2001, 1, 1), 'Date#create | ISO8601 | month padded');
+  dateEquals(Date.create('2001-01-01'), getDate(2001, 1, 1), 'Date#create | ISO8601 | month and day padded');
+  dateEquals(Date.create('2010-11-22'), getUTCDate(2010,11,22), 'Date#create | ISO8601 | month and day padded 2010');
+  dateEquals(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
+  dateEquals(Date.create('20101122'), getUTCDate(2010,11,22), 'Date#create | ISO8601 | digits strung together');
+  dateEquals(Date.create('-0002-07-26'), getUTCDate(-2, 7, 26), 'Date#create | ISO8601 | minus sign (bc)'); // BC
+  dateEquals(Date.create('+1978-04-17'), getUTCDate(1978, 4, 17), 'Date#create | ISO8601 | plus sign (ad)'); // AD
+  dateEquals(Date.create('1997-07-16T19:20+01:00'), getUTCDate(1997, 7, 16, 19, 20), 'Date#create | ISO8601 | minutes with timezone'); // TODO TIMEZONES???
+  dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getUTCDate(1997, 7, 16, 19, 20, 30), 'Date#create | ISO8601 | seconds with timezone'); // TODO TIMEZONES???
+  dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getUTCDate(1997, 7, 16, 19, 20, 30, 45), 'Date#create | ISO8601 | milliseconds with timezone'); // TODO TIMEZONES???
 
 
 
