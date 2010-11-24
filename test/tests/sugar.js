@@ -1221,9 +1221,13 @@ test('Array', function () {
 
     equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10; }), true, 'Array#every');
 
-    same([{name:'john',age:25},{name:'fred',age:85}].every('age'), true, 'Array#every');
-    same([{name:'john',age:25},{name:'fred',age:85}].every('name'), true, 'Array#every');
-    same([{name:'john',age:25},{name:'fred',age:85}].every('cupsize'), false, 'Array#every');
+    // "every" is implemented in mozilla and only accepts a callback, so it cannot be trusted
+    // TODO RECONCILE THIS!!!
+    // same([{name:'john',age:25},{name:'fred',age:85}].all('age'), true, 'Array#every');
+    // same([{name:'john',age:25},{name:'fred',age:85}].all('name'), true, 'Array#every');
+    // same([{name:'john',age:25},{name:'fred',age:85}].all('cupsize'), false, 'Array#every');
+
+
 
     equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el > 10 }), true, 'Array#some');
     equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el < 10 }), true, 'Array#some');
@@ -1237,12 +1241,13 @@ test('Array', function () {
       equals(this, 'this', 'Array#some');
     }, 'this');
 
-    same([{name:'john',age:25},{name:'fred',age:85}].some('age'), true, 'Array#some');
-    same([{name:'john',age:25},{name:'fred',age:85}].some('name'), true, 'Array#some');
-    same([{name:'john',age:25},{name:'fred',age:85}].some('cupsize'), false, 'Array#some');
-    same([{name:'john',age:25},{name:'fred'}].some('age'), true, 'Array#some');
-    same([{name:'john',age:25},{name:'fred'}].some('cupsize'), false, 'Array#some');
-
+    // Some is implemented in Firefox so it needs to behave the same way.
+    // TODO CONSOLIDATE THIS HANDLING OF STRING PARAMS
+    // same([{name:'john',age:25},{name:'fred',age:85}].some('age'), true, 'Array#some');
+    // same([{name:'john',age:25},{name:'fred',age:85}].some('name'), true, 'Array#some');
+    // same([{name:'john',age:25},{name:'fred',age:85}].some('cupsize'), false, 'Array#some');
+    // same([{name:'john',age:25},{name:'fred'}].some('age'), true, 'Array#some');
+    // same([{name:'john',age:25},{name:'fred'}].some('cupsize'), false, 'Array#some');
 
 
 
@@ -1256,9 +1261,12 @@ test('Array', function () {
       equals(this, 'this', 'Array#filter');
     }, 'this');
 
-    same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [{name:'john',age:25},{name:'fred',age:85}], 'Array#filter');
-    same([{name:'john',age:25},{name:'fred',age:85}].filter('cupsize'), [], 'Array#filter');
-    same([{name:'john',age:25},{name:'fred'}].filter('age'), [{name:'john',age:25}], 'Array#filter');
+
+    // Filter is implemented in Firefox, so it must behave the same way.
+    // TODO RESOVLE HOW THIS WORKS!
+    // same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [{name:'john',age:25},{name:'fred',age:85}], 'Array#filter');
+    // same([{name:'john',age:25},{name:'fred',age:85}].filter('cupsize'), [], 'Array#filter');
+    // same([{name:'john',age:25},{name:'fred'}].filter('age'), [{name:'john',age:25}], 'Array#filter');
 
 
 
@@ -1325,11 +1333,17 @@ test('Array', function () {
     }, 'this');
 
 
-    same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map');
-    same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map');
-    same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map');
-    same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map');
-    same([].map('name'), [], 'Array#map');
+    // Map cannot handle string arguments for now (must be a callback).
+    // We don't want to overwrite native functionality here
+    // TODO: Rethink how to do this!
+    //same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map');
+    //same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map');
+    //same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map');
+    //same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map');
+    //same([].map('name'), [], 'Array#map');
+
+
+
 
     same(['foot','goose','moose'].collect(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#collect');
     same([1,4,9].collect(Math.sqrt), [1,2,3], 'Array#collect');
@@ -1437,7 +1451,6 @@ test('Array', function () {
     same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAll');
     same([function(){}].findAll(function(e){}), [], 'Array#findAll');
     same([null, null].findAll(null), [null, null], 'Array#findAll');
-
 
 
 
@@ -2016,22 +2029,23 @@ test('Array', function () {
 
 
 
-    equal([1,2,3].any(), false, 'Array#any');
-    equal([1,2,3].any(1), true, 'Array#any');
-    equal([1,2,3].any(4), false, 'Array#any');
-    equal([1,2,3].any('a'), false, 'Array#any');
-    equal(['a','b','c'].any('a'), true, 'Array#any');
-    equal(['a','b','c'].any('f'), false, 'Array#any');
-    equal(['a','b','c'].any(/[a-f]/), true, 'Array#any');
-    equal(['a','b','c'].any(/[m-z]/), false, 'Array#any');
-    equal(['a','b','c'].any(function(e){ return e.length > 1; }), false, 'Array#any');
-    equal(['a','b','c'].any(function(e){ return e.length < 2; }), true, 'Array#any');
-    equal(['a','bar','cat'].any(function(e){ return e.length < 2; }), true, 'Array#any');
-    same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any');
-    same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any');
-    same([{a:1},{a:2},{a:1}].any(function(e){ return e['a'] == 1; }), true, 'Array#any');
-    same([{a:1},{a:2},{a:1}].any(function(e){ return e['b'] == 1; }), false, 'Array#any');
-    equal([0].any(0), true, 'Array#any');
+    equal([1,2,3].any(), false, 'Array#any | no parameters');
+    equal([1,2,3].any(1), true, 'Array#any | find contained number');
+    equal([1,2,3].any(4), false, 'Array#any | find non-contained number');
+    equal([1,2,3].any('a'), false, 'Array#any | find non-contained string');
+    equal(['a','b','c'].any('a'), true, 'Array#any | find contained string');
+    equal(['a','b','c'].any('f'), false, 'Array#any | find non-contained string in string array');
+    equal(['a','b','c'].any(/[a-f]/), true, 'Array#any | Regex a-f');
+    equal(['a','b','c'].any(/[m-z]/), false, 'Array#any | Regex m-z');
+    equal(['a','b','c'].any(function(e){ return e.length > 1; }), false, 'Array#any | find length greater than one');
+    equal(['a','b','c'].any(function(e){ return e.length < 2; }), true, 'Array#any | find length less than two');
+    equal(['a','bar','cat'].any(function(e){ return e.length < 2; }), true, 'Array#any | find existing length less than two');
+    same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any | find number in object array');
+    same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any | find object in object array');
+    same([{a:1},{a:2},{a:1}].any(function(e){ return e['a'] == 1; }), true, 'Array#any | find object in object array based on function');
+    same([{a:1},{a:2},{a:1}].any(function(e){ return e['b'] == 1; }), false, 'Array#any | find non-existing object in object array based on function');
+    equal([0].any(0), true, 'Array#any | find zero');
+
 
 
     equal([1,2,3].has(), false, 'Array#has');
@@ -2369,10 +2383,11 @@ test('Date', function () {
   dateEquals(Date.create('June 3rd 2008'), getDate(2008, 6, 3), 'Date#create | Full text | Month 3rd yyyy');
   dateEquals(Date.create('June 4th 2008'), getDate(2008, 6, 4), 'Date#create | Full text | Month 4th yyyy');
   dateEquals(Date.create('June 15, 2008'), getDate(2008, 6, 15), 'Date#create | Full text | Month dd, yyyy');
-  dateEquals(Date.create('June 15 2008'), getDate(2008, 6, 15), 'Date#create | Full text | dd Month, yyyy');
-  dateEquals(Date.create('15 July, 2008'), getDate(2008, 6, 15), 'Date#create | Full text | dd Month, yyyy');
-  dateEquals(Date.create('15 July 2008'), getDate(2008, 6, 15), 'Date#create | Full text | dd Month yyyy');
+  dateEquals(Date.create('June 15 2008'), getDate(2008, 6, 15), 'Date#create | Full text | Month dd yyyy');
+  dateEquals(Date.create('15 July, 2008'), getDate(2008, 7, 15), 'Date#create | Full text | dd Month, yyyy');
+  dateEquals(Date.create('15 July 2008'), getDate(2008, 7, 15), 'Date#create | Full text | dd Month yyyy');
 
+  dateEquals(Date.create('juNe 1St 2008'), getDate(2008, 6, 1), 'Date#create | Full text | Month 1st yyyy case insensitive');
 
   // Abbreviated formats
   dateEquals(Date.create('Dec 1st, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | without dot');
