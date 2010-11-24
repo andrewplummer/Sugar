@@ -2312,6 +2312,7 @@ test('Date', function () {
   dateEquals(Date.create('08-25-1978'), getDate(1978, 8, 25), 'Date#create | American style dashes | mm-dd-yyyy');
   dateEquals(Date.create('8-25-1978'), getDate(1978, 8, 25), 'Date#create | American style dashes | m-dd-yyyy');
 
+
   // dd-dd-dd is NOT American style as it is a reserved ISO8601 date format
   dateEquals(Date.create('08-05-05'), getDate(2008, 5, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
 
@@ -2386,8 +2387,12 @@ test('Date', function () {
   dateEquals(Date.create('June 15 2008'), getDate(2008, 6, 15), 'Date#create | Full text | Month dd yyyy');
   dateEquals(Date.create('15 July, 2008'), getDate(2008, 7, 15), 'Date#create | Full text | dd Month, yyyy');
   dateEquals(Date.create('15 July 2008'), getDate(2008, 7, 15), 'Date#create | Full text | dd Month yyyy');
-
   dateEquals(Date.create('juNe 1St 2008'), getDate(2008, 6, 1), 'Date#create | Full text | Month 1st yyyy case insensitive');
+
+  // Special cases
+  dateEquals(Date.create(' July 4th, 1987 '), getDate(1987, 7, 4), 'Date#create | Special Cases | Untrimmed full text');
+  dateEquals(Date.create('  7/4/1987 '), getDate(1987, 7, 4), 'Date#create | Special Cases | Untrimmed American');
+  dateEquals(Date.create('   1987-07-04    '), getDate(1987, 7, 4), 'Date#create | Special Cases | Untrimmed ISO8601');
 
   // Abbreviated formats
   dateEquals(Date.create('Dec 1st, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | without dot');
@@ -2395,6 +2400,9 @@ test('Date', function () {
   dateEquals(Date.create('1 Dec. 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | reversed with dot');
   dateEquals(Date.create('1 Dec., 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | reversed with dot and comma');
   dateEquals(Date.create('1 Dec, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | reversed with comma and no dot');
+
+
+
 
 
   // ISO 8601
@@ -2407,11 +2415,59 @@ test('Date', function () {
   dateEquals(Date.create('+1978-04-17'), getDate(1978, 4, 17), 'Date#create | ISO8601 | plus sign (ad)'); // AD
 
 
-  dateEquals(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
+
+  // Date with time formats
+  dateEquals(Date.create('08/25/1978 12:04'), getDate(1978, 8, 25, 12, 4), 'Date#create | Date/Time | Slash format');
+  dateEquals(Date.create('08-25-1978 12:04'), getDate(1978, 8, 25, 12, 4), 'Date#create | Date/Time | Dash format');
+  dateEquals(Date.create('1978/08/25 12:04'), getDate(1978, 8, 25, 12, 4), 'Date#create | Date/Time | Reverse slash format');
+  dateEquals(Date.create('June 1st, 2008 12:04'), getDate(2008, 6, 1, 12, 4), 'Date#create | Date/Time | Full text format');
+
+  dateEquals(Date.create('08-25-1978 12:04:57'), getDate(1978, 8, 25, 12, 4, 57), 'Date#create | Date/Time | with seconds');
+  dateEquals(Date.create('08-25-1978 12:04:57.322'), getDate(1978, 8, 25, 12, 4, 57, 322), 'Date#create | Date/Time | with milliseconds');
+
+  dateEquals(Date.create('08-25-1978 12pm'), getDate(1978, 8, 25, 12), 'Date#create | Date/Time | with meridian');
+  dateEquals(Date.create('08-25-1978 12:42pm'), getDate(1978, 8, 25, 12, 42), 'Date#create | Date/Time | with minutes and meridian');
+  dateEquals(Date.create('08-25-1978 12:42:32pm'), getDate(1978, 8, 25, 12, 42, 32), 'Date#create | Date/Time | with seconds and meridian');
+  dateEquals(Date.create('08-25-1978 12:42:32.488pm'), getDate(1978, 8, 25, 12, 42, 32, 488), 'Date#create | Date/Time | with seconds and meridian');
+
+  dateEquals(Date.create('08-25-1978 00:00am'), getDate(1978, 8, 25, 0, 0, 0, 0), 'Date#create | Date/Time | with zero am');
+  dateEquals(Date.create('08-25-1978 00:00:00am'), getDate(1978, 8, 25, 0, 0, 0, 0), 'Date#create | Date/Time | with seconds and zero am');
+  dateEquals(Date.create('08-25-1978 00:00:00.000am'), getDate(1978, 8, 25, 0, 0, 0, 0), 'Date#create | Date/Time | with milliseconds and zero am');
+
+  dateEquals(Date.create('08-25-1978 1pm'), getDate(1978, 8, 25, 13), 'Date#create | Date/Time | 1pm meridian');
+  dateEquals(Date.create('08-25-1978 1:42pm'), getDate(1978, 8, 25, 13, 42), 'Date#create | Date/Time | 1pm minutes and meridian');
+  dateEquals(Date.create('08-25-1978 1:42:32pm'), getDate(1978, 8, 25, 13, 42, 32), 'Date#create | Date/Time | 1pm seconds and meridian');
+  dateEquals(Date.create('08-25-1978 1:42:32.488pm'), getDate(1978, 8, 25, 13, 42, 32, 488), 'Date#create | Date/Time | 1pm seconds and meridian');
+
+  dateEquals(Date.create('08-25-1978 1am'), getDate(1978, 8, 25, 1), 'Date#create | Date/Time | 1am meridian');
+  dateEquals(Date.create('08-25-1978 1:42am'), getDate(1978, 8, 25, 1, 42), 'Date#create | Date/Time | 1am minutes and meridian');
+  dateEquals(Date.create('08-25-1978 1:42:32am'), getDate(1978, 8, 25, 1, 42, 32), 'Date#create | Date/Time | 1am seconds and meridian');
+  dateEquals(Date.create('08-25-1978 1:42:32.488am'), getDate(1978, 8, 25, 1, 42, 32, 488), 'Date#create | Date/Time | 1am seconds and meridian');
+
+  dateEquals(Date.create('08-25-1978 11pm'), getDate(1978, 8, 25, 23), 'Date#create | Date/Time | 11pm meridian');
+  dateEquals(Date.create('08-25-1978 11:42pm'), getDate(1978, 8, 25, 23, 42), 'Date#create | Date/Time | 11pm minutes and meridian');
+  dateEquals(Date.create('08-25-1978 11:42:32pm'), getDate(1978, 8, 25, 23, 42, 32), 'Date#create | Date/Time | 11pm seconds and meridian');
+  dateEquals(Date.create('08-25-1978 11:42:32.488pm'), getDate(1978, 8, 25, 23, 42, 32, 488), 'Date#create | Date/Time | 11pm seconds and meridian');
+
+  dateEquals(Date.create('08-25-1978 11am'), getDate(1978, 8, 25, 11), 'Date#create | Date/Time | 11am meridian');
+  dateEquals(Date.create('08-25-1978 11:42am'), getDate(1978, 8, 25, 11, 42), 'Date#create | Date/Time | 11am minutes and meridian');
+  dateEquals(Date.create('08-25-1978 11:42:32am'), getDate(1978, 8, 25, 11, 42, 32), 'Date#create | Date/Time | 11am seconds and meridian');
+  dateEquals(Date.create('08-25-1978 11:42:32.488am'), getDate(1978, 8, 25, 11, 42, 32, 488), 'Date#create | Date/Time | 11am seconds and meridian');
+
+
+
+  dateEquals(Date.create('2010-11-22T22:59Z'), getDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
   dateEquals(Date.create('1997-07-16T19:20+01:00'), getDate(1997, 7, 16, 19, 20), 'Date#create | ISO8601 | minutes with timezone'); // TODO TIMEZONES???
   dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getDate(1997, 7, 16, 19, 20, 30), 'Date#create | ISO8601 | seconds with timezone'); // TODO TIMEZONES???
   dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getDate(1997, 7, 16, 19, 20, 30, 45), 'Date#create | ISO8601 | milliseconds with timezone'); // TODO TIMEZONES???
+  dateEquals(Date.create('1994-11-05T08:15:30-05:00'), getDate(1994, 11, 5, 8, 15, 30), 'Date#create | ISO8601 | Full example 1'); // TODO TIMEZONES???
+  dateEquals(Date.create('1994-11-05T13:15:30Z'), getDate(1994, 11, 5, 8, 15, 30), 'Date#create | ISO8601 | Full example 1'); // TODO TIMEZONES???
 
+  // These are all the same moment...
+  dateEquals(Date.create('2001-04-03T18:30Z'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 1');
+  dateEquals(Date.create('2001-04-03T22:30+04'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 2');
+  dateEquals(Date.create('2001-04-03T1130-0700'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 3');
+  dateEquals(Date.create('2001-04-03T15:00-03:30'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 4');
 
 
 
@@ -2460,6 +2516,4 @@ test('Window', function () {
   }
 
 });
-
-
 
