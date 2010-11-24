@@ -2401,14 +2401,16 @@ test('Date', function () {
   dateEquals(Date.create('2001-1-1'), getDate(2001, 1, 1), 'Date#create | ISO8601 | not padded');
   dateEquals(Date.create('2001-01-1'), getDate(2001, 1, 1), 'Date#create | ISO8601 | month padded');
   dateEquals(Date.create('2001-01-01'), getDate(2001, 1, 1), 'Date#create | ISO8601 | month and day padded');
-  dateEquals(Date.create('2010-11-22'), getUTCDate(2010,11,22), 'Date#create | ISO8601 | month and day padded 2010');
+  dateEquals(Date.create('2010-11-22'), getDate(2010,11,22), 'Date#create | ISO8601 | month and day padded 2010');
+  dateEquals(Date.create('20101122'), getDate(2010,11,22), 'Date#create | ISO8601 | digits strung together');
+  dateEquals(Date.create('-0002-07-26'), getDate(-2, 7, 26), 'Date#create | ISO8601 | minus sign (bc)'); // BC
+  dateEquals(Date.create('+1978-04-17'), getDate(1978, 4, 17), 'Date#create | ISO8601 | plus sign (ad)'); // AD
+
+
   dateEquals(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
-  dateEquals(Date.create('20101122'), getUTCDate(2010,11,22), 'Date#create | ISO8601 | digits strung together');
-  dateEquals(Date.create('-0002-07-26'), getUTCDate(-2, 7, 26), 'Date#create | ISO8601 | minus sign (bc)'); // BC
-  dateEquals(Date.create('+1978-04-17'), getUTCDate(1978, 4, 17), 'Date#create | ISO8601 | plus sign (ad)'); // AD
-  dateEquals(Date.create('1997-07-16T19:20+01:00'), getUTCDate(1997, 7, 16, 19, 20), 'Date#create | ISO8601 | minutes with timezone'); // TODO TIMEZONES???
-  dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getUTCDate(1997, 7, 16, 19, 20, 30), 'Date#create | ISO8601 | seconds with timezone'); // TODO TIMEZONES???
-  dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getUTCDate(1997, 7, 16, 19, 20, 30, 45), 'Date#create | ISO8601 | milliseconds with timezone'); // TODO TIMEZONES???
+  dateEquals(Date.create('1997-07-16T19:20+01:00'), getDate(1997, 7, 16, 19, 20), 'Date#create | ISO8601 | minutes with timezone'); // TODO TIMEZONES???
+  dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getDate(1997, 7, 16, 19, 20, 30), 'Date#create | ISO8601 | seconds with timezone'); // TODO TIMEZONES???
+  dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getDate(1997, 7, 16, 19, 20, 30, 45), 'Date#create | ISO8601 | milliseconds with timezone'); // TODO TIMEZONES???
 
 
 
