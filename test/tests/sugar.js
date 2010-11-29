@@ -2402,6 +2402,11 @@ test('Date', function () {
   dateEquals(Date.create('1 Dec, 2008'), getDate(2008, 12, 1), 'Date#create | Abbreviated | reversed with comma and no dot');
 
 
+  dateEquals(Date.create('May-09-78'), getDate(1978, 5, 9), 'Date#create | Abbreviated | Mon.-dd-yy');
+  dateEquals(Date.create('Wednesday July 3rd, 2008'), getDate(2008, 7, 3), 'Date#create | Full Text | With day of week');
+  dateEquals(Date.create('Wed July 3rd, 2008'), getDate(2008, 7, 3), 'Date#create | Full Text | With day of week');
+  dateEquals(Date.create('Wed. July 3rd, 2008'), getDate(2008, 7, 3), 'Date#create | Full Text | With day of week');
+
 
 
 
@@ -2455,7 +2460,6 @@ test('Date', function () {
   dateEquals(Date.create('08-25-1978 11:42:32.488am'), getDate(1978, 8, 25, 11, 42, 32, 488), 'Date#create | Date/Time | 11am seconds and meridian');
 
 
-
   dateEquals(Date.create('2010-11-22T22:59Z'), getDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
   dateEquals(Date.create('1997-07-16T19:20+01:00'), getDate(1997, 7, 16, 18, 20), 'Date#create | ISO8601 | minutes with timezone');
   dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getDate(1997, 7, 16, 18, 20, 30), 'Date#create | ISO8601 | seconds with timezone');
@@ -2481,6 +2485,64 @@ test('Date', function () {
   dateEquals(Date.create('2001-04-03T22:30+04'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 2');
   dateEquals(Date.create('2001-04-03T1130-0700'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 3');
   dateEquals(Date.create('2001-04-03T15:00-03:30'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 4');
+
+
+
+
+  // Fuzzy dates
+  dateEquals(Date.create('today'), new Date(), 'Date#create | Fuzzy Dates | Today');
+
+
+
+
+
+  dateEquals(Date.create('Today'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Yesterday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('The day after tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('The day before yesterday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('One day after tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('One day before yesterday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Two days after tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Two days before yesterday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Two days after today'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Two days before today'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('The day after Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('The day before Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Next week'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Last week'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Next week Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Last week Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Monday of last week'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Monday of next week'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Tue of last week'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Tue. of last week'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Next month'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Next year'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('The 31st of last month.'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('January 30th of last year.'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('First day of may'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Last day of may'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Midnight tonight'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Noon tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('Last day of next month'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('2 days ago'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('2 days from now'), new Date(), 'Date#create | Fuzzy Dates | ');
+  dateEquals(Date.create('2 days 6 months ago'), new Date(), 'Date#create | Fuzzy Dates | ');
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
