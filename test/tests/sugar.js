@@ -15,12 +15,12 @@ var dateEquals = function(a, b, message){
 var getDate = function(year, month, day, hours, minutes, seconds, milliseconds){
   var d = new Date();
   if(year) d.setFullYear(year);
-  d.setMonth(month ? month - 1 : 0);
-  d.setDate(day || 1);
-  d.setHours((hours || 0));
-  d.setMinutes(minutes || 0);
-  d.setSeconds(seconds || 0);
-  d.setMilliseconds(milliseconds || 0);
+  d.setMonth(month === undefined ? 0 : month - 1);
+  d.setDate(day === undefined ? 1 : day);
+  d.setHours(hours === undefined ? 0 : hours);
+  d.setMinutes(minutes === undefined ? 0 : minutes);
+  d.setSeconds(seconds === undefined ? 0 : seconds);
+  d.setMilliseconds(milliseconds === undefined ? 0 : milliseconds);
   var offset = d.getTimezoneOffset();
   if(offset !== 0){
     d = new Date(d.getTime() - (offset * 60 * 1000));
@@ -735,7 +735,7 @@ test('String', function () {
   equal('10.848'.toNumber(), 10.848, 'String#toNumber');
 
   equal('1234blue'.toNumber(), 1234, 'String#toNumber');
-  equal(isNaN('0xA'.toNumber()), true, 'String#toNumber');
+  equal(isNaN('0xA'.toNumber()), false, 'String#toNumber');
   equal('22.5'.toNumber(), 22.5, 'String#toNumber');
   equal(isNaN('blue'.toNumber()), true, 'String#toNumber');
 
@@ -748,7 +748,7 @@ test('String', function () {
   equal('1.45kg'.toNumber(), 1.45, 'String#toNumber');
   equal('77.3'.toNumber(), 77.3, 'String#toNumber');
   equal('077.3'.toNumber(), 77.3, 'String#toNumber');
-  equal(isNaN('0x77.3'.toNumber()), true, 'String#toNumber');
+  equal(isNaN('0x77.3'.toNumber()), false, 'String#toNumber');
   equal('.3'.toNumber(), 0.3, 'String#toNumber');
   equal('0.1e6'.toNumber(), 100000, 'String#toNumber');
 
@@ -2488,25 +2488,30 @@ test('Date', function () {
 
 
 
+  var now = new Date();
 
   // Fuzzy dates
-  dateEquals(Date.create('today'), new Date(), 'Date#create | Fuzzy Dates | Today');
+  dateEquals(Date.create('today'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate()), 'Date#create | Fuzzy Dates | Today');
+  dateEquals(Date.create('yesterday'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() - 1), 'Date#create | Fuzzy Dates | Yesterday');
+  dateEquals(Date.create('tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1), 'Date#create | Fuzzy Dates | Tomorrow');
 
 
+  dateEquals(Date.create('The day after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 2), 'Date#create | Fuzzy Dates | The day after tomorrow');
+  dateEquals(Date.create('The day before yesterday'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() - 2), 'Date#create | Fuzzy Dates | The day before yesterday');
+  dateEquals(Date.create('One day after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 2), 'Date#create | Fuzzy Dates | One day after tomorrow');
+  dateEquals(Date.create('One day before yesterday'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() - 2), 'Date#create | Fuzzy Dates | One day before yesterday');
+  dateEquals(Date.create('Two days after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 3), 'Date#create | Fuzzy Dates | Two days after tomorrow');
+  dateEquals(Date.create('Two days before yesterday'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() - 3), 'Date#create | Fuzzy Dates | Two days before yesterday');
+  dateEquals(Date.create('Two days after today'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 2), 'Date#create | Fuzzy Dates | Two days after today');
+  dateEquals(Date.create('Two days before today'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() - 2), 'Date#create | Fuzzy Dates | Two days before today');
 
+  dateEquals(Date.create('tWo dAyS after toMoRRoW'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 3), 'Date#create | Fuzzy Dates | tWo dAyS after toMoRRoW');
+  dateEquals(Date.create('2 days after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 3), 'Date#create | Fuzzy Dates | 2 days after tomorrow');
+  dateEquals(Date.create('2 day after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 3), 'Date#create | Fuzzy Dates | 2 day after tomorrow');
+  dateEquals(Date.create('18 days after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 19), 'Date#create | Fuzzy Dates | 18 days after tomorrow');
+  dateEquals(Date.create('18 day after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 19), 'Date#create | Fuzzy Dates | 18 day after tomorrow');
 
-
-  dateEquals(Date.create('Today'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Yesterday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('The day after tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('The day before yesterday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('One day after tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('One day before yesterday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Two days after tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Two days before yesterday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Two days after today'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Two days before today'), new Date(), 'Date#create | Fuzzy Dates | ');
+  /*
   dateEquals(Date.create('Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('The day after Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('The day before Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
@@ -2530,6 +2535,7 @@ test('Date', function () {
   dateEquals(Date.create('2 days ago'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('2 days from now'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('2 days 6 months ago'), new Date(), 'Date#create | Fuzzy Dates | ');
+  */
 
 
 
