@@ -21,22 +21,41 @@ var getDate = function(year, month, day, hours, minutes, seconds, milliseconds){
   d.setMinutes(minutes === undefined ? 0 : minutes);
   d.setSeconds(seconds === undefined ? 0 : seconds);
   d.setMilliseconds(milliseconds === undefined ? 0 : milliseconds);
-  var offset = d.getTimezoneOffset();
-  if(offset !== 0){
-    d = new Date(d.getTime() - (offset * 60 * 1000));
-  }
+  return d;
+}
+
+var getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds){
+  var d = new Date();
+  d.setFullYear(d.getFullYear() + (year || 0));
+  d.setMonth(d.getMonth() + (month || 0));
+  d.setDate(d.getDate() + (day || 0));
+  d.setHours(d.getHours() + (hours || 0));
+  d.setMinutes(d.getMinutes() + (minutes || 0));
+  d.setSeconds(d.getSeconds() + (seconds || 0));
+  d.setMilliseconds(d.getMilliseconds() + (milliseconds || 0));
   return d;
 }
 
 var getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds){
   var d = new Date();
-  d.setUTCFullYear(year || 0);
-  d.setUTCMonth(month ? month - 1 : 0);
-  d.setUTCDate(day || 1);
-  d.setUTCHours(hours || 0);
-  d.setUTCMinutes(minutes || 0);
-  d.setUTCSeconds(seconds || 0);
-  d.setUTCMilliseconds(milliseconds || 0);
+  if(year) d.setFullYear(year);
+  d.setUTCMonth(month === undefined ? 0 : month - 1);
+  d.setUTCDate(day === undefined ? 1 : day);
+  d.setUTCHours(hours === undefined ? 0 : hours);
+  d.setUTCMinutes(minutes === undefined ? 0 : minutes);
+  d.setUTCSeconds(seconds === undefined ? 0 : seconds);
+  d.setUTCMilliseconds(milliseconds === undefined ? 0 : milliseconds);
+  return d;
+}
+
+var getDateWithWeekdayAndOffset = function(weekday, offset){
+  var d = new Date();
+  if(offset) d.setDate(d.getDate() + offset);
+  d.setDate(d.getDate() + (weekday - d.getDay()));
+  d.setHours(0);
+  d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);
   return d;
 }
 
@@ -2286,7 +2305,8 @@ test('Date', function () {
 
 
   window.parent.poo = getDate;
-  window.parent.poop = getUTCDate;
+  window.parent.poop = getRelativeDate;
+  window.parent.pee = getDateWithWeekdayAndOffset;
 
 //  dateEquals(Date.create('today'), 0, 'Date#constructor');
 
@@ -2338,9 +2358,7 @@ test('Date', function () {
   // Dots (European style)
   dateEquals(Date.create('08.10.1978', true), getDate(1978, 10, 8), 'Date#create | European style dots | dd.mm.yyyy');
   dateEquals(Date.create('8.10.1978', true), getDate(1978, 10, 8), 'Date#create | European style dots | d.mm.yyyy');
-
-  // dd-dd-dd defaults as European style, but it is in UTC time as it is an ISO8601 format!
-  dateEquals(Date.create('08-05-05'), getUTCDate(2008, 5, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
+  dateEquals(Date.create('08-05-05'), getDate(2008, 5, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
 
 
 
@@ -2460,31 +2478,31 @@ test('Date', function () {
   dateEquals(Date.create('08-25-1978 11:42:32.488am'), getDate(1978, 8, 25, 11, 42, 32, 488), 'Date#create | Date/Time | 11am seconds and meridian');
 
 
-  dateEquals(Date.create('2010-11-22T22:59Z'), getDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
-  dateEquals(Date.create('1997-07-16T19:20+01:00'), getDate(1997, 7, 16, 18, 20), 'Date#create | ISO8601 | minutes with timezone');
-  dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getDate(1997, 7, 16, 18, 20, 30), 'Date#create | ISO8601 | seconds with timezone');
-  dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getDate(1997, 7, 16, 18, 20, 30, 450), 'Date#create | ISO8601 | milliseconds with timezone');
-  dateEquals(Date.create('1994-11-05T08:15:30-05:00'), getDate(1994, 11, 5, 13, 15, 30), 'Date#create | ISO8601 | Full example 1');
-  dateEquals(Date.create('1994-11-05T13:15:30Z'), getDate(1994, 11, 5, 13, 15, 30), 'Date#create | ISO8601 | Full example 1');
+  dateEquals(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
+  dateEquals(Date.create('1997-07-16T19:20+01:00'), getUTCDate(1997, 7, 16, 18, 20), 'Date#create | ISO8601 | minutes with timezone');
+  dateEquals(Date.create('1997-07-16T19:20:30+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30), 'Date#create | ISO8601 | seconds with timezone');
+  dateEquals(Date.create('1997-07-16T19:20:30.45+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 450), 'Date#create | ISO8601 | milliseconds with timezone');
+  dateEquals(Date.create('1994-11-05T08:15:30-05:00'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Date#create | ISO8601 | Full example 1');
+  dateEquals(Date.create('1994-11-05T13:15:30Z'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Date#create | ISO8601 | Full example 1');
 
-  dateEquals(Date.create('1776-05-23T02:45:08-08:30'), getDate(1776, 5, 23, 11, 15, 08), 'Date#create | ISO8601 | Full example 3');
-  dateEquals(Date.create('1776-05-23T02:45:08+08:30'), getDate(1776, 5, 22, 18, 15, 08), 'Date#create | ISO8601 | Full example 4');
-  dateEquals(Date.create('1776-05-23T02:45:08-0830'), getDate(1776, 5, 23, 11, 15, 08), 'Date#create | ISO8601 | Full example 5');
-  dateEquals(Date.create('1776-05-23T02:45:08+0830'), getDate(1776, 5, 22, 18, 15, 08), 'Date#create | ISO8601 | Full example 6');
+  dateEquals(Date.create('1776-05-23T02:45:08-08:30'), getUTCDate(1776, 5, 23, 11, 15, 08), 'Date#create | ISO8601 | Full example 3');
+  dateEquals(Date.create('1776-05-23T02:45:08+08:30'), getUTCDate(1776, 5, 22, 18, 15, 08), 'Date#create | ISO8601 | Full example 4');
+  dateEquals(Date.create('1776-05-23T02:45:08-0830'), getUTCDate(1776, 5, 23, 11, 15, 08), 'Date#create | ISO8601 | Full example 5');
+  dateEquals(Date.create('1776-05-23T02:45:08+0830'), getUTCDate(1776, 5, 22, 18, 15, 08), 'Date#create | ISO8601 | Full example 6');
 
   // No limit on the number of millisecond decimals, so....
-  dateEquals(Date.create('1997-07-16T19:20:30.4+01:00'), getDate(1997, 7, 16, 18, 20, 30, 400), 'Date#create | ISO8601 | milliseconds have no limit 1');
-  dateEquals(Date.create('1997-07-16T19:20:30.46+01:00'), getDate(1997, 7, 16, 18, 20, 30, 460), 'Date#create | ISO8601 | milliseconds have no limit 2');
-  dateEquals(Date.create('1997-07-16T19:20:30.462+01:00'), getDate(1997, 7, 16, 18, 20, 30, 462), 'Date#create | ISO8601 | milliseconds have no limit 3');
-  dateEquals(Date.create('1997-07-16T19:20:30.4628+01:00'), getDate(1997, 7, 16, 18, 20, 30, 463), 'Date#create | ISO8601 | milliseconds have no limit 4');
-  dateEquals(Date.create('1997-07-16T19:20:30.46284+01:00'), getDate(1997, 7, 16, 18, 20, 30, 463), 'Date#create | ISO8601 | milliseconds have no limit 5');
+  dateEquals(Date.create('1997-07-16T19:20:30.4+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 400), 'Date#create | ISO8601 | milliseconds have no limit 1');
+  dateEquals(Date.create('1997-07-16T19:20:30.46+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 460), 'Date#create | ISO8601 | milliseconds have no limit 2');
+  dateEquals(Date.create('1997-07-16T19:20:30.462+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 462), 'Date#create | ISO8601 | milliseconds have no limit 3');
+  dateEquals(Date.create('1997-07-16T19:20:30.4628+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 463), 'Date#create | ISO8601 | milliseconds have no limit 4');
+  dateEquals(Date.create('1997-07-16T19:20:30.46284+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 463), 'Date#create | ISO8601 | milliseconds have no limit 5');
 
 
   // These are all the same moment...
-  dateEquals(Date.create('2001-04-03T18:30Z'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 1');
-  dateEquals(Date.create('2001-04-03T22:30+04'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 2');
-  dateEquals(Date.create('2001-04-03T1130-0700'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 3');
-  dateEquals(Date.create('2001-04-03T15:00-03:30'), getDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 4');
+  dateEquals(Date.create('2001-04-03T18:30Z'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 1');
+  dateEquals(Date.create('2001-04-03T22:30+04'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 2');
+  dateEquals(Date.create('2001-04-03T1130-0700'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 3');
+  dateEquals(Date.create('2001-04-03T15:00-03:30'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 4');
 
 
 
@@ -2511,20 +2529,81 @@ test('Date', function () {
   dateEquals(Date.create('18 days after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 19), 'Date#create | Fuzzy Dates | 18 days after tomorrow');
   dateEquals(Date.create('18 day after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 19), 'Date#create | Fuzzy Dates | 18 day after tomorrow');
 
+  dateEquals(Date.create('2 years ago'), getRelativeDate(-2), 'Date#create | Fuzzy Dates | 2 years ago');
+  dateEquals(Date.create('2 months ago'), getRelativeDate(null, -2), 'Date#create | Fuzzy Dates | 2 months ago');
+  dateEquals(Date.create('2 weeks ago'), getRelativeDate(null, null, -14), 'Date#create | Fuzzy Dates | 2 weeks ago');
+  dateEquals(Date.create('2 days ago'), getRelativeDate(null, null, -2), 'Date#create | Fuzzy Dates | 2 days ago');
+  dateEquals(Date.create('2 hours ago'), getRelativeDate(null, null, null, -2), 'Date#create | Fuzzy Dates | 2 hours ago');
+  dateEquals(Date.create('2 minutes ago'), getRelativeDate(null, null, null, null, -2), 'Date#create | Fuzzy Dates | 2 minutes ago');
+  dateEquals(Date.create('2 seconds ago'), getRelativeDate(null, null, null, null, null, -2), 'Date#create | Fuzzy Dates | 2 seconds ago');
+  dateEquals(Date.create('2 milliseconds ago'), getRelativeDate(null, null, null, null, null, null, -2), 'Date#create | Fuzzy Dates | 2 milliseconds ago');
+
+  dateEquals(Date.create('2 years from now'), getRelativeDate(2), 'Date#create | Fuzzy Dates | 2 years from now');
+  dateEquals(Date.create('2 months from now'), getRelativeDate(null, 2), 'Date#create | Fuzzy Dates | 2 months from now');
+  dateEquals(Date.create('2 weeks from now'), getRelativeDate(null, null, 14), 'Date#create | Fuzzy Dates | 2 weeks from now');
+  dateEquals(Date.create('2 days from now'), getRelativeDate(null, null, 2), 'Date#create | Fuzzy Dates | 2 days from now');
+  dateEquals(Date.create('2 hours from now'), getRelativeDate(null, null, null, 2), 'Date#create | Fuzzy Dates | 2 hours from now');
+  dateEquals(Date.create('2 minutes from now'), getRelativeDate(null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 minutes from now');
+  dateEquals(Date.create('2 seconds from now'), getRelativeDate(null, null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 seconds from now');
+  dateEquals(Date.create('2 milliseconds from now'), getRelativeDate(null, null, null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 milliseconds from now');
+
+  dateEquals(Date.create('Monday'), getDateWithWeekdayAndOffset(1), 'Date#create | Fuzzy Dates | Monday');
+  dateEquals(Date.create('The day after Monday'), getDateWithWeekdayAndOffset(2), 'Date#create | Fuzzy Dates | The day after Monday');
+  dateEquals(Date.create('The day before Monday'), getDateWithWeekdayAndOffset(0), 'Date#create | Fuzzy Dates | The day before Monday');
+  dateEquals(Date.create('2 days after monday'), getDateWithWeekdayAndOffset(3), 'Date#create | Fuzzy Dates | 2 days after monday');
+  dateEquals(Date.create('2 days before monday'), getDateWithWeekdayAndOffset(6, -7), 'Date#create | Fuzzy Dates | 2 days before monday');
+
+  dateEquals(Date.create('Next Monday'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | Fuzzy Dates | Next Monday');
+  dateEquals(Date.create('next week monday'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | Fuzzy Dates | next week monday');
+  dateEquals(Date.create('Next friDay'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Fuzzy Dates | Next friDay');
+  dateEquals(Date.create('next week thursday'), getDateWithWeekdayAndOffset(4, 7), 'Date#create | Fuzzy Dates | next week thursday');
+
+  dateEquals(Date.create('last Monday'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Fuzzy Dates | last Monday');
+  dateEquals(Date.create('last week monday'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Fuzzy Dates | last week monday');
+  dateEquals(Date.create('last friDay'), getDateWithWeekdayAndOffset(5, -7), 'Date#create | Fuzzy Dates | last friDay');
+  dateEquals(Date.create('last week thursday'), getDateWithWeekdayAndOffset(4, -7), 'Date#create | Fuzzy Dates | last week thursday');
+
+  dateEquals(Date.create('this Monday'), getDateWithWeekdayAndOffset(1, 0), 'Date#create | Fuzzy Dates | this Monday');
+  dateEquals(Date.create('this week monday'), getDateWithWeekdayAndOffset(1, 0), 'Date#create | Fuzzy Dates | this week monday');
+  dateEquals(Date.create('this friDay'), getDateWithWeekdayAndOffset(5, 0), 'Date#create | Fuzzy Dates | this friDay');
+  dateEquals(Date.create('this week thursday'), getDateWithWeekdayAndOffset(4, 0), 'Date#create | Fuzzy Dates | this week thursday');
+
+  dateEquals(Date.create('Monday of last week'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Fuzzy Dates | Monday of last week');
+  dateEquals(Date.create('saturday of next week'), getDateWithWeekdayAndOffset(6, 7), 'Date#create | Fuzzy Dates | saturday of next week');
+  dateEquals(Date.create('Monday last week'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Fuzzy Dates | Monday last week');
+  dateEquals(Date.create('saturday next week'), getDateWithWeekdayAndOffset(6, 7), 'Date#create | Fuzzy Dates | saturday next week');
+
+  dateEquals(Date.create('Monday of this week'), getDateWithWeekdayAndOffset(1, 0), 'Date#create | Fuzzy Dates | Monday of this week');
+  dateEquals(Date.create('saturday of this week'), getDateWithWeekdayAndOffset(6, 0), 'Date#create | Fuzzy Dates | saturday of this week');
+  dateEquals(Date.create('Monday this week'), getDateWithWeekdayAndOffset(1, 0), 'Date#create | Fuzzy Dates | Monday this week');
+  dateEquals(Date.create('saturday this week'), getDateWithWeekdayAndOffset(6, 0), 'Date#create | Fuzzy Dates | saturday this week');
+
+  dateEquals(Date.create('Tue of last week'), getDateWithWeekdayAndOffset(2, -7), 'Date#create | Fuzzy Dates | Tue of last week');
+  dateEquals(Date.create('Tue. of last week'), getDateWithWeekdayAndOffset(2, -7), 'Date#create | Fuzzy Dates | Tue. of last week');
+
+
+  dateEquals(Date.create('Next week'), getRelativeDate(null, null, 7), 'Date#create | Fuzzy Dates | Next week');
+  dateEquals(Date.create('Last week'), getRelativeDate(null, null, -7), 'Date#create | Fuzzy Dates | Last week');
+  dateEquals(Date.create('Next month'), getRelativeDate(null, 1), 'Date#create | Fuzzy Dates | Next month');
+  dateEquals(Date.create('Next year'), getRelativeDate(1), 'Date#create | Fuzzy Dates | Next year');
+
+  dateEquals(Date.create('beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'Date#create | Fuzzy Dates | beginning of next week');
+  dateEquals(Date.create('the beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'Date#create | Fuzzy Dates | the beginning of next week');
+  dateEquals(Date.create('beginning of next month'), getDate(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | beginning of next month');
+  dateEquals(Date.create('the beginning of next month'), getDate(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | the beginning of next month');
+  // uhoh dateEquals(Date.create('the end of next month'), getDate(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | the beginning of next month');
+  dateEquals(Date.create('the beginning of next year'), getDate(now.getFullYear() + 1), 'Date#create | Fuzzy Dates | the beginning of next year');
+  dateEquals(Date.create('the beginning of last year'), getDate(now.getFullYear() - 1), 'Date#create | Fuzzy Dates | the beginning of last year');
+  dateEquals(Date.create('the end of next year'), getDate(now.getFullYear(), 11, 31), 'Date#create | Fuzzy Dates | the end of next year');
+  dateEquals(Date.create('the end of last year'), getDate(now.getFullYear() - 1, 11, 31), 'Date#create | Fuzzy Dates | the end of last year');
+
+
+
+
+
+// weef  dateEquals(Date.create('sdf asdf asf'), /* what should this be?? */, 'Date#create | Fuzzy Dates | Invalid format');
+
   /*
-  dateEquals(Date.create('Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('The day after Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('The day before Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Next week'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Last week'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Next week Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Last week Monday'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Monday of last week'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Monday of next week'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Tue of last week'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Tue. of last week'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Next month'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Next year'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('The 31st of last month.'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('January 30th of last year.'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('First day of may'), new Date(), 'Date#create | Fuzzy Dates | ');
@@ -2532,11 +2611,7 @@ test('Date', function () {
   dateEquals(Date.create('Midnight tonight'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('Noon tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
   dateEquals(Date.create('Last day of next month'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('2 days ago'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('2 days from now'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('2 days 6 months ago'), new Date(), 'Date#create | Fuzzy Dates | ');
   */
-
 
 
 
