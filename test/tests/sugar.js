@@ -48,15 +48,19 @@ var getUTCDate = function(year, month, day, hours, minutes, seconds, millisecond
   return d;
 }
 
-var getDateWithWeekdayAndOffset = function(weekday, offset){
+var getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds, milliseconds){
   var d = new Date();
   if(offset) d.setDate(d.getDate() + offset);
   d.setDate(d.getDate() + (weekday - d.getDay()));
-  d.setHours(0);
-  d.setMinutes(0);
-  d.setSeconds(0);
-  d.setMilliseconds(0);
+  d.setHours(hours || 0);
+  d.setMinutes(minutes || 0);
+  d.setSeconds(seconds || 0);
+  d.setMilliseconds(milliseconds || 0);
   return d;
+}
+
+var getDaysInMonth = function(year, month){
+  return 32 - new Date(year, month, 32).getDate();
 }
 
 var contains = function(actual, expected, message){
@@ -2307,8 +2311,18 @@ test('Date', function () {
   window.parent.poo = getDate;
   window.parent.poop = getRelativeDate;
   window.parent.pee = getDateWithWeekdayAndOffset;
+  window.parent.fecal = getDaysInMonth;
 
-//  dateEquals(Date.create('today'), 0, 'Date#constructor');
+
+  // Valid Date
+
+  // Invalid date
+  equals(new Date('a fridge too far').isValid(), false, 'Date#create | new Date invalid');
+  equals(new Date().isValid(), true, 'Date#create | new Date valid');
+  equals(Date.create().isValid(), true, 'Date#create | Date#create valid');
+  equals(Date.create('a fridge too far').isValid(), false, 'Date#create | Date#create invalid');
+
+  dateEquals(Date.create(), new Date(), 'Date#create | Just the year');
 
   // Just the year
   dateEquals(Date.create('1999'), getDate(1999), 'Date#create | Just the year');
@@ -2522,6 +2536,7 @@ test('Date', function () {
   dateEquals(Date.create('Two days before yesterday'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() - 3), 'Date#create | Fuzzy Dates | Two days before yesterday');
   dateEquals(Date.create('Two days after today'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 2), 'Date#create | Fuzzy Dates | Two days after today');
   dateEquals(Date.create('Two days before today'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() - 2), 'Date#create | Fuzzy Dates | Two days before today');
+  dateEquals(Date.create('Two days from today'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 2), 'Date#create | Fuzzy Dates | Two days from today');
 
   dateEquals(Date.create('tWo dAyS after toMoRRoW'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 3), 'Date#create | Fuzzy Dates | tWo dAyS after toMoRRoW');
   dateEquals(Date.create('2 days after tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 3), 'Date#create | Fuzzy Dates | 2 days after tomorrow');
@@ -2537,6 +2552,7 @@ test('Date', function () {
   dateEquals(Date.create('2 minutes ago'), getRelativeDate(null, null, null, null, -2), 'Date#create | Fuzzy Dates | 2 minutes ago');
   dateEquals(Date.create('2 seconds ago'), getRelativeDate(null, null, null, null, null, -2), 'Date#create | Fuzzy Dates | 2 seconds ago');
   dateEquals(Date.create('2 milliseconds ago'), getRelativeDate(null, null, null, null, null, null, -2), 'Date#create | Fuzzy Dates | 2 milliseconds ago');
+  dateEquals(Date.create('a second ago'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Fuzzy Dates | a second ago');
 
   dateEquals(Date.create('2 years from now'), getRelativeDate(2), 'Date#create | Fuzzy Dates | 2 years from now');
   dateEquals(Date.create('2 months from now'), getRelativeDate(null, 2), 'Date#create | Fuzzy Dates | 2 months from now');
@@ -2587,44 +2603,264 @@ test('Date', function () {
   dateEquals(Date.create('Next month'), getRelativeDate(null, 1), 'Date#create | Fuzzy Dates | Next month');
   dateEquals(Date.create('Next year'), getRelativeDate(1), 'Date#create | Fuzzy Dates | Next year');
 
+  dateEquals(Date.create('beginning of the week'), getDateWithWeekdayAndOffset(0), 'Date#create | Fuzzy Dates | beginning of the week');
+  dateEquals(Date.create('beginning of this week'), getDateWithWeekdayAndOffset(0), 'Date#create | Fuzzy Dates | beginning of this week');
+  dateEquals(Date.create('end of this week'), getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | end of this week');
   dateEquals(Date.create('beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'Date#create | Fuzzy Dates | beginning of next week');
   dateEquals(Date.create('the beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'Date#create | Fuzzy Dates | the beginning of next week');
-  dateEquals(Date.create('beginning of next month'), getDate(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | beginning of next month');
-  dateEquals(Date.create('the beginning of next month'), getDate(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | the beginning of next month');
-  // uhoh dateEquals(Date.create('the end of next month'), getDate(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | the beginning of next month');
+
+  dateEquals(Date.create('beginning of the month'), getDate(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | beginning of the month');
+  dateEquals(Date.create('beginning of this month'), getDate(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | beginning of this month');
+  dateEquals(Date.create('beginning of next month'), getDate(now.getFullYear(), now.getMonth() + 2), 'Date#create | Fuzzy Dates | beginning of next month');
+  dateEquals(Date.create('the beginning of next month'), getDate(now.getFullYear(), now.getMonth() + 2), 'Date#create | Fuzzy Dates | the beginning of next month');
+  dateEquals(Date.create('the end of next month'), getDate(now.getFullYear(), now.getMonth() + 2, getDaysInMonth(now.getFullYear(), now.getMonth() + 1), 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of next month');
+
+  dateEquals(Date.create('the beginning of the year'), getDate(now.getFullYear()), 'Date#create | Fuzzy Dates | the beginning of the year');
+  dateEquals(Date.create('the beginning of this year'), getDate(now.getFullYear()), 'Date#create | Fuzzy Dates | the beginning of this year');
   dateEquals(Date.create('the beginning of next year'), getDate(now.getFullYear() + 1), 'Date#create | Fuzzy Dates | the beginning of next year');
   dateEquals(Date.create('the beginning of last year'), getDate(now.getFullYear() - 1), 'Date#create | Fuzzy Dates | the beginning of last year');
-  dateEquals(Date.create('the end of next year'), getDate(now.getFullYear(), 11, 31), 'Date#create | Fuzzy Dates | the end of next year');
-  dateEquals(Date.create('the end of last year'), getDate(now.getFullYear() - 1, 11, 31), 'Date#create | Fuzzy Dates | the end of last year');
-
-
-
-
-
-// weef  dateEquals(Date.create('sdf asdf asf'), /* what should this be?? */, 'Date#create | Fuzzy Dates | Invalid format');
-
-  /*
-  dateEquals(Date.create('The 31st of last month.'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('January 30th of last year.'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('First day of may'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Last day of may'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Midnight tonight'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Noon tomorrow'), new Date(), 'Date#create | Fuzzy Dates | ');
-  dateEquals(Date.create('Last day of next month'), new Date(), 'Date#create | Fuzzy Dates | ');
-  */
+  dateEquals(Date.create('the end of next year'), getDate(now.getFullYear() + 1, 12, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of next year');
+  dateEquals(Date.create('the end of last year'), getDate(now.getFullYear() - 1, 12, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of last year');
 
 
 
 
 
 
+  dateEquals(Date.create('The 15th of last month.'), getDate(now.getFullYear(), now.getMonth(), 15), 'Date#create | Fuzzy Dates | The 15th of last month');
+  dateEquals(Date.create('January 30th of last year.'), getDate(now.getFullYear() - 1, 1, 30), 'Date#create | Fuzzy Dates | January 30th of last year');
+  dateEquals(Date.create('January of last year.'), getDate(now.getFullYear() - 1, 1), 'Date#create | Fuzzy Dates | January of last year');
+
+  dateEquals(Date.create('First day of may'), getDate(now.getFullYear(), 5, 1), 'Date#create | Fuzzy Dates | First day of may');
+  dateEquals(Date.create('Last day of may'), getDate(now.getFullYear(), 5, 31), 'Date#create | Fuzzy Dates | Last day of may');
+  dateEquals(Date.create('Last day of next month'), getDate(now.getFullYear(), now.getMonth() + 2, getDaysInMonth(now.getFullYear(), now.getMonth() + 1)), 'Date#create | Fuzzy Dates | Last day of next month');
+  dateEquals(Date.create('Last day of november'), getDate(now.getFullYear(), 11, 30), 'Date#create | Fuzzy Dates | Last day of november');
+
+  // Just the time
+  dateEquals(Date.create('1pm'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate(), 13), 'Date#create | ISO8601 | 1pm');
+  dateEquals(Date.create('Midnight tonight'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1), 'Date#create | Fuzzy Dates | Midnight tonight');
+  dateEquals(Date.create('Noon tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1, 12), 'Date#create | Fuzzy Dates | Noon tomorrow');
+  dateEquals(Date.create('midnight'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1), 'Date#create | Fuzzy Dates | midnight');
+  dateEquals(Date.create('noon'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate(), 12), 'Date#create | Fuzzy Dates | noon');
 
 
 
+  var d;
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.set(2008, 5, 18, 4, 25, 30, 400);
+
+  equals(d.getFullYear(), 2008, 'Date#set | year');
+  equals(d.getMonth(), 5, 'Date#set | month');
+  equals(d.getDate(), 18, 'Date#set | date');
+  equals(d.getHours(), 4, 'Date#set | hours');
+  equals(d.getMinutes(), 25, 'Date#set | minutes');
+  equals(d.getSeconds(), 30, 'Date#set | seconds');
+  equals(d.getMilliseconds(), 400, 'Date#set | milliseconds');
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.set({ year: 2008, month: 5, date: 18, hour: 4, minute: 25, second: 30, millisecond: 400 });
+
+  equals(d.getFullYear(), 2008, 'Date#set | object | year');
+  equals(d.getMonth(), 5, 'Date#set | object | month');
+  equals(d.getDate(), 18, 'Date#set | object | date');
+  equals(d.getHours(), 4, 'Date#set | object | hours');
+  equals(d.getMinutes(), 25, 'Date#set | object | minutes');
+  equals(d.getSeconds(), 30, 'Date#set | object | seconds');
+  equals(d.getMilliseconds(), 400, 'Date#set | object | milliseconds');
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.set({ years: 2008, months: 5, date: 18, hours: 4, minutes: 25, seconds: 30, milliseconds: 400 });
+
+  equals(d.getFullYear(), 2008, 'Date#set | object plural | year');
+  equals(d.getMonth(), 5, 'Date#set | object plural | month');
+  equals(d.getDate(), 18, 'Date#set | object plural | date');
+  equals(d.getHours(), 4, 'Date#set | object plural | hours');
+  equals(d.getMinutes(), 25, 'Date#set | object plural | minutes');
+  equals(d.getSeconds(), 30, 'Date#set | object plural | seconds');
+  equals(d.getMilliseconds(), 400, 'Date#set | object plural | milliseconds');
+
+  d.set({ day: 2 });
+  equals(d.getDate(), 17, 'Date#set | object | day');
+  d.set({ days: 5 });
+  equals(d.getDate(), 20, 'Date#set | object plural | day');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.set({ years: 2005, hours: 2 });
+
+  equals(d.getFullYear(), 2005, 'Date#set | no reset | year');
+  equals(d.getMonth(), 7, 'Date#set | no reset | month');
+  equals(d.getDate(), 25, 'Date#set | no reset | date');
+  equals(d.getHours(), 2, 'Date#set | no reset | hours');
+  equals(d.getMinutes(), 45, 'Date#set | no reset | minutes');
+  equals(d.getSeconds(), 20, 'Date#set | no reset | seconds');
+  equals(d.getMilliseconds(), 0, 'Date#set | no reset | milliseconds');
 
 
 
+  d = new Date('August 25, 2010 11:45:20');
+  d.set({ years: 2008, hours: 4 }, true);
 
+  equals(d.getFullYear(), 2008, 'Date#set | reset | year');
+  equals(d.getMonth(), 0, 'Date#set | reset | month');
+  equals(d.getDate(), 1, 'Date#set | reset | date');
+  equals(d.getHours(), 4, 'Date#set | reset | hours');
+  equals(d.getMinutes(), 0, 'Date#set | reset | minutes');
+  equals(d.getSeconds(), 0, 'Date#set | reset | seconds');
+  equals(d.getMilliseconds(), 0, 'Date#set | reset | milliseconds');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.setUTC({ years: 2008, hours: 4 }, true);
+
+  equals(d.getFullYear(), 2008, 'Date#set | reset utc | year');
+  equals(d.getMonth(), 0, 'Date#set | reset utc | month');
+  equals(d.getDate(), 1, 'Date#set | reset utc | date');
+  equals(d.getHours(), 4 - Math.round(d.getTimezoneOffset() / 60), 'Date#set | reset utc | hours');
+  equals(d.getMinutes(), 0, 'Date#set | reset utc | minutes');
+  equals(d.getSeconds(), 0, 'Date#set | reset utc | seconds');
+  equals(d.getMilliseconds(), 0, 'Date#set | reset utc | milliseconds');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.setUTC({ years: 2005, hours: 2 }, false);
+
+  equals(d.getFullYear(), 2005, 'Date#set | no reset utc | year');
+  equals(d.getMonth(), 7, 'Date#set | no reset utc | month');
+  equals(d.getDate(), 25, 'Date#set | no reset utc | date');
+  equals(d.getHours(), 2 - Math.round(d.getTimezoneOffset() / 60), 'Date#set | no reset utc | hours');
+  equals(d.getMinutes(), 45, 'Date#set | no reset utc | minutes');
+  equals(d.getSeconds(), 20, 'Date#set | no reset utc | seconds');
+  equals(d.getMilliseconds(), 0, 'Date#set | no reset utc | milliseconds');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.setUTC({ years: 2005, hours: 2 }, false);
+
+  equals(d.getFullYear(), 2005, 'Date#setUTC | no reset | year');
+  equals(d.getMonth(), 7, 'Date#setUTC | no reset | month');
+  equals(d.getDate(), 25, 'Date#setUTC | no reset | date');
+  equals(d.getHours(), 2 - Math.round(d.getTimezoneOffset() / 60), 'Date#setUTC | no reset | hours');
+  equals(d.getMinutes(), 45, 'Date#setUTC | no reset | minutes');
+  equals(d.getSeconds(), 20, 'Date#setUTC | no reset | seconds');
+  equals(d.getMilliseconds(), 0, 'Date#setUTC | no reset | milliseconds');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+
+  d.setDay(0);
+  equals(d.getDate(), 22, 'Date#setDay | sunday');
+  d.setDay(1);
+  equals(d.getDate(), 23, 'Date#setDay | monday');
+  d.setDay(2);
+  equals(d.getDate(), 24, 'Date#setDay | tuesday');
+  d.setDay(3);
+  equals(d.getDate(), 25, 'Date#setDay | wednesday');
+  d.setDay(4);
+  equals(d.getDate(), 26, 'Date#setDay | thursday');
+  d.setDay(5);
+  equals(d.getDate(), 27, 'Date#setDay | friday');
+  d.setDay(6);
+  equals(d.getDate(), 28, 'Date#setDay | saturday');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+
+  d.setUTCDay(0);
+  equals(d.getDate(), 22, 'Date#setUTCDay | sunday');
+  d.setUTCDay(1);
+  equals(d.getDate(), 23, 'Date#setUTCDay | monday');
+  d.setUTCDay(2);
+  equals(d.getDate(), 24, 'Date#setUTCDay | tuesday');
+  d.setUTCDay(3);
+  equals(d.getDate(), 25, 'Date#setUTCDay | wednesday');
+  d.setUTCDay(4);
+  equals(d.getDate(), 26, 'Date#setUTCDay | thursday');
+  d.setUTCDay(5);
+  equals(d.getDate(), 27, 'Date#setUTCDay | friday');
+  d.setUTCDay(6);
+  equals(d.getDate(), 28, 'Date#setUTCDay | saturday');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+
+  d.advance(1,-3,2,8,12,-2,44);
+
+  equals(d.getFullYear(), 2011, 'Date#advance | year');
+  equals(d.getMonth(), 4, 'Date#advance | month');
+  equals(d.getDate(), 27, 'Date#advance | day');
+  equals(d.getHours(), 19, 'Date#advance | hours');
+  equals(d.getMinutes(), 57, 'Date#advance | minutes');
+  equals(d.getSeconds(), 18, 'Date#advance | seconds');
+  equals(d.getMilliseconds(), 44, 'Date#advance | milliseconds');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+
+  d.rewind(1,-3,2,8,12,-2,4);
+
+  equals(d.getFullYear(), 2009, 'Date#rewind | year');
+  equals(d.getMonth(), 10, 'Date#rewind | month');
+  equals(d.getDate(), 23, 'Date#rewind | day');
+  equals(d.getHours(), 3, 'Date#rewind | hours');
+  equals(d.getMinutes(), 33, 'Date#rewind | minutes');
+  equals(d.getSeconds(), 21, 'Date#rewind | seconds');
+  equals(d.getMilliseconds(), 996, 'Date#rewind | milliseconds');
+
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.advance({ year: 1, month: -3, date: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 44 });
+
+  equals(d.getFullYear(), 2011, 'Date#advance | object | year');
+  equals(d.getMonth(), 4, 'Date#advance | object | month');
+  equals(d.getDate(), 27, 'Date#advance | object | day');
+  equals(d.getHours(), 19, 'Date#advance | object | hours');
+  equals(d.getMinutes(), 57, 'Date#advance | object | minutes');
+  equals(d.getSeconds(), 18, 'Date#advance | object | seconds');
+  equals(d.getMilliseconds(), 44, 'Date#advance | object | milliseconds');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.rewind({ year: 1, month: -3, date: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 4 });
+
+  equals(d.getFullYear(), 2009, 'Date#rewind | object | year');
+  equals(d.getMonth(), 10, 'Date#rewind | object | month');
+  equals(d.getDate(), 23, 'Date#rewind | object | day');
+  equals(d.getHours(), 3, 'Date#rewind | object | hours');
+  equals(d.getMinutes(), 33, 'Date#rewind | object | minutes');
+  equals(d.getSeconds(), 21, 'Date#rewind | object | seconds');
+  equals(d.getMilliseconds(), 996, 'Date#rewind | object | milliseconds');
+
+
+  d.set({ month: 0 })
+  equals(d.daysInMonth(), 31, 'Date#daysInMonth | jan');
+  d.set({ month: 1 })
+  equals(d.daysInMonth(), 28, 'Date#daysInMonth | feb');
+  d.set({ month: 2 })
+  equals(d.daysInMonth(), 31, 'Date#daysInMonth | mar');
+  d.set({ month: 3 })
+  equals(d.daysInMonth(), 30, 'Date#daysInMonth | apr');
+  d.set({ month: 4 })
+  equals(d.daysInMonth(), 31, 'Date#daysInMonth | may');
+  d.set({ month: 5 })
+  equals(d.daysInMonth(), 30, 'Date#daysInMonth | jun');
+  d.set({ month: 6 })
+  equals(d.daysInMonth(), 31, 'Date#daysInMonth | jul');
+  d.set({ month: 7 })
+  equals(d.daysInMonth(), 31, 'Date#daysInMonth | aug');
+  d.set({ month: 8 })
+  equals(d.daysInMonth(), 30, 'Date#daysInMonth | sep');
+  d.set({ month: 9 })
+  equals(d.daysInMonth(), 31, 'Date#daysInMonth | oct');
+  d.set({ month: 10 })
+  equals(d.daysInMonth(), 30, 'Date#daysInMonth | nov');
+  d.set({ month: 11 })
+  equals(d.daysInMonth(), 31, 'Date#daysInMonth | dec');
+
+  d.set({ year: 2012, month: 1 });
+  equals(d.daysInMonth(), 29, 'Date#daysInMonth | feb leap year');
 
 
 
