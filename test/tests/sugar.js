@@ -2,7 +2,7 @@ module("Sugar");
 
 
 var dateEquals = function(a, b, message){
-  var buffer = 10; // Number of milliseconds of "play" to make sure these tests pass.
+  var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number'){
     var d = new Date();
     d.setTime(d.getTime() + b);
@@ -2299,7 +2299,12 @@ test('Array', function () {
     same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split complex regex splitting');
     same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split complex regex splitting');
 
+    var match = 'on'.match(/on(e)?/);
+    equals(match[1], undefined, 'String#match');
 
+    var match = 'on'.match(/\b/g);
+    equals(match[0], '', 'String#match');
+    equals(match[1], '', 'String#match');
 
 });
 
