@@ -67,6 +67,10 @@ var contains = function(actual, expected, message){
   equals(expected.any(actual), true, message);
 }
 
+var strictlyEqual = function(actual, expected, message){
+  equals(actual === expected, true, message + ' | strict equality');
+}
+
 test('Number', function () {
 
   var counter;
@@ -246,6 +250,34 @@ test('Number', function () {
   equals((1532587.5752).format(' ', ','), '1 532 587,5752', 'Number#format larger number with decimal')
   equals((9999999.99).format(),                     '9,999,999.99', 'Number#format Standard');
   equals((9999999.99).format('.',','),              '9.999.999,99', 'Number#format Euro style!');
+
+
+
+  equals((1).pad(0), '1', 'Number#pad')
+  equals((1).pad(1), '1', 'Number#pad')
+  equals((1).pad(2), '01', 'Number#pad')
+  equals((1).pad(3), '001', 'Number#pad')
+  equals((1).pad(4), '0001', 'Number#pad')
+  equals((547).pad(0), '547', 'Number#pad')
+  equals((547).pad(1), '547', 'Number#pad')
+  equals((547).pad(2), '547', 'Number#pad')
+  equals((547).pad(3), '547', 'Number#pad')
+  equals((547).pad(4), '0547', 'Number#pad')
+  equals((0).pad(0), '', 'Number#pad')
+  equals((0).pad(1), '0', 'Number#pad')
+  equals((0).pad(2), '00', 'Number#pad')
+  equals((0).pad(3), '000', 'Number#pad')
+  equals((0).pad(4), '0000', 'Number#pad')
+  equals((-1).pad(1), '-1', 'Number#pad')
+  equals((-1).pad(2), '-01', 'Number#pad')
+  equals((-1).pad(3), '-001', 'Number#pad')
+  equals((-1).pad(4), '-0001', 'Number#pad')
+  equals((1).pad(1, true), '+1', 'Number#pad')
+  equals((1).pad(2, true), '+01', 'Number#pad')
+  equals((1).pad(3, true), '+001', 'Number#pad')
+  equals((1).pad(4, true), '+0001', 'Number#pad')
+  equals((0).pad(1, true), '+0', 'Number#pad')
+
 
 
   equals((0).hex(), '0', 'Number#hex')
@@ -457,6 +489,7 @@ test('String', function () {
   equal('wasabi'.pad(3, '-', 'right'), 'wasabi---', 'String#pad');
   equal('4'.pad(3, '0', 'left'), '0004', 'String#pad');
   equal('wasabi'.pad(3, ' ', 'both'), '   wasabi   ', 'String#pad');
+  equal('wasabi'.pad() === 'wasabi', true, 'String#pad | strict equality works');
 
   equal('wasabi'.repeat(0), '', 'String#repeat');
   equal('wasabi'.repeat(-1), 'wasabi', 'String#repeat');
@@ -563,7 +596,6 @@ test('String', function () {
   equal(counter, 6, 'String#chars');
   same(result, ['G','I','N','G','E','R'], 'String#chars');
 
-  /*
   counter = 0;
   var sentence = 'these pretzels are \n\n making me         thirsty!\n\n';
   test = ['these', 'pretzels', 'are', 'making', 'me', 'thirsty!'];
@@ -573,7 +605,6 @@ test('String', function () {
   });
   equal(counter, 6, 'String#words');
   same(result, test, 'String#words');
-  */
 
   counter = 0;
   var paragraph = 'these\npretzels\nare\n\nmaking\nme\n         thirsty!\n\n\n\n';
@@ -599,6 +630,18 @@ test('String', function () {
   });
   equal(counter, 4, 'String#paragraphs');
   same(result, test, 'String#paragraphs');
+
+
+  same(''.bytes(), [], 'String#bytes | empty string');
+  same(''.chars(), [], 'String#chars | empty string');
+  same(''.words(), [], 'String#words | empty string');
+  same(''.lines(), [''], 'String#lines | empty string');
+  same(''.paragraphs(), [''], 'String#paragraphs | empty string');
+  same(''.each('f'), [], 'String#each | empty string');
+  same(''.each(/foo/), [], 'String#each | empty string');
+  same(''.each(function(){}), [], 'String#each | empty string');
+
+
 
 
   equal('ō'.normalize(), 'o', 'String#normalize');
@@ -803,14 +846,14 @@ test('String', function () {
   equal('foop'.at(1), 'o', 'String#at');
   equal('foop'.at(2), 'o', 'String#at');
   equal('foop'.at(3), 'p', 'String#at');
-  equal('foop'.at(4), null, 'String#at');
-  equal('foop'.at(1224), null, 'String#at');
+  equal('foop'.at(4), '', 'String#at');
+  equal('foop'.at(1224), '', 'String#at');
   equal('foop'.at(-1), 'p', 'String#at');
   equal('foop'.at(-2), 'o', 'String#at');
   equal('foop'.at(-3), 'o', 'String#at');
   equal('foop'.at(-4), 'f', 'String#at');
-  equal('foop'.at(-5), null, 'String#at');
-  equal('foop'.at(-1224), null, 'String#at');
+  equal('foop'.at(-5), '', 'String#at');
+  equal('foop'.at(-1224), '', 'String#at');
 
   same('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at');
 
@@ -863,8 +906,8 @@ test('String', function () {
 
 
   same('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize');
-  same('HOP_ON_POP'.dasherize(), 'HOP-ON-POP', 'String#dasherize');
-  same('hopOnPop'.dasherize(), 'hopOnPop', 'String#dasherize');
+  same('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize');
+  same('hopOnPop'.dasherize(), 'hop-on-pop', 'String#dasherize');
   same('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize');
   same('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize');
   same('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize');
@@ -1167,6 +1210,69 @@ test('String', function () {
   same('foo=bar&moo=3'.toObject(), {foo:'bar',moo:3}, 'String#keyValue');
   same('foo=bar&moo=true'.toObject(), {foo:'bar',moo:true}, 'String#keyValue');
   same('foo=bar&moo=false'.toObject(), {foo:'bar',moo:false}, 'String#keyValue');
+
+
+
+
+
+
+  strictlyEqual(''.escapeRegExp(), '', 'String#escapeRegExp');
+  strictlyEqual('|'.escapeRegExp(), '\\|', 'String#escapeRegExp');
+  strictlyEqual(''.capitalize(), '', 'String#capitalize');
+  strictlyEqual('wasabi'.capitalize(), 'Wasabi', 'String#capitalize');
+  strictlyEqual(''.trim(), '', 'String#trim');
+  strictlyEqual(' wasabi '.trim(), 'wasabi', 'String#trim');
+  strictlyEqual(''.trimLeft(), '', 'String#trimLeft');
+  strictlyEqual(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft');
+  strictlyEqual(''.trimRight(), '', 'String#trimRight');
+  strictlyEqual(' wasabi '.trimRight(), ' wasabi', 'String#trimRight');
+  strictlyEqual(''.pad(0), '', 'String#pad');
+  strictlyEqual('wasabi'.pad(1), ' wasabi ', 'String#pad');
+  strictlyEqual('wasabi'.repeat(0), '', 'String#repeat');
+  strictlyEqual('wasabi'.repeat(1), 'wasabi', 'String#repeat');
+  strictlyEqual('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat');
+  strictlyEqual(''.normalize(), '', 'String#normalize');
+  strictlyEqual('wasabi'.normalize(), 'wasabi', 'String#normalize');
+  strictlyEqual(''.accent('-'), '', 'String#accent');
+  strictlyEqual('a'.accent('-'), 'ā', 'String#accent');
+  strictlyEqual(''.insert('-', 0), '-', 'String#insert');
+  strictlyEqual('b'.insert('-', 0), '-b', 'String#insert');
+  strictlyEqual('b'.insert('-', 1), 'b-', 'String#insert');
+  strictlyEqual(''.hanKaku(), '', 'String#hanKaku');
+  strictlyEqual('カ'.hanKaku(), 'ｶ', 'String#hanKaku');
+  strictlyEqual(''.zenKaku(), '', 'String#zenKaku');
+  strictlyEqual('ｶ'.zenKaku(), 'カ', 'String#zenKaku');
+  strictlyEqual(''.hiragana(), '', 'String#hiragana');
+  strictlyEqual('カ'.hiragana(), 'か', 'String#hiragana');
+  strictlyEqual(''.katakana(), '', 'String#katakana');
+  strictlyEqual('か'.katakana(), 'カ', 'String#katakana');
+  strictlyEqual(''.reverse(), '', 'String#reverse');
+  strictlyEqual('wasabi'.reverse(), 'ibasaw', 'String#reverse');
+  strictlyEqual(''.compact(), '', 'String#compact');
+  strictlyEqual('run   tell    dat'.compact(), 'run tell dat', 'String#compact');
+  strictlyEqual(''.at(3), '', 'String#at');
+  strictlyEqual('wasabi'.at(0), 'w', 'String#at');
+  strictlyEqual(''.first(), '', 'String#first');
+  strictlyEqual('wasabi'.first(), 'w', 'String#first');
+  strictlyEqual(''.last(), '', 'String#last');
+  strictlyEqual('wasabi'.last(), 'i', 'String#last');
+  strictlyEqual(''.from(0), '', 'String#from');
+  strictlyEqual('wasabi'.from(3), 'abi', 'String#from');
+  strictlyEqual(''.to(0), '', 'String#to');
+  strictlyEqual('wasabi'.to(3), 'wasa', 'String#to');
+  strictlyEqual(''.dasherize(), '', 'String#dasherize');
+  strictlyEqual('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize');
+  strictlyEqual(''.underscore(), '', 'String#underscore');
+  strictlyEqual('noFingWay'.underscore(), 'no_fing_way', 'String#underscore');
+  strictlyEqual(''.camelize(), '', 'String#camelize');
+  strictlyEqual('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize');
+  strictlyEqual(''.titleize(), '', 'String#titleize');
+  strictlyEqual('chilled monkey brains'.titleize(), 'Chilled Monkey Brains', 'String#titleize');
+  strictlyEqual(''.stripTags(), '', 'String#stripTags');
+  strictlyEqual('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags');
+  strictlyEqual(''.removeTags(), '', 'String#removeTags');
+  strictlyEqual('chilled <b>monkey</b> brains'.removeTags(), 'chilled  brains', 'String#removeTags');
+
 
 });
 
@@ -2866,6 +2972,114 @@ test('Date', function () {
 
   d.set({ year: 2012, month: 1 });
   equals(d.daysInMonth(), 29, 'Date#daysInMonth | feb leap year');
+
+
+
+
+
+
+  // Date formatting. Much thanks to inspiration taken from Date.js here.
+  // I quite like the formatting patterns in Date.js, however there are a few
+  // notable limitations. One example is a format such as 4m23s which would have
+  // to be formatted as mmss and wouldn't parse at all without special massaging.
+  // Going to take a different tack here with a format that's more explicit and
+  // easy to remember, if not quite as terse and elegant.
+
+
+  d = new Date('August 5, 2010 13:45:02');
+
+
+  equals(d.format('{ms}'), '0', 'Date#format | custom formats | ms');
+  equals(d.format('{millisec}'), '0', 'Date#format | custom formats | millisec');
+  equals(d.format('{millisecond}'), '0', 'Date#format | custom formats | millisecond');
+  equals(d.format('{milliseconds}'), '0', 'Date#format | custom formats | milliseconds');
+  equals(d.format('{s}'), '2', 'Date#format | custom formats | s');
+  equals(d.format('{ss}'), '02', 'Date#format | custom formats | ss');
+  equals(d.format('{sec}'), '2', 'Date#format | custom formats | sec');
+  equals(d.format('{second}'), '2', 'Date#format | custom formats | second');
+  equals(d.format('{seconds}'), '2', 'Date#format | custom formats | seconds');
+  equals(d.format('{m}'), '45', 'Date#format | custom formats | m');
+  equals(d.format('{mm}'), '45', 'Date#format | custom formats | mm');
+  equals(d.format('{min}'), '45', 'Date#format | custom formats | min');
+  equals(d.format('{minute}'), '45', 'Date#format | custom formats | minute');
+  equals(d.format('{minutes}'), '45', 'Date#format | custom formats | minutes');
+  equals(d.format('{h}'), '13', 'Date#format | custom formats | h');
+  equals(d.format('{hh}'), '13', 'Date#format | custom formats | hh');
+  equals(d.format('{hour}'), '13', 'Date#format | custom formats | hour');
+  equals(d.format('{hours}'), '13', 'Date#format | custom formats | hours');
+  equals(d.format('{24hr}'), '13', 'Date#format | custom formats | 24hr');
+  equals(d.format('{12hr}'), '1', 'Date#format | custom formats | 12hr');
+  equals(d.format('{d}'), '5', 'Date#format | custom formats | d');
+  equals(d.format('{dd}'), '05', 'Date#format | custom formats | dd');
+  equals(d.format('{dow}'), 'thu', 'Date#format | custom formats | dow');
+  equals(d.format('{Dow}'), 'Thu', 'Date#format | custom formats | Dow');
+  equals(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
+  equals(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
+  equals(d.format('{weekday}'), 'thursday', 'Date#format | custom formats | weekday');
+  equals(d.format('{Weekday short}'), 'Thu', 'Date#format | custom formats | Weekday short');
+  equals(d.format('{Weekday}'), 'Thursday', 'Date#format | custom formats | Weekday');
+  equals(d.format('{M}'), '8', 'Date#format | custom formats | M');
+  equals(d.format('{MM}'), '08', 'Date#format | custom formats | MM');
+  equals(d.format('{Month short}'), 'Aug', 'Date#format | custom formats | Month short');
+  equals(d.format('{month short}'), 'aug', 'Date#format | custom formats | month short');
+  equals(d.format('{month}'), 'august', 'Date#format | custom formats | month');
+  equals(d.format('{Month short}'), 'Aug', 'Date#format | custom formats | Month short');
+  equals(d.format('{Mon}'), 'Aug', 'Date#format | custom formats | Mon');
+  equals(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');
+  equals(d.format('{yy}'), '10', 'Date#format | custom formats | yy');
+  equals(d.format('{yyyy}'), '2010', 'Date#format | custom formats | yyyy');
+  equals(d.format('{t}'), 'p', 'Date#format | custom formats | t');
+  equals(d.format('{T}'), 'P', 'Date#format | custom formats | T');
+  equals(d.format('{tt}'), 'pm', 'Date#format | custom formats | tt');
+  equals(d.format('{TT}'), 'PM', 'Date#format | custom formats | TT');
+  equals(d.format('{ord}'), '5th', 'Date#format | custom formats | ord');
+
+
+  d = new Date('August 5, 2010 04:03:02');
+
+  equals(d.format('{min pad}'), '03', 'Date#format | custom formats | min pad');
+  equals(d.format('{m pad}'), '03', 'Date#format | custom formats | m pad');
+  equals(d.format('{d pad}'), '05', 'Date#format | custom formats | d pad');
+  equals(d.format('{days pad}'), '05', 'Date#format | custom formats | days pad');
+  equals(d.format('{h pad}'), '04', 'Date#format | custom formats | h pad');
+  equals(d.format('{hours pad}'), '04', 'Date#format | custom formats | hours pad');
+  equals(d.format('{s pad}'), '02', 'Date#format | custom formats | s pad');
+  equals(d.format('{sec pad}'), '02', 'Date#format | custom formats | sec pad');
+  equals(d.format('{seconds pad}'), '02', 'Date#format | custom formats | seconds pad');
+
+
+  equals(d.format('{M}/{d}/{yyyy}'), '8/5/2010', 'Date#format | full formats | slashes');
+  equals(d.format('{Weekday}, {Month} {dd}, {yyyy}'), 'Thursday, August 05, 2010', 'Date#format | full formats | text date');
+  equals(d.format('{Weekday}, {Month} {dd}, {yyyy} {12hr}:{mm}:{ss} {tt}'), 'Thursday, August 05, 2010 4:03:02 am', 'Date#format | full formats | text date with time');
+  equals(d.format('{Month} {dd}'), 'August 05', 'Date#format | full formats | month and day');
+  equals(d.format('{Dow}, {dd} {Mon} {yyyy} {hh}:{mm}:{ss} GMT'), 'Thu, 05 Aug 2010 04:03:02 GMT', 'Date#format | full formats | full GMT');
+  equals(d.format('{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}'), '2010-08-05T04:03:02', 'Date#format | full formats | ISO8601 Local');
+  equals(d.format('{12hr}:{mm} {tt}'), '4:03 am', 'Date#format | full formats | hr:min');
+  equals(d.format('{12hr}:{mm}:{ss} {tt}'), '4:03:02 am', 'Date#format | full formats | hr:min:sec');
+  equals(d.format('{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'), '2010-08-05 04:03:02Z', 'Date#format | full formats | ISO8601 UTC');
+  equals(d.format('{Month}, {yyyy}'), 'August, 2010', 'Date#format | full formats | month and year');
+
+
+  var timezoneOffset = new Date().getTimezoneOffset();
+  var isotzd = Math.round(-timezoneOffset / 60).pad(2, true) + ':' + (timezoneOffset % 60).pad(2);
+  var tzd = isotzd.replace(/:/, '');
+
+  equals(d.getUTCOffset(), tzd, 'Date#getUTCOffset | no colon');
+  equals(d.getUTCOffset(true), isotzd, 'Date#getUTCOffset | colon');
+
+  equals(d.format(Date.AMERICAN_DATE), '8/5/2010', 'Date#format | internal formats | AMERICAN_DATE');
+  equals(d.format(Date.AMERICAN_DATETIME), '8/5/2010 4:03am', 'Date#format | internal formats | AMERICAN_DATETIME');
+  equals(d.format(Date.EUROPEAN_DATE), '5/8/2010', 'Date#format | internal formats | EUROPEAN_DATE');
+  equals(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
+  equals(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
+  equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
+  equals(d.format(Date.ISO8601_DATETIME, true), '2010-08-04T19:03:02Z', 'Date#format | internal formats | ISO8601_DATETIME UTC');
+  equals(d.format(Date.RFC1123), 'Thu, 05 Aug 2010 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1123');
+  equals(d.format(Date.RFC1036), 'Thursday, 05-Aug-10 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1036');
+  equals(d.format(Date.RFC1123, true), 'Wed, 04 Aug 2010 19:03:02 GMT', 'Date#format | internal formats | RFC1123 UTC');
+  equals(d.format(Date.RFC1036, true), 'Wednesday, 04-Aug-10 19:03:02 GMT', 'Date#format | internal formats | RFC1036 UTC');
+
+
 
 
 
