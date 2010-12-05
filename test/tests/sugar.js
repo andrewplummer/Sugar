@@ -25,7 +25,7 @@ var getDate = function(year, month, day, hours, minutes, seconds, milliseconds){
 }
 
 var getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds){
-  var d = new Date();
+  var d = this.getFullYear  ? this : new Date();
   d.setFullYear(d.getFullYear() + (year || 0));
   d.setMonth(d.getMonth() + (month || 0));
   d.setDate(d.getDate() + (day || 0));
@@ -333,14 +333,14 @@ test('Number', function () {
   equals((1).weeks(), (60 * 24 * 7).minutes(), 'Number#weeks');
   equals((1).weeks(), (60 * 60 * 24 * 7).seconds(), 'Number#weeks');
 
-  equals((1).months(), 2592000000, 'Number#months');
-  equals((0.5).months(), 1296000000, 'Number#months');
-  equals((10).months(), 25920000000, 'Number#months');
-  equals((0).months(), 0, 'Number#months');
-  equals((1).months(), (30).days(), 'Number#months');
-  equals((1).months(), (24 * 30).hours(), 'Number#months');
-  equals((1).months(), (60 * 24 * 30).minutes(), 'Number#months');
-  equals((1).months(), (60 * 60 * 24 * 30).seconds(), 'Number#months');
+  equals((1).months(), 2629800000, 'Number#months | 1 month');
+  equals((0.5).months(), 1314900000, 'Number#months | 0.5 month');
+  equals((10).months(), 26298000000, 'Number#months | 10 month');
+  equals((0).months(), 0, 'Number#months | 0 months');
+  equals((1).months(), (30.4375).days(), 'Number#months | equal to 30.4375 days');
+  equals((1).months(), (24 * 30.4375).hours(), 'Number#months | * 24hours');
+  equals((1).months(), (60 * 24 * 30.4375).minutes(), 'Number#months | * 60 minutes');
+  equals((1).months(), (60 * 60 * 24 * 30.4375).seconds(), 'Number#months | * 60 seconds');
 
   equals((1).years(), 31557600000, 'Number#years');
   equals((0.5).years(), 15778800000, 'Number#years');
@@ -360,24 +360,24 @@ test('Number', function () {
   equals((1).hour(), 3600000, 'Number#hour');
   equals((1).day(), 86400000, 'Number#day');
   equals((1).week(), 604800000, 'Number#week');
-  equals((1).month(), 2592000000, 'Number#month');
+  equals((1).month(), 2629800000, 'Number#month');
   equals((1).year(), 31557600000, 'Number#year');
 
 
-  dateEquals((1).second().since(), 1000, 'Number#since 1 second since');
-  dateEquals((1).minute().since(), 60000, 'Number#since 1 minute since');
-  dateEquals((1).hour().since(), 3600000, 'Number#since 1 hour since');
-  dateEquals((1).day().since(), 86400000, 'Number#since 1 day since');
-  dateEquals((1).week().since(), 604800000, 'Number#since 1 week since');
-  dateEquals((1).month().since(), 2592000000, 'Number#since 1 month since');
-  dateEquals((1).year().since(), 31557600000, 'Number#since 1 year since');
+  dateEquals((1).second().after(), 1000, 'Number#after 1 second after');
+  dateEquals((1).minute().after(), 60000, 'Number#after 1 minute after');
+  dateEquals((1).hour().after(), 3600000, 'Number#after 1 hour after');
+  dateEquals((1).day().after(), 86400000, 'Number#after 1 day after');
+  dateEquals((1).week().after(), 604800000, 'Number#after 1 week after');
+  dateEquals((1).month().after(), 2629800000, 'Number#after 1 month after');
+  dateEquals((1).year().after(), 31557600000, 'Number#after 1 year after');
 
   dateEquals((1).second().fromNow(), 1000, 'Number#fromNow');
   dateEquals((1).minute().fromNow(), 60000, 'Number#fromNow');
   dateEquals((1).hour().fromNow(), 3600000, 'Number#fromNow');
   dateEquals((1).day().fromNow(), 86400000, 'Number#fromNow');
   dateEquals((1).week().fromNow(), 604800000, 'Number#fromNow');
-  dateEquals((1).month().fromNow(), 2592000000, 'Number#fromNow');
+  dateEquals((1).month().fromNow(), 2629800000, 'Number#fromNow');
   dateEquals((1).year().fromNow(), 31557600000, 'Number#fromNow');
 
   dateEquals((1).second().ago(), -1000, 'Number#ago');
@@ -385,22 +385,22 @@ test('Number', function () {
   dateEquals((1).hour().ago(), -3600000, 'Number#ago');
   dateEquals((1).day().ago(), -86400000, 'Number#ago');
   dateEquals((1).week().ago(), -604800000, 'Number#ago');
-  dateEquals((1).month().ago(), -2592000000, 'Number#ago');
+  dateEquals((1).month().ago(), -2629800000, 'Number#ago');
   dateEquals((1).year().ago(), -31557600000, 'Number#ago');
 
-  dateEquals((1).second().until(), -1000, 'Number#until');
-  dateEquals((1).minute().until(), -60000, 'Number#until');
-  dateEquals((1).hour().until(), -3600000, 'Number#until');
-  dateEquals((1).day().until(), -86400000, 'Number#until');
-  dateEquals((1).week().until(), -604800000, 'Number#until');
-  dateEquals((1).month().until(), -2592000000, 'Number#until');
-  dateEquals((1).year().until(), -31557600000, 'Number#until');
+  dateEquals((1).second().before(), -1000, 'Number#before');
+  dateEquals((1).minute().before(), -60000, 'Number#before');
+  dateEquals((1).hour().before(), -3600000, 'Number#before');
+  dateEquals((1).day().before(), -86400000, 'Number#before');
+  dateEquals((1).week().before(), -604800000, 'Number#before');
+  dateEquals((1).month().before(), -2629800000, 'Number#before');
+  dateEquals((1).year().before(), -31557600000, 'Number#before');
 
 
 
-  dateEquals((1).secondSince(), 1000, 'Number#secondSince');
-  dateEquals((5).secondsSince(), 5000, 'Number#secondsSince');
-  dateEquals((10).minutesSince(), 600000, 'Number#minutesSince');
+  dateEquals((1).secondAfter(), 1000, 'Number#secondAfter');
+  dateEquals((5).secondsAfter(), 5000, 'Number#secondsAfter');
+  dateEquals((10).minutesAfter(), 600000, 'Number#minutesAfter');
 
   dateEquals((1).secondFromNow(), 1000, 'Number#secondFromNow');
   dateEquals((5).secondsFromNow(), 5000, 'Number#secondsFromNow');
@@ -410,14 +410,14 @@ test('Number', function () {
   dateEquals((5).secondsAgo(), -5000, 'Number#secondAgo');
   dateEquals((10).secondsAgo(), -10000, 'Number#secondAgo');
 
-  dateEquals((1).secondUntil(), -1000, 'Number#secondUntil');
-  dateEquals((5).secondsUntil(), -5000, 'Number#secondUntil');
-  dateEquals((10).secondsUntil(), -10000, 'Number#secondUntil');
+  dateEquals((1).secondBefore(), -1000, 'Number#secondBefore');
+  dateEquals((5).secondsBefore(), -5000, 'Number#secondBefore');
+  dateEquals((10).secondsBefore(), -10000, 'Number#secondBefore');
 
 
-  dateEquals((5).minutes().since((5).minutes().ago()), 0, 'Number#minutesSince');
-  dateEquals((5).minutesSince((5).minutesAgo()), 0, 'Number#minutesSince');
-  dateEquals((10).minutesSince((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesSince');
+  dateEquals((5).minutes().after((5).minutes().ago()), 0, 'Number#minutesAfter');
+  dateEquals((5).minutesAfter((5).minutesAgo()), 0, 'Number#minutesAfter');
+  dateEquals((10).minutesAfter((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesAfter');
 
   dateEquals((5).minutes().fromNow((5).minutes().ago()), 0, 'Number#minutesfromNow');
   dateEquals((5).minutesFromNow((5).minutesAgo()), 0, 'Number#minutesFromNow');
@@ -427,29 +427,34 @@ test('Number', function () {
   dateEquals((5).minutesAgo((5).minutesFromNow()), 0, 'Number#minutesAgo');
   ((10).minutesAgo((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesAgo');
 
-  dateEquals((5).minutes().until((5).minutes().fromNow()), 0, 'Number#minutesUntil');
-  dateEquals((5).minutesUntil((5).minutesFromNow()), 0, 'Number#minutesUntil');
-  dateEquals((10).minutesUntil((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesUntil');
+  dateEquals((5).minutes().before((5).minutes().fromNow()), 0, 'Number#minutesBefore');
+  dateEquals((5).minutesBefore((5).minutesFromNow()), 0, 'Number#minutesBefore');
+  dateEquals((10).minutesBefore((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesBefore');
 
 
   var christmas = new Date('December 25, 1965');
-  equals((5).minutesUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 60 * 1000)).getTime(), 'Number#minutesUntil');
-  equals((5).minutesSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 60 * 1000)).getTime(), 'Number#minutesSince');
+  dateEquals((5).minutesBefore(christmas), getRelativeDate.call(christmas, null, null, null, null, -5), 'Number#minutesBefore');
+  dateEquals((5).minutesAfter(christmas), getRelativeDate.call(christmas, null, null, null, null, 5), 'Number#minutesAfter');
 
-  equals((5).hoursUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 60 * 60 * 1000)).getTime(), 'Number#hoursUntil');
-  equals((5).hoursSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 60 * 60 * 1000)).getTime(), 'Number#hoursSince');
+  dateEquals((5).hoursBefore(christmas), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore');
+  dateEquals((5).hoursAfter(christmas), getRelativeDate.call(christmas, null, null, null, 5), 'Number#hoursAfter');
 
-  equals((5).daysUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 24 * 60 * 60 * 1000)).getTime(), 'Number#daysUntil');
-  equals((5).daysSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 24 * 60 * 60 * 1000)).getTime(), 'Number#daysSince');
+  dateEquals((5).daysBefore(christmas), getRelativeDate.call(christmas, null, null, -5), 'Number#daysBefore');
+  dateEquals((5).daysAfter(christmas), getRelativeDate.call(christmas, null, null, 5), 'Number#daysAfter');
 
-  equals((5).weeksUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 7 * 24 * 60 * 60 * 1000)).getTime(), 'Number#weeksUntil');
-  equals((5).weeksSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 7 * 24 * 60 * 60 * 1000)).getTime(), 'Number#weeksSince');
+  dateEquals((5).weeksBefore(christmas), getRelativeDate.call(christmas, null, null, -35), 'Number#weeksBefore');
+  dateEquals((5).weeksAfter(christmas), getRelativeDate.call(christmas, null, null, 35), 'Number#weeksAfter');
 
-  equals((5).monthsUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 30 * 24 * 60 * 60 * 1000)).getTime(), 'Number#monthsUntil');
-  equals((5).monthsSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 30 * 24 * 60 * 60 * 1000)).getTime(), 'Number#monthsSince');
+ // dateEquals((5).monthsBefore(christmas), getRelativeDate.call(christmas, null, -5), 'Number#monthsBefore');
+//  dateEquals((5).monthsAfter(christmas), getRelativeDate.call(christmas, null, 5), 'Number#monthsAfter');
 
-  equals((5).yearsUntil(christmas).getTime(), new Date(christmas.getTime() - (5 * 365.25 * 24 * 60 * 60 * 1000)).getTime(), 'Number#yearsUntil');
-  equals((5).yearsSince(christmas).getTime(), new Date(christmas.getTime() + (5 * 365.25 * 24 * 60 * 60 * 1000)).getTime(), 'Number#yearsSince');
+//  dateEquals((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore');
+//  dateEquals((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter');
+
+  // Hooking it all up!!
+  //
+//  equals((5).minutesBefore('April 3rd, 1998').getTime(), new Date(christmas.getTime() - (5 * 60 * 1000)).getTime(), 'Number#minutesBefore');
+//  equals((5).minutesAfter('January 2nd, 2005').getTime(), new Date(christmas.getTime() + (5 * 60 * 1000)).getTime(), 'Number#minutesAfter');
 
 });
 
@@ -2428,10 +2433,10 @@ test('Date', function () {
   // Valid Date
 
   // Invalid date
-  equals(new Date('a fridge too far').isValid(), false, 'Date#create | new Date invalid');
-  equals(new Date().isValid(), true, 'Date#create | new Date valid');
-  equals(Date.create().isValid(), true, 'Date#create | Date#create valid');
-  equals(Date.create('a fridge too far').isValid(), false, 'Date#create | Date#create invalid');
+  equals(new Date('a fridge too far').valid(), false, 'Date#create | new Date invalid');
+  equals(new Date().valid(), true, 'Date#create | new Date valid');
+  equals(Date.create().valid(), true, 'Date#create | Date#create valid');
+  equals(Date.create('a fridge too far').valid(), false, 'Date#create | Date#create invalid');
 
   dateEquals(Date.create(), new Date(), 'Date#create | empty');
 
@@ -2766,7 +2771,8 @@ test('Date', function () {
   dateEquals(Date.create('Noon tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1, 12), 'Date#create | Fuzzy Dates | Noon tomorrow');
   dateEquals(Date.create('midnight'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1), 'Date#create | Fuzzy Dates | midnight');
   dateEquals(Date.create('noon'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate(), 12), 'Date#create | Fuzzy Dates | noon');
-
+  dateEquals(Date.create('midnight wednesday'), getDateWithWeekdayAndOffset(4, 0), 'Date#create | Fuzzy Dates | midnight wednesday');
+  dateEquals(Date.create('midnight saturday'), getDateWithWeekdayAndOffset(0, 7), 'Date#create | Fuzzy Dates | midnight saturday');
 
 
   var d;
@@ -2804,10 +2810,10 @@ test('Date', function () {
   equals(d.getSeconds(), 30, 'Date#set | object plural | seconds');
   equals(d.getMilliseconds(), 400, 'Date#set | object plural | milliseconds');
 
-  d.set({ day: 2 });
-  equals(d.getDate(), 17, 'Date#set | object | day');
-  d.set({ days: 5 });
-  equals(d.getDate(), 20, 'Date#set | object plural | day');
+  d.set({ weekday: 2 });
+  equals(d.getDate(), 17, 'Date#set | object | weekday 2');
+  d.set({ weekday: 5 });
+  equals(d.getDate(), 20, 'Date#set | object | weekday 5');
 
 
   d = new Date('August 25, 2010 11:45:20');
@@ -2873,38 +2879,45 @@ test('Date', function () {
 
   d = new Date('August 25, 2010 11:45:20');
 
-  d.setDay(0);
-  equals(d.getDate(), 22, 'Date#setDay | sunday');
-  d.setDay(1);
-  equals(d.getDate(), 23, 'Date#setDay | monday');
-  d.setDay(2);
-  equals(d.getDate(), 24, 'Date#setDay | tuesday');
-  d.setDay(3);
-  equals(d.getDate(), 25, 'Date#setDay | wednesday');
-  d.setDay(4);
-  equals(d.getDate(), 26, 'Date#setDay | thursday');
-  d.setDay(5);
-  equals(d.getDate(), 27, 'Date#setDay | friday');
-  d.setDay(6);
-  equals(d.getDate(), 28, 'Date#setDay | saturday');
+  equals(d.getWeekday(), 3, 'Date#getWeekday | wednesday');
+
+  d.setWeekday(0);
+  equals(d.getDate(), 22, 'Date#setWeekday | sunday');
+  d.setWeekday(1);
+  equals(d.getDate(), 23, 'Date#setWeekday | monday');
+  d.setWeekday(2);
+  equals(d.getDate(), 24, 'Date#setWeekday | tuesday');
+  d.setWeekday(3);
+  equals(d.getDate(), 25, 'Date#setWeekday | wednesday');
+  d.setWeekday(4);
+  equals(d.getDate(), 26, 'Date#setWeekday | thursday');
+  d.setWeekday(5);
+  equals(d.getDate(), 27, 'Date#setWeekday | friday');
+  d.setWeekday(6);
+  equals(d.getDate(), 28, 'Date#setWeekday | saturday');
 
 
   d = new Date('August 25, 2010 11:45:20');
 
-  d.setUTCDay(0);
-  equals(d.getDate(), 22, 'Date#setUTCDay | sunday');
-  d.setUTCDay(1);
-  equals(d.getDate(), 23, 'Date#setUTCDay | monday');
-  d.setUTCDay(2);
-  equals(d.getDate(), 24, 'Date#setUTCDay | tuesday');
-  d.setUTCDay(3);
-  equals(d.getDate(), 25, 'Date#setUTCDay | wednesday');
-  d.setUTCDay(4);
-  equals(d.getDate(), 26, 'Date#setUTCDay | thursday');
-  d.setUTCDay(5);
-  equals(d.getDate(), 27, 'Date#setUTCDay | friday');
-  d.setUTCDay(6);
-  equals(d.getDate(), 28, 'Date#setUTCDay | saturday');
+  equals(d.getUTCWeekday(), 3, 'Date#getUTCWeekday | wednesday');
+
+  d.setUTCWeekday(0);
+  equals(d.getDate(), 22, 'Date#setUTCWeekday | sunday');
+  d.setUTCWeekday(1);
+  equals(d.getDate(), 23, 'Date#setUTCWeekday | monday');
+  d.setUTCWeekday(2);
+  equals(d.getDate(), 24, 'Date#setUTCWeekday | tuesday');
+  d.setUTCWeekday(3);
+  equals(d.getDate(), 25, 'Date#setUTCWeekday | wednesday');
+  d.setUTCWeekday(4);
+  equals(d.getDate(), 26, 'Date#setUTCWeekday | thursday');
+  d.setUTCWeekday(5);
+  equals(d.getDate(), 27, 'Date#setUTCWeekday | friday');
+  d.setUTCWeekday(6);
+  equals(d.getDate(), 28, 'Date#setUTCWeekday | saturday');
+
+  d.setUTCWeekday();
+  equals(d.getDate(), 28, 'Date#setUTCWeekday | undefined');
 
 
   d = new Date('August 25, 2010 11:45:20');
@@ -2935,7 +2948,7 @@ test('Date', function () {
 
 
   d = new Date('August 25, 2010 11:45:20');
-  d.advance({ year: 1, month: -3, date: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 44 });
+  d.advance({ year: 1, month: -3, days: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 44 });
 
   equals(d.getFullYear(), 2011, 'Date#advance | object | year');
   equals(d.getMonth(), 4, 'Date#advance | object | month');
@@ -2947,7 +2960,7 @@ test('Date', function () {
 
 
   d = new Date('August 25, 2010 11:45:20');
-  d.rewind({ year: 1, month: -3, date: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 4 });
+  d.rewind({ year: 1, month: -3, days: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 4 });
 
   equals(d.getFullYear(), 2009, 'Date#rewind | object | year');
   equals(d.getMonth(), 10, 'Date#rewind | object | month');
@@ -3087,6 +3100,7 @@ test('Date', function () {
   equals(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
   equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
   equals(d.format(Date.ISO8601_DATETIME, true), '2010-08-04T19:03:02Z', 'Date#format | internal formats | ISO8601_DATETIME UTC');
+  equals(d.format(Date.ISO8601, true), '2010-08-04T19:03:02Z', 'Date#format | internal formats | ISO8601 UTC');
   equals(d.format(Date.RFC1123), 'Thu, 05 Aug 2010 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1123');
   equals(d.format(Date.RFC1036), 'Thursday, 05-Aug-10 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1036');
   equals(d.format(Date.RFC1123, true), 'Wed, 04 Aug 2010 19:03:02 GMT', 'Date#format | internal formats | RFC1123 UTC');
@@ -3130,13 +3144,41 @@ test('Date', function () {
   equals(d.is('now'), false, 'Date#is | now');
   equals(d.is('weekday'), true, 'Date#is | weekday');
   equals(d.is('weekend'), false, 'Date#is | weekend');
-  equals(new Date().is('now'), true, 'Date#is | now is now');
+  equals(d.is('Thursday'), true, 'Date#is | Thursday');
+  equals(d.is('Friday'), false, 'Date#is | Friday');
 
+  equals(d.is(d), true, 'Date#is | self is true');
+  equals(d.is(new Date(2010,7,5,13,45,2,542)), true, 'Date#is | equal date is true');
+  equals(d.is(new Date()), false, 'Date#is | other dates are not true');
+
+
+  equals(new Date().is('now'), true, 'Date#is | now is now');
   equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.324'), true, 'Date#is | August 5th, 2010 13:42:42.324');
   equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.319'), false, 'Date#is | August 5th, 2010 13:42:42.319');
   equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.325'), false, 'Date#is | August 5th, 2010 13:42:42.325');
   equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.323'), false, 'Date#is | August 5th, 2010 13:42:42.323');
 
+  equals(new Date(2001, 0).is('the beginning of 2001'), true, 'Date#is | the beginning of 2001');
+  equals(new Date(now.getFullYear(), 2).is('the beginning of March'), true, 'Date#is | the beginning of March');
+  equals(new Date(2001, 11, 31, 23, 59, 59, 999).is('the end of 2001'), true, 'Date#is | the end of 2001');
+  equals(new Date(now.getFullYear(), 2, 31, 23, 59, 59, 999).is('the end of March'), true, 'Date#is | the end of March');
+  equals(new Date(2001, 11, 31).is('the last day of 2001'), true, 'Date#is | the last day of 2001');
+  equals(new Date(now.getFullYear(), 2, 31).is('the last day of March'), true, 'Date#is | the last day of March');
+
+  equals(Date.create('the beginning of the week').is('the beginning of the week'), true, 'Date#is | the beginning of the week is the beginning of the week');
+  equals(Date.create('the end of the week').is('the end of the week'), true, 'Date#is | the end of the week is the end of the week');
+  equals(Date.create('tuesday').is('the beginning of the week'), false, 'Date#is | tuesday is the end of the week');
+  equals(Date.create('tuesday').is('the end of the week'), false, 'Date#is | tuesday is the end of the week');
+
+  equals(Date.create('sunday').is('the beginning of the week'), true, 'Date#is | sunday is the beginning of the week');
+  equals(Date.create('sunday').is('the beginning of the week'), true, 'Date#is | sunday is the beginning of the week');
+
+  equals(Date.create('tuesday').is('tuesday'), true, 'Date#is | tuesday is tuesday');
+  equals(Date.create('sunday').is('sunday'), true, 'Date#is | sunday is sunday');
+  equals(Date.create('saturday').is('saturday'), true, 'Date#is | saturday is saturday');
+
+  equals(getDateWithWeekdayAndOffset(0).is('the beginning of the week'), true, 'Date#is | the beginning of the week');
+  equals(getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999).is('the end of the week'), true, 'Date#is | the end of the week');
 
   equals(Date.create('2008').leapYear(), true, 'Date#leapYear | 2008');
   equals(Date.create('2009').leapYear(), false, 'Date#leapYear | 2009');
@@ -3153,6 +3195,16 @@ test('Date', function () {
   equals(Date.create('2000').leapYear(), true, 'Date#leapYear | 2000');
 
 
+
+
+  d = new Date(2010,7,5,13,45,2,542);
+
+  equals(new Date(2010,7,5,13,45,3,542).secondsSince(d), 1, 'Date#secondsSince | Seconds since');
+  equals(new Date(2010,7,5,13,45,1,542).secondsUntil(d), 1, 'Date#secondsUntil | Seconds until');
+
+
+
+
 });
 
 
@@ -3164,6 +3216,107 @@ test('RegExp', function () {
     equals(RegExp.escape('what a day...'), 'what a day\\.\\.\\.', 'RegExp#escape');
     equals(RegExp.escape('.'), '\\.', 'RegExp#escape');
     equals(RegExp.escape('*.+[]{}()?|/'), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape');
+
+});
+
+test('Object', function () {
+
+    equals(Object.isArray([]), true, 'Object#isArray | true');
+    equals(Object.isArray(new Array(1,2,3)), true, 'Object#isArray | true');
+    equals(Object.isArray(new RegExp()), false, 'Object#isArray | false');
+    equals(Object.isArray(new Date()), false, 'Object#isArray | false');
+    equals(Object.isArray(function(){}), false, 'Object#isArray | false');
+    equals(Object.isArray(1), false, 'Object#isArray | false');
+    equals(Object.isArray('wasabi'), false, 'Object#isArray | false');
+    equals(Object.isArray(null), false, 'Object#isArray | false');
+    equals(Object.isArray(undefined), false, 'Object#isArray | false');
+    equals(Object.isArray(), false, 'Object#isArray | false');
+    equals(Object.isArray(false), false, 'Object#isArray | false');
+    equals(Object.isDate(true), false, 'Object#isArray | false');
+
+    equals(Object.isBoolean([]), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean(new RegExp()), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean(new Date()), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean(function(){}), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean(1), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean('wasabi'), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean(null), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean(undefined), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean(), false, 'Object#isBoolean | false');
+    equals(Object.isBoolean(false), true, 'Object#isBoolean | true');
+    equals(Object.isBoolean(true), true, 'Object#isBoolean | true');
+
+    equals(Object.isDate([]), false, 'Object#isDate | false');
+    equals(Object.isDate(new RegExp()), false, 'Object#isDate | false');
+    equals(Object.isDate(new Date()), true, 'Object#isDate | true');
+    equals(Object.isDate(function(){}), false, 'Object#isDate | false');
+    equals(Object.isDate(1), false, 'Object#isDate | false');
+    equals(Object.isDate('wasabi'), false, 'Object#isDate | false');
+    equals(Object.isDate(null), false, 'Object#isDate | false');
+    equals(Object.isDate(undefined), false, 'Object#isDate | false');
+    equals(Object.isDate(), false, 'Object#isDate | false');
+    equals(Object.isDate(false), false, 'Object#isDate | false');
+    equals(Object.isDate(true), false, 'Object#isDate | false');
+
+    equals(Object.isFunction([]), false, 'Object#isFunction | false');
+    equals(Object.isFunction(new RegExp()), false, 'Object#isFunction | false');
+    equals(Object.isFunction(new Date()), false, 'Object#isFunction | false');
+    equals(Object.isFunction(function(){}), true, 'Object#isFunction | true');
+    equals(Object.isFunction(new Function()), true, 'Object#isFunction | true');
+    equals(Object.isFunction(1), false, 'Object#isFunction | false');
+    equals(Object.isFunction('wasabi'), false, 'Object#isFunction | false');
+    equals(Object.isFunction(null), false, 'Object#isFunction | false');
+    equals(Object.isFunction(undefined), false, 'Object#isFunction | false');
+    equals(Object.isFunction(), false, 'Object#isFunction | false');
+    equals(Object.isFunction(false), false, 'Object#isFunction | false');
+    equals(Object.isFunction(true), false, 'Object#isFunction | false');
+
+    equals(Object.isNumber([]), false, 'Object#isNumber | false');
+    equals(Object.isNumber(new RegExp()), false, 'Object#isNumber | false');
+    equals(Object.isNumber(new Date()), false, 'Object#isNumber | false');
+    equals(Object.isNumber(function(){}), false, 'Object#isNumber | false');
+    equals(Object.isNumber(new Function()), false, 'Object#isNumber | false');
+    equals(Object.isNumber(1), true, 'Object#isNumber | true');
+    equals(Object.isNumber(0), true, 'Object#isNumber | true');
+    equals(Object.isNumber(-1), true, 'Object#isNumber | true');
+    equals(Object.isNumber(new Number('3')), true, 'Object#isNumber | false');
+    equals(Object.isNumber('wasabi'), false, 'Object#isNumber | false');
+    equals(Object.isNumber(null), false, 'Object#isNumber | false');
+    equals(Object.isNumber(undefined), false, 'Object#isNumber | false');
+    equals(Object.isNumber(), false, 'Object#isNumber | false');
+    equals(Object.isNumber(false), false, 'Object#isNumber | false');
+    equals(Object.isNumber(true), false, 'Object#isNumber | false');
+
+    equals(Object.isString([]), false, 'Object#isString | false');
+    equals(Object.isString(new RegExp()), false, 'Object#isString | false');
+    equals(Object.isString(new Date()), false, 'Object#isString | false');
+    equals(Object.isString(function(){}), false, 'Object#isString | false');
+    equals(Object.isString(new Function()), false, 'Object#isString | false');
+    equals(Object.isString(1), false, 'Object#isString | false');
+    equals(Object.isString('wasabi'), true, 'Object#isString | false');
+    equals(Object.isString(new String('wasabi')), true, 'Object#isString | true');
+    equals(Object.isString(null), false, 'Object#isString | false');
+    equals(Object.isString(undefined), false, 'Object#isString | false');
+    equals(Object.isString(), false, 'Object#isString | false');
+    equals(Object.isString(false), false, 'Object#isString | false');
+    equals(Object.isString(true), false, 'Object#isString | false');
+
+    equals(Object.isRegExp([]), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(new RegExp()), true, 'Object#isRegExp | true');
+    equals(Object.isRegExp(/afda/), true, 'Object#isRegExp | true');
+    equals(Object.isRegExp(new Date()), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(function(){}), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(new Function()), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(1), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp('wasabi'), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(null), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(undefined), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(false), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(true), false, 'Object#isRegExp | false');
+
+
+
 
 });
 
