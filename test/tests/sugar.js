@@ -2433,13 +2433,14 @@ test('Date', function () {
   equals(Date.create().isValid(), true, 'Date#create | Date#create valid');
   equals(Date.create('a fridge too far').isValid(), false, 'Date#create | Date#create invalid');
 
-  dateEquals(Date.create(), new Date(), 'Date#create | Just the year');
+  dateEquals(Date.create(), new Date(), 'Date#create | empty');
 
   // Just the year
   dateEquals(Date.create('1999'), getDate(1999), 'Date#create | Just the year');
 
-  // Just the year
-  //dateEquals(Date.create('June'), getDate(null, 6), 'Date#create | Just the month');
+  dateEquals(Date.create('June'), getDate(null, 6), 'Date#create | Just the month');
+  dateEquals(Date.create('June 15'), getDate(null, 6, 15), 'Date#create | Month and day');
+  dateEquals(Date.create('June 15th'), getDate(null, 6, 15), 'Date#create | Month and ordinal day');
 
   // Slashes (American style)
   dateEquals(Date.create('08/25'), getDate(null,8, 25), 'Date#create | American style slashes | mm/dd');
@@ -2559,6 +2560,7 @@ test('Date', function () {
   dateEquals(Date.create('2001-01-01'), getDate(2001, 1, 1), 'Date#create | ISO8601 | month and day padded');
   dateEquals(Date.create('2010-11-22'), getDate(2010,11,22), 'Date#create | ISO8601 | month and day padded 2010');
   dateEquals(Date.create('20101122'), getDate(2010,11,22), 'Date#create | ISO8601 | digits strung together');
+  dateEquals(Date.create('17760523T024508+0830'), getUTCDate(1776, 5, 22, 18, 15, 08), 'Date#create | ISO8601 | full datetime strung together');
   dateEquals(Date.create('-0002-07-26'), getDate(-2, 7, 26), 'Date#create | ISO8601 | minus sign (bc)'); // BC
   dateEquals(Date.create('+1978-04-17'), getDate(1978, 4, 17), 'Date#create | ISO8601 | plus sign (ad)'); // AD
 
@@ -2615,6 +2617,7 @@ test('Date', function () {
   dateEquals(Date.create('1776-05-23T02:45:08-0830'), getUTCDate(1776, 5, 23, 11, 15, 08), 'Date#create | ISO8601 | Full example 5');
   dateEquals(Date.create('1776-05-23T02:45:08+0830'), getUTCDate(1776, 5, 22, 18, 15, 08), 'Date#create | ISO8601 | Full example 6');
 
+
   // No limit on the number of millisecond decimals, so....
   dateEquals(Date.create('1997-07-16T19:20:30.4+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 400), 'Date#create | ISO8601 | milliseconds have no limit 1');
   dateEquals(Date.create('1997-07-16T19:20:30.46+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 460), 'Date#create | ISO8601 | milliseconds have no limit 2');
@@ -2634,6 +2637,7 @@ test('Date', function () {
   var now = new Date();
 
   // Fuzzy dates
+  dateEquals(Date.create('now'), new Date(), 'Date#create | Fuzzy Dates | Now');
   dateEquals(Date.create('today'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate()), 'Date#create | Fuzzy Dates | Today');
   dateEquals(Date.create('yesterday'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() - 1), 'Date#create | Fuzzy Dates | Yesterday');
   dateEquals(Date.create('tomorrow'), getDate(now.getFullYear(), now.getMonth() + 1, now.getDate() + 1), 'Date#create | Fuzzy Dates | Tomorrow');
@@ -2733,6 +2737,15 @@ test('Date', function () {
   dateEquals(Date.create('the end of next year'), getDate(now.getFullYear() + 1, 12, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of next year');
   dateEquals(Date.create('the end of last year'), getDate(now.getFullYear() - 1, 12, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of last year');
 
+  dateEquals(Date.create('beginning of March'), getDate(now.getFullYear(), 3), 'Date#create | Fuzzy Dates | beginning of March');
+  dateEquals(Date.create('end of March'), getDate(now.getFullYear(), 3, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | end of March');
+  dateEquals(Date.create('the first day of March'), getDate(now.getFullYear(), 3), 'Date#create | Fuzzy Dates | the first day of March');
+  dateEquals(Date.create('the last day of March'), getDate(now.getFullYear(), 3, 31), 'Date#create | Fuzzy Dates | the last day of March');
+
+  dateEquals(Date.create('beginning of 1998'), getDate(1998), 'Date#create | Fuzzy Dates | beginning of 1998');
+  dateEquals(Date.create('end of 1998'), getDate(1998, 12, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | end of 1998');
+  dateEquals(Date.create('the first day of 1998'), getDate(1998), 'Date#create | Fuzzy Dates | the first day of 1998');
+  dateEquals(Date.create('the last day of 1998'), getDate(1998, 12, 31), 'Date#create | Fuzzy Dates | the last day of 1998');
 
 
 
@@ -3080,7 +3093,64 @@ test('Date', function () {
   equals(d.format(Date.RFC1036, true), 'Wednesday, 04-Aug-10 19:03:02 GMT', 'Date#format | internal formats | RFC1036 UTC');
 
 
+  equals(d.format('AMERICAN_DATE'), '8/5/2010', 'Date#format | internal formats | AMERICAN_DATE');
+  equals(d.format('AMERICAN_DATETIME'), '8/5/2010 4:03am', 'Date#format | internal formats | AMERICAN_DATETIME');
+  equals(d.format('EUROPEAN_DATE'), '5/8/2010', 'Date#format | internal formats | EUROPEAN_DATE');
+  equals(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
+  equals(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
+  equals(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
+  equals(d.format('ISO8601_DATETIME', true), '2010-08-04T19:03:02Z', 'Date#format | internal formats | ISO8601_DATETIME UTC');
+  equals(d.format('RFC1123'), 'Thu, 05 Aug 2010 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1123');
+  equals(d.format('RFC1036'), 'Thursday, 05-Aug-10 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1036');
+  equals(d.format('RFC1123', true), 'Wed, 04 Aug 2010 19:03:02 GMT', 'Date#format | internal formats | RFC1123 UTC');
+  equals(d.format('RFC1036', true), 'Wednesday, 04-Aug-10 19:03:02 GMT', 'Date#format | internal formats | RFC1036 UTC');
 
+
+
+  d = new Date(2010,7,5,13,45,2,542);
+
+  equals(d.is('nonsense'), false, 'Date#is | nonsense');
+  equals(d.is('August'), true, 'Date#is | August');
+  equals(d.is('August 5th, 2010'), true, 'Date#is | August 5th, 2010');
+  equals(d.is('August 5th, 2010 13:45'), true, 'Date#is | August 5th, 2010, 13:45');
+  equals(d.is('August 5th, 2010 13:45:02'), true, 'Date#is | August 5th 2010, 13:45:02');
+  equals(d.is('August 5th, 2010 13:45:02.542'), true, 'Date#is | August 5th 2010, 13:45:02:542');
+  equals(d.is('September'), false, 'Date#is | September');
+  equals(d.is('August 6th, 2010'), false, 'Date#is | August 6th, 2010');
+  equals(d.is('August 5th, 2010 13:46'), false, 'Date#is | August 5th, 2010, 13:46');
+  equals(d.is('August 5th, 2010 13:45:03'), false, 'Date#is | August 5th 2010, 13:45:03');
+  equals(d.is('August 5th, 2010 13:45:03.543'), false, 'Date#is | August 5th 2010, 13:45:03:543');
+  equals(d.is('July'), false, 'Date#is | July');
+  equals(d.is('August 4th, 2010'), false, 'Date#is | August 4th, 2010');
+  equals(d.is('August 5th, 2010 13:44'), false, 'Date#is | August 5th, 2010, 13:44');
+  equals(d.is('August 5th, 2010 13:45:01'), false, 'Date#is | August 5th 2010, 13:45:01');
+  equals(d.is('August 5th, 2010 13:45:03.541'), false, 'Date#is | August 5th 2010, 13:45:03:541');
+  equals(d.is('2010'), true, 'Date#is | 2010');
+  equals(d.is('today'), false, 'Date#is | today');
+  equals(d.is('now'), false, 'Date#is | now');
+  equals(d.is('weekday'), true, 'Date#is | weekday');
+  equals(d.is('weekend'), false, 'Date#is | weekend');
+  equals(new Date().is('now'), true, 'Date#is | now is now');
+
+  equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.324'), true, 'Date#is | August 5th, 2010 13:42:42.324');
+  equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.319'), false, 'Date#is | August 5th, 2010 13:42:42.319');
+  equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.325'), false, 'Date#is | August 5th, 2010 13:42:42.325');
+  equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.323'), false, 'Date#is | August 5th, 2010 13:42:42.323');
+
+
+  equals(Date.create('2008').leapYear(), true, 'Date#leapYear | 2008');
+  equals(Date.create('2009').leapYear(), false, 'Date#leapYear | 2009');
+  equals(Date.create('2010').leapYear(), false, 'Date#leapYear | 2010');
+  equals(Date.create('2011').leapYear(), false, 'Date#leapYear | 2011');
+  equals(Date.create('2012').leapYear(), true, 'Date#leapYear | 2012');
+  equals(Date.create('2016').leapYear(), true, 'Date#leapYear | 2016');
+  equals(Date.create('2020').leapYear(), true, 'Date#leapYear | 2020');
+  equals(Date.create('2021').leapYear(), false, 'Date#leapYear | 2021');
+  equals(Date.create('1600').leapYear(), true, 'Date#leapYear | 1600');
+  equals(Date.create('1700').leapYear(), false, 'Date#leapYear | 1700');
+  equals(Date.create('1800').leapYear(), false, 'Date#leapYear | 1800');
+  equals(Date.create('1900').leapYear(), false, 'Date#leapYear | 1900');
+  equals(Date.create('2000').leapYear(), true, 'Date#leapYear | 2000');
 
 
 });
