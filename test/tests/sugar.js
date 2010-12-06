@@ -364,40 +364,6 @@ test('Number', function () {
   equals((1).year(), 31557600000, 'Number#year');
 
 
-  dateEquals((1).second().after(), 1000, 'Number#after 1 second after');
-  dateEquals((1).minute().after(), 60000, 'Number#after 1 minute after');
-  dateEquals((1).hour().after(), 3600000, 'Number#after 1 hour after');
-  dateEquals((1).day().after(), 86400000, 'Number#after 1 day after');
-  dateEquals((1).week().after(), 604800000, 'Number#after 1 week after');
-  dateEquals((1).month().after(), 2629800000, 'Number#after 1 month after');
-  dateEquals((1).year().after(), 31557600000, 'Number#after 1 year after');
-
-  dateEquals((1).second().fromNow(), 1000, 'Number#fromNow');
-  dateEquals((1).minute().fromNow(), 60000, 'Number#fromNow');
-  dateEquals((1).hour().fromNow(), 3600000, 'Number#fromNow');
-  dateEquals((1).day().fromNow(), 86400000, 'Number#fromNow');
-  dateEquals((1).week().fromNow(), 604800000, 'Number#fromNow');
-  dateEquals((1).month().fromNow(), 2629800000, 'Number#fromNow');
-  dateEquals((1).year().fromNow(), 31557600000, 'Number#fromNow');
-
-  dateEquals((1).second().ago(), -1000, 'Number#ago');
-  dateEquals((1).minute().ago(), -60000, 'Number#ago');
-  dateEquals((1).hour().ago(), -3600000, 'Number#ago');
-  dateEquals((1).day().ago(), -86400000, 'Number#ago');
-  dateEquals((1).week().ago(), -604800000, 'Number#ago');
-  dateEquals((1).month().ago(), -2629800000, 'Number#ago');
-  dateEquals((1).year().ago(), -31557600000, 'Number#ago');
-
-  dateEquals((1).second().before(), -1000, 'Number#before');
-  dateEquals((1).minute().before(), -60000, 'Number#before');
-  dateEquals((1).hour().before(), -3600000, 'Number#before');
-  dateEquals((1).day().before(), -86400000, 'Number#before');
-  dateEquals((1).week().before(), -604800000, 'Number#before');
-  dateEquals((1).month().before(), -2629800000, 'Number#before');
-  dateEquals((1).year().before(), -31557600000, 'Number#before');
-
-
-
   dateEquals((1).secondAfter(), 1000, 'Number#secondAfter');
   dateEquals((5).secondsAfter(), 5000, 'Number#secondsAfter');
   dateEquals((10).minutesAfter(), 600000, 'Number#minutesAfter');
@@ -415,19 +381,15 @@ test('Number', function () {
   dateEquals((10).secondsBefore(), -10000, 'Number#secondBefore');
 
 
-  dateEquals((5).minutes().after((5).minutes().ago()), 0, 'Number#minutesAfter');
   dateEquals((5).minutesAfter((5).minutesAgo()), 0, 'Number#minutesAfter');
   dateEquals((10).minutesAfter((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesAfter');
 
-  dateEquals((5).minutes().fromNow((5).minutes().ago()), 0, 'Number#minutesfromNow');
   dateEquals((5).minutesFromNow((5).minutesAgo()), 0, 'Number#minutesFromNow');
   dateEquals((10).minutesFromNow((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesFromNow');
 
-  dateEquals((5).minutes().ago((5).minutes().fromNow()), 0, 'Number#minutesAgo');
   dateEquals((5).minutesAgo((5).minutesFromNow()), 0, 'Number#minutesAgo');
   ((10).minutesAgo((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesAgo');
 
-  dateEquals((5).minutes().before((5).minutes().fromNow()), 0, 'Number#minutesBefore');
   dateEquals((5).minutesBefore((5).minutesFromNow()), 0, 'Number#minutesBefore');
   dateEquals((10).minutesBefore((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesBefore');
 
@@ -445,17 +407,30 @@ test('Number', function () {
   dateEquals((5).weeksBefore(christmas), getRelativeDate.call(christmas, null, null, -35), 'Number#weeksBefore');
   dateEquals((5).weeksAfter(christmas), getRelativeDate.call(christmas, null, null, 35), 'Number#weeksAfter');
 
- // dateEquals((5).monthsBefore(christmas), getRelativeDate.call(christmas, null, -5), 'Number#monthsBefore');
-//  dateEquals((5).monthsAfter(christmas), getRelativeDate.call(christmas, null, 5), 'Number#monthsAfter');
+  dateEquals((5).monthsBefore(christmas), getRelativeDate.call(christmas, null, -5), 'Number#monthsBefore');
+  dateEquals((5).monthsAfter(christmas), getRelativeDate.call(christmas, null, 5), 'Number#monthsAfter');
 
-//  dateEquals((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore');
-//  dateEquals((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter');
+  dateEquals((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore');
+  dateEquals((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter');
+
+
 
   // Hooking it all up!!
-  //
-//  equals((5).minutesBefore('April 3rd, 1998').getTime(), new Date(christmas.getTime() - (5 * 60 * 1000)).getTime(), 'Number#minutesBefore');
-//  equals((5).minutesAfter('January 2nd, 2005').getTime(), new Date(christmas.getTime() + (5 * 60 * 1000)).getTime(), 'Number#minutesAfter');
 
+  dateEquals((5).minutesBefore('April 3rd, 1998'), new Date(1998, 3, 2, 23, 55), 'Number#minutesBefore | 5 minutes before April 3rd, 1998');
+  dateEquals((5).minutesAfter('January 2nd, 2005'), new Date(2005, 0, 2, 0, 5), 'Number#minutesAfter | 5 minutes after January 2nd, 2005');
+  dateEquals((5).hoursBefore('the first day of 2005'), new Date(2004, 11, 31, 19), 'Number#minutesBefore | 5 hours before the first day of 2005');
+  dateEquals((5).hoursAfter('the last day of 2006'), new Date(2006, 11, 31, 5), 'Number#minutesAfter | 5 hours after the last day of 2006');
+  dateEquals((5).hoursAfter('the end of 2006'), new Date(2007, 0, 1, 4, 59, 59, 999), 'Number#minutesAfter | 5 hours after the end of 2006');
+  dateEquals((5).daysBefore('last week monday'), getDateWithWeekdayAndOffset(1, -7).rewind({ days: 5 }), 'Number#minutesAfter | 5 days before last week monday');
+  dateEquals((5).daysAfter('next tuesday'), getDateWithWeekdayAndOffset(2, 7).advance({ days: 5 }), 'Number#minutesAfter | 5 days after next week tuesday');
+  dateEquals((5).weeksBefore('today'), getRelativeDate(null, null, -35).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#minutesAfter | 5 weeks before today');
+  dateEquals((5).weeksAfter('now'), getRelativeDate(null, null, 35), 'Number#minutesAfter | 5 weeks after now');
+  dateEquals((5).monthsBefore('today'), getRelativeDate(null, -5).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#minutesAfter | 5 months before today');
+  dateEquals((5).monthsAfter('now'), getRelativeDate(null, 5), 'Number#minutesAfter | 5 months after now');
+
+
+//  dateEquals(Date.create('Monday'), getDateWithWeekdayAndOffset(1), 'Date#create | Fuzzy Dates | Monday');
 });
 
 test('String', function () {
@@ -2918,6 +2893,65 @@ test('Date', function () {
   d.setUTCWeekday(6);
   equals(d.getDate(), 28, 'Date#setUTCWeekday | saturday');
 
+
+  d.setDate(12);
+  equals(d.getWeekday(), 4, 'Date#getWeekday | Thursday');
+  equals(d.getUTCWeekday(), 4, 'Date#setUTCWeekday | Thursday');
+
+  d.setDate(13);
+  equals(d.getWeekday(), 5, 'Date#getWeekday | Friday');
+  equals(d.getUTCWeekday(), 5, 'Date#setUTCWeekday | Friday');
+
+  d.setDate(14);
+  equals(d.getWeekday(), 6, 'Date#getWeekday | Saturday');
+  equals(d.getUTCWeekday(), 6, 'Date#setUTCWeekday | Saturday');
+
+  d.setDate(15);
+  equals(d.getWeekday(), 0, 'Date#getWeekday | Sunday');
+  equals(d.getUTCWeekday(), 0, 'Date#setUTCWeekday | Sunday');
+
+  d.setDate(16);
+  equals(d.getWeekday(), 1, 'Date#getWeekday | Monday');
+  equals(d.getUTCWeekday(), 1, 'Date#setUTCWeekday | Monday');
+
+  d.setDate(17);
+  equals(d.getWeekday(), 2, 'Date#getWeekday | Tuesday');
+  equals(d.getUTCWeekday(), 2, 'Date#setUTCWeekday | Tuesday');
+
+  d.setDate(18);
+  equals(d.getWeekday(), 3, 'Date#getWeekday | Wednesday');
+  equals(d.getUTCWeekday(), 3, 'Date#setUTCWeekday | Wednesday');
+
+
+  dateEquals(new Date().advance({ weekday: 7 }), new Date(), 'Date#advance | cannot advance by weekdays');
+  dateEquals(new Date().rewind({ weekday: 7 }), new Date(), 'Date#advance | cannot rewind by weekdays');
+
+
+  var d = new Date(2010, 11, 31, 24, 59, 59);
+
+  equals(d.getWeekday(), d.getDay(), 'Date#getWeekday | equal to getDay');
+  equals(d.getUTCWeekday(), d.getUTCDay(), 'Date#getUTCWeekday | equal to getUTCDay');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+
+  equals(d.getUTCWeekday(), 3, 'Date#getUTCWeekday | wednesday');
+
+  d.setUTCWeekday(0);
+  equals(d.getDate(), 22, 'Date#setUTCWeekday | sunday');
+  d.setUTCWeekday(1);
+  equals(d.getDate(), 23, 'Date#setUTCWeekday | monday');
+  d.setUTCWeekday(2);
+  equals(d.getDate(), 24, 'Date#setUTCWeekday | tuesday');
+  d.setUTCWeekday(3);
+  equals(d.getDate(), 25, 'Date#setUTCWeekday | wednesday');
+  d.setUTCWeekday(4);
+  equals(d.getDate(), 26, 'Date#setUTCWeekday | thursday');
+  d.setUTCWeekday(5);
+  equals(d.getDate(), 27, 'Date#setUTCWeekday | friday');
+  d.setUTCWeekday(6);
+  equals(d.getDate(), 28, 'Date#setUTCWeekday | saturday');
+
   d.setUTCWeekday();
   equals(d.getDate(), 28, 'Date#setUTCWeekday | undefined');
 
@@ -2971,6 +3005,33 @@ test('Date', function () {
   equals(d.getMinutes(), 33, 'Date#rewind | object | minutes');
   equals(d.getSeconds(), 21, 'Date#rewind | object | seconds');
   equals(d.getMilliseconds(), 996, 'Date#rewind | object | milliseconds');
+
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.advance({ week: 1});
+  dateEquals(d, getDate(2010, 9, 1, 11, 45, 20), 'Date#advance | positive weeks supported');
+  d.advance({ week: -2});
+  dateEquals(d, getDate(2010, 8, 18, 11, 45, 20), 'Date#advance | negative weeks supported');
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.rewind({ week: 1});
+  dateEquals(d, getDate(2010, 8, 18, 11, 45, 20), 'Date#rewind | positive weeks supported');
+  d.rewind({ week: -1});
+  dateEquals(d, getDate(2010, 8, 25, 11, 45, 20), 'Date#rewind | negative weeks supported');
+
+
+
+  dateEquals(new Date().advance(1), Date.create('one year from now'), 'Date#advance | date instance is returned');
+  dateEquals(new Date().rewind(1), Date.create('one year ago'), 'Date#rewind | date instance is returned');
+
+
+
+
+
+
+
 
 
   d.set({ month: 0 })
@@ -3197,14 +3258,110 @@ test('Date', function () {
   equals(Date.create('2000').leapYear(), true, 'Date#leapYear | 2000');
 
 
+  d = new Date(2010,7,5,13,45,2,542);
+  var offset = d.getTimezoneOffset();
+
+  equals(d.getWeek(), 31, 'Date#getWeek | basic');
+  equals(d.getUTCWeek(), 31, 'Date#getUTCWeek | basic');
+
+  equals(new Date(2010, 0, 1).getWeek(), 1, 'Date#getWeek | January 1st');
+  equals(new Date(2010, 0, 1).getUTCWeek(), offset > 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
+  equals(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th');
+  equals(new Date(2010, 0, 6).getUTCWeek(), 1, 'Date#getUTCWeek | January 6th');
+  equals(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th');
+  equals(new Date(2010, 0, 7).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th');
+  equals(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th 23:59:59.999');
+  equals(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
+  equals(new Date(2010, 0, 8).getWeek(), 2, 'Date#getWeek | January 8th');
+  equals(new Date(2010, 0, 8).getUTCWeek(), offset > 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
+  equals(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th');
+  equals(new Date(2010, 3, 15).getUTCWeek(), 15, 'Date#getUTCWeek | April 15th');
+
+
 
 
   d = new Date(2010,7,5,13,45,2,542);
 
-  equals(new Date(2010,7,5,13,45,3,542).secondsSince(d), 1, 'Date#secondsSince | Seconds since');
-  equals(new Date(2010,7,5,13,45,1,542).secondsUntil(d), 1, 'Date#secondsUntil | Seconds until');
+  equals(new Date(2010,7,5,13,45,2,543).millisecondsSince(d), 1, 'Date#millisecondsSince | 1 milliseconds since');
+  equals(new Date(2010,7,5,13,45,2,541).millisecondsUntil(d), 1, 'Date#millisecondsUntil | 1 milliseconds until');
+  equals(new Date(2010,7,5,13,45,3,542).secondsSince(d), 1, 'Date#secondsSince | 1 seconds since');
+  equals(new Date(2010,7,5,13,45,1,542).secondsUntil(d), 1, 'Date#secondsUntil | 1 seconds until');
+  equals(new Date(2010,7,5,13,46,2,542).minutesSince(d), 1, 'Date#minutesSince | 1 minutes since');
+  equals(new Date(2010,7,5,13,44,2,542).minutesUntil(d), 1, 'Date#minutesUntil | 1 minutes until');
+  equals(new Date(2010,7,5,14,45,2,542).hoursSince(d), 1, 'Date#hoursSince | 1 hours since');
+  equals(new Date(2010,7,5,12,45,2,542).hoursUntil(d), 1, 'Date#hoursUntil | 1 hours until');
+  equals(new Date(2010,7,6,13,45,2,542).daysSince(d), 1, 'Date#daysSince | 1 days since');
+  equals(new Date(2010,7,4,13,45,2,542).daysUntil(d), 1, 'Date#daysUntil | 1 days until');
+  equals(new Date(2010,7,12,13,45,2,542).weeksSince(d), 1, 'Date#weeksSince | 1 weeks since');
+  equals(new Date(2010,6,29,13,45,2,542).weeksUntil(d), 1, 'Date#weeksUntil | 1 weeks until');
+  equals(new Date(2010,8,5,13,45,2,542).monthsSince(d).round(4), 1.0185, 'Date#monthsSince | 1 months since');
+  equals(new Date(2010,6,5,13,45,2,542).monthsUntil(d).round(4), 1.0185, 'Date#monthsUntil | 1 months until');
+  equals(new Date(2011,7,5,13,45,2,542).yearsSince(d).round(4), 0.9993, 'Date#yearsSince | 1 years since');
+  equals(new Date(2009,7,5,13,45,2,542).yearsUntil(d).round(4), 0.9993, 'Date#yearsUntil | 1 years until');
 
 
+  equals(new Date(2011,7,5,13,45,2,542).millisecondsSince(d), 31536000000, 'Date#millisecondsSince | milliseconds since last year');
+  equals(new Date(2011,7,5,13,45,2,542).millisecondsUntil(d), -31536000000, 'Date#millisecondsUntil | milliseconds until last year');
+  equals(new Date(2011,7,5,13,45,2,542).secondsSince(d), 31536000, 'Date#secondsSince | seconds since last year');
+  equals(new Date(2011,7,5,13,45,2,542).secondsUntil(d), -31536000, 'Date#secondsUntil | seconds until last year');
+  equals(new Date(2011,7,5,13,45,2,542).minutesSince(d), 525600, 'Date#minutesSince | minutes since last year');
+  equals(new Date(2011,7,5,13,45,2,542).minutesUntil(d), -525600, 'Date#minutesUntil | minutes until last year');
+  equals(new Date(2011,7,5,13,45,2,542).hoursSince(d), 8760, 'Date#hoursSince | hours since last year');
+  equals(new Date(2011,7,5,13,45,2,542).hoursUntil(d), -8760, 'Date#hoursUntil | hours until last year');
+  equals(new Date(2011,7,5,13,45,2,542).daysSince(d), 365, 'Date#daysSince | days since last year');
+  equals(new Date(2011,7,5,13,45,2,542).daysUntil(d), -365, 'Date#daysUntil | days until last year');
+  equals(new Date(2011,7,5,13,45,2,542).weeksSince(d).round(4), 52.1429, 'Date#weeksSince | weeks since last year');
+  equals(new Date(2011,7,5,13,45,2,542).weeksUntil(d).round(4), -52.1429, 'Date#weeksUntil | weeks until last year');
+  equals(new Date(2011,7,5,13,45,2,542).monthsSince(d).round(4), 11.9918, 'Date#monthsSince | months since last year');
+  equals(new Date(2011,7,5,13,45,2,542).monthsUntil(d).round(4), -11.9918, 'Date#monthsUntil | months until last year');
+  equals(new Date(2011,7,5,13,45,2,542).yearsSince(d).round(4), 0.9993, 'Date#yearsSince | years since last year');
+  equals(new Date(2011,7,5,13,45,2,542).yearsUntil(d).round(4), -0.9993, 'Date#yearsUntil | years until last year');
+
+
+  // Works with Date.create?
+  equals(d.millisecondsSince('the last day of 2011'), -44273697458, 'Date#millisecondsSince | milliseconds since the last day of 2011');
+  equals(d.millisecondsUntil('the last day of 2011'), 44273697458, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
+  equals(d.secondsSince('the last day of 2011'), -44273697.458, 'Date#secondsSince | seconds since the last day of 2011');
+  equals(d.secondsUntil('the last day of 2011'), 44273697.458, 'Date#secondsUntil | seconds until the last day of 2011');
+  equals(d.minutesSince('the last day of 2011').round(4), -737894.9576, 'Date#minutesSince | minutes since the last day of 2011');
+  equals(d.minutesUntil('the last day of 2011').round(4), 737894.9576, 'Date#minutesUntil | minutes until the last day of 2011');
+  equals(d.hoursSince('the last day of 2011').round(4), -12298.2493, 'Date#hoursSince | hours since the last day of 2011');
+  equals(d.hoursUntil('the last day of 2011').round(4), 12298.2493, 'Date#hoursUntil | hours until the last day of 2011');
+  equals(d.daysSince('the last day of 2011').round(4), -512.4271, 'Date#daysSince | days since the last day of 2011');
+  equals(d.daysUntil('the last day of 2011').round(4), 512.4271, 'Date#daysUntil | days until the last day of 2011');
+  equals(d.weeksSince('the last day of 2011').round(4), -73.2039, 'Date#weeksSince | weeks since the last day of 2011');
+  equals(d.weeksUntil('the last day of 2011').round(4), 73.2039, 'Date#weeksUntil | weeks until the last day of 2011');
+  equals(d.monthsSince('the last day of 2011').round(4), -16.8354, 'Date#monthsSince | months since the last day of 2011');
+  equals(d.monthsUntil('the last day of 2011').round(4), 16.8354, 'Date#monthsUntil | months until the last day of 2011');
+  equals(d.yearsSince('the last day of 2011').round(4), -1.4029, 'Date#yearsSince | years since the last day of 2011');
+  equals(d.yearsUntil('the last day of 2011').round(4), 1.4029, 'Date#yearsUntil | years until the last day of 2011');
+
+
+
+  d = new Date();
+  var offset = d.getTime() - Date.create('last week').getTime();
+
+  // Works with Date.create?
+  // need a bit of a buffer here, so...
+  var since = d.millisecondsSince('last week');
+  var until = d.millisecondsUntil('last week');
+  equals(since > (offset - 5) && since < offset + 5, true, 'Date#millisecondsSince | milliseconds since last week');
+  equals(since > (5 - offset) && since < (5 + offset), true, 'Date#millisecondsUntil | milliseconds until last week');
+
+  equals(d.secondsSince('last week').round(), offset / 1000, 'Date#secondsSince | seconds since last week');
+  equals(d.secondsUntil('last week').round(), -offset / 1000, 'Date#secondsUntil | seconds until last week');
+  equals(d.minutesSince('last week').round(), offset / 1000 / 60, 'Date#minutesSince | minutes since last week');
+  equals(d.minutesUntil('last week').round(), -offset / 1000 / 60, 'Date#minutesUntil | minutes until last week');
+  equals(d.hoursSince('last week').round(), offset / 1000 / 60 / 60, 'Date#hoursSince | hours since last week');
+  equals(d.hoursUntil('last week').round(), -offset / 1000 / 60 / 60, 'Date#hoursUntil | hours until last week');
+  equals(d.daysSince('last week').round(), offset / 1000 / 60 / 60 / 24, 'Date#daysSince | days since last week');
+  equals(d.daysUntil('last week').round(), -offset / 1000 / 60 / 60 / 24, 'Date#daysUntil | days until last week');
+  equals(d.weeksSince('last week').round(4), (offset / 1000 / 60 / 60 / 24 / 7).round(4), 'Date#weeksSince | weeks since last week');
+  equals(d.weeksUntil('last week').round(4), (-offset / 1000 / 60 / 60 / 24 / 7).round(4), 'Date#weeksUntil | weeks until last week');
+  equals(d.monthsSince('last week').round(4), (offset / 1000 / 60 / 60 / 24 / 30.4375).round(4), 'Date#monthsSince | months since last week');
+  equals(d.monthsUntil('last week').round(4), (-offset / 1000 / 60 / 60 / 24 / 30.4375).round(4), 'Date#monthsUntil | months until last week');
+  equals(d.yearsSince('last week').round(4), (offset / 1000 / 60 / 60 / 24 / 365.25).round(4), 'Date#yearsSince | years since last week');
+  equals(d.yearsUntil('last week').round(4), (-offset / 1000 / 60 / 60 / 24 / 365.25).round(4), 'Date#yearsUntil | years until the last day of 2011');
 
 
 });
