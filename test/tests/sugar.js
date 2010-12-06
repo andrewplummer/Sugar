@@ -2877,6 +2877,8 @@ test('Date', function () {
   equals(d.getMilliseconds(), 0, 'Date#setUTC | no reset | milliseconds');
 
 
+  dateEquals(Date.create('Next week'), getRelativeDate(null, null, 7), 'Date#create | Fuzzy Dates | Next week');
+
   d = new Date('August 25, 2010 11:45:20');
 
   equals(d.getWeekday(), 3, 'Date#getWeekday | wednesday');
