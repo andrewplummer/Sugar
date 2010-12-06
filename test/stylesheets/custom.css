@@ -163,3 +163,7 @@ iframe {
   -webkit-border-radius:6px;
   float: left;
 }
+
+h1,h3,h4 {
+  display: none;
+}
