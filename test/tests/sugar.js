@@ -3326,19 +3326,15 @@ test('Date', function () {
 
 
 
-  window.parent.relative = getRelativeDate;
-  console.info('LE BOUF'.pad(20, '-'));
-
-  // Note that relative #is formats are only accurate to within 10 milliseconds
-  // to avoid complications rising from the date being created momentarily after
-  // the function is called.
+  // Note that relative #is formats can only be considered to be accurate to within a few milliseconds
+  // to avoid complications rising from the date being created momentarily after the function is called.
+  equals(getRelativeDate(null,null,null,null,null,null, -5).is('3 milliseconds ago'), false, 'Date#is | 3 milliseconds ago is accurate to milliseconds');
   equals(getRelativeDate(null,null,null,null,null,null, -5).is('5 milliseconds ago'), true, 'Date#is | 5 milliseconds ago is accurate to milliseconds');
+  equals(getRelativeDate(null,null,null,null,null,null, -5).is('7 milliseconds ago'), false, 'Date#is | 7 milliseconds ago is accurate to milliseconds');
 
-  equals(getRelativeDate(null,null,null,null,null,-5).is('3 seconds ago'), false, 'Date#is | 3 seconds ago is accurate to seconds');
-  equals(getRelativeDate(null,null,null,null,null,-5).is('4 seconds ago'), true, 'Date#is | 4 seconds ago is accurate to seconds');
+  equals(getRelativeDate(null,null,null,null,null,-5).is('4 seconds ago'), false, 'Date#is | 4 seconds ago is accurate to seconds');
   equals(getRelativeDate(null,null,null,null,null,-5).is('5 seconds ago'), true, 'Date#is | 5 seconds ago is accurate to seconds');
-  equals(getRelativeDate(null,null,null,null,null,-5).is('6 seconds ago'), true, 'Date#is | 6 seconds ago is accurate to seconds');
-  equals(getRelativeDate(null,null,null,null,null,-5).is('7 seconds ago'), false, 'Date#is | 7 seconds ago is accurate to seconds');
+  equals(getRelativeDate(null,null,null,null,null,-5).is('6 seconds ago'), false, 'Date#is | 6 seconds ago is accurate to seconds');
 
   equals(getRelativeDate(null,null,null,null,-5).is('4 minutes ago'), false, 'Date#is | 4 minutes ago is accurate to minutes');
   equals(getRelativeDate(null,null,null,null,-5).is('5 minutes ago'), true, 'Date#is | 5 minutes ago is accurate to minutes');
@@ -3360,7 +3356,6 @@ test('Date', function () {
   equals(getRelativeDate(-5).is('5 years ago'), true, 'Date#is | 5 years ago is accurate to years');
   equals(getRelativeDate(-5).is('6 years ago'), false, 'Date#is | 6 years ago is accurate to years');
 
-  console.info('LE BOUF'.pad(20, '-'));
 
 
 
