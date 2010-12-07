@@ -10,7 +10,7 @@ var dateEquals = function(a, b, message){
     b = d;
   }
   var offset = Math.abs(a.getTime() - b.getTime());
-  equals(offset < buffer, true, message + ' | expected: ' + a.format(format) + ' got: ' + b.format(format));
+  equals(offset < buffer, true, message + ' | expected: ' + b.format(format) + ' got: ' + a.format(format));
 }
 
 var getDate = function(year, month, day, hours, minutes, seconds, milliseconds){
@@ -2405,6 +2405,7 @@ test('Date', function () {
   window.parent.pee = getDateWithWeekdayAndOffset;
   window.parent.fecal = getDaysInMonth;
 
+  var timezoneOffset = new Date().getTimezoneOffset();
 
   // Valid Date
 
@@ -2420,8 +2421,8 @@ test('Date', function () {
 
   dateEquals(new Date(new Date(2008, 6, 22)), new Date(2008, 6, 22), 'Date | date accepts itself as a constructor');
 
-  // Just the year
-  dateEquals(Date.create('1999'), getDate(1999), 'Date#create | Just the year');
+  dateEquals(Date.create(0), new Date(1970, 0, 1, 0, -timezoneOffset) , 'Date#create | Accepts numbers');
+  dateEquals(Date.create('1999'), new Date(1999, 0), 'Date#create | Just the year');
 
   dateEquals(Date.create('June'), getDate(null, 6), 'Date#create | Just the month');
   dateEquals(Date.create('June 15'), getDate(null, 6, 15), 'Date#create | Month and day');
@@ -3069,6 +3070,32 @@ test('Date', function () {
 
 
 
+  d = new Date('August 5, 2010 13:45:02');
+  d.setMilliseconds(234);
+  d.set({ month: 3 });
+
+  equals(d.getFullYear(), 2010, 'Date#set | does not reset year');
+  equals(d.getMonth(), 3, 'Date#set | does reset month');
+  equals(d.getDate(), 5, 'Date#set | does not reset date');
+  equals(d.getHours(), 13, 'Date#set | does not reset hours');
+  equals(d.getMinutes(), 45, 'Date#set | does not reset minutes');
+  equals(d.getSeconds(), 02, 'Date#set | does not reset seconds');
+  equals(d.getMilliseconds(), 234, 'Date#set | does not reset milliseconds');
+
+
+
+  d = new Date('August 5, 2010 13:45:02');
+  d.set({ month: 3 }, true);
+
+  equals(d.getFullYear(), 2010, 'Date#set | does not reset year');
+  equals(d.getMonth(), 3, 'Date#set | does reset month');
+  equals(d.getDate(), 1, 'Date#set | does reset date');
+  equals(d.getHours(), 0, 'Date#set | does reset hours');
+  equals(d.getMinutes(), 0, 'Date#set | does reset minutes');
+  equals(d.getSeconds(), 0, 'Date#set | does reset seconds');
+  equals(d.getMilliseconds(), 0, 'Date#set | does reset milliseconds');
+
+
 
 
 
@@ -3154,7 +3181,6 @@ test('Date', function () {
   equals(d.format('{Month}, {yyyy}'), 'August, 2010', 'Date#format | full formats | month and year');
 
 
-  var timezoneOffset = new Date().getTimezoneOffset();
   var isotzd = Math.round(-timezoneOffset / 60).pad(2, true) + ':' + (timezoneOffset % 60).pad(2);
   var tzd = isotzd.replace(/:/, '');
 
@@ -3247,6 +3273,10 @@ test('Date', function () {
 
   equals(getDateWithWeekdayAndOffset(0).is('the beginning of the week'), true, 'Date#is | the beginning of the week');
   equals(getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999).is('the end of the week'), true, 'Date#is | the end of the week');
+
+  equals(new Date(1970, 0, 1, 0, -timezoneOffset).is(0), true, 'Date#is | Accepts numbers');
+
+
 
   equals(Date.create('2008').leapYear(), true, 'Date#leapYear | 2008');
   equals(Date.create('2009').leapYear(), false, 'Date#leapYear | 2009');
@@ -3420,6 +3450,28 @@ test('Date', function () {
   dateEquals(new Date(d).endOfWeek(), new Date(2012, 2, 3, 23, 59, 59, 999), 'Date#endOfWeek | February 29, 2012');
   dateEquals(new Date(d).endOfMonth(), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfMonth | February 29, 2012');
   dateEquals(new Date(d).endOfYear(), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | February 29, 2012');
+
+
+  dateEquals(new Date(d).beginningOfDay(false), new Date(2012, 1, 29, 22, 15, 42), 'Date#beginningOfDay | do not reset time | February 29, 2012');
+  dateEquals(new Date(d).beginningOfWeek(false), new Date(2012, 1, 26, 22, 15, 42), 'Date#beginningOfWeek | do not reset time | February 29, 2012');
+  dateEquals(new Date(d).beginningOfMonth(false), new Date(2012, 1, 1, 22, 15, 42), 'Date#beginningOfMonth | do not reset time | February 29, 2012');
+  dateEquals(new Date(d).beginningOfYear(false), new Date(2012, 0, 1, 22, 15, 42), 'Date#beginningOfYear | do not reset time | February 29, 2012');
+
+  dateEquals(new Date(d).endOfDay(false), new Date(2012, 1, 29, 22, 15, 42), 'Date#endOfDay | do not reset time | February 29, 2012');
+  dateEquals(new Date(d).endOfWeek(false), new Date(2012, 2, 3, 22, 15, 42), 'Date#endOfWeek | do not reset time | February 29, 2012');
+  dateEquals(new Date(d).endOfMonth(false), new Date(2012, 1, 29, 22, 15, 42), 'Date#endOfMonth | do not reset time | February 29, 2012');
+  dateEquals(new Date(d).endOfYear(false), new Date(2012, 11, 31, 22, 15, 42), 'Date#endOfYear | do not reset time | February 29, 2012');
+
+
+  dateEquals(new Date(d).beginningOfDay(true), new Date(2012, 1, 29), 'Date#beginningOfDay | reset if true | February 29, 2012');
+  dateEquals(new Date(d).beginningOfWeek(true), new Date(2012, 1, 26), 'Date#beginningOfWeek | reset if true | February 29, 2012');
+  dateEquals(new Date(d).beginningOfMonth(true), new Date(2012, 1), 'Date#beginningOfMonth | reset if true | February 29, 2012');
+  dateEquals(new Date(d).beginningOfYear(true), new Date(2012, 0), 'Date#beginningOfYear | reset if true | February 29, 2012');
+
+  dateEquals(new Date(d).endOfDay(true), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfDay | reset if true | February 29, 2012');
+  dateEquals(new Date(d).endOfWeek(true), new Date(2012, 2, 3, 23, 59, 59, 999), 'Date#endOfWeek | reset if true | February 29, 2012');
+  dateEquals(new Date(d).endOfMonth(true), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfMonth | reset if true | February 29, 2012');
+  dateEquals(new Date(d).endOfYear(true), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | reset if true | February 29, 2012');
 
 
 
