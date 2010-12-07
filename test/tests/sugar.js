@@ -1,5 +1,6 @@
 module("Sugar");
 
+var format = '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}'
 
 var dateEquals = function(a, b, message){
   var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
@@ -9,7 +10,7 @@ var dateEquals = function(a, b, message){
     b = d;
   }
   var offset = Math.abs(a.getTime() - b.getTime());
-  equals(offset < buffer, true, message + ' | offset is '+offset);
+  equals(offset < buffer, true, message + ' | expected: ' + a.format(format) + ' got: ' + b.format(format));
 }
 
 var getDate = function(year, month, day, hours, minutes, seconds, milliseconds){
@@ -2408,12 +2409,16 @@ test('Date', function () {
   // Valid Date
 
   // Invalid date
-  equals(new Date('a fridge too far').valid(), false, 'Date#create | new Date invalid');
-  equals(new Date().valid(), true, 'Date#create | new Date valid');
-  equals(Date.create().valid(), true, 'Date#create | Date#create valid');
-  equals(Date.create('a fridge too far').valid(), false, 'Date#create | Date#create invalid');
+  equals(new Date('a fridge too far').valid(), false, 'Date#valid | new Date invalid');
+  equals(new Date().valid(), true, 'Date#valid | new Date valid');
+  equals(Date.create().valid(), true, 'Date#valid | created date is valid');
+  equals(Date.create('a fridge too far').valid(), false, 'Date#valid | Date#create invalid');
 
   dateEquals(Date.create(), new Date(), 'Date#create | empty');
+
+
+
+  dateEquals(new Date(new Date(2008, 6, 22)), new Date(2008, 6, 22), 'Date | date accepts itself as a constructor');
 
   // Just the year
   dateEquals(Date.create('1999'), getDate(1999), 'Date#create | Just the year');
@@ -3362,6 +3367,60 @@ test('Date', function () {
   equals(d.monthsUntil('last week').round(4), (-offset / 1000 / 60 / 60 / 24 / 30.4375).round(4), 'Date#monthsUntil | months until last week');
   equals(d.yearsSince('last week').round(4), (offset / 1000 / 60 / 60 / 24 / 365.25).round(4), 'Date#yearsSince | years since last week');
   equals(d.yearsUntil('last week').round(4), (-offset / 1000 / 60 / 60 / 24 / 365.25).round(4), 'Date#yearsUntil | years until the last day of 2011');
+
+
+
+  d = new Date('August 5, 2010 13:45:02');
+
+  dateEquals(new Date(d).beginningOfDay(), new Date(2010, 7, 5), 'Date#beginningOfDay');
+  dateEquals(new Date(d).beginningOfWeek(), new Date(2010, 7, 1), 'Date#beginningOfWeek');
+  dateEquals(new Date(d).beginningOfMonth(), new Date(2010, 7), 'Date#beginningOfMonth');
+  dateEquals(new Date(d).beginningOfYear(), new Date(2010, 0), 'Date#beginningOfYear');
+
+  dateEquals(new Date(d).endOfDay(), new Date(2010, 7, 5, 23, 59, 59, 999), 'Date#endOfDay');
+  dateEquals(new Date(d).endOfWeek(), new Date(2010, 7, 7, 23, 59, 59, 999), 'Date#endOfWeek');
+  dateEquals(new Date(d).endOfMonth(), new Date(2010, 7, 31, 23, 59, 59, 999), 'Date#endOfMonth');
+  dateEquals(new Date(d).endOfYear(), new Date(2010, 11, 31, 23, 59, 59, 999), 'Date#endOfYear');
+
+
+  d = new Date('January 1, 1979 01:33:42');
+
+  dateEquals(new Date(d).beginningOfDay(), new Date(1979, 0, 1), 'Date#beginningOfDay | January 1, 1979');
+  dateEquals(new Date(d).beginningOfWeek(), new Date(1978, 11, 31), 'Date#beginningOfWeek | January 1, 1979');
+  dateEquals(new Date(d).beginningOfMonth(), new Date(1979, 0), 'Date#beginningOfMonth | January 1, 1979');
+  dateEquals(new Date(d).beginningOfYear(), new Date(1979, 0), 'Date#beginningOfYear | January 1, 1979');
+
+  dateEquals(new Date(d).endOfDay(), new Date(1979, 0, 1, 23, 59, 59, 999), 'Date#endOfDay | January 1, 1979');
+  dateEquals(new Date(d).endOfWeek(), new Date(1979, 0, 6, 23, 59, 59, 999), 'Date#endOfWeek | January 1, 1979');
+  dateEquals(new Date(d).endOfMonth(), new Date(1979, 0, 31, 23, 59, 59, 999), 'Date#endOfMonth | January 1, 1979');
+  dateEquals(new Date(d).endOfYear(), new Date(1979, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | January 1, 1979');
+
+
+  d = new Date('December 31, 1945 01:33:42');
+
+  dateEquals(new Date(d).beginningOfDay(), new Date(1945, 11, 31), 'Date#beginningOfDay | January 1, 1945');
+  dateEquals(new Date(d).beginningOfWeek(), new Date(1945, 11, 30), 'Date#beginningOfWeek | January 1, 1945');
+  dateEquals(new Date(d).beginningOfMonth(), new Date(1945, 11), 'Date#beginningOfMonth | January 1, 1945');
+  dateEquals(new Date(d).beginningOfYear(), new Date(1945, 0), 'Date#beginningOfYear | January 1, 1945');
+
+  dateEquals(new Date(d).endOfDay(), new Date(1945, 11, 31, 23, 59, 59, 999), 'Date#endOfDay | January 1, 1945');
+  dateEquals(new Date(d).endOfWeek(), new Date(1946, 0, 5, 23, 59, 59, 999), 'Date#endOfWeek | January 1, 1945');
+  dateEquals(new Date(d).endOfMonth(), new Date(1945, 11, 31, 23, 59, 59, 999), 'Date#endOfMonth | January 1, 1945');
+  dateEquals(new Date(d).endOfYear(), new Date(1945, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | January 1, 1945');
+
+
+  d = new Date('February 29, 2012 22:15:42');
+
+  dateEquals(new Date(d).beginningOfDay(), new Date(2012, 1, 29), 'Date#beginningOfDay | February 29, 2012');
+  dateEquals(new Date(d).beginningOfWeek(), new Date(2012, 1, 26), 'Date#beginningOfWeek | February 29, 2012');
+  dateEquals(new Date(d).beginningOfMonth(), new Date(2012, 1), 'Date#beginningOfMonth | February 29, 2012');
+  dateEquals(new Date(d).beginningOfYear(), new Date(2012, 0), 'Date#beginningOfYear | February 29, 2012');
+
+  dateEquals(new Date(d).endOfDay(), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfDay | February 29, 2012');
+  dateEquals(new Date(d).endOfWeek(), new Date(2012, 2, 3, 23, 59, 59, 999), 'Date#endOfWeek | February 29, 2012');
+  dateEquals(new Date(d).endOfMonth(), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfMonth | February 29, 2012');
+  dateEquals(new Date(d).endOfYear(), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | February 29, 2012');
+
 
 
 });
