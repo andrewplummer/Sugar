@@ -2388,6 +2388,7 @@ test('Array', function () {
 test('Date', function () {
 
 
+  var day;
   var timezoneOffset = new Date().getTimezoneOffset();
   var now = new Date();
   var thisYear = now.getFullYear();
@@ -2399,6 +2400,11 @@ test('Date', function () {
   equals(new Date().isValid(), true, 'Date#isValid | new Date valid');
   equals(Date.create().isValid(), true, 'Date#isValid | created date is valid');
   equals(Date.create('a fridge too far').isValid(), false, 'Date#isValid | Date#create invalid');
+
+
+  equals(new Date().isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC is true if the current timezone has no offset');
+  // UTC is not if there is a timezone offset, even if the time is reset to the intended utc equivalent, as timezones can never be changed
+  equals(now.addMinutes(timezoneOffset).isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
 
   dateEquals(Date.create(), new Date(), 'Date#create | empty');
 
@@ -3203,6 +3209,11 @@ test('Date', function () {
 
 
 
+  // shortcut for ISO format
+  equals(d.iso(), d.format(Date.ISO8601_DATETIME, true), 'Date#iso is an alias for the ISO8601_DATETIME format');
+
+
+
   d = new Date(2010,7,5,13,45,2,542);
 
   equals(d.is('nonsense'), false, 'Date#is | nonsense');
@@ -3358,8 +3369,26 @@ test('Date', function () {
 
 
 
+  equals(Date.create('tomorrow').is('future'), true, 'Date#is | tomorrow is the future');
+  equals(Date.create('tomorrow').is('past'), false, 'Date#is | tomorrow is the past');
 
+  equals(new Date().is('future'), false, 'Date#is | now is the future');
+  equals(new Date().is('past'), false, 'Date#is | now is the past');
 
+  equals(Date.create('yesterday').is('future'), false, 'Date#is | yesterday is the future');
+  equals(Date.create('yesterday').is('past'), true, 'Date#is | yesterday is the past');
+
+  equals(Date.create('monday').is('weekday'), true, 'Date#is | monday is a weekday');
+  equals(Date.create('monday').is('weekend'), false, 'Date#is | monday is a weekend');
+
+  equals(Date.create('friday').is('weekday'), true, 'Date#is | friday is a weekday');
+  equals(Date.create('friday').is('weekend'), false, 'Date#is | friday is a weekend');
+
+  equals(Date.create('saturday').is('weekday'), false, 'Date#is | saturday is a weekday');
+  equals(Date.create('saturday').is('weekend'), true, 'Date#is | saturday is a weekend');
+
+  equals(Date.create('sunday').is('weekday'), false, 'Date#is | sunday is a weekday');
+  equals(Date.create('sunday').is('weekend'), true, 'Date#is | sunday is a weekend');
 
 
 
@@ -3585,11 +3614,54 @@ test('Date', function () {
   dateEquals(new Date(d).addYears(-12), new Date(2000, 1, 29, 22, 15, 42), 'Date#addYears | negative | 12');
 
 
+  d = new Date('February 29, 2012 22:15:42');
+
+  dUTC = new Date(d.getTime() + (d.getTimezoneOffset() * 60 * 1000));
+
+  dateEquals(d.utc(), dUTC, 'Date#utc');
+
+
+
+
+  d = new Date('February 29, 2012 22:15:42');
+
+  dateEquals(d.resetTime(), new Date(2012, 1, 29), 'Date#resetTime | Clears time');
+
+
+  equals(now.isYesterday(), false, 'Date#isYesterday');
+  equals(now.isToday(), true, 'Date#isToday');
+  equals(now.isTomorrow(), false, 'Date#isTomorrow');
+  equals(now.isWeekday(), now.getDay() !== 0 && now.getDay() !== 6, 'Date#isWeekday');
+  equals(now.isWeekend(), now.getDay() === 0 || now.getDay() === 6, 'Date#isWeekend');
+  equals(now.isFuture(), false, 'Date#isFuture');
+  equals(now.isPast(), true, 'Date#isPast');
+
+
+  d = new Date('February 29, 2008 22:15:42');
+
+  equals(d.isYesterday(), false, 'Date#isYesterday | February 29, 2008');
+  equals(d.isToday(), false, 'Date#isToday | February 29, 2008');
+  equals(d.isTomorrow(), false, 'Date#isTomorrow | February 29, 2008');
+  equals(d.isWeekday(), true, 'Date#isWeekday | February 29, 2008');
+  equals(d.isWeekend(), false, 'Date#isWeekend | February 29, 2008');
+  equals(d.isFuture(), false, 'Date#isFuture | February 29, 2008');
+  equals(d.isPast(), true, 'Date#isPast | February 29, 2008');
+
+
+  d.setFullYear(thisYear + 2);
+
+  equals(d.isYesterday(), false, 'Date#isYesterday | 2 years from now');
+  equals(d.isToday(), false, 'Date#isToday | 2 years from now');
+  equals(d.isTomorrow(), false, 'Date#isTomorrow | 2 years from now');
+  equals(d.isWeekday(), true, 'Date#isWeekday | 2 years from now');
+  equals(d.isWeekend(), false, 'Date#isWeekend | 2 years from now');
+  equals(d.isFuture(), true, 'Date#isFuture | 2 years from now');
+  equals(d.isPast(), false, 'Date#isPast | 2 years from now');
+
+
+
   /*
 
-  equals(new Date().isYesterday(), false, 'Date#isYesterday');
-  equals(new Date().isToday(), true, 'Date#isToday');
-  equals(new Date().isTomorrow(), false, 'Date#isTomorrow');
   equals(new Date().isLastWeek(), false, 'Date#isLastWeek');
   equals(new Date().isThisWeek(), true, 'Date#isThisWeek');
   equals(new Date().isNextWeek(), false, 'Date#isNextWeek');
