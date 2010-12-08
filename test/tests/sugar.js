@@ -52,12 +52,41 @@ var getDaysInMonth = function(year, month){
   return 32 - new Date(year, month, 32).getDate();
 }
 
+var getWeekday = function(d, utc){
+  var day = utc ? d.getUTCDay() : d.getDay();
+  return ['sunday','monday','tuesday','wednesday','thursday','friday','saturday','sunday'][day];
+}
+
+var getMonth = function(d, utc){
+  var month = utc ? d.getUTCMonth() : d.getMonth();
+  return ['january','february','march','april','may','june','july','august','september','october','november','december'][month];
+}
+
+var getHours = function(num){
+  return Math.floor(num < 0 ? 24 + num : num);
+}
+
+
 var contains = function(actual, expected, message){
   equals(expected.any(actual), true, message);
 }
 
 var strictlyEqual = function(actual, expected, message){
   equals(actual === expected, true, message + ' | strict equality');
+}
+
+// A DST Safe version of equals for dates
+var equalsDST = function(actual, expected, multiplier, message){
+  if(multiplier === undefined) multiplier = 1;
+  var dst = Date.DSTOffset;
+  dst /= multiplier;
+  if(expected < 0) expected += dst;
+  else expected -= dst;
+  equals(actual, expected.round(4), message + ' | DST offset applied');
+}
+
+var dst = function(d){
+  return new Date(d.getTime() - Date.DSTOffset);
 }
 
 test('Number', function () {
@@ -2404,11 +2433,13 @@ test('Date', function () {
 
   equals(new Date().isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC is true if the current timezone has no offset');
   // UTC is not if there is a timezone offset, even if the time is reset to the intended utc equivalent, as timezones can never be changed
-  equals(now.addMinutes(timezoneOffset).isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
+  equals(new Date(now.getTime()).addMinutes(timezoneOffset).isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
 
   dateEquals(Date.create(), new Date(), 'Date#create | empty');
 
 
+  // DST Offset is properly set
+  equals(Date.DSTOffset, (new Date(2001, 6, 1).getTimezoneOffset() - new Date(2000, 0, 1).getTimezoneOffset()) * 60 * 1000, 'Date#DSTOffset | is the correct offset');
 
   dateEquals(new Date(new Date(2008, 6, 22)), new Date(2008, 6, 22), 'Date | date accepts itself as a constructor');
 
@@ -2432,7 +2463,7 @@ test('Date', function () {
 
   // August 25, 0001... the numeral 1 gets interpreted as 1901...
   // freakin' unbelievable...
-  dateEquals(Date.create('08/25/0001'), new Date(-62115238800000), 'Date#create | American style slashes | mm/dd/0001');
+  dateEquals(Date.create('08/25/0001'), new Date(-62115206400000).utc(), 'Date#create | American style slashes | mm/dd/0001');
 
   // Dashes (American style)
   dateEquals(Date.create('08-25-1978'), new Date(1978, 7, 25), 'Date#create | American style dashes | mm-dd-yyyy');
@@ -2819,10 +2850,10 @@ test('Date', function () {
   d = new Date('August 25, 2010 11:45:20');
   d.setUTC({ years: 2008, hours: 4 }, true);
 
-  equals(d.getFullYear(), 2008, 'Date#set | reset utc | year');
-  equals(d.getMonth(), 0, 'Date#set | reset utc | month');
-  equals(d.getDate(), 1, 'Date#set | reset utc | date');
-  equals(d.getHours(), 4 - Math.round(d.getTimezoneOffset() / 60), 'Date#set | reset utc | hours');
+  equals(d.getFullYear(), timezoneOffset > 240 ? 2007 : 2008, 'Date#set | reset utc | year');
+  equals(d.getMonth(), timezoneOffset > 240 ? 11 : 0, 'Date#set | reset utc | month');
+  equals(d.getDate(), timezoneOffset > 240 ? 31 : 1, 'Date#set | reset utc | date');
+  equals(d.getHours(), getHours(4 - (d.getTimezoneOffset() / 60)), 'Date#set | reset utc | hours');
   equals(d.getMinutes(), 0, 'Date#set | reset utc | minutes');
   equals(d.getSeconds(), 0, 'Date#set | reset utc | seconds');
   equals(d.getMilliseconds(), 0, 'Date#set | reset utc | milliseconds');
@@ -2833,8 +2864,8 @@ test('Date', function () {
 
   equals(d.getFullYear(), 2005, 'Date#set | no reset utc | year');
   equals(d.getMonth(), 7, 'Date#set | no reset utc | month');
-  equals(d.getDate(), 25, 'Date#set | no reset utc | date');
-  equals(d.getHours(), 2 - Math.round(d.getTimezoneOffset() / 60), 'Date#set | no reset utc | hours');
+  equals(d.getDate(), timezoneOffset > 120 ? 24 : 25, 'Date#set | no reset utc | date');
+  equals(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'Date#set | no reset utc | hours');
   equals(d.getMinutes(), 45, 'Date#set | no reset utc | minutes');
   equals(d.getSeconds(), 20, 'Date#set | no reset utc | seconds');
   equals(d.getMilliseconds(), 0, 'Date#set | no reset utc | milliseconds');
@@ -2845,8 +2876,8 @@ test('Date', function () {
 
   equals(d.getFullYear(), 2005, 'Date#setUTC | no reset | year');
   equals(d.getMonth(), 7, 'Date#setUTC | no reset | month');
-  equals(d.getDate(), 25, 'Date#setUTC | no reset | date');
-  equals(d.getHours(), 2 - Math.round(d.getTimezoneOffset() / 60), 'Date#setUTC | no reset | hours');
+  equals(d.getDate(), timezoneOffset > 120 ? 24 : 25, 'Date#setUTC | no reset | date');
+  equals(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'Date#setUTC | no reset | hours');
   equals(d.getMinutes(), 45, 'Date#setUTC | no reset | minutes');
   equals(d.getSeconds(), 20, 'Date#setUTC | no reset | seconds');
   equals(d.getMilliseconds(), 0, 'Date#setUTC | no reset | milliseconds');
@@ -3175,8 +3206,15 @@ test('Date', function () {
   equals(d.format('{Month}, {yyyy}'), 'August, 2010', 'Date#format | full formats | month and year');
 
 
-  var isotzd = Math.round(-timezoneOffset / 60).pad(2, true) + ':' + (timezoneOffset % 60).pad(2);
+  // Be VERY careful here. Timezone offset is NOT always guaranteed to be the same for a given timezone,
+  // as DST may come into play.
+  var offset = d.getTimezoneOffset();
+  var isotzd = Math.round(-offset / 60).pad(2, true) + ':' + (offset % 60).pad(2);
   var tzd = isotzd.replace(/:/, '');
+  if(new Date().isUTC()){
+    isotzd = 'Z';
+    tzd = '+0000';
+  }
 
   equals(d.getUTCOffset(), tzd, 'Date#getUTCOffset | no colon');
   equals(d.getUTCOffset(true), isotzd, 'Date#getUTCOffset | colon');
@@ -3187,12 +3225,6 @@ test('Date', function () {
   equals(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
   equals(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
   equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
-  equals(d.format(Date.ISO8601_DATETIME, true), '2010-08-04T19:03:02Z', 'Date#format | internal formats | ISO8601_DATETIME UTC');
-  equals(d.format(Date.ISO8601, true), '2010-08-04T19:03:02Z', 'Date#format | internal formats | ISO8601 UTC');
-  equals(d.format(Date.RFC1123), 'Thu, 05 Aug 2010 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1123');
-  equals(d.format(Date.RFC1036), 'Thursday, 05-Aug-10 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1036');
-  equals(d.format(Date.RFC1123, true), 'Wed, 04 Aug 2010 19:03:02 GMT', 'Date#format | internal formats | RFC1123 UTC');
-  equals(d.format(Date.RFC1036, true), 'Wednesday, 04-Aug-10 19:03:02 GMT', 'Date#format | internal formats | RFC1036 UTC');
 
 
   equals(d.format('AMERICAN_DATE'), '8/5/2010', 'Date#format | internal formats | AMERICAN_DATE');
@@ -3201,11 +3233,28 @@ test('Date', function () {
   equals(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
   equals(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
   equals(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
-  equals(d.format('ISO8601_DATETIME', true), '2010-08-04T19:03:02Z', 'Date#format | internal formats | ISO8601_DATETIME UTC');
-  equals(d.format('RFC1123'), 'Thu, 05 Aug 2010 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1123');
-  equals(d.format('RFC1036'), 'Thursday, 05-Aug-10 04:03:02 GMT'+tzd, 'Date#format | internal formats | RFC1036');
-  equals(d.format('RFC1123', true), 'Wed, 04 Aug 2010 19:03:02 GMT', 'Date#format | internal formats | RFC1123 UTC');
-  equals(d.format('RFC1036', true), 'Wednesday, 04-Aug-10 19:03:02 GMT', 'Date#format | internal formats | RFC1036 UTC');
+
+
+  var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+d.getUTCOffset(true);
+  equals(d.format(Date.ISO8601_DATETIME, true), iso, 'Date#format | internal formats | ISO8601_DATETIME UTC');
+  equals(d.format(Date.ISO8601, true), iso, 'Date#format | internal formats | ISO8601 UTC');
+  equals(d.format('ISO8601_DATETIME', true), iso, 'Date#format | internal formats | ISO8601_DATETIME UTC');
+  equals(d.format('ISO8601', true), iso, 'Date#format | internal formats | ISO8601 UTC');
+
+
+  var rfc1123 = getWeekday(d).to(2).capitalize()+', '+d.getDate().pad(2)+' '+getMonth(d).to(2).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  var rfc1036 = getWeekday(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonth(d).to(2).capitalize()+'-'+d.getFullYear().toString().last(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  equals(d.format(Date.RFC1123), rfc1123, 'Date#format | internal formats | RFC1123');
+  equals(d.format(Date.RFC1036), rfc1036, 'Date#format | internal formats | RFC1036');
+  equals(d.format('RFC1123'), rfc1123, 'Date#format | internal formats | RFC1123');
+  equals(d.format('RFC1036'), rfc1036, 'Date#format | internal formats | RFC1036');
+
+
+  rfc1123 = getWeekday(d,true).to(2).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonth(d,true).to(2).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  rfc1036 = getWeekday(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonth(d,true).to(2).capitalize()+'-'+d.getUTCFullYear().toString().last(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  equals(d.format('RFC1123', true), rfc1123, 'Date#format | internal formats | RFC1123 UTC');
+  equals(d.format('RFC1036', true), rfc1036, 'Date#format | internal formats | RFC1036 UTC');
+
 
 
 
@@ -3410,21 +3459,20 @@ test('Date', function () {
 
 
   d = new Date(2010,7,5,13,45,2,542);
-  var offset = d.getTimezoneOffset();
 
   equals(d.getWeek(), 31, 'Date#getWeek | basic');
-  equals(d.getUTCWeek(), 31, 'Date#getUTCWeek | basic');
+  equals(d.getUTCWeek(), timezoneOffset > 0 ? 32 : 31, 'Date#getUTCWeek | basic');
 
   equals(new Date(2010, 0, 1).getWeek(), 1, 'Date#getWeek | January 1st');
-  equals(new Date(2010, 0, 1).getUTCWeek(), offset > 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
+  equals(new Date(2010, 0, 1).getUTCWeek(), timezoneOffset > 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
   equals(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th');
   equals(new Date(2010, 0, 6).getUTCWeek(), 1, 'Date#getUTCWeek | January 6th');
   equals(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th');
   equals(new Date(2010, 0, 7).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th');
   equals(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th 23:59:59.999');
-  equals(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
+  equals(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), timezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
   equals(new Date(2010, 0, 8).getWeek(), 2, 'Date#getWeek | January 8th');
-  equals(new Date(2010, 0, 8).getUTCWeek(), offset > 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
+  equals(new Date(2010, 0, 8).getUTCWeek(), timezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
   equals(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th');
   equals(new Date(2010, 3, 15).getUTCWeek(), 15, 'Date#getUTCWeek | April 15th');
 
@@ -3470,22 +3518,22 @@ test('Date', function () {
 
 
   // Works with Date.create?
-  equals(d.millisecondsSince('the last day of 2011'), -44273697458, 'Date#millisecondsSince | milliseconds since the last day of 2011');
-  equals(d.millisecondsUntil('the last day of 2011'), 44273697458, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
-  equals(d.secondsSince('the last day of 2011'), -44273697.458, 'Date#secondsSince | seconds since the last day of 2011');
-  equals(d.secondsUntil('the last day of 2011'), 44273697.458, 'Date#secondsUntil | seconds until the last day of 2011');
-  equals(d.minutesSince('the last day of 2011').round(4), -737894.9576, 'Date#minutesSince | minutes since the last day of 2011');
-  equals(d.minutesUntil('the last day of 2011').round(4), 737894.9576, 'Date#minutesUntil | minutes until the last day of 2011');
-  equals(d.hoursSince('the last day of 2011').round(4), -12298.2493, 'Date#hoursSince | hours since the last day of 2011');
-  equals(d.hoursUntil('the last day of 2011').round(4), 12298.2493, 'Date#hoursUntil | hours until the last day of 2011');
-  equals(d.daysSince('the last day of 2011').round(4), -512.4271, 'Date#daysSince | days since the last day of 2011');
-  equals(d.daysUntil('the last day of 2011').round(4), 512.4271, 'Date#daysUntil | days until the last day of 2011');
-  equals(d.weeksSince('the last day of 2011').round(4), -73.2039, 'Date#weeksSince | weeks since the last day of 2011');
-  equals(d.weeksUntil('the last day of 2011').round(4), 73.2039, 'Date#weeksUntil | weeks until the last day of 2011');
-  equals(d.monthsSince('the last day of 2011').round(4), -16.8354, 'Date#monthsSince | months since the last day of 2011');
-  equals(d.monthsUntil('the last day of 2011').round(4), 16.8354, 'Date#monthsUntil | months until the last day of 2011');
-  equals(d.yearsSince('the last day of 2011').round(4), -1.4029, 'Date#yearsSince | years since the last day of 2011');
-  equals(d.yearsUntil('the last day of 2011').round(4), 1.4029, 'Date#yearsUntil | years until the last day of 2011');
+  equals(dst(d).millisecondsSince('the last day of 2011'), -44273697458, 'Date#millisecondsSince | milliseconds since the last day of 2011');
+  equals(dst(d).millisecondsUntil('the last day of 2011'), 44273697458, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
+  equals(dst(d).secondsSince('the last day of 2011'), -44273697.458, 'Date#secondsSince | seconds since the last day of 2011');
+  equals(dst(d).secondsUntil('the last day of 2011'), 44273697.458, 'Date#secondsUntil | seconds until the last day of 2011');
+  equals(dst(d).minutesSince('the last day of 2011').round(4), -737894.9576, 'Date#minutesSince | minutes since the last day of 2011');
+  equals(dst(d).minutesUntil('the last day of 2011').round(4), 737894.9576, 'Date#minutesUntil | minutes until the last day of 2011');
+  equals(dst(d).hoursSince('the last day of 2011').round(4), -12298.2493, 'Date#hoursSince | hours since the last day of 2011');
+  equals(dst(d).hoursUntil('the last day of 2011').round(4), 12298.2493, 'Date#hoursUntil | hours until the last day of 2011');
+  equals(dst(d).daysSince('the last day of 2011').round(4), -512.4271, 'Date#daysSince | days since the last day of 2011');
+  equals(dst(d).daysUntil('the last day of 2011').round(4), 512.4271, 'Date#daysUntil | days until the last day of 2011');
+  equals(dst(d).weeksSince('the last day of 2011').round(4), -73.2039, 'Date#weeksSince | weeks since the last day of 2011');
+  equals(dst(d).weeksUntil('the last day of 2011').round(4), 73.2039, 'Date#weeksUntil | weeks until the last day of 2011');
+  equals(dst(d).monthsSince('the last day of 2011').round(4), -16.8354, 'Date#monthsSince | months since the last day of 2011');
+  equals(dst(d).monthsUntil('the last day of 2011').round(4), 16.8354, 'Date#monthsUntil | months until the last day of 2011');
+  equals(dst(d).yearsSince('the last day of 2011').round(4), -1.4029, 'Date#yearsSince | years since the last day of 2011');
+  equals(dst(d).yearsUntil('the last day of 2011').round(4), 1.4029, 'Date#yearsUntil | years until the last day of 2011');
 
 
 
