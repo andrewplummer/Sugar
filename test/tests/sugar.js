@@ -435,7 +435,13 @@ test('Number', function () {
 
   // Hooking it all up!!
 
-  dateEquals((5).minutesBefore('April 3rd, 1998'), new Date(1998, 3, 2, 23, 55), 'Number#minutesBefore | 5 minutes before April 3rd, 1998');
+  // Try this in WinXP:
+  // 1. Set timezone to Damascus
+  // 2. var d = new Date(1998, 3, 3, 17); d.setHours(0); d.getHours();
+  // 3. hours = 23
+  // 4. PROFIT $$$
+
+  dateEquals((5).minutesBefore('April 2rd, 1998'), new Date(1998, 3, 1, 23, 55), 'Number#minutesBefore | 5 minutes before April 3rd, 1998');
   dateEquals((5).minutesAfter('January 2nd, 2005'), new Date(2005, 0, 2, 0, 5), 'Number#minutesAfter | 5 minutes after January 2nd, 2005');
   dateEquals((5).hoursBefore('the first day of 2005'), new Date(2004, 11, 31, 19), 'Number#minutesBefore | 5 hours before the first day of 2005');
   dateEquals((5).hoursAfter('the last day of 2006'), new Date(2006, 11, 31, 5), 'Number#minutesAfter | 5 hours after the last day of 2006');
@@ -446,6 +452,9 @@ test('Number', function () {
   dateEquals((5).weeksAfter('now'), getRelativeDate(null, null, 35), 'Number#minutesAfter | 5 weeks after now');
   dateEquals((5).monthsBefore('today'), getRelativeDate(null, -5).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#minutesAfter | 5 months before today');
   dateEquals((5).monthsAfter('now'), getRelativeDate(null, 5), 'Number#minutesAfter | 5 months after now');
+
+
+
 
 
 //  dateEquals(Date.create('Monday'), getDateWithWeekdayAndOffset(1), 'Date#create | Fuzzy Dates | Monday');
@@ -2422,6 +2431,7 @@ test('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
+  /*
   // Valid Date
 
   // Invalid date
@@ -2850,11 +2860,11 @@ test('Date', function () {
   d = new Date('August 25, 2010 11:45:20');
   d.setUTC({ years: 2008, hours: 4 }, true);
 
-  equals(d.getFullYear(), timezoneOffset > 240 ? 2007 : 2008, 'Date#set | reset utc | year');
-  equals(d.getMonth(), timezoneOffset > 240 ? 11 : 0, 'Date#set | reset utc | month');
-  equals(d.getDate(), timezoneOffset > 240 ? 31 : 1, 'Date#set | reset utc | date');
+  equals(d.getFullYear(), d.getTimezoneOffset() > 240 ? 2007 : 2008, 'Date#set | reset utc | year');
+  equals(d.getMonth(), d.getTimezoneOffset() > 240 ? 11 : 0, 'Date#set | reset utc | month');
+  equals(d.getDate(), d.getTimezoneOffset() > 240 ? 31 : 1, 'Date#set | reset utc | date');
   equals(d.getHours(), getHours(4 - (d.getTimezoneOffset() / 60)), 'Date#set | reset utc | hours');
-  equals(d.getMinutes(), 0, 'Date#set | reset utc | minutes');
+  equals(d.getMinutes(), d.getTimezoneOffset() % 60, 'Date#set | reset utc | minutes');
   equals(d.getSeconds(), 0, 'Date#set | reset utc | seconds');
   equals(d.getMilliseconds(), 0, 'Date#set | reset utc | milliseconds');
 
@@ -2864,7 +2874,7 @@ test('Date', function () {
 
   equals(d.getFullYear(), 2005, 'Date#set | no reset utc | year');
   equals(d.getMonth(), 7, 'Date#set | no reset utc | month');
-  equals(d.getDate(), timezoneOffset > 120 ? 24 : 25, 'Date#set | no reset utc | date');
+  equals(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'Date#set | no reset utc | date');
   equals(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'Date#set | no reset utc | hours');
   equals(d.getMinutes(), 45, 'Date#set | no reset utc | minutes');
   equals(d.getSeconds(), 20, 'Date#set | no reset utc | seconds');
@@ -2876,7 +2886,7 @@ test('Date', function () {
 
   equals(d.getFullYear(), 2005, 'Date#setUTC | no reset | year');
   equals(d.getMonth(), 7, 'Date#setUTC | no reset | month');
-  equals(d.getDate(), timezoneOffset > 120 ? 24 : 25, 'Date#setUTC | no reset | date');
+  equals(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'Date#setUTC | no reset | date');
   equals(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'Date#setUTC | no reset | hours');
   equals(d.getMinutes(), 45, 'Date#setUTC | no reset | minutes');
   equals(d.getSeconds(), 20, 'Date#setUTC | no reset | seconds');
@@ -3072,6 +3082,7 @@ test('Date', function () {
   d.set({ month: 2 })
   equals(d.daysInMonth(), 31, 'Date#daysInMonth | mar');
   d.set({ month: 3 })
+  // This test fails in Casablanca in Windows XP! Reason unknown.
   equals(d.daysInMonth(), 30, 'Date#daysInMonth | apr');
   d.set({ month: 4 })
   equals(d.daysInMonth(), 31, 'Date#daysInMonth | may');
@@ -3121,6 +3132,9 @@ test('Date', function () {
   equals(d.getMilliseconds(), 0, 'Date#set | does reset milliseconds');
 
 
+
+  // Catch for DST inequivalencies
+  equals(new Date(2010, 11, 9, 17).set({ year: 1998, month: 3, day: 3}, true).getHours(), 0, 'Date#set | handles DST properly');
 
 
 
@@ -3211,7 +3225,7 @@ test('Date', function () {
   var offset = d.getTimezoneOffset();
   var isotzd = Math.round(-offset / 60).pad(2, true) + ':' + (offset % 60).pad(2);
   var tzd = isotzd.replace(/:/, '');
-  if(new Date().isUTC()){
+  if(d.isUTC()){
     isotzd = 'Z';
     tzd = '+0000';
   }
@@ -3422,7 +3436,10 @@ test('Date', function () {
   equals(Date.create('tomorrow').is('past'), false, 'Date#is | tomorrow is the past');
 
   equals(new Date().is('future'), false, 'Date#is | now is the future');
-  equals(new Date().is('past'), false, 'Date#is | now is the past');
+
+  // now CAN be in the past if there is any lag between when the dates are
+  // created, so give this a bit of a buffer...
+  equals(new Date().advance({ milliseconds: 5 }).is('past', 5), false, 'Date#is | now is the past');
 
   equals(Date.create('yesterday').is('future'), false, 'Date#is | yesterday is the future');
   equals(Date.create('yesterday').is('past'), true, 'Date#is | yesterday is the past');
@@ -3461,10 +3478,10 @@ test('Date', function () {
   d = new Date(2010,7,5,13,45,2,542);
 
   equals(d.getWeek(), 31, 'Date#getWeek | basic');
-  equals(d.getUTCWeek(), timezoneOffset > 0 ? 32 : 31, 'Date#getUTCWeek | basic');
+  equals(dst(d).getUTCWeek(), timezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
   equals(new Date(2010, 0, 1).getWeek(), 1, 'Date#getWeek | January 1st');
-  equals(new Date(2010, 0, 1).getUTCWeek(), timezoneOffset > 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
+  equals(new Date(2010, 0, 1).getUTCWeek(), timezoneOffset >= 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
   equals(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th');
   equals(new Date(2010, 0, 6).getUTCWeek(), 1, 'Date#getUTCWeek | January 6th');
   equals(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th');
@@ -3472,7 +3489,7 @@ test('Date', function () {
   equals(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th 23:59:59.999');
   equals(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), timezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
   equals(new Date(2010, 0, 8).getWeek(), 2, 'Date#getWeek | January 8th');
-  equals(new Date(2010, 0, 8).getUTCWeek(), timezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
+  equals(new Date(2010, 0, 8).getUTCWeek(), timezoneOffset >= 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
   equals(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th');
   equals(new Date(2010, 3, 15).getUTCWeek(), 15, 'Date#getUTCWeek | April 15th');
 
