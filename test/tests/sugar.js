@@ -3493,10 +3493,10 @@ test('Date', function () {
   equals(new Date(2010,7,4,13,45,2,542).daysUntil(d), 1, 'Date#daysUntil | 1 days until');
   equals(new Date(2010,7,12,13,45,2,542).weeksSince(d), 1, 'Date#weeksSince | 1 weeks since');
   equals(new Date(2010,6,29,13,45,2,542).weeksUntil(d), 1, 'Date#weeksUntil | 1 weeks until');
-  equals(new Date(2010,8,5,13,45,2,542).monthsSince(d).round(4), 1.0185, 'Date#monthsSince | 1 months since');
-  equals(new Date(2010,6,5,13,45,2,542).monthsUntil(d).round(4), 1.0185, 'Date#monthsUntil | 1 months until');
-  equals(new Date(2011,7,5,13,45,2,542).yearsSince(d).round(4), 0.9993, 'Date#yearsSince | 1 years since');
-  equals(new Date(2009,7,5,13,45,2,542).yearsUntil(d).round(4), 0.9993, 'Date#yearsUntil | 1 years until');
+  equals(new Date(2010,8,5,13,45,2,542).monthsSince(d), 1, 'Date#monthsSince | 1 months since');
+  equals(new Date(2010,6,5,13,45,2,542).monthsUntil(d), 1, 'Date#monthsUntil | 1 months until');
+  equals(new Date(2011,7,5,13,45,2,542).yearsSince(d), 1, 'Date#yearsSince | 1 years since');
+  equals(new Date(2009,7,5,13,45,2,542).yearsUntil(d), 1, 'Date#yearsUntil | 1 years until');
 
 
   equals(new Date(2011,7,5,13,45,2,542).millisecondsSince(d), 31536000000, 'Date#millisecondsSince | milliseconds since last year');
@@ -3509,36 +3509,36 @@ test('Date', function () {
   equals(new Date(2011,7,5,13,45,2,542).hoursUntil(d), -8760, 'Date#hoursUntil | hours until last year');
   equals(new Date(2011,7,5,13,45,2,542).daysSince(d), 365, 'Date#daysSince | days since last year');
   equals(new Date(2011,7,5,13,45,2,542).daysUntil(d), -365, 'Date#daysUntil | days until last year');
-  equals(new Date(2011,7,5,13,45,2,542).weeksSince(d).round(4), 52.1429, 'Date#weeksSince | weeks since last year');
-  equals(new Date(2011,7,5,13,45,2,542).weeksUntil(d).round(4), -52.1429, 'Date#weeksUntil | weeks until last year');
-  equals(new Date(2011,7,5,13,45,2,542).monthsSince(d).round(4), 11.9918, 'Date#monthsSince | months since last year');
-  equals(new Date(2011,7,5,13,45,2,542).monthsUntil(d).round(4), -11.9918, 'Date#monthsUntil | months until last year');
-  equals(new Date(2011,7,5,13,45,2,542).yearsSince(d).round(4), 0.9993, 'Date#yearsSince | years since last year');
-  equals(new Date(2011,7,5,13,45,2,542).yearsUntil(d).round(4), -0.9993, 'Date#yearsUntil | years until last year');
+  equals(new Date(2011,7,5,13,45,2,542).weeksSince(d), 52, 'Date#weeksSince | weeks since last year');
+  equals(new Date(2011,7,5,13,45,2,542).weeksUntil(d), -52, 'Date#weeksUntil | weeks until last year');
+  equals(new Date(2011,7,5,13,45,2,542).monthsSince(d), 12, 'Date#monthsSince | months since last year');
+  equals(new Date(2011,7,5,13,45,2,542).monthsUntil(d), -12, 'Date#monthsUntil | months until last year');
+  equals(new Date(2011,7,5,13,45,2,542).yearsSince(d), 1, 'Date#yearsSince | years since last year');
+  equals(new Date(2011,7,5,13,45,2,542).yearsUntil(d), -1, 'Date#yearsUntil | years until last year');
 
 
   // Works with Date.create?
   equals(dst(d).millisecondsSince('the last day of 2011'), -44273697458, 'Date#millisecondsSince | milliseconds since the last day of 2011');
   equals(dst(d).millisecondsUntil('the last day of 2011'), 44273697458, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
-  equals(dst(d).secondsSince('the last day of 2011'), -44273697.458, 'Date#secondsSince | seconds since the last day of 2011');
-  equals(dst(d).secondsUntil('the last day of 2011'), 44273697.458, 'Date#secondsUntil | seconds until the last day of 2011');
-  equals(dst(d).minutesSince('the last day of 2011').round(4), -737894.9576, 'Date#minutesSince | minutes since the last day of 2011');
-  equals(dst(d).minutesUntil('the last day of 2011').round(4), 737894.9576, 'Date#minutesUntil | minutes until the last day of 2011');
-  equals(dst(d).hoursSince('the last day of 2011').round(4), -12298.2493, 'Date#hoursSince | hours since the last day of 2011');
-  equals(dst(d).hoursUntil('the last day of 2011').round(4), 12298.2493, 'Date#hoursUntil | hours until the last day of 2011');
-  equals(dst(d).daysSince('the last day of 2011').round(4), -512.4271, 'Date#daysSince | days since the last day of 2011');
-  equals(dst(d).daysUntil('the last day of 2011').round(4), 512.4271, 'Date#daysUntil | days until the last day of 2011');
-  equals(dst(d).weeksSince('the last day of 2011').round(4), -73.2039, 'Date#weeksSince | weeks since the last day of 2011');
-  equals(dst(d).weeksUntil('the last day of 2011').round(4), 73.2039, 'Date#weeksUntil | weeks until the last day of 2011');
-  equals(dst(d).monthsSince('the last day of 2011').round(4), -16.8354, 'Date#monthsSince | months since the last day of 2011');
-  equals(dst(d).monthsUntil('the last day of 2011').round(4), 16.8354, 'Date#monthsUntil | months until the last day of 2011');
-  equals(dst(d).yearsSince('the last day of 2011').round(4), -1.4029, 'Date#yearsSince | years since the last day of 2011');
-  equals(dst(d).yearsUntil('the last day of 2011').round(4), 1.4029, 'Date#yearsUntil | years until the last day of 2011');
+  equals(dst(d).secondsSince('the last day of 2011'), -44273697, 'Date#secondsSince | seconds since the last day of 2011');
+  equals(dst(d).secondsUntil('the last day of 2011'), 44273697, 'Date#secondsUntil | seconds until the last day of 2011');
+  equals(dst(d).minutesSince('the last day of 2011'), -737895, 'Date#minutesSince | minutes since the last day of 2011');
+  equals(dst(d).minutesUntil('the last day of 2011'), 737895, 'Date#minutesUntil | minutes until the last day of 2011');
+  equals(dst(d).hoursSince('the last day of 2011'), -12298, 'Date#hoursSince | hours since the last day of 2011');
+  equals(dst(d).hoursUntil('the last day of 2011'), 12298, 'Date#hoursUntil | hours until the last day of 2011');
+  equals(dst(d).daysSince('the last day of 2011'), -512, 'Date#daysSince | days since the last day of 2011');
+  equals(dst(d).daysUntil('the last day of 2011'), 512, 'Date#daysUntil | days until the last day of 2011');
+  equals(dst(d).weeksSince('the last day of 2011'), -73, 'Date#weeksSince | weeks since the last day of 2011');
+  equals(dst(d).weeksUntil('the last day of 2011'), 73, 'Date#weeksUntil | weeks until the last day of 2011');
+  equals(dst(d).monthsSince('the last day of 2011'), -17, 'Date#monthsSince | months since the last day of 2011');
+  equals(dst(d).monthsUntil('the last day of 2011'), 17, 'Date#monthsUntil | months until the last day of 2011');
+  equals(dst(d).yearsSince('the last day of 2011'), -1, 'Date#yearsSince | years since the last day of 2011');
+  equals(dst(d).yearsUntil('the last day of 2011'), 1, 'Date#yearsUntil | years until the last day of 2011');
 
 
 
   d = new Date();
-  var offset = d.getTime() - Date.create('last week').getTime();
+  var offset = d.getTime() - new Date(d).advance({ week: -1 });
 
   // Works with Date.create?
   // need a bit of a buffer here, so...
@@ -3547,20 +3547,20 @@ test('Date', function () {
   equals(since > (offset - 5) && since < offset + 5, true, 'Date#millisecondsSince | milliseconds since last week');
   equals(since > (5 - offset) && since < (5 + offset), true, 'Date#millisecondsUntil | milliseconds until last week');
 
-  equals(d.secondsSince('last week').round(), offset / 1000, 'Date#secondsSince | seconds since last week');
-  equals(d.secondsUntil('last week').round(), -offset / 1000, 'Date#secondsUntil | seconds until last week');
-  equals(d.minutesSince('last week').round(), offset / 1000 / 60, 'Date#minutesSince | minutes since last week');
-  equals(d.minutesUntil('last week').round(), -offset / 1000 / 60, 'Date#minutesUntil | minutes until last week');
-  equals(d.hoursSince('last week').round(), offset / 1000 / 60 / 60, 'Date#hoursSince | hours since last week');
-  equals(d.hoursUntil('last week').round(), -offset / 1000 / 60 / 60, 'Date#hoursUntil | hours until last week');
-  equals(d.daysSince('last week').round(), offset / 1000 / 60 / 60 / 24, 'Date#daysSince | days since last week');
-  equals(d.daysUntil('last week').round(), -offset / 1000 / 60 / 60 / 24, 'Date#daysUntil | days until last week');
-  equals(d.weeksSince('last week').round(4), (offset / 1000 / 60 / 60 / 24 / 7).round(4), 'Date#weeksSince | weeks since last week');
-  equals(d.weeksUntil('last week').round(4), (-offset / 1000 / 60 / 60 / 24 / 7).round(4), 'Date#weeksUntil | weeks until last week');
-  equals(d.monthsSince('last week').round(4), (offset / 1000 / 60 / 60 / 24 / 30.4375).round(4), 'Date#monthsSince | months since last week');
-  equals(d.monthsUntil('last week').round(4), (-offset / 1000 / 60 / 60 / 24 / 30.4375).round(4), 'Date#monthsUntil | months until last week');
-  equals(d.yearsSince('last week').round(4), (offset / 1000 / 60 / 60 / 24 / 365.25).round(4), 'Date#yearsSince | years since last week');
-  equals(d.yearsUntil('last week').round(4), (-offset / 1000 / 60 / 60 / 24 / 365.25).round(4), 'Date#yearsUntil | years until the last day of 2011');
+  equals(d.secondsSince('last week'), (offset / 1000).round(), 'Date#secondsSince | seconds since last week');
+  equals(d.secondsUntil('last week'), (-offset / 1000).round(), 'Date#secondsUntil | seconds until last week');
+  equals(d.minutesSince('last week'), (offset / 1000 / 60).round(), 'Date#minutesSince | minutes since last week');
+  equals(d.minutesUntil('last week'), (-offset / 1000 / 60).round(), 'Date#minutesUntil | minutes until last week');
+  equals(d.hoursSince('last week'), (offset / 1000 / 60 / 60).round(), 'Date#hoursSince | hours since last week');
+  equals(d.hoursUntil('last week'), (-offset / 1000 / 60 / 60).round(), 'Date#hoursUntil | hours until last week');
+  equals(d.daysSince('last week'), (offset / 1000 / 60 / 60 / 24).round(), 'Date#daysSince | days since last week');
+  equals(d.daysUntil('last week'), (-offset / 1000 / 60 / 60 / 24).round(), 'Date#daysUntil | days until last week');
+  equals(d.weeksSince('last week'), (offset / 1000 / 60 / 60 / 24 / 7).round(), 'Date#weeksSince | weeks since last week');
+  equals(d.weeksUntil('last week'), (-offset / 1000 / 60 / 60 / 24 / 7).round(), 'Date#weeksUntil | weeks until last week');
+  equals(d.monthsSince('last week'), (offset / 1000 / 60 / 60 / 24 / 30.4375).round(), 'Date#monthsSince | months since last week');
+  equals(d.monthsUntil('last week'), (-offset / 1000 / 60 / 60 / 24 / 30.4375).round(), 'Date#monthsUntil | months until last week');
+  equals(d.yearsSince('last week'), (offset / 1000 / 60 / 60 / 24 / 365.25).round(), 'Date#yearsSince | years since last week');
+  equals(d.yearsUntil('last week'), (-offset / 1000 / 60 / 60 / 24 / 365.25).round(), 'Date#yearsUntil | years until the last day of 2011');
 
 
 
