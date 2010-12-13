@@ -2431,7 +2431,6 @@ test('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  /*
   // Valid Date
 
   // Invalid date
@@ -2446,6 +2445,17 @@ test('Date', function () {
   equals(new Date(now.getTime()).addMinutes(timezoneOffset).isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
 
   dateEquals(Date.create(), new Date(), 'Date#create | empty');
+
+
+  // Date constructor also accepts enumerated parameters
+
+  dateEquals(Date.create(1998), new Date(1998), 'Date#create | 1998');
+  dateEquals(Date.create(1998,1), new Date(1998,1), 'Date#create | January, 1998');
+  dateEquals(Date.create(1998,1,23), new Date(1998,1,23), 'Date#create | January 23, 1998');
+  dateEquals(Date.create(1998,1,23,11), new Date(1998,1,23,11), 'Date#create | January 23, 1998 11am');
+  dateEquals(Date.create(1998,1,23,11,54), new Date(1998,1,23,11,54), 'Date#create | January 23, 1998 11:54am');
+  dateEquals(Date.create(1998,1,23,11,54,32), new Date(1998,1,23,11,54,32), 'Date#create | January 23, 1998 11:54:32');
+  dateEquals(Date.create(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,454), 'Date#create | January 23, 1998 11:54:32.454');
 
 
   // DST Offset is properly set
