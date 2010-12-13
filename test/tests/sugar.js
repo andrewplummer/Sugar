@@ -2447,15 +2447,26 @@ test('Date', function () {
   dateEquals(Date.create(), new Date(), 'Date#create | empty');
 
 
-  // Date constructor also accepts enumerated parameters
+  // Date constructor accepts enumerated parameters
 
-  dateEquals(Date.create(1998), new Date(1998), 'Date#create | 1998');
-  dateEquals(Date.create(1998,1), new Date(1998,1), 'Date#create | January, 1998');
-  dateEquals(Date.create(1998,1,23), new Date(1998,1,23), 'Date#create | January 23, 1998');
-  dateEquals(Date.create(1998,1,23,11), new Date(1998,1,23,11), 'Date#create | January 23, 1998 11am');
-  dateEquals(Date.create(1998,1,23,11,54), new Date(1998,1,23,11,54), 'Date#create | January 23, 1998 11:54am');
-  dateEquals(Date.create(1998,1,23,11,54,32), new Date(1998,1,23,11,54,32), 'Date#create | January 23, 1998 11:54:32');
-  dateEquals(Date.create(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,454), 'Date#create | January 23, 1998 11:54:32.454');
+  dateEquals(Date.create(1998), new Date(1998), 'Date#create | enumerated | 1998');
+  dateEquals(Date.create(1998,1), new Date(1998,1), 'Date#create | enumerated | January, 1998');
+  dateEquals(Date.create(1998,1,23), new Date(1998,1,23), 'Date#create | enumerated | January 23, 1998');
+  dateEquals(Date.create(1998,1,23,11), new Date(1998,1,23,11), 'Date#create | enumerated | January 23, 1998 11am');
+  dateEquals(Date.create(1998,1,23,11,54), new Date(1998,1,23,11,54), 'Date#create | enumerated | January 23, 1998 11:54am');
+  dateEquals(Date.create(1998,1,23,11,54,32), new Date(1998,1,23,11,54,32), 'Date#create | enumerated | January 23, 1998 11:54:32');
+  dateEquals(Date.create(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,454), 'Date#create | enumerated | January 23, 1998 11:54:32.454');
+
+
+  // Date constructor accepts an object
+
+  dateEquals(Date.create({ year: 1998 }), new Date(1998, 0), 'Date#create | object | 1998');
+  dateEquals(Date.create({ year: 1998, month: 1 }), new Date(1998,1), 'Date#create | object | January, 1998');
+  dateEquals(Date.create({ year: 1998, month: 1, day: 23 }), new Date(1998,1,23), 'Date#create | object | January 23, 1998');
+  dateEquals(Date.create({ year: 1998, month: 1, day: 23, hour: 11 }), new Date(1998,1,23,11), 'Date#create | object | January 23, 1998 11am');
+  dateEquals(Date.create({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }), new Date(1998,1,23,11,54), 'Date#create | object | January 23, 1998 11:54am');
+  dateEquals(Date.create({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }), new Date(1998,1,23,11,54,32), 'Date#create | object | January 23, 1998 11:54:32');
+  dateEquals(Date.create({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), new Date(1998,1,23,11,54,32,454), 'Date#create | object | January 23, 1998 11:54:32.454');
 
 
   // DST Offset is properly set
@@ -3769,99 +3780,121 @@ test('RegExp', function () {
 
 test('Object', function () {
 
-    equals(Object.isArray([]), true, 'Object#isArray | true');
-    equals(Object.isArray(new Array(1,2,3)), true, 'Object#isArray | true');
-    equals(Object.isArray(new RegExp()), false, 'Object#isArray | false');
-    equals(Object.isArray(new Date()), false, 'Object#isArray | false');
-    equals(Object.isArray(function(){}), false, 'Object#isArray | false');
-    equals(Object.isArray(1), false, 'Object#isArray | false');
-    equals(Object.isArray('wasabi'), false, 'Object#isArray | false');
-    equals(Object.isArray(null), false, 'Object#isArray | false');
-    equals(Object.isArray(undefined), false, 'Object#isArray | false');
-    equals(Object.isArray(), false, 'Object#isArray | false');
-    equals(Object.isArray(false), false, 'Object#isArray | false');
-    equals(Object.isDate(true), false, 'Object#isArray | false');
+    equals(Object.isObject({}), true, 'Object#isObject | {}');
+    equals(Object.isObject(new Object({})), true, 'Object#isObject | new Object()');
+    equals(Object.isObject([]), false, 'Object#isObject | []');
+    equals(Object.isObject(new Array(1,2,3)), false, 'Object#isObject | new Array(1,2,3)');
+    equals(Object.isObject(new RegExp()), false, 'Object#isObject | new RegExp()');
+    equals(Object.isObject(new Date()), false, 'Object#isObject | new Date()');
+    equals(Object.isObject(function(){}), false, 'Object#isObject | function(){}');
+    equals(Object.isObject(1), false, 'Object#isObject | 1');
+    equals(Object.isObject('wasabi'), false, 'Object#isObject | "wasabi"');
+    equals(Object.isObject(null), false, 'Object#isObject | null');
+    equals(Object.isObject(undefined), false, 'Object#isObject | undefined');
+    equals(Object.isObject(), false, 'Object#isObject | blank');
+    equals(Object.isObject(false), false, 'Object#isObject | false');
+    equals(Object.isObject(true), false, 'Object#isObject | true');
 
-    equals(Object.isBoolean([]), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean(new RegExp()), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean(new Date()), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean(function(){}), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean(1), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean('wasabi'), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean(null), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean(undefined), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean(), false, 'Object#isBoolean | false');
-    equals(Object.isBoolean(false), true, 'Object#isBoolean | true');
+    equals(Object.isArray({}), false, 'Object#isArray | {}');
+    equals(Object.isArray([]), true, 'Object#isArray | []');
+    equals(Object.isArray(new Array(1,2,3)), true, 'Object#isArray | new Array(1,2,3)');
+    equals(Object.isArray(new RegExp()), false, 'Object#isArray | new RegExp()');
+    equals(Object.isArray(new Date()), false, 'Object#isArray | new Date()');
+    equals(Object.isArray(function(){}), false, 'Object#isArray | function(){}');
+    equals(Object.isArray(1), false, 'Object#isArray | 1');
+    equals(Object.isArray('wasabi'), false, 'Object#isArray | "wasabi"');
+    equals(Object.isArray(null), false, 'Object#isArray | null');
+    equals(Object.isArray(undefined), false, 'Object#isArray | undefined');
+    equals(Object.isArray(), false, 'Object#isArray | blank');
+    equals(Object.isArray(false), false, 'Object#isArray | false');
+    equals(Object.isArray(true), false, 'Object#isArray | true');
+
+    equals(Object.isBoolean({}), false, 'Object#isBoolean | {}');
+    equals(Object.isBoolean([]), false, 'Object#isBoolean | []');
+    equals(Object.isBoolean(new RegExp()), false, 'Object#isBoolean | new RegExp()');
+    equals(Object.isBoolean(new Date()), false, 'Object#isBoolean | new Date()');
+    equals(Object.isBoolean(function(){}), false, 'Object#isBoolean | function(){}');
+    equals(Object.isBoolean(1), false, 'Object#isBoolean | 1');
+    equals(Object.isBoolean('wasabi'), false, 'Object#isBoolean | "wasabi"');
+    equals(Object.isBoolean(null), false, 'Object#isBoolean | null');
+    equals(Object.isBoolean(undefined), false, 'Object#isBoolean | undefined');
+    equals(Object.isBoolean(), false, 'Object#isBoolean | blank');
+    equals(Object.isBoolean(false), true, 'Object#isBoolean | false');
     equals(Object.isBoolean(true), true, 'Object#isBoolean | true');
 
-    equals(Object.isDate([]), false, 'Object#isDate | false');
-    equals(Object.isDate(new RegExp()), false, 'Object#isDate | false');
-    equals(Object.isDate(new Date()), true, 'Object#isDate | true');
-    equals(Object.isDate(function(){}), false, 'Object#isDate | false');
-    equals(Object.isDate(1), false, 'Object#isDate | false');
-    equals(Object.isDate('wasabi'), false, 'Object#isDate | false');
-    equals(Object.isDate(null), false, 'Object#isDate | false');
-    equals(Object.isDate(undefined), false, 'Object#isDate | false');
-    equals(Object.isDate(), false, 'Object#isDate | false');
+    equals(Object.isDate({}), false, 'Object#isDate | {}');
+    equals(Object.isDate([]), false, 'Object#isDate | []');
+    equals(Object.isDate(new RegExp()), false, 'Object#isDate | new RegExp()');
+    equals(Object.isDate(new Date()), true, 'Object#isDate | new Date()');
+    equals(Object.isDate(function(){}), false, 'Object#isDate | function(){}');
+    equals(Object.isDate(1), false, 'Object#isDate | 1');
+    equals(Object.isDate('wasabi'), false, 'Object#isDate | "wasabi"');
+    equals(Object.isDate(null), false, 'Object#isDate | null');
+    equals(Object.isDate(undefined), false, 'Object#isDate | undefined');
+    equals(Object.isDate(), false, 'Object#isDate | blank');
     equals(Object.isDate(false), false, 'Object#isDate | false');
-    equals(Object.isDate(true), false, 'Object#isDate | false');
+    equals(Object.isDate(true), false, 'Object#isDate | true');
 
-    equals(Object.isFunction([]), false, 'Object#isFunction | false');
-    equals(Object.isFunction(new RegExp()), false, 'Object#isFunction | false');
-    equals(Object.isFunction(new Date()), false, 'Object#isFunction | false');
-    equals(Object.isFunction(function(){}), true, 'Object#isFunction | true');
-    equals(Object.isFunction(new Function()), true, 'Object#isFunction | true');
-    equals(Object.isFunction(1), false, 'Object#isFunction | false');
-    equals(Object.isFunction('wasabi'), false, 'Object#isFunction | false');
-    equals(Object.isFunction(null), false, 'Object#isFunction | false');
-    equals(Object.isFunction(undefined), false, 'Object#isFunction | false');
-    equals(Object.isFunction(), false, 'Object#isFunction | false');
+    equals(Object.isFunction({}), false, 'Object#isFunction | {}');
+    equals(Object.isFunction([]), false, 'Object#isFunction | []');
+    equals(Object.isFunction(new RegExp()), false, 'Object#isFunction | new RegExp()');
+    equals(Object.isFunction(new Date()), false, 'Object#isFunction | new Date()');
+    equals(Object.isFunction(function(){}), true, 'Object#isFunction | function(){}');
+    equals(Object.isFunction(new Function()), true, 'Object#isFunction | new Function()');
+    equals(Object.isFunction(1), false, 'Object#isFunction | 1');
+    equals(Object.isFunction('wasabi'), false, 'Object#isFunction | "wasabi"');
+    equals(Object.isFunction(null), false, 'Object#isFunction | null');
+    equals(Object.isFunction(undefined), false, 'Object#isFunction | undefined');
+    equals(Object.isFunction(), false, 'Object#isFunction | blank');
     equals(Object.isFunction(false), false, 'Object#isFunction | false');
-    equals(Object.isFunction(true), false, 'Object#isFunction | false');
+    equals(Object.isFunction(true), false, 'Object#isFunction | true');
 
-    equals(Object.isNumber([]), false, 'Object#isNumber | false');
-    equals(Object.isNumber(new RegExp()), false, 'Object#isNumber | false');
-    equals(Object.isNumber(new Date()), false, 'Object#isNumber | false');
-    equals(Object.isNumber(function(){}), false, 'Object#isNumber | false');
-    equals(Object.isNumber(new Function()), false, 'Object#isNumber | false');
-    equals(Object.isNumber(1), true, 'Object#isNumber | true');
-    equals(Object.isNumber(0), true, 'Object#isNumber | true');
-    equals(Object.isNumber(-1), true, 'Object#isNumber | true');
-    equals(Object.isNumber(new Number('3')), true, 'Object#isNumber | false');
-    equals(Object.isNumber('wasabi'), false, 'Object#isNumber | false');
-    equals(Object.isNumber(null), false, 'Object#isNumber | false');
-    equals(Object.isNumber(undefined), false, 'Object#isNumber | false');
-    equals(Object.isNumber(), false, 'Object#isNumber | false');
+    equals(Object.isNumber({}), false, 'Object#isNumber | {}');
+    equals(Object.isNumber([]), false, 'Object#isNumber | []');
+    equals(Object.isNumber(new RegExp()), false, 'Object#isNumber | new RegExp()');
+    equals(Object.isNumber(new Date()), false, 'Object#isNumber | new Date()');
+    equals(Object.isNumber(function(){}), false, 'Object#isNumber | function(){}');
+    equals(Object.isNumber(new Function()), false, 'Object#isNumber | new Function()');
+    equals(Object.isNumber(1), true, 'Object#isNumber | 1');
+    equals(Object.isNumber(0), true, 'Object#isNumber | 0');
+    equals(Object.isNumber(-1), true, 'Object#isNumber | -1');
+    equals(Object.isNumber(new Number('3')), true, 'Object#isNumber | new Number("3")');
+    equals(Object.isNumber('wasabi'), false, 'Object#isNumber | "wasabi"');
+    equals(Object.isNumber(null), false, 'Object#isNumber | null');
+    equals(Object.isNumber(undefined), false, 'Object#isNumber | undefined');
+    equals(Object.isNumber(), false, 'Object#isNumber | blank');
     equals(Object.isNumber(false), false, 'Object#isNumber | false');
-    equals(Object.isNumber(true), false, 'Object#isNumber | false');
+    equals(Object.isNumber(true), false, 'Object#isNumber | true');
 
-    equals(Object.isString([]), false, 'Object#isString | false');
-    equals(Object.isString(new RegExp()), false, 'Object#isString | false');
-    equals(Object.isString(new Date()), false, 'Object#isString | false');
-    equals(Object.isString(function(){}), false, 'Object#isString | false');
-    equals(Object.isString(new Function()), false, 'Object#isString | false');
-    equals(Object.isString(1), false, 'Object#isString | false');
-    equals(Object.isString('wasabi'), true, 'Object#isString | false');
-    equals(Object.isString(new String('wasabi')), true, 'Object#isString | true');
-    equals(Object.isString(null), false, 'Object#isString | false');
-    equals(Object.isString(undefined), false, 'Object#isString | false');
-    equals(Object.isString(), false, 'Object#isString | false');
+    equals(Object.isString({}), false, 'Object#isString | {}');
+    equals(Object.isString([]), false, 'Object#isString | []');
+    equals(Object.isString(new RegExp()), false, 'Object#isString | new RegExp()');
+    equals(Object.isString(new Date()), false, 'Object#isString | new Date()');
+    equals(Object.isString(function(){}), false, 'Object#isString | function(){}');
+    equals(Object.isString(new Function()), false, 'Object#isString | new Function()');
+    equals(Object.isString(1), false, 'Object#isString | 1');
+    equals(Object.isString('wasabi'), true, 'Object#isString | "wasabi"');
+    equals(Object.isString(new String('wasabi')), true, 'Object#isString | new String("wasabi")');
+    equals(Object.isString(null), false, 'Object#isString | null');
+    equals(Object.isString(undefined), false, 'Object#isString | undefined');
+    equals(Object.isString(), false, 'Object#isString | blank');
     equals(Object.isString(false), false, 'Object#isString | false');
-    equals(Object.isString(true), false, 'Object#isString | false');
+    equals(Object.isString(true), false, 'Object#isString | true');
 
-    equals(Object.isRegExp([]), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp(new RegExp()), true, 'Object#isRegExp | true');
-    equals(Object.isRegExp(/afda/), true, 'Object#isRegExp | true');
-    equals(Object.isRegExp(new Date()), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp(function(){}), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp(new Function()), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp(1), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp('wasabi'), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp(null), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp(undefined), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp(), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp({}), false, 'Object#isRegExp | {}');
+    equals(Object.isRegExp([]), false, 'Object#isRegExp | []');
+    equals(Object.isRegExp(new RegExp()), true, 'Object#isRegExp | new RegExp()');
+    equals(Object.isRegExp(/afda/), true, 'Object#isRegExp | /afda/');
+    equals(Object.isRegExp(new Date()), false, 'Object#isRegExp | new Date()');
+    equals(Object.isRegExp(function(){}), false, 'Object#isRegExp | function(){}');
+    equals(Object.isRegExp(new Function()), false, 'Object#isRegExp | new Function()');
+    equals(Object.isRegExp(1), false, 'Object#isRegExp | 1');
+    equals(Object.isRegExp('wasabi'), false, 'Object#isRegExp | "wasabi"');
+    equals(Object.isRegExp(null), false, 'Object#isRegExp | null');
+    equals(Object.isRegExp(undefined), false, 'Object#isRegExp | undefined');
+    equals(Object.isRegExp(), false, 'Object#isRegExp | blank');
     equals(Object.isRegExp(false), false, 'Object#isRegExp | false');
-    equals(Object.isRegExp(true), false, 'Object#isRegExp | false');
+    equals(Object.isRegExp(true), false, 'Object#isRegExp | true');
 
 
 
