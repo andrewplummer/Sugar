@@ -3746,19 +3746,162 @@ test('Date', function () {
 
 
 
-  /*
 
-  equals(new Date().isLastWeek(), false, 'Date#isLastWeek');
-  equals(new Date().isThisWeek(), true, 'Date#isThisWeek');
-  equals(new Date().isNextWeek(), false, 'Date#isNextWeek');
-  equals(new Date().isLastMonth(), false, 'Date#isLastMonth');
-  equals(new Date().isThisMonth(), true, 'Date#isThisMonth');
-  equals(new Date().isNextMonth(), false, 'Date#isNextMonth');
-  equals(new Date().isLastYear(), false, 'Date#isLastYear');
-  equals(new Date().isThisYear(), true, 'Date#isThisYear');
-  equals(new Date().isNextYear(), false, 'Date#isNextYear');
-  */
+  equals(new Date().isLastWeek(), false, 'Date#isLastWeek | now');
+  equals(new Date().isThisWeek(), true, 'Date#isThisWeek | now');
+  equals(new Date().isNextWeek(), false, 'Date#isNextWeek | now');
+  equals(new Date().isLastMonth(), false, 'Date#isLastMonth | now');
+  equals(new Date().isThisMonth(), true, 'Date#isThisMonth | now');
+  equals(new Date().isNextMonth(), false, 'Date#isNextMonth | now');
+  equals(new Date().isLastYear(), false, 'Date#isLastYear | now');
+  equals(new Date().isThisYear(), true, 'Date#isThisYear | now');
+  equals(new Date().isNextYear(), false, 'Date#isNextYear | now');
 
+  equals(getRelativeDate(null, null, -7).isLastWeek(), true, 'Date#isLastWeek | last week');
+  equals(getRelativeDate(null, null, -7).isThisWeek(), false, 'Date#isThisWeek | last week');
+  equals(getRelativeDate(null, null, -7).isNextWeek(), false, 'Date#isNextWeek | last week');
+  equals(getRelativeDate(null, null, -7).isLastMonth(), false, 'Date#isLastMonth | last week');
+  equals(getRelativeDate(null, null, -7).isThisMonth(), true, 'Date#isThisMonth | last week');
+  equals(getRelativeDate(null, null, -7).isNextMonth(), false, 'Date#isNextMonth | last week');
+  equals(getRelativeDate(null, null, -7).isLastYear(), false, 'Date#isLastYear | last week');
+  equals(getRelativeDate(null, null, -7).isThisYear(), true, 'Date#isThisYear | last week');
+  equals(getRelativeDate(null, null, -7).isNextYear(), false, 'Date#isNextYear | last week');
+
+  equals(getRelativeDate(null, null, 7).isLastWeek(), false, 'Date#isLastWeek | next week');
+  equals(getRelativeDate(null, null, 7).isThisWeek(), false, 'Date#isThisWeek | next week');
+  equals(getRelativeDate(null, null, 7).isNextWeek(), true, 'Date#isNextWeek | next week');
+  equals(getRelativeDate(null, null, 7).isLastMonth(), false, 'Date#isLastMonth | next week');
+  equals(getRelativeDate(null, null, 7).isThisMonth(), true, 'Date#isThisMonth | next week');
+  equals(getRelativeDate(null, null, 7).isNextMonth(), false, 'Date#isNextMonth | next week');
+  equals(getRelativeDate(null, null, 7).isLastYear(), false, 'Date#isLastYear | next week');
+  equals(getRelativeDate(null, null, 7).isThisYear(), true, 'Date#isThisYear | next week');
+  equals(getRelativeDate(null, null, 7).isNextYear(), false, 'Date#isNextYear | next week');
+
+  equals(getDateWithWeekdayAndOffset(0).isLastWeek(), false, 'Date#isLastWeek | this week sunday');
+  equals(getDateWithWeekdayAndOffset(0).isThisWeek(), true, 'Date#isThisWeek | this week sunday');
+  equals(getDateWithWeekdayAndOffset(0).isNextWeek(), false, 'Date#isNextWeek | this week sunday');
+
+  equals(getDateWithWeekdayAndOffset(6).isLastWeek(), false, 'Date#isLastWeek | this week friday');
+  equals(getDateWithWeekdayAndOffset(6).isThisWeek(), true, 'Date#isThisWeek | this week friday');
+  equals(getDateWithWeekdayAndOffset(6).isNextWeek(), false, 'Date#isNextWeek | this week friday');
+
+  equals(Date.create('last sunday').isLastWeek(), true, 'Date#isLastWeek | last sunday');
+  equals(Date.create('last sunday').isThisWeek(), false, 'Date#isThisWeek | last sunday');
+  equals(Date.create('last sunday').isNextWeek(), false, 'Date#isNextWeek | last sunday');
+
+  equals(Date.create('next sunday').isLastWeek(), false, 'Date#isLastWeek | next sunday');
+  equals(Date.create('next sunday').isThisWeek(), false, 'Date#isThisWeek | next sunday');
+  equals(Date.create('next sunday').isNextWeek(), true, 'Date#isNextWeek | next sunday');
+
+  equals(Date.create('last monday').isLastWeek(), true, 'Date#isLastWeek | last monday');
+  equals(Date.create('last monday').isThisWeek(), false, 'Date#isThisWeek | last monday');
+  equals(Date.create('last monday').isNextWeek(), false, 'Date#isNextWeek | last monday');
+
+  equals(Date.create('next monday').isLastWeek(), false, 'Date#isLastWeek | next monday');
+  equals(Date.create('next monday').isThisWeek(), false, 'Date#isThisWeek | next monday');
+  equals(Date.create('next monday').isNextWeek(), true, 'Date#isNextWeek | next monday');
+
+  equals(Date.create('last friday').isLastWeek(), true, 'Date#isLastWeek | last friday');
+  equals(Date.create('last friday').isThisWeek(), false, 'Date#isThisWeek | last friday');
+  equals(Date.create('last friday').isNextWeek(), false, 'Date#isNextWeek | last friday');
+
+  equals(Date.create('next friday').isLastWeek(), false, 'Date#isLastWeek | next friday');
+  equals(Date.create('next friday').isThisWeek(), false, 'Date#isThisWeek | next friday');
+  equals(Date.create('next friday').isNextWeek(), true, 'Date#isNextWeek | next friday');
+
+  equals(Date.create('last saturday').isLastWeek(), true, 'Date#isLastWeek | last saturday');
+  equals(Date.create('last saturday').isThisWeek(), false, 'Date#isThisWeek | last saturday');
+  equals(Date.create('last saturday').isNextWeek(), false, 'Date#isNextWeek | last saturday');
+
+  equals(Date.create('next saturday').isLastWeek(), false, 'Date#isLastWeek | next saturday');
+  equals(Date.create('next saturday').isThisWeek(), false, 'Date#isThisWeek | next saturday');
+  equals(Date.create('next saturday').isNextWeek(), true, 'Date#isNextWeek | next saturday');
+
+  equals(Date.create('the beginning of the week').isLastWeek(), false, 'Date#isLastWeek | the beginning of the week');
+  equals(Date.create('the beginning of the week').isThisWeek(), true, 'Date#isThisWeek | the beginning of the week');
+  equals(Date.create('the beginning of the week').isNextWeek(), false, 'Date#isNextWeek | the beginning of the week');
+
+  equals(Date.create('the beginning of the week').addMinutes(-1).isLastWeek(), true, 'Date#isLastWeek | the beginning of the week - 1 minute');
+  equals(Date.create('the beginning of the week').addMinutes(-1).isThisWeek(), false, 'Date#isThisWeek | the beginning of the week - 1 minute');
+  equals(Date.create('the beginning of the week').addMinutes(-1).isNextWeek(), false, 'Date#isNextWeek | the beginning of the week - 1 minute');
+
+  equals(Date.create('the end of the week').isLastWeek(), false, 'Date#isLastWeek | the end of the week');
+  equals(Date.create('the end of the week').isThisWeek(), true, 'Date#isThisWeek | the end of the week');
+  equals(Date.create('the end of the week').isNextWeek(), false, 'Date#isNextWeek | the end of the week');
+
+  equals(Date.create('the end of the week').addMinutes(1).isLastWeek(), false, 'Date#isLastWeek | the end of the week + 1 minute');
+  equals(Date.create('the end of the week').addMinutes(1).isThisWeek(), false, 'Date#isThisWeek | the end of the week + 1 minute');
+  equals(Date.create('the end of the week').addMinutes(1).isNextWeek(), true, 'Date#isNextWeek | the end of the week + 1 minute');
+
+
+  equals(Date.create('the beginning of last week').isLastWeek(), true, 'Date#isLastWeek | the beginning of last week');
+  equals(Date.create('the beginning of last week').isThisWeek(), false, 'Date#isThisWeek | the beginning of last week');
+  equals(Date.create('the beginning of last week').isNextWeek(), false, 'Date#isNextWeek | the beginning of last week');
+
+  equals(Date.create('the beginning of last week').addMinutes(-1).isLastWeek(), false, 'Date#isLastWeek | the beginning of last week - 1 minute');
+  equals(Date.create('the beginning of last week').addMinutes(-1).isThisWeek(), false, 'Date#isThisWeek | the beginning of last week - 1 minute');
+  equals(Date.create('the beginning of last week').addMinutes(-1).isNextWeek(), false, 'Date#isNextWeek | the beginning of last week - 1 minute');
+
+  equals(Date.create('the end of next week').isLastWeek(), false, 'Date#isLastWeek | the end of next week');
+  equals(Date.create('the end of next week').isThisWeek(), false, 'Date#isThisWeek | the end of next week');
+  equals(Date.create('the end of next week').isNextWeek(), true, 'Date#isNextWeek | the end of next week');
+
+  equals(Date.create('the end of next week').addMinutes(1).isLastWeek(), false, 'Date#isLastWeek | the end of next week + 1 minute');
+  equals(Date.create('the end of next week').addMinutes(1).isThisWeek(), false, 'Date#isThisWeek | the end of next week + 1 minute');
+  equals(Date.create('the end of next week').addMinutes(1).isNextWeek(), false, 'Date#isNextWeek | the end of next week + 1 minute');
+
+  equals(Date.create('the end of last week').isLastWeek(), true, 'Date#isLastWeek | the end of last week');
+  equals(Date.create('the end of last week').isThisWeek(), false, 'Date#isThisWeek | the end of last week');
+  equals(Date.create('the end of last week').isNextWeek(), false, 'Date#isNextWeek | the end of last week');
+
+  equals(Date.create('the end of last week').addMinutes(1).isLastWeek(), false, 'Date#isLastWeek | the end of last week + 1 minute');
+  equals(Date.create('the end of last week').addMinutes(1).isThisWeek(), true, 'Date#isThisWeek | the end of last week + 1 minute');
+  equals(Date.create('the end of last week').addMinutes(1).isNextWeek(), false, 'Date#isNextWeek | the end of last week + 1 minute');
+
+  equals(Date.create('the beginning of next week').isLastWeek(), false, 'Date#isLastWeek | the beginning of next week');
+  equals(Date.create('the beginning of next week').isThisWeek(), false, 'Date#isThisWeek | the beginning of next week');
+  equals(Date.create('the beginning of next week').isNextWeek(), true, 'Date#isNextWeek | the beginning of next week');
+
+  equals(Date.create('the beginning of next week').addMinutes(-1).isLastWeek(), false, 'Date#isLastWeek | the beginning of next week - 1 minute');
+  equals(Date.create('the beginning of next week').addMinutes(-1).isThisWeek(), true, 'Date#isThisWeek | the beginning of next week - 1 minute');
+  equals(Date.create('the beginning of next week').addMinutes(-1).isNextWeek(), false, 'Date#isNextWeek | the beginning of next week - 1 minute');
+
+
+
+  equals(getRelativeDate(null, -1).isLastWeek(), false, 'Date#isLastWeek | last month');
+  equals(getRelativeDate(null, -1).isThisWeek(), false, 'Date#isThisWeek | last month');
+  equals(getRelativeDate(null, -1).isNextWeek(), false, 'Date#isNextWeek | last month');
+  equals(getRelativeDate(null, -1).isLastMonth(), true, 'Date#isLastMonth | last month');
+  equals(getRelativeDate(null, -1).isThisMonth(), false, 'Date#isThisMonth | last month');
+  equals(getRelativeDate(null, -1).isNextMonth(), false, 'Date#isNextMonth | last month');
+
+  equals(getRelativeDate(null, 1).isLastWeek(), false, 'Date#isLastWeek | next month');
+  equals(getRelativeDate(null, 1).isThisWeek(), false, 'Date#isThisWeek | next month');
+  equals(getRelativeDate(null, 1).isNextWeek(), false, 'Date#isNextWeek | next month');
+  equals(getRelativeDate(null, 1).isLastMonth(), false, 'Date#isLastMonth | next month');
+  equals(getRelativeDate(null, 1).isThisMonth(), false, 'Date#isThisMonth | next month');
+  equals(getRelativeDate(null, 1).isNextMonth(), true, 'Date#isNextMonth | next month');
+
+
+  equals(getRelativeDate(-1).isLastWeek(), false, 'Date#isLastWeek | last year');
+  equals(getRelativeDate(-1).isThisWeek(), false, 'Date#isThisWeek | last year');
+  equals(getRelativeDate(-1).isNextWeek(), false, 'Date#isNextWeek | last year');
+  equals(getRelativeDate(-1).isLastMonth(), false, 'Date#isLastMonth | last year');
+  equals(getRelativeDate(-1).isThisMonth(), false, 'Date#isThisMonth | last year');
+  equals(getRelativeDate(-1).isNextMonth(), false, 'Date#isNextMonth | last year');
+  equals(getRelativeDate(-1).isLastYear(), true, 'Date#isLastYear | last year');
+  equals(getRelativeDate(-1).isThisYear(), false, 'Date#isThisYear | last year');
+  equals(getRelativeDate(-1).isNextYear(), false, 'Date#isNextYear | last year');
+
+  equals(getRelativeDate(1).isLastWeek(), false, 'Date#isLastWeek | next year');
+  equals(getRelativeDate(1).isThisWeek(), false, 'Date#isThisWeek | next year');
+  equals(getRelativeDate(1).isNextWeek(), false, 'Date#isNextWeek | next year');
+  equals(getRelativeDate(1).isLastMonth(), false, 'Date#isLastMonth | next year');
+  equals(getRelativeDate(1).isThisMonth(), false, 'Date#isThisMonth | next year');
+  equals(getRelativeDate(1).isNextMonth(), false, 'Date#isNextMonth | next year');
+  equals(getRelativeDate(1).isLastYear(), false, 'Date#isLastYear | next year');
+  equals(getRelativeDate(1).isThisYear(), false, 'Date#isThisYear | next year');
+  equals(getRelativeDate(1).isNextYear(), true, 'Date#isNextYear | next year');
 
 
 
