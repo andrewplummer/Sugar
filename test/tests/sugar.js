@@ -3426,7 +3426,7 @@ test('Date', function () {
   // Note that relative #is formats can only be considered to be accurate to within a few milliseconds
   // to avoid complications rising from the date being created momentarily after the function is called.
   equals(getRelativeDate(null,null,null,null,null,null, -5).is('3 milliseconds ago'), false, 'Date#is | 3 milliseconds ago is accurate to milliseconds');
-  equals(getRelativeDate(null,null,null,null,null,null, -5).is('5 milliseconds ago'), true, 'Date#is | 5 milliseconds ago is accurate to milliseconds');
+  equals(getRelativeDate(null,null,null,null,null,null, -5).is('5 milliseconds ago', 2), true, 'Date#is | 5 milliseconds ago is accurate to milliseconds');
   equals(getRelativeDate(null,null,null,null,null,null, -5).is('7 milliseconds ago'), false, 'Date#is | 7 milliseconds ago is accurate to milliseconds');
 
   equals(getRelativeDate(null,null,null,null,null,-5).is('4 seconds ago'), false, 'Date#is | 4 seconds ago is accurate to seconds');
@@ -3870,6 +3870,31 @@ test('Date', function () {
   equals(Date.create('the beginning of next week').addMinutes(-1).isLastWeek(), false, 'Date#isLastWeek | the beginning of next week - 1 minute');
   equals(Date.create('the beginning of next week').addMinutes(-1).isThisWeek(), true, 'Date#isThisWeek | the beginning of next week - 1 minute');
   equals(Date.create('the beginning of next week').addMinutes(-1).isNextWeek(), false, 'Date#isNextWeek | the beginning of next week - 1 minute');
+
+
+
+
+  equals(new Date(2001, 11, 28).isSunday(), false, 'Date#isSunday');
+  equals(new Date(2001, 11, 28).isMonday(), false, 'Date#isMonday');
+  equals(new Date(2001, 11, 28).isTuesday(), false, 'Date#isTuesday');
+  equals(new Date(2001, 11, 28).isWednesday(), false, 'Date#isWednesday');
+  equals(new Date(2001, 11, 28).isThursday(), false, 'Date#isThursday');
+  equals(new Date(2001, 11, 28).isFriday(), true, 'Date#isFriday');
+  equals(new Date(2001, 11, 28).isSaturday(), false, 'Date#isSaturday');
+
+  equals(new Date(2001, 11, 28).isJanuary(), false, 'Date#isJanuary');
+  equals(new Date(2001, 11, 28).isFebruary(), false, 'Date#isFebruary');
+  equals(new Date(2001, 11, 28).isMarch(), false, 'Date#isMarch');
+  equals(new Date(2001, 11, 28).isApril(), false, 'Date#isApril');
+  equals(new Date(2001, 11, 28).isMay(), false, 'Date#isMay');
+  equals(new Date(2001, 11, 28).isJune(), false, 'Date#isJune');
+  equals(new Date(2001, 11, 28).isJuly(), false, 'Date#isJuly');
+  equals(new Date(2001, 11, 28).isAugust(), false, 'Date#isAugust');
+  equals(new Date(2001, 11, 28).isSeptember(), false, 'Date#isSeptember');
+  equals(new Date(2001, 11, 28).isOctober(), false, 'Date#isOctober');
+  equals(new Date(2001, 11, 28).isNovember(), false, 'Date#isNovember');
+  equals(new Date(2001, 11, 28).isDecember(), true, 'Date#isDecember');
+
 
 
 
