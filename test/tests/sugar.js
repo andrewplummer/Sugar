@@ -908,8 +908,9 @@ test('String', function () {
 
   same('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate');
   same('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate');
-  same(''.toDate().toString(), new Date('').toString(), 'String#toDate');
+  same(''.toDate().toString(), new Date().toString(), 'String#toDate');
   same('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate');
+  same('the day after tomorrow'.toDate().toString(), Date.create('the day after tomorrow').toString(), 'String#toDate');
 
 
   same('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize');
@@ -2431,7 +2432,8 @@ test('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  /*
+
+
   // Valid Date
 
   // Invalid date
@@ -3134,6 +3136,7 @@ test('Date', function () {
 
 
   // Catch for DST inequivalencies
+  // FAILS IN DAMASCUS IN XP!
   equals(new Date(2010, 11, 9, 17).set({ year: 1998, month: 3, day: 3}, true).getHours(), 0, 'Date#set | handles DST properly');
 
 
@@ -3458,6 +3461,9 @@ test('Date', function () {
 
 
 
+  equals(new Date(2001,5,4,12,22,34,445).is(new Date(2001,5,4,12,22,34,445)), true, 'Date#is | straight dates passed in are accurate to the millisecond');
+  equals(new Date(2001,5,4,12,22,34,445).is(new Date(2001,5,4,12,22,34,444)), false, 'Date#is | straight dates passed in are accurate to the millisecond');
+  equals(new Date(2001,5,4,12,22,34,445).is(new Date(2001,5,4,12,22,34,446)), false, 'Date#is | straight dates passed in are accurate to the millisecond');
 
 
   equals(Date.create('2008').leapYear(), true, 'Date#leapYear | 2008');
