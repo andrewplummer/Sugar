@@ -1358,11 +1358,12 @@ test('Array', function () {
 
     equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10; }), true, 'Array#every');
 
-    // "every" is implemented in mozilla and only accepts a callback, so it cannot be trusted
-    // TODO RECONCILE THIS!!!
-    // same([{name:'john',age:25},{name:'fred',age:85}].all('age'), true, 'Array#every');
-    // same([{name:'john',age:25},{name:'fred',age:85}].all('name'), true, 'Array#every');
-    // same([{name:'john',age:25},{name:'fred',age:85}].all('cupsize'), false, 'Array#every');
+
+    same([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#every');
+    same([{name:'john',age:25},{name:'fred',age:85}].all('name'), false, 'Array#every');
+    same([{name:'john',age:25},{name:'fred',age:85}].all('cupsize'), false, 'Array#every');
+    same([{name:'john',age:25}].all({name:'john',age:25}), true, 'Array#every');
+    same([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, 'Array#every');
 
 
 
@@ -1378,13 +1379,11 @@ test('Array', function () {
       equals(this, 'this', 'Array#some');
     }, 'this');
 
-    // Some is implemented in Firefox so it needs to behave the same way.
-    // TODO CONSOLIDATE THIS HANDLING OF STRING PARAMS
-    // same([{name:'john',age:25},{name:'fred',age:85}].some('age'), true, 'Array#some');
-    // same([{name:'john',age:25},{name:'fred',age:85}].some('name'), true, 'Array#some');
-    // same([{name:'john',age:25},{name:'fred',age:85}].some('cupsize'), false, 'Array#some');
-    // same([{name:'john',age:25},{name:'fred'}].some('age'), true, 'Array#some');
-    // same([{name:'john',age:25},{name:'fred'}].some('cupsize'), false, 'Array#some');
+    same([{name:'john',age:25},{name:'fred',age:85}].some('age'), false, 'Array#some');
+    same([{name:'john',age:25},{name:'fred',age:85}].some('name'), false, 'Array#some');
+    same([{name:'john',age:25},{name:'fred',age:85}].some('cupsize'), false, 'Array#some');
+    same([{name:'john',age:25}].some({name:'john',age:25}), true, 'Array#every');
+    same([{name:'john',age:25},{name:'fred',age:85}].some({name:'john',age:25}), true, 'Array#every');
 
 
 
@@ -3426,7 +3425,7 @@ test('Date', function () {
   // Note that relative #is formats can only be considered to be accurate to within a few milliseconds
   // to avoid complications rising from the date being created momentarily after the function is called.
   equals(getRelativeDate(null,null,null,null,null,null, -5).is('3 milliseconds ago'), false, 'Date#is | 3 milliseconds ago is accurate to milliseconds');
-  equals(getRelativeDate(null,null,null,null,null,null, -5).is('5 milliseconds ago', 2), true, 'Date#is | 5 milliseconds ago is accurate to milliseconds');
+  equals(getRelativeDate(null,null,null,null,null,null, -5).is('5 milliseconds ago', 5), true, 'Date#is | 5 milliseconds ago is accurate to milliseconds');
   equals(getRelativeDate(null,null,null,null,null,null, -5).is('7 milliseconds ago'), false, 'Date#is | 7 milliseconds ago is accurate to milliseconds');
 
   equals(getRelativeDate(null,null,null,null,null,-5).is('4 seconds ago'), false, 'Date#is | 4 seconds ago is accurate to seconds');
