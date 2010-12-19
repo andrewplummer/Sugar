@@ -3424,6 +3424,7 @@ test('Date', function () {
 
   // Note that relative #is formats can only be considered to be accurate to within a few milliseconds
   // to avoid complications rising from the date being created momentarily after the function is called.
+  // These tests are subject to CPU speed and other timing factors!
   equals(getRelativeDate(null,null,null,null,null,null, -5).is('3 milliseconds ago'), false, 'Date#is | 3 milliseconds ago is accurate to milliseconds');
   equals(getRelativeDate(null,null,null,null,null,null, -5).is('5 milliseconds ago', 5), true, 'Date#is | 5 milliseconds ago is accurate to milliseconds');
   equals(getRelativeDate(null,null,null,null,null,null, -5).is('7 milliseconds ago'), false, 'Date#is | 7 milliseconds ago is accurate to milliseconds');
@@ -4217,6 +4218,8 @@ test('Object', function () {
 
 });
 
+/**
+ * Not going to limit this to a window object for now....
 test('Window', function () {
 
   if(window && window.parent){
@@ -4247,4 +4250,5 @@ test('Window', function () {
   }
 
 });
+**/
 
