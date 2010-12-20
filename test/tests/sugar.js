@@ -2047,6 +2047,8 @@ test('Array', function () {
     same([1,2,undefined,3].compact(), [1,2,3], 'Array#compact');
     same([undefined,undefined,undefined].compact(), [], 'Array#compact');
     same([null,null,null].compact(), [], 'Array#compact');
+    same([NaN,NaN,NaN].compact(), [], 'Array#compact');
+    same(['','',''], ['','',''], 'Array#compact');
     same([false,false,false].compact(), [false,false,false], 'Array#compact');
     same([0,1,2].compact(), [0,1,2], 'Array#compact');
     same([].compact(), [], 'Array#compact');
