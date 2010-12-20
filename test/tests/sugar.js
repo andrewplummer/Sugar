@@ -4219,6 +4219,8 @@ test('Object', function () {
 
 });
 
+/**
+ * Not going to limit this to a window object for now....
 test('Window', function () {
 
   if(window && window.parent){
@@ -4249,4 +4251,5 @@ test('Window', function () {
   }
 
 });
+**/
 
