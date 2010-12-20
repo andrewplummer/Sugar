@@ -1398,11 +1398,10 @@ test('Array', function () {
     }, 'this');
 
 
-    // Filter is implemented in Firefox, so it must behave the same way.
-    // TODO RESOVLE HOW THIS WORKS!
-    // same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [{name:'john',age:25},{name:'fred',age:85}], 'Array#filter');
-    // same([{name:'john',age:25},{name:'fred',age:85}].filter('cupsize'), [], 'Array#filter');
-    // same([{name:'john',age:25},{name:'fred'}].filter('age'), [{name:'john',age:25}], 'Array#filter');
+    same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [], 'Array#filter');
+    same([{name:'john',age:25},{name:'fred',age:85}].filter('cupsize'), [], 'Array#filter');
+    same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'john',age:25}), [{name:'john',age:25}], 'Array#filter');
+    same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'fred',age:85}), [{name:'fred',age:85}], 'Array#filter');
 
 
 
@@ -1469,15 +1468,11 @@ test('Array', function () {
     }, 'this');
 
 
-    // Map cannot handle string arguments for now (must be a callback).
-    // We don't want to overwrite native functionality here
-    // TODO: Rethink how to do this!
-    //same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map');
-    //same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map');
-    //same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map');
-    //same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map');
-    //same([].map('name'), [], 'Array#map');
-
+    same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map');
+    same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map');
+    same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map');
+    same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map');
+    same([].map('name'), [], 'Array#map');
 
 
 
@@ -1942,7 +1937,8 @@ test('Array', function () {
     same([12,87,128].sum(), 227, 'Array#sum');
     same([].sum(), 0, 'Array#sum');
     same([null, false].sum(), 0, 'Array#sum');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum(function(el){ return el['a']; }), 6, 'Array#sum');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum(function(el){ return el['a']; }), 6, 'Array#sum | handles callbacks');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum('a'), 6, 'Array#sum | handles strings');
 
     same([13,18,13,14,13,16,14,21,13].average(), 15, 'Array#average');
     same([2,2,2].average(), 2, 'Array#average');
@@ -1950,7 +1946,8 @@ test('Array', function () {
     same([2,3,4,2].average(), 2.75, 'Array#average');
     same([].average(), 0, 'Array#average');
     same([null, false].average(), 0, 'Array#average');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average(function(el){ return el['a']; }), 2, 'Array#average');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average(function(el){ return el['a']; }), 2, 'Array#average | handles callback');
+    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average('a'), 2, 'Array#average | handles strings');
 
 
     same(people.average('age'), 29.75, 'Array#average');
