@@ -94,342 +94,343 @@ test('Number', function () {
   var counter;
   var ret;
 
-  equals((4).toNumber(), 4, 'Number#toNumber');
-  equals((10000).toNumber(), 10000, 'Number#toNumber');
-  equals((5.2345).toNumber(), 5.2345, 'Number#toNumber');
+  equals((4).toNumber(), 4, 'Number#toNumber | 4 is 4');
+  equals((10000).toNumber(), 10000, 'Number#toNumber | 10000 is 10000');
+  equals((5.2345).toNumber(), 5.2345, 'Number#toNumber | 5.2345 is 5.2345');
 
 
 
-  equals((5.5).ceil(), 6, 'Number#ceil');
-  equals((5.14).ceil(), 6, 'Number#ceil');
-  equals((5).ceil(), 5, 'Number#ceil');
-  equals((-5.5).ceil(), -5, 'Number#ceil');
-  equals((-5.14).ceil(), -5, 'Number#ceil');
-  equals((-5).ceil(), -5, 'Number#ceil');
+  equals((5.5).ceil(), 6, 'Number#ceil | 5.5');
+  equals((5.14).ceil(), 6, 'Number#ceil | 5.14');
+  equals((5).ceil(), 5, 'Number#ceil | 5');
+  equals((-5.5).ceil(), -5, 'Number#ceil | -5.5');
+  equals((-5.14).ceil(), -5, 'Number#ceil | -5.14');
+  equals((-5).ceil(), -5, 'Number#ceil | -5');
 
 
-  equals((5.5).floor(), 5, 'Number#floor');
-  equals((5.14).floor(), 5, 'Number#floor');
-  equals((5.9).floor(), 5, 'Number#floor');
-  equals((5).floor(), 5, 'Number#floor');
-  equals((-5.5).floor(), -6, 'Number#floor');
-  equals((-5.14).floor(), -6, 'Number#floor');
-  equals((-5).floor(), -5, 'Number#floor');
+  equals((5.5).floor(), 5, 'Number#floor | 5.5');
+  equals((5.14).floor(), 5, 'Number#floor | 5.14');
+  equals((5.9).floor(), 5, 'Number#floor | 5.9');
+  equals((5).floor(), 5, 'Number#floor | 5');
+  equals((-5.5).floor(), -6, 'Number#floor | -5.5');
+  equals((-5.14).floor(), -6, 'Number#floor | -5.14');
+  equals((-5).floor(), -5, 'Number#floor | -5');
 
 
-  equals((-5).abs(), 5, 'Number#abs');
-  equals((5).abs(), 5, 'Number#abs');
-  equals((-3.324).abs(), 3.324, 'Number#abs');
-  equals((3.324).abs(), 3.324, 'Number#abs');
+  equals((-5).abs(), 5, 'Number#abs | -5');
+  equals((5).abs(), 5, 'Number#abs | 5');
+  equals((-3.324).abs(), 3.324, 'Number#abs | -3.324');
+  equals((3.324).abs(), 3.324, 'Number#abs | 3.324');
 
 
-  equals((3).pow(2), 9, 'Number#pow');
-  equals((3).pow(1), 3, 'Number#pow');
-  equals((12).pow(2), 144, 'Number#pow');
-  equals((3).pow(3), 27, 'Number#pow');
-  equals(isNaN((3).pow()), true, 'Number#pow');
+  equals((3).pow(2), 9, 'Number#pow | 3 ^ 2');
+  equals((3).pow(1), 3, 'Number#pow | 3 ^ 1');
+  equals((12).pow(2), 144, 'Number#pow | 12 ^ 2');
+  equals((3).pow(3), 27, 'Number#pow | 3 ^ 3');
+  equals(isNaN((3).pow()), true, 'Number#pow | 3 ^ undefined');
 
 
-  equals((3).round(), 3, 'Number#round');
-  equals((3.241).round(), 3, 'Number#round');
-  equals((3.752).round(), 4, 'Number#round');
-  equals((-3.241).round(), -3, 'Number#round');
-  equals((-3.752).round(), -4, 'Number#round');
-  equals((3.241).round(1), 3.2, 'Number#round');
-  equals((3.752).round(1), 3.8, 'Number#round');
-  equals((3.241).round(2), 3.24, 'Number#round');
-  equals((3.752).round(2), 3.75, 'Number#round');
+  equals((3).round(), 3, 'Number#round | 3');
+  equals((3.241).round(), 3, 'Number#round | 3.241');
+  equals((3.752).round(), 4, 'Number#round | 3.752');
+  equals((-3.241).round(), -3, 'Number#round | -3.241');
+  equals((-3.752).round(), -4, 'Number#round | -3.752');
+  equals((3.241).round(1), 3.2, 'Number#round | 3.241 to 1 place');
+  equals((3.752).round(1), 3.8, 'Number#round | 3.752 to 1 place');
+  equals((3.241).round(2), 3.24, 'Number#round | 3.241 to 2 places');
+  equals((3.752).round(2), 3.75, 'Number#round | 3.752 to 2 places');
 
-  equals((322855.241).round(-2), 322900, 'Number#round');
-  equals((322855.241).round(-3), 323000, 'Number#round');
-  equals((322855.241).round(-4), 320000, 'Number#round');
-  equals((322855.241).round(-6), 0, 'Number#round');
-  equals((722855.241).round(-6), 1000000, 'Number#round');
-  equals((722855.241).round(-8), 0, 'Number#round');
+  equals((322855.241).round(-2), 322900, 'Number#round | 322855.241 to -2 places');
+  equals((322855.241).round(-3), 323000, 'Number#round | 322855.241 to -3 places');
+  equals((322855.241).round(-4), 320000, 'Number#round | 322855.241 to -4 places');
+  equals((322855.241).round(-6), 0, 'Number#round | 322855.241 to -6 places');
+  equals((722855.241).round(-6), 1000000, 'Number#round | 722855.241 to -6 places');
+  equals((722855.241).round(-8), 0, 'Number#round | 722855.241 to -8 places');
 
 
-  equals((65).chr(), 'A', 'Number#chr');
-  equals((24536).chr(), '忘', 'Number#chr');
+  equals((65).chr(), 'A', 'Number#chr | 65');
+  equals((24536).chr(), '忘', 'Number#chr | 24536');
 
   counter = 0;
   var dCounter = 5;
   ret = (5).downto(1, function(i){
-    equal(i, dCounter, 'Number#downto');
+    equal(i, dCounter, 'Number#downto | index is set');
     counter++;
     dCounter--;
   });
-  equal(counter, 5, 'Number#downto');
-  same(ret, [5,4,3,2,1], 'Number#downto');
+  equal(counter, 5, 'Number#downto | iterated 5 times');
+  same(ret, [5,4,3,2,1], 'Number#downto | returns array');
 
 
   counter = 0;
   var dCounter = 1;
   ret = (1).upto(5, function(i){
-    equal(i, dCounter, 'Number#upto');
+    equal(i, dCounter, 'Number#upto | index is set');
     counter++;
     dCounter++;
   });
-  equal(counter, 5, 'Number#upto');
-  same(ret, [1,2,3,4,5], 'Number#upto');
+  equal(counter, 5, 'Number#upto | iterated 5 times');
+  same(ret, [1,2,3,4,5], 'Number#upto | returns array');
 
   counter = 0;
   ret = (5).downto(10, function(){});
-  equal(counter, 0, 'Number#downto');
-  same(ret, [], 'Number#downto');
+  equal(counter, 0, 'Number#downto | 5 downto 10 | iterates 0 times');
+  same(ret, [], 'Number#downto | 5 downto 10 | returns empty array');
 
   counter = 0;
   ret = (5).upto(1, function(){});
-  equal(counter, 0, 'Number#downto');
-  same(ret, [], 'Number#downto');
+  equal(counter, 0, 'Number#downto | 5 up to 1 | iterates 0 times');
+  same(ret, [], 'Number#downto | 5 up to 1 | returns empty array');
 
 
   counter = 0;
   (5).times(function(){
     counter++;
   });
-  equal(counter, 5, 'Number#times');
+  equal(counter, 5, 'Number#times | iterated 5 times');
 
 
 
-  equal((2).multipleOf(2), true, 'Number#multipleOf');
-  equal((6).multipleOf(2), true, 'Number#multipleOf');
-  equal((100).multipleOf(2), true, 'Number#multipleOf');
-  equal((2).multipleOf(100), false, 'Number#multipleOf');
-  equal((100).multipleOf(-2), true, 'Number#multipleOf');
-  equal((6).multipleOf(-2), true, 'Number#multipleOf');
-  equal((6).multipleOf(3), true, 'Number#multipleOf');
-  equal((7).multipleOf(3), false, 'Number#multipleOf');
-  equal((2.5).multipleOf(1.25), true, 'Number#multipleOf');
+  equal((2).multipleOf(2), true, 'Number#multipleOf | 2 is a multiple of 2');
+  equal((6).multipleOf(2), true, 'Number#multipleOf | 6 is a multiple of 2');
+  equal((100).multipleOf(2), true, 'Number#multipleOf | 100 is a multiple of 2');
+  equal((2).multipleOf(100), false, 'Number#multipleOf | 2 is a multiple of 100');
+  equal((100).multipleOf(-2), true, 'Number#multipleOf | 100 is a multiple of -2');
+  equal((6).multipleOf(-2), true, 'Number#multipleOf | 6 is a multiple of -2');
+  equal((6).multipleOf(3), true, 'Number#multipleOf | 6 is a multiple of 3');
+  equal((7).multipleOf(3), false, 'Number#multipleOf | 7 is a multiple of 3');
+  equal((2.5).multipleOf(1.25), true, 'Number#multipleOf | 2.5 is a multiple of 1.25');
 
 
 
-  equals((1).odd(), true, 'Number#odd');  // 1 is odd
-  equals((2).odd(), false, 'Number#odd'); // 2 is not odd
+  equals((1).odd(), true, 'Number#odd | 1');
+  equals((2).odd(), false, 'Number#odd | 2');
 
 
 
 
-  equals((1).even(), false, 'Number#even');  // 1 is not even
-  equals((2).even(), true, 'Number#even');   // 2 is even
+  equals((1).even(), false, 'Number#even | 1');
+  equals((2).even(), true, 'Number#even | 2');
 
 
 
-  equals((1).ordinalize(), '1st', 'Number#ordinalize');
-  equals((2).ordinalize(), '2nd', 'Number#ordinalize');
-  equals((3).ordinalize(), '3rd', 'Number#ordinalize');
-  equals((4).ordinalize(), '4th', 'Number#ordinalize');
-  equals((5).ordinalize(), '5th', 'Number#ordinalize');
-  equals((6).ordinalize(), '6th', 'Number#ordinalize');
-  equals((7).ordinalize(), '7th', 'Number#ordinalize');
-  equals((8).ordinalize(), '8th', 'Number#ordinalize');
-  equals((9).ordinalize(), '9th', 'Number#ordinalize');
-  equals((10).ordinalize(), '10th', 'Number#ordinalize');
-  equals((11).ordinalize(), '11th', 'Number#ordinalize');
-  equals((12).ordinalize(), '12th', 'Number#ordinalize');
-  equals((13).ordinalize(), '13th', 'Number#ordinalize');
-  equals((14).ordinalize(), '14th', 'Number#ordinalize');
-  equals((15).ordinalize(), '15th', 'Number#ordinalize');
-  equals((20).ordinalize(), '20th', 'Number#ordinalize');
-  equals((21).ordinalize(), '21st', 'Number#ordinalize');
-  equals((22).ordinalize(), '22nd', 'Number#ordinalize');
-  equals((23).ordinalize(), '23rd', 'Number#ordinalize');
-  equals((24).ordinalize(), '24th', 'Number#ordinalize');
-  equals((25).ordinalize(), '25th', 'Number#ordinalize');
-  equals((100).ordinalize(), '100th', 'Number#ordinalize');
-  equals((101).ordinalize(), '101st', 'Number#ordinalize');
-  equals((102).ordinalize(), '102nd', 'Number#ordinalize');
-  equals((103).ordinalize(), '103rd', 'Number#ordinalize');
-  equals((104).ordinalize(), '104th', 'Number#ordinalize');
-  equals((105).ordinalize(), '105th', 'Number#ordinalize');
+  equals((1).ordinalize(), '1st', 'Number#ordinalize | 1');
+  equals((2).ordinalize(), '2nd', 'Number#ordinalize | 2');
+  equals((3).ordinalize(), '3rd', 'Number#ordinalize | 3');
+  equals((4).ordinalize(), '4th', 'Number#ordinalize | 4');
+  equals((5).ordinalize(), '5th', 'Number#ordinalize | 5');
+  equals((6).ordinalize(), '6th', 'Number#ordinalize | 6');
+  equals((7).ordinalize(), '7th', 'Number#ordinalize | 7');
+  equals((8).ordinalize(), '8th', 'Number#ordinalize | 8');
+  equals((9).ordinalize(), '9th', 'Number#ordinalize | 9');
+  equals((10).ordinalize(), '10th', 'Number#ordinalize | 10');
+  equals((11).ordinalize(), '11th', 'Number#ordinalize | 11');
+  equals((12).ordinalize(), '12th', 'Number#ordinalize | 12');
+  equals((13).ordinalize(), '13th', 'Number#ordinalize | 13');
+  equals((14).ordinalize(), '14th', 'Number#ordinalize | 14');
+  equals((15).ordinalize(), '15th', 'Number#ordinalize | 15');
+  equals((20).ordinalize(), '20th', 'Number#ordinalize | 20');
+  equals((21).ordinalize(), '21st', 'Number#ordinalize | 21');
+  equals((22).ordinalize(), '22nd', 'Number#ordinalize | 22');
+  equals((23).ordinalize(), '23rd', 'Number#ordinalize | 23');
+  equals((24).ordinalize(), '24th', 'Number#ordinalize | 24');
+  equals((25).ordinalize(), '25th', 'Number#ordinalize | 25');
+  equals((100).ordinalize(), '100th', 'Number#ordinalize | 100');
+  equals((101).ordinalize(), '101st', 'Number#ordinalize | 101');
+  equals((102).ordinalize(), '102nd', 'Number#ordinalize | 102');
+  equals((103).ordinalize(), '103rd', 'Number#ordinalize | 103');
+  equals((104).ordinalize(), '104th', 'Number#ordinalize | 104');
+  equals((105).ordinalize(), '105th', 'Number#ordinalize | 105');
 
 
-  equals((100).format(), '100')
-  equals((1).format(), '1')
-  equals((10).format(), '10')
-  equals((100).format(), '100')
-  equals((1000).format(), '1,000')
-  equals((10000).format(), '10,000')
-  equals((100000).format(), '100,000')
-  equals((1000000).format(), '1,000,000')
-  equals((1000000.01).format(), '1,000,000.01')
-  equals((-100).format(), '-100')
-  equals((-1).format(), '-1')
-  equals((-1000).format(), '-1,000')
-  equals((-1000000.01).format(), '-1,000,000.01')
+  equals((100).format(), '100', 'Number#format | 100')
+  equals((1).format(), '1', 'Number#format | 1')
+  equals((10).format(), '10', 'Number#format | 10')
+  equals((100).format(), '100', 'Number#format | 100')
+  equals((1000).format(), '1,000', 'Number#format | 1,000')
+  equals((10000).format(), '10,000', 'Number#format | 10,000')
+  equals((100000).format(), '100,000', 'Number#format | 100,000')
+  equals((1000000).format(), '1,000,000', 'Number#format | 1,000,000')
+  equals((1000000.01).format(), '1,000,000.01', 'Number#format | 1,000,000.01')
+  equals((-100).format(), '-100', 'Number#format | -100')
+  equals((-1).format(), '-1', 'Number#format | -1')
+  equals((-1000).format(), '-1,000', 'Number#format | -1,000')
+  equals((-1000000.01).format(), '-1,000,000.01', 'Number#format | -1,000,000.01')
 
-  equals((0.52).format(), '0.52')
+  equals((0.52).format(), '0.52', 'Number#format | 0.52')
 
   // These discrepancies are due to floating point variable limitations.
-  equals((100046546510000.022435451).format().replace(/\.\d+$/, ''), '100,046,546,510,000')
-  equals((-100046546510000.022435451).format().replace(/\.\d+$/, ''), '-100,046,546,510,000')
+  equals((100046546510000.022435451).format().replace(/\.\d+$/, ''), '100,046,546,510,000', 'Number#format | 100,046,546,510,000')
+  equals((-100046546510000.022435451).format().replace(/\.\d+$/, ''), '-100,046,546,510,000', 'Number#format | -100,046,546,510,000')
 
-  equals((1000).format(' '), '1 000', 'Number#format 1000')
-  equals((1532587).format(' '), '1 532 587', 'Number#format larger number')
-  equals((1532587.5752).format(' ', ','), '1 532 587,5752', 'Number#format larger number with decimal')
-  equals((9999999.99).format(),                     '9,999,999.99', 'Number#format Standard');
-  equals((9999999.99).format('.',','),              '9.999.999,99', 'Number#format Euro style!');
-
-
-
-  equals((1).pad(0), '1', 'Number#pad')
-  equals((1).pad(1), '1', 'Number#pad')
-  equals((1).pad(2), '01', 'Number#pad')
-  equals((1).pad(3), '001', 'Number#pad')
-  equals((1).pad(4), '0001', 'Number#pad')
-  equals((547).pad(0), '547', 'Number#pad')
-  equals((547).pad(1), '547', 'Number#pad')
-  equals((547).pad(2), '547', 'Number#pad')
-  equals((547).pad(3), '547', 'Number#pad')
-  equals((547).pad(4), '0547', 'Number#pad')
-  equals((0).pad(0), '', 'Number#pad')
-  equals((0).pad(1), '0', 'Number#pad')
-  equals((0).pad(2), '00', 'Number#pad')
-  equals((0).pad(3), '000', 'Number#pad')
-  equals((0).pad(4), '0000', 'Number#pad')
-  equals((-1).pad(1), '-1', 'Number#pad')
-  equals((-1).pad(2), '-01', 'Number#pad')
-  equals((-1).pad(3), '-001', 'Number#pad')
-  equals((-1).pad(4), '-0001', 'Number#pad')
-  equals((1).pad(1, true), '+1', 'Number#pad')
-  equals((1).pad(2, true), '+01', 'Number#pad')
-  equals((1).pad(3, true), '+001', 'Number#pad')
-  equals((1).pad(4, true), '+0001', 'Number#pad')
-  equals((0).pad(1, true), '+0', 'Number#pad')
+  equals((1000).format(' '), '1 000', 'Number#format | 1000')
+  equals((1532587).format(' '), '1 532 587', 'Number#format | larger number')
+  equals((1532587.5752).format(' ', ','), '1 532 587,5752', 'Number#format | larger number with decimal')
+  equals((9999999.99).format(), '9,999,999.99', 'Number#format | Standard');
+  equals((9999999.99).format('.',','), '9.999.999,99', 'Number#format | Euro style!');
 
 
 
-  equals((0).hex(), '0', 'Number#hex')
-  equals((10).hex(), 'a', 'Number#hex')
-  equals((255).hex(), 'ff', 'Number#hex')
-  equals((0.5).hex(), '0.8', 'Number#hex')
-  equals((2.5).hex(), '2.8', 'Number#hex')
-  equals((2553423).hex(), '26f64f', 'Number#hex')
+  equals((1).pad(0), '1', 'Number#pad | 1 no padding')
+  equals((1).pad(1), '1', 'Number#pad | 1 padded to 1 place')
+  equals((1).pad(2), '01', 'Number#pad | 1 padded to 2 places')
+  equals((1).pad(3), '001', 'Number#pad | 1 padded to 3 places')
+  equals((1).pad(4), '0001', 'Number#pad | 1 padded to 4 places')
+  equals((547).pad(0), '547', 'Number#pad | 547 no padding')
+  equals((547).pad(1), '547', 'Number#pad | 547 padded to 1 place')
+  equals((547).pad(2), '547', 'Number#pad | 547 padded to 2 places')
+  equals((547).pad(3), '547', 'Number#pad | 547 padded to 3 places')
+  equals((547).pad(4), '0547', 'Number#pad | 547 padded to 4 places')
+  equals((0).pad(0), '', 'Number#pad | 0 no padding')
+  equals((0).pad(1), '0', 'Number#pad | 0 padded to 1 place')
+  equals((0).pad(2), '00', 'Number#pad | 0 padded to 2 places')
+  equals((0).pad(3), '000', 'Number#pad | 0 padded to 3 places')
+  equals((0).pad(4), '0000', 'Number#pad | 0 padded to 4 places')
+  equals((-1).pad(1), '-1', 'Number#pad | -1 padded to 1 places')
+  equals((-1).pad(2), '-01', 'Number#pad | -1 padded to 2 places')
+  equals((-1).pad(3), '-001', 'Number#pad | -1 padded to 3 places')
+  equals((-1).pad(4), '-0001', 'Number#pad | -1 padded to 4 places')
+  equals((1).pad(1, true), '+1', 'Number#pad | 1 padded to 1 places and sign')
+  equals((1).pad(2, true), '+01', 'Number#pad | 1 padded to 2 places and sign')
+  equals((1).pad(3, true), '+001', 'Number#pad | 1 padded to 3 places and sign')
+  equals((1).pad(4, true), '+0001', 'Number#pad | 1 padded to 4 places and sign')
+  equals((0).pad(1, true), '+0', 'Number#pad | 0 padded to 1 place and sign')
 
 
-  equals((24).blank(), false, 'Number#blank');
-  equals((0).blank(), false, 'Number#blank');
+
+  equals((0).hex(), '0', 'Number#hex | 0')
+  equals((10).hex(), 'a', 'Number#hex | 10')
+  equals((255).hex(), 'ff', 'Number#hex | 255')
+  equals((0.5).hex(), '0.8', 'Number#hex | 0.5')
+  equals((2.5).hex(), '2.8', 'Number#hex | 2.5')
+  equals((2553423).hex(), '26f64f', 'Number#hex | 2553423')
 
 
-  equals((0).seconds(), 0, 'Number#seconds');
-  equals((1).seconds(), 1000, 'Number#seconds');
-  equals((30).seconds(), 30000, 'Number#seconds');
-  equals((60).seconds(), 60000, 'Number#seconds');
+  equals((24).blank(), false, 'Number#blank | 24');
+  equals((0).blank(), false, 'Number#blank | 24');
+  equals((NaN).blank(), true, 'Number#blank | NaN');
 
 
-  equals((1).minutes(), 60000, 'Number#minutes');
-  equals((10).minutes(), 600000, 'Number#minutes');
-  equals((100).minutes(), 6000000, 'Number#minutes');
-  equals((0).minutes(), 0, 'Number#minutes');
-  equals((0.5).minutes(), 30000, 'Number#minutes');
-  equals((1).minutes(), (60).seconds(), 'Number#minutes');
-
-  equals((1).hours(), 3600000, 'Number#hours');
-  equals((10).hours(), 36000000, 'Number#hours');
-  equals((100).hours(), 360000000, 'Number#hours');
-  equals((0).hours(), 0, 'Number#hours');
-  equals((0.5).hours(), 1800000, 'Number#hours');
-  equals((1).hours(), (60).minutes(), 'Number#hours');
-  equals((1).hours(), (3600).seconds(), 'Number#hours');
+  equals((0).seconds(), 0, 'Number#seconds | 0');
+  equals((1).seconds(), 1000, 'Number#seconds | 1');
+  equals((30).seconds(), 30000, 'Number#seconds | 30');
+  equals((60).seconds(), 60000, 'Number#seconds | 60');
 
 
-  equals((1).days(), 86400000, 'Number#days');
-  equals((10).days(), 864000000, 'Number#days');
-  equals((100).days(), 8640000000, 'Number#days');
-  equals((0).days(), 0, 'Number#days');
-  equals((0.5).days(), 43200000, 'Number#days');
-  equals((1).days(), (24).hours(), 'Number#days');
-  equals((1).days(), (1440).minutes(), 'Number#days');
-  equals((1).days(), (86400).seconds(), 'Number#days');
+  equals((1).minutes(), 60000, 'Number#minutes | 1');
+  equals((10).minutes(), 600000, 'Number#minutes | 10');
+  equals((100).minutes(), 6000000, 'Number#minutes | 100');
+  equals((0).minutes(), 0, 'Number#minutes | 0');
+  equals((0.5).minutes(), 30000, 'Number#minutes | 0.5');
+  equals((1).minutes(), (60).seconds(), 'Number#minutes | 1 minute is 60 seconds');
+
+  equals((1).hours(), 3600000, 'Number#hours | 1');
+  equals((10).hours(), 36000000, 'Number#hours | 10');
+  equals((100).hours(), 360000000, 'Number#hours | 100');
+  equals((0).hours(), 0, 'Number#hours | 0');
+  equals((0.5).hours(), 1800000, 'Number#hours | 0.5');
+  equals((1).hours(), (60).minutes(), 'Number#hours | 1 hour is 60 minutes');
+  equals((1).hours(), (3600).seconds(), 'Number#hours | 1 hour is 3600 seconds');
 
 
-  equals((1).weeks(), 604800000, 'Number#weeks');
-  equals((0.5).weeks(), 302400000, 'Number#weeks');
-  equals((10).weeks(), 6048000000, 'Number#weeks');
-  equals((0).weeks(), 0, 'Number#weeks');
-  equals((1).weeks(), (7).days(), 'Number#weeks');
-  equals((1).weeks(), (24 * 7).hours(), 'Number#weeks');
-  equals((1).weeks(), (60 * 24 * 7).minutes(), 'Number#weeks');
-  equals((1).weeks(), (60 * 60 * 24 * 7).seconds(), 'Number#weeks');
+  equals((1).days(), 86400000, 'Number#days | 1');
+  equals((10).days(), 864000000, 'Number#days | 10');
+  equals((100).days(), 8640000000, 'Number#days | 100');
+  equals((0).days(), 0, 'Number#days | 0');
+  equals((0.5).days(), 43200000, 'Number#days | 0.5');
+  equals((1).days(), (24).hours(), 'Number#days | 1 day is 24 hours');
+  equals((1).days(), (1440).minutes(), 'Number#days | 1 day is 1440 minutes');
+  equals((1).days(), (86400).seconds(), 'Number#days | 1 day is 86400 seconds');
+
+
+  equals((1).weeks(), 604800000, 'Number#weeks | 1');
+  equals((0.5).weeks(), 302400000, 'Number#weeks | 0.5');
+  equals((10).weeks(), 6048000000, 'Number#weeks | 10');
+  equals((0).weeks(), 0, 'Number#weeks | 0');
+  equals((1).weeks(), (7).days(), 'Number#weeks | 1 week is 7 days');
+  equals((1).weeks(), (24 * 7).hours(), 'Number#weeks | 1 week is 24 * 7 hours');
+  equals((1).weeks(), (60 * 24 * 7).minutes(), 'Number#weeks | 1 week is 60 * 24 * 7 minutes');
+  equals((1).weeks(), (60 * 60 * 24 * 7).seconds(), 'Number#weeks | 1 week is 60 * 60 * 24 * 7 seconds');
 
   equals((1).months(), 2629800000, 'Number#months | 1 month');
   equals((0.5).months(), 1314900000, 'Number#months | 0.5 month');
   equals((10).months(), 26298000000, 'Number#months | 10 month');
   equals((0).months(), 0, 'Number#months | 0 months');
-  equals((1).months(), (30.4375).days(), 'Number#months | equal to 30.4375 days');
-  equals((1).months(), (24 * 30.4375).hours(), 'Number#months | * 24hours');
-  equals((1).months(), (60 * 24 * 30.4375).minutes(), 'Number#months | * 60 minutes');
-  equals((1).months(), (60 * 60 * 24 * 30.4375).seconds(), 'Number#months | * 60 seconds');
+  equals((1).months(), (30.4375).days(), 'Number#months | 1 month is 30.4375 days');
+  equals((1).months(), (24 * 30.4375).hours(), 'Number#months | 1 month is 24 * 30.4375 hours');
+  equals((1).months(), (60 * 24 * 30.4375).minutes(), 'Number#months | 1 month is 60 * 24 * 30.4375 minutes');
+  equals((1).months(), (60 * 60 * 24 * 30.4375).seconds(), 'Number#months | 1 month is 60 * 60 * 24 * 30.4375 seconds');
 
-  equals((1).years(), 31557600000, 'Number#years');
-  equals((0.5).years(), 15778800000, 'Number#years');
-  equals((10).years(), 315576000000, 'Number#years');
-  equals((0).years(), 0, 'Number#years');
-  equals((1).years(), (365.25).days(), 'Number#years');
-  equals((1).years(), (24 * 365.25).hours(), 'Number#years');
-  equals((1).years(), (60 * 24 * 365.25).minutes(), 'Number#years');
-  equals((1).years(), (60 * 60 * 24 * 365.25).seconds(), 'Number#years');
+  equals((1).years(), 31557600000, 'Number#years | 1');
+  equals((0.5).years(), 15778800000, 'Number#years | 0.5');
+  equals((10).years(), 315576000000, 'Number#years | 10');
+  equals((0).years(), 0, 'Number#years | 0');
+  equals((1).years(), (365.25).days(), 'Number#years | 1 year is 365.25 days');
+  equals((1).years(), (24 * 365.25).hours(), 'Number#years | 1 year is 24 * 365.25 hours');
+  equals((1).years(), (60 * 24 * 365.25).minutes(), 'Number#years | 1 year is 60 * 24 * 365.25 minutes');
+  equals((1).years(), (60 * 60 * 24 * 365.25).seconds(), 'Number#years | 1 year is 60 * 60 * 24 * 365.25 seconds');
 
 
 
   /* compatibility */
 
-  equals((1).second(), 1000, 'Number#second');
-  equals((1).minute(), 60000, 'Number#minute');
-  equals((1).hour(), 3600000, 'Number#hour');
-  equals((1).day(), 86400000, 'Number#day');
-  equals((1).week(), 604800000, 'Number#week');
-  equals((1).month(), 2629800000, 'Number#month');
-  equals((1).year(), 31557600000, 'Number#year');
+  equals((1).second(), 1000, 'Number#second | 1 second');
+  equals((1).minute(), 60000, 'Number#minute | 1 minute');
+  equals((1).hour(), 3600000, 'Number#hour | 1 hour');
+  equals((1).day(), 86400000, 'Number#day | 1 day');
+  equals((1).week(), 604800000, 'Number#week | 1 week');
+  equals((1).month(), 2629800000, 'Number#month | 1 month');
+  equals((1).year(), 31557600000, 'Number#year | 1 year');
 
 
-  dateEquals((1).secondAfter(), 1000, 'Number#secondAfter');
-  dateEquals((5).secondsAfter(), 5000, 'Number#secondsAfter');
-  dateEquals((10).minutesAfter(), 600000, 'Number#minutesAfter');
+  dateEquals((1).secondAfter(), 1000, 'Number#secondAfter | 1');
+  dateEquals((5).secondsAfter(), 5000, 'Number#secondsAfter | 5');
+  dateEquals((10).minutesAfter(), 600000, 'Number#minutesAfter | 10');
 
-  dateEquals((1).secondFromNow(), 1000, 'Number#secondFromNow');
-  dateEquals((5).secondsFromNow(), 5000, 'Number#secondsFromNow');
-  dateEquals((10).minutesFromNow(), 600000, 'Number#minutesFromNow');
+  dateEquals((1).secondFromNow(), 1000, 'Number#secondFromNow | 1');
+  dateEquals((5).secondsFromNow(), 5000, 'Number#secondsFromNow | 5');
+  dateEquals((10).minutesFromNow(), 600000, 'Number#minutesFromNow | 10');
 
-  dateEquals((1).secondAgo(), -1000, 'Number#secondAgo');
-  dateEquals((5).secondsAgo(), -5000, 'Number#secondAgo');
-  dateEquals((10).secondsAgo(), -10000, 'Number#secondAgo');
+  dateEquals((1).secondAgo(), -1000, 'Number#secondAgo | 1');
+  dateEquals((5).secondsAgo(), -5000, 'Number#secondAgo | 5');
+  dateEquals((10).secondsAgo(), -10000, 'Number#secondAgo | 10');
 
-  dateEquals((1).secondBefore(), -1000, 'Number#secondBefore');
-  dateEquals((5).secondsBefore(), -5000, 'Number#secondBefore');
-  dateEquals((10).secondsBefore(), -10000, 'Number#secondBefore');
+  dateEquals((1).secondBefore(), -1000, 'Number#secondBefore | 1');
+  dateEquals((5).secondsBefore(), -5000, 'Number#secondBefore | 5');
+  dateEquals((10).secondsBefore(), -10000, 'Number#secondBefore | 10');
 
 
-  dateEquals((5).minutesAfter((5).minutesAgo()), 0, 'Number#minutesAfter');
-  dateEquals((10).minutesAfter((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesAfter');
+  dateEquals((5).minutesAfter((5).minutesAgo()), 0, 'Number#minutesAfter | 5 minutes after 5 minutes ago');
+  dateEquals((10).minutesAfter((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesAfter | 10 minutes after 5 minutes ago');
 
-  dateEquals((5).minutesFromNow((5).minutesAgo()), 0, 'Number#minutesFromNow');
-  dateEquals((10).minutesFromNow((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesFromNow');
+  dateEquals((5).minutesFromNow((5).minutesAgo()), 0, 'Number#minutesFromNow | 5 minutes from now 5 minutes ago');
+  dateEquals((10).minutesFromNow((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesFromNow | 10 minutes from now 5 minutes ago');
 
-  dateEquals((5).minutesAgo((5).minutesFromNow()), 0, 'Number#minutesAgo');
-  ((10).minutesAgo((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesAgo');
+  dateEquals((5).minutesAgo((5).minutesFromNow()), 0, 'Number#minutesAgo | 5 minutes ago 5 minutes from now');
+  dateEquals((10).minutesAgo((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesAgo | 10 minutes ago 5 minutes from now');
 
-  dateEquals((5).minutesBefore((5).minutesFromNow()), 0, 'Number#minutesBefore');
-  dateEquals((10).minutesBefore((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesBefore');
+  dateEquals((5).minutesBefore((5).minutesFromNow()), 0, 'Number#minutesBefore | 5 minutes before 5 minutes from now');
+  dateEquals((10).minutesBefore((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesBefore | 10 minutes before 5 minutes from now');
 
 
   var christmas = new Date('December 25, 1965');
-  dateEquals((5).minutesBefore(christmas), getRelativeDate.call(christmas, null, null, null, null, -5), 'Number#minutesBefore');
-  dateEquals((5).minutesAfter(christmas), getRelativeDate.call(christmas, null, null, null, null, 5), 'Number#minutesAfter');
+  dateEquals((5).minutesBefore(christmas), getRelativeDate.call(christmas, null, null, null, null, -5), 'Number#minutesBefore | 5 minutes before christmas');
+  dateEquals((5).minutesAfter(christmas), getRelativeDate.call(christmas, null, null, null, null, 5), 'Number#minutesAfter | 5 minutes after christmas');
 
-  dateEquals((5).hoursBefore(christmas), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore');
-  dateEquals((5).hoursAfter(christmas), getRelativeDate.call(christmas, null, null, null, 5), 'Number#hoursAfter');
+  dateEquals((5).hoursBefore(christmas), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | 5 hours before christmas');
+  dateEquals((5).hoursAfter(christmas), getRelativeDate.call(christmas, null, null, null, 5), 'Number#hoursAfter | 5 hours after christmas');
 
-  dateEquals((5).daysBefore(christmas), getRelativeDate.call(christmas, null, null, -5), 'Number#daysBefore');
-  dateEquals((5).daysAfter(christmas), getRelativeDate.call(christmas, null, null, 5), 'Number#daysAfter');
+  dateEquals((5).daysBefore(christmas), getRelativeDate.call(christmas, null, null, -5), 'Number#daysBefore | 5 days before christmas');
+  dateEquals((5).daysAfter(christmas), getRelativeDate.call(christmas, null, null, 5), 'Number#daysAfter | 5 days after christmas');
 
-  dateEquals((5).weeksBefore(christmas), getRelativeDate.call(christmas, null, null, -35), 'Number#weeksBefore');
-  dateEquals((5).weeksAfter(christmas), getRelativeDate.call(christmas, null, null, 35), 'Number#weeksAfter');
+  dateEquals((5).weeksBefore(christmas), getRelativeDate.call(christmas, null, null, -35), 'Number#weeksBefore | 5 weeks before christmas');
+  dateEquals((5).weeksAfter(christmas), getRelativeDate.call(christmas, null, null, 35), 'Number#weeksAfter | 5 weeks after christmas');
 
-  dateEquals((5).monthsBefore(christmas), getRelativeDate.call(christmas, null, -5), 'Number#monthsBefore');
-  dateEquals((5).monthsAfter(christmas), getRelativeDate.call(christmas, null, 5), 'Number#monthsAfter');
+  dateEquals((5).monthsBefore(christmas), getRelativeDate.call(christmas, null, -5), 'Number#monthsBefore | 5 months before christmas');
+  dateEquals((5).monthsAfter(christmas), getRelativeDate.call(christmas, null, 5), 'Number#monthsAfter | 5 months after christmas');
 
-  dateEquals((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore');
-  dateEquals((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter');
+  dateEquals((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore | 5 years before christmas');
+  dateEquals((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter | 5 years after christmas');
 
 
 
