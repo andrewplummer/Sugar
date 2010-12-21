@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QUnit Test Suite</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" href="stylesheets/custom.css" type="text/css" />
+</head>
+<body>
+  <div class="header">
+    <h1 id="qunit-header">QUnit Test Suite</h1>
+    <h2 id="qunit-useragent"></h2>
+  </div>
+  <h3 id="sugar_override">Warning: Override mode active!</h3>
+  <div id="suite">
+    <ul class="environments"></ul>
+  </div>
+  <div id="tooltip">
+    <div class="content"></div>
+  </div>
+  <div id="tooltip_arrow"></div>
+  <div id="env"></div>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/tooltip.js"></script>
+  <script type="text/javascript" src="javascripts/suite.js"></script>
+  <script type="text/javascript">
+
+    $(document).ready(function(){
+
+      var environments = ['mootools'];
+      var env = $('#env');
+
+      $('#qunit-useragent').text(navigator.userAgent);
+
+      $.each(environments, function(i, environment){
+        var location = 'environments/' + environment + '/test.html';
+        var iframe = $('<iframe src="'+location+'" />');
+        env.append(iframe);
+      });
+
+    });
+
+  </script>
+</body>
+</html>
