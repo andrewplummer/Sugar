@@ -1956,6 +1956,7 @@ test('Array', function () {
 
 
 
+    same([].groupBy(), {}, 'Array#groupBy | Null');
     same([1,1,2,2,3,3,4].groupBy(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#groupBy');
     same(['a','b','c','a','e','c'].groupBy(), {'a':['a','a'],'b':['b'],'c':['c','c'],'e':['e']}, 'Array#groupBy');
     same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy('a'), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy');
@@ -3157,6 +3158,20 @@ test('Date', function () {
   // FAILS IN DAMASCUS IN XP!
   equals(new Date(2010, 11, 9, 17).set({ year: 1998, month: 3, day: 3}, true).getHours(), 0, 'Date#set | handles DST properly');
 
+
+
+
+  d = new Date('August 25, 2010 11:45:20');
+  d.setWeek(1);
+  dateEquals(d, new Date(2010,0,8,11,45,20), 'Date#setWeek | week 1');
+  d.setWeek(15);
+  dateEquals(d, new Date(2010,3,16,11,45,20), 'Date#setWeek | week 15');
+  d.setWeek(27);
+  dateEquals(d, new Date(2010,6,9,11,45,20), 'Date#setWeek | week 27');
+  d.setWeek(52);
+  dateEquals(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week 52');
+  d.setWeek();
+  dateEquals(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week stays set');
 
 
   // Date formatting. Much thanks to inspiration taken from Date.js here.
