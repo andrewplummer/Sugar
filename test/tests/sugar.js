@@ -3783,22 +3783,10 @@ test('Date', function () {
   equals(getRelativeDate(null, null, -7).isLastWeek(), true, 'Date#isLastWeek | last week');
   equals(getRelativeDate(null, null, -7).isThisWeek(), false, 'Date#isThisWeek | last week');
   equals(getRelativeDate(null, null, -7).isNextWeek(), false, 'Date#isNextWeek | last week');
-  equals(getRelativeDate(null, null, -7).isLastMonth(), false, 'Date#isLastMonth | last week');
-  equals(getRelativeDate(null, null, -7).isThisMonth(), true, 'Date#isThisMonth | last week');
-  equals(getRelativeDate(null, null, -7).isNextMonth(), false, 'Date#isNextMonth | last week');
-  equals(getRelativeDate(null, null, -7).isLastYear(), false, 'Date#isLastYear | last week');
-  equals(getRelativeDate(null, null, -7).isThisYear(), true, 'Date#isThisYear | last week');
-  equals(getRelativeDate(null, null, -7).isNextYear(), false, 'Date#isNextYear | last week');
 
   equals(getRelativeDate(null, null, 7).isLastWeek(), false, 'Date#isLastWeek | next week');
   equals(getRelativeDate(null, null, 7).isThisWeek(), false, 'Date#isThisWeek | next week');
   equals(getRelativeDate(null, null, 7).isNextWeek(), true, 'Date#isNextWeek | next week');
-  equals(getRelativeDate(null, null, 7).isLastMonth(), false, 'Date#isLastMonth | next week');
-  equals(getRelativeDate(null, null, 7).isThisMonth(), true, 'Date#isThisMonth | next week');
-  equals(getRelativeDate(null, null, 7).isNextMonth(), false, 'Date#isNextMonth | next week');
-  equals(getRelativeDate(null, null, 7).isLastYear(), false, 'Date#isLastYear | next week');
-  equals(getRelativeDate(null, null, 7).isThisYear(), true, 'Date#isThisYear | next week');
-  equals(getRelativeDate(null, null, 7).isNextYear(), false, 'Date#isNextYear | next week');
 
   equals(getDateWithWeekdayAndOffset(0).isLastWeek(), false, 'Date#isLastWeek | this week sunday');
   equals(getDateWithWeekdayAndOffset(0).isThisWeek(), true, 'Date#isThisWeek | this week sunday');
