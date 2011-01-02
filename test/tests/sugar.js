@@ -465,135 +465,130 @@ test('String', function () {
 
 
 
-  equals('test regexp'.escapeRegExp(), 'test regexp', 'RegExp#escape');
-  equals('test reg|exp'.escapeRegExp(), 'test reg\\|exp', 'RegExp#escape');
-  equals('hey there (budday)'.escapeRegExp(), 'hey there \\(budday\\)', 'RegExp#escape');
-  equals('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'RegExp#escape');
-  equals('.'.escapeRegExp(), '\\.', 'RegExp#escape');
-  equals('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape');
+  equals('test regexp'.escapeRegExp(), 'test regexp', 'RegExp#escape | nothing to escape');
+  equals('test reg|exp'.escapeRegExp(), 'test reg\\|exp', 'RegExp#escape | should escape pipe');
+  equals('hey there (budday)'.escapeRegExp(), 'hey there \\(budday\\)', 'RegExp#escape | should escape parentheses');
+  equals('.'.escapeRegExp(), '\\.', 'RegExp#escape | should escape period');
+  equals('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'RegExp#escape | should escape many period');
+  equals('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape | complex regex tokens');
 
 
   var test;
 
-  equalsWithException('reuben sandwich'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'Reuben Sandwich' }, 'String#capitalize');
-  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'REUBEN SANDWICH' }, 'String#capitalize');
-  equalsWithException('Reuben sandwich'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'Reuben Sandwich' }, 'String#capitalize');
+  equalsWithException('reuben sandwich'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'Reuben Sandwich' }, 'String#capitalize | should capitalize first letter of first word only.');
+  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letter');
+  equalsWithException('Reuben sandwich'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'Reuben Sandwich' }, 'String#capitalize | should leave the string alone');
 
-  same('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars');
+  same('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
 
-  equal('   wasabi   '.trim(), 'wasabi', 'String#chars');
-  equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim');
-  equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim');
-  equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim');
-  equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim');
+  equal('   wasabi   '.trim(), 'wasabi', 'String#chars | should trim both left and right whitespace');
+  equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim | should trim left whitespace only');
+  equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim | should trim right whitespace only');
 
-  equal('wasabi'.pad(), 'wasabi', 'String#pad');
-  equal('wasabi'.pad(-1), 'wasabi', 'String#pad');
-  equal('wasabi'.pad(3), '   wasabi   ', 'String#pad');
-  equal('wasabi'.pad(5), '     wasabi     ', 'String#pad');
-  equal('wasabi'.pad(5, '-'), '-----wasabi-----', 'String#pad');
-  equal('wasabi'.pad(2).pad(3, '-'), '---  wasabi  ---', 'String#pad');
+  equal('wasabi'.pad(), 'wasabi', 'String#pad | passing no params');
+  equal('wasabi'.pad(-1), 'wasabi', 'String#pad | passing in -1');
+  equal('wasabi'.pad(3), '   wasabi   ', 'String#pad | should pad the string with 3 spaces');
+  equal('wasabi'.pad(5), '     wasabi     ', 'String#pad | should pad the string with 5 spaces');
+  equal('wasabi'.pad(5, '-'), '-----wasabi-----', 'String#pad | should pad the string with 5 hyphens');
+  equal('wasabi'.pad(2).pad(3, '-'), '---  wasabi  ---', 'String#pad | should pad the string with 2 spaces and 3 hyphens');
 
-  equal('wasabi'.pad(3, '-', 'right'), 'wasabi---', 'String#pad');
-  equal('4'.pad(3, '0', 'left'), '0004', 'String#pad');
-  equal('wasabi'.pad(3, ' ', 'both'), '   wasabi   ', 'String#pad');
+  equal('wasabi'.pad(3, '-', 'right'), 'wasabi---', 'String#pad | should pad the string with 3 hyphens on the right');
+  equal('4'.pad(3, '0', 'left'), '0004', 'String#pad | should pad the string with 4 zeroes on the left');
+  equal('wasabi'.pad(3, ' ', 'both'), '   wasabi   ', 'String#pad | should pad the string with 3 spaces on both sides');
   equal('wasabi'.pad() === 'wasabi', true, 'String#pad | strict equality works');
 
-  equal('wasabi'.repeat(0), '', 'String#repeat');
-  equal('wasabi'.repeat(-1), 'wasabi', 'String#repeat');
-  equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat');
+  equal('wasabi'.repeat(0), '', 'String#repeat | 0 should repeat the string 0 times');
+  equal('wasabi'.repeat(-1), 'wasabi', 'String#repeat | -1 should do nothing to the string');
+  equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | 2 should repeat the string 2 times');
 
   // "each" will return an array of everything that was matched, defaulting to individual characters
-  same('g'.each(), ['g'], 'String#each');
+  same('g'.each(), ['g'], 'String#each | each should return an array of each char');
 
   // Each without a first parameter assumes "each character"
   var result = 'g'.each(function(str, i){
-    equal(str, 'g', 'String#each');
-    equal(this, 'g', 'String#each');
+    equal(str, 'g', 'String#each | char should be passed as the first argument');
+    equal(this, 'g', 'String#each | string should be bound as the scope');
   });
 
-  same(result, ['g'], 'String#each');
+  same(result, ['g'], "String#each | ['g'] should be the resulting value");
 
   var counter = 0;
   result = 'ginger'.each(function(str, i){
-    equal(i, counter, 'String#each');
-    equal(str, 'ginger'.charAt(counter), 'String#each');
+    equal(str, 'ginger'.charAt(counter), 'String#each | ginger | char should be passed as the first argument');
+    equal(i, counter, 'String#each | ginger | index should be passed as the second argument');
     counter++;
   });
-  equal(counter, 6, 'String#each');
-  same(result, ['g','i','n','g','e','r'], 'String#each');
+  equal(counter, 6, 'String#each | ginger | should have ran 6 times');
+  same(result, ['g','i','n','g','e','r'], 'String#each | ginger | resulting array should contain all the characters');
 
   counter = 0;
   result = 'ginger'.each('g', function(str, i){
-    equal(str, 'g', 'String#each');
+    equal(str, 'g', 'String#each | string argument | match should be passed as the first argument to the block');
     counter++;
   });
-  equal(counter, 2, 'String#each');
-  same(result, ['g','g'], 'String#each');
+  equal(counter, 2, 'String#each | string argument | should have ran 2 times');
+  same(result, ['g','g'], "String#each | string argument | resulting array should be ['g','g']");
 
   counter = 0;
   test = ['g','i','g','e'];
   result = 'ginger'.each(/[a-i]/g, function(str, i){
-    equal(str, test[i], 'String#each');
+    equal(str, test[i], 'String#each | regexp argument | match should be passed as the first argument to the block');
     counter++;
   });
-  equal(counter, 4, 'String#each');
-  same(result, ['g','i','g','e'], 'String#each');
+  equal(counter, 4, 'String#each | regexp argument | should have ran 4 times');
+  same(result, ['g','i','g','e'], "String#each | regexp argument | resulting array should have been ['g','i','g','e']");
 
   counter = 0;
   test = ['three', 'two', 'one', 'contact'];
   result = 'three|two|one|contact'.each('|', 'split', function(str, i){
-    equal(str, test[i], 'String#each');
+    equal(str, test[i], 'String#each | string split | match should be passed as the first argument to the block');
     counter++;
   });
-  equal(counter, 4, 'String#each');
-  same(result, test, 'String#each');
+  equal(counter, 4, 'String#each | string split | should have ran 4 times');
+  same(result, test, "String#each | string split | resulting array should have been ['three','two','one','contact']");
 
   counter = 0;
   test = ['beebop', 'rocksteady', 'and donatello'];
   result = 'beebop, rocksteady, and donatello'.each(/,\s*/g, 'split', function(str, i){
-    equal(str, test[i], 'String#each');
+    equal(str, test[i], 'String#each | regexp split | match should be passed as the first argument to the block');
     counter++;
   });
-  equal(counter, 3, 'String#each');
-  same(result, test, 'String#each');
+  equal(counter, 3, 'String#each | regexp split | should have run 3 times');
+  same(result, test, "String#each | regexp split | resulting array should have been ['beebop','rocksteady','and donatello']");
 
 
   /* .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups */
   var testString = 'cruel world';
 
   result = testString.each(/\w+/g);
-  same(result, ['cruel', 'world'], 'String#each');
+  same(result, ['cruel', 'world'], 'String#each | complex regexp | /\\w+/g');
 
   result = testString.each(/.../g);
-  same(result, ['cru', 'el ', 'wor'], 'String#each');
-
-  result = testString.each(/(...)/g);
-  same(result, ['cru', 'el ', 'wor'], 'String#each');
+  same(result, ['cru', 'el ', 'wor'], 'String#each | complex regexp | /.../');
 
   result = testString.each(/(..)(..)/g);
-  same(result, ['crue', 'l wo'], 'String#each');
+  same(result, ['crue', 'l wo'], 'String#each | complex regexp | /(..)(..)/');
 
 
   /* test each char code */
   counter = 0;
   test = [103,105,110,103,101,114];
   result = 'ginger'.bytes(function(str, i){
-    equal(str, test[i], 'String#bytes');
+    equal(str, test[i], 'String#bytes | ginger codes | char code should have been passed into the block');
     counter++;
   });
-  equal(counter, 6, 'String#bytes');
-  same(result, test, 'String#bytes');
+  equal(counter, 6, 'String#bytes | ginger codes | should have ran 6 times');
+  same(result, test, 'String#bytes | ginger codes | result should be an array');
 
   /* test each char */
   counter = 0;
   result = 'ginger'.chars(function(str, i){
-    equal(i, counter, 'String#chars');
-    equal(str, 'ginger'.charAt(counter), 'String#chars');
+    equal(str, 'ginger'.charAt(counter), 'String#chars | ginger | char code should be the first argument in the block');
+    equal(i, counter, 'String#chars | ginger | index should be the second argument in the block');
     counter++;
   });
-  equal(counter, 6, 'String#chars');
-  same(result, ['g','i','n','g','e','r'], 'String#chars');
+  equal(counter, 6, 'String#chars | ginger | should have run 6 times');
+  same(result, ['g','i','n','g','e','r'], 'String#chars | result should be an array');
 
   /* test each char collects when properly returned */
   counter = 0;
@@ -601,28 +596,27 @@ test('String', function () {
     counter++;
     return str.toUpperCase();
   });
-  equal(counter, 6, 'String#chars');
-  same(result, ['G','I','N','G','E','R'], 'String#chars');
+  same(result, ['G','I','N','G','E','R'], 'String#chars | ginger | resulting array is properly collected');
 
   counter = 0;
   var sentence = 'these pretzels are \n\n making me         thirsty!\n\n';
   test = ['these', 'pretzels', 'are', 'making', 'me', 'thirsty!'];
   result = sentence.words(function(str, i){
-    equal(str, test[i], 'String#words');
+    equal(str, test[i], 'String#words | match is the first argument');
     counter ++;
   });
-  equal(counter, 6, 'String#words');
-  same(result, test, 'String#words');
+  equal(counter, 6, 'String#words | should have run 6 times');
+  same(result, test, 'String#words | result should be an array of matches');
 
   counter = 0;
   var paragraph = 'these\npretzels\nare\n\nmaking\nme\n         thirsty!\n\n\n\n';
   test = ['these', 'pretzels', 'are', '', 'making', 'me', '         thirsty!'];
   result = paragraph.lines(function(str, i){
-    equal(str, test[i], 'String#lines');
+    equal(str, test[i], 'String#lines | match is the first argument');
     counter ++;
   });
-  equal(counter, 7, 'String#lines');
-  same(result, test, 'String#lines');
+  equal(counter, 7, 'String#lines | should have run 7 times');
+  same(result, test, 'String#lines | result should be an array of matches');
 
   counter = 0;
   var essay = 'the history of the united states\n\n';
@@ -633,11 +627,11 @@ test('String', function () {
   essay +=    'The End\n\n\n\n\n\n\n';
   test = ['the history of the united states', 'it all began back in 1776 when someone declared something from someone.\nit was at this point that we had to get our rears in gear', 'The British got their revenge in the late 60s with the British Invasion,\nwhich claimed the lives of over 32,352 young women across the nation.', 'The End'];
   result = essay.paragraphs(function(str, i){
-    equal(str, test[i], 'String#paragraphs');
+    equal(str, test[i], 'String#paragraphs | match is the first argument');
     counter ++;
   });
-  equal(counter, 4, 'String#paragraphs');
-  same(result, test, 'String#paragraphs');
+  equal(counter, 4, 'String#paragraphs | should have run 4 times');
+  same(result, test, 'String#paragraphs | result should be an array of matches');
 
 
   same(''.bytes(), [], 'String#bytes | empty string');
@@ -645,420 +639,433 @@ test('String', function () {
   same(''.words(), [], 'String#words | empty string');
   same(''.lines(), [''], 'String#lines | empty string');
   same(''.paragraphs(), [''], 'String#paragraphs | empty string');
-  same(''.each('f'), [], 'String#each | empty string');
-  same(''.each(/foo/), [], 'String#each | empty string');
-  same(''.each(function(){}), [], 'String#each | empty string');
+  same(''.each('f'), [], 'String#each | empty string | each f');
+  same(''.each(/foo/), [], 'String#each | empty string | each /foo/');
+  same(''.each(function(){}), [], 'String#each | empty string | passing a block');
 
 
 
 
-  equal('ō'.normalize(), 'o', 'String#normalize');
-  equal('o'.normalize(), 'o', 'String#normalize');
-  equal('kyōto'.normalize(), 'kyoto', 'String#normalize');
-  equal(''.normalize(), '', 'String#normalize');
-  equal('äěìøůŷñ'.normalize(), 'aeiouyn', 'String#normalize');
+  equal('ō'.normalize(), 'o', 'String#normalize | ō is o');
+  equal('o'.normalize(), 'o', 'String#normalize | o is o');
+  equal('kyōto'.normalize(), 'kyoto', 'String#normalize | kyōto is kyoto ');
+  equal(''.normalize(), '', 'String#normalize | empty string');
+  equal('äěìøůŷñ'.normalize(), 'aeiouyn', 'String#normalize | äěìøůŷñ is aeiouyn');
 
-  equal('Ō'.normalize(), 'O', 'String#normalize');
-  equal('KYŌTO'.normalize(), 'KYOTO', 'String#normalize');
-  equal('ÄĚÌØŮŶÑ'.normalize(), 'AEIOUYN', 'String#normalize');
-
-
-  equal('o'.accent('-'), 'ō', 'String#accent');
-  equal('a'.accent('`'), 'à', 'String#accent');
-  equal('a'.accent('v'), 'ǎ', 'String#accent');
-  equal('e'.accent(':'), 'ë', 'String#accent');
-  equal('e'.accent('-'), 'ē', 'String#accent');
-  equal('th'.accent(), 'þ', 'String#accent');
-  equal('dh'.accent(), 'ð', 'String#accent');
-  equal('ss'.accent(), 'ß', 'String#accent');
-  equal('oe'.accent(), 'œ', 'String#accent');
-
-  equal('A'.accent('`'), 'À', 'String#accent');
-  equal('A'.accent('v'), 'Ǎ', 'String#accent');
-  equal('E'.accent(':'), 'Ë', 'String#accent');
-  equal('E'.accent('-'), 'Ē', 'String#accent');
+  equal('Ō'.normalize(), 'O', 'String#normalize | Ō is O');
+  equal('KYŌTO'.normalize(), 'KYOTO', 'String#normalize | KYŌTO is KYOTO');
+  equal('ÄĚÌØŮŶÑ'.normalize(), 'AEIOUYN', 'String#normalize | ÄĚÌØŮŶÑ is AEIOUYN');
 
 
+  equal('o'.accent('-'), 'ō', 'String#accent | o + - is ō');
+  equal('a'.accent('`'), 'à', 'String#accent | a + ` is à');
+  equal('a'.accent('v'), 'ǎ', 'String#accent | a + v is ǎ');
+  equal('e'.accent(':'), 'ë', 'String#accent | e + : is ë');
+  equal('e'.accent('-'), 'ē', 'String#accent | e + - is ē');
+  equal('th'.accent(), 'þ', 'String#accent | th is þ');
+  equal('dh'.accent(), 'ð', 'String#accent | dh is ð');
+  equal('ss'.accent(), 'ß', 'String#accent | ss is ß');
+  equal('oe'.accent(), 'œ', 'String#accent | oe is œ');
 
-  equal('hello'.startsWith('hell'), true, 'String#startsWith');
-  equal('HELLO'.startsWith('HELL'), true, 'String#startsWith');
-  equal('HELLO'.startsWith('hell'), true, 'String#startsWith');
-  equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith');
-  equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith');
-
-
-  equal('vader'.endsWith('der'), true, 'String#endsWith');
-  equal('VADER'.endsWith('DER'), true, 'String#endsWith');
-  equal('VADER'.endsWith('der'), true, 'String#endsWith');
-  equal('VADER'.endsWith('DER', true), true, 'String#endsWith');
-  equal('VADER'.endsWith('der', true), false, 'String#endsWith');
-  equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith');
-  equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith');
-
-
-  equal(''.blank(), true, 'String#blank');
-  equal('0'.blank(), false, 'String#blank');
-  equal('            '.blank(), true, 'String#blank');
-  equal('\n'.blank(), true, 'String#blank');
-  equal('\t\t\t\t'.blank(), true, 'String#blank');
-  equal('　　　　　\n　　　'.blank(), true, 'String#blank'); // Japanese space
-  equal('日本語では　「マス」　というの知ってた？'.blank(), false, 'String#blank');
-  equal('mayonnaise'.blank(), false, 'String#blank');
+  equal('A'.accent('`'), 'À', 'String#accent | A + ` is À');
+  equal('A'.accent('v'), 'Ǎ', 'String#accent | A + v is Ǎ');
+  equal('E'.accent(':'), 'Ë', 'String#accent | E + : is Ë');
+  equal('E'.accent('-'), 'Ē', 'String#accent | E + - is Ē');
 
 
-  equal('foo'.has('f'), true, 'String#has');
-  equal('foo'.has('oo'), true, 'String#has');
-  equal('foo'.has(/f/), true, 'String#has');
-  equal('foo'.has(/[a-g]/), true, 'String#has');
-  equal('foo'.has(/[p-z]/), false, 'String#has');
-  equal('foo'.has(/f$/), false, 'String#has');
+
+  equal('hello'.startsWith('hell'), true, 'String#startsWith | hello starts with hell');
+  equal('HELLO'.startsWith('HELL'), true, 'String#startsWith | HELLO starts with HELL');
+  equal('HELLO'.startsWith('hell'), true, 'String#startsWith | HELLO starts with hell');
+  equal('HELLO'.startsWith('hell', true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
+  equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith | valley girls rock starts with valley girls');
+  equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith | valley girls rock starts with valley girls r');
 
 
-  equal('five'.insert('schfifty '), 'schfifty five', 'String#insert');
-  equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert');
-  equal('spelling eror'.insert('r', -3), 'spelling error', 'String#insert');
-  equal('flack'.insert('a', 0), 'aflack', 'String#insert');
-  equal('five'.insert('schfifty', 20), 'five', 'String#insert');
-  equal('five'.insert('schfifty', -20), 'five', 'String#insert');
-  equal('five'.insert('schfifty', 4), 'fiveschfifty', 'String#insert');
-  equal('five'.insert('schfifty', 5), 'five', 'String#insert');
+  equal('vader'.endsWith('der'), true, 'String#endsWith | vader ends with der');
+  equal('VADER'.endsWith('DER'), true, 'String#endsWith | VADER ends with DER');
+  equal('VADER'.endsWith('der'), true, 'String#endsWith | VADER ends with der');
+  equal('VADER'.endsWith('DER', true), true, 'String#endsWith | case sensitive | VADER ends with DER');
+  equal('VADER'.endsWith('der', true), false, 'String#endsWith | case sensitive |  VADER ends with der');
+  equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith | vader ends with der');
+  equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith | vader ends with der');
 
-  equal('カタカナ'.hanKaku(), 'ｶﾀｶﾅ', 'String#hankaku');
-  equal('こんにちは。ヤマダタロウです。'.hanKaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku');
-  equal('こんにちは。ＴＡＲＯ　ＹＡＭＡＤＡです。'.hanKaku(), 'こんにちは｡TARO YAMADAです｡', 'String#hankaku');
-  equal('　'.hanKaku(), ' ', 'String#hankaku');
-  equal('　'.hanKaku('p'), ' ', 'String#hankaku');
+
+  equal(''.blank(), true, 'String#blank | empty string');
+  equal('0'.blank(), false, 'String#blank | 0');
+  equal('            '.blank(), true, 'String#blank | sucessive blanks');
+  equal('\n'.blank(), true, 'String#blank | new line');
+  equal('\t\t\t\t'.blank(), true, 'String#blank | tabs');
+  equal('　　　　　\n　　　'.blank(), true, 'String#blank | japanese zenkaku space');
+  equal('日本語では　「マス」　というの知ってた？'.blank(), false, 'String#blank | japanese');
+  equal('mayonnaise'.blank(), false, 'String#blank | mayonnaise');
+
+
+  equal('foo'.has('f'), true, 'String#has | foo has f');
+  equal('foo'.has('oo'), true, 'String#has | foo has oo');
+  equal('foo'.has(/f/), true, 'String#has | foo has /f/');
+  equal('foo'.has(/[a-g]/), true, 'String#has | foo has /[a-g]/');
+  equal('foo'.has(/[p-z]/), false, 'String#has | foo has /[p-z]/');
+  equal('foo'.has(/f$/), false, 'String#has | foo has /f$/');
+
+
+  equal('five'.insert('schfifty '), 'schfifty five', 'String#insert | schfiffy five');
+  equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert | dopeamine');
+  equal('spelling eror'.insert('r', -3), 'spelling error', 'String#insert | inserts from the end');
+  equal('flack'.insert('a', 0), 'aflack', 'String#insert | inserts at 0');
+  equal('five'.insert('schfifty', 20), 'five', 'String#insert | does not insert out of positive range');
+  equal('five'.insert('schfifty', -20), 'five', 'String#insert | does not insert out of negative range');
+  equal('five'.insert('schfifty', 4), 'fiveschfifty', 'String#insert | inserts at position 4');
+  equal('five'.insert('schfifty', 5), 'five', 'String#insert | inserts at position 5');
+
+  equal('カタカナ'.hankaku(), 'ｶﾀｶﾅ', 'String#hankaku | katakana');
+  equal('こんにちは。ヤマダタロウです。'.hankaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku |  hankaku katakana inside a string');
+  equal('こんにちは。ＴＡＲＯ　ＹＡＭＡＤＡです。'.hankaku(), 'こんにちは｡TARO YAMADAです｡', 'String#hankaku | hankaku romaji inside a string');
+  equal('　'.hankaku(), ' ', 'String#hankaku | spaces');
+  equal('　'.hankaku('p'), ' ', 'String#hankaku | punctuation | spaces');
 
 
   var barabara = 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）';
-  equal(barabara.hanKaku(), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hankaku');
-  equal(barabara.hanKaku('a'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('n'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('k'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('p'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('s'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku');
+  equal(barabara.hankaku(), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hankaku | modes | full conversion');
+  equal(barabara.hankaku('a'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | romaji only');
+  equal(barabara.hankaku('n'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes | numbers only');
+  equal(barabara.hankaku('k'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes | katakana only');
+  equal(barabara.hankaku('p'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku | modes | punctuation only');
+  equal(barabara.hankaku('s'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku | modes | special chars only');
 
-  equal(barabara.hanKaku('a', 'n'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('a', 'k'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('a', 's'), 'こんにちは。タロウ　YAMADAです。１８才です！(笑)', 'String#hankaku');
-  equal(barabara.hanKaku('a', 'p'), 'こんにちは｡タロウ YAMADAです｡１８才です!（笑）', 'String#hankaku');
+  equal(barabara.hankaku('an'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku | modes | alphabet and numbers');
+  equal(barabara.hankaku('ak'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | alphabet and katakana');
+  equal(barabara.hankaku('as'), 'こんにちは。タロウ　YAMADAです。１８才です！(笑)', 'String#hankaku | modes | alphabet and special');
+  equal(barabara.hankaku('ap'), 'こんにちは｡タロウ YAMADAです｡１８才です!（笑）', 'String#hankaku | modes | alphabet and punctuation');
 
-  equal(barabara.hanKaku('alphabet'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('numbers'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('katakana'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('punctuation'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku');
-  equal(barabara.hanKaku('special'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku');
+  equal(barabara.hankaku('na'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku | modes reverse | alphabet and numbers');
+  equal(barabara.hankaku('ka'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes reverse | alphabet and katakana');
+  equal(barabara.hankaku('sa'), 'こんにちは。タロウ　YAMADAです。１８才です！(笑)', 'String#hankaku | modes reverse | alphabet and special');
+  equal(barabara.hankaku('pa'), 'こんにちは｡タロウ YAMADAです｡１８才です!（笑）', 'String#hankaku | modes reverse | alphabet and punctuation');
+
+  equal(barabara.hankaku('alphabet'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes full | alphabet');
+  equal(barabara.hankaku('numbers'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes full | numbers');
+  equal(barabara.hankaku('katakana'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes full | katakana');
+  equal(barabara.hankaku('punctuation'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku | modes full | punctuation');
+  equal(barabara.hankaku('special'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku | modes full | special');
 
 
-  equal('ｶﾀｶﾅ'.zenKaku(), 'カタカナ', 'String#zenKaku');
-  equal(' '.zenKaku(), '　', 'String#zenKaku');
-  equal(' '.zenKaku('p'), '　', 'String#zenKaku');
+  equal('ｶﾀｶﾅ'.zenkaku(), 'カタカナ', 'String#zenkaku | katakana');
+  equal(' '.zenkaku(), '　', 'String#zenkaku | spaces');
+  equal(' '.zenkaku('p'), '　', 'String#zenkaku | punctuation | spaces');
 
 
   barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
 
-  equal(barabara.zenKaku(), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#zenKaku');
-  equal(barabara.zenKaku('a'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('n'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('k'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('p'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('s'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenKaku');
+  equal(barabara.zenkaku(), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#zenkaku | modes | full conversion');
+  equal(barabara.zenkaku('a'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet');
+  equal(barabara.zenkaku('n'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenkaku | modes | number');
+  equal(barabara.zenkaku('k'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenkaku | modes | katakana');
+  equal(barabara.zenkaku('p'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenkaku | modes | punctuation');
+  equal(barabara.zenkaku('s'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenkaku | modes | special');
 
-  equal(barabara.zenKaku('a', 'n'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('a', 'k'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('a', 's'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!（笑）', 'String#zenKaku');
-  equal(barabara.zenKaku('a', 'p'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。18才です！(笑)', 'String#zenKaku');
+  equal(barabara.zenkaku('an'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenkaku | modes | alphabet and numbers');
+  equal(barabara.zenkaku('ak'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet and katakana');
+  equal(barabara.zenkaku('as'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!（笑）', 'String#zenkaku | modes | alphabet and special');
+  equal(barabara.zenkaku('ap'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。18才です！(笑)', 'String#zenkaku | modes | alphabet and punctuation');
 
-  equal(barabara.zenKaku('alphabet'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('numbers'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('katakana'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenKaku');
-  equal(barabara.zenKaku('special'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenKaku');
-  equal(barabara.zenKaku('punctuation'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenKaku');
+  equal(barabara.zenkaku('na'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenkaku | modes reverse | alphabet and numbers');
+  equal(barabara.zenkaku('ka'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes reverse | alphabet and katakana');
+  equal(barabara.zenkaku('sa'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!（笑）', 'String#zenkaku | modes reverse | alphabet and special');
+  equal(barabara.zenkaku('pa'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。18才です！(笑)', 'String#zenkaku | modes reverse | alphabet and punctuation');
 
-
-  equal('ガ'.hanKaku(), 'ｶﾞ', 'String#hankaku:Convert dakuten');
-  equal('ｶﾞ'.zenKaku(), 'ガ', 'String#zenkaku:Convert dakuten');
-  equal('ｶﾞ'.hiragana(), 'が', 'String#hiragana:Convert dakuten');
-
-
-  equal('カタカナ'.hiragana(), 'かたかな', 'String#hiragana');
-  equal('ｶﾀｶﾅ'.hiragana(), 'かたかな', 'String#hiragana');
-  equal('ｶﾀｶﾅ'.hiragana(false), 'ｶﾀｶﾅ', 'String#hiragana');
-  equal(barabara.hiragana(), 'こんにちは｡たろう YAMADAです｡18才です!(笑)', 'String#hiragana');
-  equal(barabara.zenKaku().hiragana(), 'こんにちは。たろう　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hiragana');
-  equal(barabara.hiragana(false), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hiragana');
+  equal(barabara.zenkaku('alphabet'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes full | alphabet');
+  equal(barabara.zenkaku('numbers'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenkaku | modes full | numbers');
+  equal(barabara.zenkaku('katakana'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenkaku | modes full | katakana');
+  equal(barabara.zenkaku('special'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenkaku | modes full | special');
+  equal(barabara.zenkaku('punctuation'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenkaku | modes full | punctuation');
 
 
+  equal('ガ'.hankaku(), 'ｶﾞ', 'String#hankaku | dakuten | ガ');
+  equal('ｶﾞ'.zenkaku(), 'ガ', 'String#zenkaku | dakuten | ｶ');
+  equal('ｶﾞ'.hiragana(), 'が', 'String#hiragana | dakuten | ｶ');
 
 
-  equal('ひらがな'.katakana(), 'ヒラガナ', 'String#katakana');
-  equal(barabara.katakana(), 'コンニチハ｡ﾀﾛｳ YAMADAデス｡18才デス!(笑)', 'String#katakana');
-  equal(barabara.zenKaku().katakana(), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'String#katakana');
+  equal('カタカナ'.hiragana(), 'かたかな', 'String#hiragana | from katakana');
+  equal('ｶﾀｶﾅ'.hiragana(), 'かたかな', 'String#hiragana | convert from hankaku katakana');
+  equal('ｶﾀｶﾅ'.hiragana(false), 'ｶﾀｶﾅ', 'String#hiragana | no widths |convert from hankaku katakana');
+  equal(barabara.hiragana(), 'こんにちは｡たろう YAMADAです｡18才です!(笑)', 'String#hiragana | full string');
+  equal(barabara.zenkaku().hiragana(), 'こんにちは。たろう　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hiragana | full string to zenkaku');
+  equal(barabara.hiragana(false), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hiragana | no widths | full string');
 
 
-  equal('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）'.katakana().hanKaku(), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'String#katakana');
 
 
-  equal('4em'.toNumber(), 4, 'String#toNumber');
-  equal('10px'.toNumber(), 10, 'String#toNumber');
-  equal('10,000'.toNumber(), 10000, 'String#toNumber');
-  equal('5,322,144,444'.toNumber(), 5322144444, 'String#toNumber');
-  equal('10.532'.toNumber(), 10.532, 'String#toNumber');
-  equal('10'.toNumber(), 10, 'String#toNumber');
-  equal('95.25%'.toNumber(), 95.25, 'String#toNumber');
-  equal('10.848'.toNumber(), 10.848, 'String#toNumber');
+  equal('ひらがな'.katakana(), 'ヒラガナ', 'String#katakana | from hiragana');
+  equal(barabara.katakana(), 'コンニチハ｡ﾀﾛｳ YAMADAデス｡18才デス!(笑)', 'String#katakana | full string');
+  equal(barabara.zenkaku().katakana(), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'String#katakana full string to zenkaku');
 
-  equal('1234blue'.toNumber(), 1234, 'String#toNumber');
-  equal(isNaN('0xA'.toNumber()), false, 'String#toNumber');
-  equal('22.5'.toNumber(), 22.5, 'String#toNumber');
-  equal(isNaN('blue'.toNumber()), true, 'String#toNumber');
 
-  equal('010'.toNumber(), 10, 'String#toNumber');
-  equal('0908'.toNumber(), 908, 'String#toNumber');
-  equal('22.34.5'.toNumber(), 22.34, 'String#toNumber');
+  equal('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）'.katakana().hankaku(), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'String#katakana | full string to katakana and hankaku');
 
-  equal(isNaN('........'.toNumber()), true, 'String#toNumber');
 
-  equal('1.45kg'.toNumber(), 1.45, 'String#toNumber');
-  equal('77.3'.toNumber(), 77.3, 'String#toNumber');
-  equal('077.3'.toNumber(), 77.3, 'String#toNumber');
-  equal(isNaN('0x77.3'.toNumber()), false, 'String#toNumber');
-  equal('.3'.toNumber(), 0.3, 'String#toNumber');
-  equal('0.1e6'.toNumber(), 100000, 'String#toNumber');
+  equal('4em'.toNumber(), 4, 'String#toNumber | 4em');
+  equal('10px'.toNumber(), 10, 'String#toNumber | 10px');
+  equal('10,000'.toNumber(), 10000, 'String#toNumber | 10,000');
+  equal('5,322,144,444'.toNumber(), 5322144444, 'String#toNumber | 5,322,144,444');
+  equal('10.532'.toNumber(), 10.532, 'String#toNumber | 10.532');
+  equal('10'.toNumber(), 10, 'String#toNumber | 10');
+  equal('95.25%'.toNumber(), 95.25, 'String#toNumber | 95.25%');
+  equal('10.848'.toNumber(), 10.848, 'String#toNumber | 10.848');
+
+  equal('1234blue'.toNumber(), 1234, 'String#toNumber | 1234blue');
+  equal(isNaN('0xA'.toNumber()), false, 'String#toNumber | "0xA" should not be NaN');
+  equal('22.5'.toNumber(), 22.5, 'String#toNumber | 22.5');
+  equal(isNaN('blue'.toNumber()), true, 'String#toNumber | "blue" should not be NaN');
+
+  equal('010'.toNumber(), 10, 'String#toNumber | "010" should be 10');
+  equal('0908'.toNumber(), 908, 'String#toNumber | "0908" should be 908');
+  equal('22.34.5'.toNumber(), 22.34, 'String#toNumber | "22.34.5" should be 22.34');
+
+  equal(isNaN('........'.toNumber()), true, 'String#toNumber | "......." should be NaN');
+
+  equal('1.45kg'.toNumber(), 1.45, 'String#toNumber | "1.45kg"');
+  equal('77.3'.toNumber(), 77.3, 'String#toNumber | 77.3');
+  equal('077.3'.toNumber(), 77.3, 'String#toNumber | "077.3" should be 77.3');
+  equal(isNaN('0x77.3'.toNumber()), false, 'String#toNumber | "0x77.3" is not NaN');
+  equal('.3'.toNumber(), 0.3, 'String#toNumber | ".3" should be 0.3');
+  equal('0.1e6'.toNumber(), 100000, 'String#toNumber | "0.1e6" should be 100000');
 
 
   // This should handle hexadecimal, etc
-  equal('ff'.toNumber(16), 255, 'String#toNumber');
-  equal('00'.toNumber(16), 0, 'String#toNumber');
-  equal('33'.toNumber(16), 51, 'String#toNumber');
-  equal('66'.toNumber(16), 102, 'String#toNumber');
-  equal('99'.toNumber(16), 153, 'String#toNumber');
-  equal('bb'.toNumber(16), 187, 'String#toNumber');
+  equal('ff'.toNumber(16), 255, 'String#toNumber | hex | ff');
+  equal('00'.toNumber(16), 0, 'String#toNumber | hex | 00');
+  equal('33'.toNumber(16), 51, 'String#toNumber | hex | 33');
+  equal('66'.toNumber(16), 102, 'String#toNumber | hex | 66');
+  equal('99'.toNumber(16), 153, 'String#toNumber | hex | 99');
+  equal('bb'.toNumber(16), 187, 'String#toNumber | hex | bb');
 
 
 
 
-  equal('spoon'.reverse(), 'noops', 'String#reverse');
-  equal('amanaplanacanalpanama'.reverse(), 'amanaplanacanalpanama', 'String#reverse');
+  equal('spoon'.reverse(), 'noops', 'String#reverse | spoon');
+  equal('amanaplanacanalpanama'.reverse(), 'amanaplanacanalpanama', 'String#reverse | amanaplanacanalpanama');
 
 
-  equal('the rain in     spain    falls mainly   on     the        plain'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact');
-  equal('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact');
-  equal('\n\n\n\n           \t\t\t\t          \n\n      \t'.compact(), '', 'String#compact');
-  equal('　　　日本語　　　　　の　　　　　スペース　　　　　も　　'.compact(), '日本語　の　スペース　も', 'String#compact');
-
-
-
-
-  equal('foop'.at(0), 'f', 'String#at');
-  equal('foop'.at(1), 'o', 'String#at');
-  equal('foop'.at(2), 'o', 'String#at');
-  equal('foop'.at(3), 'p', 'String#at');
-  equal('foop'.at(4), '', 'String#at');
-  equal('foop'.at(1224), '', 'String#at');
-  equal('foop'.at(-1), 'p', 'String#at');
-  equal('foop'.at(-2), 'o', 'String#at');
-  equal('foop'.at(-3), 'o', 'String#at');
-  equal('foop'.at(-4), 'f', 'String#at');
-  equal('foop'.at(-5), '', 'String#at');
-  equal('foop'.at(-1224), '', 'String#at');
-
-  same('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at');
-
-
-  equal('quack'.first(), 'q', 'String#first');
-  equal('quack'.first(2), 'qu', 'String#first');
-  equal('quack'.first(3), 'qua', 'String#first');
-  equal('quack'.first(4), 'quac', 'String#first');
-  equal('quack'.first(20), 'quack', 'String#first');
-  equal('quack'.first(0), '', 'String#first');
-  equal('quack'.first(-1), '', 'String#first');
-  equal('quack'.first(-5), '', 'String#first');
-  equal('quack'.first(-10), '', 'String#first');
-
-
-
-  equal('quack'.last(), 'k', 'String#last');
-  equal('quack'.last(2), 'ck', 'String#last');
-  equal('quack'.last(3), 'ack', 'String#last');
-  equal('quack'.last(4), 'uack', 'String#last');
-  equal('quack'.last(10), 'quack', 'String#last');
-  equal('quack'.last(-1), '', 'String#last');
-  equal('quack'.last(-5), '', 'String#last');
-  equal('quack'.last(-10), '', 'String#last');
-  equal('fa'.last(3), 'fa', 'String#last');
-
-
-  equal('quack'.from(), 'quack', 'String#from');
-  equal('quack'.from(0), 'quack', 'String#from');
-  equal('quack'.from(2), 'ack', 'String#from');
-  equal('quack'.from(4), 'k', 'String#from');
-  equal('quack'.from(-1), 'k', 'String#from');
-  equal('quack'.from(-3), 'ack', 'String#from');
-  equal('quack'.from(-4), 'uack', 'String#from');
-
-
-  equal('quack'.to(), 'quack', 'String#to');
-  equal('quack'.to(0), 'q', 'String#to');
-  equal('quack'.to(2), 'qua', 'String#to');
-  equal('quack'.to(4), 'quack', 'String#to');
-  equal('quack'.to(-1), 'quack', 'String#to');
-  equal('quack'.to(-3), 'qua', 'String#to');
-  equal('quack'.to(-4), 'qu', 'String#to');
-
-
-  same('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate');
-  same('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate');
-  same(''.toDate().toString(), new Date().toString(), 'String#toDate');
-  same('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate');
-  same('the day after tomorrow'.toDate().toString(), Date.create('the day after tomorrow').toString(), 'String#toDate');
-
-
-  same('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize');
-  same('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize');
-  same('hopOnPop'.dasherize(), 'hop-on-pop', 'String#dasherize');
-  same('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize');
-  same('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize');
-  same('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize');
-  same('hop-on-pop'.camelize('lower'), 'hopOnPop', 'String#camelize');
-  same('HOP-ON-POP'.camelize('lower'), 'hopOnPop', 'String#camelize');
-  same('hop_on_pop'.camelize('lower'), 'hopOnPop', 'String#camelize');
-  same('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore');
-  same('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore');
-  same('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore');
-  same('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore');
-  same('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore');
-
-
-  equal('what a shame of a title'.titleize(), 'What A Shame Of A Title', 'String#titleize');
-  equal('What A Shame Of A Title'.titleize(), 'What A Shame Of A Title', 'String#titleize');
-  equal(' what a shame of a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize');
-  equal(' what a shame of\n a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize');
-
-
-
-  equal('ア'.isKatakana(), true, 'String#isKatakana');
-  equal('ｱ'.isKatakana(), true, 'String#isKatakana');
-  equal('ァ'.isKatakana(), true, 'String#isKatakana');
-  equal('ah'.isKatakana(), false, 'String#isKatakana');
-  equal('アイカムインピース'.isKatakana(), true, 'String#isKatakana');
-  equal('アイカムinピース'.isKatakana(), false, 'String#isKatakana');
-  equal('アイカム イン ピース'.isKatakana(), true, 'String#isKatakana');
-
-  equal('ア'.hasKatakana(), true, 'String#hasKatakana');
-  equal('ｱ'.hasKatakana(), true, 'String#hasKatakana');
-  equal('ah'.hasKatakana(), false, 'String#hasKatakana');
-  equal('aアh'.hasKatakana(), true, 'String#hasKatakana');
-  equal('aｱh'.hasKatakana(), true, 'String#hasKatakana');
-  equal('アイカムインピース'.hasKatakana(), true, 'String#hasKatakana');
-  equal('アイカムinピース'.hasKatakana(), true, 'String#hasKatakana');
-
-
-  equal('あ'.isHiragana(), true, 'String#isHiragana');
-  equal('ぁ'.isHiragana(), true, 'String#isHiragana');
-  equal('ah'.isHiragana(), false, 'String#isHiragana');
-  equal('あいかむいんぴーす'.isHiragana(), true, 'String#isHiragana');
-  equal('あいかむinぴーす'.isHiragana(), false, 'String#isHiragana');
-  equal('あいかむ in ぴーす'.isHiragana(), false, 'String#isHiragana');
-  equal('アイカム イン ピース'.isHiragana(), false, 'String#isHiragana');
-
-
-  equal('あ'.hasHiragana(), true, 'String#hasHiragana');
-  equal('ぁ'.hasHiragana(), true, 'String#hasHiragana');
-  equal('ah'.hasHiragana(), false, 'String#hasHiragana');
-  equal('aあh'.hasHiragana(), true, 'String#hasHiragana');
-  equal('aぁh'.hasHiragana(), true, 'String#hasHiragana');
-  equal('あいかむいんぴーす'.hasHiragana(), true, 'String#hasHiragana');
-  equal('あいかむinぴーす'.hasHiragana(), true, 'String#hasHiragana');
+  equal('the rain in     spain    falls mainly   on     the        plain'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact | basic');
+  equal('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact | with newlines');
+  equal('\n\n\n\n           \t\t\t\t          \n\n      \t'.compact(), '', 'String#compact | with newlines and tabs');
+  equal('　　　日本語　　　　　の　　　　　スペース　　　　　も　　'.compact(), '日本語　の　スペース　も', 'String#compact | japanese spaces');
 
 
 
 
-  equal(''.isKana(), false, 'String#isKana');
-  equal('あいうえお'.isKana(), true, 'String#isKana');
-  equal('アイウエオ'.isKana(), true, 'String#isKana');
-  equal('あうえおアイウエオ'.isKana(), true, 'String#isKana');
-  equal('あうえおaeiouアイウエオ'.isKana(), false, 'String#isKana');
-  equal('  あいうえお  '.isKana(), true, 'String#isKana');
-  equal('  アイウエオ \n '.isKana(), true, 'String#isKana');
+  equal('foop'.at(0), 'f', 'String#at | pos 0');
+  equal('foop'.at(1), 'o', 'String#at | pos 1');
+  equal('foop'.at(2), 'o', 'String#at | pos 2');
+  equal('foop'.at(3), 'p', 'String#at | pos 3');
+  equal('foop'.at(4), '', 'String#at | pos 4');
+  equal('foop'.at(1224), '', 'String#at | out of bounds');
+  equal('foop'.at(-1), 'p', 'String#at | negative | pos -1');
+  equal('foop'.at(-2), 'o', 'String#at | negative | pos -2');
+  equal('foop'.at(-3), 'o', 'String#at | negative | pos -3');
+  equal('foop'.at(-4), 'f', 'String#at | negative | pos -4');
+  equal('foop'.at(-5), '', 'String#at | negative | pos -5');
+  equal('foop'.at(-1224), '', 'String#at | negative | out of bounds');
+
+  same('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at | handles enumerated params');
+
+
+  equal('quack'.first(), 'q', 'String#first | first character');
+  equal('quack'.first(2), 'qu', 'String#first | first 2 characters');
+  equal('quack'.first(3), 'qua', 'String#first | first 3 characters');
+  equal('quack'.first(4), 'quac', 'String#first | first 4 characters');
+  equal('quack'.first(20), 'quack', 'String#first | first 20 characters');
+  equal('quack'.first(0), '', 'String#first | first 0 characters');
+  equal('quack'.first(-1), '', 'String#first | first -1 characters');
+  equal('quack'.first(-5), '', 'String#first | first -5 characters');
+  equal('quack'.first(-10), '', 'String#first | first -10 characters');
+
+
+
+  equal('quack'.last(), 'k', 'String#last | last character');
+  equal('quack'.last(2), 'ck', 'String#last | last 2 characters');
+  equal('quack'.last(3), 'ack', 'String#last | last 3 characters');
+  equal('quack'.last(4), 'uack', 'String#last | last 4 characters');
+  equal('quack'.last(10), 'quack', 'String#last | last 10 characters');
+  equal('quack'.last(-1), '', 'String#last | last -1 characters');
+  equal('quack'.last(-5), '', 'String#last | last -5 characters');
+  equal('quack'.last(-10), '', 'String#last | last -10 characters');
+  equal('fa'.last(3), 'fa', 'String#last | last 3 characters');
+
+
+  equal('quack'.from(), 'quack', 'String#from | no params');
+  equal('quack'.from(0), 'quack', 'String#from | from 0');
+  equal('quack'.from(2), 'ack', 'String#from | from 2');
+  equal('quack'.from(4), 'k', 'String#from | from 4');
+  equal('quack'.from(-1), 'k', 'String#from | from -1');
+  equal('quack'.from(-3), 'ack', 'String#from | from -3');
+  equal('quack'.from(-4), 'uack', 'String#from | from -4');
+
+
+  equal('quack'.to(), 'quack', 'String#to | no params');
+  equal('quack'.to(0), 'q', 'String#to | to 0');
+  equal('quack'.to(2), 'qua', 'String#to | to 2');
+  equal('quack'.to(4), 'quack', 'String#to | to 4');
+  equal('quack'.to(-1), 'quack', 'String#to | to -1');
+  equal('quack'.to(-3), 'qua', 'String#to | to -3');
+  equal('quack'.to(-4), 'qu', 'String#to | to -4');
+
+
+  same('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
+  same('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate | slash format');
+  same(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
+  same('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
+  same('the day after tomorrow'.toDate().toString(), Date.create('the day after tomorrow').toString(), 'String#toDate | relative format');
+
+
+  same('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
+  same('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize | capitals and underscores');
+  same('hopOnPop'.dasherize(), 'hop-on-pop', 'String#dasherize | camel-case');
+  same('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize | dashes');
+  same('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize | capital dashes');
+  same('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize | underscores');
+  same('hop-on-pop'.camelize('lower'), 'hopOnPop', 'String#camelize | lower | dashes');
+  same('HOP-ON-POP'.camelize('lower'), 'hopOnPop', 'String#camelize | lower | capital dashes');
+  same('hop_on_pop'.camelize('lower'), 'hopOnPop', 'String#camelize | lower | underscores');
+  same('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
+  same('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
+  same('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps');
+  same('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore | caps and dashes');
+  same('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore | lower-case and dashes');
+
+
+  equal('what a shame of a title'.titleize(), 'What A Shame Of A Title', 'String#titleize | all lower-case');
+  equal('What A Shame Of A Title'.titleize(), 'What A Shame Of A Title', 'String#titleize | already titleized');
+  equal(' what a shame of a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize | with whitespace');
+  equal(' what a shame of\n a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize | with whitespace and newlines');
+
+
+
+  equal('ア'.isKatakana(), true, 'String#isKatakana | ア');
+  equal('ｱ'.isKatakana(), true, 'String#isKatakana | ｱ');
+  equal('ァ'.isKatakana(), true, 'String#isKatakana | ァ');
+  equal('ah'.isKatakana(), false, 'String#isKatakana | ah');
+  equal('アイカムインピース'.isKatakana(), true, 'String#isKatakana | full katakana');
+  equal('アイカムinピース'.isKatakana(), false, 'String#isKatakana | full katakana with romaji');
+  equal('アイカム イン ピース'.isKatakana(), true, 'String#isKatakana | full katakana with spaces');
+
+  equal('ア'.hasKatakana(), true, 'String#hasKatakana | ア');
+  equal('ｱ'.hasKatakana(), true, 'String#hasKatakana | ｱ');
+  equal('ah'.hasKatakana(), false, 'String#hasKatakana | ah');
+  equal('aアh'.hasKatakana(), true, 'String#hasKatakana | aアh');
+  equal('aｱh'.hasKatakana(), true, 'String#hasKatakana | aｱh');
+  equal('アイカムインピース'.hasKatakana(), true, 'String#hasKatakana | full katakana');
+  equal('アイカムinピース'.hasKatakana(), true, 'String#hasKatakana | full katakana with romaji');
+
+
+  equal('あ'.isHiragana(), true, 'String#isHiragana | あ');
+  equal('ぁ'.isHiragana(), true, 'String#isHiragana | ぁ');
+  equal('ah'.isHiragana(), false, 'String#isHiragana | ah');
+  equal('あいかむいんぴーす'.isHiragana(), true, 'String#isHiragana | full hiragana');
+  equal('あいかむinぴーす'.isHiragana(), false, 'String#isHiragana | full hiragana with romaji');
+  equal('あいかむ in ぴーす'.isHiragana(), false, 'String#isHiragana | full hiragana with romaji and spaces');
+  equal('アイカム イン ピース'.isHiragana(), false, 'String#isHiragana | full hiragana with spaces');
+
+
+  equal('あ'.hasHiragana(), true, 'String#hasHiragana | あ');
+  equal('ぁ'.hasHiragana(), true, 'String#hasHiragana | ぁ');
+  equal('ah'.hasHiragana(), false, 'String#hasHiragana | ah');
+  equal('aあh'.hasHiragana(), true, 'String#hasHiragana | aあh');
+  equal('aぁh'.hasHiragana(), true, 'String#hasHiragana | aぁh');
+  equal('あいかむいんぴーす'.hasHiragana(), true, 'String#hasHiragana | full hiragana');
+  equal('あいかむinぴーす'.hasHiragana(), true, 'String#hasHiragana | full hiragana with romaji');
 
 
 
 
-
-  equal(''.hasKana(), false, 'String#hasKana');
-  equal('aeiou'.hasKana(), false, 'String#hasKana');
-  equal('あいうえお'.hasKana(), true, 'String#hasKana');
-  equal('アイウエオ'.hasKana(), true, 'String#hasKana');
-  equal('あうえおアイウエオ'.hasKana(), true, 'String#hasKana');
-  equal('あうえおaeiouアイウエオ'.hasKana(), true, 'String#hasKana');
-  equal('aeiouアaeiou'.hasKana(), true, 'String#hasKana');
-  equal('aeiouaeiou'.hasKana(), false, 'String#hasKana');
-
-
-
-  equal(''.isHan(), false, 'String#isHan');
-  equal('aeiou'.isHan(), false, 'String#isHan');
-  equal('あいうえお'.isHan(), false, 'String#isHan');
-  equal('アイウエオ'.isHan(), false, 'String#isHan');
-  equal('あうえおaeiouアイウエオ'.isHan(), false, 'String#isHan');
-  equal('合コン'.isHan(), false, 'String#isHan');
-  equal('語学'.isHan(), true, 'String#isHan');
-  equal('庭には二羽鶏がいる。'.isHan(), false, 'String#isHan');
-  equal(' 語学 '.isHan(), true, 'String#isHan');
-  equal(' 語学\t '.isHan(), true, 'String#isHan');
-
-
-
-  equal(''.hasHan(), false, 'String#hasHan');
-  equal('aeiou'.hasHan(), false, 'String#hasHan');
-  equal('あいうえお'.hasHan(), false, 'String#hasHan');
-  equal('アイウエオ'.hasHan(), false, 'String#hasHan');
-  equal('あうえおaeiouアイウエオ'.hasHan(), false, 'String#hasHan');
-  equal('合コン'.hasHan(), true, 'String#hasHan');
-  equal('語学'.hasHan(), true, 'String#hasHan');
-  equal('庭には二羽鶏がいる。'.hasHan(), true, 'String#hasHan');
-  equal(' 語学 '.hasHan(), true, 'String#hasHan');
-  equal(' 語学\t '.hasHan(), true, 'String#hasHan');
+  equal(''.isKana(), false, 'String#isKana | blank');
+  equal('あいうえお'.isKana(), true, 'String#isKana | hiragana');
+  equal('アイウエオ'.isKana(), true, 'String#isKana | katakana');
+  equal('あうえおアイウエオ'.isKana(), true, 'String#isKana | hiragana and katakan');
+  equal('あうえおaeiouアイウエオ'.isKana(), false, 'String#isKana | hiragana, katakana, and romaji');
+  equal('  あいうえお  '.isKana(), true, 'String#isKana | hiragana with whitespace');
+  equal('  アイウエオ \n '.isKana(), true, 'String#isKana | katakana with whitespace and a newline');
 
 
 
 
 
-  equal(''.isKanji(), false, 'String#isKanji');
-  equal('aeiou'.isKanji(), false, 'String#isKanji');
-  equal('あいうえお'.isKanji(), false, 'String#isKanji');
-  equal('アイウエオ'.isKanji(), false, 'String#isKanji');
-  equal('あうえおaeiouアイウエオ'.isKanji(), false, 'String#isKanji');
-  equal('合コン'.isKanji(), false, 'String#isKanji');
-  equal('語学'.isKanji(), true, 'String#isKanji');
-  equal('庭には二羽鶏がいる。'.isKanji(), false, 'String#isKanji');
-  equal(' 語学 '.isKanji(), true, 'String#isKanji');
-  equal(' 語学\t '.isKanji(), true, 'String#isKanji');
+  equal(''.hasKana(), false, 'String#hasKana | blank');
+  equal('aeiou'.hasKana(), false, 'String#hasKana | romaji');
+  equal('あいうえお'.hasKana(), true, 'String#hasKana | hiragana');
+  equal('アイウエオ'.hasKana(), true, 'String#hasKana | katakana');
+  equal('あうえおアイウエオ'.hasKana(), true, 'String#hasKana | hiragana and katakana');
+  equal('あうえおaeiouアイウエオ'.hasKana(), true, 'String#hasKana | hiragana, katakana, and romaji');
+  equal('aeiouアaeiou'.hasKana(), true, 'String#hasKana | katakana with romaji outside');
+  equal('aeiouaeiou'.hasKana(), false, 'String#hasKana | romaji all the way');
 
 
 
-  equal(''.hasKanji(), false, 'String#hasKanji');
-  equal('aeiou'.hasKanji(), false, 'String#hasKanji');
-  equal('あいうえお'.hasKanji(), false, 'String#hasKanji');
-  equal('アイウエオ'.hasKanji(), false, 'String#hasKanji');
-  equal('あうえおaeiouアイウエオ'.hasKanji(), false, 'String#hasKanji');
-  equal('合コン'.hasKanji(), true, 'String#hasKanji');
-  equal('語学'.hasKanji(), true, 'String#hasKanji');
-  equal('庭には二羽鶏がいる。'.hasKanji(), true, 'String#hasKanji');
-  equal(' 語学 '.hasKanji(), true, 'String#hasKanji');
-  equal(' 語学\t '.hasKanji(), true, 'String#hasKanji');
+  equal(''.isHan(), false, 'String#isHan | blank');
+  equal('aeiou'.isHan(), false, 'String#isHan | romaji');
+  equal('あいうえお'.isHan(), false, 'String#isHan | hiragana');
+  equal('アイウエオ'.isHan(), false, 'String#isHan | katakana');
+  equal('あうえおaeiouアイウエオ'.isHan(), false, 'String#isHan | hiragana, katakana, and romaji');
+  equal('合コン'.isHan(), false, 'String#isHan | mixed kanji and katakana');
+  equal('語学'.isHan(), true, 'String#isHan | kango');
+  equal('庭には二羽鶏がいる。'.isHan(), false, 'String#isHan | full sentence');
+  equal(' 語学 '.isHan(), true, 'String#isHan | kango with whitespace');
+  equal(' 語学\t '.isHan(), true, 'String#isHan | kango with whitespace and tabs');
 
 
-  equal('모'.isHangul(), true, 'String#isHangul');
-  equal('난 뻔데기를 싫어 한 사람 이다...너는?'.isHangul(), false, 'String#isHangul');
-  equal('안녕 하세요'.isHangul(), true, 'String#isHangul');
-  equal('ㅠブラじゃない！'.isHangul(), false, 'String#isHangul');
 
-  equal('모'.hasHangul(), true, 'String#hasHangul');
-  equal('난 뻔데기를 싫어 한 사람 이다...너는?'.hasHangul(), true, 'String#hasHangul');
-  equal('안녕 하세요.'.hasHangul(), true, 'String#hasHangul');
-  equal('ㅠブラじゃない！'.hasHangul(), false, 'String#hasHangul');
+  equal(''.hasHan(), false, 'String#hasHan | blank');
+  equal('aeiou'.hasHan(), false, 'String#hasHan | romaji');
+  equal('あいうえお'.hasHan(), false, 'String#hasHan | hiragana');
+  equal('アイウエオ'.hasHan(), false, 'String#hasHan | katakana');
+  equal('あうえおaeiouアイウエオ'.hasHan(), false, 'String#hasHan | hiragana, katakana, and romaji');
+  equal('合コン'.hasHan(), true, 'String#hasHan | mixed kanji and katakana');
+  equal('語学'.hasHan(), true, 'String#hasHan | kango');
+  equal('庭には二羽鶏がいる。'.hasHan(), true, 'String#hasHan | full sentence');
+  equal(' 語学 '.hasHan(), true, 'String#hasHan | kango with whitespace');
+  equal(' 語学\t '.hasHan(), true, 'String#hasHan | kango with whitespace and tabs');
+
+
+
+
+
+  equal(''.isKanji(), false, 'String#isKanji | blank');
+  equal('aeiou'.isKanji(), false, 'String#isKanji | romaji');
+  equal('あいうえお'.isKanji(), false, 'String#isKanji | hiragana');
+  equal('アイウエオ'.isKanji(), false, 'String#isKanji | katakana');
+  equal('あうえおaeiouアイウエオ'.isKanji(), false, 'String#isKanji | hiragana, katakana, and romaji');
+  equal('合コン'.isKanji(), false, 'String#isKanji | mixed kanji and katakana');
+  equal('語学'.isKanji(), true, 'String#isKanji | kango');
+  equal('庭には二羽鶏がいる。'.isKanji(), false, 'String#isKanji | full sentence');
+  equal(' 語学 '.isKanji(), true, 'String#isKanji | kango with whitespace');
+  equal(' 語学\t '.isKanji(), true, 'String#isKanji | kango with whitespace and tabs');
+
+
+
+
+
+  equal(''.hasKanji(), false, 'String#hasKanji | blank');
+  equal('aeiou'.hasKanji(), false, 'String#hasKanji | romaji');
+  equal('あいうえお'.hasKanji(), false, 'String#hasKanji | hiragana');
+  equal('アイウエオ'.hasKanji(), false, 'String#hasKanji | katakana');
+  equal('あうえおaeiouアイウエオ'.hasKanji(), false, 'String#hasKanji | hiragana, katakana, and romaji');
+  equal('合コン'.hasKanji(), true, 'String#hasKanji | mixed kanji and katakana');
+  equal('語学'.hasKanji(), true, 'String#hasKanji | kango');
+  equal('庭には二羽鶏がいる。'.hasKanji(), true, 'String#hasKanji | full sentence');
+  equal(' 語学 '.hasKanji(), true, 'String#hasKanji | kango with whitespace');
+  equal(' 語学\t '.hasKanji(), true, 'String#hasKanji | kango with whitespace and tabs');
+
+
+  equal('모'.isHangul(), true, 'String#isHangul | character');
+  equal('난 뻔데기를 싫어 한 사람 이다...너는?'.isHangul(), false, 'String#isHangul | full sentence');
+  equal('안녕 하세요'.isHangul(), true, 'String#isHangul | how are you?');
+  equal('ㅠブラじゃない！'.isHangul(), false, 'String#isHangul | mixed with kana');
+
+  equal('모'.hasHangul(), true, 'String#hasHangul | character');
+  equal('난 뻔데기를 싫어 한 사람 이다...너는?'.hasHangul(), true, 'String#hasHangul | full sentence');
+  equal('안녕 하세요.'.hasHangul(), true, 'String#hasHangul | how are you?');
+  equal('ㅠブラじゃない！'.hasHangul(), false, 'String#hasHangul | mixed with kana');
 
 
   var stripped;
@@ -1074,52 +1081,52 @@ test('String', function () {
     '<div class="outer">' +
       '<p>text with links, &quot;entitites&quot; and <b>bold</b> tags</p>' +
     '</div>';
-  equal(html.stripTags('a'), stripped, 'String#stripTags');
-  equal(html.stripTags('a') == html, false, 'String#stripTags');
+  equal(html.stripTags('a'), stripped, 'String#stripTags | stripped a tags');
+  equal(html.stripTags('a') == html, false, 'String#stripTags | stripped <a> tags was changed');
 
 
   stripped =
     '<div class="outer">' +
       '<p>text with links, &quot;entitites&quot; and bold tags</p>' +
     '</div>';
-  equal(html.stripTags('a', 'b'), stripped, 'String#stripTags');
+  equal(html.stripTags('a', 'b'), stripped, 'String#stripTags | stripped <a> and <b> tags');
 
 
   stripped =
     '<div class="outer">' +
       'text with links, &quot;entitites&quot; and <b>bold</b> tags' +
     '</div>';
-  equal(html.stripTags('p', 'a'), stripped, 'String#stripTags');
+  equal(html.stripTags('p', 'a'), stripped, 'String#stripTags | stripped <p> and <a> tags');
 
 
   stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entitites&quot; and <b>bold</b> tags</p>';
-  equal(html.stripTags('div'), stripped, 'String#stripTags');
+  equal(html.stripTags('div'), stripped, 'String#stripTags | stripped <div> tags');
 
 
   stripped = 'text with links, &quot;entitites&quot; and bold tags';
-  equal(html.stripTags(), stripped, 'String#stripTags');
+  equal(html.stripTags(), stripped, 'String#stripTags | all tags stripped');
 
 
   stripped = '<p>paragraph';
-  equal(malformed_html.stripTags('div'), stripped, 'String#stripTags');
+  equal(malformed_html.stripTags('div'), stripped, 'String#stripTags | malformed | div tag stripped');
 
   stripped = '<div class="outer">paragraph';
-  equal(malformed_html.stripTags('p'), stripped, 'String#stripTags');
+  equal(malformed_html.stripTags('p'), stripped, 'String#stripTags | malformed | p tags stripped');
 
   stripped = 'paragraph';
-  equal(malformed_html.stripTags(), stripped, 'String#stripTags');
+  equal(malformed_html.stripTags(), stripped, 'String#stripTags | malformed | all tags stripped');
 
 
 
-  equal('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', 'String#stripTags');
-  equal('a < b'.stripTags(), 'a < b', 'String#stripTags');
-  equal('a > b'.stripTags(), 'a > b', 'String#stripTags');
-  equal('</foo  >>'.stripTags(), '>', 'String#stripTags');
+  equal('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', "String#stripTags | does not strip tags that aren't properly closed");
+  equal('a < b'.stripTags(), 'a < b', 'String#stripTags | does not strip less than');
+  equal('a > b'.stripTags(), 'a > b', 'String#stripTags | does not strip greater than');
+  equal('</foo  >>'.stripTags(), '>', 'String#stripTags | strips closing tags with white space');
 
 
 
   /* Stipping self-closing tags */
-  equal('<input type="text" class="blech" />'.stripTags(), '', 'String#stripTags');
+  equal('<input type="text" class="blech" />'.stripTags(), '', 'String#stripTags | full input stripped');
 
   html =
     '<form action="poo.php" method="post">' +
@@ -1130,18 +1137,18 @@ test('String', function () {
     '</p>' +
     '</form>';
 
-  equal(html.stripTags(), 'label for text:', 'String#stripTags');
-  equal(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#stripTags');
-  equal(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', 'String#stripTags');
+  equal(html.stripTags(), 'label for text:', 'String#stripTags | form | all tags removed');
+  equal(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#stripTags | form | input tags stripped');
+  equal(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', 'String#stripTags | form | input, p, and form tags stripped');
 
   /* Stripping namespaced tags */
-  equal('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', 'String#stripTags');
-  equal('<xsl:template>foobar</xsl:template>'.stripTags('xsl:template'), 'foobar', 'String#stripTags');
-  equal('<xsl/template>foobar</xsl/template>'.stripTags('xsl/template'), 'foobar', 'String#stripTags');
+  equal('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', 'String#stripTags | strips tags with xml namespaces');
+  equal('<xsl:template>foobar</xsl:template>'.stripTags('xsl:template'), 'foobar', 'String#stripTags | strips xsl:template');
+  equal('<xsl/template>foobar</xsl/template>'.stripTags('xsl/template'), 'foobar', 'String#stripTags | strips xsl/template');
 
 
   /* No errors on RegExp */
-  equal('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', 'String#stripTags');
+  equal('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', 'String#stripTags | no regexp errors on tokens');
 
 
 
@@ -1156,35 +1163,35 @@ test('String', function () {
     '<div class="outer">' +
       '<p>text with , &quot;entitites&quot; and <b>bold</b> tags</p>' +
     '</div>';
-  equal(html.removeTags('a'), removed, 'String#removeTags');
-  equal(html.removeTags('a') == html, false, 'String#removeTags');
+  equal(html.removeTags('a'), removed, 'String#removeTags | <a> tag removed');
+  equal(html.removeTags('a') == html, false, 'String#removeTags | html was changed');
 
 
   removed =
     '<div class="outer">' +
       '<p>text with , &quot;entitites&quot; and  tags</p>' +
     '</div>';
-  equal(html.removeTags('a', 'b'), removed, 'String#removeTags');
+  equal(html.removeTags('a', 'b'), removed, 'String#removeTags | <a> and <b> tags removed');
 
 
   removed =
     '<div class="outer"></div>';
-  equal(html.removeTags('p', 'a'), removed, 'String#removeTags');
+  equal(html.removeTags('p', 'a'), removed, 'String#removeTags | <p> and <a> tags removed');
 
 
-  equal(html.removeTags('div'), '', 'String#removeTags');
-  equal(html.removeTags(), '', 'String#removeTags');
+  equal(html.removeTags('div'), '', 'String#removeTags | <div> tags removed');
+  equal(html.removeTags(), '', 'String#removeTags | removing all tags');
 
-  equal(malformed_html.removeTags('div'), malformed_html, 'String#removeTags');
-  equal(malformed_html.removeTags('p'), malformed_html, 'String#removeTags');
-  equal(malformed_html.removeTags(), malformed_html, 'String#removeTags');
+  equal(malformed_html.removeTags('div'), malformed_html, 'String#removeTags | malformed | <div> tags removed');
+  equal(malformed_html.removeTags('p'), malformed_html, 'String#removeTags | malformed | <p> tags removed');
+  equal(malformed_html.removeTags(), malformed_html, 'String#removeTags | malformed | all tags removed');
 
 
 
-  equal('<b NOT BOLD</b>'.removeTags(), '<b NOT BOLD</b>', 'String#removeTags');
-  equal('a < b'.removeTags(), 'a < b', 'String#removeTags');
-  equal('a > b'.removeTags(), 'a > b', 'String#removeTags');
-  equal('</foo  >>'.removeTags(), '</foo  >>', 'String#removeTags');
+  equal('<b NOT BOLD</b>'.removeTags(), '<b NOT BOLD</b>', 'String#removeTags | unclosed opening tag untouched');
+  equal('a < b'.removeTags(), 'a < b', 'String#removeTags | less than unaffected');
+  equal('a > b'.removeTags(), 'a > b', 'String#removeTags | greater than unaffected');
+  equal('</foo  >>'.removeTags(), '</foo  >>', 'String#removeTags | malformed closing tag unaffected');
 
 
 
@@ -1200,87 +1207,87 @@ test('String', function () {
     '</p>' +
     '</form>';
 
-  equal(html.removeTags(), '', 'String#removeTags');
-  equal(html.removeTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#removeTags');
-  equal(html.removeTags('input', 'p', 'form'), '', 'String#removeTags');
+  equal(html.removeTags(), '', 'String#removeTags | form | removing all tags');
+  equal(html.removeTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#removeTags | form | removing input tags');
+  equal(html.removeTags('input', 'p', 'form'), '', 'String#removeTags | form | removing input, p, and form tags');
 
   /* Stripping namespaced tags */
-  equal('<xsl:template>foobar</xsl:template>'.removeTags(), '', 'String#removeTags');
-  equal('<xsl:template>foobar</xsl:template>'.removeTags('xsl:template'), '', 'String#removeTags');
-  equal('<xsl/template>foobar</xsl/template>'.removeTags('xsl/template'), '', 'String#removeTags');
+  equal('<xsl:template>foobar</xsl:template>'.removeTags(), '', 'String#removeTags | form | xml namespaced tags removed');
+  equal('<xsl:template>foobar</xsl:template>'.removeTags('xsl:template'), '', 'String#removeTags | form | xsl:template removed');
+  equal('<xsl/template>foobar</xsl/template>'.removeTags('xsl/template'), '', 'String#removeTags | form | xsl/template removed');
 
 
   /* No errors on RegExp */
-  equal('<xsl(template>foobar</xsl(template>'.removeTags('xsl(template'), '', 'String#removeTags');
+  equal('<xsl(template>foobar</xsl(template>'.removeTags('xsl(template'), '', 'String#removeTags | form | no regexp token errors');
 
 
 
-  same('foo=bar&moo=car'.toObject(), {foo:'bar',moo:'car'}, 'String#keyValue');
-  same('foo=bar&moo=3'.toObject(), {foo:'bar',moo:3}, 'String#keyValue');
-  same('foo=bar&moo=true'.toObject(), {foo:'bar',moo:true}, 'String#keyValue');
-  same('foo=bar&moo=false'.toObject(), {foo:'bar',moo:false}, 'String#keyValue');
+  same('foo=bar&moo=car'.toObject(), {foo:'bar',moo:'car'}, 'String#toObject | basic');
+  same('foo=bar&moo=3'.toObject(), {foo:'bar',moo:3}, 'String#toObject | with numbers');
+  same('foo=bar&moo=true'.toObject(), {foo:'bar',moo:true}, 'String#toObject | with true');
+  same('foo=bar&moo=false'.toObject(), {foo:'bar',moo:false}, 'String#toObject | with false');
 
 
 
 
 
 
-  strictlyEqual(''.escapeRegExp(), '', 'String#escapeRegExp');
-  strictlyEqual('|'.escapeRegExp(), '\\|', 'String#escapeRegExp');
-  strictlyEqual(''.capitalize(), '', 'String#capitalize');
-  strictlyEqual('wasabi'.capitalize(), 'Wasabi', 'String#capitalize');
-  strictlyEqual(''.trim(), '', 'String#trim');
-  strictlyEqual(' wasabi '.trim(), 'wasabi', 'String#trim');
-  strictlyEqual(''.trimLeft(), '', 'String#trimLeft');
-  strictlyEqual(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft');
-  strictlyEqual(''.trimRight(), '', 'String#trimRight');
-  strictlyEqual(' wasabi '.trimRight(), ' wasabi', 'String#trimRight');
-  strictlyEqual(''.pad(0), '', 'String#pad');
-  strictlyEqual('wasabi'.pad(1), ' wasabi ', 'String#pad');
-  strictlyEqual('wasabi'.repeat(0), '', 'String#repeat');
-  strictlyEqual('wasabi'.repeat(1), 'wasabi', 'String#repeat');
-  strictlyEqual('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat');
-  strictlyEqual(''.normalize(), '', 'String#normalize');
-  strictlyEqual('wasabi'.normalize(), 'wasabi', 'String#normalize');
-  strictlyEqual(''.accent('-'), '', 'String#accent');
-  strictlyEqual('a'.accent('-'), 'ā', 'String#accent');
-  strictlyEqual(''.insert('-', 0), '-', 'String#insert');
-  strictlyEqual('b'.insert('-', 0), '-b', 'String#insert');
-  strictlyEqual('b'.insert('-', 1), 'b-', 'String#insert');
-  strictlyEqual(''.hanKaku(), '', 'String#hanKaku');
-  strictlyEqual('カ'.hanKaku(), 'ｶ', 'String#hanKaku');
-  strictlyEqual(''.zenKaku(), '', 'String#zenKaku');
-  strictlyEqual('ｶ'.zenKaku(), 'カ', 'String#zenKaku');
-  strictlyEqual(''.hiragana(), '', 'String#hiragana');
-  strictlyEqual('カ'.hiragana(), 'か', 'String#hiragana');
-  strictlyEqual(''.katakana(), '', 'String#katakana');
-  strictlyEqual('か'.katakana(), 'カ', 'String#katakana');
-  strictlyEqual(''.reverse(), '', 'String#reverse');
-  strictlyEqual('wasabi'.reverse(), 'ibasaw', 'String#reverse');
-  strictlyEqual(''.compact(), '', 'String#compact');
-  strictlyEqual('run   tell    dat'.compact(), 'run tell dat', 'String#compact');
-  strictlyEqual(''.at(3), '', 'String#at');
-  strictlyEqual('wasabi'.at(0), 'w', 'String#at');
-  strictlyEqual(''.first(), '', 'String#first');
-  strictlyEqual('wasabi'.first(), 'w', 'String#first');
-  strictlyEqual(''.last(), '', 'String#last');
-  strictlyEqual('wasabi'.last(), 'i', 'String#last');
-  strictlyEqual(''.from(0), '', 'String#from');
-  strictlyEqual('wasabi'.from(3), 'abi', 'String#from');
-  strictlyEqual(''.to(0), '', 'String#to');
-  strictlyEqual('wasabi'.to(3), 'wasa', 'String#to');
-  strictlyEqual(''.dasherize(), '', 'String#dasherize');
-  strictlyEqual('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize');
-  strictlyEqual(''.underscore(), '', 'String#underscore');
-  strictlyEqual('noFingWay'.underscore(), 'no_fing_way', 'String#underscore');
-  strictlyEqual(''.camelize(), '', 'String#camelize');
-  strictlyEqual('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize');
-  strictlyEqual(''.titleize(), '', 'String#titleize');
-  strictlyEqual('chilled monkey brains'.titleize(), 'Chilled Monkey Brains', 'String#titleize');
-  strictlyEqual(''.stripTags(), '', 'String#stripTags');
-  strictlyEqual('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags');
-  strictlyEqual(''.removeTags(), '', 'String#removeTags');
-  strictlyEqual('chilled <b>monkey</b> brains'.removeTags(), 'chilled  brains', 'String#removeTags');
+  strictlyEqual(''.escapeRegExp(), '', 'String#escapeRegExp | blank');
+  strictlyEqual('|'.escapeRegExp(), '\\|', 'String#escapeRegExp | pipe');
+  strictlyEqual(''.capitalize(), '', 'String#capitalize | blank');
+  strictlyEqual('wasabi'.capitalize(), 'Wasabi', 'String#capitalize | wasabi');
+  strictlyEqual(''.trim(), '', 'String#trim | blank');
+  strictlyEqual(' wasabi '.trim(), 'wasabi', 'String#trim | wasabi with whitespace');
+  strictlyEqual(''.trimLeft(), '', 'String#trimLeft | blank');
+  strictlyEqual(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft | wasabi with whitespace');
+  strictlyEqual(''.trimRight(), '', 'String#trimRight | blank');
+  strictlyEqual(' wasabi '.trimRight(), ' wasabi', 'String#trimRight | wasabi with whitespace');
+  strictlyEqual(''.pad(0), '', 'String#pad | blank');
+  strictlyEqual('wasabi'.pad(1), ' wasabi ', 'String#pad | wasabi padded to 1');
+  strictlyEqual('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
+  strictlyEqual('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
+  strictlyEqual('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
+  strictlyEqual(''.normalize(), '', 'String#normalize | blank');
+  strictlyEqual('wasabi'.normalize(), 'wasabi', 'String#normalize | wasabi');
+  strictlyEqual(''.accent('-'), '', 'String#accent | blank with -');
+  strictlyEqual('a'.accent('-'), 'ā', 'String#accent | a with -');
+  strictlyEqual(''.insert('-', 0), '-', 'String#insert | - inserted at 0');
+  strictlyEqual('b'.insert('-', 0), '-b', 'String#insert | b inserted at 0');
+  strictlyEqual('b'.insert('-', 1), 'b-', 'String#insert | b inserted at 1');
+  strictlyEqual(''.hankaku(), '', 'String#hankaku | blank');
+  strictlyEqual('カ'.hankaku(), 'ｶ', 'String#hankaku | カ');
+  strictlyEqual(''.zenkaku(), '', 'String#zenkaku | blank');
+  strictlyEqual('ｶ'.zenkaku(), 'カ', 'String#zenkaku | ｶ');
+  strictlyEqual(''.hiragana(), '', 'String#hiragana | blank');
+  strictlyEqual('カ'.hiragana(), 'か', 'String#hiragana | カ');
+  strictlyEqual(''.katakana(), '', 'String#katakana | blank');
+  strictlyEqual('か'.katakana(), 'カ', 'String#katakana | か');
+  strictlyEqual(''.reverse(), '', 'String#reverse | blank');
+  strictlyEqual('wasabi'.reverse(), 'ibasaw', 'String#reverse | wasabi');
+  strictlyEqual(''.compact(), '', 'String#compact | blank');
+  strictlyEqual('run   tell    dat'.compact(), 'run tell dat', 'String#compact | with extra whitespace');
+  strictlyEqual(''.at(3), '', 'String#at | blank');
+  strictlyEqual('wasabi'.at(0), 'w', 'String#at | wasabi at pos 0');
+  strictlyEqual(''.first(), '', 'String#first | blank');
+  strictlyEqual('wasabi'.first(), 'w', 'String#first | no params');
+  strictlyEqual(''.last(), '', 'String#last | blank');
+  strictlyEqual('wasabi'.last(), 'i', 'String#last | no params');
+  strictlyEqual(''.from(0), '', 'String#from | blank');
+  strictlyEqual('wasabi'.from(3), 'abi', 'String#from | from pos 3');
+  strictlyEqual(''.to(0), '', 'String#to | blank');
+  strictlyEqual('wasabi'.to(3), 'wasa', 'String#to | to pos 3');
+  strictlyEqual(''.dasherize(), '', 'String#dasherize | blank');
+  strictlyEqual('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize | noFingWay');
+  strictlyEqual(''.underscore(), '', 'String#underscore | blank');
+  strictlyEqual('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
+  strictlyEqual(''.camelize(), '', 'String#camelize | blank');
+  strictlyEqual('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize | no-fing-way');
+  strictlyEqual(''.titleize(), '', 'String#titleize | blank');
+  strictlyEqual('chilled monkey brains'.titleize(), 'Chilled Monkey Brains', 'String#titleize | chilled monkey brains');
+  strictlyEqual(''.stripTags(), '', 'String#stripTags | blank');
+  strictlyEqual('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags | chilled <b>monkey</b> brains');
+  strictlyEqual(''.removeTags(), '', 'String#removeTags | blank');
+  strictlyEqual('chilled <b>monkey</b> brains'.removeTags(), 'chilled  brains', 'String#removeTags | chilled <b>monkey</b> brains');
 
 
 });
