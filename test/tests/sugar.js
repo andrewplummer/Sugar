@@ -1290,1142 +1290,1095 @@ test('String', function () {
   strictlyEqual('chilled <b>monkey</b> brains'.removeTags(), 'chilled  brains', 'String#removeTags | chilled <b>monkey</b> brains');
 
 
+  // Thanks to Steven Levitah (http://stevenlevithan.com/demo/split.cfm) for inspiration and information here.
+
+
+  same('a,b,c,d,e'.split(',') , ['a','b','c','d','e'] , 'Array#split | splits on standard commas');
+  same('a|b|c|d|e'.split(',') , ['a|b|c|d|e'] , "Array#split | doesn't split on standard commas");
+  same('a|b|c|d|e'.split('|') , ['a','b','c','d','e'] , 'Array#split | splits on pipes');
+  same('a,b,c,d,e'.split(/,/) , ['a','b','c','d','e'] , 'Array#split | splits on standard regexp commas');
+  same('a|b|c|d|e'.split(/\|/) , ['a','b','c','d','e'] , 'Array#split | splits on standard regexp pipes');
+  same('a|b|c|d|e'.split(/[,|]/) , ['a','b','c','d','e'] , 'Array#split | splits on classes');
+  same('a|b|c|d|e'.split(/[a-z]/) , ['','|','|','|','|',''] , 'Array#split | splits on classes with ranges');
+  same('a|b|c|d|e'.split(/\|*/) , ['a','b','c','d','e'] , 'Array#split | splits on star');
+  same('a|b|c|d|e'.split(/\|?/) , ['a','b','c','d','e'] , 'Array#split | splits on optionals');
+
+  same('a,b,c,d,e'.split(',', 2) , ['a','b'] , 'Array#split | handles limits');
+
+  same('a|||b|c|d|e'.split('|') , ['a', '', '', 'b','c','d','e'] , 'Array#split | splits back-to-back separators on a string');
+  same('a|||b|c|d|e'.split(/\|/) , ['a', '', '', 'b','c','d','e'] , 'Array#split | splits back-to-back separators on a regexp');
+
+  same('paragraph one\n\nparagraph two\n\n\n'.split(/\n/) , ['paragraph one', '', 'paragraph two','','',''] , 'Array#split | splits on new lines');
+  same(''.split() , [''] , 'Array#split | has a single null string for null separators on null strings');
+  same(''.split(/./) , [''] , 'Array#split | has a single null string for separators on null strings');
+
+  same(''.split(/.?/) , [] , 'Array#split | has a single null string for optionals on null strings');
+  same(''.split(/.??/) , [] , 'Array#split | has a single null string for double optionals on null strings');
+
+  same('a'.split(/./) , ['',''] , 'Array#split | has two entries when splitting on the only character in the string');
+  same('a'.split(/-/) , ['a'] , 'Array#split | has one entry when only one character and no match');
+  same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split | properly splits hyphens');
+  same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split | properly splits optional hyphens');
+
+
+  same('a:b:c'.split(/(:)/) , ['a',':','b',':','c'] , 'Array#split | respects capturing groups');
+
+
+  same('ab'.split(/a*/) , ['', 'b'] , 'Array#split | complex regex splitting | /a*/');
+  same('ab'.split(/a*?/) , ['a', 'b'] , 'Array#split | complex regex splitting | /a*?/');
+  same('ab'.split(/(?:ab)/) , ['', ''] , 'Array#split | complex regex splitting | /(?:ab)/');
+  same('ab'.split(/(?:ab)*/) , ['', ''] , 'Array#split | complex regex splitting | /(?:ab)*/');
+  same('ab'.split(/(?:ab)*?/) , ['a', 'b'] , 'Array#split | complex regex splitting | /(?:ab)*?/');
+  same('test'.split('') , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | empty string');
+  same('test'.split() , ['test'] , 'Array#split | complex regex splitting | no argument');
+  same('111'.split(1) , ['', '', '', ''] , 'Array#split | complex regex splitting | 1');
+  same('test'.split(/(?:)/, 2) , ['t', 'e'] , 'Array#split | complex regex splitting | index is 2');
+  same('test'.split(/(?:)/, -1) , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | index is -1');
+  same('test'.split(/(?:)/, undefined) , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | index is undefined');
+  same('test'.split(/(?:)/, null) , [] , 'Array#split | complex regex splitting | index is undefined');
+  same('test'.split(/(?:)/, NaN) , [] , 'Array#split | complex regex splitting | index is NaN');
+  same('test'.split(/(?:)/, true) , ['t'] , 'Array#split | complex regex splitting | index is true');
+  same('test'.split(/(?:)/, '2') , ['t', 'e'] , 'Array#split | complex regex splitting | index is "2"');
+  same('test'.split(/(?:)/, 'two') , [] , 'Array#split | complex regex splitting | index is two');
+  same('a'.split(/-/) , ['a'] , 'Array#split | complex regex splitting | a | /-/');
+  same('a'.split(/-?/) , ['a'] , 'Array#split | complex regex splitting | a | /-?/');
+  same('a'.split(/-??/) , ['a'] , 'Array#split | complex regex splitting | a | /-??/');
+  same('a'.split(/a/) , ['', ''] , 'Array#split | complex regex splitting | a | /a/');
+  same('a'.split(/a?/) , ['', ''] , 'Array#split | complex regex splitting | a | /a?/');
+  same('a'.split(/a??/) , ['a'] , 'Array#split | complex regex splitting | a | /a??/');
+  same('ab'.split(/-/) , ['ab'] , 'Array#split | complex regex splitting | ab | /-/');
+  same('ab'.split(/-?/) , ['a', 'b'] , 'Array#split | complex regex splitting | ab | /-?/');
+  same('ab'.split(/-??/) , ['a', 'b'] , 'Array#split | complex regex splitting | ab | /-??/');
+  same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split | complex regex splitting | a-b | /-/');
+  same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split | complex regex splitting | a-b | /-?/');
+  same('a-b'.split(/-??/) , ['a', '-', 'b'] , 'Array#split | complex regex splitting | a-b | /-??/');
+  same('a--b'.split(/-/) , ['a', '', 'b'] , 'Array#split | complex regex splitting | a--b | /-/');
+  same('a--b'.split(/-?/) , ['a', '', 'b'] , 'Array#split | complex regex splitting | a--b | /-?/');
+  same('a--b'.split(/-??/) , ['a', '-', '-', 'b'] , 'Array#split | complex regex splitting | a--b | /-??/');
+  same(''.split(/()()/) , [] , 'Array#split | complex regex splitting | empty string | /()()/');
+  same('.'.split(/()()/) , ['.'] , 'Array#split | complex regex splitting | . | /()()/');
+  same('.'.split(/(.?)(.?)/) , ['', '.', '', ''] , 'Array#split | complex regex splitting | . | /(.?)(.?)/');
+  same('.'.split(/(.??)(.??)/) , ['.'] , 'Array#split | complex regex splitting | . | /(.??)(.??)/');
+  same('.'.split(/(.)?(.)?/) , ['', '.', undefined, ''] , 'Array#split | complex regex splitting | . | /(.)?(.)?/');
+  same('tesst'.split(/(s)*/) , ['t', undefined, 'e', 's', 't'] , 'Array#split | complex regex splitting | tesst | /(s)*/');
+  same('tesst'.split(/(s)*?/) , ['t', undefined, 'e', undefined, 's', undefined, 's', undefined, 't'] , 'Array#split | complex regex splitting | tesst | /(s)*?/');
+  same('tesst'.split(/(s*)/) , ['t', '', 'e', 'ss', 't'] , 'Array#split | complex regex splitting | tesst | /(s*)/');
+  same('tesst'.split(/(s*?)/) , ['t', '', 'e', '', 's', '', 's', '', 't'] , 'Array#split | complex regex splitting | tesst | /(s*?)/');
+  same('tesst'.split(/(?:s)*/) , ['t', 'e', 't'] , 'Array#split | complex regex splitting | tesst | /(?:s)*/');
+  same('tesst'.split(/(?=s+)/) , ['te', 's', 'st'] , 'Array#split | complex regex splitting | tesst | /(?=s+)/');
+  same('test'.split('t') , ['', 'es', ''] , 'Array#split | complex regex splitting | test | t');
+  same('test'.split('es') , ['t', 't'] , 'Array#split | complex regex splitting | test | es');
+  same('test'.split(/t/) , ['', 'es', ''] , 'Array#split | complex regex splitting | test | /t/');
+  same('test'.split(/es/) , ['t', 't'] , 'Array#split | complex regex splitting | test | /es/');
+  same('test'.split(/(t)/) , ['', 't', 'es', 't', ''] , 'Array#split | complex regex splitting | test | /(t)/');
+  same('test'.split(/(es)/) , ['t', 'es', 't'] , 'Array#split | complex regex splitting | test | /(es)/');
+  same('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split | complex regex splitting | test | /(t)(e)(s)(t)/');
+  same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split | complex regex splitting | . | /(((.((.??)))))/');
+  same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split | complex regex splitting | . | /(((((.??)))))/');
+
+  var match = 'on'.match(/on(e)?/);
+  equals(match[1], undefined, 'String#match | capturing group should be undefined');
+
+  var match = 'on'.match(/\b/g);
+  equals(match[0], '', 'String#match | first match should be empty string');
+  equals(match[1], '', 'String#match | second match should be empty string');
+
+
 });
 
 
 test('Array', function () {
 
-    var arr;
-    var count;
-
-    equals(['a','b','c'].indexOf('b'), 1, 'Array#indexOf');
-    equals(['a','b','c'].indexOf('b', 0), 1, 'Array#indexOf');
-    equals(['a','b','c'].indexOf('a'), 0, 'Array#indexOf');
-    equals(['a','b','c'].indexOf('f'), -1, 'Array#indexOf');
-
-    equals(['a','b','c','b'].indexOf('b'), 1, 'Array#indexOf');
-    equals(['a','b','c','b'].indexOf('b', 2), 3, 'Array#indexOf');
-
-    equals([5,2,4].indexOf(5), 0, 'Array#indexOf');
-    equals([5,2,4].indexOf(2), 1, 'Array#indexOf');
-    equals([5,2,4].indexOf(4), 2, 'Array#indexOf');
-    equals([5,2,4,4].indexOf(4, 3), 3, 'Array#indexOf');
-
-    equals([5,2,4,4].indexOf(4, 10), -1, 'Array#indexOf');
-    equals([5,2,4,4].indexOf(4, -10), 2, 'Array#indexOf');
-    equals([5,2,4,4].indexOf(4, -1), 3, 'Array#indexOf');
+  var arr;
+  var count;
 
-    equals([{ foo: 'bar' }].indexOf({ foo: 'bar' }), -1, 'Array#indexOf');
+  equals(['a','b','c'].indexOf('b'), 1, 'Array#indexOf | b in a,b,c');
+  equals(['a','b','c'].indexOf('b', 0), 1, 'Array#indexOf | b in a,b,c from 0');
+  equals(['a','b','c'].indexOf('a'), 0, 'Array#indexOf | a in a,b,c');
+  equals(['a','b','c'].indexOf('f'), -1, 'Array#indexOf | f in a,b,c');
 
-    ['a'].indexOf(function(el, i, a){
-      same(a, ['a'], 'Array#indexOf');
-      equals(el, 'a', 'Array#indexOf');
-      equals(i, 0, 'Array#indexOf');
-      equals(this, 'this', 'Array#indexOf');
-    }, 'this');
+  equals(['a','b','c','b'].indexOf('b'), 1, 'Array#indexOf | finds first instance');
+  equals(['a','b','c','b'].indexOf('b', 2), 3, 'Array#indexOf | finds first instance from index');
 
-    equals(['a', 'b', 'c', 'd', 'a', 'b'].lastIndexOf('b'), 5, 'Array#lastIndexOf');
-    equals(['a', 'b', 'c', 'd', 'a', 'b'].lastIndexOf('b', 4), 1, 'Array#lastIndexOf');
-    equals(['a', 'b', 'c', 'd', 'a', 'b'].lastIndexOf('z'), -1, 'Array#lastIndexOf');
-
-    equals([1,5,6,8,8,2,5,3].lastIndexOf(3), 7, 'Array#lastIndexOf');
-    equals([1,5,6,8,8,2,5,3].lastIndexOf(3, 0), -1, 'Array#lastIndexOf');
-    equals([1,5,6,8,8,2,5,3].lastIndexOf(8), 4, 'Array#lastIndexOf');
-    equals([1,5,6,8,8,2,5,3].lastIndexOf(8, 3), 3, 'Array#lastIndexOf');
-    equals([1,5,6,8,8,2,5,3].lastIndexOf(1), 0, 'Array#lastIndexOf');
-    equals([1,5,6,8,8,2,5,3].lastIndexOf(42), -1, 'Array#lastIndexOf');
-
-    equals([2, 5, 9, 2].lastIndexOf(2), 3, 'Array#lastIndexOf');
-    equals([2, 5, 9, 2].lastIndexOf(7), -1, 'Array#lastIndexOf');
-    equals([2, 5, 9, 2].lastIndexOf(2, 3), 3, 'Array#lastIndexOf');
-    equals([2, 5, 9, 2].lastIndexOf(2, 2), 0, 'Array#lastIndexOf');
-    equals([2, 5, 9, 2].lastIndexOf(2, -2), 0, 'Array#lastIndexOf');
-    equals([2, 5, 9, 2].lastIndexOf(2, -1), 3, 'Array#lastIndexOf');
-    equals([2, 5, 9, 2].lastIndexOf(2, 10), 3, 'Array#lastIndexOf');
-    equals([2, 5, 9, 2].lastIndexOf(2, -10), -1, 'Array#lastIndexOf');
+  equals([5,2,4].indexOf(5), 0, 'Array#indexOf | 5 in 5,2,4');
+  equals([5,2,4].indexOf(2), 1, 'Array#indexOf | 2 in 5,2,4');
+  equals([5,2,4].indexOf(4), 2, 'Array#indexOf | 4 in 5,2,4');
+  equals([5,2,4,4].indexOf(4, 3), 3, 'Array#indexOf | 4 in 5,2,4,4 from index 3');
 
-    equals([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), -1, 'Array#lastIndexOf');
-
-    ['a'].lastIndexOf(function(el, i, a){
-      same(a, ['a'], 'Array#lastIndexOf');
-      equals(el, 'a', 'Array#lastIndexOf');
-      equals(i, 0, 'Array#lastIndexOf');
-      equals(this, 'this', 'Array#lastIndexOf');
-    }, 'this');
-
-
-
-    equals([12, 5, 8, 130, 44].every(function(el, i, a){ return el >= 10; }), false, 'Array#every');
-    equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10; }), true, 'Array#every');
-    ['a'].every(function(el, i, a){
-      equals(el, 'a', 'Array#every | First parameter is the element');
-      equals(i, 0, 'Array#every | Second parameter is the index');
-      same(a, ['a'], 'Array#every | Third parameter is the array');
-      equals(this, 'this', 'Array#every | Scope is passed properly');
-    }, 'this');
+  equals([5,2,4,4].indexOf(4, 10), -1, 'Array#indexOf | 4 in 5,2,4,4 from index 10');
+  equals([5,2,4,4].indexOf(4, -10), 2, 'Array#indexOf | 4 in 5,2,4,4 from index -10');
+  equals([5,2,4,4].indexOf(4, -1), 3, 'Array#indexOf | 4 in 5,2,4,4 from index -1');
 
-    equals([12, 54, 18, 130, 44].every(function(el, i, a){ return el >= 10; }), true, 'Array#every');
+  equals([{ foo: 'bar' }].indexOf({ foo: 'bar' }), 0, 'Array#indexOf | handles objects');
+  equals([{ foo: 'bar' }].indexOf(function(a){ return a.foo === 'bar'; }), 0, 'Array#indexOf | handles functions');
 
+  equals(['a','b','c','d','a','b'].lastIndexOf('b'), 5, 'Array#lastIndexOf | b');
+  equals(['a','b','c','d','a','b'].lastIndexOf('b', 4), 1, 'Array#lastIndexOf | b from index 4');
+  equals(['a','b','c','d','a','b'].lastIndexOf('z'), -1, 'Array#lastIndexOf | z');
 
-    same([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#every');
-    same([{name:'john',age:25},{name:'fred',age:85}].all('name'), false, 'Array#every');
-    same([{name:'john',age:25},{name:'fred',age:85}].all('cupsize'), false, 'Array#every');
-    same([{name:'john',age:25}].all({name:'john',age:25}), true, 'Array#every');
-    same([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, 'Array#every');
-
-
-
-    equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el > 10 }), true, 'Array#some');
-    equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el < 10 }), true, 'Array#some');
-    equals([12, 54, 18, 130, 44].some(function(el, i, a){ return el >= 10 }), true, 'Array#some');
-    equals([12, 5, 8, 130, 44].some(function(el, i, a){ return el < 4 }), false, 'Array#some');
-    equals([].some(function(el, i, a){ return el > 10 }), false, 'Array#some');
-    ['a'].some(function(el, i, a){
-      same(a, ['a'], 'Array#some');
-      equals(el, 'a', 'Array#some');
-      equals(i, 0, 'Array#some');
-      equals(this, 'this', 'Array#some');
-    }, 'this');
+  equals([1,5,6,8,8,2,5,3].lastIndexOf(3), 7, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 3');
+  equals([1,5,6,8,8,2,5,3].lastIndexOf(3, 0), -1, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 3 from index 0');
+  equals([1,5,6,8,8,2,5,3].lastIndexOf(8), 4, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 8');
+  equals([1,5,6,8,8,2,5,3].lastIndexOf(8, 3), 3, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 8 from index 3');
+  equals([1,5,6,8,8,2,5,3].lastIndexOf(1), 0, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 1');
+  equals([1,5,6,8,8,2,5,3].lastIndexOf(42), -1, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 42');
 
-    same([{name:'john',age:25},{name:'fred',age:85}].some('age'), false, 'Array#some');
-    same([{name:'john',age:25},{name:'fred',age:85}].some('name'), false, 'Array#some');
-    same([{name:'john',age:25},{name:'fred',age:85}].some('cupsize'), false, 'Array#some');
-    same([{name:'john',age:25}].some({name:'john',age:25}), true, 'Array#every');
-    same([{name:'john',age:25},{name:'fred',age:85}].some({name:'john',age:25}), true, 'Array#every');
+  equals([2,5,9,2].lastIndexOf(2), 3, 'Array#lastIndexOf | 2,5,9,2 | 2');
+  equals([2,5,9,2].lastIndexOf(7), -1, 'Array#lastIndexOf | 2,5,9,2 | 7');
+  equals([2,5,9,2].lastIndexOf(2, 3), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 3');
+  equals([2,5,9,2].lastIndexOf(2, 2), 0, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 2');
+  equals([2,5,9,2].lastIndexOf(2, -2), 0, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -2');
+  equals([2,5,9,2].lastIndexOf(2, -1), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -1');
+  equals([2,5,9,2].lastIndexOf(2, 10), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 10');
+  equals([2,5,9,2].lastIndexOf(2, -10), -1, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -10');
 
+  equals([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), 0, 'Array#lastIndexOf | handles objects');
+  equals([{ foo: 'bar' }].lastIndexOf(function(a){ return a.foo === 'bar'; }), 0, 'Array#lastIndexOf | handles functions');
 
 
 
-    same([12,4,8,130,44].filter(function(el, i, a){ return el > 10 }), [12,130,44], 'Array#filter');
-    same([12,4,8,130,44].filter(function(el, i, a){ return el < 10 }), [4,8], 'Array#filter');
-    ['a'].filter(function(el, i, a){
-      same(a, ['a'], 'Array#filter');
-      equals(el, 'a', 'Array#filter');
-      equals(i, 0, 'Array#filter');
-      equals(this, 'this', 'Array#filter');
-    }, 'this');
+  equals([12,5,8,130,44].every(function(el, i, a){ return el >= 10; }), false, 'Array#every | not every element is greater than 10');
+  equals([12,54,18,130,44].every(function(el, i, a){ return el >= 10; }), true, 'Array#every | every element is greater than 10');
+  ['a'].every(function(el, i, a){
+    equals(el, 'a', 'Array#every | First parameter is the element');
+    equals(i, 0, 'Array#every | Second parameter is the index');
+    same(a, ['a'], 'Array#every | Third parameter is the array');
+    equals(this, 'this', 'Array#every | Scope is passed properly');
+  }, 'this');
 
 
-    same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [], 'Array#filter');
-    same([{name:'john',age:25},{name:'fred',age:85}].filter('cupsize'), [], 'Array#filter');
-    same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'john',age:25}), [{name:'john',age:25}], 'Array#filter');
-    same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'fred',age:85}), [{name:'fred',age:85}], 'Array#filter');
+  same([{name:'john',age:25}].all({name:'john',age:25}), true, 'Array#all | handles complex objects');
+  same([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#all | simple string mistakenly passed for complex objects');
+  same([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, "Array#all | john isn't all");
 
 
 
+  equals([12,5,8,130,44].some(function(el, i, a){ return el > 10 }), true, 'Array#some | some elements are greater than 10');
+  equals([12,5,8,130,44].some(function(el, i, a){ return el < 10 }), true, 'Array#some | some elements are less than 10');
+  equals([12,54,18,130,44].some(function(el, i, a){ return el >= 10 }), true, 'Array#some | all elements are greater than 10');
+  equals([12,5,8,130,44].some(function(el, i, a){ return el < 4 }), false, 'Array#some | no elements are less than 4');
+  equals([].some(function(el, i, a){ return el > 10 }), false, 'Array#some | no elements are greater than 10 in an empty array');
+  ['a'].some(function(el, i, a){
+    equals(el, 'a', 'Array#some | first parameter is the element');
+    equals(i, 0, 'Array#some | second parameter is the index');
+    same(a, ['a'], 'Array#some | third parameter is the array');
+    equals(this, 'this', 'Array#some | scope is passed properly');
+  }, 'this');
 
-    arr = [2, 5, 9];
-    arr.forEach(function(el, i, a){
-      equals(el, arr[i], 'Array#forEach');
-    });
-    arr.forEach(function(el, i, a){
-      equals(el, a[i], 'Array#forEach');
-    });
+  same([{name:'john',age:25}].some({name:'john',age:25}), true, 'Array#every | handles complex objects');
+  same([{name:'john',age:25},{name:'fred',age:85}].some('age'), false, 'Array#some | simple string mistakenly passed for complex objects');
+  same([{name:'john',age:25},{name:'fred',age:85}].some({name:'john',age:25}), true, 'Array#some | john can be found ');
 
-    arr = ['a', [1], { foo: 'bar' }, 352];
-    count = 0;
-    arr.forEach(function(el, i, a){
-        count++;
-    });
-    equals(count, 4, 'Array#forEach');
-
-    ['a'].forEach(function(el, i, a){
-      same(a, ['a'], 'Array#forEach');
-      equals(el, 'a', 'Array#forEach');
-      equals(i, 0, 'Array#forEach');
-      equals(this, 'this', 'Array#forEach');
-    }, 'this');
-
-
-
-
-    arr = [2, 5, 9];
-    arr.each(function(el, i, a){
-      equals(el, arr[i], 'Array#each');
-    });
-    arr.each(function(el, i, a){
-      equals(el, a[i], 'Array#each');
-    });
-
-    arr = ['a', [1], { foo: 'bar' }, 352];
-    count = 0;
-    arr.each(function(el, i, a){
-        count++;
-    });
-    equals(count, 4, 'Array#each');
-
-    ['a'].each(function(el, i, a){
-      same(a, ['a'], 'Array#each');
-      equals(el, 'a', 'Array#each');
-      equals(i, 0, 'Array#each');
-      equals(this, 'this', 'Array#each');
-    }, 'this');
-
-
-
-
-    same(['foot','goose','moose'].map(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#map');
-    same([1,4,9].map(Math.sqrt), [1,2,3], 'Array#map');
-    same([{ foo: 'bar' }].map(function(el){ return el['foo']; }), ['bar'], 'Array#map');
-
-    ['a'].map(function(el, i, a){
-      same(a, ['a'], 'Array#map');
-      equals(el, 'a', 'Array#map');
-      equals(i, 0, 'Array#map');
-      equals(this, 'this', 'Array#map');
-    }, 'this');
-
-
-    same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map');
-    same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map');
-    same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map');
-    same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map');
-    same([].map('name'), [], 'Array#map');
-
-
-
-    same(['foot','goose','moose'].collect(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#collect');
-    same([1,4,9].collect(Math.sqrt), [1,2,3], 'Array#collect');
-    same([{ foo: 'bar' }].collect(function(el){ return el['foo']; }), ['bar'], 'Array#collect');
-
-    ['a'].collect(function(el, i, a){
-      same(a, ['a'], 'Array#collect');
-      equals(el, 'a', 'Array#collect');
-      equals(i, 0, 'Array#collect');
-      equals(this, 'this', 'Array#collect');
-    }, 'this');
-
-
-
-
-    equals([0,1,2,3,4].reduce(function(a,b){ return a + b; }), 10, 'Array#reduce');
-    same([[0,1],[2,3],[4,5]].reduce(function(a,b){ return a.concat(b); }, []), [0,1,2,3,4,5], 'Array#reduce');
-    ['a'].reduce(function(p, c, i, a){
-      equals(p, 'c', 'Array#reduce');
-      equals(c, 'a', 'Array#reduce');
-      equals(i, 0, 'Array#reduce');
-      same(a, ['a'], 'Array#reduce');
-    }, 'c');
-    [55,66].reduce(function(p, c, i, a){
-      equals(p, 55, 'Array#reduce');
-      equals(c, 66, 'Array#reduce');
-      equals(i, 1, 'Array#reduce');
-      same(a, [55,66], 'Array#reduce');
-    });
-    [1].reduce(function(p, c, i, a){
-      // This assertion should never be called.
-      equals(true, false, 'Array#reduce');
-    });
-    equals([1].reduce(function(){}), 1, 'Array#reduce');
-
-
-    equals([0,1,2,3,4].reduceRight(function(a,b){ return a + b; }), 10, 'Array#reduceRight');
-    same([[0,1],[2,3],[4,5]].reduceRight(function(a,b){ return a.concat(b); }, []), [4,5,2,3,0,1], 'Array#reduceRight');
-    ['a'].reduceRight(function(p, c, i, a){
-      equals(p, 'c', 'Array#reduceRight');
-      equals(c, 'a', 'Array#reduceRight');
-      equals(i, 0, 'Array#reduceRight');
-      same(a, ['a'], 'Array#reduceRight');
-    }, 'c');
-    [55,66].reduceRight(function(p, c, i, a){
-      equals(p, 66, 'Array#reduceRight');
-      equals(c, 55, 'Array#reduceRight');
-      equals(i, 0, 'Array#reduceRight');
-      same(a, [55,66], 'Array#reduceRight');
-    });
-    [1].reduceRight(function(p, c, i, a){
-      // This assertion should never be called.
-      equals(true, false, 'Array#reduceRight');
-    });
-    equals([1].reduceRight(function(){}), 1, 'Array#reduceRight');
-
-
-    same(['a','b','c'].find('a'), 'a', 'Array#find');
-    same(['a','b','c'].find('b'), 'b', 'Array#find');
-    same(['a','b','c'].find('c'), 'c', 'Array#find');
-    same(['a','b','c'].find('d'), null, 'Array#find');
-    same([1,2,3].find(1), 1, 'Array#find');
-    same([1,2,3].find(2), 2, 'Array#find');
-    same([1,2,3].find(3), 3, 'Array#find');
-    same([1,2,3].find(4), null, 'Array#find');
-    same([{a:1},{b:2},{c:3}].find({a:1}), {a:1}, 'Array#find');
-    same([{a:1},{b:2},{c:3}].find({c:3}), {c:3}, 'Array#find');
-    same([{a:1},{b:2},{c:3}].find({d:4}), null, 'Array#find');
-    same([{a:1},{b:2},{c:3}].find({c:4}), null, 'Array#find');
-    same([[1,2],[2,3],[4,5]].find([2,3]), [2,3], 'Array#find');
-    same([[1,2],[2,3],[4,5]].find([2,4]), null, 'Array#find');
-    same([[1,2],[2,3],[2,3]].find([2,3]), [2,3], 'Array#find');
-    same(['foo','bar'].find(/f+/), 'foo', 'Array#find');
-    same(['foo','bar'].find(/r+/), 'bar', 'Array#find');
-    same(['foo','bar'].find(/q+/), null, 'Array#find');
-    same([1,2,3].find(function(e){ return e > 0; }), 1, 'Array#find');
-    same([1,2,3].find(function(e){ return e > 2; }), 3, 'Array#find');
-    same([1,2,3].find(function(e){ return e > 3; }), null, 'Array#find');
-    same([{a:1},{b:2},{c:3}].find(function(e){ return e['a'] === 1; }), {a:1}, 'Array#find');
-    same([function(){}].find(function(e){}), null, 'Array#find');
-    same([null, null].find(null), null, 'Array#find');
-
-
-
-    same(['a','b','c'].findAll('a'), ['a'], 'Array#findAll');
-    same(['a','a','c'].findAll('a'), ['a','a'], 'Array#findAll');
-    same(['a','b','c'].findAll('q'), [], 'Array#findAll');
-    same([1,2,3].findAll(1), [1], 'Array#findAll');
-    same([2,2,3].findAll(2), [2,2], 'Array#findAll');
-    same([1,2,3].findAll(4), [], 'Array#findAll');
-    same([{a:1},{b:2},{c:3}].findAll({a:1}), [{a:1}], 'Array#findAll');
-    same([{a:1},{a:1},{c:3}].findAll({a:1}), [{a:1},{a:1}], 'Array#findAll');
-    same([{a:1},{b:2},{c:3}].findAll({d:4}), [], 'Array#findAll');
-    same([{a:1},{b:2},{c:3}].findAll({c:4}), [], 'Array#findAll');
-    same([[1,2],[2,3],[4,5]].findAll([2,3]), [[2,3]], 'Array#findAll');
-    same([[1,2],[2,3],[4,5]].findAll([2,4]), [], 'Array#findAll');
-    same([[1,2],[2,3],[2,3]].findAll([2,3]), [[2,3],[2,3]], 'Array#findAll');
-    same(['foo','bar'].findAll(/f+/), ['foo'], 'Array#findAll');
-    same(['foo','bar'].findAll(/[a-f]/), ['foo','bar'], 'Array#findAll');
-    same(['foo','bar'].findAll(/q+/), [], 'Array#findAll');
-    same([1,2,3].findAll(function(e){ return e > 0; }), [1,2,3], 'Array#findAll');
-    same([1,2,3].findAll(function(e){ return e > 1; }), [2,3], 'Array#findAll');
-    same([1,2,3].findAll(function(e){ return e > 2; }), [3], 'Array#findAll');
-    same([1,2,3].findAll(function(e){ return e > 3; }), [], 'Array#findAll');
-    same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAll');
-    same([function(){}].findAll(function(e){}), [], 'Array#findAll');
-    same([null, null].findAll(null), [null, null], 'Array#findAll');
-
-
-
-    same(['a','b','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex');
-    same(['a','a','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex');
-    same(['a','b','c'].findFromIndex(0, 'q'), null, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(0, 1), 1, 'Array#findFromIndex');
-    same([2,2,3].findFromIndex(0, 2), 2, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(0, 4), null, 'Array#findFromIndex');
-    same([{a:1},{b:2},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex');
-    same([{a:1},{a:1},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex');
-    same([{a:1},{b:2},{c:3}].findFromIndex(0, {d:4}), null, 'Array#findFromIndex');
-    same([{a:1},{b:2},{c:3}].findFromIndex(0, {c:4}), null, 'Array#findFromIndex');
-    same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex');
-    same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,4]), null, 'Array#findFromIndex');
-    same([[1,2],[2,3],[2,3]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex');
-    same(['foo','bar'].findFromIndex(0, /f+/), 'foo', 'Array#findFromIndex');
-    same(['foo','bar'].findFromIndex(0, /[a-f]/), 'foo', 'Array#findFromIndex');
-    same(['foo','bar'].findFromIndex(1, /[a-f]/), 'bar', 'Array#findFromIndex');
-    same(['foo','bar'].findFromIndex(0, /q+/), null, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(0, function(e){ return e > 0; }), 1, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(1, function(e){ return e > 0; }), 2, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(2, function(e){ return e > 0; }), 3, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(3, function(e){ return e > 0; }), 1, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(0, function(e){ return e > 1; }), 2, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(1, function(e){ return e > 1; }), 2, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(2, function(e){ return e > 1; }), 3, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(0, function(e){ return e > 2; }), 3, 'Array#findFromIndex');
-    same([1,2,3].findFromIndex(0, function(e){ return e > 3; }), null, 'Array#findFromIndex');
-
-    same([{a:10},{a:8},{a:3}].findFromIndex(0, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex');
-    same([{a:10},{a:8},{a:3}].findFromIndex(1, function(e){ return e['a'] > 5; }), {a:8}, 'Array#findFromIndex');
-    same([{a:10},{a:8},{a:3}].findFromIndex(2, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex');
-    same([function(){}].findFromIndex(0, function(e){}), null, 'Array#findFromIndex');
-    same([function(){}].findFromIndex(1, function(e){}), null, 'Array#findFromIndex');
-    same([null, null].findFromIndex(0, null), null, 'Array#findFromIndex');
-    same([null, null].findFromIndex(1, null), null, 'Array#findFromIndex');
-    same([undefined, undefined].findFromIndex(0, undefined), undefined, 'Array#findFromIndex');
-    same([undefined, undefined].findFromIndex(1, undefined), undefined, 'Array#findFromIndex');
-    same([undefined, 'a'].findFromIndex(1, undefined), 'a', 'Array#findFromIndex');
-    same([null, null].findFromIndex(1, undefined), null, 'Array#findFromIndex');
-
-
-
-    same(['a','b','c'].findAllFromIndex(0, 'a'), ['a'], 'Array#findAllFromIndex');
-    same(['a','a','c'].findAllFromIndex(0, 'a'), ['a','a'], 'Array#findAllFromIndex');
-    same(['a','b','c'].findAllFromIndex(0, 'q'), [], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(0, 1), [1], 'Array#findAllFromIndex');
-    same([2,2,3].findAllFromIndex(0, 2), [2,2], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(0, 4), [], 'Array#findAllFromIndex');
-    same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {a:1}), [{a:1}], 'Array#findAllFromIndex');
-    same([{a:1},{a:1},{c:3}].findAllFromIndex(0, {a:1}), [{a:1},{a:1}], 'Array#findAllFromIndex');
-    same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {d:4}), [], 'Array#findAllFromIndex');
-    same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {c:4}), [], 'Array#findAllFromIndex');
-    same([[1,2],[2,3],[4,5]].findAllFromIndex(0, [2,3]), [[2,3]], 'Array#findAllFromIndex');
-    same([[1,2],[2,3],[4,5]].findAllFromIndex(0, [2,4]), [], 'Array#findAllFromIndex');
-    same([[1,2],[2,3],[2,3]].findAllFromIndex(0, [2,3]), [[2,3],[2,3]], 'Array#findAllFromIndex');
-    same(['foo','bar'].findAllFromIndex(0, /f+/), ['foo'], 'Array#findAllFromIndex');
-    same(['foo','bar'].findAllFromIndex(0, /[a-f]/), ['foo','bar'], 'Array#findAllFromIndex');
-    same(['foo','bar'].findAllFromIndex(1, /[a-f]/), ['bar','foo'], 'Array#findAllFromIndex');
-    same(['foo','bar'].findAllFromIndex(0, /q+/), [], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(0, function(e){ return e > 0; }), [1,2,3], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(1, function(e){ return e > 0; }), [2,3,1], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(2, function(e){ return e > 0; }), [3,1,2], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(3, function(e){ return e > 0; }), [1,2,3], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(0, function(e){ return e > 1; }), [2,3], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(1, function(e){ return e > 1; }), [2,3], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(2, function(e){ return e > 1; }), [3,2], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(0, function(e){ return e > 2; }), [3], 'Array#findAllFromIndex');
-    same([1,2,3].findAllFromIndex(0, function(e){ return e > 3; }), [], 'Array#findAllFromIndex');
-
-    same([{a:10},{a:8},{a:3}].findAllFromIndex(0, function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAllFromIndex');
-    same([{a:10},{a:8},{a:3}].findAllFromIndex(1, function(e){ return e['a'] > 5; }), [{a:8},{a:10}], 'Array#findAllFromIndex');
-    same([{a:10},{a:8},{a:3}].findAllFromIndex(2, function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAllFromIndex');
-    same([function(){}].findAllFromIndex(0, function(e){}), [], 'Array#findAllFromIndex');
-    same([function(){}].findAllFromIndex(1, function(e){}), [], 'Array#findAllFromIndex');
-    same([null, null].findAllFromIndex(0, null), [null, null], 'Array#findAllFromIndex');
-    same([null, null].findAllFromIndex(1, null), [null, null], 'Array#findAllFromIndex');
-
-    // Find all from index also implements a "stop" parameter to stop after
-    // n number of matches
-    same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 1), ['c'], 'Array#findAllFromIndex with stop');
-    same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 2), ['c','a'], 'Array#findAllFromIndex with stop');
-    same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 3), ['c','a','n'], 'Array#findAllFromIndex with stop');
-    same(['c','a','n','d','y'].findAllFromIndex(3, function(c){ return c.length == 1; }, 3), ['d','y','c'], 'Array#findAllFromIndex with stop');
-
-    // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
-    arr = [{name:'john',age:10,food:'sushi'},{name:'randy',age:23,food:'natto'},{name:'karen',age:32,food:'salad'}];
-    arr = [1,2,3,4,5,6,7,8,9];
-    same(arr.findAllFromIndex(4, function(n){ return n % 3 == 0; }), [6,9,3], 'Array#findAllFromIndex');
-    same(arr.reverse().findAllFromIndex(4, function(n){ return n % 3 == 0; }), [3,9,6], 'Array#findAllFromIndex reversed');
-
-
-    same([1,1,3].unique(), [1,3], 'Array#unique');
-    same([0,0,0].unique(), [0], 'Array#unique');
-    same(['a','b','c'].unique(), ['a','b','c'], 'Array#unique');
-    same(['a','a','c'].unique(), ['a','c'], 'Array#unique');
-    same([{foo:'bar'}, {foo:'bar'}].unique(), [{foo:'bar'}], 'Array#unique');
-
-
-
-    same([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union');
-    same([1,1,1].union([1,2,3]), [1,2,3], 'Array#union');
-    same([0,0,0].union([1,2,3]), [0,1,2,3], 'Array#union');
-    same([0,0,0].union([0,0,0]), [0], 'Array#union');
-    same([].union([]), [], 'Array#union');
-    same([-1,-2,-3].union([-2,-4,-5]), [-1,-2,-3,-4,-5], 'Array#union');
-    same([-1,-2,-3].union([3,4,5]), [-1,-2,-3,3,4,5], 'Array#union');
-    same([{a:1},{b:2}].union([{b:2},{c:3}]), [{a:1},{b:2},{c:3}], 'Array#intersect');
-    same([1,2,3].union(4), [1,2,3,4], 'Array#union');
-
-
-    same([1,2,3].intersect([3,4,5]), [3], 'Array#intersect');
-    same(['a','b','c'].intersect(['c','d','e']), ['c'], 'Array#intersect');
-    same([1,2,3].intersect([1,2,3]), [1,2,3], 'Array#intersect');
-    same([1,2,3].intersect([3,2,1]), [1,2,3], 'Array#intersect');
-    same([].intersect([3]), [], 'Array#intersect');
-    same([3].intersect([]), [], 'Array#intersect');
-    same([].intersect([]), [], 'Array#intersect');
-    same([null].intersect([]), [], 'Array#intersect');
-    same([null].intersect([null]), [null], 'Array#intersect');
-    same([false].intersect([false]), [false], 'Array#intersect');
-    same([false].intersect([0]), [], 'Array#intersect');
-    same([false].intersect([null]), [], 'Array#intersect');
-    same([false].intersect([undefined]), [], 'Array#intersect');
-    same([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], 'Array#intersect');
-    same([1,1,3].intersect([1,5,6]), [1], 'Array#intersect');
-    same([1,2,3].intersect([4,5,6]), [], 'Array#intersect');
-    same([1,2,3].intersect(1), [1], 'Array#intersect');
-
-
-
-
-    same([1,2,3].subtract([3,4,5]), [1,2], 'Array#subtract');
-    same([1,1,2,2,3,3,4,4,5,5].subtract([2,3,4]), [1,1,5,5], 'Array#subtract');
-    same(['a','b','c'].subtract(['c','d','e']), ['a','b'], 'Array#subtract');
-    same([1,2,3].subtract([1,2,3]), [], 'Array#subtract');
-    same([1,2,3].subtract([3,2,1]), [], 'Array#subtract');
-    same([].subtract([3]), [], 'Array#subtract');
-    same([3].subtract([]), [3], 'Array#subtract');
-    same([].subtract([]), [], 'Array#subtract');
-    same([null].subtract([]), [null], 'Array#subtract');
-    same([null].subtract([null]), [], 'Array#subtract');
-    same([false].subtract([false]), [], 'Array#subtract');
-    same([false].subtract([0]), [false], 'Array#subtract');
-    same([false].subtract([null]), [false], 'Array#subtract');
-    same([false].subtract([undefined]), [false], 'Array#subtract');
-    same([{a:1},{b:2}].subtract([{b:2},{c:3}]), [{a:1}], 'Array#subtract');
-    same([1,1,3].subtract([1,5,6]), [3], 'Array#subtract');
-    same([1,2,3].subtract([4,5,6]), [1,2,3], 'Array#subtract');
-    same([1,2,3].subtract(1), [2,3], 'Array#subtract');
-
-
-
-
-
-    same(['a','b','c'].at(0), 'a', 'Array#at');
-    same(['a','b','c'].at(1), 'b', 'Array#at');
-    same(['a','b','c'].at(2), 'c', 'Array#at');
-    same(['a','b','c'].at(3), null, 'Array#at');
-    same(['a','b','c'].at(-1), 'c', 'Array#at');
-    same(['a','b','c'].at(-2), 'b', 'Array#at');
-    same(['a','b','c'].at(-3), 'a', 'Array#at');
-    same(['a','b','c'].at(-4), null, 'Array#at');
-    same(['a','b','c'].at(), null, 'Array#at');
-    same([false].at(0), false, 'Array#at');
-    same(['a'].at(0), 'a', 'Array#at');
-    same(['a'].at(1), null, 'Array#at');
-    same(['a'].at(-1), 'a', 'Array#at');
-    same(['a','b','c','d','e','f'].at(0,2,4), ['a','c','e'], 'Array#at');
-    same(['a','b','c','d','e','f'].at(1,3,5), ['b','d','f'], 'Array#at');
-    same(['a','b','c','d','e','f'].at(0,2,4,6), ['a','c','e'], 'Array#at');
-
-
-
-    same(['a','b','c'].from(), ['a','b','c'], 'Array#from');
-    same(['a','b','c'].from(1), ['b','c'], 'Array#from');
-    same(['a','b','c'].from(2), ['c'], 'Array#from');
-    same(['a','b','c'].from(3), [], 'Array#from');
-    same(['a','b','c'].from(4), [], 'Array#from');
-    same(['a','b','c'].from(-1), ['c'], 'Array#from');
-    same(['a','b','c'].from(-2), ['b','c'], 'Array#from');
-    same(['a','b','c'].from(-3), ['a','b','c'], 'Array#from');
-    same(['a','b','c'].from(-4), ['a','b','c'], 'Array#from');
-
-
-    same(['a','b','c'].to(), ['a','b','c'], 'Array#to');
-    same(['a','b','c'].to(1), ['a','b'], 'Array#to');
-    same(['a','b','c'].to(2), ['a','b','c'], 'Array#to');
-    same(['a','b','c'].to(3), ['a','b','c'], 'Array#to');
-    same(['a','b','c'].to(4), ['a','b','c'], 'Array#to');
-    same(['a','b','c'].to(-1), ['a','b','c'], 'Array#to');
-    same(['a','b','c'].to(-2), ['a','b'], 'Array#to');
-    same(['a','b','c'].to(-3), ['a'], 'Array#to');
-    same(['a','b','c'].to(-4), [], 'Array#to');
-
-
-
-
-    same(['a','b','c'].first(), 'a', 'Array#first');
-    same(['a','b','c'].first(1), ['a'], 'Array#first');
-    same(['a','b','c'].first(2), ['a','b'], 'Array#first');
-    same(['a','b','c'].first(3), ['a','b','c'], 'Array#first');
-    same(['a','b','c'].first(4), ['a','b','c'], 'Array#first');
-    same(['a','b','c'].first(-1), [], 'Array#first');
-    same(['a','b','c'].first(-2), [], 'Array#first');
-    same(['a','b','c'].first(-3), [], 'Array#first');
-
-
-    same(['a','b','c'].last(), 'c', 'Array#last');
-    same(['a','b','c'].last(1), ['c'], 'Array#last');
-    same(['a','b','c'].last(2), ['b','c'], 'Array#last');
-    same(['a','b','c'].last(3), ['a','b','c'], 'Array#last');
-    same(['a','b','c'].last(4), ['a','b','c'], 'Array#last');
-    same(['a','b','c'].last(-1), [], 'Array#last');
-    same(['a','b','c'].last(-2), [], 'Array#last');
-    same(['a','b','c'].last(-3), [], 'Array#last');
-    same(['a','b','c'].last(-4), [], 'Array#last');
-
-
-
-
-
-
-
-
-
-
-
-    same([12,87,55].min(), 12, 'Array#min');
-    same([12,87,55].min(true), [12], 'Array#min');
-    same([-12,-87,-55].min(), -87, 'Array#min');
-    same([-12,-87,-55].min(true), [-87], 'Array#min');
-    same([5,5,128].min(), 5, 'Array#min');
-    same([5,5,128].min(true), [5], 'Array#min');
-    same([5,5,5].min(), 5, 'Array#min');
-    same([5,5,5].min(true), [5], 'Array#min');
-    same(['a','b','c'].min(), null, 'Array#min');
-    same(['a','b','c'].min(true), [], 'Array#min');
-    same([].min(), null, 'Array#min');
-    same([].min(true), [], 'Array#min');
-    same([null].min(), null, 'Array#min');
-    same([null].min(true), [], 'Array#min');
-    same([undefined].min(), null, 'Array#min');
-    same([undefined].min(true), [], 'Array#min');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), {a:1,b:5}, 'Array#min');
-    same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), {a:3,b:3}, 'Array#min');
-    same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min');
-    same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#min');
-    same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), {a:-1,b:-5}, 'Array#min');
-    same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(true, function(el){ return el['b']; }), [{a:-1,b:-5}], 'Array#min');
-    same(['short','and', 'mort'].min(function(el){ return el.length; }), 'and', 'Array#min');
-    same(['short','and', 'mort'].min(true, function(el){ return el.length; }), ['and'], 'Array#min');
-    same(['short','and', 'mort', 'fat'].min(function(el){ return el.length; }), 'and', 'Array#min');
-    same(['short','and', 'mort', 'fat'].min(true, function(el){ return el.length; }), ['and','fat'], 'Array#min');
-
-
-    same([12,87,55].max(), 87, 'Array#max');
-    same([12,87,55].max(true), [87], 'Array#max');
-    same([-12,-87,-55].max(), -12, 'Array#max');
-    same([-12,-87,-55].max(true), [-12], 'Array#max');
-    same([5,5,128].max(), 128, 'Array#max');
-    same([5,128,128].max(true), [128], 'Array#max');
-    same([128,128,128].max(true), [128], 'Array#max');
-    same(['a','b','c'].max(), null, 'Array#max');
-    same(['a','b','c'].max(true), [], 'Array#max');
-    same([].max(), null, 'Array#max');
-    same([].max(true), [], 'Array#max');
-    same([null].max(), null, 'Array#max');
-    same([null].max(true), [], 'Array#max');
-    same([undefined].max(), null, 'Array#max');
-    same([undefined].max(true), [], 'Array#max');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), {a:3,b:5}, 'Array#max');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(true, function(el){ return el['a']; }), [{a:3,b:5}], 'Array#max');
-    same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), {a:1,b:5}, 'Array#max');
-    same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:5}], 'Array#max');
-    same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max');
-    same([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max');
-    same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), {a:-3,b:-3}, 'Array#max');
-    same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(true, function(el){ return el['b']; }), [{a:-3,b:-3}], 'Array#max');
-    same(['short','and', 'mort'].max(function(el){ return el.length; }), 'short', 'Array#max');
-    same(['short','and', 'mort'].max(true, function(el){ return el.length; }), ['short'], 'Array#max');
-    same(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), 'short', 'Array#max');
-    same(['short','and', 'morts', 'fat'].max(true, function(el){ return el.length; }), ['short','morts'], 'Array#max');
-
-
-
-
-    var people = [
-      { name: 'jim',    age: 27, hair: 'brown'  },
-      { name: 'mary',   age: 52, hair: 'blonde' },
-      { name: 'ronnie', age: 13, hair: 'brown'  },
-      { name: 'edmund', age: 27, hair: 'blonde' }
-    ];
-
-    equal(people.most(function(person){ return person.age; }).age, 27, 'Array#most');
-    same(people.most(function(person){ return person.age; }), {name:'jim',age:27,hair:'brown'}, 'Array#most');
-    same(people.most(true, function(person){ return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most');
-
-    same(people.most(function(person){ return person.hair; }), null, 'Array#most');
-    same(people.most(true, function(person){ return person.hair; }), [], 'Array#most');
-
-    same([].most(), null, 'Array#most');
-    same([1,2,3].most(), null, 'Array#most');
-    same([1,2,3].most(true), [], 'Array#most');
-    same([1,2,3,3].most(), 3, 'Array#most');
-    same([1,2,3,3].most(true), [3], 'Array#most');
-    same([1,1,2,3,3].most(), 1, 'Array#most');
-    same([1,1,2,3,3].most(true), [1,3], 'Array#most');
-    same(['a','b','c'].most(), null, 'Array#most');
-    same(['a','b','c'].most(true), [], 'Array#most');
-    same(['a','b','c','c'].most(), 'c', 'Array#most');
-    same(['a','b','c','c'].most(true), ['c'], 'Array#most');
-    same(['a','a','b','c','c'].most(), 'a', 'Array#most');
-    same(['a','a','b','c','c'].most(true), ['a','c'], 'Array#most');
-
-    // Leaving this here as a reference for how to collect the actual number of occurences.
-    equal(people.most(true, function(person){ return person.age; }).length, 2, 'Array#most');
-
-
-    contains(people.least(function(person){ return person.age; }).age, [52,13], 'Array#least');
-    contains(people.least(function(person){ return person.age; }), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least');
-    same(people.least(true, function(person){ return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least');
-
-
-    same(people.least(function(person){ return person.hair; }), null, 'Array#least');
-    same(people.least(true, function(person){ return person.hair; }), [], 'Array#least');
-
-    same([].least(), null, 'Array#least');
-    same([1,2,3].least(), null, 'Array#least');
-    same([1,2,3].least(true), [], 'Array#least');
-    same([1,2,3,3].least(), 1, 'Array#least');
-    same([1,2,3,3].least(true), [1,2], 'Array#least');
-    same([1,1,2,3,3].least(), 2, 'Array#least');
-    same([1,1,2,3,3].least(true), [2], 'Array#least');
-    same([1,1,1,2,2,3,3,3].least(), 2, 'Array#least');
-    same([1,1,1,2,2,3,3,3].least(true), [2], 'Array#least');
-    same(['a','b','c'].least(), null, 'Array#least');
-    same(['a','b','c'].least(true), [], 'Array#least');
-    same(['a','b','c','c'].least(), 'a', 'Array#least');
-    same(['a','b','c','c'].least(true), ['a','b'], 'Array#least');
-    same(['a','a','b','c','c'].least(), 'b', 'Array#least');
-    same(['a','a','b','c','c'].least(true), ['b'], 'Array#least');
-
-    // Leaving this here as a reference for how to collect the actual number of occurences.
-    same(people.least(true, function(person){ return person.age; }).length, 2, 'Array#least');
-
-
-
-
-
-    same([12,87,55].sum(), 154, 'Array#sum');
-    same([12,87,128].sum(), 227, 'Array#sum');
-    same([].sum(), 0, 'Array#sum');
-    same([null, false].sum(), 0, 'Array#sum');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum(function(el){ return el['a']; }), 6, 'Array#sum | handles callbacks');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum('a'), 6, 'Array#sum | handles strings');
-
-    same([13,18,13,14,13,16,14,21,13].average(), 15, 'Array#average');
-    same([2,2,2].average(), 2, 'Array#average');
-    same([2,3,4].average(), 3, 'Array#average');
-    same([2,3,4,2].average(), 2.75, 'Array#average');
-    same([].average(), 0, 'Array#average');
-    same([null, false].average(), 0, 'Array#average');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average(function(el){ return el['a']; }), 2, 'Array#average | handles callback');
-    same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average('a'), 2, 'Array#average | handles strings');
-
-
-    same(people.average('age'), 29.75, 'Array#average');
-    same(people.average(function(p){ return p.age; }), 29.75, 'Array#average');
-    same(isNaN(people.average(function(p){ return p.hair; })), true, 'Array#average');
-
-
-
-    same([].groupBy(), {}, 'Array#groupBy | Null');
-    same([1,1,2,2,3,3,4].groupBy(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#groupBy');
-    same(['a','b','c','a','e','c'].groupBy(), {'a':['a','a'],'b':['b'],'c':['c','c'],'e':['e']}, 'Array#groupBy');
-    same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy('a'), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy');
-    same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy(function(el){ return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy');
-
-
-    people = people.sortBy('hair');
-    same(people.groupBy(function(p){ return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy');
-
-
-
-
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(1), [[1,2,3,4,5,6,7,8,9,10]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(2), [[1,2,3,4,5],[6,7,8,9,10]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(3), [[1,2,3,4],[5,6,7,8],[9,10]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(4), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(5), [[1,2],[3,4],[5,6],[7,8],[9,10]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(6), [[1,2],[3,4],[5,6],[7,8],[9,10],[]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(7), [[1,2],[3,4],[5,6],[7,8],[9,10],[],[]], 'Array#inGroups');
-
-
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(3, null), [[1,2,3,4],[5,6,7,8],[9,10,null,null]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(4, null), [[1,2,3],[4,5,6],[7,8,9],[10,null,null]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(5, null), [[1,2],[3,4],[5,6],[7,8],[9,10]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(6, null), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null]], 'Array#inGroups');
-    same([1,2,3,4,5,6,7,8,9,10].inGroups(7, null), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null],[null,null]], 'Array#inGroups');
-
-
-
-
-    same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8,9].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7].inGroupsOf(3), [[1,2,3],[4,5,6],[7]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6].inGroupsOf(3), [[1,2,3],[4,5,6]], 'Array#inGroupsOf');
-    same([1,2,3,4,5].inGroupsOf(3), [[1,2,3],[4,5]], 'Array#inGroupsOf');
-    same([1,2,3,4].inGroupsOf(3), [[1,2,3],[4]], 'Array#inGroupsOf');
-    same([1,2,3].inGroupsOf(3), [[1,2,3]], 'Array#inGroupsOf');
-    same([1,2].inGroupsOf(3), [[1,2]], 'Array#inGroupsOf');
-    same([1].inGroupsOf(3), [[1]], 'Array#inGroupsOf');
-
-    same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9],[10, null, null]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8,9].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7,8].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8, null]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6,7].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7, null, null]], 'Array#inGroupsOf');
-    same([1,2,3,4,5,6].inGroupsOf(3, null), [[1,2,3],[4,5,6]], 'Array#inGroupsOf');
-    same([1,2,3,4,5].inGroupsOf(3, null), [[1,2,3],[4,5,null]], 'Array#inGroupsOf');
-    same([1,2,3,4].inGroupsOf(3, null), [[1,2,3],[4,null,null]], 'Array#inGroupsOf');
-    same([1,2,3].inGroupsOf(3, null), [[1,2,3]], 'Array#inGroupsOf');
-    same([1,2].inGroupsOf(3, null), [[1,2,null]], 'Array#inGroupsOf');
-    same([1].inGroupsOf(3, null), [[1,null,null]], 'Array#inGroupsOf');
-
-    same([1].inGroupsOf(3, ' '), [[1,' ',' ']], 'Array#inGroupsOf');
-    same([1].inGroupsOf(3, true), [[1,true,true]], 'Array#inGroupsOf');
-    same([1].inGroupsOf(3, false), [[1,false,false]], 'Array#inGroupsOf');
-
-    same([1].inGroupsOf(), [[1]], 'Array#inGroupsOf');
-    same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf');
-
-    same([1].inGroupsOf(0), [1], 'Array#inGroupsOf');
-    same([1].inGroupsOf(0, null), [1], 'Array#inGroupsOf');
-
-    same([1].inGroupsOf(3, null), [[1, null, null]], 'Array#inGroupsOf');
-    same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf');
-    same([].inGroupsOf(3), [], 'Array#inGroupsOf');
-    same([].inGroupsOf(3, null), [], 'Array#inGroupsOf');
-    same([null].inGroupsOf(3), [[null]], 'Array#inGroupsOf');
-    same([null].inGroupsOf(3, null), [[null,null,null]], 'Array#inGroupsOf');
-
-
-
-    // Emulating example of Enumerable#each_slice
-    same((1).upto(10).inGroupsOf(3).map(function(g){ return g[1]; }).compact(), [2,5,8], 'Array#inGroupsOf');
-
-
-    same([1,2,3,4,5].split(3), [[1,2],[4,5]], 'Array#split');
-    same([1,2,3,4,5,6,7,8,9,10].split(function(i){ return i % 3 == 0; }), [[1,2],[4,5],[7,8],[10]], 'Array#split');
-    same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 2; }), [['wherever','you'],['whatever','you']], 'Array#split');
-    same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 3; }), [['wherever'],['go','whatever'],['do']], 'Array#split');
-    same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length < 4; }), [['wherever'],['whatever']], 'Array#split');
-
-
-
-    same([1,2,3].compact(), [1,2,3], 'Array#compact');
-    same([1,2,null,3].compact(), [1,2,3], 'Array#compact');
-    same([1,2,undefined,3].compact(), [1,2,3], 'Array#compact');
-    same([undefined,undefined,undefined].compact(), [], 'Array#compact');
-    same([null,null,null].compact(), [], 'Array#compact');
-    same([NaN,NaN,NaN].compact(), [], 'Array#compact');
-    same(['','',''], ['','',''], 'Array#compact');
-    same([false,false,false].compact(), [false,false,false], 'Array#compact');
-    same([0,1,2].compact(), [0,1,2], 'Array#compact');
-    same([].compact(), [], 'Array#compact');
-
-
-
-    same([1,2,2,3].count(), 4, 'Array#count');
-    same([1,2,2,3].count(2), 2, 'Array#count');
-    same(['a','b','c','c'].count(), 4, 'Array#count');
-    same(['a','b','c','c'].count('c'), 2, 'Array#count');
-    same([1,2,2,3].count(function(el){ return el % 2 == 0; }), 2, 'Array#count');
-    same([1,2,2,3].count(function(el){ return el > 2; }), 1, 'Array#count');
-    same([1,2,2,3].count(function(el){ return el > 20; }), 0, 'Array#count');
-    same([{a:1},{a:2},{a:1}].count({a:1}), 2, 'Array#count');
-
-
-
-
-
-
-    same([1,2,2,3].remove(), [], 'Array#remove');
-    same([1,2,2,3].remove(2), [1,3], 'Array#remove');
-    same(['a','b','c','c'].remove(), [], 'Array#remove');
-    same(['a','b','c','c'].remove('c'), ['a','b'], 'Array#remove');
-    same([1,2,2,3].remove(function(el){ return el % 2 == 0; }), [1,3], 'Array#remove');
-    same([1,2,2,3].remove(function(el){ return el > 2; }), [1,2,2], 'Array#remove');
-    same([1,2,2,3].remove(function(el){ return el > 20; }), [1,2,2,3], 'Array#remove');
-    same([{a:1},{a:2},{a:1}].remove({a:1}), [{a:2}], 'Array#remove');
-
-
-
-    same([1,2,2,3].removeIndex(), [1,2,2,3], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(0), [2,2,3], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(1), [1,2,3], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(2), [1,2,3], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(3), [1,2,2], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(4), [1,2,2,3], 'Array#removeIndex');
-    same(['a','b','c','c'].removeIndex(), ['a','b','c','c'], 'Array#removeIndex');
-    same(['a','b','c','c'].removeIndex(0), ['b','c','c'], 'Array#removeIndex');
-    same(['a','b','c','c'].removeIndex(1), ['a','c','c'], 'Array#removeIndex');
-    same(['a','b','c','c'].removeIndex(2), ['a','b','c'], 'Array#removeIndex');
-    same(['a','b','c','c'].removeIndex(3), ['a','b','c'], 'Array#removeIndex');
-    same(['a','b','c','c'].removeIndex(4), ['a','b','c','c'], 'Array#removeIndex');
-    same([{a:1},{a:2},{a:1}].removeIndex(1), [{a:1},{a:1}], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(0,1), [2,3], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(0,2), [3], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(1,2), [1,3], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(1,5), [1], 'Array#removeIndex');
-    same([1,2,2,3].removeIndex(0,5), [], 'Array#removeIndex');
-
-
-
-
-
-
-    same([1,2,3].add(4), [1,2,3,4], 'Array#add');
-    same(['a','b','c'].add('d'), ['a','b','c','d'], 'Array#add');
-    same([{a:1},{a:2}].add({a:3}), [{a:1},{a:2},{a:3}], 'Array#add');
-    same([1,2,3].add([3,4,5]), [1,2,3,3,4,5], 'Array#add');
-    same(['a','b','c'].add(['c','d','e']), ['a','b','c','c','d','e'], 'Array#add');
-    same([1,2,3].add([1,2,3]), [1,2,3,1,2,3], 'Array#add');
-    same([1,2,3].add([3,2,1]), [1,2,3,3,2,1], 'Array#add');
-    same([].add([3]), [3], 'Array#add');
-    same([3].add([]), [3], 'Array#add');
-    same([].add([]), [], 'Array#add');
-    same([null].add([]), [null], 'Array#add');
-    same([null].add([null]), [null, null], 'Array#add');
-    same([false].add([false]), [false, false], 'Array#add');
-    same([false].add([0]), [false, 0], 'Array#add');
-    same([false].add([null]), [false, null], 'Array#add');
-    same([false].add([undefined]), [false, undefined], 'Array#add');
-    same([{a:1},{b:2}].add([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#add');
-    same([1,1,3].add([1,5,6]), [1,1,3,1,5,6], 'Array#add');
-    same([1,2,3].add([4,5,6]), [1,2,3,4,5,6], 'Array#add');
-    same([1,2,3].add(1), [1,2,3,1], 'Array#add');
-
-
-
-
-    arr = [1,2,3];
-    arr.insert(4)
-    same(arr, [1,2,3,4], 'Array#insert');
-
-    arr = ['a','b','c'];
-    arr.insert('d')
-    same(arr, ['a','b','c','d'], 'Array#insert');
-
-    arr = [{a:1},{a:2}];
-    arr.insert({a:3})
-    same(arr, [{a:1},{a:2},{a:3}], 'Array#insert');
-
-    arr = [1,2,3];
-    arr.insert(4, 1)
-    same(arr, [1,4,2,3], 'Array#insert');
-
-    arr = ['a','b','c'];
-    arr.insert('d', 1)
-    same(arr, ['a','d','b','c'], 'Array#insert');
-
-    arr = [{a:1},{a:2}];
-    arr.insert({a:3}, 1)
-    same(arr, [{a:1},{a:3},{a:2}], 'Array#insert');
-    same(arr.insert({a:3}), {a:3}, 'Array#insert');
-
-
-
-    equal([1,2,3].blank(), false, 'Array#blank');
-    equal([].blank(), true, 'Array#blank');
-    equal([null].blank(), true, 'Array#blank');
-    equal([undefined].blank(), true, 'Array#blank');
-    equal([null,null].blank(), true, 'Array#blank');
-    equal([undefined,undefined].blank(), true, 'Array#blank');
-    equal([false,false].blank(), false, 'Array#blank');
-    equal([0,0].blank(), false, 'Array#blank');
-
-
-
-
-    equal([1,2,3].any(), false, 'Array#any | no parameters');
-    equal([1,2,3].any(1), true, 'Array#any | find contained number');
-    equal([1,2,3].any(4), false, 'Array#any | find non-contained number');
-    equal([1,2,3].any('a'), false, 'Array#any | find non-contained string');
-    equal(['a','b','c'].any('a'), true, 'Array#any | find contained string');
-    equal(['a','b','c'].any('f'), false, 'Array#any | find non-contained string in string array');
-    equal(['a','b','c'].any(/[a-f]/), true, 'Array#any | Regex a-f');
-    equal(['a','b','c'].any(/[m-z]/), false, 'Array#any | Regex m-z');
-    equal(['a','b','c'].any(function(e){ return e.length > 1; }), false, 'Array#any | find length greater than one');
-    equal(['a','b','c'].any(function(e){ return e.length < 2; }), true, 'Array#any | find length less than two');
-    equal(['a','bar','cat'].any(function(e){ return e.length < 2; }), true, 'Array#any | find existing length less than two');
-    same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any | find number in object array');
-    same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any | find object in object array');
-    same([{a:1},{a:2},{a:1}].any(function(e){ return e['a'] == 1; }), true, 'Array#any | find object in object array based on function');
-    same([{a:1},{a:2},{a:1}].any(function(e){ return e['b'] == 1; }), false, 'Array#any | find non-existing object in object array based on function');
-    equal([0].any(0), true, 'Array#any | find zero');
-
-
-
-    equal([1,2,3].has(), false, 'Array#has');
-    equal([1,2,3].has(1), true, 'Array#has');
-    equal([1,2,3].has(4), false, 'Array#has');
-    equal([1,2,3].has('a'), false, 'Array#has');
-    equal(['a','b','c'].has('a'), true, 'Array#has');
-    equal(['a','b','c'].has('f'), false, 'Array#has');
-    equal(['a','b','c'].has(/[a-f]/), true, 'Array#has');
-    equal(['a','b','c'].has(/[m-z]/), false, 'Array#has');
-    equal(['a','b','c'].has(function(e){ return e.length > 1; }), false, 'Array#has');
-    equal(['a','b','c'].has(function(e){ return e.length < 2; }), true, 'Array#has');
-    equal(['a','bar','cat'].has(function(e){ return e.length < 2; }), true, 'Array#has');
-    same([{a:1},{a:2},{a:1}].has(1), false, 'Array#has');
-    same([{a:1},{a:2},{a:1}].has({a:1}), true, 'Array#has');
-    same([{a:1},{a:2},{a:1}].has(function(e){ return e['a'] == 1; }), true, 'Array#has');
-    same([{a:1},{a:2},{a:1}].has(function(e){ return e['b'] == 1; }), false, 'Array#has');
-
-
-
-    // None is the reverse of any
-
-    equal([1,2,3].none(), true, 'Array#none');
-    equal([1,2,3].none(1), false, 'Array#none');
-    equal([1,2,3].none(4), true, 'Array#none');
-    equal([1,2,3].none('a'), true, 'Array#none');
-    equal(['a','b','c'].none('a'), false, 'Array#none');
-    equal(['a','b','c'].none('f'), true, 'Array#none');
-    equal(['a','b','c'].none(/[a-f]/), false, 'Array#none');
-    equal(['a','b','c'].none(/[m-z]/), true, 'Array#none');
-    equal(['a','b','c'].none(function(e){ return e.length > 1; }), true, 'Array#none');
-    equal(['a','b','c'].none(function(e){ return e.length < 2; }), false, 'Array#none');
-    equal(['a','bar','cat'].none(function(e){ return e.length < 2; }), false, 'Array#none');
-    same([{a:1},{a:2},{a:1}].none(1), true, 'Array#none');
-    same([{a:1},{a:2},{a:1}].none({a:1}), false, 'Array#none');
-    same([{a:1},{a:2},{a:1}].none(function(e){ return e['a'] == 1; }), false, 'Array#none');
-    same([{a:1},{a:2},{a:1}].none(function(e){ return e['b'] == 1; }), true, 'Array#none');
-
-
-
-
-
-    equal([1,2,3].all(), false, 'Array#all');
-    equal([1,2,3].all(1), false, 'Array#all');
-    equal([1,1,1].all(1), true, 'Array#all');
-    equal([1,2,3].all(3), false, 'Array#all');
-    equal(['a','b','c'].all('a'), false, 'Array#all');
-    equal(['a','a','a'].all('a'), true, 'Array#all');
-    equal(['a','b','c'].all('f'), false, 'Array#all');
-    equal(['a','b','c'].all(/[a-f]/), true, 'Array#all');
-    equal(['a','b','c'].all(/[a-b]/), false, 'Array#all');
-    equal(['a','b','c'].all(function(e){ return e.length > 1; }), false, 'Array#all');
-    equal(['a','b','c'].all(function(e){ return e.length < 2; }), true, 'Array#all');
-    equal(['a','bar','cat'].all(function(e){ return e.length < 2; }), false, 'Array#all');
-    same([{a:1},{a:2},{a:1}].all(1), false, 'Array#all');
-    same([{a:1},{a:2},{a:1}].all({a:1}), false, 'Array#all');
-    same([{a:1},{a:1},{a:1}].all({a:1}), true, 'Array#all');
-    same([{a:1},{a:2},{a:1}].all(function(e){ return e['a'] == 1; }), false, 'Array#all');
-    same([{a:1},{a:2},{a:1}].all(function(e){ return e['b'] == 1; }), false, 'Array#all');
-    same([{a:1},{a:1},{a:1}].all(function(e){ return e['a'] == 1; }), true, 'Array#all');
-
-
-
-    same([1,2,3].flatten(), [1,2,3], 'Array#flatten');
-    same(['a','b','c'].flatten(), ['a','b','c'], 'Array#flatten');
-    same([{a:1},{a:2},{a:1}].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
-    same([[1],[2],[3]].flatten(), [1,2,3], 'Array#flatten');
-    same([[1,2],[3]].flatten(), [1,2,3], 'Array#flatten');
-    same([[1,2,3]].flatten(), [1,2,3], 'Array#flatten');
-    same([['a'],['b'],['c']].flatten(), ['a','b','c'], 'Array#flatten');
-    same([['a','b'],['c']].flatten(), ['a','b','c'], 'Array#flatten');
-    same([['a','b','c']].flatten(), ['a','b','c'], 'Array#flatten');
-    same([[{a:1}],[{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
-    same([[{a:1},{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
-    same([[{a:1},{a:2},{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten');
-    same([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten');
-
-
-
-
-
-    arr = ['more','everyone!','bring','the','family'];
-    same(arr.sortBy('length'), ['the','more','bring','family','everyone!'], 'Array#sortBy');
-    same(arr.sortBy('length', true), ['everyone!','family','bring','more','the'], 'Array#sortBy');
-
-    same(arr.sortBy(function(a){ return a.length; }), ['the','more','bring','family','everyone!'], 'Array#sortBy');
-    same(arr.sortBy(function(a){ return a.length; }, true), ['everyone!','family','bring','more','the'], 'Array#sortBy');
-
-    arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
-    same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy');
-    same(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy');
-
-
-
-
-
-
-    arr = [1,2,3,4,5,6,7,8,9,10];
-    var firsts = [];
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-    firsts.push(arr.randomize().first());
-
-    /* Note that there is a built-in 0.00000001% chance that this test will fail */
-    equals(firsts.all(1), false, 'Array#randomize');
-
-
-
-    // Shuffle is an alias
-
-    arr = [1,2,3,4,5,6,7,8,9,10];
-    var firsts = [];
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-    firsts.push(arr.shuffle().first());
-
-    /* Note that there is a built-in 0.00000001% chance that this test will fail */
-    equals(firsts.all(1), false, 'Array#shuffle');
-
-
-
-
-    // These tests are a bit more complicated and are designed to flesh out desired behavior
-    var ids = [11235,11211,11235,43248,55232,11456];
-
-
-
-
-
-
-    // Thanks to Steven Levitah (http://stevenlevithan.com/demo/split.cfm) for inspiration and information here.
-
-
-    same('a,b,c,d,e'.split(',') , ['a','b','c','d','e'] , 'Array#split splits on standard commas');
-    same('a|b|c|d|e'.split(',') , ['a|b|c|d|e'] , "Array#split doesn't split on standard commas");
-    same('a|b|c|d|e'.split('|') , ['a','b','c','d','e'] , 'Array#split splits on pipes');
-    same('a,b,c,d,e'.split(/,/) , ['a','b','c','d','e'] , 'Array#split splits on standard regexp commas');
-    same('a|b|c|d|e'.split(/\|/) , ['a','b','c','d','e'] , 'Array#split splits on standard regexp pipes');
-    same('a|b|c|d|e'.split(/[,|]/) , ['a','b','c','d','e'] , 'Array#split splits on classes');
-    same('a|b|c|d|e'.split(/[a-z]/) , ['','|','|','|','|',''] , 'Array#split splits on classes with ranges');
-    same('a|b|c|d|e'.split(/\|*/) , ['a','b','c','d','e'] , 'Array#split splits on star');
-    same('a|b|c|d|e'.split(/\|?/) , ['a','b','c','d','e'] , 'Array#split splits on optionals');
-
-    same('a,b,c,d,e'.split(',', 2) , ['a','b'] , 'Array#split handles limits');
-
-    same('a|||b|c|d|e'.split('|') , ['a', '', '', 'b','c','d','e'] , 'Array#split splits back-to-back separators on a string');
-    same('a|||b|c|d|e'.split(/\|/) , ['a', '', '', 'b','c','d','e'] , 'Array#split splits back-to-back separators on a regexp');
-
-    same('paragraph one\n\nparagraph two\n\n\n'.split(/\n/) , ['paragraph one', '', 'paragraph two','','',''] , 'Array#split splits on new lines');
-    same(''.split() , [''] , 'Array#split has a single null string for null separators on null strings');
-    same(''.split(/./) , [''] , 'Array#split has a single null string for separators on null strings');
-
-    same(''.split(/.?/) , [] , 'Array#split has a single null string for optionals on null strings');
-    same(''.split(/.??/) , [] , 'Array#split has a single null string for double optionals on null strings');
-
-    same('a'.split(/./) , ['',''] , 'Array#split has two entries when splitting on the only character in the string');
-    same('a'.split(/-/) , ['a'] , 'Array#split has one entry when only one character and no match');
-    same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split properly splits hyphens');
-    same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split properly splits optional hyphens');
-
-
-    same('a:b:c'.split(/(:)/) , ['a',':','b',':','c'] , 'Array#split respects capturing groups');
-
-
-    same('ab'.split(/a*/) , ['', 'b'] , 'Array#split complex regex splitting');
-    same('ab'.split(/a*?/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('ab'.split(/(?:ab)/) , ['', ''] , 'Array#split complex regex splitting');
-    same('ab'.split(/(?:ab)*/) , ['', ''] , 'Array#split complex regex splitting');
-    same('ab'.split(/(?:ab)*?/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('test'.split('') , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
-    same('test'.split() , ['test'] , 'Array#split complex regex splitting');
-    same('111'.split(1) , ['', '', '', ''] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, 2) , ['t', 'e'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, -1) , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, undefined) , ['t', 'e', 's', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, null) , [] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, NaN) , [] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, true) , ['t'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, '2') , ['t', 'e'] , 'Array#split complex regex splitting');
-    same('test'.split(/(?:)/, 'two') , [] , 'Array#split complex regex splitting');
-    same('a'.split(/-/) , ['a'] , 'Array#split complex regex splitting');
-    same('a'.split(/-?/) , ['a'] , 'Array#split complex regex splitting');
-    same('a'.split(/-??/) , ['a'] , 'Array#split complex regex splitting');
-    same('a'.split(/a/) , ['', ''] , 'Array#split complex regex splitting');
-    same('a'.split(/a?/) , ['', ''] , 'Array#split complex regex splitting');
-    same('a'.split(/a??/) , ['a'] , 'Array#split complex regex splitting');
-    same('ab'.split(/-/) , ['ab'] , 'Array#split complex regex splitting');
-    same('ab'.split(/-?/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('ab'.split(/-??/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split complex regex splitting');
-    same('a-b'.split(/-??/) , ['a', '-', 'b'] , 'Array#split complex regex splitting');
-    same('a--b'.split(/-/) , ['a', '', 'b'] , 'Array#split complex regex splitting');
-    same('a--b'.split(/-?/) , ['a', '', 'b'] , 'Array#split complex regex splitting');
-    same('a--b'.split(/-??/) , ['a', '-', '-', 'b'] , 'Array#split complex regex splitting');
-    same(''.split(/()()/) , [] , 'Array#split complex regex splitting');
-    same('.'.split(/()()/) , ['.'] , 'Array#split complex regex splitting');
-    same('.'.split(/(.?)(.?)/) , ['', '.', '', ''] , 'Array#split complex regex splitting');
-    same('.'.split(/(.??)(.??)/) , ['.'] , 'Array#split complex regex splitting');
-    same('.'.split(/(.)?(.)?/) , ['', '.', undefined, ''] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(s)*/) , ['t', undefined, 'e', 's', 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(s)*?/) , ['t', undefined, 'e', undefined, 's', undefined, 's', undefined, 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(s*)/) , ['t', '', 'e', 'ss', 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(s*?)/) , ['t', '', 'e', '', 's', '', 's', '', 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(?:s)*/) , ['t', 'e', 't'] , 'Array#split complex regex splitting');
-    same('tesst'.split(/(?=s+)/) , ['te', 's', 'st'] , 'Array#split complex regex splitting');
-    same('test'.split('t') , ['', 'es', ''] , 'Array#split complex regex splitting');
-    same('test'.split('es') , ['t', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/t/) , ['', 'es', ''] , 'Array#split complex regex splitting');
-    same('test'.split(/es/) , ['t', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/(t)/) , ['', 't', 'es', 't', ''] , 'Array#split complex regex splitting');
-    same('test'.split(/(es)/) , ['t', 'es', 't'] , 'Array#split complex regex splitting');
-    same('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split complex regex splitting');
-    same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split complex regex splitting');
-    same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split complex regex splitting');
-
-    var match = 'on'.match(/on(e)?/);
-    equals(match[1], undefined, 'String#match');
-
-    var match = 'on'.match(/\b/g);
-    equals(match[0], '', 'String#match');
-    equals(match[1], '', 'String#match');
+
+
+
+  same([12,4,8,130,44].filter(function(el, i, a){ return el > 10 }), [12,130,44], 'Array#filter | numbers above 10');
+  same([12,4,8,130,44].filter(function(el, i, a){ return el < 10 }), [4,8], 'Array#filter | numbers below 10');
+  ['a'].filter(function(el, i, a){
+    equals(el, 'a', 'Array#filter | first parameter is the element');
+    equals(i, 0, 'Array#filter | second parameter is the index');
+    same(a, ['a'], 'Array#filter | third parameter is the array');
+    equals(this, 'this', 'Array#filter | scope is passed properly');
+  }, 'this');
+
+
+  same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [], 'Array#filter | simple string mistakenly passed for complex objects');
+  same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'john',age:25}), [{name:'john',age:25}], 'Array#filter | filtering john');
+  same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'fred',age:85}), [{name:'fred',age:85}], 'Array#filter | filtering fred');
+
+
+
+
+  arr = [2, 5, 9];
+  arr.forEach(function(el, i, a){
+    equals(el, a[i], 'Array#forEach | looping successfully');
+  });
+
+  arr = ['a', [1], { foo: 'bar' }, 352];
+  count = 0;
+  arr.forEach(function(el, i, a){
+      count++;
+  });
+  equals(count, 4, 'Array#forEach | complex array | should have looped 4 times');
+
+  ['a'].forEach(function(el, i, a){
+    equals(el, 'a', 'Array#forEach | first parameter is the element');
+    equals(i, 0, 'Array#forEach | second parameter is the index');
+    same(a, ['a'], 'Array#forEach | third parameter is the array');
+    equals(this, 'this', 'Array#forEach | scope is passed properly');
+  }, 'this');
+
+
+
+
+  arr = [2, 5, 9];
+  arr.each(function(el, i, a){
+    equals(el, arr[i], 'Array#each | looping successfully');
+  });
+
+  arr = ['a', [1], { foo: 'bar' }, 352];
+  count = 0;
+  arr.each(function(el, i, a){
+      count++;
+  });
+  equals(count, 4, 'Array#each | complex array | should have looped 4 times');
+
+  ['a'].each(function(el, i, a){
+    equals(el, 'a', 'Array#each | first parameter is the element');
+    equals(i, 0, 'Array#each | second parameter is the index');
+    same(a, ['a'], 'Array#each | third parameter is the array');
+    equals(this, 'this', 'Array#each | scope is passed properly');
+  }, 'this');
+
+
+
+
+  same(['foot','goose','moose'].map(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#map | with regexp');
+  // cool!
+  same([1,4,9].map(Math.sqrt), [1,2,3], 'Array#map | passing Math.sqrt directly');
+  same([{ foo: 'bar' }].map(function(el){ return el['foo']; }), ['bar'], 'Array#map | with key "foo"');
+
+  ['a'].map(function(el, i, a){
+    equals(el, 'a', 'Array#map | first parameter is the element');
+    equals(i, 0, 'Array#map | second parameter is the index');
+    same(a, ['a'], 'Array#map | third parameter is the array');
+    equals(this, 'this', 'Array#map | scope is passed properly');
+  }, 'this');
+
+
+  same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map | length');
+  same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map | age');
+  same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map | name');
+  same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map | (nonexistent) cupsize');
+  same([].map('name'), [], 'Array#map');
+
+
+
+  same(['foot','goose','moose'].collect(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#collect | with regexp');
+  same([1,4,9].collect(Math.sqrt), [1,2,3], 'Array#collect | passing Math.sqrt directly');
+  same([{ foo: 'bar' }].collect(function(el){ return el['foo']; }), ['bar'], 'Array#collect | with key "foo"');
+
+  ['a'].collect(function(el, i, a){
+    same(a, ['a'], 'Array#collect | third paramteter is the array');
+    equals(el, 'a', 'Array#collect | first paramteter is the element');
+    equals(i, 0, 'Array#collect | second paramteter is the index');
+    equals(this, 'this', 'Array#collect | scope is passed properly');
+  }, 'this');
+
+
+
+
+  equals([0,1,2,3,4].reduce(function(a,b){ return a + b; }), 10, 'Array#reduce | a + b');
+  same([[0,1],[2,3],[4,5]].reduce(function(a,b){ return a.concat(b); }, []), [0,1,2,3,4,5], 'Array#reduce | concat');
+  ['a'].reduce(function(p, c, i, a){
+    equals(p, 'c', 'Array#reduce | a | first parameter is the lhs');
+    equals(c, 'a', 'Array#reduce | a | second parameter is the rhs');
+    equals(i, 0, 'Array#reduce | a | third parameter is the index');
+    same(a, ['a'], 'Array#reduce | a | fourth parameter is the array');
+  }, 'c');
+  [55,66].reduce(function(p, c, i, a){
+    equals(p, 55, 'Array#reduce | 55,66 | first parameter is the lhs');
+    equals(c, 66, 'Array#reduce | 55,66 | second parameter is the rhs');
+    equals(i, 1, 'Array#reduce | 55,66 | third parameter is the index');
+    same(a, [55,66], 'Array#reduce | 55,66 | fourth parameter is the array');
+  });
+  [1].reduce(function(p, c, i, a){
+    // This assertion should never be called.
+    equals(true, false, 'Array#reduce | one element array with no rhs passed in does not iterate');
+  });
+  equals([1].reduce(function(){}), 1, 'Array#reduce | [1] reduces to 1');
+
+
+  equals([0,1,2,3,4].reduceRight(function(a,b){ return a + b; }), 10, 'Array#reduceRight | a + b');
+  same([[0,1],[2,3],[4,5]].reduceRight(function(a,b){ return a.concat(b); }, []), [4,5,2,3,0,1], 'Array#reduceRight | concat');
+  ['a'].reduceRight(function(p, c, i, a){
+    equals(p, 'c', 'Array#reduceRight | a | first parameter is the lhs');
+    equals(c, 'a', 'Array#reduceRight | a | second parameter is the rhs');
+    equals(i, 0, 'Array#reduceRight | a | third parameter is the index');
+    same(a, ['a'], 'Array#reduceRight | a | fourth parameter is the array');
+  }, 'c');
+  [55,66].reduceRight(function(p, c, i, a){
+    equals(p, 66, 'Array#reduceRight | 55,66 | first parameter is the lhs');
+    equals(c, 55, 'Array#reduceRight | 55,66 | second parameter is the rhs');
+    equals(i, 0, 'Array#reduceRight | 55,66 | third parameter is the index');
+    same(a, [55,66], 'Array#reduceRight | 55,66 | fourth parameter is the array');
+  });
+  [1].reduceRight(function(p, c, i, a){
+    // This assertion should never be called.
+    equals(true, false, 'Array#reduceRight | one element array with no rhs passed in does not iterate');
+  });
+  equals([1].reduceRight(function(){}), 1, 'Array#reduceRight | [1] reduces to 1');
+
+
+  same(['a','b','c'].find('a'), 'a', 'Array#find | a');
+  same(['a','b','c'].find('b'), 'b', 'Array#find | b');
+  same(['a','b','c'].find('c'), 'c', 'Array#find | c');
+  same(['a','b','c'].find('d'), null, 'Array#find | d');
+  same([1,2,3].find(1), 1, 'Array#find | 1');
+  same([1,2,3].find(2), 2, 'Array#find | 2');
+  same([1,2,3].find(3), 3, 'Array#find | 3');
+  same([1,2,3].find(4), null, 'Array#find | 4');
+  same([{a:1},{b:2},{c:3}].find({a:1}), {a:1}, 'Array#find | {a:1}');
+  same([{a:1},{b:2},{c:3}].find({c:3}), {c:3}, 'Array#find | {c:3}');
+  same([{a:1},{b:2},{c:3}].find({d:4}), null, 'Array#find | {d:4}');
+  same([{a:1},{b:2},{c:3}].find({c:4}), null, 'Array#find | {c:4}');
+  same([[1,2],[2,3],[4,5]].find([2,3]), [2,3], 'Array#find | [2,3]');
+  same([[1,2],[2,3],[4,5]].find([2,4]), null, 'Array#find | [2,4]');
+  same([[1,2],[2,3],[2,3]].find([2,3]), [2,3], 'Array#find | first [2,3]');
+  same(['foo','bar'].find(/f+/), 'foo', 'Array#find | /f+/');
+  same(['foo','bar'].find(/r+/), 'bar', 'Array#find | /r+/');
+  same(['foo','bar'].find(/q+/), null, 'Array#find | /q+/');
+  same([1,2,3].find(function(e){ return e > 0; }), 1, 'Array#find | greater than 0');
+  same([1,2,3].find(function(e){ return e > 2; }), 3, 'Array#find | greater than 2');
+  same([1,2,3].find(function(e){ return e > 3; }), null, 'Array#find | greater than 3');
+  same([{a:1},{b:2},{c:3}].find(function(e){ return e['a'] === 1; }), {a:1}, 'Array#find | with key "a" === 1');
+  same([function(){}].find(function(e){}), null, 'Array#find | null function');
+  same([null, null].find(null), null, 'Array#find | first null');
+
+
+
+  same(['a','b','c'].findAll('a'), ['a'], 'Array#findAll | a');
+  same(['a','a','c'].findAll('a'), ['a','a'], 'Array#findAll | a,a');
+  same(['a','b','c'].findAll('q'), [], 'Array#findAll | q');
+  same([1,2,3].findAll(1), [1], 'Array#findAll | 1');
+  same([2,2,3].findAll(2), [2,2], 'Array#findAll | 2,2');
+  same([1,2,3].findAll(4), [], 'Array#findAll | 4');
+  same([{a:1},{b:2},{c:3}].findAll({a:1}), [{a:1}], 'Array#findAll | a:1');
+  same([{a:1},{a:1},{c:3}].findAll({a:1}), [{a:1},{a:1}], 'Array#findAll | a:1,a:1');
+  same([{a:1},{b:2},{c:3}].findAll({d:4}), [], 'Array#findAll | d:4');
+  same([{a:1},{b:2},{c:3}].findAll({c:4}), [], 'Array#findAll | c:4');
+  same([[1,2],[2,3],[4,5]].findAll([2,3]), [[2,3]], 'Array#findAll | 2,3');
+  same([[1,2],[2,3],[4,5]].findAll([2,4]), [], 'Array#findAll | 2,4');
+  same([[1,2],[2,3],[2,3]].findAll([2,3]), [[2,3],[2,3]], 'Array#findAll | [2,3],[2,3]');
+  same(['foo','bar'].findAll(/f+/), ['foo'], 'Array#findAll | /f+/');
+  same(['foo','bar'].findAll(/[a-f]/), ['foo','bar'], 'Array#findAll | /[a-f]/');
+  same(['foo','bar'].findAll(/q+/), [], 'Array#findAll | /q+/');
+  same([1,2,3].findAll(function(e){ return e > 0; }), [1,2,3], 'Array#findAll | greater than 0');
+  same([1,2,3].findAll(function(e){ return e > 1; }), [2,3], 'Array#findAll | greater than 1');
+  same([1,2,3].findAll(function(e){ return e > 2; }), [3], 'Array#findAll | greater than 2');
+  same([1,2,3].findAll(function(e){ return e > 3; }), [], 'Array#findAll | greater than 3');
+  same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAll | key "a" is greater than 5');
+  same([function(){}].findAll(function(e){}), [], 'Array#findAll | null function');
+  same([null, null].findAll(null), [null, null], 'Array#findAll | null');
+
+
+
+  same(['a','b','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex | a');
+  same(['a','a','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex | first a');
+  same(['a','b','c'].findFromIndex(0, 'q'), null, 'Array#findFromIndex | q');
+  same([1,2,3].findFromIndex(0, 1), 1, 'Array#findFromIndex | 1');
+  same([2,2,3].findFromIndex(0, 2), 2, 'Array#findFromIndex | 2');
+  same([1,2,3].findFromIndex(0, 4), null, 'Array#findFromIndex | 4');
+  same([{a:1},{b:2},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex | a:1');
+  same([{a:1},{a:1},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex | first a:1');
+  same([{a:1},{b:2},{c:3}].findFromIndex(0, {d:4}), null, 'Array#findFromIndex | d:4');
+  same([{a:1},{b:2},{c:3}].findFromIndex(0, {c:4}), null, 'Array#findFromIndex | c:4');
+  same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex | 2,3');
+  same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,4]), null, 'Array#findFromIndex | 2,4');
+  same([[1,2],[2,3],[2,3]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex | first 2,3');
+  same(['foo','bar'].findFromIndex(0, /f+/), 'foo', 'Array#findFromIndex | /f+/');
+  same(['foo','bar'].findFromIndex(0, /[a-f]/), 'foo', 'Array#findFromIndex | /a-f/');
+  same(['foo','bar'].findFromIndex(1, /[a-f]/), 'bar', 'Array#findFromIndex | /a-f/ from index 1');
+  same(['foo','bar'].findFromIndex(0, /q+/), null, 'Array#findFromIndex | /q+/');
+  same([1,2,3].findFromIndex(0, function(e){ return e > 0; }), 1, 'Array#findFromIndex | greater than 0 from index 0');
+  same([1,2,3].findFromIndex(1, function(e){ return e > 0; }), 2, 'Array#findFromIndex | greater than 0 from index 1');
+  same([1,2,3].findFromIndex(2, function(e){ return e > 0; }), 3, 'Array#findFromIndex | greater than 0 from index 2');
+  same([1,2,3].findFromIndex(3, function(e){ return e > 0; }), 1, 'Array#findFromIndex | greater than 0 from index 3');
+  same([1,2,3].findFromIndex(0, function(e){ return e > 1; }), 2, 'Array#findFromIndex | greater than 1 from index 0');
+  same([1,2,3].findFromIndex(1, function(e){ return e > 1; }), 2, 'Array#findFromIndex | greater than 1 from index 1');
+  same([1,2,3].findFromIndex(2, function(e){ return e > 1; }), 3, 'Array#findFromIndex | greater than 1 from index 2');
+  same([1,2,3].findFromIndex(0, function(e){ return e > 2; }), 3, 'Array#findFromIndex | greater than 2 from index 0');
+  same([1,2,3].findFromIndex(0, function(e){ return e > 3; }), null, 'Array#findFromIndex | greater than 3 from index 0');
+
+  same([{a:10},{a:8},{a:3}].findFromIndex(0, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex | key "a" greater than 5');
+  same([{a:10},{a:8},{a:3}].findFromIndex(1, function(e){ return e['a'] > 5; }), {a:8}, 'Array#findFromIndex | key "a" greater than 5 from index 1');
+  same([{a:10},{a:8},{a:3}].findFromIndex(2, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex | key "a" greater than 5 from index 2');
+  same([function(){}].findFromIndex(0, function(e){}), null, 'Array#findFromIndex | null function');
+  same([function(){}].findFromIndex(1, function(e){}), null, 'Array#findFromIndex | null function from index 1');
+  same([null, null].findFromIndex(0, null), null, 'Array#findFromIndex | null');
+  same([null, null].findFromIndex(1, null), null, 'Array#findFromIndex | null from index 1');
+  same([undefined, undefined].findFromIndex(0, undefined), undefined, 'Array#findFromIndex | undefined');
+  same([undefined, undefined].findFromIndex(1, undefined), undefined, 'Array#findFromIndex | undefined from index 1');
+  same([undefined, 'a'].findFromIndex(1, undefined), 'a', 'Array#findFromIndex | undefined finds the first element');
+  same([null, null].findFromIndex(1, undefined), null, 'Array#findFromIndex | undefined finds first null too');
+
+
+
+  same(['a','b','c'].findAllFromIndex(0, 'a'), ['a'], 'Array#findAllFromIndex | a');
+  same(['a','a','c'].findAllFromIndex(0, 'a'), ['a','a'], 'Array#findAllFromIndex | a,a');
+  same(['a','b','c'].findAllFromIndex(0, 'q'), [], 'Array#findAllFromIndex | q');
+  same([1,2,3].findAllFromIndex(0, 1), [1], 'Array#findAllFromIndex | 1');
+  same([2,2,3].findAllFromIndex(0, 2), [2,2], 'Array#findAllFromIndex | 2,2');
+  same([1,2,3].findAllFromIndex(0, 4), [], 'Array#findAllFromIndex | 4');
+  same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {a:1}), [{a:1}], 'Array#findAllFromIndex | a:1');
+  same([{a:1},{a:1},{c:3}].findAllFromIndex(0, {a:1}), [{a:1},{a:1}], 'Array#findAllFromIndex | a:1,a:1');
+  same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {d:4}), [], 'Array#findAllFromIndex | d:4');
+  same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {c:4}), [], 'Array#findAllFromIndex | c:4');
+  same([[1,2],[2,3],[4,5]].findAllFromIndex(0, [2,3]), [[2,3]], 'Array#findAllFromIndex | 2,3');
+  same([[1,2],[2,3],[4,5]].findAllFromIndex(0, [2,4]), [], 'Array#findAllFromIndex | 2,4');
+  same([[1,2],[2,3],[2,3]].findAllFromIndex(0, [2,3]), [[2,3],[2,3]], 'Array#findAllFromIndex | [2,3],[2,3]');
+  same(['foo','bar'].findAllFromIndex(0, /f+/), ['foo'], 'Array#findAllFromIndex | /f+/');
+  same(['foo','bar'].findAllFromIndex(0, /[a-f]/), ['foo','bar'], 'Array#findAllFromIndex | /[a-f]/');
+  same(['foo','bar'].findAllFromIndex(1, /[a-f]/), ['bar','foo'], 'Array#findAllFromIndex | /[a-f]/ from index 1');
+  same(['foo','bar'].findAllFromIndex(0, /q+/), [], 'Array#findAllFromIndex | /q+/');
+  same([1,2,3].findAllFromIndex(0, function(e){ return e > 0; }), [1,2,3], 'Array#findAllFromIndex | greater than 0 from index 0');
+  same([1,2,3].findAllFromIndex(1, function(e){ return e > 0; }), [2,3,1], 'Array#findAllFromIndex | greater than 0 from index 1');
+  same([1,2,3].findAllFromIndex(2, function(e){ return e > 0; }), [3,1,2], 'Array#findAllFromIndex | greater than 0 from index 2');
+  same([1,2,3].findAllFromIndex(3, function(e){ return e > 0; }), [1,2,3], 'Array#findAllFromIndex | greater than 0 from index 3');
+  same([1,2,3].findAllFromIndex(0, function(e){ return e > 1; }), [2,3], 'Array#findAllFromIndex | greater than 1 from index 0');
+  same([1,2,3].findAllFromIndex(1, function(e){ return e > 1; }), [2,3], 'Array#findAllFromIndex | greater than 1 from index 1');
+  same([1,2,3].findAllFromIndex(2, function(e){ return e > 1; }), [3,2], 'Array#findAllFromIndex | greater than 1 from index 2');
+  same([1,2,3].findAllFromIndex(0, function(e){ return e > 2; }), [3], 'Array#findAllFromIndex | greater than 2 from index 0');
+  same([1,2,3].findAllFromIndex(0, function(e){ return e > 3; }), [], 'Array#findAllFromIndex | greater than 3 from index 0');
+
+  same([{a:10},{a:8},{a:3}].findAllFromIndex(0, function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAllFromIndex | key "a" is greater than 5');
+  same([{a:10},{a:8},{a:3}].findAllFromIndex(1, function(e){ return e['a'] > 5; }), [{a:8},{a:10}], 'Array#findAllFromIndex | key "a" is greater than 5 from index 1');
+  same([{a:10},{a:8},{a:3}].findAllFromIndex(2, function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAllFromIndex | key "a" is greater than 5 from index 2');
+  same([function(){}].findAllFromIndex(0, function(e){}), [], 'Array#findAllFromIndex | null function');
+  same([function(){}].findAllFromIndex(1, function(e){}), [], 'Array#findAllFromIndex | null function from index 1');
+  same([null, null].findAllFromIndex(0, null), [null, null], 'Array#findAllFromIndex | null');
+  same([null, null].findAllFromIndex(1, null), [null, null], 'Array#findAllFromIndex | null from index 1');
+
+  // Find all from index also implements a "stop" parameter to stop after
+  // n number of matches
+  same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 1), ['c'], 'Array#findAllFromIndex with stop | length == 1 stop at 1');
+  same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 2), ['c','a'], 'Array#findAllFromIndex with stop | length == 1 stop at 2');
+  same(['c','a','n','d','y'].findAllFromIndex(0, function(c){ return c.length == 1; }, 3), ['c','a','n'], 'Array#findAllFromIndex with stop | length == 1 stop at 3');
+  same(['c','a','n','d','y'].findAllFromIndex(3, function(c){ return c.length == 1; }, 3), ['d','y','c'], 'Array#findAllFromIndex with stop | length == 1 stop at 3 from index 3');
+
+  // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
+  arr = [{name:'john',age:10,food:'sushi'},{name:'randy',age:23,food:'natto'},{name:'karen',age:32,food:'salad'}];
+  arr = [1,2,3,4,5,6,7,8,9];
+  same(arr.findAllFromIndex(4, function(n){ return n % 3 == 0; }), [6,9,3], 'Array#findAllFromIndex | n % 3 from index 4');
+  same(arr.reverse().findAllFromIndex(4, function(n){ return n % 3 == 0; }), [3,9,6], 'Array#findAllFromIndex reversed | n % 3 from index 4 reversed');
+
+
+  same([1,1,3].unique(), [1,3], 'Array#unique | 1,1,3');
+  same([0,0,0].unique(), [0], 'Array#unique | 0,0,0');
+  same(['a','b','c'].unique(), ['a','b','c'], 'Array#unique | a,b,c');
+  same(['a','a','c'].unique(), ['a','c'], 'Array#unique | a,a,c');
+  same([{foo:'bar'}, {foo:'bar'}].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well');
+
+
+
+  same([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union | 1,2,3 + 3,4,5');
+  same([1,1,1].union([1,2,3]), [1,2,3], 'Array#union | 1,1,1 + 1,2,3');
+  same([0,0,0].union([1,2,3]), [0,1,2,3], 'Array#union | 0,0,0 + 1,2,3');
+  same([0,0,0].union([0,0,0]), [0], 'Array#union | 0,0,0 + 0,0,0');
+  same([].union([]), [], 'Array#union | 2 empty arrays');
+  same([-1,-2,-3].union([-2,-4,-5]), [-1,-2,-3,-4,-5], 'Array#union | -1,-2,-3 + -2,-4,-5');
+  same([-1,-2,-3].union([3,4,5]), [-1,-2,-3,3,4,5], 'Array#union | -1,-2,-3 + 3,4,5');
+  same([{a:1},{b:2}].union([{b:2},{c:3}]), [{a:1},{b:2},{c:3}], 'Array#intersect | a:1,b:2 + b:2,c:3');
+  same([1,2,3].union(4), [1,2,3,4], 'Array#union | 1,2,3 + 4');
+
+
+  same([1,2,3].intersect([3,4,5]), [3], 'Array#intersect | 1,2,3 + 3,4,5');
+  same(['a','b','c'].intersect(['c','d','e']), ['c'], 'Array#intersect | a,b,c + c,d,e');
+  same([1,2,3].intersect([1,2,3]), [1,2,3], 'Array#intersect | 1,2,3 + 1,2,3');
+  same([1,2,3].intersect([3,2,1]), [1,2,3], 'Array#intersect | 1,2,3 + 3,2,1');
+  same([].intersect([3]), [], 'Array#intersect | empty array + 3');
+  same([3].intersect([]), [], 'Array#intersect | 3 + empty array');
+  same([].intersect([]), [], 'Array#intersect | 2 empty arrays');
+  same([null].intersect([]), [], 'Array#intersect | [null] + empty array');
+  same([null].intersect([null]), [null], 'Array#intersect | [null] + [null]');
+  same([false].intersect([false]), [false], 'Array#intersect | [false] + [false]');
+  same([false].intersect([0]), [], 'Array#intersect | [false] + [0]');
+  same([false].intersect([null]), [], 'Array#intersect | [false] + [null]');
+  same([false].intersect([undefined]), [], 'Array#intersect | [false] + [undefined]');
+  same([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], 'Array#intersect | a:1,b:2 + b:2,c:3');
+  same([1,1,3].intersect([1,5,6]), [1], 'Array#intersect | 1,1,3 + 1,5,6');
+  same([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
+  same([1,2,3].intersect(1), [1], 'Array#intersect | 1,2,3 + 1');
+
+
+
+
+  same([1,2,3].subtract([3,4,5]), [1,2], 'Array#subtract | 1,2,3 + 3,4,5');
+  same([1,1,2,2,3,3,4,4,5,5].subtract([2,3,4]), [1,1,5,5], 'Array#subtract | 1,1,2,2,3,3,4,4,5,5 + 2,3,4');
+  same(['a','b','c'].subtract(['c','d','e']), ['a','b'], 'Array#subtract | a,b,c + c,d,e');
+  same([1,2,3].subtract([1,2,3]), [], 'Array#subtract | 1,2,3 + 1,2,3');
+  same([1,2,3].subtract([3,2,1]), [], 'Array#subtract | 1,2,3 + 3,2,1');
+  same([].subtract([3]), [], 'Array#subtract | empty array + [3]');
+  same([3].subtract([]), [3], 'Array#subtract | [3] + empty array');
+  same([].subtract([]), [], 'Array#subtract | 2 empty arrays');
+  same([null].subtract([]), [null], 'Array#subtract | [null] + empty array');
+  same([null].subtract([null]), [], 'Array#subtract | [null] + [null]');
+  same([false].subtract([false]), [], 'Array#subtract | [false] + [false]');
+  same([false].subtract([0]), [false], 'Array#subtract | [false] + [0]');
+  same([false].subtract([null]), [false], 'Array#subtract | [false] + [null]');
+  same([false].subtract([undefined]), [false], 'Array#subtract | [false] + [undefined]');
+  same([{a:1},{b:2}].subtract([{b:2},{c:3}]), [{a:1}], 'Array#subtract | a:1,b:2 + b:2,c:3');
+  same([1,1,3].subtract([1,5,6]), [3], 'Array#subtract | 1,1,3 + 1,5,6');
+  same([1,2,3].subtract([4,5,6]), [1,2,3], 'Array#subtract | 1,2,3 + 4,5,6');
+  same([1,2,3].subtract(1), [2,3], 'Array#subtract | 1,2,3 + 1');
+
+
+
+
+
+  same(['a','b','c'].at(0), 'a', 'Array#at | a,b,c | 0');
+  same(['a','b','c'].at(1), 'b', 'Array#at | a,b,c | 1');
+  same(['a','b','c'].at(2), 'c', 'Array#at | a,b,c | 2');
+  same(['a','b','c'].at(3), null, 'Array#at | a,b,c | 3');
+  same(['a','b','c'].at(-1), 'c', 'Array#at | a,b,c | -1');
+  same(['a','b','c'].at(-2), 'b', 'Array#at | a,b,c | -2');
+  same(['a','b','c'].at(-3), 'a', 'Array#at | a,b,c | -3');
+  same(['a','b','c'].at(-4), null, 'Array#at | a,b,c | -4');
+  same(['a','b','c'].at(), null, 'Array#at | a,b,c | no argument');
+  same([false].at(0), false, 'Array#at | false | 0');
+  same(['a'].at(0), 'a', 'Array#at | a | 0');
+  same(['a'].at(1), null, 'Array#at | a | 1');
+  same(['a'].at(-1), 'a', 'Array#at | a | -1');
+  same(['a','b','c','d','e','f'].at(0,2,4), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4');
+  same(['a','b','c','d','e','f'].at(1,3,5), ['b','d','f'], 'Array#at | a,b,c,d,e,f | 1,3,5');
+  same(['a','b','c','d','e','f'].at(0,2,4,6), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4,6');
+
+
+
+  same(['a','b','c'].from(), ['a','b','c'], 'Array#from | no argument');
+  same(['a','b','c'].from(1), ['b','c'], 'Array#from| 1');
+  same(['a','b','c'].from(2), ['c'], 'Array#from | 2');
+  same(['a','b','c'].from(3), [], 'Array#from | 3');
+  same(['a','b','c'].from(4), [], 'Array#from | 4');
+  same(['a','b','c'].from(-1), ['c'], 'Array#from | -1');
+  same(['a','b','c'].from(-2), ['b','c'], 'Array#from | -2');
+  same(['a','b','c'].from(-3), ['a','b','c'], 'Array#from | -3');
+  same(['a','b','c'].from(-4), ['a','b','c'], 'Array#from | -4');
+
+
+  same(['a','b','c'].to(), ['a','b','c'], 'Array#to | no argument');
+  same(['a','b','c'].to(1), ['a','b'], 'Array#to | 1');
+  same(['a','b','c'].to(2), ['a','b','c'], 'Array#to | 2');
+  same(['a','b','c'].to(3), ['a','b','c'], 'Array#to | 3');
+  same(['a','b','c'].to(4), ['a','b','c'], 'Array#to | 4');
+  same(['a','b','c'].to(-1), ['a','b','c'], 'Array#to | -1');
+  same(['a','b','c'].to(-2), ['a','b'], 'Array#to | -2');
+  same(['a','b','c'].to(-3), ['a'], 'Array#to | -3');
+  same(['a','b','c'].to(-4), [], 'Array#to | -4');
+
+
+
+
+  same(['a','b','c'].first(), 'a', 'Array#first | no argument');
+  same(['a','b','c'].first(1), ['a'], 'Array#first | 1');
+  same(['a','b','c'].first(2), ['a','b'], 'Array#first | 2');
+  same(['a','b','c'].first(3), ['a','b','c'], 'Array#first | 3');
+  same(['a','b','c'].first(4), ['a','b','c'], 'Array#first | 4');
+  same(['a','b','c'].first(-1), [], 'Array#first | -1');
+  same(['a','b','c'].first(-2), [], 'Array#first | -2');
+  same(['a','b','c'].first(-3), [], 'Array#first | -3');
+
+
+  same(['a','b','c'].last(), 'c', 'Array#last | no argument');
+  same(['a','b','c'].last(1), ['c'], 'Array#last | 1');
+  same(['a','b','c'].last(2), ['b','c'], 'Array#last | 2');
+  same(['a','b','c'].last(3), ['a','b','c'], 'Array#last | 3');
+  same(['a','b','c'].last(4), ['a','b','c'], 'Array#last | 4');
+  same(['a','b','c'].last(-1), [], 'Array#last | -1');
+  same(['a','b','c'].last(-2), [], 'Array#last | -2');
+  same(['a','b','c'].last(-3), [], 'Array#last | -3');
+  same(['a','b','c'].last(-4), [], 'Array#last | -4');
+
+
+
+
+
+
+  same([12,87,55].min(), 12, 'Array#min | 12');
+  same([12,87,55].min(true), [12], 'Array#min | multiple | 12');
+  same([-12,-87,-55].min(), -87, 'Array#min | -87 ');
+  same([-12,-87,-55].min(true), [-87], 'Array#min | multiple | -87');
+  same([5,5,5].min(), 5, 'Array#min | 5');
+  same([5,5,5].min(true), [5], 'Array#min | multiple | 5 is uniqued');
+  same(['a','b','c'].min(), null, 'Array#min | strings are not counted');
+  same(['a','b','c'].min(true), [], 'Array#min | multiple | strings are not counted');
+  same([].min(), null, 'Array#min | empty array');
+  same([].min(true), [], 'Array#min | multiple | empty array');
+  same([null].min(), null, 'Array#min | [null]');
+  same([null].min(true), [], 'Array#min | multiple | [null]');
+  same([undefined].min(), null, 'Array#min | [undefined]');
+  same([undefined].min(true), [], 'Array#min | multiple | [undefined]');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), {a:1,b:5}, 'Array#min | key "a"');
+  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), {a:3,b:3}, 'Array#min | key "b"');
+  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min | multiple | key "b", 1 found');
+  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#min | multiple | key "b", 2 found');
+  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), {a:-1,b:-5}, 'Array#min | key "b", 1 found');
+  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(true, function(el){ return el['b']; }), [{a:-1,b:-5}], 'Array#min | multiple | key "b", 1 found');
+  same(['short','and','mort'].min(function(el){ return el.length; }), 'and', 'Array#min | length');
+  same(['short','and','mort'].min(true, function(el){ return el.length; }), ['and'], 'Array#min | multiple | length');
+  same(['short','and','mort','fat'].min(function(el){ return el.length; }), 'and', 'Array#min | and');
+  same(['short','and','mort','fat'].min(true, function(el){ return el.length; }), ['and','fat'], 'Array#min | multiple | and,fat');
+
+
+  same([12,87,55].max(), 87, 'Array#max | 87');
+  same([12,87,55].max(true), [87], 'Array#max | multiple | 87');
+  same([-12,-87,-55].max(), -12, 'Array#max | -12');
+  same([-12,-87,-55].max(true), [-12], 'Array#max | multiple | -12');
+  same([5,5,128].max(), 128, 'Array#max | 128');
+  same([5,128,128].max(true), [128], 'Array#max | multiple | 128');
+  same([128,128,128].max(true), [128], 'Array#max | multiple | 128 is uniqued');
+  same(['a','b','c'].max(), null, 'Array#max | strings are not counted');
+  same(['a','b','c'].max(true), [], 'Array#max | multiple | strings are not counted');
+  same([].max(), null, 'Array#max | empty array');
+  same([].max(true), [], 'Array#max | multiple | empty array');
+  same([null].max(), null, 'Array#max | [null]');
+  same([null].max(true), [], 'Array#max | multiple | [null]');
+  same([undefined].max(), null, 'Array#max | [undefined]');
+  same([undefined].max(true), [], 'Array#max | multiple | [undefined]');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), {a:3,b:5}, 'Array#max | key "a"');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(true, function(el){ return el['a']; }), [{a:3,b:5}], 'Array#max | multiple | key "a"');
+  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), {a:1,b:5}, 'Array#max | key "b"');
+  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:5}], 'Array#max | multiple | key "b" returns b:5');
+  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max | multiple | key "b" returns b:4');
+  same([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max | multiple | key "b", 2 found');
+  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), {a:-3,b:-3}, 'Array#max | key "b", returns b:-3');
+  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(true, function(el){ return el['b']; }), [{a:-3,b:-3}], 'Array#max | multiple | key "b" returns b:-3');
+  same(['short','and', 'mort'].max(function(el){ return el.length; }), 'short', 'Array#max | length');
+  same(['short','and', 'mort'].max(true, function(el){ return el.length; }), ['short'], 'Array#max | multiple | length');
+  same(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), 'short', 'Array#max | short');
+  same(['short','and', 'morts', 'fat'].max(true, function(el){ return el.length; }), ['short','morts'], 'Array#max | multiple | short,morts');
+
+
+
+
+  var people = [
+    { name: 'jim',    age: 27, hair: 'brown'  },
+    { name: 'mary',   age: 52, hair: 'blonde' },
+    { name: 'ronnie', age: 13, hair: 'brown'  },
+    { name: 'edmund', age: 27, hair: 'blonde' }
+  ];
+
+  same(people.most(function(person){ return person.age; }), {name:'jim',age:27,hair:'brown'}, 'Array#most | age');
+  same(people.most(true, function(person){ return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | multiple | age');
+
+  same(people.most(function(person){ return person.hair; }), null, 'Array#most | hair');
+  same(people.most(true, function(person){ return person.hair; }), [], 'Array#most | multiple | hair');
+
+  same([].most(), null, 'Array#most | empty array');
+  same([1,2,3].most(), null, 'Array#most | 1,2,3');
+  same([1,2,3].most(true), [], 'Array#most | multiple | 1,2,3');
+  same([1,2,3,3].most(), 3, 'Array#most | 1,2,3,3');
+  same([1,2,3,3].most(true), [3], 'Array#most | multiple | 1,2,3,3');
+  same([1,1,2,3,3].most(), 1, 'Array#most | 1,1,2,3,3');
+  same([1,1,2,3,3].most(true), [1,3], 'Array#most | multiple | 1,1,2,3,3');
+  same(['a','b','c'].most(), null, 'Array#most | a,b,c');
+  same(['a','b','c'].most(true), [], 'Array#most | multiple | a,b,c');
+  same(['a','b','c','c'].most(), 'c', 'Array#most | a,b,c,c');
+  same(['a','b','c','c'].most(true), ['c'], 'Array#most | multiple | a,b,c,c');
+  same(['a','a','b','c','c'].most(), 'a', 'Array#most | a,a,b,c,c');
+  same(['a','a','b','c','c'].most(true), ['a','c'], 'Array#most | multiple | a,a,b,c,c');
+
+  // Leaving this here as a reference for how to collect the actual number of occurences.
+  equal(people.most(true, function(person){ return person.age; }).length, 2, 'Array#most | multiple | collect actual number of occurrences');
+
+
+  contains(people.least(function(person){ return person.age; }).age, [52,13], 'Array#least | age');
+  contains(people.least(function(person){ return person.age; }), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | multiple | age');
+  same(people.least(true, function(person){ return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | multiple | age and sorted by age');
+
+
+  same(people.least(function(person){ return person.hair; }), null, 'Array#least | hair');
+  same(people.least(true, function(person){ return person.hair; }), [], 'Array#least | multiple | hair');
+
+  same([].least(), null, 'Array#least | empty array');
+  same([1,2,3].least(), null, 'Array#least | 1,2,3');
+  same([1,2,3].least(true), [], 'Array#least | multiple | 1,2,3');
+  same([1,2,3,3].least(), 1, 'Array#least | 1,2,3,3');
+  same([1,2,3,3].least(true), [1,2], 'Array#least | multiple | 1,2,3,3');
+  same([1,1,2,3,3].least(), 2, 'Array#least | 1,1,2,3,3');
+  same([1,1,2,3,3].least(true), [2], 'Array#least | multiple | 1,1,2,3,3');
+  same([1,1,1,2,2,3,3,3].least(), 2, 'Array#least | 1,1,1,2,2,3,3,3');
+  same([1,1,1,2,2,3,3,3].least(true), [2], 'Array#least | multiple | 1,1,1,2,2,3,3,3');
+  same(['a','b','c'].least(), null, 'Array#least | a,b,c');
+  same(['a','b','c'].least(true), [], 'Array#least | multiple | a,b,c');
+  same(['a','b','c','c'].least(), 'a', 'Array#least | a,b,c,c');
+  same(['a','b','c','c'].least(true), ['a','b'], 'Array#least | multiple | a,b,c,c');
+  same(['a','a','b','c','c'].least(), 'b', 'Array#least | a,a,b,c,c');
+  same(['a','a','b','c','c'].least(true), ['b'], 'Array#least | multiple | a,a,b,c,c');
+
+  // Leaving this here as a reference for how to collect the actual number of occurences.
+  same(people.least(true, function(person){ return person.age; }).length, 2, 'Array#least | multiple | collect actual number of occurences');
+
+
+
+
+
+  same([12,87,55].sum(), 154, 'Array#sum | 12,87,55');
+  same([12,87,128].sum(), 227, 'Array#sum | 12,87,128');
+  same([].sum(), 0, 'Array#sum | empty array is 0');
+  same([null, false].sum(), 0, 'Array#sum | [null,false] is 0');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum(function(el){ return el['a']; }), 6, 'Array#sum | key "a"');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum('a'), 6, 'Array#sum | shortcut for key "a"');
+
+  same([13,18,13,14,13,16,14,21,13].average(), 15, 'Array#average | 13,18,13,14,13,16,14,21,13');
+  same([2,2,2].average(), 2, 'Array#average | 2,2,2');
+  same([2,3,4].average(), 3, 'Array#average | 2,3,4');
+  same([2,3,4,2].average(), 2.75, 'Array#average | 2,3,4,2');
+  same([].average(), 0, 'Array#average | empty array is 0');
+  same([null, false].average(), 0, 'Array#average | [null, false] is 0');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average(function(el){ return el['a']; }), 2, 'Array#average | key "a"');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average('a'), 2, 'Array#average | shortcut for key "a"');
+
+
+  same(people.average('age'), 29.75, 'Array#average | people average age is 29.75');
+  same(people.average(function(p){ return p.age; }), 29.75, 'Array#average | people average age is 29.75 by function');
+  same(isNaN(people.average(function(p){ return p.hair; })), true, 'Array#average | people average hair is NaN');
+
+
+
+  same([].groupBy(), {}, 'Array#groupBy | empty array');
+  same([1,1,2,2,3,3,4].groupBy(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#groupBy | 1,1,2,2,3,3,4');
+  same(['a','b','c','a','e','c'].groupBy(), {'a':['a','a'],'b':['b'],'c':['c','c'],'e':['e']}, 'Array#groupBy | a,b,c,a,e,c');
+  same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy('a'), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy | grouping by "a"');
+  same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy(function(el){ return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy | grouping by "a" by function');
+
+
+  people = people.sortBy('hair');
+  same(people.groupBy(function(p){ return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
+
+
+
+
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(1), [[1,2,3,4,5,6,7,8,9,10]], 'Array#inGroups | in groups of 1');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(2), [[1,2,3,4,5],[6,7,8,9,10]], 'Array#inGroups | in groups of 2');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(3), [[1,2,3,4],[5,6,7,8],[9,10]], 'Array#inGroups | in groups of 3');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(4), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroups | in groups of 4');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(5), [[1,2],[3,4],[5,6],[7,8],[9,10]], 'Array#inGroups | in groups of 5');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(6), [[1,2],[3,4],[5,6],[7,8],[9,10],[]], 'Array#inGroups | in groups of 6');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(7), [[1,2],[3,4],[5,6],[7,8],[9,10],[],[]], 'Array#inGroups | in groups of 7');
+
+
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(3, null), [[1,2,3,4],[5,6,7,8],[9,10,null,null]], 'Array#inGroups | pad with null | in groups of 3');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(4, null), [[1,2,3],[4,5,6],[7,8,9],[10,null,null]], 'Array#inGroups | pad with null | in groups of 4');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(5, null), [[1,2],[3,4],[5,6],[7,8],[9,10]], 'Array#inGroups | pad with null | in groups of 5');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(6, null), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null]], 'Array#inGroups | pad with null | in groups of 6');
+  same([1,2,3,4,5,6,7,8,9,10].inGroups(7, null), [[1,2],[3,4],[5,6],[7,8],[9,10],[null,null],[null,null]], 'Array#inGroups | pad with null | in groups of 7');
+
+
+
+
+  same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroupsOf | groups of 3 | 1 to 10');
+  same([1,2,3,4,5,6,7,8,9].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf | groups of 3 | 1 to 9');
+  same([1,2,3,4,5,6,7,8].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8]], 'Array#inGroupsOf | groups of 3 | 1 to 8');
+  same([1,2,3,4,5,6,7].inGroupsOf(3), [[1,2,3],[4,5,6],[7]], 'Array#inGroupsOf | groups of 3 | 1 to 7');
+  same([1,2,3,4,5,6].inGroupsOf(3), [[1,2,3],[4,5,6]], 'Array#inGroupsOf | groups of 3 | 1 to 6');
+  same([1,2,3,4,5].inGroupsOf(3), [[1,2,3],[4,5]], 'Array#inGroupsOf | groups of 3 | 1 to 5');
+  same([1,2,3,4].inGroupsOf(3), [[1,2,3],[4]], 'Array#inGroupsOf | groups of 3 | 1 to 4');
+  same([1,2,3].inGroupsOf(3), [[1,2,3]], 'Array#inGroupsOf | groups of 3 | 1 to 3');
+  same([1,2].inGroupsOf(3), [[1,2]], 'Array#inGroupsOf | groups of 3 | 1 to 2');
+  same([1].inGroupsOf(3), [[1]], 'Array#inGroupsOf | groups of 3 | 1');
+
+  same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9],[10, null, null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 10');
+  same([1,2,3,4,5,6,7,8,9].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 9');
+  same([1,2,3,4,5,6,7,8].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8, null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 8');
+  same([1,2,3,4,5,6,7].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7, null, null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 7');
+  same([1,2,3,4,5,6].inGroupsOf(3, null), [[1,2,3],[4,5,6]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 6');
+  same([1,2,3,4,5].inGroupsOf(3, null), [[1,2,3],[4,5,null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 5');
+  same([1,2,3,4].inGroupsOf(3, null), [[1,2,3],[4,null,null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 4');
+  same([1,2,3].inGroupsOf(3, null), [[1,2,3]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 3');
+  same([1,2].inGroupsOf(3, null), [[1,2,null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 2');
+  same([1].inGroupsOf(3, null), [[1,null,null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1');
+
+  same([1].inGroupsOf(3, ' '), [[1,' ',' ']], 'Array#inGroupsOf | pad with spaces');
+  same([1].inGroupsOf(3, true), [[1,true,true]], 'Array#inGroupsOf | pad with true');
+  same([1].inGroupsOf(3, false), [[1,false,false]], 'Array#inGroupsOf | pad with false');
+
+  same([1].inGroupsOf(), [[1]], 'Array#inGroupsOf | no argument');
+  same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf | pad with null | no argument');
+
+  same([1].inGroupsOf(0), [1], 'Array#inGroupsOf | 0');
+  same([1].inGroupsOf(0, null), [1], 'Array#inGroupsOf | pad with null | 0');
+
+  same([1].inGroupsOf(3, null), [[1, null, null]], 'Array#inGroupsOf | pad with null | 3');
+  same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf | pad with null | 1');
+  same([].inGroupsOf(3), [], 'Array#inGroupsOf | empty array');
+  same([].inGroupsOf(3, null), [], 'Array#inGroupsOf | pad with null | empty array');
+  same([null].inGroupsOf(3), [[null]], 'Array#inGroupsOf | [null] in groups of 3');
+  same([null].inGroupsOf(3, null), [[null,null,null]], 'Array#inGroupsOf | pad with null | [null] in groups of 3');
+
+
+
+  // Emulating example of Enumerable#each_slice
+  same((1).upto(10).inGroupsOf(3).map(function(g){ return g[1]; }).compact(), [2,5,8], 'Array#inGroupsOf | 1 to 10 in groups of 3 compacted');
+
+
+  same([1,2,3,4,5].split(3), [[1,2],[4,5]], 'Array#split | split on 3');
+  same([1,2,3,4,5,6,7,8,9,10].split(function(i){ return i % 3 == 0; }), [[1,2],[4,5],[7,8],[10]], 'Array#split | split on every 3rd');
+  same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 2; }), [['wherever','you'],['whatever','you']], 'Array#split | split on strings with length of 2');
+  same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 3; }), [['wherever'],['go','whatever'],['do']], 'Array#split | split on strings with length of 3');
+  same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length < 4; }), [['wherever'],['whatever']], 'Array#split | split on strings with length less than 4');
+
+
+
+  same([1,2,3].compact(), [1,2,3], 'Array#compact | 1,2,3');
+  same([1,2,null,3].compact(), [1,2,3], 'Array#compact | 1,2,null,3');
+  same([1,2,undefined,3].compact(), [1,2,3], 'Array#compact | 1,2,undefined,3');
+  same([undefined,undefined,undefined].compact(), [], 'Array#compact | undefined,undefined,undefined');
+  same([null,null,null].compact(), [], 'Array#compact | null,null,null');
+  same([NaN,NaN,NaN].compact(), [], 'Array#compact | NaN,NaN,NaN');
+  same(['','',''], ['','',''], 'Array#compact | empty strings');
+  same([false,false,false].compact(), [false,false,false], 'Array#compact | false,false,false');
+  same([0,1,2].compact(), [0,1,2], 'Array#compact | 0,1,2');
+  same([].compact(), [], 'Array#compact | empty array');
+
+
+
+  same([1,2,2,3].count(), 4, 'Array#count | no arugment numeric');
+  same([1,2,2,3].count(2), 2, 'Array#count | count 2s');
+  same(['a','b','c','c'].count(), 4, 'Array#count | no argument alphabet');
+  same(['a','b','c','c'].count('c'), 2, 'Array#count | count "c"s');
+  same([1,2,2,3].count(function(el){ return el % 2 == 0; }), 2, 'Array#count | count all odd numbers');
+  same([1,2,2,3].count(function(el){ return el > 2; }), 1, 'Array#count | count all numbers greater than 2');
+  same([1,2,2,3].count(function(el){ return el > 20; }), 0, 'Array#count | count all numbers greater than 20');
+  same([{a:1},{a:2},{a:1}].count({a:1}), 2, 'Array#count | count all a:1');
+
+
+
+
+
+
+  same([1,2,2,3].remove(), [], 'Array#remove | no argument numeric');
+  same([1,2,2,3].remove(2), [1,3], 'Array#remove | remove 2s');
+  same(['a','b','c','c'].remove(), [], 'Array#remove | no argument alphabet');
+  same(['a','b','c','c'].remove('c'), ['a','b'], 'Array#remove | remove "c"s');
+  same([1,2,2,3].remove(function(el){ return el % 2 == 0; }), [1,3], 'Array#remove | remove all odd numbers');
+  same([1,2,2,3].remove(function(el){ return el > 2; }), [1,2,2], 'Array#remove | remove all numbers greater than 2');
+  same([1,2,2,3].remove(function(el){ return el > 20; }), [1,2,2,3], 'Array#remove | remove all numbers greater than 20');
+  same([{a:1},{a:2},{a:1}].remove({a:1}), [{a:2}], 'Array#remove | remove all a:1');
+
+
+
+  same([1,2,2,3].removeIndex(), [1,2,2,3], 'Array#removeIndex | numeric | no argument');
+  same([1,2,2,3].removeIndex(0), [2,2,3], 'Array#removeIndex | numeric | 0');
+  same([1,2,2,3].removeIndex(1), [1,2,3], 'Array#removeIndex | numeric | 1');
+  same([1,2,2,3].removeIndex(2), [1,2,3], 'Array#removeIndex | numeric | 2');
+  same([1,2,2,3].removeIndex(3), [1,2,2], 'Array#removeIndex | numeric | 3');
+  same([1,2,2,3].removeIndex(4), [1,2,2,3], 'Array#removeIndex | numeric | 4');
+  same(['a','b','c','c'].removeIndex(), ['a','b','c','c'], 'Array#removeIndex | alphabet | no argument');
+  same(['a','b','c','c'].removeIndex(0), ['b','c','c'], 'Array#removeIndex | alphabet | 0');
+  same(['a','b','c','c'].removeIndex(1), ['a','c','c'], 'Array#removeIndex | alphabet | 1');
+  same(['a','b','c','c'].removeIndex(2), ['a','b','c'], 'Array#removeIndex | alphabet | 2');
+  same(['a','b','c','c'].removeIndex(3), ['a','b','c'], 'Array#removeIndex | alphabet | 3');
+  same(['a','b','c','c'].removeIndex(4), ['a','b','c','c'], 'Array#removeIndex | alphabet | 4');
+  same([{a:1},{a:2},{a:1}].removeIndex(1), [{a:1},{a:1}], 'Array#removeIndex | objects | 1');
+  same([1,2,2,3].removeIndex(0,1), [2,3], 'Array#removeIndex | 0 to 1');
+  same([1,2,2,3].removeIndex(0,2), [3], 'Array#removeIndex | 0 to 2');
+  same([1,2,2,3].removeIndex(1,2), [1,3], 'Array#removeIndex | 1 to 2');
+  same([1,2,2,3].removeIndex(1,5), [1], 'Array#removeIndex | 1 to 5');
+  same([1,2,2,3].removeIndex(0,5), [], 'Array#removeIndex | 0 to 5');
+
+
+
+
+
+
+  same([1,2,3].add(4), [1,2,3,4], 'Array#add | 1,2,3 + 4');
+  same(['a','b','c'].add('d'), ['a','b','c','d'], 'Array#add | a,b,c + d');
+  same([{a:1},{a:2}].add({a:3}), [{a:1},{a:2},{a:3}], 'Array#add | a:1,a:2 + a:3');
+  same([1,2,3].add([3,4,5]), [1,2,3,3,4,5], 'Array#add | 1,2,3 + 3,4,5');
+  same(['a','b','c'].add(['c','d','e']), ['a','b','c','c','d','e'], 'Array#add | a,b,c + c,d,e');
+  same([1,2,3].add([1,2,3]), [1,2,3,1,2,3], 'Array#add | 1,2,3 + 1,2,3');
+  same([1,2,3].add([3,2,1]), [1,2,3,3,2,1], 'Array#add | 1,2,3 + 3,2,1');
+  same([].add([3]), [3], 'Array#add | empty array + 3');
+  same([3].add([]), [3], 'Array#add | 3 + empty array');
+  same([].add([]), [], 'Array#add | 2 empty arrays');
+  same([null].add([]), [null], 'Array#add | [null] + empty array');
+  same([null].add([null]), [null, null], 'Array#add | [null] + [null]');
+  same([false].add([false]), [false, false], 'Array#add | [false] + [false]');
+  same([false].add([0]), [false, 0], 'Array#add | [false] + [0]');
+  same([false].add([null]), [false, null], 'Array#add | [false] + [null]');
+  same([false].add([undefined]), [false, undefined], 'Array#add | [false] + [undefined]');
+  same([{a:1},{b:2}].add([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#add | a:1,b:2 + b:2,c:3');
+  same([1,1,3].add([1,5,6]), [1,1,3,1,5,6], 'Array#add | 1,1,3 + 1,5,6');
+  same([1,2,3].add([4,5,6]), [1,2,3,4,5,6], 'Array#add | 1,2,3 + 4,5,6');
+  same([1,2,3].add(1), [1,2,3,1], 'Array#add | 1,2,3 + 1');
+
+
+
+
+  same([1,2,3].addAtIndex(1, 4), [1,4,2,3], 'Array#addAtIndex | 1 | 4');
+  same(['a','b','c'].addAtIndex(1, 'd'), ['a','d','b','c'], 'Array#addAtIndex | 1 | d');
+  same([{a:1},{a:2}].addAtIndex(1, {a:3}), [{a:1},{a:3},{a:2}], 'Array#addAtIndex | 1 | a:3');
+
+  same([1,2,3].addAtIndex(2, 4), [1,2,4,3], 'Array#addAtIndex | 2 | 4');
+  same(['a','b','c'].addAtIndex(2, 'd'), ['a','b','d','c'], 'Array#addAtIndex | 2 | d');
+  same([{a:1},{a:2}].addAtIndex(2, {a:3}), [{a:1},{a:2},{a:3}], 'Array#addAtIndex | 2 | a:3');
+
+  same(['a','b','c'].addAtIndex(5, 'd'), ['a','b','c','d'], 'Array#addAtIndex | 5 | d');
+  same(['a','b','c'].addAtIndex(0, 'd'), ['d','a','b','c'], 'Array#addAtIndex | 0 | d');
+  same(['a','b','c'].addAtIndex(-1, 'd'), ['a','b','c','d'], 'Array#addAtIndex | -1 | d');
+  same(['a','b','c'].addAtIndex(-2, 'd'), ['a','b','d','c'], 'Array#addAtIndex | -2 | d');
+  same(['a','b','c'].addAtIndex(-3, 'd'), ['a','d','b','c'], 'Array#addAtIndex | -3 | d');
+  same(['a','b','c'].addAtIndex(null, 'd'), ['a','b','c','d'], 'Array#addAtIndex | null | d');
+  same(['a','b','c'].addAtIndex(undefined, 'd'), ['a','b','c','d'], 'Array#addAtIndex | undefined | d');
+  same(['a','b','c'].addAtIndex('a', 'd'), ['a','b','c','d'], 'Array#addAtIndex | a | d');
+  same(['a','b','c'].addAtIndex(NaN, 'd'), ['a','b','c','d'], 'Array#addAtIndex | NaN | d');
+
+
+
+
+  equal([1,2,3].blank(), false, 'Array#blank | 1,2,3');
+  equal([].blank(), true, 'Array#blank | empty array');
+  equal([null].blank(), true, 'Array#blank | [null]');
+  equal([undefined].blank(), true, 'Array#blank | [undefined]');
+  equal([null,null].blank(), true, 'Array#blank | [null,null]');
+  equal([undefined,undefined].blank(), true, 'Array#blank | [undefined,undefined]');
+  equal([false,false].blank(), false, 'Array#blank | [false,false]');
+  equal([0,0].blank(), false, 'Array#blank | [0,0]');
+
+
+
+
+  equal([1,2,3].any(), false, 'Array#any | numeric | no argument');
+  equal([1,2,3].any(1), true, 'Array#any | numeric | 1');
+  equal([1,2,3].any(4), false, 'Array#any | numeric | 4');
+  equal([1,2,3].any('a'), false, 'Array#any | numeric | a');
+  equal(['a','b','c'].any('a'), true, 'Array#any | alphabet | a');
+  equal(['a','b','c'].any('f'), false, 'Array#any | alphabet | f');
+  equal(['a','b','c'].any(/[a-f]/), true, 'Array#any | alphabet | /[a-f]/');
+  equal(['a','b','c'].any(/[m-z]/), false, 'Array#any | alphabet | /[m-z]/');
+  equal(['a','b','c'].any(function(e){ return e.length > 1; }), false, 'Array#any | alphabet | length greater than 1');
+  equal(['a','b','c'].any(function(e){ return e.length < 2; }), true, 'Array#any | alphabet | length less than 2');
+  equal(['a','bar','cat'].any(function(e){ return e.length < 2; }), true, 'Array#any | a,bar,cat | length less than 2');
+  same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any | objects | 1');
+  same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any | objects | a:1');
+  same([{a:1},{a:2},{a:1}].any(function(e){ return e['a'] == 1; }), true, 'Array#any | objects | key "a" is 1');
+  same([{a:1},{a:2},{a:1}].any(function(e){ return e['b'] == 1; }), false, 'Array#any | objects | key "b" is 1');
+  equal([0].any(0), true, 'Array#any | [0] | 0');
+
+
+
+  equal([1,2,3].has(), false, 'Array#has | numeric | no argument');
+  equal([1,2,3].has(1), true, 'Array#has | numeric | 1');
+  equal([1,2,3].has(4), false, 'Array#has | numeric | 4');
+  equal([1,2,3].has('a'), false, 'Array#has | numeric | a');
+  equal(['a','b','c'].has('a'), true, 'Array#has | alphabet | a');
+  equal(['a','b','c'].has('f'), false, 'Array#has | alphabet | f');
+  equal(['a','b','c'].has(/[a-f]/), true, 'Array#has | alphabet | /[a-f]/');
+  equal(['a','b','c'].has(/[m-z]/), false, 'Array#has | alphabet | /[m-z]/');
+  equal(['a','b','c'].has(function(e){ return e.length > 1; }), false, 'Array#has | alphabet | length greater than 1');
+  equal(['a','b','c'].has(function(e){ return e.length < 2; }), true, 'Array#has | alphabet | length less than 2');
+  equal(['a','bar','cat'].has(function(e){ return e.length < 2; }), true, 'Array#has | a,bar,cat | length less than 2');
+  same([{a:1},{a:2},{a:1}].has(1), false, 'Array#has | objects | 1');
+  same([{a:1},{a:2},{a:1}].has({a:1}), true, 'Array#has | objects | a:1');
+  same([{a:1},{a:2},{a:1}].has(function(e){ return e['a'] == 1; }), true, 'Array#has | objects | key "a" is 1');
+  same([{a:1},{a:2},{a:1}].has(function(e){ return e['b'] == 1; }), false, 'Array#has | objects | key "b" is 1');
+
+
+
+
+  equal([1,2,3].none(), true, 'Array#none | numeric | no argument');
+  equal([1,2,3].none(1), false, 'Array#none | numeric | 1');
+  equal([1,2,3].none(4), true, 'Array#none | numeric | 4');
+  equal([1,2,3].none('a'), true, 'Array#none | numeric | a');
+  equal(['a','b','c'].none('a'), false, 'Array#none | alphabet | a');
+  equal(['a','b','c'].none('f'), true, 'Array#none | alphabet | f');
+  equal(['a','b','c'].none(/[a-f]/), false, 'Array#none | alphabet | /[a-f]/');
+  equal(['a','b','c'].none(/[m-z]/), true, 'Array#none | alphabet | /[m-z]/');
+  equal(['a','b','c'].none(function(e){ return e.length > 1; }), true, 'Array#none | alphabet | length is greater than 1');
+  equal(['a','b','c'].none(function(e){ return e.length < 2; }), false, 'Array#none | alphabet | length is less than 2');
+  equal(['a','bar','cat'].none(function(e){ return e.length < 2; }), false, 'Array#none | a,bar,cat | length is less than 2');
+  same([{a:1},{a:2},{a:1}].none(1), true, 'Array#none | objects | 1');
+  same([{a:1},{a:2},{a:1}].none({a:1}), false, 'Array#none | objects | a:1');
+  same([{a:1},{a:2},{a:1}].none(function(e){ return e['a'] == 1; }), false, 'Array#none | objects | key "a" is 1');
+  same([{a:1},{a:2},{a:1}].none(function(e){ return e['b'] == 1; }), true, 'Array#none | objects | key "b" is 1');
+
+
+
+
+
+  equal([1,2,3].all(), false, 'Array#all | numeric | no argument');
+  equal([1,2,3].all(1), false, 'Array#all | numeric | 1');
+  equal([1,1,1].all(1), true, 'Array#all | numeric | 1 is true for all');
+  equal([1,2,3].all(3), false, 'Array#all | numeric | 3');
+  equal(['a','b','c'].all('a'), false, 'Array#all | alphabet | a');
+  equal(['a','a','a'].all('a'), true, 'Array#all | alphabet | a is true for all');
+  equal(['a','b','c'].all('f'), false, 'Array#all | alphabet | f');
+  equal(['a','b','c'].all(/[a-f]/), true, 'Array#all | alphabet | /[a-f]/');
+  equal(['a','b','c'].all(/[a-b]/), false, 'Array#all | alphabet | /[m-z]/');
+  equal(['a','b','c'].all(function(e){ return e.length > 1; }), false, 'Array#all | alphabet | length is greater than 1');
+  equal(['a','b','c'].all(function(e){ return e.length < 2; }), true, 'Array#all | alphabet | length is less than 2');
+  equal(['a','bar','cat'].all(function(e){ return e.length < 2; }), false, 'Array#all | a,bar,cat | length is less than 2');
+  same([{a:1},{a:2},{a:1}].all(1), false, 'Array#all | objects | 1');
+  same([{a:1},{a:2},{a:1}].all({a:1}), false, 'Array#all | objects | a:1');
+  same([{a:1},{a:1},{a:1}].all({a:1}), true, 'Array#all | objects | a:1 is true for all');
+  same([{a:1},{a:2},{a:1}].all(function(e){ return e['a'] == 1; }), false, 'Array#all | objects | key "a" is 1');
+  same([{a:1},{a:2},{a:1}].all(function(e){ return e['b'] == 1; }), false, 'Array#all | objects | key "b" is 1');
+  same([{a:1},{a:1},{a:1}].all(function(e){ return e['a'] == 1; }), true, 'Array#all | objects | key "a" is 1 for all');
+
+
+
+  same([1,2,3].flatten(), [1,2,3], 'Array#flatten | 1,2,3');
+  same(['a','b','c'].flatten(), ['a','b','c'], 'Array#flatten | a,b,c');
+  same([{a:1},{a:2},{a:1}].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | a:1,a:2,a:1');
+  same([[1],[2],[3]].flatten(), [1,2,3], 'Array#flatten | [1],[2],[3]');
+  same([[1,2],[3]].flatten(), [1,2,3], 'Array#flatten | [1,2],[3]');
+  same([[1,2,3]].flatten(), [1,2,3], 'Array#flatten | [1,2,3]');
+  same([['a'],['b'],['c']].flatten(), ['a','b','c'], 'Array#flatten | [a],[b],[c]');
+  same([['a','b'],['c']].flatten(), ['a','b','c'], 'Array#flatten | [a,b],[c]');
+  same([['a','b','c']].flatten(), ['a','b','c'], 'Array#flatten | [a,b,c]');
+  same([[{a:1}],[{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1],[a:2],[a:1]');
+  same([[{a:1},{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2],[a:1]');
+  same([[{a:1},{a:2},{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2,a:1]');
+  same([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten | [[a,b],c,[d,e],f],g');
+
+
+
+
+
+  arr = ['more','everyone!','bring','the','family'];
+  same(arr.sortBy('length'), ['the','more','bring','family','everyone!'], 'Array#sortBy | sorting by length');
+  same(arr.sortBy('length', true), ['everyone!','family','bring','more','the'], 'Array#sortBy | desc | sorting by length');
+
+  same(arr.sortBy(function(a){ return a.length; }), ['the','more','bring','family','everyone!'], 'Array#sortBy | sort by length by function');
+  same(arr.sortBy(function(a){ return a.length; }, true), ['everyone!','family','bring','more','the'], 'Array#sortBy | desc | sort by length by function');
+
+  arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
+  same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
+  same(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy | desc | sort by key "a"');
+
+
+
+
+
+
+  arr = [1,2,3,4,5,6,7,8,9,10];
+  var firsts = [];
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+  firsts.push(arr.randomize().first());
+
+  /* Note that there is a built-in 0.00000001% chance that this test will fail */
+  equals(firsts.all(1), false, 'Array#randomize');
+
+
+
+  // Shuffle is an alias
+
+  arr = [1,2,3,4,5,6,7,8,9,10];
+  var firsts = [];
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+  firsts.push(arr.shuffle().first());
+
+  /* Note that there is a built-in 0.00000001% chance that this test will fail */
+  equals(firsts.all(1), false, 'Array#shuffle');
+
+
 
 });
 
