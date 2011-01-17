@@ -4192,6 +4192,46 @@ test('Object', function () {
 
 });
 
+
+
+test('Function', function () {
+
+  var bound,obj,result;
+
+  bound = (function(){
+    equals(this, 'wasabi', 'Function#bind | Correctly binds objects');
+    return 'howdy';
+  }).bind('wasabi');
+
+  result = bound.call();
+  equals(result, 'howdy', 'Function#bind | result is correctly returned');
+
+  obj = { foo: 'bar' };
+
+  bound = (function(){
+    equals(this === obj, true, 'Function#bind | Bound object is strictly equal');
+  }).bind(obj);
+
+  bound.call();
+
+  bound = (function(num, bool, str){
+    equals(num, 1, 'Function#bind | Also accepts parameters | first');
+    equals(bool, true, 'Function#bind | Also accepts parameters | second');
+    equals(str, 'wasabi', 'Function#bind | Also accepts parameters | third');
+  }).bind(obj, 1, true, 'wasabi');
+
+  bound.call();
+
+
+  bound = (function(){
+    start();
+  }).delay(500);
+
+  stop();
+
+
+
+});
 /**
  * Not going to limit this to a window object for now....
 test('Window', function () {
