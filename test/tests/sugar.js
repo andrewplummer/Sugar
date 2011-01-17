@@ -4198,34 +4198,32 @@ test('Function', function () {
 
   var bound,obj,result;
 
-  bound = (function(){
-    equals(this, 'wasabi', 'Function#bind | Correctly binds objects');
+  obj = { foo: 'bar' };
+
+  bound = (function(num, bool, str){
+    equals(this === obj, true, 'Function#bind | Bound object is strictly equal');
+    equals(num, 1, 'Function#bind | first parameter');
+    equals(bool, true, 'Function#bind | second parameter');
+    equals(str, 'wasabi', 'Function#bind | third parameter');
     return 'howdy';
-  }).bind('wasabi');
+  }).bind(obj, [1, true, 'wasabi']);
 
   result = bound.call();
   equals(result, 'howdy', 'Function#bind | result is correctly returned');
 
-  obj = { foo: 'bar' };
 
-  bound = (function(){
-    equals(this === obj, true, 'Function#bind | Bound object is strictly equal');
-  }).bind(obj);
+  (function(first){
+    same(Array.prototype.slice.call(arguments), [], 'Function#bind | arguments array is empty');
+    equals(first, undefined, 'Function#bind | first argument is undefined');
+  }).bind('foo')();
 
-  bound.call();
 
   bound = (function(num, bool, str){
-    equals(num, 1, 'Function#bind | Also accepts parameters | first');
-    equals(bool, true, 'Function#bind | Also accepts parameters | second');
-    equals(str, 'wasabi', 'Function#bind | Also accepts parameters | third');
-  }).bind(obj, 1, true, 'wasabi');
-
-  bound.call();
-
-
-  bound = (function(){
+    equals(num, 1, 'Function#delay | first parameter');
+    equals(bool, true, 'Function#delay | second parameter');
+    equals(str, 'wasabi', 'Function#delay | third parameter');
     start();
-  }).delay(500);
+  }).delay(10, [1, true, 'wasabi']);
 
   stop();
 
