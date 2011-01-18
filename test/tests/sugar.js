@@ -3556,20 +3556,26 @@ test('Date', function () {
 
   d = new Date();
   var offset = d.getTime() - new Date(d).advance({ week: -1 });
+  var since, until;
 
-  // Works with Date.create?
-  // need a bit of a buffer here, so...
-  // I occasionally get some REALLY big lags with IE here...
-  var since = d.millisecondsSince('last week');
-  var until = d.millisecondsUntil('last week');
+  // I'm occasionally seeing some REALLY big lags with IE here (up to 500ms), so giving a 1s buffer here.
+  //
+  var msSince = d.millisecondsSince('last week');
+  var msUntil = d.millisecondsUntil('last week');
+  var actualMsSince = offset.round();
+  var actualMsUntil = -offset.round();
 
-  // IE is showing some REAL big lags (up to 500ms) this deep into testing,
-  // so I'm commenting these out for now.
-  // equals(since > (offset - 5) && since < offset + 5, true, 'Date#millisecondsSince | milliseconds since last week');
-  // equals(since > (5 - offset) && since < (5 + offset), true, 'Date#millisecondsUntil | milliseconds until last week');
+  equals((msSince <= actualMsSince + 1000) && (msSince >= actualMsSince - 1000), true, 'Date#millisecondsSince | milliseconds since last week');
+  equals((msUntil <= actualMsUntil + 1000) && (msUntil >= actualMsUntil - 1000), true, 'Date#millisecondsUntil | milliseconds until last week');
 
-  equals(d.secondsSince('last week'), (offset / 1000).round(), 'Date#secondsSince | seconds since last week');
-  equals(d.secondsUntil('last week'), (-offset / 1000).round(), 'Date#secondsUntil | seconds until last week');
+  var secSince = d.secondsSince('last week');
+  var secUntil = d.secondsUntil('last week');
+  var actualSecSince = (offset / 1000).round();
+  var actualSecUntil = (-offset / 1000).round();
+
+  equals((secSince <= actualSecSince + 1) && (secSince >= actualSecSince - 1), true, 'Date#secondsSince | seconds since last week');
+  equals((secUntil <= actualSecUntil + 1) && (secUntil >= actualSecUntil - 1), true, 'Date#secondsUntil | seconds until last week');
+
   equals(d.minutesSince('last week'), (offset / 1000 / 60).round(), 'Date#minutesSince | minutes since last week');
   equals(d.minutesUntil('last week'), (-offset / 1000 / 60).round(), 'Date#minutesUntil | minutes until last week');
   equals(d.hoursSince('last week'), (offset / 1000 / 60 / 60).round(), 'Date#hoursSince | hours since last week');
