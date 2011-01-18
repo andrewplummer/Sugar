@@ -1697,8 +1697,8 @@ test('Array', function () {
   same([function(){}].findFromIndex(1, function(e){}), null, 'Array#findFromIndex | null function from index 1');
   same([null, null].findFromIndex(0, null), null, 'Array#findFromIndex | null');
   same([null, null].findFromIndex(1, null), null, 'Array#findFromIndex | null from index 1');
-  same([undefined, undefined].findFromIndex(0, undefined), undefined, 'Array#findFromIndex | undefined');
-  same([undefined, undefined].findFromIndex(1, undefined), undefined, 'Array#findFromIndex | undefined from index 1');
+  same([undefined, undefined].findFromIndex(0, undefined), null, 'Array#findFromIndex | undefined');
+  same([undefined, undefined].findFromIndex(1, undefined), null, 'Array#findFromIndex | undefined from index 1');
   same([undefined, 'a'].findFromIndex(1, undefined), 'a', 'Array#findFromIndex | undefined finds the first element');
   same([null, null].findFromIndex(1, undefined), null, 'Array#findFromIndex | undefined finds first null too');
 
@@ -2229,7 +2229,7 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].any(), false, 'Array#any | numeric | no argument');
+  equal([1,2,3].any(), true, 'Array#any | numeric | no argument');
   equal([1,2,3].any(1), true, 'Array#any | numeric | 1');
   equal([1,2,3].any(4), false, 'Array#any | numeric | 4');
   equal([1,2,3].any('a'), false, 'Array#any | numeric | a');
@@ -2248,7 +2248,7 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].has(), false, 'Array#has | numeric | no argument');
+  equal([1,2,3].has(), true, 'Array#has | numeric | no argument');
   equal([1,2,3].has(1), true, 'Array#has | numeric | 1');
   equal([1,2,3].has(4), false, 'Array#has | numeric | 4');
   equal([1,2,3].has('a'), false, 'Array#has | numeric | a');
@@ -2267,7 +2267,7 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].none(), true, 'Array#none | numeric | no argument');
+  equal([1,2,3].none(), false, 'Array#none | numeric | no argument');
   equal([1,2,3].none(1), false, 'Array#none | numeric | 1');
   equal([1,2,3].none(4), true, 'Array#none | numeric | 4');
   equal([1,2,3].none('a'), true, 'Array#none | numeric | a');
@@ -2287,7 +2287,8 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].all(), false, 'Array#all | numeric | no argument');
+  equal([1,2,3].all(), true, 'Array#all | numeric | no argument');
+  equal([0,2,3].all(), false, 'Array#all | numeric | 0 is not truthy');
   equal([1,2,3].all(1), false, 'Array#all | numeric | 1');
   equal([1,1,1].all(1), true, 'Array#all | numeric | 1 is true for all');
   equal([1,2,3].all(3), false, 'Array#all | numeric | 3');
