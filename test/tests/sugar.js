@@ -2246,6 +2246,10 @@ test('Array', function () {
   same([{a:1},{a:2},{a:1}].any(function(e){ return e['b'] == 1; }), false, 'Array#any | objects | key "b" is 1');
   equal([0].any(0), true, 'Array#any | [0] | 0');
 
+  [1].any(function(){
+    equal(this, 'wasabi', 'Array#any | scope should be passable');
+  }, 'wasabi');
+
 
 
   equal([1,2,3].has(), true, 'Array#has | numeric | no argument');
@@ -2306,6 +2310,10 @@ test('Array', function () {
   same([{a:1},{a:2},{a:1}].all(function(e){ return e['a'] == 1; }), false, 'Array#all | objects | key "a" is 1');
   same([{a:1},{a:2},{a:1}].all(function(e){ return e['b'] == 1; }), false, 'Array#all | objects | key "b" is 1');
   same([{a:1},{a:1},{a:1}].all(function(e){ return e['a'] == 1; }), true, 'Array#all | objects | key "a" is 1 for all');
+
+  [1].all(function(){
+    equal(this, 'wasabi', 'Array#all | scope should be passable');
+  }, 'wasabi');
 
 
 
