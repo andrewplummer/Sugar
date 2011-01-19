@@ -49,6 +49,7 @@ modules << current_module
 
 
 modules.each do |mod|
+  mod[:methods] = mod[:methods].sort_by { |m| m[:method] }
   mod[:methods].each do |m|
     h = row_html.dup
     h.gsub!(/\{MODULE\}/, mod[:name])
