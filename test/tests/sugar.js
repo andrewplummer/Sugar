@@ -2057,16 +2057,16 @@ test('Array', function () {
 
 
 
-  same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroupsOf | groups of 3 | 1 to 10');
+  same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9],[10,null,null]], 'Array#inGroupsOf | groups of 3 | 1 to 10');
   same([1,2,3,4,5,6,7,8,9].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf | groups of 3 | 1 to 9');
-  same([1,2,3,4,5,6,7,8].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8]], 'Array#inGroupsOf | groups of 3 | 1 to 8');
-  same([1,2,3,4,5,6,7].inGroupsOf(3), [[1,2,3],[4,5,6],[7]], 'Array#inGroupsOf | groups of 3 | 1 to 7');
+  same([1,2,3,4,5,6,7,8].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,null]], 'Array#inGroupsOf | groups of 3 | 1 to 8');
+  same([1,2,3,4,5,6,7].inGroupsOf(3), [[1,2,3],[4,5,6],[7,null,null]], 'Array#inGroupsOf | groups of 3 | 1 to 7');
   same([1,2,3,4,5,6].inGroupsOf(3), [[1,2,3],[4,5,6]], 'Array#inGroupsOf | groups of 3 | 1 to 6');
-  same([1,2,3,4,5].inGroupsOf(3), [[1,2,3],[4,5]], 'Array#inGroupsOf | groups of 3 | 1 to 5');
-  same([1,2,3,4].inGroupsOf(3), [[1,2,3],[4]], 'Array#inGroupsOf | groups of 3 | 1 to 4');
+  same([1,2,3,4,5].inGroupsOf(3), [[1,2,3],[4,5,null]], 'Array#inGroupsOf | groups of 3 | 1 to 5');
+  same([1,2,3,4].inGroupsOf(3), [[1,2,3],[4,null,null]], 'Array#inGroupsOf | groups of 3 | 1 to 4');
   same([1,2,3].inGroupsOf(3), [[1,2,3]], 'Array#inGroupsOf | groups of 3 | 1 to 3');
-  same([1,2].inGroupsOf(3), [[1,2]], 'Array#inGroupsOf | groups of 3 | 1 to 2');
-  same([1].inGroupsOf(3), [[1]], 'Array#inGroupsOf | groups of 3 | 1');
+  same([1,2].inGroupsOf(3), [[1,2,null]], 'Array#inGroupsOf | groups of 3 | 1 to 2');
+  same([1].inGroupsOf(3), [[1,null,null]], 'Array#inGroupsOf | groups of 3 | 1');
 
   same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9],[10, null, null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 10');
   same([1,2,3,4,5,6,7,8,9].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 9');
@@ -2093,8 +2093,9 @@ test('Array', function () {
   same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf | pad with null | 1');
   same([].inGroupsOf(3), [], 'Array#inGroupsOf | empty array');
   same([].inGroupsOf(3, null), [], 'Array#inGroupsOf | pad with null | empty array');
-  same([null].inGroupsOf(3), [[null]], 'Array#inGroupsOf | [null] in groups of 3');
+  same([null].inGroupsOf(3), [[null,null,null]], 'Array#inGroupsOf | [null] in groups of 3');
   same([null].inGroupsOf(3, null), [[null,null,null]], 'Array#inGroupsOf | pad with null | [null] in groups of 3');
+  same([1].inGroupsOf(3, undefined), [[1,null,null]], 'Array#inGroupsOf | passing undefined reverts to null');
 
 
 
@@ -2117,9 +2118,11 @@ test('Array', function () {
   same([null,null,null].compact(), [], 'Array#compact | null,null,null');
   same([NaN,NaN,NaN].compact(), [], 'Array#compact | NaN,NaN,NaN');
   same(['','',''], ['','',''], 'Array#compact | empty strings');
-  same([false,false,false].compact(), [false,false,false], 'Array#compact | false,false,false');
+  same([false,false,false].compact(), [false,false,false], 'Array#compact | false is left alone');
   same([0,1,2].compact(), [0,1,2], 'Array#compact | 0,1,2');
   same([].compact(), [], 'Array#compact | empty array');
+  same([null,[null],[false,[null,undefined,3]]].compact(), [[],[false,[3]]], 'Array#compact | deep compacts as well');
+  same([null,null,null,[null],null].compact(), [[]], "Array#compact | deep compact doesn't have index conflicts");
 
 
 
@@ -2145,6 +2148,11 @@ test('Array', function () {
   same([1,2,2,3].remove(function(el){ return el > 2; }), [1,2,2], 'Array#remove | remove all numbers greater than 2');
   same([1,2,2,3].remove(function(el){ return el > 20; }), [1,2,2,3], 'Array#remove | remove all numbers greater than 20');
   same([{a:1},{a:2},{a:1}].remove({a:1}), [{a:2}], 'Array#remove | remove all a:1');
+  ['a'].remove(function(el,i,arr){
+    equals(el, 'a', 'Array#remove | first param should be the element');
+    equals(i, 0, 'Array#remove | second param should be the index');
+    same(arr, ['a'], 'Array#remove | third param should be the array');
+  });
 
 
 
