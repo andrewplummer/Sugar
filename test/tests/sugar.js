@@ -185,9 +185,11 @@ test('Number', function () {
 
 
   counter = 0;
-  (5).times(function(){
+  (5).times(function(first){
+    equal(first, counter, 'Number#times | first parameter is the index');
+    equal(this, 'wasabi', 'Number#times | handles scope');
     counter++;
-  });
+  }, 'wasabi');
   equal(counter, 5, 'Number#times | iterated 5 times');
 
 
