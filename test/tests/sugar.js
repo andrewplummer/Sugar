@@ -148,8 +148,9 @@ test('Number', function () {
   equals((722855.241).round(-8), 0, 'Number#round | 722855.241 to -8 places');
 
 
-  equals((65).chr(), 'A', 'Number#chr | 65');
-  equals((24536).chr(), '忘', 'Number#chr | 24536');
+  equals((65).unicode(), 'A', 'Number#chr | 65');
+  equals((24536).unicode(), '忘', 'Number#chr | 24536');
+  equals((20294).unicode(), '但', 'Number#chr | 20294');
 
   counter = 0;
   var dCounter = 5;
