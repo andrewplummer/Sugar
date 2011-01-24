@@ -8,11 +8,19 @@ def get_property(property, source)
   match = source.match(Regexp.new('@' + property.to_s + '(.*)$'))
   #replace = match ? CGI.escapeHTML(match[1]) : ''
   replace = match ? match[1].strip : nil
+  if replace
+    replace.gsub!(/[<>]/, '|')
+    replace.gsub!(/\|(.+?)\|/, '<span class="parameter">\\1</span>')
+    if property == :method
+      replace.gsub!(/\((.*)\)/, '<span class="parameters">(\\1)</span>')
+    end
+  end
+  replace
 end
 
 
 html = ''
-row_reg = /\s*<tr class="method">.*?<\/tr>/m
+row_reg = /\s*<li class="method">.*?<\/li>/m
 fileout_html  = File.open(fileout, 'r').read
 template_html = File.open(template, 'r').read
 row_html = template_html.match(row_reg)[0]
@@ -29,7 +37,6 @@ File.open('lib/sugar.js', 'r') do |f|
     mod = get_property(:module, b)
     m = {
       :method => get_property(:method, b),
-      :parameters => get_property(:parameters, b),
       :returns => get_property(:returns, b),
       :description => get_property(:description, b)
     }
@@ -39,6 +46,7 @@ File.open('lib/sugar.js', 'r') do |f|
       end
       current_module = { :name => mod, :methods => [] }
     elsif(current_module && m.values.all? { |s| !s.nil? })
+      puts m.inspect
       current_module[:methods] << m
     end
    # html += h
@@ -47,6 +55,7 @@ end
 
 modules << current_module
 
+#puts modules.inspect
 
 modules.each do |mod|
   mod[:methods] = mod[:methods].sort_by { |m| m[:method] }
@@ -62,5 +71,5 @@ end
 
 
 File.open(fileout, 'w') do |f|
-  f.puts fileout_html.gsub(/<tbody>.*?<\/tbody>/m, "<tbody>  " + html + "\n  </tbody>")
+  f.puts fileout_html.gsub(/<ul class="method_list">.*?<\/ul>/m, '<ul class="method_list">  ' + html + "\n  </ul>")
 end
