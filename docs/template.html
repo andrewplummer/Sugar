@@ -5,25 +5,15 @@
     <title>Mwahaha</title>
   </head>
   <body>
-    <table>
-      <thead>
-        <tr>
-          <th>Module</th>
-          <th>Method</th>
-          <th>Arguments</th>
-          <th>Returns</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="method">
-          <td class="module">{MODULE}</td>
-          <td class="name">{METHOD}</td>
-          <td class="parameters">{PARAMETERS}</td>
-          <td class="returns">{RETURNS}</td>
-          <td class="description">{DESCRIPTION}</td>
-        </tr>
-      </tbody>
-    </table>
+    <ul>
+      <li class="method">
+        <h3>{METHOD}</h3>
+        <h4>
+          <span class="label">Returns:</span>
+          <span class="returns">{RETURNS}</span>
+        </h4>
+        <p>{DESCRIPTION}</p>
+      </li>
+    </ul>
   </body>
 </html>
