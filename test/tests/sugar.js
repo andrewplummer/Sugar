@@ -1892,59 +1892,38 @@ test('Array', function () {
 
 
 
-  same([12,87,55].min(), 12, 'Array#min | 12');
-  same([12,87,55].min(true), [12], 'Array#min | multiple | 12');
-  same([-12,-87,-55].min(), -87, 'Array#min | -87 ');
-  same([-12,-87,-55].min(true), [-87], 'Array#min | multiple | -87');
-  same([5,5,5].min(), 5, 'Array#min | 5');
-  same([5,5,5].min(true), [5], 'Array#min | multiple | 5 is uniqued');
-  same(['a','b','c'].min(), undefined, 'Array#min | strings are not counted');
-  same(['a','b','c'].min(true), [], 'Array#min | multiple | strings are not counted');
-  same([].min(), undefined, 'Array#min | empty array');
-  same([].min(true), [], 'Array#min | multiple | empty array');
-  same([null].min(), undefined, 'Array#min | [null]');
-  same([null].min(true), [], 'Array#min | multiple | [null]');
-  same([undefined].min(), undefined, 'Array#min | [undefined]');
-  same([undefined].min(true), [], 'Array#min | multiple | [undefined]');
-  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), {a:1,b:5}, 'Array#min | key "a"');
-  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), {a:3,b:3}, 'Array#min | key "b"');
-  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min | multiple | key "b", 1 found');
-  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#min | multiple | key "b", 2 found');
-  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), {a:-1,b:-5}, 'Array#min | key "b", 1 found');
-  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(true, function(el){ return el['b']; }), [{a:-1,b:-5}], 'Array#min | multiple | key "b", 1 found');
-  same(['short','and','mort'].min(function(el){ return el.length; }), 'and', 'Array#min | length');
-  same(['short','and','mort'].min(true, function(el){ return el.length; }), ['and'], 'Array#min | multiple | length');
-  same(['short','and','mort','fat'].min(function(el){ return el.length; }), 'and', 'Array#min | and');
-  same(['short','and','mort','fat'].min(true, function(el){ return el.length; }), ['and','fat'], 'Array#min | multiple | and,fat');
+  same([12,87,55].min(), [12], 'Array#min | 12');
+  same([-12,-87,-55].min(), [-87], 'Array#min | -87');
+  same([5,5,5].min(), [5], 'Array#min | 5 is uniqued');
+  same(['a','b','c'].min(), [], 'Array#min | strings are not counted');
+  same([].min(), [], 'Array#min | empty array');
+  same([null].min(), [], 'Array#min | [null]');
+  same([undefined].min(), [], 'Array#min | [undefined]');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), [{a:1,b:5}], 'Array#min | key "a"');
+  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min | key "b", 1 found');
+  same([{a:1,b:5},{a:3,b:3},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min | key "b", 1 found');
+  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#min | key "b", 2 found');
+  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), [{a:-1,b:-5}], 'Array#min | key "b", 1 found');
+  same(['short','and','mort'].min(function(el){ return el.length; }), ['and'], 'Array#min | length');
+  same(['short','and','mort','fat'].min(function(el){ return el.length; }), ['and','fat'], 'Array#min | and,fat');
 
 
-  same([12,87,55].max(), 87, 'Array#max | 87');
-  same([12,87,55].max(true), [87], 'Array#max | multiple | 87');
-  same([-12,-87,-55].max(), -12, 'Array#max | -12');
-  same([-12,-87,-55].max(true), [-12], 'Array#max | multiple | -12');
-  same([5,5,128].max(), 128, 'Array#max | 128');
-  same([5,128,128].max(true), [128], 'Array#max | multiple | 128');
-  same([128,128,128].max(true), [128], 'Array#max | multiple | 128 is uniqued');
-  same(['a','b','c'].max(), undefined, 'Array#max | strings are not counted');
-  same(['a','b','c'].max(true), [], 'Array#max | multiple | strings are not counted');
-  same([].max(), undefined, 'Array#max | empty array');
-  same([].max(true), [], 'Array#max | multiple | empty array');
-  same([null].max(), undefined, 'Array#max | [null]');
-  same([null].max(true), [], 'Array#max | multiple | [null]');
-  same([undefined].max(), undefined, 'Array#max | [undefined]');
-  same([undefined].max(true), [], 'Array#max | multiple | [undefined]');
-  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), {a:3,b:5}, 'Array#max | key "a"');
-  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(true, function(el){ return el['a']; }), [{a:3,b:5}], 'Array#max | multiple | key "a"');
-  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), {a:1,b:5}, 'Array#max | key "b"');
-  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:5}], 'Array#max | multiple | key "b" returns b:5');
-  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max | multiple | key "b" returns b:4');
-  same([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max | multiple | key "b", 2 found');
-  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), {a:-3,b:-3}, 'Array#max | key "b", returns b:-3');
-  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(true, function(el){ return el['b']; }), [{a:-3,b:-3}], 'Array#max | multiple | key "b" returns b:-3');
-  same(['short','and', 'mort'].max(function(el){ return el.length; }), 'short', 'Array#max | length');
-  same(['short','and', 'mort'].max(true, function(el){ return el.length; }), ['short'], 'Array#max | multiple | length');
-  same(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), 'short', 'Array#max | short');
-  same(['short','and', 'morts', 'fat'].max(true, function(el){ return el.length; }), ['short','morts'], 'Array#max | multiple | short,morts');
+  same([12,87,55].max(), [87], 'Array#max | 87');
+  same([-12,-87,-55].max(), [-12], 'Array#max | -12');
+  same([5,5,128].max(), [128], 'Array#max | 128');
+  same([128,128,128].max(), [128], 'Array#max | 128 is uniqued');
+  same(['a','b','c'].max(), [], 'Array#max | strings are not counted');
+  same([].max(), [], 'Array#max | empty array');
+  same([null].max(), [], 'Array#max | [null]');
+  same([undefined].max(), [], 'Array#max | [undefined]');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), [{a:3,b:5}], 'Array#max | key "a"');
+  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:1,b:5}], 'Array#max | key "b" returns b:5');
+  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max | key "b" returns b:4');
+  same([{a:1,b:3},{a:2,b:4},{a:2,b:4}].max(function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max | key "b" returns b:4 uniqued');
+  same([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max | key "b", 2 found');
+  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), [{a:-3,b:-3}], 'Array#max | key "b" returns b:-3');
+  same(['short','and', 'mort'].max(function(el){ return el.length; }), ['short'], 'Array#max | length');
+  same(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), ['short','morts'], 'Array#max | short,morts');
 
 
 
