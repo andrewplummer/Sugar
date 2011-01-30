@@ -1935,56 +1935,36 @@ test('Array', function () {
     { name: 'edmund', age: 27, hair: 'blonde' }
   ];
 
-  same(people.most(function(person){ return person.age; }), {name:'jim',age:27,hair:'brown'}, 'Array#most | age');
-  same(people.most(true, function(person){ return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | multiple | age');
+  same(people.most(function(person){ return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | age');
+  same(people.most(function(person){ return person.hair; }), [], 'Array#most | hair');
 
-  same(people.most(function(person){ return person.hair; }), undefined, 'Array#most | hair');
-  same(people.most(true, function(person){ return person.hair; }), [], 'Array#most | multiple | hair');
-
-  same([].most(), undefined, 'Array#most | empty array');
-  same([1,2,3].most(), undefined, 'Array#most | 1,2,3');
-  same([1,2,3].most(true), [], 'Array#most | multiple | 1,2,3');
-  same([1,2,3,3].most(), 3, 'Array#most | 1,2,3,3');
-  same([1,2,3,3].most(true), [3], 'Array#most | multiple | 1,2,3,3');
-  same([1,1,2,3,3].most(), 1, 'Array#most | 1,1,2,3,3');
-  same([1,1,2,3,3].most(true), [1,3], 'Array#most | multiple | 1,1,2,3,3');
-  same(['a','b','c'].most(), undefined, 'Array#most | a,b,c');
-  same(['a','b','c'].most(true), [], 'Array#most | multiple | a,b,c');
-  same(['a','b','c','c'].most(), 'c', 'Array#most | a,b,c,c');
-  same(['a','b','c','c'].most(true), ['c'], 'Array#most | multiple | a,b,c,c');
-  same(['a','a','b','c','c'].most(), 'a', 'Array#most | a,a,b,c,c');
-  same(['a','a','b','c','c'].most(true), ['a','c'], 'Array#most | multiple | a,a,b,c,c');
+  same([].most(), [], 'Array#most | empty array');
+  same([1,2,3].most(), [], 'Array#most | 1,2,3');
+  same([1,2,3,3].most(), [3], 'Array#most | 1,2,3,3');
+  same([1,1,2,3,3].most(), [1,3], 'Array#most | 1,1,2,3,3');
+  same(['a','b','c'].most(), [], 'Array#most | a,b,c');
+  same(['a','b','c','c'].most(), ['c'], 'Array#most | a,b,c,c');
+  same(['a','a','b','c','c'].most(), ['a','c'], 'Array#most | a,a,b,c,c');
 
   // Leaving this here as a reference for how to collect the actual number of occurences.
-  equal(people.most(true, function(person){ return person.age; }).length, 2, 'Array#most | multiple | collect actual number of occurrences');
+  equal(people.most(function(person){ return person.age; }).length, 2, 'Array#most | collect actual number of occurrences');
 
 
   contains(people.least(function(person){ return person.age; }).age, [52,13], 'Array#least | age');
-  contains(people.least(function(person){ return person.age; }), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | multiple | age');
-  same(people.least(true, function(person){ return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | multiple | age and sorted by age');
+  same(people.least(function(person){ return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | age and sorted by age');
+  same(people.least(function(person){ return person.hair; }), [], 'Array#least | hair');
 
-
-  same(people.least(function(person){ return person.hair; }), undefined, 'Array#least | hair');
-  same(people.least(true, function(person){ return person.hair; }), [], 'Array#least | multiple | hair');
-
-  same([].least(), undefined, 'Array#least | empty array');
-  same([1,2,3].least(), undefined, 'Array#least | 1,2,3');
-  same([1,2,3].least(true), [], 'Array#least | multiple | 1,2,3');
-  same([1,2,3,3].least(), 1, 'Array#least | 1,2,3,3');
-  same([1,2,3,3].least(true), [1,2], 'Array#least | multiple | 1,2,3,3');
-  same([1,1,2,3,3].least(), 2, 'Array#least | 1,1,2,3,3');
-  same([1,1,2,3,3].least(true), [2], 'Array#least | multiple | 1,1,2,3,3');
-  same([1,1,1,2,2,3,3,3].least(), 2, 'Array#least | 1,1,1,2,2,3,3,3');
-  same([1,1,1,2,2,3,3,3].least(true), [2], 'Array#least | multiple | 1,1,1,2,2,3,3,3');
-  same(['a','b','c'].least(), undefined, 'Array#least | a,b,c');
-  same(['a','b','c'].least(true), [], 'Array#least | multiple | a,b,c');
-  same(['a','b','c','c'].least(), 'a', 'Array#least | a,b,c,c');
-  same(['a','b','c','c'].least(true), ['a','b'], 'Array#least | multiple | a,b,c,c');
-  same(['a','a','b','c','c'].least(), 'b', 'Array#least | a,a,b,c,c');
-  same(['a','a','b','c','c'].least(true), ['b'], 'Array#least | multiple | a,a,b,c,c');
+  same([].least(), [], 'Array#least | empty array');
+  same([1,2,3].least(), [], 'Array#least | 1,2,3');
+  same([1,2,3,3].least(), [1,2], 'Array#least | 1,2,3,3');
+  same([1,1,2,3,3].least(), [2], 'Array#least | 1,1,2,3,3');
+  same([1,1,1,2,2,3,3,3].least(), [2], 'Array#least | 1,1,1,2,2,3,3,3');
+  same(['a','b','c'].least(), [], 'Array#least | a,b,c');
+  same(['a','b','c','c'].least(), ['a','b'], 'Array#least | a,b,c,c');
+  same(['a','a','b','c','c'].least(), ['b'], 'Array#least | a,a,b,c,c');
 
   // Leaving this here as a reference for how to collect the actual number of occurences.
-  same(people.least(true, function(person){ return person.age; }).length, 2, 'Array#least | multiple | collect actual number of occurences');
+  same(people.least(function(person){ return person.age; }).length, 2, 'Array#least | collect actual number of occurences');
 
 
 
@@ -3150,7 +3130,7 @@ test('Date', function () {
   d = new Date('August 5, 2010 13:45:02');
 
 
-  equals(d.format('{ms}'), '0', 'Date#format | custom formats | ms');
+  equals(d.format('{ms}'), '000', 'Date#format | custom formats | ms');
   equals(d.format('{millisec}'), '0', 'Date#format | custom formats | millisec');
   equals(d.format('{millisecond}'), '0', 'Date#format | custom formats | millisecond');
   equals(d.format('{milliseconds}'), '0', 'Date#format | custom formats | milliseconds');
@@ -3239,7 +3219,7 @@ test('Date', function () {
   equals(d.format(Date.EUROPEAN_DATE), '5/8/2010', 'Date#format | internal formats | EUROPEAN_DATE');
   equals(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
   equals(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
-  equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
+  equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02.000Z', 'Date#format | internal formats | ISO8601_DATETIME');
 
 
   equals(d.format('AMERICAN_DATE'), '8/5/2010', 'Date#format | internal formats | AMERICAN_DATE');
@@ -3247,10 +3227,10 @@ test('Date', function () {
   equals(d.format('EUROPEAN_DATE'), '5/8/2010', 'Date#format | internal formats | EUROPEAN_DATE');
   equals(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
   equals(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
-  equals(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
+  equals(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02.000Z', 'Date#format | internal formats | ISO8601_DATETIME');
 
 
-  var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+d.getUTCOffset(true);
+  var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+'.'+d.getUTCMilliseconds().pad(3)+'Z';
   equals(d.format(Date.ISO8601_DATETIME, true), iso, 'Date#format | internal formats | ISO8601_DATETIME UTC');
   equals(d.format(Date.ISO8601, true), iso, 'Date#format | internal formats | ISO8601 UTC');
   equals(d.format('ISO8601_DATETIME', true), iso, 'Date#format | internal formats | ISO8601_DATETIME UTC');
