@@ -28,6 +28,7 @@ var getRelativeDate = function(year, month, day, hours, minutes, seconds, millis
 var getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds){
   var d = new Date();
   if(year) d.setFullYear(year);
+  d.setUTCDate(15); // Pre-emptively preventing a month overflow situation
   d.setUTCMonth(month === undefined ? 0 : month - 1);
   d.setUTCDate(day === undefined ? 1 : day);
   d.setUTCHours(hours === undefined ? 0 : hours);
