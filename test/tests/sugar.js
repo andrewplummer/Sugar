@@ -932,12 +932,12 @@ test('String', function () {
   same('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize | dashes');
   same('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize | capital dashes');
   same('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize | underscores');
-  same('hop-on-pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | dashes');
-  same('HOP-ON-POP'.camelize(false), 'hopOnPop', 'String#camelize | first false | capital dashes');
-  same('hop_on_pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | underscores');
-  same('hop-on-pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | dashes');
-  same('HOP-ON-POP'.camelize(true), 'HopOnPop', 'String#camelize | first true | capital dashes');
-  same('hop_on_pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | underscores');
+  same('hop-on-pop'.camelize('lower'), 'hopOnPop', 'String#camelize | first false | dashes');
+  same('HOP-ON-POP'.camelize('lower'), 'hopOnPop', 'String#camelize | first false | capital dashes');
+  same('hop_on_pop'.camelize('lower'), 'hopOnPop', 'String#camelize | first false | underscores');
+  same('hop-on-pop'.camelize('upper'), 'HopOnPop', 'String#camelize | first true | dashes');
+  same('HOP-ON-POP'.camelize('upper'), 'HopOnPop', 'String#camelize | first true | capital dashes');
+  same('hop_on_pop'.camelize('upper'), 'HopOnPop', 'String#camelize | first true | underscores');
   same('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
   same('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
   same('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps');
