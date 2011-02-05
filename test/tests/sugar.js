@@ -3170,6 +3170,8 @@ test('Date', function () {
   equals(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');
   equals(d.format('{yy}'), '10', 'Date#format | custom formats | yy');
   equals(d.format('{yyyy}'), '2010', 'Date#format | custom formats | yyyy');
+  equals(d.format('{year}'), '2010', 'Date#format | custom formats | year');
+  equals(d.format('{Year}'), '2010', 'Date#format | custom formats | Year');
   equals(d.format('{t}'), 'p', 'Date#format | custom formats | t');
   equals(d.format('{T}'), 'P', 'Date#format | custom formats | T');
   equals(d.format('{tt}'), 'pm', 'Date#format | custom formats | tt');
