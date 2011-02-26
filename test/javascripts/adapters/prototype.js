@@ -6,10 +6,12 @@
  */
 
 var currentTest;
+var allTests = [];
 
 var Test = {
   Unit: {
     Runner: function(tests){
+      allTests.push(function(){
       for(var test_name in tests){
         if(tests.hasOwnProperty(test_name)){
           // The function passed into the second argument of "test"
@@ -24,9 +26,16 @@ var Test = {
           })(test_name);
         }
       }
+      });
     }
   }
 };
+
+function startTests(){
+  for(var i = 0; i < allTests.length; i++){
+    allTests[i].call();
+  }
+}
 
 QUnitBridge = {
   assertEnumEqual: function(){

@@ -37,6 +37,9 @@
         var location = 'environments/' + environment + '/test.html';
         var iframe = $('<iframe src="'+location+'" />');
         env.append(iframe);
+        iframe.load(function(){
+          this.contentWindow.startTests();
+        });
       });
 
     });
