@@ -28,6 +28,7 @@ var getRelativeDate = function(year, month, day, hours, minutes, seconds, millis
 var getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds){
   var d = new Date();
   if(year) d.setFullYear(year);
+  d.setUTCDate(15); // Pre-emptively preventing a month overflow situation
   d.setUTCMonth(month === undefined ? 0 : month - 1);
   d.setUTCDate(day === undefined ? 1 : day);
   d.setUTCHours(hours === undefined ? 0 : hours);
@@ -150,6 +151,7 @@ test('Number', function () {
 
   equals((65).chr(), 'A', 'Number#chr | 65');
   equals((24536).chr(), '忘', 'Number#chr | 24536');
+  equals((20294).chr(), '但', 'Number#chr | 20294');
 
   counter = 0;
   var dCounter = 5;
@@ -184,9 +186,11 @@ test('Number', function () {
 
 
   counter = 0;
-  (5).times(function(){
+  (5).times(function(first){
+    equal(first, counter, 'Number#times | first parameter is the index');
+    equal(this, 'wasabi', 'Number#times | handles scope');
     counter++;
-  });
+  }, 'wasabi');
   equal(counter, 5, 'Number#times | iterated 5 times');
 
 
@@ -676,15 +680,18 @@ test('String', function () {
 
   equal('hello'.startsWith('hell'), true, 'String#startsWith | hello starts with hell');
   equal('HELLO'.startsWith('HELL'), true, 'String#startsWith | HELLO starts with HELL');
-  equal('HELLO'.startsWith('hell'), true, 'String#startsWith | HELLO starts with hell');
+  equal('HELLO'.startsWith('hell'), false, 'String#startsWith | HELLO starts with hell');
   equal('HELLO'.startsWith('hell', true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
+  equal('HELLO'.startsWith('hell', false), true, 'String#startsWith | case insensitive | HELLO starts with hell');
   equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith | valley girls rock starts with valley girls');
   equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith | valley girls rock starts with valley girls r');
 
 
   equal('vader'.endsWith('der'), true, 'String#endsWith | vader ends with der');
   equal('VADER'.endsWith('DER'), true, 'String#endsWith | VADER ends with DER');
-  equal('VADER'.endsWith('der'), true, 'String#endsWith | VADER ends with der');
+  equal('VADER'.endsWith('der'), false, 'String#endsWith | VADER ends with der');
+  equal('VADER'.endsWith('DER', false), true, 'String#endsWith | case insensitive | VADER ends with DER');
+  equal('VADER'.endsWith('der', false), true, 'String#endsWith | case insensitive |  VADER ends with der');
   equal('VADER'.endsWith('DER', true), true, 'String#endsWith | case sensitive | VADER ends with DER');
   equal('VADER'.endsWith('der', true), false, 'String#endsWith | case sensitive |  VADER ends with der');
   equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith | vader ends with der');
@@ -925,9 +932,12 @@ test('String', function () {
   same('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize | dashes');
   same('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize | capital dashes');
   same('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize | underscores');
-  same('hop-on-pop'.camelize('lower'), 'hopOnPop', 'String#camelize | lower | dashes');
-  same('HOP-ON-POP'.camelize('lower'), 'hopOnPop', 'String#camelize | lower | capital dashes');
-  same('hop_on_pop'.camelize('lower'), 'hopOnPop', 'String#camelize | lower | underscores');
+  same('hop-on-pop'.camelize('lower'), 'hopOnPop', 'String#camelize | first false | dashes');
+  same('HOP-ON-POP'.camelize('lower'), 'hopOnPop', 'String#camelize | first false | capital dashes');
+  same('hop_on_pop'.camelize('lower'), 'hopOnPop', 'String#camelize | first false | underscores');
+  same('hop-on-pop'.camelize('upper'), 'HopOnPop', 'String#camelize | first true | dashes');
+  same('HOP-ON-POP'.camelize('upper'), 'HopOnPop', 'String#camelize | first true | capital dashes');
+  same('hop_on_pop'.camelize('upper'), 'HopOnPop', 'String#camelize | first true | underscores');
   same('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
   same('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
   same('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps');
@@ -1613,26 +1623,26 @@ test('Array', function () {
   same(['a','b','c'].find('a'), 'a', 'Array#find | a');
   same(['a','b','c'].find('b'), 'b', 'Array#find | b');
   same(['a','b','c'].find('c'), 'c', 'Array#find | c');
-  same(['a','b','c'].find('d'), null, 'Array#find | d');
+  same(['a','b','c'].find('d'), undefined, 'Array#find | d');
   same([1,2,3].find(1), 1, 'Array#find | 1');
   same([1,2,3].find(2), 2, 'Array#find | 2');
   same([1,2,3].find(3), 3, 'Array#find | 3');
-  same([1,2,3].find(4), null, 'Array#find | 4');
+  same([1,2,3].find(4), undefined, 'Array#find | 4');
   same([{a:1},{b:2},{c:3}].find({a:1}), {a:1}, 'Array#find | {a:1}');
   same([{a:1},{b:2},{c:3}].find({c:3}), {c:3}, 'Array#find | {c:3}');
-  same([{a:1},{b:2},{c:3}].find({d:4}), null, 'Array#find | {d:4}');
-  same([{a:1},{b:2},{c:3}].find({c:4}), null, 'Array#find | {c:4}');
+  same([{a:1},{b:2},{c:3}].find({d:4}), undefined, 'Array#find | {d:4}');
+  same([{a:1},{b:2},{c:3}].find({c:4}), undefined, 'Array#find | {c:4}');
   same([[1,2],[2,3],[4,5]].find([2,3]), [2,3], 'Array#find | [2,3]');
-  same([[1,2],[2,3],[4,5]].find([2,4]), null, 'Array#find | [2,4]');
+  same([[1,2],[2,3],[4,5]].find([2,4]), undefined, 'Array#find | [2,4]');
   same([[1,2],[2,3],[2,3]].find([2,3]), [2,3], 'Array#find | first [2,3]');
   same(['foo','bar'].find(/f+/), 'foo', 'Array#find | /f+/');
   same(['foo','bar'].find(/r+/), 'bar', 'Array#find | /r+/');
-  same(['foo','bar'].find(/q+/), null, 'Array#find | /q+/');
+  same(['foo','bar'].find(/q+/), undefined, 'Array#find | /q+/');
   same([1,2,3].find(function(e){ return e > 0; }), 1, 'Array#find | greater than 0');
   same([1,2,3].find(function(e){ return e > 2; }), 3, 'Array#find | greater than 2');
-  same([1,2,3].find(function(e){ return e > 3; }), null, 'Array#find | greater than 3');
+  same([1,2,3].find(function(e){ return e > 3; }), undefined, 'Array#find | greater than 3');
   same([{a:1},{b:2},{c:3}].find(function(e){ return e['a'] === 1; }), {a:1}, 'Array#find | with key "a" === 1');
-  same([function(){}].find(function(e){}), null, 'Array#find | null function');
+  same([function(){}].find(function(e){}), undefined, 'Array#find | null function');
   same([null, null].find(null), null, 'Array#find | first null');
 
 
@@ -1665,21 +1675,21 @@ test('Array', function () {
 
   same(['a','b','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex | a');
   same(['a','a','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex | first a');
-  same(['a','b','c'].findFromIndex(0, 'q'), null, 'Array#findFromIndex | q');
+  same(['a','b','c'].findFromIndex(0, 'q'), undefined, 'Array#findFromIndex | q');
   same([1,2,3].findFromIndex(0, 1), 1, 'Array#findFromIndex | 1');
   same([2,2,3].findFromIndex(0, 2), 2, 'Array#findFromIndex | 2');
-  same([1,2,3].findFromIndex(0, 4), null, 'Array#findFromIndex | 4');
+  same([1,2,3].findFromIndex(0, 4), undefined, 'Array#findFromIndex | 4');
   same([{a:1},{b:2},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex | a:1');
   same([{a:1},{a:1},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex | first a:1');
-  same([{a:1},{b:2},{c:3}].findFromIndex(0, {d:4}), null, 'Array#findFromIndex | d:4');
-  same([{a:1},{b:2},{c:3}].findFromIndex(0, {c:4}), null, 'Array#findFromIndex | c:4');
+  same([{a:1},{b:2},{c:3}].findFromIndex(0, {d:4}), undefined, 'Array#findFromIndex | d:4');
+  same([{a:1},{b:2},{c:3}].findFromIndex(0, {c:4}), undefined, 'Array#findFromIndex | c:4');
   same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex | 2,3');
-  same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,4]), null, 'Array#findFromIndex | 2,4');
+  same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,4]), undefined, 'Array#findFromIndex | 2,4');
   same([[1,2],[2,3],[2,3]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex | first 2,3');
   same(['foo','bar'].findFromIndex(0, /f+/), 'foo', 'Array#findFromIndex | /f+/');
   same(['foo','bar'].findFromIndex(0, /[a-f]/), 'foo', 'Array#findFromIndex | /a-f/');
   same(['foo','bar'].findFromIndex(1, /[a-f]/), 'bar', 'Array#findFromIndex | /a-f/ from index 1');
-  same(['foo','bar'].findFromIndex(0, /q+/), null, 'Array#findFromIndex | /q+/');
+  same(['foo','bar'].findFromIndex(0, /q+/), undefined, 'Array#findFromIndex | /q+/');
   same([1,2,3].findFromIndex(0, function(e){ return e > 0; }), 1, 'Array#findFromIndex | greater than 0 from index 0');
   same([1,2,3].findFromIndex(1, function(e){ return e > 0; }), 2, 'Array#findFromIndex | greater than 0 from index 1');
   same([1,2,3].findFromIndex(2, function(e){ return e > 0; }), 3, 'Array#findFromIndex | greater than 0 from index 2');
@@ -1688,19 +1698,18 @@ test('Array', function () {
   same([1,2,3].findFromIndex(1, function(e){ return e > 1; }), 2, 'Array#findFromIndex | greater than 1 from index 1');
   same([1,2,3].findFromIndex(2, function(e){ return e > 1; }), 3, 'Array#findFromIndex | greater than 1 from index 2');
   same([1,2,3].findFromIndex(0, function(e){ return e > 2; }), 3, 'Array#findFromIndex | greater than 2 from index 0');
-  same([1,2,3].findFromIndex(0, function(e){ return e > 3; }), null, 'Array#findFromIndex | greater than 3 from index 0');
+  same([1,2,3].findFromIndex(0, function(e){ return e > 3; }), undefined, 'Array#findFromIndex | greater than 3 from index 0');
 
   same([{a:10},{a:8},{a:3}].findFromIndex(0, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex | key "a" greater than 5');
   same([{a:10},{a:8},{a:3}].findFromIndex(1, function(e){ return e['a'] > 5; }), {a:8}, 'Array#findFromIndex | key "a" greater than 5 from index 1');
   same([{a:10},{a:8},{a:3}].findFromIndex(2, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex | key "a" greater than 5 from index 2');
-  same([function(){}].findFromIndex(0, function(e){}), null, 'Array#findFromIndex | null function');
-  same([function(){}].findFromIndex(1, function(e){}), null, 'Array#findFromIndex | null function from index 1');
+  same([function(){}].findFromIndex(0, function(e){}), undefined, 'Array#findFromIndex | undefined function');
+  same([function(){}].findFromIndex(1, function(e){}), undefined, 'Array#findFromIndex | null function from index 1');
   same([null, null].findFromIndex(0, null), null, 'Array#findFromIndex | null');
   same([null, null].findFromIndex(1, null), null, 'Array#findFromIndex | null from index 1');
   same([undefined, undefined].findFromIndex(0, undefined), undefined, 'Array#findFromIndex | undefined');
   same([undefined, undefined].findFromIndex(1, undefined), undefined, 'Array#findFromIndex | undefined from index 1');
   same([undefined, 'a'].findFromIndex(1, undefined), 'a', 'Array#findFromIndex | undefined finds the first element');
-  same([null, null].findFromIndex(1, undefined), null, 'Array#findFromIndex | undefined finds first null too');
 
 
 
@@ -1819,15 +1828,15 @@ test('Array', function () {
   same(['a','b','c'].at(0), 'a', 'Array#at | a,b,c | 0');
   same(['a','b','c'].at(1), 'b', 'Array#at | a,b,c | 1');
   same(['a','b','c'].at(2), 'c', 'Array#at | a,b,c | 2');
-  same(['a','b','c'].at(3), null, 'Array#at | a,b,c | 3');
+  same(['a','b','c'].at(3), undefined, 'Array#at | a,b,c | 3');
   same(['a','b','c'].at(-1), 'c', 'Array#at | a,b,c | -1');
   same(['a','b','c'].at(-2), 'b', 'Array#at | a,b,c | -2');
   same(['a','b','c'].at(-3), 'a', 'Array#at | a,b,c | -3');
-  same(['a','b','c'].at(-4), null, 'Array#at | a,b,c | -4');
-  same(['a','b','c'].at(), null, 'Array#at | a,b,c | no argument');
+  same(['a','b','c'].at(-4), undefined, 'Array#at | a,b,c | -4');
+  same(['a','b','c'].at(), undefined, 'Array#at | a,b,c | no argument');
   same([false].at(0), false, 'Array#at | false | 0');
   same(['a'].at(0), 'a', 'Array#at | a | 0');
-  same(['a'].at(1), null, 'Array#at | a | 1');
+  same(['a'].at(1), undefined, 'Array#at | a | 1');
   same(['a'].at(-1), 'a', 'Array#at | a | -1');
   same(['a','b','c','d','e','f'].at(0,2,4), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4');
   same(['a','b','c','d','e','f'].at(1,3,5), ['b','d','f'], 'Array#at | a,b,c,d,e,f | 1,3,5');
@@ -1884,59 +1893,38 @@ test('Array', function () {
 
 
 
-  same([12,87,55].min(), 12, 'Array#min | 12');
-  same([12,87,55].min(true), [12], 'Array#min | multiple | 12');
-  same([-12,-87,-55].min(), -87, 'Array#min | -87 ');
-  same([-12,-87,-55].min(true), [-87], 'Array#min | multiple | -87');
-  same([5,5,5].min(), 5, 'Array#min | 5');
-  same([5,5,5].min(true), [5], 'Array#min | multiple | 5 is uniqued');
-  same(['a','b','c'].min(), null, 'Array#min | strings are not counted');
-  same(['a','b','c'].min(true), [], 'Array#min | multiple | strings are not counted');
-  same([].min(), null, 'Array#min | empty array');
-  same([].min(true), [], 'Array#min | multiple | empty array');
-  same([null].min(), null, 'Array#min | [null]');
-  same([null].min(true), [], 'Array#min | multiple | [null]');
-  same([undefined].min(), null, 'Array#min | [undefined]');
-  same([undefined].min(true), [], 'Array#min | multiple | [undefined]');
-  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), {a:1,b:5}, 'Array#min | key "a"');
-  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), {a:3,b:3}, 'Array#min | key "b"');
-  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min | multiple | key "b", 1 found');
-  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#min | multiple | key "b", 2 found');
-  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), {a:-1,b:-5}, 'Array#min | key "b", 1 found');
-  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(true, function(el){ return el['b']; }), [{a:-1,b:-5}], 'Array#min | multiple | key "b", 1 found');
-  same(['short','and','mort'].min(function(el){ return el.length; }), 'and', 'Array#min | length');
-  same(['short','and','mort'].min(true, function(el){ return el.length; }), ['and'], 'Array#min | multiple | length');
-  same(['short','and','mort','fat'].min(function(el){ return el.length; }), 'and', 'Array#min | and');
-  same(['short','and','mort','fat'].min(true, function(el){ return el.length; }), ['and','fat'], 'Array#min | multiple | and,fat');
+  same([12,87,55].min(), [12], 'Array#min | 12');
+  same([-12,-87,-55].min(), [-87], 'Array#min | -87');
+  same([5,5,5].min(), [5], 'Array#min | 5 is uniqued');
+  same(['a','b','c'].min(), [], 'Array#min | strings are not counted');
+  same([].min(), [], 'Array#min | empty array');
+  same([null].min(), [], 'Array#min | [null]');
+  same([undefined].min(), [], 'Array#min | [undefined]');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), [{a:1,b:5}], 'Array#min | key "a"');
+  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min | key "b", 1 found');
+  same([{a:1,b:5},{a:3,b:3},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:3,b:3}], 'Array#min | key "b", 1 found');
+  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#min | key "b", 2 found');
+  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), [{a:-1,b:-5}], 'Array#min | key "b", 1 found');
+  same(['short','and','mort'].min(function(el){ return el.length; }), ['and'], 'Array#min | length');
+  same(['short','and','mort','fat'].min(function(el){ return el.length; }), ['and','fat'], 'Array#min | and,fat');
 
 
-  same([12,87,55].max(), 87, 'Array#max | 87');
-  same([12,87,55].max(true), [87], 'Array#max | multiple | 87');
-  same([-12,-87,-55].max(), -12, 'Array#max | -12');
-  same([-12,-87,-55].max(true), [-12], 'Array#max | multiple | -12');
-  same([5,5,128].max(), 128, 'Array#max | 128');
-  same([5,128,128].max(true), [128], 'Array#max | multiple | 128');
-  same([128,128,128].max(true), [128], 'Array#max | multiple | 128 is uniqued');
-  same(['a','b','c'].max(), null, 'Array#max | strings are not counted');
-  same(['a','b','c'].max(true), [], 'Array#max | multiple | strings are not counted');
-  same([].max(), null, 'Array#max | empty array');
-  same([].max(true), [], 'Array#max | multiple | empty array');
-  same([null].max(), null, 'Array#max | [null]');
-  same([null].max(true), [], 'Array#max | multiple | [null]');
-  same([undefined].max(), null, 'Array#max | [undefined]');
-  same([undefined].max(true), [], 'Array#max | multiple | [undefined]');
-  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), {a:3,b:5}, 'Array#max | key "a"');
-  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(true, function(el){ return el['a']; }), [{a:3,b:5}], 'Array#max | multiple | key "a"');
-  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), {a:1,b:5}, 'Array#max | key "b"');
-  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:5}], 'Array#max | multiple | key "b" returns b:5');
-  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max | multiple | key "b" returns b:4');
-  same([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(true, function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max | multiple | key "b", 2 found');
-  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), {a:-3,b:-3}, 'Array#max | key "b", returns b:-3');
-  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(true, function(el){ return el['b']; }), [{a:-3,b:-3}], 'Array#max | multiple | key "b" returns b:-3');
-  same(['short','and', 'mort'].max(function(el){ return el.length; }), 'short', 'Array#max | length');
-  same(['short','and', 'mort'].max(true, function(el){ return el.length; }), ['short'], 'Array#max | multiple | length');
-  same(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), 'short', 'Array#max | short');
-  same(['short','and', 'morts', 'fat'].max(true, function(el){ return el.length; }), ['short','morts'], 'Array#max | multiple | short,morts');
+  same([12,87,55].max(), [87], 'Array#max | 87');
+  same([-12,-87,-55].max(), [-12], 'Array#max | -12');
+  same([5,5,128].max(), [128], 'Array#max | 128');
+  same([128,128,128].max(), [128], 'Array#max | 128 is uniqued');
+  same(['a','b','c'].max(), [], 'Array#max | strings are not counted');
+  same([].max(), [], 'Array#max | empty array');
+  same([null].max(), [], 'Array#max | [null]');
+  same([undefined].max(), [], 'Array#max | [undefined]');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), [{a:3,b:5}], 'Array#max | key "a"');
+  same([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:1,b:5}], 'Array#max | key "b" returns b:5');
+  same([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max | key "b" returns b:4');
+  same([{a:1,b:3},{a:2,b:4},{a:2,b:4}].max(function(el){ return el['b']; }), [{a:2,b:4}], 'Array#max | key "b" returns b:4 uniqued');
+  same([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], 'Array#max | key "b", 2 found');
+  same([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), [{a:-3,b:-3}], 'Array#max | key "b" returns b:-3');
+  same(['short','and', 'mort'].max(function(el){ return el.length; }), ['short'], 'Array#max | length');
+  same(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), ['short','morts'], 'Array#max | short,morts');
 
 
 
@@ -1948,56 +1936,36 @@ test('Array', function () {
     { name: 'edmund', age: 27, hair: 'blonde' }
   ];
 
-  same(people.most(function(person){ return person.age; }), {name:'jim',age:27,hair:'brown'}, 'Array#most | age');
-  same(people.most(true, function(person){ return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | multiple | age');
+  same(people.most(function(person){ return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | age');
+  same(people.most(function(person){ return person.hair; }), [], 'Array#most | hair');
 
-  same(people.most(function(person){ return person.hair; }), null, 'Array#most | hair');
-  same(people.most(true, function(person){ return person.hair; }), [], 'Array#most | multiple | hair');
-
-  same([].most(), null, 'Array#most | empty array');
-  same([1,2,3].most(), null, 'Array#most | 1,2,3');
-  same([1,2,3].most(true), [], 'Array#most | multiple | 1,2,3');
-  same([1,2,3,3].most(), 3, 'Array#most | 1,2,3,3');
-  same([1,2,3,3].most(true), [3], 'Array#most | multiple | 1,2,3,3');
-  same([1,1,2,3,3].most(), 1, 'Array#most | 1,1,2,3,3');
-  same([1,1,2,3,3].most(true), [1,3], 'Array#most | multiple | 1,1,2,3,3');
-  same(['a','b','c'].most(), null, 'Array#most | a,b,c');
-  same(['a','b','c'].most(true), [], 'Array#most | multiple | a,b,c');
-  same(['a','b','c','c'].most(), 'c', 'Array#most | a,b,c,c');
-  same(['a','b','c','c'].most(true), ['c'], 'Array#most | multiple | a,b,c,c');
-  same(['a','a','b','c','c'].most(), 'a', 'Array#most | a,a,b,c,c');
-  same(['a','a','b','c','c'].most(true), ['a','c'], 'Array#most | multiple | a,a,b,c,c');
+  same([].most(), [], 'Array#most | empty array');
+  same([1,2,3].most(), [], 'Array#most | 1,2,3');
+  same([1,2,3,3].most(), [3], 'Array#most | 1,2,3,3');
+  same([1,1,2,3,3].most(), [1,3], 'Array#most | 1,1,2,3,3');
+  same(['a','b','c'].most(), [], 'Array#most | a,b,c');
+  same(['a','b','c','c'].most(), ['c'], 'Array#most | a,b,c,c');
+  same(['a','a','b','c','c'].most(), ['a','c'], 'Array#most | a,a,b,c,c');
 
   // Leaving this here as a reference for how to collect the actual number of occurences.
-  equal(people.most(true, function(person){ return person.age; }).length, 2, 'Array#most | multiple | collect actual number of occurrences');
+  equal(people.most(function(person){ return person.age; }).length, 2, 'Array#most | collect actual number of occurrences');
 
 
   contains(people.least(function(person){ return person.age; }).age, [52,13], 'Array#least | age');
-  contains(people.least(function(person){ return person.age; }), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | multiple | age');
-  same(people.least(true, function(person){ return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | multiple | age and sorted by age');
+  same(people.least(function(person){ return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | age and sorted by age');
+  same(people.least(function(person){ return person.hair; }), [], 'Array#least | hair');
 
-
-  same(people.least(function(person){ return person.hair; }), null, 'Array#least | hair');
-  same(people.least(true, function(person){ return person.hair; }), [], 'Array#least | multiple | hair');
-
-  same([].least(), null, 'Array#least | empty array');
-  same([1,2,3].least(), null, 'Array#least | 1,2,3');
-  same([1,2,3].least(true), [], 'Array#least | multiple | 1,2,3');
-  same([1,2,3,3].least(), 1, 'Array#least | 1,2,3,3');
-  same([1,2,3,3].least(true), [1,2], 'Array#least | multiple | 1,2,3,3');
-  same([1,1,2,3,3].least(), 2, 'Array#least | 1,1,2,3,3');
-  same([1,1,2,3,3].least(true), [2], 'Array#least | multiple | 1,1,2,3,3');
-  same([1,1,1,2,2,3,3,3].least(), 2, 'Array#least | 1,1,1,2,2,3,3,3');
-  same([1,1,1,2,2,3,3,3].least(true), [2], 'Array#least | multiple | 1,1,1,2,2,3,3,3');
-  same(['a','b','c'].least(), null, 'Array#least | a,b,c');
-  same(['a','b','c'].least(true), [], 'Array#least | multiple | a,b,c');
-  same(['a','b','c','c'].least(), 'a', 'Array#least | a,b,c,c');
-  same(['a','b','c','c'].least(true), ['a','b'], 'Array#least | multiple | a,b,c,c');
-  same(['a','a','b','c','c'].least(), 'b', 'Array#least | a,a,b,c,c');
-  same(['a','a','b','c','c'].least(true), ['b'], 'Array#least | multiple | a,a,b,c,c');
+  same([].least(), [], 'Array#least | empty array');
+  same([1,2,3].least(), [], 'Array#least | 1,2,3');
+  same([1,2,3,3].least(), [1,2], 'Array#least | 1,2,3,3');
+  same([1,1,2,3,3].least(), [2], 'Array#least | 1,1,2,3,3');
+  same([1,1,1,2,2,3,3,3].least(), [2], 'Array#least | 1,1,1,2,2,3,3,3');
+  same(['a','b','c'].least(), [], 'Array#least | a,b,c');
+  same(['a','b','c','c'].least(), ['a','b'], 'Array#least | a,b,c,c');
+  same(['a','a','b','c','c'].least(), ['b'], 'Array#least | a,a,b,c,c');
 
   // Leaving this here as a reference for how to collect the actual number of occurences.
-  same(people.least(true, function(person){ return person.age; }).length, 2, 'Array#least | multiple | collect actual number of occurences');
+  same(people.least(function(person){ return person.age; }).length, 2, 'Array#least | collect actual number of occurences');
 
 
 
@@ -2057,16 +2025,16 @@ test('Array', function () {
 
 
 
-  same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9],[10]], 'Array#inGroupsOf | groups of 3 | 1 to 10');
+  same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9],[10,null,null]], 'Array#inGroupsOf | groups of 3 | 1 to 10');
   same([1,2,3,4,5,6,7,8,9].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf | groups of 3 | 1 to 9');
-  same([1,2,3,4,5,6,7,8].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8]], 'Array#inGroupsOf | groups of 3 | 1 to 8');
-  same([1,2,3,4,5,6,7].inGroupsOf(3), [[1,2,3],[4,5,6],[7]], 'Array#inGroupsOf | groups of 3 | 1 to 7');
+  same([1,2,3,4,5,6,7,8].inGroupsOf(3), [[1,2,3],[4,5,6],[7,8,null]], 'Array#inGroupsOf | groups of 3 | 1 to 8');
+  same([1,2,3,4,5,6,7].inGroupsOf(3), [[1,2,3],[4,5,6],[7,null,null]], 'Array#inGroupsOf | groups of 3 | 1 to 7');
   same([1,2,3,4,5,6].inGroupsOf(3), [[1,2,3],[4,5,6]], 'Array#inGroupsOf | groups of 3 | 1 to 6');
-  same([1,2,3,4,5].inGroupsOf(3), [[1,2,3],[4,5]], 'Array#inGroupsOf | groups of 3 | 1 to 5');
-  same([1,2,3,4].inGroupsOf(3), [[1,2,3],[4]], 'Array#inGroupsOf | groups of 3 | 1 to 4');
+  same([1,2,3,4,5].inGroupsOf(3), [[1,2,3],[4,5,null]], 'Array#inGroupsOf | groups of 3 | 1 to 5');
+  same([1,2,3,4].inGroupsOf(3), [[1,2,3],[4,null,null]], 'Array#inGroupsOf | groups of 3 | 1 to 4');
   same([1,2,3].inGroupsOf(3), [[1,2,3]], 'Array#inGroupsOf | groups of 3 | 1 to 3');
-  same([1,2].inGroupsOf(3), [[1,2]], 'Array#inGroupsOf | groups of 3 | 1 to 2');
-  same([1].inGroupsOf(3), [[1]], 'Array#inGroupsOf | groups of 3 | 1');
+  same([1,2].inGroupsOf(3), [[1,2,null]], 'Array#inGroupsOf | groups of 3 | 1 to 2');
+  same([1].inGroupsOf(3), [[1,null,null]], 'Array#inGroupsOf | groups of 3 | 1');
 
   same([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9],[10, null, null]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 10');
   same([1,2,3,4,5,6,7,8,9].inGroupsOf(3, null), [[1,2,3],[4,5,6],[7,8,9]], 'Array#inGroupsOf | groups of 3 | pad with null | 1 to 9');
@@ -2093,8 +2061,9 @@ test('Array', function () {
   same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf | pad with null | 1');
   same([].inGroupsOf(3), [], 'Array#inGroupsOf | empty array');
   same([].inGroupsOf(3, null), [], 'Array#inGroupsOf | pad with null | empty array');
-  same([null].inGroupsOf(3), [[null]], 'Array#inGroupsOf | [null] in groups of 3');
+  same([null].inGroupsOf(3), [[null,null,null]], 'Array#inGroupsOf | [null] in groups of 3');
   same([null].inGroupsOf(3, null), [[null,null,null]], 'Array#inGroupsOf | pad with null | [null] in groups of 3');
+  same([1].inGroupsOf(3, undefined), [[1,null,null]], 'Array#inGroupsOf | passing undefined reverts to null');
 
 
 
@@ -2117,9 +2086,11 @@ test('Array', function () {
   same([null,null,null].compact(), [], 'Array#compact | null,null,null');
   same([NaN,NaN,NaN].compact(), [], 'Array#compact | NaN,NaN,NaN');
   same(['','',''], ['','',''], 'Array#compact | empty strings');
-  same([false,false,false].compact(), [false,false,false], 'Array#compact | false,false,false');
+  same([false,false,false].compact(), [false,false,false], 'Array#compact | false is left alone');
   same([0,1,2].compact(), [0,1,2], 'Array#compact | 0,1,2');
   same([].compact(), [], 'Array#compact | empty array');
+  same([null,[null],[false,[null,undefined,3]]].compact(), [[],[false,[3]]], 'Array#compact | deep compacts as well');
+  same([null,null,null,[null],null].compact(), [[]], "Array#compact | deep compact doesn't have index conflicts");
 
 
 
@@ -2145,6 +2116,11 @@ test('Array', function () {
   same([1,2,2,3].remove(function(el){ return el > 2; }), [1,2,2], 'Array#remove | remove all numbers greater than 2');
   same([1,2,2,3].remove(function(el){ return el > 20; }), [1,2,2,3], 'Array#remove | remove all numbers greater than 20');
   same([{a:1},{a:2},{a:1}].remove({a:1}), [{a:2}], 'Array#remove | remove all a:1');
+  ['a'].remove(function(el,i,arr){
+    equals(el, 'a', 'Array#remove | first param should be the element');
+    equals(i, 0, 'Array#remove | second param should be the index');
+    same(arr, ['a'], 'Array#remove | third param should be the array');
+  });
 
 
 
@@ -2229,7 +2205,7 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].any(), false, 'Array#any | numeric | no argument');
+  equal([1,2,3].any(), true, 'Array#any | numeric | no argument');
   equal([1,2,3].any(1), true, 'Array#any | numeric | 1');
   equal([1,2,3].any(4), false, 'Array#any | numeric | 4');
   equal([1,2,3].any('a'), false, 'Array#any | numeric | a');
@@ -2246,9 +2222,13 @@ test('Array', function () {
   same([{a:1},{a:2},{a:1}].any(function(e){ return e['b'] == 1; }), false, 'Array#any | objects | key "b" is 1');
   equal([0].any(0), true, 'Array#any | [0] | 0');
 
+  [1].any(function(){
+    equal(this, 'wasabi', 'Array#any | scope should be passable');
+  }, 'wasabi');
 
 
-  equal([1,2,3].has(), false, 'Array#has | numeric | no argument');
+
+  equal([1,2,3].has(), true, 'Array#has | numeric | no argument');
   equal([1,2,3].has(1), true, 'Array#has | numeric | 1');
   equal([1,2,3].has(4), false, 'Array#has | numeric | 4');
   equal([1,2,3].has('a'), false, 'Array#has | numeric | a');
@@ -2267,7 +2247,7 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].none(), true, 'Array#none | numeric | no argument');
+  equal([1,2,3].none(), false, 'Array#none | numeric | no argument');
   equal([1,2,3].none(1), false, 'Array#none | numeric | 1');
   equal([1,2,3].none(4), true, 'Array#none | numeric | 4');
   equal([1,2,3].none('a'), true, 'Array#none | numeric | a');
@@ -2287,7 +2267,8 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].all(), false, 'Array#all | numeric | no argument');
+  equal([1,2,3].all(), true, 'Array#all | numeric | no argument');
+  equal([0,2,3].all(), false, 'Array#all | numeric | 0 is not truthy');
   equal([1,2,3].all(1), false, 'Array#all | numeric | 1');
   equal([1,1,1].all(1), true, 'Array#all | numeric | 1 is true for all');
   equal([1,2,3].all(3), false, 'Array#all | numeric | 3');
@@ -2305,6 +2286,10 @@ test('Array', function () {
   same([{a:1},{a:2},{a:1}].all(function(e){ return e['a'] == 1; }), false, 'Array#all | objects | key "a" is 1');
   same([{a:1},{a:2},{a:1}].all(function(e){ return e['b'] == 1; }), false, 'Array#all | objects | key "b" is 1');
   same([{a:1},{a:1},{a:1}].all(function(e){ return e['a'] == 1; }), true, 'Array#all | objects | key "a" is 1 for all');
+
+  [1].all(function(){
+    equal(this, 'wasabi', 'Array#all | scope should be passable');
+  }, 'wasabi');
 
 
 
@@ -3146,7 +3131,7 @@ test('Date', function () {
   d = new Date('August 5, 2010 13:45:02');
 
 
-  equals(d.format('{ms}'), '0', 'Date#format | custom formats | ms');
+  equals(d.format('{ms}'), '000', 'Date#format | custom formats | ms');
   equals(d.format('{millisec}'), '0', 'Date#format | custom formats | millisec');
   equals(d.format('{millisecond}'), '0', 'Date#format | custom formats | millisecond');
   equals(d.format('{milliseconds}'), '0', 'Date#format | custom formats | milliseconds');
@@ -3185,6 +3170,8 @@ test('Date', function () {
   equals(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');
   equals(d.format('{yy}'), '10', 'Date#format | custom formats | yy');
   equals(d.format('{yyyy}'), '2010', 'Date#format | custom formats | yyyy');
+  equals(d.format('{year}'), '2010', 'Date#format | custom formats | year');
+  equals(d.format('{Year}'), '2010', 'Date#format | custom formats | Year');
   equals(d.format('{t}'), 'p', 'Date#format | custom formats | t');
   equals(d.format('{T}'), 'P', 'Date#format | custom formats | T');
   equals(d.format('{tt}'), 'pm', 'Date#format | custom formats | tt');
@@ -3235,7 +3222,7 @@ test('Date', function () {
   equals(d.format(Date.EUROPEAN_DATE), '5/8/2010', 'Date#format | internal formats | EUROPEAN_DATE');
   equals(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
   equals(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
-  equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
+  equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02.000Z', 'Date#format | internal formats | ISO8601_DATETIME');
 
 
   equals(d.format('AMERICAN_DATE'), '8/5/2010', 'Date#format | internal formats | AMERICAN_DATE');
@@ -3243,10 +3230,10 @@ test('Date', function () {
   equals(d.format('EUROPEAN_DATE'), '5/8/2010', 'Date#format | internal formats | EUROPEAN_DATE');
   equals(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
   equals(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
-  equals(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02'+isotzd, 'Date#format | internal formats | ISO8601_DATETIME');
+  equals(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02.000Z', 'Date#format | internal formats | ISO8601_DATETIME');
 
 
-  var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+d.getUTCOffset(true);
+  var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+'.'+d.getUTCMilliseconds().pad(3)+'Z';
   equals(d.format(Date.ISO8601_DATETIME, true), iso, 'Date#format | internal formats | ISO8601_DATETIME UTC');
   equals(d.format(Date.ISO8601, true), iso, 'Date#format | internal formats | ISO8601 UTC');
   equals(d.format('ISO8601_DATETIME', true), iso, 'Date#format | internal formats | ISO8601_DATETIME UTC');
@@ -3556,20 +3543,26 @@ test('Date', function () {
 
   d = new Date();
   var offset = d.getTime() - new Date(d).advance({ week: -1 });
+  var since, until;
 
-  // Works with Date.create?
-  // need a bit of a buffer here, so...
-  // I occasionally get some REALLY big lags with IE here...
-  var since = d.millisecondsSince('last week');
-  var until = d.millisecondsUntil('last week');
+  // I'm occasionally seeing some REALLY big lags with IE here (up to 500ms), so giving a 1s buffer here.
+  //
+  var msSince = d.millisecondsSince('last week');
+  var msUntil = d.millisecondsUntil('last week');
+  var actualMsSince = offset.round();
+  var actualMsUntil = -offset.round();
 
-  // IE is showing some REAL big lags (up to 500ms) this deep into testing,
-  // so I'm commenting these out for now.
-  // equals(since > (offset - 5) && since < offset + 5, true, 'Date#millisecondsSince | milliseconds since last week');
-  // equals(since > (5 - offset) && since < (5 + offset), true, 'Date#millisecondsUntil | milliseconds until last week');
+  equals((msSince <= actualMsSince + 1000) && (msSince >= actualMsSince - 1000), true, 'Date#millisecondsSince | milliseconds since last week');
+  equals((msUntil <= actualMsUntil + 1000) && (msUntil >= actualMsUntil - 1000), true, 'Date#millisecondsUntil | milliseconds until last week');
 
-  equals(d.secondsSince('last week'), (offset / 1000).round(), 'Date#secondsSince | seconds since last week');
-  equals(d.secondsUntil('last week'), (-offset / 1000).round(), 'Date#secondsUntil | seconds until last week');
+  var secSince = d.secondsSince('last week');
+  var secUntil = d.secondsUntil('last week');
+  var actualSecSince = (offset / 1000).round();
+  var actualSecUntil = (-offset / 1000).round();
+
+  equals((secSince <= actualSecSince + 1) && (secSince >= actualSecSince - 1), true, 'Date#secondsSince | seconds since last week');
+  equals((secUntil <= actualSecUntil + 1) && (secUntil >= actualSecUntil - 1), true, 'Date#secondsUntil | seconds until last week');
+
   equals(d.minutesSince('last week'), (offset / 1000 / 60).round(), 'Date#minutesSince | minutes since last week');
   equals(d.minutesUntil('last week'), (-offset / 1000 / 60).round(), 'Date#minutesUntil | minutes until last week');
   equals(d.hoursSince('last week'), (offset / 1000 / 60 / 60).round(), 'Date#hoursSince | hours since last week');
@@ -4192,6 +4185,44 @@ test('Object', function () {
 
 });
 
+
+
+test('Function', function () {
+
+  var bound,obj,result;
+
+  obj = { foo: 'bar' };
+
+  bound = (function(num, bool, str){
+    equals(this === obj, true, 'Function#bind | Bound object is strictly equal');
+    equals(num, 1, 'Function#bind | first parameter');
+    equals(bool, true, 'Function#bind | second parameter');
+    equals(str, 'wasabi', 'Function#bind | third parameter');
+    return 'howdy';
+  }).bind(obj, [1, true, 'wasabi']);
+
+  result = bound.call();
+  equals(result, 'howdy', 'Function#bind | result is correctly returned');
+
+
+  (function(first){
+    same(Array.prototype.slice.call(arguments), [], 'Function#bind | arguments array is empty');
+    equals(first, undefined, 'Function#bind | first argument is undefined');
+  }).bind('foo')();
+
+
+  bound = (function(num, bool, str){
+    equals(num, 1, 'Function#delay | first parameter');
+    equals(bool, true, 'Function#delay | second parameter');
+    equals(str, 'wasabi', 'Function#delay | third parameter');
+    start();
+  }).delay(10, [1, true, 'wasabi']);
+
+  stop();
+
+
+
+});
 /**
  * Not going to limit this to a window object for now....
 test('Window', function () {
