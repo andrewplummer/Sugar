@@ -1,6 +1,5 @@
 
 var environment;
-var override;
 
 (function(){
 
@@ -26,17 +25,13 @@ var override;
     if(window.parent && window != window.parent && window.parent.registerEnvironment){
       environment = arguments[0];
       window.parent.registerEnvironment.apply(this, arguments);
-      override = ''.sugarOverride;
-      window.parent.sugarOverride = override;
     }
   }
 
 })();
 
 function equalsWithException(actual, expected, exception, message){
-  if(exception.override && override){
-    equals(actual, exception.override, message);
-  } else if(exception.environment == environment && !override){
+  if(exception.environment == environment && !override){
     equals(actual, exception.result, message);
   } else {
     equals(actual, expected, message);
