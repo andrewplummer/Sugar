@@ -78,11 +78,6 @@
       $('h3', environment).append('<span class="subheader">('+subheader+')</span>');
     }
     $('#suite .environments').append(environment);
-    if(window['sugarOverride']){
-      // Each environment reports whether or not sugar is overriding functions,
-      // so check it here and set to true if it is.
-      $('#sugar_override').show();
-    }
   }
 
   function underscore(s){
