@@ -4184,6 +4184,20 @@ function startTests(){
 
 
 
+      equals(({}).keys, undefined, 'Object | native objects are not wrapped by default');
+      same(Object.create(), Object.create({}), 'Object#create | null argument same as empty object');
+
+      var d = new Date();
+      var obj = Object.create({
+        number: 3,
+        person: 'jim',
+        date: d
+      });
+
+      same(obj.keys(), ['number','person','date'], "Object#keys | returns object's keys");
+      same(Object.create().keys(), [], 'Object#keys | empty object');
+      same(obj.values(), [3,'jim',d], "Object#values | returns object's values");
+      same(Object.create().values(), [], 'Object#values | empty object');
 
   });
 
