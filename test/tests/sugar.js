@@ -130,7 +130,8 @@ function startTests(){
     equals((3).pow(1), 3, 'Number#pow | 3 ^ 1');
     equals((12).pow(2), 144, 'Number#pow | 12 ^ 2');
     equals((3).pow(3), 27, 'Number#pow | 3 ^ 3');
-    equals(isNaN((3).pow()), true, 'Number#pow | 3 ^ undefined');
+    equals((3).pow(), 3, 'Number#pow | undefined defaults to 1');
+    equals((3).pow(0), 1, 'Number#pow | zero is allowed');
 
 
     equals((3).round(), 3, 'Number#round | 3');
@@ -206,6 +207,10 @@ function startTests(){
     equal((6).multipleOf(3), true, 'Number#multipleOf | 6 is a multiple of 3');
     equal((7).multipleOf(3), false, 'Number#multipleOf | 7 is a multiple of 3');
     equal((2.5).multipleOf(1.25), true, 'Number#multipleOf | 2.5 is a multiple of 1.25');
+    equal((2).multipleOf('a'), false, 'Number#multipleOf | string arguments');
+    equal((2).multipleOf(/af/), false, 'Number#multipleOf | other random arguments');
+    equal((2).multipleOf(null), false, 'Number#multipleOf | null');
+    equal((2).multipleOf(), false, 'Number#multipleOf | no argument passed');
 
 
 
