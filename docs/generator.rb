@@ -1,23 +1,88 @@
 
 require 'cgi'
+require 'pp'
 
 fileout  = ARGV[0] || 'docs/output/docs.html'
 template = 'docs/template.html'
 
-def get_property(property, source)
-  match = source.match(Regexp.new('@' + property.to_s + '(.*)$'))
+def get_property(property, source, defaults = {})
+  match = source.match(Regexp.new('@' + property.to_s + '(.*)$', (property == :example ? Regexp::MULTILINE : nil)))
   #replace = match ? CGI.escapeHTML(match[1]) : ''
   replace = match ? match[1].strip : nil
   if replace
-    replace.gsub!(/[<>]/, '|')
-    replace.gsub!(/\|(.+?)\|/, '<span class="parameter">\\1</span>')
     if property == :method
+      #replace.gsub!(/[<>]/, '|')
+      #replace.gsub!(/\|(.+?)\|/, '<span class="parameter">\\1</span>')
+      get_parameter_html(replace, defaults)
       replace.gsub!(/\((.*)\)/, '<span class="parameters">(\\1)</span>')
+    end
+    if property == :description
+      get_parameter_html(replace, defaults)
+      replace.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\\1</span>')
+    end
+    if property == :defaults
+      replace.gsub!(/<(.*?)> = ([^\s*?])/, '<span class="parameter">\\1</span> = <span class="default">\\2</span>')
+    end
+    if property == :example
+      result = ''
+      multi = false
+      replace.lines do |l|
+        l.gsub!(/\s*?\*(\/)?(\s\s\s)?/, '')
+        next if l.empty?
+        if l =~ /function\s?\(.*?\)/
+          multi = true
+          l.gsub!(/\n/, '<br/>')
+          l = '<div class="example"><pre class="statement sh_javascript">' + l
+        elsif l =~ /->/ && !multi
+        #  l.gsub!(/->(\s*.*?)$/, '<span class=\"split\">-&gt;</span><span class=\"result\">\\1</span>')
+          l.gsub!(/\n?(.*?\s*)->(\s*.*?)$/, "\n              <div class=\"example\"><pre class=\"statement sh_javascript\">\\1</pre><span class=\"split\">-&gt;</span><span class=\"result\">\\2</span></div>")
+        elsif l =~ /;/
+          multi = false
+          l.gsub!(/\n/, '<br/>')
+          l = l + '</pre></div>'
+        end
+        result << l
+      end
+      replace = result
     end
   end
   replace
 end
 
+
+def get_parameter_html(source, defaults)
+  source.gsub!(/<.+?>/) do |param|
+    param.gsub!(/[<>]/, '')
+    default = defaults[param]
+    title = default ? ' title="Default: '+default+'"' : ''
+    '<span class="parameter"'+title+'>'+param+'</span>'
+  end
+  source.gsub!(/\[.+?\]/) do |param|
+    param.gsub!(/[\[\]]/, '')
+    default = defaults[param]
+    title = default ? ' title="Optional. Default: '+default+'"' : ' title="Optional."'
+    '<span class="optional parameter"'+title+'>'+param+'</span>'
+  end
+end
+
+def get_module(source)
+  match = source.match(/(\w+) module/)
+  return match ? match[1] : nil
+end
+
+def get_defaults(source)
+  d = {}
+  match = source.match(/@defaults (.+?)$/)
+  if match
+    match[1].split(',').each do |f|
+      s = f.split(' = ')
+      key = s[0].gsub(/[<>\[\]]/, '').strip
+      value = s[1].strip
+      d[key] = value
+    end
+  end
+  d
+end
 
 html = ''
 row_reg = /\s*<li class="method">.*?<\/li>/m
@@ -34,19 +99,22 @@ current_module = nil
 File.open('lib/sugar.js', 'r') do |f|
   f.read.scan(/\/\*\*.*?\*\//m) do |b|
     #h = row_html
-    mod = get_property(:module, b)
+    mod = get_module(b)
+    defaults = get_defaults(b)
     m = {
-      :method => get_property(:method, b),
+      :method => get_property(:method, b, defaults),
+      :description => get_property(:description, b, defaults),
       :returns => get_property(:returns, b),
-      :description => get_property(:description, b)
+      :extra => get_property(:extra, b),
+      :example => get_property(:example, b)
     }
-    if(mod)
-      if(current_module)
+    if mod
+      if current_module
         modules << current_module
       end
       current_module = { :name => mod, :methods => [] }
-    elsif(current_module && m.values.all? { |s| !s.nil? })
-      puts m.inspect
+    elsif current_module
+#      puts m.inspect
       current_module[:methods] << m
     end
    # html += h
@@ -55,15 +123,13 @@ end
 
 modules << current_module
 
-#puts modules.inspect
-
 modules.each do |mod|
   mod[:methods] = mod[:methods].sort_by { |m| m[:method] }
   mod[:methods].each do |m|
     h = row_html.dup
     h.gsub!(/\{MODULE\}/, mod[:name])
     m.each do |k,v|
-      h.gsub!(Regexp.new("\\{#{k.to_s.upcase}\\}"), v)
+      h.gsub!(Regexp.new("\\{#{k.to_s.upcase}\\}"), v || '')
     end
     html << h
   end
