@@ -54,13 +54,13 @@ def get_parameter_html(source, defaults)
   source.gsub!(/<.+?>/) do |param|
     param.gsub!(/[<>]/, '')
     default = defaults[param]
-    title = default ? ' title="Default: '+default+'"' : ''
+    title = default ? ' title="Default: '+CGI::escapeHTML(default)+'"' : ''
     '<span class="parameter"'+title+'>'+param+'</span>'
   end
   source.gsub!(/\[.+?\]/) do |param|
     param.gsub!(/[\[\]]/, '')
     default = defaults[param]
-    title = default ? ' title="Optional. Default: '+default+'"' : ' title="Optional."'
+    title = default ? ' title="Optional. Default: '+CGI::escapeHTML(default)+'"' : ' title="Optional."'
     '<span class="optional parameter"'+title+'>'+param+'</span>'
   end
 end
@@ -123,16 +123,23 @@ end
 
 modules << current_module
 
+methods = []
+
 modules.each do |mod|
-  mod[:methods] = mod[:methods].sort_by { |m| m[:method] }
-  mod[:methods].each do |m|
-    h = row_html.dup
-    h.gsub!(/\{MODULE\}/, mod[:name])
-    m.each do |k,v|
-      h.gsub!(Regexp.new("\\{#{k.to_s.upcase}\\}"), v || '')
-    end
-    html << h
+  #mod[:methods] = mod[:methods].sort_by { |m| m[:method] }
+  mod[:methods].each do |method|
+    method[:module] = mod[:name]
+    methods << method
   end
+end
+
+methods.sort_by{ |method| method[:method] }.each do |method|
+  h = row_html.dup
+  h.gsub!(/\{MODULE\}/, method[:module])
+  method.each do |k,v|
+    h.gsub!(Regexp.new("\\{#{k.to_s.upcase}\\}"), v || '')
+  end
+  html << h
 end
 
 
