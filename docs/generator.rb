@@ -2,15 +2,19 @@
 require 'cgi'
 require 'pp'
 
-fileout  = ARGV[0] || 'docs/output/docs.html'
+fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/api.php'
 template = 'docs/template.html'
 
 def get_property(property, source, defaults = {})
+  if property == :name
+    property = :method
+    name = true
+  end
   match = source.match(Regexp.new('@' + property.to_s + '(.*)$', (property == :example ? Regexp::MULTILINE : nil)))
   #replace = match ? CGI.escapeHTML(match[1]) : ''
   replace = match ? match[1].strip : nil
   if replace
-    if property == :method
+    if property == :method && !name
       #replace.gsub!(/[<>]/, '|')
       #replace.gsub!(/\|(.+?)\|/, '<span class="parameter">\\1</span>')
       get_parameter_html(replace, defaults)
@@ -29,8 +33,9 @@ def get_property(property, source, defaults = {})
       multi = false
       replace.lines do |l|
         l.gsub!(/\s*?\*(\/)?(\s\s\s)?/, '')
+        l.gsub!(/^\s+$/, '')
         next if l.empty?
-        if l =~ /function\s?\(.*?\)/
+        if l =~ /function\s?\(.*?\)\s*\{\s*\n/
           multi = true
           l.gsub!(/\n/, '<br/>')
           l = '<div class="example"><pre class="statement sh_javascript">' + l
@@ -62,13 +67,12 @@ def get_parameter_html(source, defaults, include_defaults = true)
       type = :number
     elsif default =~ /^null$/
       type = :null
-    else
-      type = ''
     end
-    default = '<span class="' + type.to_s + ' value">' + CGI::escapeHTML(default || '') + '</span>'
-#    title = default ? ' title="Default: '+CGI::escapeHTML(default)+'"' : ''
     result = '<span class="parameter small">'+param+'</span>'
-    result += '<span class="default small"><span class="equals small">=</span>'+default+'</span>' if include_defaults
+    if default && include_defaults
+      default = '<span class="' + type.to_s + ' value">' + CGI::escapeHTML(default || '') + '</span>'
+      result += '<span class="default small"><span class="equals small">=</span>'+default+'</span>'
+    end
     result
   end
   source.gsub!(/\[.+?\]/) do |param|
@@ -80,14 +84,12 @@ def get_parameter_html(source, defaults, include_defaults = true)
       type = :number
     elsif default =~ /^null$/
       type = :null
-    else
-      type = ''
     end
-    default = '<span class="' + type.to_s + ' value">' + CGI::escapeHTML(default || '') + '</span>'
-#    title = default ? ' title="Optional. Default: '+CGI::escapeHTML(default)+'"' : ' title="Optional."'
-#    '<span class="optional parameter"'+title+'>'+param+'</span>'
     result = '<span class="optional parameter small">'+param+'</span>'
-    result += '<span class="default small"><span class="equals small">=</span>'+default+'</span>' if include_defaults
+    if default && include_defaults
+      default = '<span class="' + type.to_s + ' value">' + CGI::escapeHTML(default || '') + '</span>'
+      result += '<span class="default small"><span class="equals small">=</span>'+default+'</span>' if include_defaults
+    end
     result
   end
 end
@@ -124,11 +126,12 @@ current_module = nil
 
 
 File.open('lib/sugar.js', 'r') do |f|
-  f.read.scan(/\/\*\*.*?\*\//m) do |b|
+  f.read.scan(/\*\*\*.*?\*\*\*/m) do |b|
     #h = row_html
     mod = get_module(b)
     defaults = get_defaults(b)
     m = {
+      :name => get_property(:name, b),
       :method => get_property(:method, b, defaults),
       :description => get_property(:description, b, defaults),
       :returns => get_property(:returns, b),
@@ -141,7 +144,6 @@ File.open('lib/sugar.js', 'r') do |f|
       end
       current_module = { :name => mod, :methods => [] }
     elsif current_module
-#      puts m.inspect
       current_module[:methods] << m
     end
    # html += h
@@ -160,7 +162,7 @@ modules.each do |mod|
   end
 end
 
-methods.sort_by{ |method| method[:method] }.each do |method|
+methods.sort_by{ |method| method[:name] }.each do |method|
   h = row_html.dup
   h.gsub!(/\{MODULE\}/, method[:module])
   method.each do |k,v|
