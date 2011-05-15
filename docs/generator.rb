@@ -5,7 +5,7 @@ require 'pp'
 fileout  = ARGV[0] || 'docs/output/docs.html'
 template = 'docs/template.html'
 
-def get_property(property, source)
+def get_property(property, source, defaults = {})
   match = source.match(Regexp.new('@' + property.to_s + '(.*)$', (property == :example ? Regexp::MULTILINE : nil)))
   #replace = match ? CGI.escapeHTML(match[1]) : ''
   replace = match ? match[1].strip : nil
@@ -13,17 +13,16 @@ def get_property(property, source)
     if property == :method
       #replace.gsub!(/[<>]/, '|')
       #replace.gsub!(/\|(.+?)\|/, '<span class="parameter">\\1</span>')
-      get_parameter_html(replace)
-      replace.gsub!(/\((.*)\)/, '<span class="parameters">(\\1)</span>')
+      get_parameter_html(replace, defaults)
+      replace.gsub!(/,/, '<span class="comma small">,</span>')
+      replace.gsub!(/(.*)\((.*)\)/, '<span class="name">\\1</span><span class="parenthesis small">(</span>\\2<span class="parenthesis small">)</span>')
     end
     if property == :description
-      get_parameter_html(replace)
+      get_parameter_html(replace, defaults, false)
       replace.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\\1</span>')
     end
     if property == :defaults
-      replace.gsub!(/<(.*?)> = (.+?),?/, '<li><span class="parameter">\\1:</span> <span class="default">\\2</span></li>')
-      replace.gsub!(/\[(.*?)\] = ([^,]+),?/, '<li><span class="optional parameter">\\1:</span> <span class="default">\\2</span></li>')
-      replace = "<div class=\"defaults\"><h6 class=\"label\">Defaults:</h6><ul>#{replace}</ul></div>"
+      replace.gsub!(/<(.*?)> = ([^\s*?])/, '<span class="parameter">\\1</span> = <span class="default">\\2</span>')
     end
     if property == :example
       result = ''
@@ -52,14 +51,44 @@ def get_property(property, source)
 end
 
 
-def get_parameter_html(source)
+def get_parameter_html(source, defaults, include_defaults = true)
   source.gsub!(/<.+?>/) do |param|
     param.gsub!(/[<>]/, '')
-    '<span class="parameter">'+param+'</span>'
+    default = defaults[param]
+    default = defaults[param]
+    if default =~ /['"].*['"]/
+      type = :string
+    elsif default =~ /\d+/
+      type = :number
+    elsif default =~ /^null$/
+      type = :null
+    else
+      type = ''
+    end
+    default = '<span class="' + type.to_s + ' value">' + CGI::escapeHTML(default || '') + '</span>'
+#    title = default ? ' title="Default: '+CGI::escapeHTML(default)+'"' : ''
+    result = '<span class="parameter small">'+param+'</span>'
+    result += '<span class="default small"><span class="equals small">=</span>'+default+'</span>' if include_defaults
+    result
   end
   source.gsub!(/\[.+?\]/) do |param|
     param.gsub!(/[\[\]]/, '')
-    '<span class="optional parameter">'+param+'</span>'
+    default = defaults[param]
+    if default =~ /['"].*['"]/
+      type = :string
+    elsif default =~ /\d+/
+      type = :number
+    elsif default =~ /^null$/
+      type = :null
+    else
+      type = ''
+    end
+    default = '<span class="' + type.to_s + ' value">' + CGI::escapeHTML(default || '') + '</span>'
+#    title = default ? ' title="Optional. Default: '+CGI::escapeHTML(default)+'"' : ' title="Optional."'
+#    '<span class="optional parameter"'+title+'>'+param+'</span>'
+    result = '<span class="optional parameter small">'+param+'</span>'
+    result += '<span class="default small"><span class="equals small">=</span>'+default+'</span>' if include_defaults
+    result
   end
 end
 
@@ -98,11 +127,10 @@ File.open('lib/sugar.js', 'r') do |f|
   f.read.scan(/\/\*\*.*?\*\//m) do |b|
     #h = row_html
     mod = get_module(b)
-    #defaults = get_defaults(b)
+    defaults = get_defaults(b)
     m = {
-      :method => get_property(:method, b),
-      :description => get_property(:description, b),
-      :defaults => get_property(:defaults, b),
+      :method => get_property(:method, b, defaults),
+      :description => get_property(:description, b, defaults),
       :returns => get_property(:returns, b),
       :extra => get_property(:extra, b),
       :example => get_property(:example, b)
