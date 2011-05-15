@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>QUnit Test Suite</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- qunit setup -->
+    <script type="text/javascript" src="../qunit.js"></script>
+    <script type="text/javascript" src="../environment.js"></script>
+    <!-- sugar -->
+    <script type="text/javascript" src="../../lib/sugar.js"></script>
+    <!-- tests -->
+    <script type="text/javascript">
+      registerEnvironment('core', [
+        {
+          name: 'core',
+          tests:['core.js']
+        }
+      ]);
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
