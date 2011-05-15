@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Unit Tests</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="stylesheets/custom.css" type="text/css" />
+  </head>
+  <body>
+    <div id="tests" class="centered">
+      <h3><span>Sugar Core</span></h3>
+      <div id="core" class="environment">
+        <div class="loading">Running Sugar tests.</div>
+        <div class="tests"></div>
+        <p>
+          <span class="stats"></span>
+          <a class="run" href="#run">Run Test</a>
+        </p>
+      </div>
+
+      <h3>Prototype</h3>
+      <div id="prototype" class="environment">
+        <div class="loading">Running Prototype tests...</div>
+        <div class="tests"></div>
+        <p>
+          <span class="stats"></span>
+          <a class="run" href="#run">Run Test</a>
+        </p>
+      </div>
+
+      <h3>Mootools</h3>
+      <div id="mootools" class="environment">
+        <div class="loading">Running MooTools tests...</div>
+        <div class="tests"></div>
+        <p>
+          <span class="stats"></span>
+          <a class="run" href="#run">Run Test</a>
+        </p>
+      </div>
+
+      <iframe id="core_frame" src="sugar/test.html"></iframe>
+      <iframe id="prototype_frame" src="prototype/test.html"></iframe>
+      <iframe id="mootools_frame" src="mootools/test.html"></iframe>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
+      <script type="text/javascript" src="suite.js"></script>
+      <script type="text/javascript" src="tooltip.js"></script>
+      <script type="text/javascript">
+
+        $(document).ready(function(){
+
+          $(document).bind('tests_finished', function(event, environment){
+            $('#'+environment).removeClass('running');
+            $('[title]').tooltip();
+          });
+
+          $('.environment').each(function(){
+            var id = this.id;
+            var env = $(this);
+            var tests = $('.tests', this);
+            var stats = $('.stats', this);
+            $('a', this).click(function(){
+              $(this).remove();
+              env.addClass('running').removeClass('finished');
+              tests.empty();
+              stats.empty();
+              setTimeout(function(){
+                $('#'+id+'_frame').get(0).contentWindow.startTests();
+              }, 100);
+              return false;
+            });
+          });
+
+          var runButtons = $('a.run');
+          var runIndex = 0;
+
+          $(document).bind('tests_finished', function(){
+            runIndex++;
+            var el = runButtons.eq(runIndex);
+            if(el.length > 0){
+              el.click();
+            }
+          });
+
+          runButtons.eq(0).click();
+
+
+        });
+
+
+      </script>
+
+    </div>
+    <div id="tooltip">
+      <div class="arrow"></div>
+      <div class="content"></div>
+    </div>
+  </body>
+</html>

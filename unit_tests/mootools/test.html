@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MooTools 1.2.4</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- qunit setup -->
+    <script type="text/javascript" src="../qunit.js"></script>
+    <script type="text/javascript" src="../environment.js"></script>
+    <!-- test adapter -->
+    <script type="text/javascript" src="adapter.js"></script>
+    <!-- environment -->
+    <script type="text/javascript" src="mootools-core-1.3.1-full-compat.js"></script>
+    <!-- sugar -->
+    <script type="text/javascript" src="../../lib/sugar.js"></script>
+    <!-- tests -->
+    <!-- hmmm -->
+    <!--<script type="text/javascript" src="../../tests/javascript.js"></script>-->
+    <!--<script type="text/javascript" src="../../tests/sugar.js"></script>-->
+    <!-- mootools tests -->
+    <script type="text/javascript">
+      registerEnvironment('mootools', [
+      /*
+        {
+          name: 'sugar',
+          tests: ['../sugar/core.js']
+        },
+        */
+        {
+          name: 'mootools',
+          tests: [
+            'Base/Core/Core.js',
+            'Base/Class/Class.js',
+//            'Base/Fx/Fx.js',
+            'Base/Types/Array.js',
+//            'Base/Types/Function.js'
+            'Client/Browser/Browser.js',
+//           'Client/Class/Class.Extras.js',
+            'Client/Core/Core.js',
+            'Client/Element/Element.js',
+            'Client/Element/Element.Dimensions.js',
+//            'Client/Element/Element.Event.js',
+            'Client/Element/Element.Style.js',
+//            'Client/Element/IFrame.js',
+            'Client/Element/NewElement.js',
+            'Client/Fx/Fx.Morph.js', // async issues?
+            'Client/Fx/Fx.Tween.js', // async issues?
+//            'Client/Request/Request.js',
+//            'Client/Request/Request.JSON.js',
+//            'Client/Request/Request.HTML.js',
+            'Client/Types/Object.js',
+            'Client/Utilities/Cookie.js',
+            'Client/Utilities/DOMReady.js',
+            'Client/Utilities/JSON.js',
+            'Base/Types/Object.js'
+          /*
+            'Core/Core.js',
+            'Core/Browser.js',
+            'Native/Array.js',
+            'Native/Function.js',
+            'Native/Hash.js',
+            'Native/Number.js',
+            'Native/String.js',
+            'Class/Class.js',
+            //'Class/Class.Extras.js'
+            'Element/Element.js',
+            'Element/Element.Style.js',
+            'Element/Element.Dimensions.js',
+            'Utilities/Cookie.js'
+            */
+          /*
+            'Core/Core.js',
+            'Core/Browser.js',
+            'Native/Array.js',
+            'Native/Function.js',
+            'Native/Hash.js',
+            'Native/Number.js',
+            'Native/String.js',
+            'Class/Class.js',
+            'Class/Class.Extras.js',
+            'Element/Element.js',
+            'Element/Element.Style.js',
+            'Element/Element.Dimensions.js',
+            'Utilities/Cookie.js'
+            */
+          ]
+        }
+      ]);
+    </script>
+    <!--<script type="text/javascript" src="Core/Core.js"></script>-->
+    <!--<script type="text/javascript" src="Core/Browser.js"></script>-->
+    <!--<script type="text/javascript" src="Native/Array.js"></script>-->
+    <!--<script type="text/javascript" src="Native/Function.js"></script>-->
+    <!--<script type="text/javascript" src="Native/Hash.js"></script>-->
+    <!--<script type="text/javascript" src="Native/Number.js"></script>-->
+    <!--<script type="text/javascript" src="Native/String.js"></script>-->
+    <!--<script type="text/javascript" src="Class/Class.js"></script>-->
+    <!--<script type="text/javascript" src="Class/Class.Extras.js"></script>-->
+    <!--<script type="text/javascript" src="Element/Element.js"></script>-->
+    <!--<script type="text/javascript" src="Element/Element.Style.js"></script>-->
+    <!--<script type="text/javascript" src="Element/Element.Dimensions.js"></script>-->
+    <!--<script type="text/javascript" src="Utilities/Cookie.js"></script>-->
+  </head>
+  <body>
+    <div id="main">
+      <h1>test h1</h1>
+      <p>
+        <span>test paragraph</span>
+        <a rel="external" href="1">link one</a>
+        <a href="2" target="_blank">link two</a>
+        <a href="3" class="foo" target="_blow">link three</a>
+        <a href="4" class="foo">link four</a>
+        <a rel="externuts" href="5" class="foo">link four</a>
+      </p>
+    </div>
+  </body>
+</html>
