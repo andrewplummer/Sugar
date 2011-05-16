@@ -1,7 +1,7 @@
 
 body {
   font-family: sans-serif;
-  padding: 20px;
+  padding: 20px 220px;
   background-color: #f2f2f2;
 }
 
@@ -108,6 +108,7 @@ iframe {
 }
 
 #tooltip {
+  max-width: 500px;
   position: absolute;
   -moz-border-radius:6px;
   -webkit-border-radius:6px;
