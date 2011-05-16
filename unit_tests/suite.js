@@ -8,7 +8,7 @@
   var totalAssertions;
   var time;
 
-  QUnit = {
+  var events = {
     log: function(result, message, environment){
       if(!result){
         failedAssertions += '<p class="fail">'+message.replace(/(&nbsp;)+/g, ' ') +'</p>';
@@ -54,7 +54,6 @@
     },
 
     done: function(failures, total, environment){
-      console.info(failures,total,environment);
       var now = new Date();
       var runtime = new Date() - time;
       time = null;
@@ -69,8 +68,16 @@
       $(document).trigger('tests_finished', [environment]);
     }
 
-  }
+  };
 
+  for(var e in events){
+    (function(){
+      var key = e;
+      $(document).bind(e, function(event, args){
+        events[key].apply(this, args);
+      });
+    })();
+  }
   registerEnvironment = function(name, subheader){
     environment = $('#'+name);
     //environment = $('<li/>').addClass('environment');

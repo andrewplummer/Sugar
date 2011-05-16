@@ -4,6 +4,11 @@
     <title>Unit Tests</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="stylesheets/custom.css" type="text/css" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/sugar.js"></script>
+    <script type="text/javascript" src="qunit.js"></script>
+    <script type="text/javascript" src="suite.js"></script>
+    <script type="text/javascript" src="tooltip.js"></script>
   </head>
   <body>
     <div id="tests" class="centered">
@@ -18,12 +23,9 @@
       </div>
 
       <iframe id="core_frame" src="sugar/test.html"></iframe>
-      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
-      <script type="text/javascript" src="suite.js"></script>
-      <script type="text/javascript" src="tooltip.js"></script>
       <script type="text/javascript">
 
-        $(document).ready(function(){
+        $(window).load(function(){
 
           $(document).bind('tests_finished', function(event, environment){
             $('#'+environment).removeClass('running');
@@ -40,9 +42,7 @@
               env.addClass('running').removeClass('finished');
               tests.empty();
               stats.empty();
-              setTimeout(function(){
-                $('#'+id+'_frame').get(0).contentWindow.startTests();
-              }, 100);
+              $('#'+id+'_frame').get(0).contentWindow.startTests();
               return false;
             });
           });
@@ -58,7 +58,7 @@
             }
           });
 
-          runButtons.eq(0).click();
+          $('#core_frame').get(0).contentWindow.startTests();
 
 
         });
