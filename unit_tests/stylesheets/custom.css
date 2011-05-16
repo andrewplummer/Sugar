@@ -43,10 +43,8 @@ ul,li {
   display: none;
 }
 
-.environments > li.fail {
+.environments.fail {
   border-color: #caa;
-  background-color: #fff5f5;
-  color: #c33;
 }
 
 .environment h3 {
@@ -89,7 +87,7 @@ ul,li {
   color: #040;
 }
 
-.fail {
+.test.fail {
   background-color: #fcc;
   color: #400;
 }
