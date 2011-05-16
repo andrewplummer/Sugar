@@ -4,7 +4,6 @@ var startTests;
 
 (function(){
 
-
   forwardCallback('begin');
   forwardCallback('log');
   forwardCallback('testStart');
@@ -14,12 +13,11 @@ var startTests;
   forwardCallback('done');
 
   function forwardCallback(name){
-    if(!window.parent || window == window.parent || !window.parent.QUnit || !window.parent.QUnit[name]) return;
     QUnit[name] = function(){
       var args = [];
       for(var i=0;i<arguments.length;i++){ if(typeof arguments[i] != 'undefined') args.push(arguments[i]); }
       args.push(environment);
-      window.parent.QUnit[name].apply(this, args);
+      window.parent.$(window.parent.document).trigger(name, [args]);
     }
   }
 
@@ -34,6 +32,7 @@ var startTests;
   }
 
   function initialize(modules){
+
     startTests = function(){
       QUnit.init();
       var loaded = 0;

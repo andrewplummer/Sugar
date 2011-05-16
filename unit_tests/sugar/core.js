@@ -112,6 +112,32 @@ var testWithErrorHandling = function(test, expected){
     throw new Error('Test ' + test.toString() + ' errored with message ' + error.message);
   }
 }
+
+var sameProxy = same;
+
+var deepEqualWithoutPrototyping = function(actual, expected){
+  for(var key in actual){
+    if(!actual.hasOwnProperty(key)) continue;
+    if(Object.isObject(actual[key]) || Object.isArray(actual[key])){
+      if(!deepEqualWithoutPrototyping(actual[key], expected[key])){
+        return false;
+      }
+    } else if(actual[key] !== expected[key]){
+      return false;
+    }
+  }
+  return true;
+}
+
+same = function(actual, expected, message){
+  if(Object.isArray(actual)){
+    sameProxy.apply(this, arguments);
+  } else {
+    equals(deepEqualWithoutPrototyping(actual, expected), true, message);
+  }
+}
+
+
 // A DST Safe version of equals for dates
 var equalsDST = function(actual, expected, multiplier, message){
   if(multiplier === undefined) multiplier = 1;
@@ -4284,6 +4310,7 @@ test('Object', function () {
     date: d
   });
 
+
   keys = ['number','person','date'];
   values = [3,'jim',d];
   same(obj.keys(), keys, "Object#keys | returns object's keys");
@@ -4294,6 +4321,22 @@ test('Object', function () {
   });
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
+  same(Object.create().keys(), [], 'Object#keys | empty object');
+  same(Object.keys(Object.create()), [], 'Object#keys | empty object');
+
+  keys = ['number','person','date'];
+  values = [3,'jim',d];
+  same(Object.keys(obj), keys, "Object.keys | returns object's keys");
+  count = 0;
+  Object.keys(obj, function(key){
+    equal(key, keys[count], 'Object.keys | accepts a block');
+    count++;
+  });
+  equal(count, 3, 'Object.keys | accepts a block | iterated properly');
+
+
+
+
   same(obj.values(), values, "Object#values | returns object's values");
   count = 0;
   obj.values(function(value){
@@ -4302,16 +4345,57 @@ test('Object', function () {
   });
   equal(count, 3, 'Object#values | accepts a block | iterated properly');
 
+  same(Object.values(obj), values, "Object.values | returns object's values");
+  count = 0;
+  Object.values(obj, function(value){
+    equal(value, values[count], 'Object.values | accepts a block');
+    count++;
+  });
+  equal(count, 3, 'Object.values | accepts a block | iterated properly');
+
+  same(Object.create().values(), [], 'Object#values | empty object');
+  same(Object.values(Object.create()), [], 'Object#values | empty object');
+
+
+
+
   count = 0;
   obj.each(function(key, value){
     equal(key, keys[count], 'Object#each | accepts a block');
     equal(value, values[count], 'Object#each | accepts a block');
     count++;
   });
-  equal(count, 3, 'Object#values | accepts a block | iterated properly');
+  equal(count, 3, 'Object#each | accepts a block | iterated properly');
 
-  same(Object.create().keys(), [], 'Object#keys | empty object');
-  same(Object.create().values(), [], 'Object#values | empty object');
+
+  count = 0;
+  Object.each(obj, function(key, value){
+    equal(key, keys[count], 'Object.each | accepts a block');
+    equal(value, values[count], 'Object.each | accepts a block');
+    count++;
+  });
+  equal(count, 3, 'Object.each | accepts a block | iterated properly');
+
+
+  same(Object.merge({ foo: 'bar' }, { broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object.merge | basic');
+  same(Object.merge({ foo: 'bar' }, { broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object.merge | merge 3');
+  same(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object.merge | merge string');
+  same(Object.merge({ foo: 'bar' }, 8), { foo: 'bar' }, 'Object.merge | merge number');
+  same(Object.merge({ foo: 'bar' }, null), { foo: 'bar' }, 'Object.merge | merge null');
+  same(Object.merge({ foo: 'bar' }, 'wear', 8, null), { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' }, 'Object.merge | merge multi invalid');
+  same(Object.merge({}, {}, {}), {}, 'Object.merge | merge multi empty');
+
+
+
+  same(Object.create({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
+  same(Object.create({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
+  same(Object.create({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string');
+  same(Object.create({ foo: 'bar' }).merge(8), { foo: 'bar' }, 'Object#merge | merge number');
+  same(Object.create({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
+  same(Object.create({ foo: 'bar' }).merge('wear', 8, null), { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' }, 'Object#merge | merge multi invalid');
+  same(Object.create({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
+
+  console.info('running??');
 
 });
 
