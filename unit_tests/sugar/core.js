@@ -578,9 +578,10 @@ test('String', function () {
   equal('wasabi'.pad(5, '-'), '-----wasabi-----', 'String#pad | should pad the string with 5 hyphens');
   equal('wasabi'.pad(2).pad(3, '-'), '---  wasabi  ---', 'String#pad | should pad the string with 2 spaces and 3 hyphens');
 
-  equal('wasabi'.pad(3, '-', 'right'), 'wasabi---', 'String#pad | should pad the string with 3 hyphens on the right');
-  equal('4'.pad(3, '0', 'left'), '0004', 'String#pad | should pad the string with 4 zeroes on the left');
-  equal('wasabi'.pad(3, ' ', 'both'), '   wasabi   ', 'String#pad | should pad the string with 3 spaces on both sides');
+  equal('wasabi'.padRight(3, '-'), 'wasabi---', 'String#pad | should pad the string with 3 hyphens on the right');
+  equal('4'.padLeft(3, '0'), '0004', 'String#pad | should pad the string with 4 zeroes on the left');
+  equal('wasabi'.padLeft(3), '   wasabi', 'String#pad | should pad the string with 3 spaces on the left');
+  equal('wasabi'.padRight(3), 'wasabi   ', 'String#pad | should pad the string with 3 spaces on the right');
   equal('wasabi'.pad() === 'wasabi', true, 'String#pad | strict equality works');
 
   equal('wasabi'.repeat(0), '', 'String#repeat | 0 should repeat the string 0 times');
