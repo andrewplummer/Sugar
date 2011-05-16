@@ -143,6 +143,13 @@ test('Number', function () {
   equals((-5.5).ceil(), -5, 'Number#ceil | -5.5');
   equals((-5.14).ceil(), -5, 'Number#ceil | -5.14');
   equals((-5).ceil(), -5, 'Number#ceil | -5');
+  equals((4417.1318).ceil(0), 4418, 'Number#ceil | 0');
+  equals((4417.1318).ceil(1), 4417.2, 'Number#ceil | 1');
+  equals((4417.1318).ceil(2), 4417.14, 'Number#ceil | 2');
+  equals((4417.1318).ceil(3), 4417.132, 'Number#ceil | 3');
+  equals((4417.1318).ceil(-1), 4420, 'Number#ceil | -1');
+  equals((4417.1318).ceil(-2), 4500, 'Number#ceil | -2');
+  equals((4417.1318).ceil(-3), 5000, 'Number#ceil | -3');
 
 
   equals((5.5).floor(), 5, 'Number#floor | 5.5');
@@ -152,6 +159,13 @@ test('Number', function () {
   equals((-5.5).floor(), -6, 'Number#floor | -5.5');
   equals((-5.14).floor(), -6, 'Number#floor | -5.14');
   equals((-5).floor(), -5, 'Number#floor | -5');
+  equals((4417.1318).floor(0), 4417, 'Number#ceil | 0');
+  equals((4417.1318).floor(1), 4417.1, 'Number#ceil | 1');
+  equals((4417.1318).floor(2), 4417.13, 'Number#ceil | 2');
+  equals((4417.1318).floor(3), 4417.131, 'Number#ceil | 3');
+  equals((4417.1318).floor(-1), 4410, 'Number#ceil | -1');
+  equals((4417.1318).floor(-2), 4400, 'Number#ceil | -2');
+  equals((4417.1318).floor(-3), 4000, 'Number#ceil | -3');
 
 
   equals((-5).abs(), 5, 'Number#abs | -5');

@@ -94,11 +94,6 @@ def get_parameter_html(source, defaults, include_defaults = true)
   end
 end
 
-def get_module(source)
-  match = source.match(/(\w+) module/)
-  return match ? match[1] : nil
-end
-
 def get_defaults(source)
   d = {}
   match = source.match(/@defaults (.+?)$/)
@@ -114,7 +109,7 @@ def get_defaults(source)
 end
 
 html = ''
-row_reg = /\s*<li class="method">.*?<\/li>/m
+row_reg = /\s*<li class="method" id="">.*?<\/li>/m
 fileout_html  = File.open(fileout, 'r').read
 template_html = File.open(template, 'r').read
 row_html = template_html.match(row_reg)[0]
@@ -126,27 +121,25 @@ current_module = nil
 
 
 File.open('lib/sugar.js', 'r') do |f|
-  f.read.scan(/\*\*\*.*?\*\*\*/m) do |b|
+  f.read.scan(/\/\*\*\*.*?\*\*\*/m) do |b|
     #h = row_html
-    mod = get_module(b)
-    defaults = get_defaults(b)
-    m = {
-      :name => get_property(:name, b),
-      :method => get_property(:method, b, defaults),
-      :description => get_property(:description, b, defaults),
-      :returns => get_property(:returns, b),
-      :extra => get_property(:extra, b),
-      :example => get_property(:example, b)
-    }
-    if mod
+    if mod = b.match(/(\w+) module/)
       if current_module
         modules << current_module
       end
-      current_module = { :name => mod, :methods => [] }
-    elsif current_module
+      current_module = { :name => mod[1], :methods => [] }
+    else
+      defaults = get_defaults(b)
+      m = {
+        :name => get_property(:name, b),
+        :method => get_property(:method, b, defaults),
+        :description => get_property(:description, b, defaults),
+        :returns => get_property(:returns, b),
+        :extra => get_property(:extra, b),
+        :example => get_property(:example, b)
+      }
       current_module[:methods] << m
     end
-   # html += h
   end
 end
 
@@ -165,6 +158,8 @@ end
 methods.sort_by{ |method| method[:name] }.each do |method|
   h = row_html.dup
   h.gsub!(/\{MODULE\}/, method[:module])
+  id = method[:name].downcase.gsub(/\(.*?\)/, '').gsub(/\./, '_')
+  h.gsub!(/id=""/, "id=\"#{id}\"")
   method.each do |k,v|
     h.gsub!(Regexp.new("\\{#{k.to_s.upcase}\\}"), v || '')
   end
