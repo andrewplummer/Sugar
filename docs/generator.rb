@@ -19,6 +19,7 @@ def get_property(property, source, defaults = {})
       #replace.gsub!(/\|(.+?)\|/, '<span class="parameter">\\1</span>')
       get_parameter_html(replace, defaults)
       replace.gsub!(/,/, '<span class="comma small">,</span>')
+      replace.gsub!(/\.\.\./, '<span class="ellipsis small">...</span>')
       replace.gsub!(/(.*)\((.*)\)/, '<span class="name">\\1</span><span class="parenthesis small">(</span>\\2<span class="parenthesis small">)</span>')
     end
     if property == :description
@@ -41,11 +42,13 @@ def get_property(property, source, defaults = {})
           l = '<div class="example"><pre class="statement sh_javascript">' + l
         elsif l =~ /->/ && !multi
         #  l.gsub!(/->(\s*.*?)$/, '<span class=\"split\">-&gt;</span><span class=\"result\">\\1</span>')
-          l.gsub!(/\n?(.*?\s*)->(\s*.*?)$/, "\n              <div class=\"example\"><pre class=\"statement sh_javascript\">\\1</pre><span class=\"split\">-&gt;</span><span class=\"result\">\\2</span></div>")
-        elsif l =~ /;/
+          l.gsub!(/\n?(.*?\s*)->(\s*.*?)$/, "\n              <div class=\"example\"><pre class=\"statement sh_javascript\">\\1</pre><span class=\"monospace result\"><span class=\"split\">-&gt;</span>\\2</span></div>")
+        elsif l =~ /^\s*\}\);/
           multi = false
           l.gsub!(/\n/, '<br/>')
           l = l + '</pre></div>'
+        else
+          l.gsub!(/\s*(.*?);$/, "\n              <div class=\"example\"><pre class=\"statement sh_javascript\">\\1;</pre>")
         end
         result << l
       end
