@@ -1,7 +1,7 @@
 
 body {
   font-family: sans-serif;
-  padding: 20px 220px;
+  padding: 20px;
   background-color: #f2f2f2;
 }
 
@@ -145,13 +145,16 @@ iframe {
   font-weight: bold;
 }
 
-#tooltip_arrow {
-  display: none;
+#tooltip .arrow {
   opacity: 0.8;
   width: 13px;
   height: 7px;
+  bottom: -7px;
+  left: 50%;
+  margin-left: -13px;
   position: absolute;
   background: url('../images/arrow.gif') no-repeat center center;
+  background: #000;
 }
 
 #sugar_override {
