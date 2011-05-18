@@ -392,9 +392,9 @@ test('Number', function () {
   equals((2553423).hex(), '26f64f', 'Number#hex | 2553423')
 
 
-  equals((24).blank(), false, 'Number#blank | 24');
-  equals((0).blank(), false, 'Number#blank | 24');
-  equals((NaN).blank(), true, 'Number#blank | NaN');
+  equals((24).empty(), false, 'Number#empty | 24');
+  equals((0).empty(), false, 'Number#empty | 24');
+  equals((NaN).empty(), true, 'Number#empty | NaN');
 
 
   equals((0).seconds(), 0, 'Number#seconds | 0');
@@ -781,14 +781,14 @@ test('String', function () {
   equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith | vader ends with der');
 
 
-  equal(''.blank(), true, 'String#blank | empty string');
-  equal('0'.blank(), false, 'String#blank | 0');
-  equal('            '.blank(), true, 'String#blank | sucessive blanks');
-  equal('\n'.blank(), true, 'String#blank | new line');
-  equal('\t\t\t\t'.blank(), true, 'String#blank | tabs');
-  equal('　　　　　\n　　　'.blank(), true, 'String#blank | japanese zenkaku space');
-  equal('日本語では　「マス」　というの知ってた？'.blank(), false, 'String#blank | japanese');
-  equal('mayonnaise'.blank(), false, 'String#blank | mayonnaise');
+  equal(''.empty(), true, 'String#empty | empty string');
+  equal('0'.empty(), false, 'String#empty | 0');
+  equal('            '.empty(), true, 'String#empty | sucessive blanks');
+  equal('\n'.empty(), true, 'String#empty | new line');
+  equal('\t\t\t\t'.empty(), true, 'String#empty | tabs');
+  equal('　　　　　\n　　　'.empty(), true, 'String#empty | japanese zenkaku space');
+  equal('日本語では　「マス」　というの知ってた？'.empty(), false, 'String#empty | japanese');
+  equal('mayonnaise'.empty(), false, 'String#empty | mayonnaise');
 
 
   equal('foo'.has('f'), true, 'String#has | foo has f');
@@ -2299,14 +2299,14 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].blank(), false, 'Array#blank | 1,2,3');
-  equal([].blank(), true, 'Array#blank | empty array');
-  equal([null].blank(), true, 'Array#blank | [null]');
-  equal([undefined].blank(), true, 'Array#blank | [undefined]');
-  equal([null,null].blank(), true, 'Array#blank | [null,null]');
-  equal([undefined,undefined].blank(), true, 'Array#blank | [undefined,undefined]');
-  equal([false,false].blank(), false, 'Array#blank | [false,false]');
-  equal([0,0].blank(), false, 'Array#blank | [0,0]');
+  equal([1,2,3].empty(), false, 'Array#empty | 1,2,3');
+  equal([].empty(), true, 'Array#empty | empty array');
+  equal([null].empty(), true, 'Array#empty | [null]');
+  equal([undefined].empty(), true, 'Array#empty | [undefined]');
+  equal([null,null].empty(), true, 'Array#empty | [null,null]');
+  equal([undefined,undefined].empty(), true, 'Array#empty | [undefined,undefined]');
+  equal([false,false].empty(), false, 'Array#empty | [false,false]');
+  equal([0,0].empty(), false, 'Array#empty | [0,0]');
 
 
 
@@ -4396,7 +4396,69 @@ test('Object', function () {
   same(Object.create({ foo: 'bar' }).merge('wear', 8, null), { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' }, 'Object#merge | merge multi invalid');
   same(Object.create({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
 
-  console.info('running??');
+
+  same(Object.clone({ foo: 'bar' }), { foo: 'bar' }, 'Object.clone | basic clone');
+  same(Object.clone({ foo: 'bar', broken: 1, wear: null }), { foo: 'bar', broken: 1, wear: null }, 'Object.clone | complex clone');
+  same(Object.clone({ foo: { broken: 'wear' }}), { foo: { broken: 'wear' }}, 'Object.clone | deep clone');
+  equals(Object.clone({ foo: 'bar', broken: 1, wear: /foo/ }) == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object.clone | fully cloned');
+
+  var obj1 = {
+    broken: 'wear',
+    foo: {
+      jumpy: 'jump',
+      bucket: {
+        reverse: true
+      }
+    }
+  }
+  var obj2 = Object.clone(obj1);
+  equals(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
+  obj1.foo.jumpy = 'hump';
+  equals(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
+  equals(obj2.foo.jumpy, 'jump', 'Object.clone | cloned object is not modified');
+
+  obj1 = {
+    foo: {
+      bar: [1,2,3]
+    }
+  };
+  obj2 = Object.clone(obj1);
+
+  obj1.foo.bar = ['a','b','c'];
+  same(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
+  same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+
+
+  same(Object.create({ foo: 'bar' }).clone(), { foo: 'bar' }, 'Object#clone | basic clone');
+  same(Object.create({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }, 'Object#clone | complex clone');
+  same(Object.create({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}, 'Object#clone | deep clone');
+  equals(Object.create({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
+
+  var obj1 = Object.create({
+    broken: 'wear',
+    foo: {
+      jumpy: 'jump',
+      bucket: {
+        reverse: true
+      }
+    }
+  });
+  var obj2 = obj1.clone();
+  equals(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
+  obj1.foo.jumpy = 'hump';
+  equals(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
+  equals(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
+
+  obj1 = Object.create({
+    foo: {
+      bar: [1,2,3]
+    }
+  });
+  obj2 = obj1.clone();
+
+  obj1.foo.bar = ['a','b','c'];
+  same(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
+  same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
 
 });
 
