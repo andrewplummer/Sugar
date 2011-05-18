@@ -4456,9 +4456,28 @@ test('Object', function () {
   });
   obj2 = obj1.clone();
 
-  obj1.foo.bar = ['a','b','c'];
-  same(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
+  obj1.foo.bar[1] = 'b';
+  same(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
   same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+
+  equals(Object.empty({}), true, 'Object.empty | object is empty');
+  equals(Object.empty({ broken: 'wear' }), false, 'Object.empty | object is not empty');
+
+  equals(Object.create({}).empty({}), true, 'Object#empty | object is empty');
+  equals(Object.create({ broken: 'wear' }).empty(), false, 'Object#empty | object is not empty');
+
+  equals(Object.equals({ broken: 'wear'}, { broken: 'wear' }), true, 'Object.equals | objects are equal');
+  equals(Object.equals({ broken: 'wear'}, { broken: 'jumpy' }), false, 'Object.equals | objects are not equal');
+  equals(Object.equals({}, {}), true, 'Object.equals | empty objects are equal');
+  equals(Object.equals({}, { broken: 'wear' }), false, 'Object.equals | 1st empty');
+  equals(Object.equals({ broken: 'wear' }, {}), false, 'Object.equals | 2nd empty');
+
+  equals(Object.create({ broken: 'wear'}).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
+  equals(Object.create({ broken: 'wear'}).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
+  equals(Object.create({}).equals({}), true, 'Object#equals | empty objects are equal');
+  equals(Object.create({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
+  equals(Object.create({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
+
 
 });
 
