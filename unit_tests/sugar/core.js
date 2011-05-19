@@ -592,7 +592,6 @@ test('String', function () {
   // Each without a first parameter assumes "each character"
   var result = 'g'.each(function(str, i){
     equal(str, 'g', 'String#each | char should be passed as the first argument');
-    equal(this, 'g', 'String#each | string should be bound as the scope');
   });
 
   same(result, ['g'], "String#each | ['g'] should be the resulting value");
@@ -622,24 +621,6 @@ test('String', function () {
   });
   equal(counter, 4, 'String#each | regexp argument | should have ran 4 times');
   same(result, ['g','i','g','e'], "String#each | regexp argument | resulting array should have been ['g','i','g','e']");
-
-  counter = 0;
-  test = ['three', 'two', 'one', 'contact'];
-  result = 'three|two|one|contact'.each('|', 'split', function(str, i){
-    equal(str, test[i], 'String#each | string split | match should be passed as the first argument to the block');
-    counter++;
-  });
-  equal(counter, 4, 'String#each | string split | should have ran 4 times');
-  same(result, test, "String#each | string split | resulting array should have been ['three','two','one','contact']");
-
-  counter = 0;
-  test = ['beebop', 'rocksteady', 'and donatello'];
-  result = 'beebop, rocksteady, and donatello'.each(/,\s*/g, 'split', function(str, i){
-    equal(str, test[i], 'String#each | regexp split | match should be passed as the first argument to the block');
-    counter++;
-  });
-  equal(counter, 3, 'String#each | regexp split | should have run 3 times');
-  same(result, test, "String#each | regexp split | resulting array should have been ['beebop','rocksteady','and donatello']");
 
 
   /* .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups */
@@ -688,7 +669,7 @@ test('String', function () {
   test = ['these', 'pretzels', 'are', 'making', 'me', 'thirsty!'];
   result = sentence.words(function(str, i){
     equal(str, test[i], 'String#words | match is the first argument');
-    counter ++;
+    counter++;
   });
   equal(counter, 6, 'String#words | should have run 6 times');
   same(result, test, 'String#words | result should be an array of matches');
@@ -698,10 +679,15 @@ test('String', function () {
   test = ['these', 'pretzels', 'are', '', 'making', 'me', '         thirsty!'];
   result = paragraph.lines(function(str, i){
     equal(str, test[i], 'String#lines | match is the first argument');
-    counter ++;
+    counter++;
   });
   equal(counter, 7, 'String#lines | should have run 7 times');
   same(result, test, 'String#lines | result should be an array of matches');
+
+  result = 'one\ntwo'.lines(function(str, i){
+    return str.capitalize();
+  });
+  same(['One','Two'], result, 'String#lines | lines can be modified');
 
   counter = 0;
   var essay = 'the history of the united states\n\n';
