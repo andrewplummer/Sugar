@@ -266,7 +266,6 @@ test('Number', function () {
   counter = 0;
   (5).times(function(first){
     equal(first, counter, 'Number#times | first parameter is the index');
-    equal(this, 'wasabi', 'Number#times | handles scope');
     counter++;
   }, 'wasabi');
   equal(counter, 5, 'Number#times | iterated 5 times');
@@ -394,7 +393,6 @@ test('Number', function () {
 
   equals((24).empty(), false, 'Number#empty | 24');
   equals((0).empty(), false, 'Number#empty | 24');
-  equals((NaN).empty(), true, 'Number#empty | NaN');
 
 
   equals((0).seconds(), 0, 'Number#seconds | 0');
