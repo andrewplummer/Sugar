@@ -26,8 +26,8 @@
     s.offset = el.offset();
     s.offset.right = s.offset.left + elementWidth;
     s.offset.bottom = s.offset.top + elementHeight;
-    s.offset.hCenter = s.offset.left + Math.round(elementWidth / 2);
-    s.offset.vCenter = s.offset.top + Math.round(elementHeight / 2);
+    s.offset.hCenter = s.offset.left + Math.floor(elementWidth / 2);
+    s.offset.vCenter = s.offset.top + Math.floor(elementHeight / 2);
     s.css = {};
     s.on  = {};
     s.off = {};
