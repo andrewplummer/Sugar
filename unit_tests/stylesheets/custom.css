@@ -151,7 +151,6 @@ iframe {
   height: 7px;
   bottom: -7px;
   left: 50%;
-  margin-left: -13px;
   position: absolute;
   background: url('../images/arrow.gif') no-repeat center center;
   background: #000;

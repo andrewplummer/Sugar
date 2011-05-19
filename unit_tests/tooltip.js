@@ -2,6 +2,8 @@
 
   var tooltip;
   var arrow;
+  var arrowWidth;
+  var arrowHeight;
   var content;
   var win;
   var timer;
@@ -17,18 +19,19 @@
 
   function getState(el, options){
     var s = {};
-    var offset = el.offset();
+    var elementHeight = el.outerHeight(true);
+    var elementWidth  = el.outerWidth(true);
     s.height = tooltip.outerHeight(true);
     s.width  = tooltip.outerWidth(true);
-    s.anchorHeight = el.outerHeight(true);
-    s.anchorWidth  = el.outerWidth(true);
-    s.top  = offset.top;
-    s.left = offset.left;
-    s.right = s.left + s.anchorWidth;
-    s.bottom = s.top + s.anchorHeight;
+    s.offset = el.offset();
+    s.offset.right = s.offset.left + elementWidth;
+    s.offset.bottom = s.offset.top + elementHeight;
+    s.offset.hCenter = s.offset.left + Math.round(elementWidth / 2);
+    s.offset.vCenter = s.offset.top + Math.round(elementHeight / 2);
     s.css = {};
     s.on  = {};
-    s.off = {}
+    s.off = {};
+    s.arrow = {};
     return s;
   }
 
@@ -38,37 +41,39 @@
     switch(direction){
       case 'top':
         bound = win.scrollTop();
-        if(s.top - s.height < bound) alternate = 'bottom';
-        s.on.top  = s.top - s.height;
+        if(s.offset.top - s.height < bound) alternate = 'bottom';
+        s.on.top  = s.offset.top - s.height;
         s.off.top = s.on.top + 10;
         s.css.top = s.on.top - 10;
         s.css.left = getCenter(s, true);
         break;
       case 'left':
         bound = win.scrollLeft();
-        if(s.left - s.width < bound) alternate = 'right';
-        s.on.left  = s.left - s.width;
+        if(s.offset.left - s.width < bound) alternate = 'right';
+        s.on.left  = s.offset.left - s.width;
         s.off.left = s.on.left + 10;
         s.css.top  = getCenter(s, false);
         s.css.left = s.on.left - 10;
         break;
       case 'bottom':
         bound = win.scrollTop() + win.height();
-        if(s.bottom + s.height > bound) alternate = 'top';
-        s.on.top   = s.bottom;
-        s.off.top  = s.bottom - 10;
+        if(s.offset.bottom + s.height > bound) alternate = 'top';
+        s.on.top   = s.offset.bottom;
+        s.off.top  = s.offset.bottom - 10;
         s.css.top  = s.on.top + 10;
         s.css.left = getCenter(s, true);
         break;
       case 'right':
         bound = win.scrollLeft() + win.width();
-        if(s.right + s.width > bound) alternate = 'left';
-        s.on.left  = s.right;
+        if(s.offset.right + s.width > bound) alternate = 'left';
+        s.on.left  = s.offset.right;
         s.off.left = s.on.left - 10;
         s.css.left = s.on.left + 10;
         s.css.top = getCenter(s, false);
         break;
     }
+    getArrowOffset(s, direction);
+    checkSlide(s, direction);
     if(alternate && !s.over){
       s.over = true;
       checkBounds(s, alternate);
@@ -77,17 +82,43 @@
     }
   }
 
+  function checkSlide(s, dir){
+    var d = (dir == 'left' || dir == 'right') ? 'vertical' : 'horizontal';
+    var offset;
+    if(d == 'horizontal'){
+      offset = win.scrollLeft() - (s.offset.left - Math.round(s.width / 2));
+      if(offset > 0){
+        s.css.left += Math.abs(offset);
+        s.arrow.left -= offset;
+      }
+      offset = (s.offset.right + Math.round(s.width / 2)) - (win.scrollLeft() + win.width());
+      if(offset > 0){
+        s.css.left -= Math.abs(offset);
+        s.arrow.left += offset;
+      }
+    }
+  }
+
+  function getArrowOffset(s, dir){
+    if(dir == 'left' || dir == 'right'){
+      s.arrow.top = Math.floor((s.height / 2) - (arrowHeight / 2));
+    } else {
+      s.arrow.left = Math.floor((s.width / 2) - (arrowWidth / 2));
+    }
+  }
+
   function getCenter(s, horizontal){
     if(horizontal){
-      return s.left + Math.round((s.anchorWidth / 2) - (s.width / 2));
+      return s.offset.hCenter + - (s.width / 2);
     } else {
-      return s.top + Math.round((s.anchorHeight / 2) - (s.height / 2));
+      return s.offset.vCenter + - (s.height / 2);
     }
   }
 
   function animateTooltip(s, options){
     tooltip.attr('class', s.direction);
     tooltip.stop(true, true).css(s.css);
+    arrow.css(s.arrow);
     tooltip.animate(s.on, { duration: options.duration, queue: false });
     tooltip.fadeIn(options.duration);
   }
@@ -129,6 +160,8 @@
   $(document).ready(function(){
     tooltip = $('#tooltip');
     arrow   = $('.arrow', tooltip);
+    arrowWidth = arrow.width();
+    arrowHeight = arrow.height();
     content = $('.content', tooltip);
     win     = $(window);
     $('[title]').tooltip();
