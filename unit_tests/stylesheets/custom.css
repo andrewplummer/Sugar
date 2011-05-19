@@ -119,6 +119,7 @@ iframe {
   padding:6px;
   position:absolute;
   display: none;
+  margin-bottom: 10px;
 }
 
 #tooltip h4 {
