@@ -637,6 +637,9 @@ test('String', function () {
 
 
   /* test each char code */
+
+  same('jumpy'.bytes(), [106,117,109,112,121], 'String#bytes | jumpy');
+
   counter = 0;
   test = [103,105,110,103,101,114];
   result = 'ginger'.bytes(function(str, i){
