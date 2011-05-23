@@ -638,16 +638,16 @@ test('String', function () {
 
   /* test each char code */
 
-  same('jumpy'.bytes(), [106,117,109,112,121], 'String#bytes | jumpy');
+  same('jumpy'.codes(), [106,117,109,112,121], 'String#codes | jumpy');
 
   counter = 0;
   test = [103,105,110,103,101,114];
-  result = 'ginger'.bytes(function(str, i){
-    equal(str, test[i], 'String#bytes | ginger codes | char code should have been passed into the block');
+  result = 'ginger'.codes(function(str, i){
+    equal(str, test[i], 'String#codes | ginger codes | char code should have been passed into the block');
     counter++;
   });
-  equal(counter, 6, 'String#bytes | ginger codes | should have ran 6 times');
-  same(result, test, 'String#bytes | ginger codes | result should be an array');
+  equal(counter, 6, 'String#codes | ginger codes | should have ran 6 times');
+  same(result, test, 'String#codes | ginger codes | result should be an array');
 
   /* test each char */
   counter = 0;
@@ -708,7 +708,7 @@ test('String', function () {
   same(result, test, 'String#paragraphs | result should be an array of matches');
 
 
-  same(''.bytes(), [], 'String#bytes | empty string');
+  same(''.codes(), [], 'String#codes | empty string');
   same(''.chars(), [], 'String#chars | empty string');
   same(''.words(), [], 'String#words | empty string');
   same(''.lines(), [''], 'String#lines | empty string');
