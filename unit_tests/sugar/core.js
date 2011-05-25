@@ -730,16 +730,17 @@ test('String', function () {
   equal('KYŌTO'.normalize(), 'KYOTO', 'String#normalize | KYŌTO is KYOTO');
   equal('ÄĚÌØŮŶÑ'.normalize(), 'AEIOUYN', 'String#normalize | ÄĚÌØŮŶÑ is AEIOUYN');
 
+  equal('ß'.normalize(), 'ß', 'String#normalize | ß remains the same');
+  equal('œæ'.normalize(), 'oeae', 'String#normalize | œæ are replaced too');
+  equal('ÀÁÂÃÄÅÆ'.normalize(), 'AAAAAAAE', 'String#normalize | test basic main chars');
+  equal('òóôõöø'.normalize(), 'oooooo', 'String#normalize | test basic o');
+  equal('ĆćĈĉĊċČč'.normalize(), 'CcCcCcCc', 'String#normalize | test basic o');
 
   equal('o'.accent('-'), 'ō', 'String#accent | o + - is ō');
   equal('a'.accent('`'), 'à', 'String#accent | a + ` is à');
   equal('a'.accent('v'), 'ǎ', 'String#accent | a + v is ǎ');
   equal('e'.accent(':'), 'ë', 'String#accent | e + : is ë');
   equal('e'.accent('-'), 'ē', 'String#accent | e + - is ē');
-  equal('th'.accent(), 'þ', 'String#accent | th is þ');
-  equal('dh'.accent(), 'ð', 'String#accent | dh is ð');
-  equal('ss'.accent(), 'ß', 'String#accent | ss is ß');
-  equal('oe'.accent(), 'œ', 'String#accent | oe is œ');
 
   equal('A'.accent('`'), 'À', 'String#accent | A + ` is À');
   equal('A'.accent('v'), 'Ǎ', 'String#accent | A + v is Ǎ');
