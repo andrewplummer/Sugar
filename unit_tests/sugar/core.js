@@ -734,6 +734,7 @@ test('String', function () {
   equal('ÀÁÂÃÄÅ'.normalize(), 'AAAAAA', 'String#normalize | test basic main chars');
   equal('òóôõöø'.normalize(), 'oooooo', 'String#normalize | test basic o');
   equal('ĆćĈĉĊċČč'.normalize(), 'CcCcCcCc', 'String#normalize | test basic o');
+  equal('ǖ'.normalize(), 'u', 'String#normalize | test basic o');
 
   equal('o'.accent('-'), 'ō', 'String#accent | o + - is ō');
   equal('a'.accent('`'), 'à', 'String#accent | a + ` is à');
@@ -745,6 +746,7 @@ test('String', function () {
   equal('A'.accent('v'), 'Ǎ', 'String#accent | A + v is Ǎ');
   equal('E'.accent(':'), 'Ë', 'String#accent | E + : is Ë');
   equal('E'.accent('-'), 'Ē', 'String#accent | E + - is Ē');
+  equal('u'.accent('-:'), 'ǖ', 'String#normalize | test basic o');
 
 
 
