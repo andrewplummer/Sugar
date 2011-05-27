@@ -731,8 +731,7 @@ test('String', function () {
   equal('ÄĚÌØŮŶÑ'.normalize(), 'AEIOUYN', 'String#normalize | ÄĚÌØŮŶÑ is AEIOUYN');
 
   equal('ß'.normalize(), 'ß', 'String#normalize | ß remains the same');
-  equal('œæ'.normalize(), 'oeae', 'String#normalize | œæ are replaced too');
-  equal('ÀÁÂÃÄÅÆ'.normalize(), 'AAAAAAAE', 'String#normalize | test basic main chars');
+  equal('ÀÁÂÃÄÅ'.normalize(), 'AAAAAA', 'String#normalize | test basic main chars');
   equal('òóôõöø'.normalize(), 'oooooo', 'String#normalize | test basic o');
   equal('ĆćĈĉĊċČč'.normalize(), 'CcCcCcCc', 'String#normalize | test basic o');
 

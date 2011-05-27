@@ -22,15 +22,6 @@ var startTests;
   }
 
 
-  function getScript(path, callback){
-    var head = document.getElementsByTagName("head")[0];
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = path;
-    script.onload = callback;
-    head.appendChild(script);
-  }
-
   function initialize(modules){
 
     startTests = function(){
@@ -41,7 +32,7 @@ var startTests;
         module(m.name);
         for(var j = 0; j < m.tests.length; j++){
           var src = m.tests[j];
-          getScript(src, function(){
+          jQuery.getScript(src, function(){
             loaded++;
             if(loaded == m.tests.length){
               QUnit.start();
