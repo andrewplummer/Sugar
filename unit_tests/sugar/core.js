@@ -1153,6 +1153,9 @@ test('String', function () {
   equal('안녕 하세요.'.hasHangul(), true, 'String#hasHangul | how are you?');
   equal('ㅠブラじゃない！'.hasHangul(), false, 'String#hasHangul | mixed with kana');
 
+  equal('שְׂרָאֵל'.isHebrew(), true, 'String#isHebrew');
+  equal('שְׂרָאֵל'.hasHebrew(), true, 'String#hasHebrew');
+
 
   var stripped;
   var html =
