@@ -636,6 +636,10 @@ test('String', function () {
   same(result, ['crue', 'l wo'], 'String#each | complex regexp | /(..)(..)/');
 
 
+  result = testString.each(/\w+/);
+  same(result, ['cruel', 'world'], 'String#each non-global regexes should still be global');
+
+
   /* test each char code */
 
   same('jumpy'.codes(), [106,117,109,112,121], 'String#codes | jumpy');
@@ -4502,13 +4506,38 @@ test('Function', function () {
     equals(first, undefined, 'Function#bind | first argument is undefined');
   }).bind('foo')();
 
+  bound = (function(num, bool, str){}).bind('wasabi', 'moo');
 
   bound = (function(num, bool, str){
     equals(num, 1, 'Function#delay | first parameter');
     equals(bool, true, 'Function#delay | second parameter');
     equals(str, 'wasabi', 'Function#delay | third parameter');
     start();
+    equals(shouldBeFalse, false, 'Function#delay | cancel is working');
   }).delay(10, [1, true, 'wasabi']);
+
+  equals(typeof bound, 'function', 'Function#delay | returns pointer to self');
+
+
+
+  var shouldBeFalse = false;
+
+  bound = (function(){
+    shouldBeFalse = true;
+  }).delay(5);
+
+  bound.cancel();
+
+
+  bound = (function(num, bool, str){}).delay(1, 'wasabi');
+
+  bound = (function(num, bool, str){
+    equals(num, 1, 'Function#defer | first parameter');
+    equals(bool, true, 'Function#defer | second parameter');
+    equals(str, 'wasabi', 'Function#defer | third parameter');
+  }).defer([1, true, 'wasabi']);
+
+  bound = (function(num, bool, str){}).defer('wasabi');
 
   stop();
 
