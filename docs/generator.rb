@@ -101,7 +101,7 @@ def get_defaults(source)
   d = {}
   match = source.match(/@defaults (.+?)$/)
   if match
-    match[1].split(',').each do |f|
+    match[1].split(/,(?!')/).each do |f|
       s = f.split(' = ')
       key = s[0].gsub(/[<>\[\]]/, '').strip
       value = s[1].strip
