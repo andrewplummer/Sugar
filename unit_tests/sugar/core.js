@@ -4500,7 +4500,6 @@ test('Function', function () {
   result = bound.call();
   equals(result, 'howdy', 'Function#bind | result is correctly returned');
 
-
   (function(first){
     same(Array.prototype.slice.call(arguments), [], 'Function#bind | arguments array is empty');
     equals(first, undefined, 'Function#bind | first argument is undefined');
