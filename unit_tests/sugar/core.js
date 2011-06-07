@@ -591,7 +591,7 @@ test('String', function () {
 
   // Each without a first parameter assumes "each character"
   var result = 'g'.each(function(str, i){
-    equal(str, 'g', 'String#each | char should be passed as the first argument');
+    strictlyEqual(str, 'g', 'String#each | char should be passed as the first argument');
   });
 
   same(result, ['g'], "String#each | ['g'] should be the resulting value");
@@ -4506,7 +4506,7 @@ test('Function', function () {
     equals(first, undefined, 'Function#bind | first argument is undefined');
   }).bind('foo')();
 
-  bound = (function(num, bool, str){}).bind('wasabi', 'moo');
+  bound = (function(num, bool, str){}).bind('wasabi', 'moo')();
 
   bound = (function(num, bool, str){
     equals(num, 1, 'Function#delay | first parameter');
