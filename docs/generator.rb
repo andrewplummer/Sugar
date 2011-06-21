@@ -1,123 +1,10 @@
 
-require 'cgi'
-require 'pp'
 require 'rubygems'
 require 'json'
 
 fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/methods.php'
-template = 'docs/template.html'
 
-#def get_property(property, source, defaults = {})
-#  if property == :name
-#    property = :method
-#    name = true
-#  end
-#  match = source.match(Regexp.new('@' + property.to_s + '(.*)$', (property == :example ? Regexp::MULTILINE : nil)))
-#  #replace = match ? CGI.escapeHTML(match[1]) : ''
-#  replace = match ? match[1].strip : nil
-#  if replace
-#    if property == :method && !name
-#      #replace.gsub!(/[<>]/, '|')
-#      #replace.gsub!(/\|(.+?)\|/, '<span class="parameter">\\1</span>')
-#      get_parameter_html(replace, defaults)
-#      replace.gsub!(/,/, '<span class="comma small">,</span>')
-#      replace.gsub!(/\.\.\./, '<span class="ellipsis small">...</span>')
-#      replace.gsub!(/(.*)\((.*)\)/, '<span class="name">\\1</span><span class="parenthesis small">(</span>\\2<span class="parenthesis small">)</span>')
-#    end
-#    if property == :description
-#      get_parameter_html(replace, defaults, false)
-#      replace.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\\1</span>')
-#    end
-#    if property == :defaults
-#      replace.gsub!(/<(.*?)> = ([^\s*?])/, '<span class="parameter">\\1</span> = <span class="default">\\2</span>')
-#    end
-#    if property == :example
-#      result = ''
-#      multi = false
-#      replace.lines do |l|
-#        l.gsub!(/\s*?\*(\/)?(\s\s\s)?/, '')
-#        l.gsub!(/^\s+$/, '')
-#        next if l.empty?
-#        if l =~ /function\s?\(.*?\)\s*\{\s*\n/
-#          multi = true
-#          l.gsub!(/\n/, '<br/>')
-#          l = '<div class="example"><pre class="statement sh_javascript">' + l
-#        elsif l =~ /->/ && !multi
-#        #  l.gsub!(/->(\s*.*?)$/, '<span class=\"split\">-&gt;</span><span class=\"result\">\\1</span>')
-#          l.gsub!(/\n?(.*?\s*)->(\s*.*?)$/, "\n              <div class=\"example\"><pre class=\"statement sh_javascript\">\\1</pre><span class=\"monospace result\"><span class=\"split\">-&gt;</span>\\2</span></div>")
-#        elsif l =~ /^\s*\}\);/
-#          multi = false
-#          l.gsub!(/\n/, '<br/>')
-#          l = l + '</pre></div>'
-#        else
-#          l.gsub!(/\s*(.*?);$/, "\n              <div class=\"example\"><pre class=\"statement sh_javascript\">\\1;</pre>")
-#        end
-#        result << l
-#      end
-#      replace = result
-#    end
-#  end
-#  replace
-#end
-#
-#
-#def get_parameter_html(source, defaults, include_defaults = true)
-#  source.gsub!(/<.+?>/) do |param|
-#    param.gsub!(/[<>]/, '')
-#    default = defaults[param]
-#    default = defaults[param]
-#    if default =~ /['"].*['"]/
-#      type = :string
-#    elsif default =~ /\d+/
-#      type = :number
-#    elsif default =~ /^null$/
-#      type = :null
-#    end
-#    result = '<span class="parameter small">'+param+'</span>'
-#    if default && include_defaults
-#      default = '<span class="' + type.to_s + ' value">' + CGI::escapeHTML(default || '') + '</span>'
-#      result += '<span class="default small"><span class="equals small">=</span>'+default+'</span>'
-#    end
-#    result
-#  end
-#  source.gsub!(/\[.+?\]/) do |param|
-#    param.gsub!(/[\[\]]/, '')
-#    default = defaults[param]
-#    if default =~ /['"].*['"]/
-#      type = :string
-#    elsif default =~ /\d+/
-#      type = :number
-#    elsif default =~ /^null$/
-#      type = :null
-#    end
-#    result = '<span class="optional parameter small">'+param+'</span>'
-#    if default && include_defaults
-#      default = '<span class="' + type.to_s + ' value">' + CGI::escapeHTML(default || '') + '</span>'
-#      result += '<span class="default small"><span class="equals small">=</span>'+default+'</span>' if include_defaults
-#    end
-#    result
-#  end
-#end
-#
-#def get_defaults(source)
-#  d = {}
-#  match = source.match(/@defaults (.+?)$/)
-#  if match
-#    match[1].split(/,(?!')/).each do |f|
-#      s = f.split(' = ')
-#      key = s[0].gsub(/[<>\[\]]/, '').strip
-#      value = s[1].strip
-#      d[key] = value
-#    end
-#  end
-#  d
-#end
-
-html = ''
-row_reg = /\s*<li class="method" id="">.*?<\/li>/m
 fileout_html  = File.open(fileout, 'r').read
-template_html = File.open(template, 'r').read
-row_html = template_html.match(row_reg)[0]
 
 modules = []
 current_module = nil
@@ -136,16 +23,17 @@ end
 def get_html_parameters(str)
   str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
   str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
+  str.gsub!(/%(.+)%/, '<span class="code">\1</span>')
 end
 
 def get_method(s)
   raw = get_property(:method, s)
-  match = raw.match(/(.+)\((.+)?\)/)
+  match = raw.match(/(.+\.)?(.+)\((.+)?\)/)
   params = []
   full_html = "<span class=\"name\">#{match[1]}</span><span class=\"parenthesis\">(</span>"
   accepts_unlimited_params = false
-  if match[2]
-    p = match[2].split(/,(?!')/)
+  if match[3]
+    p = match[3].split(/,(?!')/)
     if p.last =~ /\.\.\./
       p.delete_at(-1)
       accepts_unlimited_params = true
@@ -165,6 +53,8 @@ def get_method(s)
           d.gsub!(/(['"])(.+)(['"])/, '\\1<span class="monospace">\\2</span>\\3')
         elsif d =~ /\d+/
           type = :number
+        elsif d =~ /\/.+\//
+          type = :regexp
         elsif d =~ /^null$/
           type = :null
         elsif d =~ /true|false/
@@ -176,6 +66,7 @@ def get_method(s)
       full_html << '<span class="comma">,</span>' if i < p.length - 1
       {
         :name => name,
+        :type => type,
         :required => required,
         :default => default ? default[1] : nil
       }
@@ -188,7 +79,8 @@ def get_method(s)
   {
     :full_raw => raw,
     :full_html => full_html,
-    :name => match[1],
+    :name => match[2],
+    :class_method => !!match[1],
     :params => params,
     :accepts_unlimited_params => accepts_unlimited_params
   }
@@ -201,15 +93,18 @@ def get_examples(s)
   lines.each do |l|
     l.gsub!(/^[\s*]+/, '')
     if l =~ /function/
-      func << l + '_BR_'
+      func << l + '\n&nbsp;&nbsp;'
     elsif l =~ /\}\);$/
       func << l.gsub(/\s+->.+$/, '')
-      examples << func
+      examples << { :multi_line => true, :html => func }
       func = ''
     elsif func.length > 0
-      func << '  ' + l + '_BR_'
+      func << '\n' + l + '\n&nbsp;&nbsp;'
     elsif !l.empty?
-      examples << l.gsub(/\s+->.+$/, '')
+      examples << {
+        :multi_line => false,
+        :html => l.gsub(/\s+->.+$/, '')
+      }
     end
   end
   examples
@@ -219,7 +114,6 @@ end
 File.open('lib/sugar.js', 'r') do |f|
   i = 0
   f.read.scan(/\/\*\*\*.*?\*\*\*/m) do |b|
-    #h = row_html
     if mod = b.match(/(\w+) module/)
       if current_module
         modules << current_module
@@ -227,10 +121,10 @@ File.open('lib/sugar.js', 'r') do |f|
       current_module = { :name => mod[1], :methods => [] }
     else
       method = get_method(b)
-      method[:class_method] = !!method[:name].match(Regexp.new("^#{current_module[:name]}\."))
       method[:returns] = get_property(:returns, b)
       method[:description] = get_property(:description, b)
       method[:examples] = get_examples(b)
+      method[:module] = current_module[:name]
       get_html_parameters(method[:description])
       current_module[:methods] << method
     end
@@ -249,30 +143,7 @@ modules.each do |mod|
     end
   end
 end
-#modules << current_module
-#
-#methods = []
-#
-#modules.each do |mod|
-#  #mod[:methods] = mod[:methods].sort_by { |m| m[:method] }
-#  mod[:methods].each do |method|
-#    method[:module] = mod[:name]
-#    methods << method
-#  end
-#end
-#
-#methods.sort_by{ |method| method[:name] }.each do |method|
-#  h = row_html.dup
-#  h.gsub!(/\{MODULE\}/, method[:module])
-#  id = method[:name].downcase.gsub(/\(.*?\)/, '').gsub(/\./, '_')
-#  h.gsub!(/id=""/, "id=\"#{id}\"")
-#  method.each do |k,v|
-#    h.gsub!(Regexp.new("\\{#{k.to_s.upcase}\\}"), v || '')
-#  end
-#  html << h
-#end
-#
-#
+
 File.open(fileout, 'w') do |f|
   f.puts fileout_html.gsub(/SugarModules = .+/, "SugarModules = #{modules.to_json};")
 end
