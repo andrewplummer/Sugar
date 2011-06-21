@@ -3396,6 +3396,8 @@ test('Date', function () {
   equals(d.format('RFC1036', true), rfc1036, 'Date#format | internal formats | RFC1036 UTC');
 
 
+  equals(Date.create('totally invalid').format(), 'Invalid Date', 'Date#format | invalid');
+  equals(Date.create('totally invalid').format(Date.ISO8601_DATETIME), 'Invalid Date', 'Date#format | invalid');
 
 
   // shortcut for ISO format
