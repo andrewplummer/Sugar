@@ -93,13 +93,13 @@ def get_examples(s)
   lines.each do |l|
     l.gsub!(/^[\s*]+/, '')
     if l =~ /function/
-      func << l + '\n&nbsp;&nbsp;'
+      func << l
     elsif l =~ /\}\);$/
       func << l.gsub(/\s+->.+$/, '')
       examples << { :multi_line => true, :html => func }
       func = ''
     elsif func.length > 0
-      func << '\n' + l + '\n&nbsp;&nbsp;'
+      func << '\n' + l
     elsif !l.empty?
       examples << {
         :multi_line => false,
