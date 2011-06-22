@@ -4506,6 +4506,13 @@ test('Object', function () {
   equals(Object.create({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 
 
+
+  // Enabling native object methods
+
+  Object.enableSugar();
+
+  same(({ foo: 'bar' }).keys(), ['foo'], 'Object#keys | Object.prototype');
+
 });
 
 
