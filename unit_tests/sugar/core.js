@@ -4511,7 +4511,72 @@ test('Object', function () {
 
   Object.enableSugar();
 
-  same(({ foo: 'bar' }).keys(), ['foo'], 'Object#keys | Object.prototype');
+  count = 0;
+  same(({ foo: 'bar' }).keys(function(){ count++; }), ['foo'], 'Object#keys | Object.prototype');
+  same(({ foo: 'bar' }).values(function(){ count++; }), ['bar'], 'Object#values | Object.prototype');
+  ({ foo: 'bar' }).each(function(){ count++; });
+
+  equals(count, 3, 'Object | Object.prototype should have correctly called all functions');
+
+  equals(({}).empty(), true, 'Object#empty | Object.prototype');
+  equals(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
+  same(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype');
+
+  obj1 = { foo: 'bar' };
+  obj2 = obj1.clone();
+  obj1.foo = 'mar';
+
+  same(obj2, { foo: 'bar' }, 'Object#clone | Object.prototype');
+
+  equals(([1,2,3]).isArray(), true, 'Object#isArray | Object.prototype');
+  equals(([1,2,3]).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+  equals(([1,2,3]).isDate(), false, 'Object#isDate | Object.prototype');
+  equals(([1,2,3]).isFunction(), false, 'Object#isFunction | Object.prototype');
+  equals(([1,2,3]).isNumber(), false, 'Object#isNumber | Object.prototype');
+  equals(([1,2,3]).isString(), false, 'Object#isString | Object.prototype');
+  equals(([1,2,3]).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+  equals((true).isArray(), false, 'Object#isArray | Object.prototype');
+  equals((true).isBoolean(), true, 'Object#isBoolean | Object.prototype');
+  equals((true).isDate(), false, 'Object#isDate | Object.prototype');
+  equals((true).isFunction(), false, 'Object#isFunction | Object.prototype');
+  equals((true).isNumber(), false, 'Object#isNumber | Object.prototype');
+  equals((true).isString(), false, 'Object#isString | Object.prototype');
+  equals((true).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+  equals((new Date()).isArray(), false, 'Object#isArray | Object.prototype');
+  equals((new Date()).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+  equals((new Date()).isDate(), true, 'Object#isDate | Object.prototype');
+  equals((new Date()).isFunction(), false, 'Object#isFunction | Object.prototype');
+  equals((new Date()).isNumber(), false, 'Object#isNumber | Object.prototype');
+  equals((new Date()).isString(), false, 'Object#isString | Object.prototype');
+  equals((new Date()).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+  equals((function(){}).isArray(), false, 'Object#isArray | Object.prototype');
+  equals((function(){}).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+  equals((function(){}).isDate(), false, 'Object#isDate | Object.prototype');
+  equals((function(){}).isFunction(), true, 'Object#isFunction | Object.prototype');
+  equals((function(){}).isNumber(), false, 'Object#isNumber | Object.prototype');
+  equals((function(){}).isString(), false, 'Object#isString | Object.prototype');
+  equals((function(){}).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+  equals((3).isArray(), false, 'Object#isArray | Object.prototype');
+  equals((3).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+  equals((3).isDate(), false, 'Object#isDate | Object.prototype');
+  equals((3).isFunction(), false, 'Object#isFunction | Object.prototype');
+  equals((3).isNumber(), true, 'Object#isNumber | Object.prototype');
+  equals((3).isString(), false, 'Object#isString | Object.prototype');
+  equals((3).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+  equals(('wasabi').isArray(), false, 'Object#isArray | Object.prototype');
+  equals(('wasabi').isBoolean(), false, 'Object#isBoolean | Object.prototype');
+  equals(('wasabi').isDate(), false, 'Object#isDate | Object.prototype');
+  equals(('wasabi').isFunction(), false, 'Object#isFunction | Object.prototype');
+  equals(('wasabi').isNumber(), false, 'Object#isNumber | Object.prototype');
+  equals(('wasabi').isString(), true, 'Object#isString | Object.prototype');
+  equals(('wasabi').isRegExp(), false, 'Object#isRegExp | Object.prototype');
+  equals((/wasabi/).isArray(), false, 'Object#isArray | Object.prototype');
+  equals((/wasabi/).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+  equals((/wasabi/).isDate(), false, 'Object#isDate | Object.prototype');
+  equals((/wasabi/).isFunction(), false, 'Object#isFunction | Object.prototype');
+  equals((/wasabi/).isNumber(), false, 'Object#isNumber | Object.prototype');
+  equals((/wasabi/).isString(), false, 'Object#isString | Object.prototype');
+  equals((/wasabi/).isRegExp(), true, 'Object#isRegExp | Object.prototype');
 
 });
 
