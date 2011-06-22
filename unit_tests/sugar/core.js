@@ -591,7 +591,7 @@ test('String', function () {
 
   // Each without a first parameter assumes "each character"
   var result = 'g'.each(function(str, i){
-    equal(str, 'g', 'String#each | char should be passed as the first argument');
+    strictlyEqual(str, 'g', 'String#each | char should be passed as the first argument');
   });
 
   same(result, ['g'], "String#each | ['g'] should be the resulting value");
@@ -634,6 +634,10 @@ test('String', function () {
 
   result = testString.each(/(..)(..)/g);
   same(result, ['crue', 'l wo'], 'String#each | complex regexp | /(..)(..)/');
+
+
+  result = testString.each(/\w+/);
+  same(result, ['cruel', 'world'], 'String#each non-global regexes should still be global');
 
 
   /* test each char code */
@@ -942,14 +946,28 @@ test('String', function () {
   equal('foop'.at(1), 'o', 'String#at | pos 1');
   equal('foop'.at(2), 'o', 'String#at | pos 2');
   equal('foop'.at(3), 'p', 'String#at | pos 3');
-  equal('foop'.at(4), '', 'String#at | pos 4');
-  equal('foop'.at(1224), '', 'String#at | out of bounds');
+  equal('foop'.at(4), 'f', 'String#at | pos 4');
+  equal('foop'.at(5), 'o', 'String#at | pos 5');
+  equal('foop'.at(1224), 'f', 'String#at | out of bounds');
   equal('foop'.at(-1), 'p', 'String#at | negative | pos -1');
   equal('foop'.at(-2), 'o', 'String#at | negative | pos -2');
   equal('foop'.at(-3), 'o', 'String#at | negative | pos -3');
   equal('foop'.at(-4), 'f', 'String#at | negative | pos -4');
-  equal('foop'.at(-5), '', 'String#at | negative | pos -5');
-  equal('foop'.at(-1224), '', 'String#at | negative | out of bounds');
+  equal('foop'.at(-5), 'p', 'String#at | negative | pos -5');
+  equal('foop'.at(-1224), 'f', 'String#at | negative | out of bounds');
+
+  equal('foop'.at(0, false), 'f', 'String#at | pos 0');
+  equal('foop'.at(1, false), 'o', 'String#at | pos 1');
+  equal('foop'.at(2, false), 'o', 'String#at | pos 2');
+  equal('foop'.at(3, false), 'p', 'String#at | pos 3');
+  equal('foop'.at(4, false), '', 'String#at | pos 4');
+  equal('foop'.at(1224, false), '', 'String#at | out of bounds');
+  equal('foop'.at(-1, false), '', 'String#at | negative | pos -1');
+  equal('foop'.at(-2, false), '', 'String#at | negative | pos -2');
+  equal('foop'.at(-3, false), '', 'String#at | negative | pos -3');
+  equal('foop'.at(-4, false), '', 'String#at | negative | pos -4');
+  equal('foop'.at(-5, false), '', 'String#at | negative | pos -5');
+  equal('foop'.at(-1224, false), '', 'String#at | negative | out of bounds');
 
   same('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at | handles enumerated params');
 
@@ -1152,6 +1170,9 @@ test('String', function () {
   equal('난 뻔데기를 싫어 한 사람 이다...너는?'.hasHangul(), true, 'String#hasHangul | full sentence');
   equal('안녕 하세요.'.hasHangul(), true, 'String#hasHangul | how are you?');
   equal('ㅠブラじゃない！'.hasHangul(), false, 'String#hasHangul | mixed with kana');
+
+  equal('שְׂרָאֵל'.isHebrew(), true, 'String#isHebrew');
+  equal('שְׂרָאֵל'.hasHebrew(), true, 'String#hasHebrew');
 
 
   var stripped;
@@ -1922,19 +1943,30 @@ test('Array', function () {
   same(['a','b','c'].at(0), 'a', 'Array#at | a,b,c | 0');
   same(['a','b','c'].at(1), 'b', 'Array#at | a,b,c | 1');
   same(['a','b','c'].at(2), 'c', 'Array#at | a,b,c | 2');
-  same(['a','b','c'].at(3), undefined, 'Array#at | a,b,c | 3');
+  same(['a','b','c'].at(3), 'a', 'Array#at | a,b,c | 3');
   same(['a','b','c'].at(-1), 'c', 'Array#at | a,b,c | -1');
   same(['a','b','c'].at(-2), 'b', 'Array#at | a,b,c | -2');
   same(['a','b','c'].at(-3), 'a', 'Array#at | a,b,c | -3');
-  same(['a','b','c'].at(-4), undefined, 'Array#at | a,b,c | -4');
-  same(['a','b','c'].at(), undefined, 'Array#at | a,b,c | no argument');
+  same(['a','b','c'].at(-4), 'c', 'Array#at | a,b,c | -3');
+
+  same(['a','b','c'].at(0, false), 'a', 'Array#at | a,b,c | 0');
+  same(['a','b','c'].at(1, false), 'b', 'Array#at | a,b,c | 1');
+  same(['a','b','c'].at(2, false), 'c', 'Array#at | a,b,c | 2');
+  equals(['a','b','c'].at(3, false), null, 'Array#at | a,b,c | 3');
+  same(['a','b','c'].at(-1, false), 'c', 'Array#at | a,b,c | -1');
+  same(['a','b','c'].at(-2, false), 'b', 'Array#at | a,b,c | -2');
+  same(['a','b','c'].at(-3, false), 'a', 'Array#at | a,b,c | -3');
+  equals(['a','b','c'].at(-4, false), null, 'Array#at | a,b,c | -4');
+  same(['a','b','c'].at(), null, 'Array#at | a,b,c | no argument');
   same([false].at(0), false, 'Array#at | false | 0');
   same(['a'].at(0), 'a', 'Array#at | a | 0');
-  same(['a'].at(1), undefined, 'Array#at | a | 1');
+  equals(['a'].at(1), 'a', 'Array#at | a | 1');
+  equals(['a'].at(1, false), null, 'Array#at | a | 1');
   same(['a'].at(-1), 'a', 'Array#at | a | -1');
   same(['a','b','c','d','e','f'].at(0,2,4), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4');
   same(['a','b','c','d','e','f'].at(1,3,5), ['b','d','f'], 'Array#at | a,b,c,d,e,f | 1,3,5');
-  same(['a','b','c','d','e','f'].at(0,2,4,6), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4,6');
+  same(['a','b','c','d','e','f'].at(0,2,4,6), ['a','c','e','a'], 'Array#at | a,b,c,d,e,f | 0,2,4,6');
+  same(['a','b','c','d','e','f'].at(0,2,4,6, false), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4,6 | false');
 
 
 
@@ -3364,6 +3396,8 @@ test('Date', function () {
   equals(d.format('RFC1036', true), rfc1036, 'Date#format | internal formats | RFC1036 UTC');
 
 
+  equals(Date.create('totally invalid').format(), 'Invalid Date', 'Date#format | invalid');
+  equals(Date.create('totally invalid').format(Date.ISO8601_DATETIME), 'Invalid Date', 'Date#format | invalid');
 
 
   // shortcut for ISO format
@@ -4493,19 +4527,43 @@ test('Function', function () {
   result = bound.call();
   equals(result, 'howdy', 'Function#bind | result is correctly returned');
 
-
   (function(first){
     same(Array.prototype.slice.call(arguments), [], 'Function#bind | arguments array is empty');
     equals(first, undefined, 'Function#bind | first argument is undefined');
   }).bind('foo')();
 
+  bound = (function(num, bool, str){}).bind('wasabi', 'moo')();
 
   bound = (function(num, bool, str){
     equals(num, 1, 'Function#delay | first parameter');
     equals(bool, true, 'Function#delay | second parameter');
     equals(str, 'wasabi', 'Function#delay | third parameter');
     start();
+    equals(shouldBeFalse, false, 'Function#delay | cancel is working');
   }).delay(10, [1, true, 'wasabi']);
+
+  equals(typeof bound, 'function', 'Function#delay | returns pointer to self');
+
+
+
+  var shouldBeFalse = false;
+
+  bound = (function(){
+    shouldBeFalse = true;
+  }).delay(5);
+
+  bound.cancel();
+
+
+  bound = (function(num, bool, str){}).delay(1, 'wasabi');
+
+  bound = (function(num, bool, str){
+    equals(num, 1, 'Function#defer | first parameter');
+    equals(bool, true, 'Function#defer | second parameter');
+    equals(str, 'wasabi', 'Function#defer | third parameter');
+  }).defer([1, true, 'wasabi']);
+
+  bound = (function(num, bool, str){}).defer('wasabi');
 
   stop();
 
