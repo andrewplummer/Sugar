@@ -75,6 +75,15 @@ var QUnitBridge = function(expression){
     equals(arrayContains(expression, test), true, currentBlock);
   }
 
+  this.toHaveBeenCalled = function(){
+    equals(!!expression.wasCalled, true, currentBlock);
+  }
+
+  this.toHaveBeenCalledWith = function(){
+    equals(!!expression.wasCalled, true, currentBlock);
+    same(expression.withParameters, arguments, currentBlock);
+  }
+
   this.not = {
 
     toBe: function(test){
@@ -93,7 +102,12 @@ var QUnitBridge = function(expression){
         error = true;
       }
       equals(error, false, currentBlock);
+    },
+
+    toHaveBeenCalled: function(){
+      equals(expression.wasCalled, false, currentBlock);
     }
+
 
   }
 
@@ -171,4 +185,22 @@ var describe = function(test_name, blocks){
 };
 
 
+var jasmine = {
 
+  createSpy: function(){
+    var f = function(){
+      f.wasCalled = true;
+      f.withParameters = arguments;
+    };
+    f.andReturn = function(){
+      return f;
+    };
+    return f;
+  }
+
+}
+
+var waitsFor = function(timeout, fn){
+  fn.call();
+  return true;
+}

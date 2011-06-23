@@ -341,7 +341,7 @@ describe('Object.each', {
 
 	'should call the function for each item in the object': function(){
 		var daysObj = {};
-		Object.each({first: "Sunday", second: "Monday", third: "Tuesday"}, function(value, key){
+		Object.each({first: "Sunday", second: "Monday", third: "Tuesday"}, function(value, key, obj){
 			daysObj[key] = value;
 		});
 
