@@ -170,13 +170,12 @@ test('Number', function () {
   equals((-5.14).ceil(), -5, 'Number#ceil | -5.14');
   equals((-5).ceil(), -5, 'Number#ceil | -5');
   equals((4417.1318).ceil(0), 4418, 'Number#ceil | 0');
-  equals((4417.1318).ceil(1), 4417.2, 'Number#ceil | 1');
-  equals((4417.1318).ceil(2), 4417.14, 'Number#ceil | 2');
-  equals((4417.1318).ceil(3), 4417.132, 'Number#ceil | 3');
-  equals((4417.1318).ceil(-1), 4420, 'Number#ceil | -1');
-  equals((4417.1318).ceil(-2), 4500, 'Number#ceil | -2');
-  equals((4417.1318).ceil(-3), 5000, 'Number#ceil | -3');
-
+  equalsWithException((4417.1318).ceil(1), 4417.2, { environment: 'prototype', result: 4418 }, 'Number#ceil | 1');
+  equalsWithException((4417.1318).ceil(2), 4417.14, { environment: 'prototype', result: 4418 }, 'Number#ceil | 2');
+  equalsWithException((4417.1318).ceil(3), 4417.132, { environment: 'prototype', result: 4418 }, 'Number#ceil | 3');
+  equalsWithException((4417.1318).ceil(-1), 4420, { environment: 'prototype', result: 4418 }, 'Number#ceil | -1');
+  equalsWithException((4417.1318).ceil(-2), 4500, { environment: 'prototype', result: 4418 }, 'Number#ceil | -2');
+  equalsWithException((4417.1318).ceil(-3), 5000, { environment: 'prototype', result: 4418 }, 'Number#ceil | -3');
 
   equals((5.5).floor(), 5, 'Number#floor | 5.5');
   equals((5.14).floor(), 5, 'Number#floor | 5.14');
@@ -185,13 +184,13 @@ test('Number', function () {
   equals((-5.5).floor(), -6, 'Number#floor | -5.5');
   equals((-5.14).floor(), -6, 'Number#floor | -5.14');
   equals((-5).floor(), -5, 'Number#floor | -5');
-  equals((4417.1318).floor(0), 4417, 'Number#ceil | 0');
-  equals((4417.1318).floor(1), 4417.1, 'Number#ceil | 1');
-  equals((4417.1318).floor(2), 4417.13, 'Number#ceil | 2');
-  equals((4417.1318).floor(3), 4417.131, 'Number#ceil | 3');
-  equals((4417.1318).floor(-1), 4410, 'Number#ceil | -1');
-  equals((4417.1318).floor(-2), 4400, 'Number#ceil | -2');
-  equals((4417.1318).floor(-3), 4000, 'Number#ceil | -3');
+  equals((4417.1318).floor(0), 4417, 'Number#floor | 0');
+  equalsWithException((4417.1318).floor(1), 4417.1, { environment: 'prototype', result: 4417 }, 'Number#floor | 1');
+  equalsWithException((4417.1318).floor(2), 4417.13, { environment: 'prototype', result: 4417 }, 'Number#floor | 2');
+  equalsWithException((4417.1318).floor(3), 4417.131, { environment: 'prototype', result: 4417 }, 'Number#floor | 3');
+  equalsWithException((4417.1318).floor(-1), 4410, { environment: 'prototype', result: 4417 }, 'Number#floor | -1');
+  equalsWithException((4417.1318).floor(-2), 4400, { environment: 'prototype', result: 4417 }, 'Number#floor | -2');
+  equalsWithException((4417.1318).floor(-3), 4000, { environment: 'prototype', result: 4417 }, 'Number#floor | -3');
 
 
   equals((-5).abs(), 5, 'Number#abs | -5');
@@ -758,8 +757,8 @@ test('String', function () {
   equal('HELLO'.startsWith('HELL'), true, 'String#startsWith | HELLO starts with HELL');
   equal('HELLO'.startsWith('hell'), false, 'String#startsWith | HELLO starts with hell');
   equal('HELLO'.startsWith('hell', true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
-  equal('hello'.startsWith(/hell/), true, 'String#startsWith | accepts regex');
-  equal('hello'.startsWith(/[a-h]/), true, 'String#startsWith | accepts regex alternates');
+  equalsWithException('hello'.startsWith(/hell/), true, { environment: 'prototype', result: false }, 'String#startsWith | accepts regex');
+  equalsWithException('hello'.startsWith(/[a-h]/), true, { environment: 'prototype', result: false }, 'String#startsWith | accepts regex alternates');
   equalsWithException('HELLO'.startsWith('hell', false), true, { environment: 'prototype', result: false }, 'String#startsWith | case insensitive | HELLO starts with hell');
   equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith | valley girls rock starts with valley girls');
   equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith | valley girls rock starts with valley girls r');
@@ -769,8 +768,8 @@ test('String', function () {
   equal('VADER'.endsWith('DER'), true, 'String#endsWith | VADER ends with DER');
   equal('VADER'.endsWith('der'), false, 'String#endsWith | VADER ends with der');
   equal('VADER'.endsWith('DER', false), true, 'String#endsWith | case insensitive | VADER ends with DER');
-  equal('vader'.endsWith(/der/), true, 'String#endsWith | accepts regex');
-  equal('vader'.endsWith(/[q-z]/), true, 'String#endsWith | accepts regex alternates');
+  equalsWithException('vader'.endsWith(/der/), true, { environment: 'prototype', result: false }, 'String#endsWith | accepts regex');
+  equalsWithException('vader'.endsWith(/[q-z]/), true, { environment: 'prototype', result: false }, 'String#endsWith | accepts regex alternates');
   equalsWithException('VADER'.endsWith('der', false), true, { environment: 'prototype', result: false }, 'String#endsWith | case insensitive |  VADER ends with der');
   equal('VADER'.endsWith('DER', true), true, 'String#endsWith | case sensitive | VADER ends with DER');
   equal('VADER'.endsWith('der', true), false, 'String#endsWith | case sensitive |  VADER ends with der');
@@ -778,14 +777,14 @@ test('String', function () {
   equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith | vader ends with der');
 
 
-  equal(''.empty(), true, 'String#empty | empty string');
-  equal('0'.empty(), false, 'String#empty | 0');
-  equal('            '.empty(), true, 'String#empty | sucessive blanks');
-  equal('\n'.empty(), true, 'String#empty | new line');
-  equal('\t\t\t\t'.empty(), true, 'String#empty | tabs');
-  equal('　　　　　\n　　　'.empty(), true, 'String#empty | japanese zenkaku space');
-  equal('日本語では　「マス」　というの知ってた？'.empty(), false, 'String#empty | japanese');
-  equal('mayonnaise'.empty(), false, 'String#empty | mayonnaise');
+  equal(''.blank(), true, 'String#blank | blank string');
+  equal('0'.blank(), false, 'String#blank | 0');
+  equal('            '.blank(), true, 'String#blank | successive blanks');
+  equal('\n'.blank(), true, 'String#blank | new line');
+  equal('\t\t\t\t'.blank(), true, 'String#blank | tabs');
+  equal('　　　　　\n　　　'.blank(), true, 'String#blank | japanese zenkaku space');
+  equal('日本語では　「マス」　というの知ってた？'.blank(), false, 'String#blank | japanese');
+  equal('mayonnaise'.blank(), false, 'String#blank | mayonnaise');
 
 
   equal('foo'.has('f'), true, 'String#has | foo has f');
@@ -4606,25 +4605,28 @@ test('Function', function () {
 
   bound = (function(num, bool, str){}).bind('wasabi', 'moo')();
 
-  bound = (function(num, bool, str){
+
+  var delayedFunction,delayReturn;
+
+
+  var delayedFunction = function(num, bool, str){
     equals(num, 1, 'Function#delay | first parameter');
     equals(bool, true, 'Function#delay | second parameter');
     equals(str, 'wasabi', 'Function#delay | third parameter');
     start();
     equals(shouldBeFalse, false, 'Function#delay | cancel is working');
-  }).delay(10, [1, true, 'wasabi']);
+  };
 
-  equals(typeof bound, 'function', 'Function#delay | returns pointer to self');
-
-
+  delayReturn = delayedFunction.delay(10, [1, true, 'wasabi']);
+  equals(typeof delayReturn, 'function', 'Function#delay | returns pointer to self');
 
   var shouldBeFalse = false;
-
-  bound = (function(){
+  delayedFunction = function(){
     shouldBeFalse = true;
-  }).delay(5);
+  };
 
-  bound.cancel();
+  delayReturn = delayedFunction.delay(5);
+  delayedFunction.cancel();
 
 
   bound = (function(num, bool, str){}).delay(1, 'wasabi');
