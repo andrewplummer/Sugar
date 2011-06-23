@@ -27,14 +27,16 @@ var startTests;
     startTests = function(){
       QUnit.init();
       var loaded = 0;
+      var methods = [];
       for(var i = 0; i < modules.length; i++){
         var m = modules[i];
         module(m.name);
         for(var j = 0; j < m.tests.length; j++){
           var src = m.tests[j];
+          methods.push(src);
           jQuery.getScript(src, function(){
             loaded++;
-            if(loaded == m.tests.length){
+            if(loaded == methods.length){
               QUnit.start();
             }
           });
