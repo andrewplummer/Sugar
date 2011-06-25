@@ -4327,11 +4327,11 @@ test('Object', function () {
 
 
   equals(({}).keys, undefined, 'Object | native objects are not wrapped by default');
-  same(Object.create(), Object.create({}), 'Object#create | null argument same as empty object');
+  same(Object.extend(), Object.extend({}), 'Object#extend | null argument same as empty object');
 
   var keys,values;
   var d = new Date();
-  var obj = Object.create({
+  var obj = Object.extend({
     number: 3,
     person: 'jim',
     date: d
@@ -4348,8 +4348,8 @@ test('Object', function () {
   });
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  same(Object.create().keys(), [], 'Object#keys | empty object');
-  same(Object.keys(Object.create()), [], 'Object#keys | empty object');
+  same(Object.extend().keys(), [], 'Object#keys | empty object');
+  same(Object.keys(Object.extend()), [], 'Object#keys | empty object');
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
@@ -4380,8 +4380,8 @@ test('Object', function () {
   });
   equal(count, 3, 'Object.values | accepts a block | iterated properly');
 
-  same(Object.create().values(), [], 'Object#values | empty object');
-  same(Object.values(Object.create()), [], 'Object#values | empty object');
+  same(Object.extend().values(), [], 'Object#values | empty object');
+  same(Object.values(Object.extend()), [], 'Object#values | empty object');
 
 
 
@@ -4414,13 +4414,13 @@ test('Object', function () {
 
 
 
-  same(Object.create({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
-  same(Object.create({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
-  same(Object.create({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string');
-  same(Object.create({ foo: 'bar' }).merge(8), { foo: 'bar' }, 'Object#merge | merge number');
-  same(Object.create({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
-  same(Object.create({ foo: 'bar' }).merge('wear', 8, null), { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' }, 'Object#merge | merge multi invalid');
-  same(Object.create({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
+  same(Object.extend({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
+  same(Object.extend({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
+  same(Object.extend({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string');
+  same(Object.extend({ foo: 'bar' }).merge(8), { foo: 'bar' }, 'Object#merge | merge number');
+  same(Object.extend({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
+  same(Object.extend({ foo: 'bar' }).merge('wear', 8, null), { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' }, 'Object#merge | merge multi invalid');
+  same(Object.extend({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
 
 
   same(Object.clone({ foo: 'bar' }), { foo: 'bar' }, 'Object.clone | basic clone');
@@ -4455,12 +4455,12 @@ test('Object', function () {
   same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
 
 
-  same(Object.create({ foo: 'bar' }).clone(), { foo: 'bar' }, 'Object#clone | basic clone');
-  same(Object.create({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }, 'Object#clone | complex clone');
-  same(Object.create({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}, 'Object#clone | deep clone');
-  equals(Object.create({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
+  same(Object.extend({ foo: 'bar' }).clone(), { foo: 'bar' }, 'Object#clone | basic clone');
+  same(Object.extend({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }, 'Object#clone | complex clone');
+  same(Object.extend({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}, 'Object#clone | deep clone');
+  equals(Object.extend({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
 
-  var obj1 = Object.create({
+  var obj1 = Object.extend({
     broken: 'wear',
     foo: {
       jumpy: 'jump',
@@ -4475,7 +4475,7 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
   equals(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
 
-  obj1 = Object.create({
+  obj1 = Object.extend({
     foo: {
       bar: [1,2,3]
     }
@@ -4489,8 +4489,8 @@ test('Object', function () {
   equals(Object.empty({}), true, 'Object.empty | object is empty');
   equals(Object.empty({ broken: 'wear' }), false, 'Object.empty | object is not empty');
 
-  equals(Object.create({}).empty({}), true, 'Object#empty | object is empty');
-  equals(Object.create({ broken: 'wear' }).empty(), false, 'Object#empty | object is not empty');
+  equals(Object.extend({}).empty({}), true, 'Object#empty | object is empty');
+  equals(Object.extend({ broken: 'wear' }).empty(), false, 'Object#empty | object is not empty');
 
   equals(Object.equals({ broken: 'wear'}, { broken: 'wear' }), true, 'Object.equals | objects are equal');
   equals(Object.equals({ broken: 'wear'}, { broken: 'jumpy' }), false, 'Object.equals | objects are not equal');
@@ -4498,11 +4498,11 @@ test('Object', function () {
   equals(Object.equals({}, { broken: 'wear' }), false, 'Object.equals | 1st empty');
   equals(Object.equals({ broken: 'wear' }, {}), false, 'Object.equals | 2nd empty');
 
-  equals(Object.create({ broken: 'wear'}).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
-  equals(Object.create({ broken: 'wear'}).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
-  equals(Object.create({}).equals({}), true, 'Object#equals | empty objects are equal');
-  equals(Object.create({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
-  equals(Object.create({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
+  equals(Object.extend({ broken: 'wear'}).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
+  equals(Object.extend({ broken: 'wear'}).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
+  equals(Object.extend({}).equals({}), true, 'Object#equals | empty objects are equal');
+  equals(Object.extend({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
+  equals(Object.extend({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 
 
 
