@@ -152,6 +152,29 @@ var dst = function(d){
   return new Date(d.getTime() - Date.DSTOffset);
 }
 
+var objectPrototypeMethods = {};
+
+var rememberObjectProtoypeMethods = function(){
+  for(var m in Object.prototype){
+    if(!Object.prototype.hasOwnProperty(m)) continue;
+    objectPrototypeMethods[m] = Object.prototype[m];
+  }
+}
+
+var restoreObjectPrototypeMethods = function(){
+  for(var m in Object.prototype){
+    if(!Object.prototype.hasOwnProperty(m)) continue;
+    var actualProp = objectPrototypeMethods.hasOwnProperty(m) && objectPrototypeMethods[m];
+    if(Object.prototype[m] == actualProp){
+      continue;
+    } else if(actualProp){
+      Object.prototype[m] = objectPrototypeMethods[m];
+    } else {
+      delete Object.prototype[m];
+    }
+  }
+}
+
 test('Number', function () {
 
   var counter;
@@ -4543,7 +4566,11 @@ test('Object', function () {
 
   // Enabling native object methods
 
+
+  rememberObjectProtoypeMethods();
+
   Object.enableSugar();
+
 
   count = 0;
   same(({ foo: 'bar' }).keys(function(){ count++; }), ['foo'], 'Object#keys | Object.prototype');
@@ -4611,6 +4638,8 @@ test('Object', function () {
   equals((/wasabi/).isNumber(), false, 'Object#isNumber | Object.prototype');
   equals((/wasabi/).isString(), false, 'Object#isString | Object.prototype');
   equals((/wasabi/).isRegExp(), true, 'Object#isRegExp | Object.prototype');
+
+  restoreObjectPrototypeMethods();
 
 });
 

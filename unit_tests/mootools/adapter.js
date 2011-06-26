@@ -84,6 +84,11 @@ var QUnitBridge = function(expression){
     same(expression.withParameters, arguments, currentBlock);
   }
 
+  this.toMatch = function(reg){
+    return reg.test(expression);
+    console.info('whmmm', reg, 'what',  expression, 'who');
+  }
+
   this.not = {
 
     toBe: function(test){
@@ -204,3 +209,5 @@ var waitsFor = function(timeout, fn){
   fn.call();
   return true;
 }
+
+var Syn = { browser: {} };
