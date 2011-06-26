@@ -46,11 +46,11 @@ var startTests;
   }
 
   registerEnvironment = function(name, modules){
-    initialize(modules);
     if(window.parent && window != window.parent && window.parent.registerEnvironment){
       environment = arguments[0];
       window.parent.registerEnvironment.apply(this, arguments);
     }
+    initialize(modules);
   }
 
 })();

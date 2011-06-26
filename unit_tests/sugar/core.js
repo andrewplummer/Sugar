@@ -85,7 +85,7 @@ var equalsWithException = function(actual, expected, exception, message){
 }
 
 var sameWithException = function(actual, expected, exception, message){
-  if(exception[environment]) expected = exception[environment];
+  if(exception.hasOwnProperty(environment)) expected = exception[environment];
   same(actual, expected, message);
 }
 
@@ -800,9 +800,9 @@ test('String', function () {
   equal('            '.isBlank(), true, 'String#blank | successive blanks');
   equal('\n'.isBlank(), true, 'String#blank | new line');
   equal('\t\t\t\t'.isBlank(), true, 'String#blank | tabs');
-  equal('　　　　　\n　　　'.isBlank(), true, 'String#blank | japanese zenkaku space');
   equal('日本語では　「マス」　というの知ってた？'.isBlank(), false, 'String#blank | japanese');
   equal('mayonnaise'.isBlank(), false, 'String#blank | mayonnaise');
+  equalsWithException('　　　　　\n　　　'.isBlank(), true, { mootools: (jQuery.browser.msie ? false : true) }, 'String#blank | japanese zenkaku space');
 
 
   equal('foo'.has('f'), true, 'String#has | foo has f');
@@ -954,7 +954,11 @@ test('String', function () {
   equal('the rain in     spain    falls mainly   on     the        plain'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact | basic');
   equal('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact | with newlines');
   equal('\n\n\n\n           \t\t\t\t          \n\n      \t'.compact(), '', 'String#compact | with newlines and tabs');
-  equal('　　　日本語　　　　　の　　　　　スペース　　　　　も　　'.compact(), '日本語　の　スペース　も', 'String#compact | japanese spaces');
+
+  var largeJapaneseSpaces = '　　　日本語　　　　　の　　　　　スペース　　　　　も　　';
+  var compactedWithoutJapaneseSpaces = '日本語　の　スペース　も';
+  var compactedWithTrailingJapaneseSpaces = '　日本語　の　スペース　も　';
+  equalsWithException(largeJapaneseSpaces.compact(), compactedWithoutJapaneseSpaces, { mootools: (jQuery.browser.msie ? compactedWithTrailingJapaneseSpaces : compactedWithoutJapaneseSpaces) }, 'String#compact | japanese spaces');
 
 
 
@@ -1590,7 +1594,7 @@ test('Array', function () {
   ['a'].some(function(el, i, a){
     equals(el, 'a', 'Array#some | first parameter is the element');
     equals(i, 0, 'Array#some | second parameter is the index');
-    sameWithException(a, ['a'], { environment: 'prototype', result: undefined }, 'Array#some | third parameter is the array');
+    sameWithException(a, ['a'], { prototype: undefined }, 'Array#some | third parameter is the array');
     equals(this, 'this', 'Array#some | scope is passed properly');
   }, 'this');
 
@@ -1606,7 +1610,7 @@ test('Array', function () {
   ['a'].filter(function(el, i, a){
     equals(el, 'a', 'Array#filter | first parameter is the element');
     equals(i, 0, 'Array#filter | second parameter is the index');
-    sameWithException(a, ['a'], { environment: 'prototype', result: undefined }, 'Array#filter | third parameter is the array');
+    sameWithException(a, ['a'], { prototype: undefined }, 'Array#filter | third parameter is the array');
     equals(this, 'this', 'Array#filter | scope is passed properly');
   }, 'this');
 
@@ -1654,7 +1658,7 @@ test('Array', function () {
   ['a'].each(function(el, i, a){
     equals(el, 'a', 'Array#each | first parameter is the element');
     equals(i, 0, 'Array#each | second parameter is the index');
-    sameWithException(a, ['a'], { environment: 'prototype', result: undefined }, 'Array#each | third parameter is the array');
+    sameWithException(a, ['a'], { prototype: undefined }, 'Array#each | third parameter is the array');
     equals(this, 'this', 'Array#each | scope is passed properly');
   }, 'this');
 
@@ -1669,7 +1673,7 @@ test('Array', function () {
   ['a'].map(function(el, i, a){
     equals(el, 'a', 'Array#map | first parameter is the element');
     equals(i, 0, 'Array#map | second parameter is the index');
-    sameWithException(a, ['a'], { environment: 'prototype', result: undefined }, 'Array#map | third parameter is the array');
+    sameWithException(a, ['a'], { prototype: undefined }, 'Array#map | third parameter is the array');
     equals(this, 'this', 'Array#map | scope is passed properly');
   }, 'this');
 
@@ -1687,7 +1691,7 @@ test('Array', function () {
   same([{ foo: 'bar' }].collect(function(el){ return el['foo']; }), ['bar'], 'Array#collect | with key "foo"');
 
   ['a'].collect(function(el, i, a){
-    sameWithException(a, ['a'], { environment: 'prototype', result: undefined }, 'Array#collect | third paramteter is the array');
+    sameWithException(a, ['a'], { prototype: undefined }, 'Array#collect | third paramteter is the array');
     equals(el, 'a', 'Array#collect | first paramteter is the element');
     equals(i, 0, 'Array#collect | second paramteter is the index');
     equals(this, 'this', 'Array#collect | scope is passed properly');
@@ -1919,12 +1923,12 @@ test('Array', function () {
   same([3].intersect([]), [], 'Array#intersect | 3 + empty array');
   same([].intersect([]), [], 'Array#intersect | 2 empty arrays');
   same([null].intersect([]), [], 'Array#intersect | [null] + empty array');
-  sameWithException([null].intersect([null]), [null], { environment: 'prototype', result: [] }, 'Array#intersect | [null] + [null]');
-  sameWithException([false].intersect([false]), [false], { environment: 'prototype', result: [] }, 'Array#intersect | [false] + [false]');
+  sameWithException([null].intersect([null]), [null], { prototype: [] }, 'Array#intersect | [null] + [null]');
+  sameWithException([false].intersect([false]), [false], { prototype: [] }, 'Array#intersect | [false] + [false]');
   same([false].intersect([0]), [], 'Array#intersect | [false] + [0]');
   same([false].intersect([null]), [], 'Array#intersect | [false] + [null]');
   same([false].intersect([undefined]), [], 'Array#intersect | [false] + [undefined]');
-  sameWithException([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], { environment: 'prototype', result: [] }, 'Array#intersect | a:1,b:2 + b:2,c:3');
+  sameWithException([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], { prototype: [] }, 'Array#intersect | a:1,b:2 + b:2,c:3');
   same([1,1,3].intersect([1,5,6]), [1], 'Array#intersect | 1,1,3 + 1,5,6');
   same([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
   testWithErrorHandling(function(){
@@ -2012,62 +2016,62 @@ test('Array', function () {
 
 
   same(['a','b','c'].first(), 'a', 'Array#first | no argument');
-  sameWithException(['a','b','c'].first(1), ['a'], { environment: 'prototype', result: 'a' }, 'Array#first | 1');
-  sameWithException(['a','b','c'].first(2), ['a','b'], { environment: 'prototype', result: 'a' }, 'Array#first | 2');
-  sameWithException(['a','b','c'].first(3), ['a','b','c'], { environment: 'prototype', result: 'a' }, 'Array#first | 3');
-  sameWithException(['a','b','c'].first(4), ['a','b','c'], { environment: 'prototype', result: 'a' }, 'Array#first | 4');
-  sameWithException(['a','b','c'].first(-1), [], { environment: 'prototype', result: 'a' }, 'Array#first | -1');
-  sameWithException(['a','b','c'].first(-2), [], { environment: 'prototype', result: 'a' }, 'Array#first | -2');
-  sameWithException(['a','b','c'].first(-3), [], { environment: 'prototype', result: 'a' }, 'Array#first | -3');
+  sameWithException(['a','b','c'].first(1), ['a'], { prototype: 'a' }, 'Array#first | 1');
+  sameWithException(['a','b','c'].first(2), ['a','b'], { prototype: 'a' }, 'Array#first | 2');
+  sameWithException(['a','b','c'].first(3), ['a','b','c'], { prototype: 'a' }, 'Array#first | 3');
+  sameWithException(['a','b','c'].first(4), ['a','b','c'], { prototype: 'a' }, 'Array#first | 4');
+  sameWithException(['a','b','c'].first(-1), [], { prototype: 'a' }, 'Array#first | -1');
+  sameWithException(['a','b','c'].first(-2), [], { prototype: 'a' }, 'Array#first | -2');
+  sameWithException(['a','b','c'].first(-3), [], { prototype: 'a' }, 'Array#first | -3');
 
 
   same(['a','b','c'].last(), 'c', 'Array#last | no argument');
-  sameWithException(['a','b','c'].last(1), ['c'], { environment: 'prototype', result: 'c' }, 'Array#last | 1');
-  sameWithException(['a','b','c'].last(2), ['b','c'], { environment: 'prototype', result: 'c' }, 'Array#last | 2');
-  sameWithException(['a','b','c'].last(3), ['a','b','c'], { environment: 'prototype', result: 'c' }, 'Array#last | 3');
-  sameWithException(['a','b','c'].last(4), ['a','b','c'], { environment: 'prototype', result: 'c' }, 'Array#last | 4');
-  sameWithException(['a','b','c'].last(-1), [], { environment: 'prototype', result: 'c' }, 'Array#last | -1');
-  sameWithException(['a','b','c'].last(-2), [], { environment: 'prototype', result: 'c' }, 'Array#last | -2');
-  sameWithException(['a','b','c'].last(-3), [], { environment: 'prototype', result: 'c' }, 'Array#last | -3');
-  sameWithException(['a','b','c'].last(-4), [], { environment: 'prototype', result: 'c' }, 'Array#last | -4');
+  sameWithException(['a','b','c'].last(1), ['c'], { prototype: 'c' }, 'Array#last | 1');
+  sameWithException(['a','b','c'].last(2), ['b','c'], { prototype: 'c' }, 'Array#last | 2');
+  sameWithException(['a','b','c'].last(3), ['a','b','c'], { prototype: 'c' }, 'Array#last | 3');
+  sameWithException(['a','b','c'].last(4), ['a','b','c'], { prototype: 'c' }, 'Array#last | 4');
+  sameWithException(['a','b','c'].last(-1), [], { prototype: 'c' }, 'Array#last | -1');
+  sameWithException(['a','b','c'].last(-2), [], { prototype: 'c' }, 'Array#last | -2');
+  sameWithException(['a','b','c'].last(-3), [], { prototype: 'c' }, 'Array#last | -3');
+  sameWithException(['a','b','c'].last(-4), [], { prototype: 'c' }, 'Array#last | -4');
 
 
 
 
 
 
-  sameWithException([12,87,55].min(), [12], { environment: 'prototype', result: 12 }, 'Array#min | 12');
-  sameWithException([-12,-87,-55].min(), [-87], { environment: 'prototype', result: -87 }, 'Array#min | -87');
-  sameWithException([5,5,5].min(), [5], { environment: 'prototype', result: 5 }, 'Array#min | 5 is uniqued');
-  sameWithException(['a','b','c'].min(), [], { environment: 'prototype', result: 'a' }, 'Array#min | strings are not counted');
-  sameWithException([].min(), [], { environment: 'prototype', result: undefined }, 'Array#min | empty array');
-  sameWithException([null].min(), [], { environment: 'prototype', result: null }, 'Array#min | [null]');
-  sameWithException([undefined].min(), [], { environment: 'prototype', result: undefined }, 'Array#min | [undefined]');
-  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), [{a:1,b:5}], { environment: 'prototype', result: 1 }, 'Array#min | key "a"');
-  sameWithException([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:3,b:3}], { environment: 'prototype', result: 3 }, 'Array#min | key "b", 1 found');
-  sameWithException([{a:1,b:5},{a:3,b:3},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:3,b:3}], { environment: 'prototype', result: 3 }, 'Array#min | key "b", 1 found');
-  sameWithException([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], { environment: 'prototype', result: 3 }, 'Array#min | key "b", 2 found');
-  sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), [{a:-1,b:-5}], { environment: 'prototype', result: -5 }, 'Array#min | key "b", 1 found');
-  sameWithException(['short','and','mort'].min(function(el){ return el.length; }), ['and'], { environment: 'prototype', result: 3 }, 'Array#min | length');
-  sameWithException(['short','and','mort','fat'].min(function(el){ return el.length; }), ['and','fat'], { environment: 'prototype', result: 3 }, 'Array#min | and,fat');
+  sameWithException([12,87,55].min(), [12], { prototype: 12 }, 'Array#min | 12');
+  sameWithException([-12,-87,-55].min(), [-87], { prototype: -87 }, 'Array#min | -87');
+  sameWithException([5,5,5].min(), [5], { prototype: 5 }, 'Array#min | 5 is uniqued');
+  sameWithException(['a','b','c'].min(), [], { prototype: 'a' }, 'Array#min | strings are not counted');
+  sameWithException([].min(), [], { prototype: undefined }, 'Array#min | empty array');
+  sameWithException([null].min(), [], { prototype: null }, 'Array#min | [null]');
+  sameWithException([undefined].min(), [], { prototype: undefined }, 'Array#min | [undefined]');
+  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el){ return el['a']; }), [{a:1,b:5}], { prototype: 1 }, 'Array#min | key "a"');
+  sameWithException([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:3,b:3}], { prototype: 3 }, 'Array#min | key "b", 1 found');
+  sameWithException([{a:1,b:5},{a:3,b:3},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:3,b:3}], { prototype: 3 }, 'Array#min | key "b", 1 found');
+  sameWithException([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], { prototype: 3 }, 'Array#min | key "b", 2 found');
+  sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), [{a:-1,b:-5}], { prototype: -5 }, 'Array#min | key "b", 1 found');
+  sameWithException(['short','and','mort'].min(function(el){ return el.length; }), ['and'], { prototype: 3 }, 'Array#min | length');
+  sameWithException(['short','and','mort','fat'].min(function(el){ return el.length; }), ['and','fat'], { prototype: 3 }, 'Array#min | and,fat');
 
 
-  sameWithException([12,87,55].max(), [87], { environment: 'prototype', result: 87 }, 'Array#max | 87');
-  sameWithException([-12,-87,-55].max(), [-12], { environment: 'prototype', result: -12 }, 'Array#max | -12');
-  sameWithException([5,5,128].max(), [128], { environment: 'prototype', result: 128 }, 'Array#max | 128');
-  sameWithException([128,128,128].max(), [128], { environment: 'prototype', result: 128 }, 'Array#max | 128 is uniqued');
-  sameWithException(['a','b','c'].max(), [], { environment: 'prototype', result: 'c' }, 'Array#max | strings are not counted');
-  sameWithException([].max(), [], { environment: 'prototype', result: undefined }, 'Array#max | empty array');
-  sameWithException([null].max(), [], { environment: 'prototype', result: null }, 'Array#max | [null]');
-  sameWithException([undefined].max(), [], { environment: 'prototype', result: undefined }, 'Array#max | [undefined]');
-  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), [{a:3,b:5}], { environment: 'prototype', result: 3 }, 'Array#max | key "a"');
-  sameWithException([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:1,b:5}], { environment: 'prototype', result: 5 }, 'Array#max | key "b" returns b:5');
-  sameWithException([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:2,b:4}], { environment: 'prototype', result: 4 }, 'Array#max | key "b" returns b:4');
-  sameWithException([{a:1,b:3},{a:2,b:4},{a:2,b:4}].max(function(el){ return el['b']; }), [{a:2,b:4}], { environment: 'prototype', result: 4 }, 'Array#max | key "b" returns b:4 uniqued');
-  sameWithException([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], { environment: 'prototype', result: 3 }, 'Array#max | key "b", 2 found');
-  sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), [{a:-3,b:-3}], { environment: 'prototype', result: -3 }, 'Array#max | key "b" returns b:-3');
-  sameWithException(['short','and', 'mort'].max(function(el){ return el.length; }), ['short'], { environment: 'prototype', result: 5 }, 'Array#max | length');
-  sameWithException(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), ['short','morts'], { environment: 'prototype', result: 5 }, 'Array#max | short,morts');
+  sameWithException([12,87,55].max(), [87], { prototype: 87 }, 'Array#max | 87');
+  sameWithException([-12,-87,-55].max(), [-12], { prototype: -12 }, 'Array#max | -12');
+  sameWithException([5,5,128].max(), [128], { prototype: 128 }, 'Array#max | 128');
+  sameWithException([128,128,128].max(), [128], { prototype: 128 }, 'Array#max | 128 is uniqued');
+  sameWithException(['a','b','c'].max(), [], { prototype: 'c' }, 'Array#max | strings are not counted');
+  sameWithException([].max(), [], { prototype: undefined }, 'Array#max | empty array');
+  sameWithException([null].max(), [], { prototype: null }, 'Array#max | [null]');
+  sameWithException([undefined].max(), [], { prototype: undefined }, 'Array#max | [undefined]');
+  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el){ return el['a']; }), [{a:3,b:5}], { prototype: 3 }, 'Array#max | key "a"');
+  sameWithException([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:1,b:5}], { prototype: 5 }, 'Array#max | key "b" returns b:5');
+  sameWithException([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:2,b:4}], { prototype: 4 }, 'Array#max | key "b" returns b:4');
+  sameWithException([{a:1,b:3},{a:2,b:4},{a:2,b:4}].max(function(el){ return el['b']; }), [{a:2,b:4}], { prototype: 4 }, 'Array#max | key "b" returns b:4 uniqued');
+  sameWithException([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(function(el){ return el['b']; }), [{a:1,b:3},{a:3,b:3}], { prototype: 3 }, 'Array#max | key "b", 2 found');
+  sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el){ return el['b']; }), [{a:-3,b:-3}], { prototype: -3 }, 'Array#max | key "b" returns b:-3');
+  sameWithException(['short','and', 'mort'].max(function(el){ return el.length; }), ['short'], { prototype: 5 }, 'Array#max | length');
+  sameWithException(['short','and', 'morts', 'fat'].max(function(el){ return el.length; }), ['short','morts'], { prototype: 5 }, 'Array#max | short,morts');
 
 
 
@@ -2199,7 +2203,7 @@ test('Array', function () {
   same([1].inGroupsOf(3, true), [[1,true,true]], 'Array#inGroupsOf | pad with true');
   same([1].inGroupsOf(3, false), [[1,false,false]], 'Array#inGroupsOf | pad with false');
 
-  sameWithException([1].inGroupsOf(), [[1]], { environment: 'prototype', result: [] }, 'Array#inGroupsOf | no argument');
+  sameWithException([1].inGroupsOf(), [[1]], { prototype: [] }, 'Array#inGroupsOf | no argument');
   same([1].inGroupsOf(1, null), [[1]], 'Array#inGroupsOf | pad with null | no argument');
 
   same([1].inGroupsOf(0), [1], 'Array#inGroupsOf | 0');
@@ -2232,13 +2236,13 @@ test('Array', function () {
   same([1,2,undefined,3].compact(), [1,2,3], 'Array#compact | 1,2,undefined,3');
   same([undefined,undefined,undefined].compact(), [], 'Array#compact | undefined,undefined,undefined');
   same([null,null,null].compact(), [], 'Array#compact | null,null,null');
-  sameWithException([NaN,NaN,NaN].compact(), [], { environment: 'prototype', result: [NaN,NaN,NaN] }, 'Array#compact | NaN,NaN,NaN');
+  sameWithException([NaN,NaN,NaN].compact(), [], { prototype: [NaN,NaN,NaN] }, 'Array#compact | NaN,NaN,NaN');
   same(['','',''], ['','',''], 'Array#compact | empty strings');
   same([false,false,false].compact(), [false,false,false], 'Array#compact | false is left alone');
   same([0,1,2].compact(), [0,1,2], 'Array#compact | 0,1,2');
   same([].compact(), [], 'Array#compact | empty array');
-  sameWithException([null,[null],[false,[null,undefined,3]]].compact(), [[],[false,[3]]], { environment: 'prototype', result: [[null],[false,[null,undefined,3]]] }, 'Array#compact | deep compacts as well');
-  sameWithException([null,null,null,[null],null].compact(), [[]], { environment: 'prototype', result: [[null]] }, "Array#compact | deep compact doesn't have index conflicts");
+  sameWithException([null,[null],[false,[null,undefined,3]]].compact(), [[],[false,[3]]], { prototype: [[null],[false,[null,undefined,3]]] }, 'Array#compact | deep compacts as well');
+  sameWithException([null,null,null,[null],null].compact(), [[]], { prototype: [[null]] }, "Array#compact | deep compact doesn't have index conflicts");
 
 
 
@@ -4365,9 +4369,14 @@ test('Object', function () {
   });
 
 
+  // Note here that the need for this complicated syntax is that Prototype's Object.keys method
+  // is incorrectly reporting keys up the prototype chain.
+  var objectPrototypeMethods = ['keys','values','each','merge','clone','isEmpty','equals'];
+  var objectPrototypeMethodReferences = objectPrototypeMethods.map(function(m){ return Object.create()[m]; });
+
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  same(obj.keys(), keys, "Object#keys | returns object's keys");
+  sameWithException(obj.keys(), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object#keys | returns object's keys");
   count = 0;
   obj.keys(function(key){
     equal(key, keys[count], 'Object#keys | accepts a block');
@@ -4376,12 +4385,12 @@ test('Object', function () {
 
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  same(Object.create().keys(), [], 'Object#keys | empty object');
-  same(Object.keys(Object.create()), [], 'Object#keys | empty object');
+  sameWithException(Object.create().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object');
+  sameWithException(Object.keys(Object.create()), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object');
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  same(Object.keys(obj), keys, "Object.keys | returns object's keys");
+  sameWithException(Object.keys(obj), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object.keys | returns object's keys");
   count = 0;
   Object.keys(obj, function(key){
     equal(key, keys[count], 'Object.keys | accepts a block');
@@ -4392,7 +4401,7 @@ test('Object', function () {
 
 
 
-  same(obj.values(), values, "Object#values | returns object's values");
+  sameWithException(obj.values(), values, { prototype: values.concat(objectPrototypeMethodReferences) }, "Object#values | returns object's values");
   count = 0;
   obj.values(function(value){
     equal(value, values[count], 'Object#values | accepts a block');
@@ -4401,7 +4410,7 @@ test('Object', function () {
 
   equals(count, 3, 'Object#values | accepts a block | iterated properly');
 
-  same(Object.values(obj), values, "Object.values | returns object's values");
+  sameWithException(Object.values(obj), values, { prototype: values.concat(objectPrototypeMethodReferences) }, "Object.values | returns object's values");
   count = 0;
   Object.values(obj, function(value){
     equal(value, values[count], 'Object.values | accepts a block');
@@ -4409,8 +4418,8 @@ test('Object', function () {
   });
   equals(count, 3, 'Object.values | accepts a block | iterated properly');
 
-  same(Object.create().values(), [], 'Object#values | empty object');
-  same(Object.values(Object.create()), [], 'Object#values | empty object');
+  sameWithException(Object.create().values(), [], { prototype: objectPrototypeMethodReferences }, 'Object#values | empty object');
+  sameWithException(Object.values(Object.create()), [], { prototype: objectPrototypeMethodReferences }, 'Object#values | empty object');
 
 
 
@@ -4492,7 +4501,7 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equals(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
-  equals(obj2.foo.jumpy, 'jump', 'Object.clone | cloned object is not modified');
+  equalsWithException(obj2.foo.jumpy, 'jump', { prototype: 'hump' }, 'Object.clone | cloned object is not modified');
 
   obj1 = {
     foo: {
@@ -4503,15 +4512,15 @@ test('Object', function () {
 
   obj1.foo.bar = ['a','b','c'];
   same(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
-  same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+  sameWithException(obj2.foo.bar, [1,2,3], { prototype: ['a','b','c'] }, 'Object#clone | cloned object is not modified');
 
 
 
-  // Note here that the need for these complicated syntaxes is that Mootools Object.clone is incorrectly 
+  // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
   // cloning properties in the prototype chain directly into the object itself.
-  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: 'bar' }).clone(), { foo: 'bar' }), true, { mootools: false }, 'Object#clone | basic clone');
-  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, { mootools: false }, 'Object#clone | complex clone');
-  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, { mootools: false }, 'Object#clone | deep clone');
+  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: 'bar' }).clone(), { foo: 'bar' }), true, { prototype: false, mootools: false }, 'Object#clone | basic clone');
+  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, { prototype: false, mootools: false }, 'Object#clone | complex clone');
+  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, { prototype: false, mootools: false }, 'Object#clone | deep clone');
 
   equals(Object.create({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
 
@@ -4529,9 +4538,10 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equals(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
-  equals(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
+  equalsWithException(obj2.foo.jumpy, 'jump', { prototype: 'hump' }, 'Object#clone | cloned object is not modified');
 
-  sameWithException(obj2.keys(), ['broken','foo'], { mootools: ['broken','foo','keys','values','each','merge','clone','isEmpty','equals'] }, 'Object#clone | cloned objects are themselves extended');
+  var withPrototypes = ['broken','foo'].concat(objectPrototypeMethods).sort();
+  sameWithException(obj2.keys().sort(), ['broken','foo'], { prototype: withPrototypes, mootools: withPrototypes }, 'Object#clone | cloned objects are themselves extended');
 
   obj1 = Object.create({
     foo: {
@@ -4542,7 +4552,7 @@ test('Object', function () {
 
   obj1.foo.bar[1] = 'b';
   same(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
-  same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+  sameWithException(obj2.foo.bar, [1,2,3], { prototype: [1,'b',3] }, 'Object#clone | cloned object is not modified');
 
   equals(Object.isEmpty({}), true, 'Object.isEmpty | object is empty');
   equals(Object.isEmpty({ broken: 'wear' }), false, 'Object.isEmpty | object is not empty');
@@ -4679,7 +4689,7 @@ test('Function', function () {
     start();
     equalsWithException(one, 'one', { mootools: 'two' }, 'Function#delay | first parameter');
     equalsWithException(two, 'two', { mootools: undefined }, 'Function#delay | second parameter');
-    equalsWithException(shouldBeFalse, false, { mootools: true }, 'Function#delay | cancel is working');
+    equalsWithException(shouldBeFalse, false, { prototype: true, mootools: true }, 'Function#delay | cancel is working');
   };
 
   delayReturn = delayedFunction.delay(10, 'one', 'two');

@@ -86,7 +86,6 @@ var QUnitBridge = function(expression){
 
   this.toMatch = function(reg){
     return reg.test(expression);
-    console.info('whmmm', reg, 'what',  expression, 'who');
   }
 
   this.not = {
