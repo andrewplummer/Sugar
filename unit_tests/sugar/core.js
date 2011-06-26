@@ -76,32 +76,29 @@ var strictlyEqual = function(actual, expected, message){
 }
 
 var equalsWithException = function(actual, expected, exception, message){
-  if(exception.environment == environment){
-    equals(actual, exception.result, message);
+  if(exception.hasOwnProperty(environment)) expected = exception[environment];
+  if(expected == 'NaN'){
+    equals(isNaN(actual), true, message);
   } else {
     equals(actual, expected, message);
   }
 }
 
 var sameWithException = function(actual, expected, exception, message){
-  if(exception.environment == environment){
-    same(actual, exception.result, message);
-  } else {
-    same(actual, expected, message);
-  }
+  if(exception[environment]) expected = exception[environment];
+  same(actual, expected, message);
 }
 
 var strictlyEqualsWithException = function(actual, expected, exception, message){
   equalsWithException(actual === expected, true, exception, message + ' | strict equality');
 }
 
-var testWithErrorHandling = function(test, expected){
+var testWithErrorHandling = function(test, environments){
   try {
     test.call();
   } catch(error){
-    for(var i = 0; i < expected.length; i++){
-      var e = expected[i];
-      if(e.environment == environment){
+    for(var i = 0; i < environments.length; i++){
+      if(environments[i] == environment){
         // Allow test to fail
         if(console){
           console.info('Skipping test with exepction "' + error.message + '" for environment ' + environment);
@@ -125,6 +122,9 @@ var deepEqualWithoutPrototyping = function(actual, expected){
     } else if(actual[key] !== expected[key]){
       return false;
     }
+  }
+  if((actual && !expected) || (expected && !actual)){
+    return false;
   }
   return true;
 }
@@ -170,12 +170,12 @@ test('Number', function () {
   equals((-5.14).ceil(), -5, 'Number#ceil | -5.14');
   equals((-5).ceil(), -5, 'Number#ceil | -5');
   equals((4417.1318).ceil(0), 4418, 'Number#ceil | 0');
-  equalsWithException((4417.1318).ceil(1), 4417.2, { environment: 'prototype', result: 4418 }, 'Number#ceil | 1');
-  equalsWithException((4417.1318).ceil(2), 4417.14, { environment: 'prototype', result: 4418 }, 'Number#ceil | 2');
-  equalsWithException((4417.1318).ceil(3), 4417.132, { environment: 'prototype', result: 4418 }, 'Number#ceil | 3');
-  equalsWithException((4417.1318).ceil(-1), 4420, { environment: 'prototype', result: 4418 }, 'Number#ceil | -1');
-  equalsWithException((4417.1318).ceil(-2), 4500, { environment: 'prototype', result: 4418 }, 'Number#ceil | -2');
-  equalsWithException((4417.1318).ceil(-3), 5000, { environment: 'prototype', result: 4418 }, 'Number#ceil | -3');
+  equalsWithException((4417.1318).ceil(1), 4417.2, { prototype: 4418, mootools: 4418 }, 'Number#ceil | 1');
+  equalsWithException((4417.1318).ceil(2), 4417.14, { prototype: 4418, mootools: 4418 }, 'Number#ceil | 2');
+  equalsWithException((4417.1318).ceil(3), 4417.132, { prototype: 4418, mootools: 4418 }, 'Number#ceil | 3');
+  equalsWithException((4417.1318).ceil(-1), 4420, { prototype: 4418, mootools: 4418 }, 'Number#ceil | -1');
+  equalsWithException((4417.1318).ceil(-2), 4500, { prototype: 4418, mootools: 4418 }, 'Number#ceil | -2');
+  equalsWithException((4417.1318).ceil(-3), 5000, { prototype: 4418, mootools: 4418 }, 'Number#ceil | -3');
 
   equals((5.5).floor(), 5, 'Number#floor | 5.5');
   equals((5.14).floor(), 5, 'Number#floor | 5.14');
@@ -185,12 +185,12 @@ test('Number', function () {
   equals((-5.14).floor(), -6, 'Number#floor | -5.14');
   equals((-5).floor(), -5, 'Number#floor | -5');
   equals((4417.1318).floor(0), 4417, 'Number#floor | 0');
-  equalsWithException((4417.1318).floor(1), 4417.1, { environment: 'prototype', result: 4417 }, 'Number#floor | 1');
-  equalsWithException((4417.1318).floor(2), 4417.13, { environment: 'prototype', result: 4417 }, 'Number#floor | 2');
-  equalsWithException((4417.1318).floor(3), 4417.131, { environment: 'prototype', result: 4417 }, 'Number#floor | 3');
-  equalsWithException((4417.1318).floor(-1), 4410, { environment: 'prototype', result: 4417 }, 'Number#floor | -1');
-  equalsWithException((4417.1318).floor(-2), 4400, { environment: 'prototype', result: 4417 }, 'Number#floor | -2');
-  equalsWithException((4417.1318).floor(-3), 4000, { environment: 'prototype', result: 4417 }, 'Number#floor | -3');
+  equalsWithException((4417.1318).floor(1), 4417.1, { prototype: 4417, mootools: 4417 }, 'Number#floor | 1');
+  equalsWithException((4417.1318).floor(2), 4417.13, { prototype: 4417, mootools: 4417 }, 'Number#floor | 2');
+  equalsWithException((4417.1318).floor(3), 4417.131, { prototype: 4417, mootools: 4417 }, 'Number#floor | 3');
+  equalsWithException((4417.1318).floor(-1), 4410, { prototype: 4417, mootools: 4417 }, 'Number#floor | -1');
+  equalsWithException((4417.1318).floor(-2), 4400, { prototype: 4417, mootools: 4417 }, 'Number#floor | -2');
+  equalsWithException((4417.1318).floor(-3), 4000, { prototype: 4417, mootools: 4417 }, 'Number#floor | -3');
 
 
   equals((-5).abs(), 5, 'Number#abs | -5');
@@ -203,8 +203,8 @@ test('Number', function () {
   equals((3).pow(1), 3, 'Number#pow | 3 ^ 1');
   equals((12).pow(2), 144, 'Number#pow | 12 ^ 2');
   equals((3).pow(3), 27, 'Number#pow | 3 ^ 3');
-  equals((3).pow(), 3, 'Number#pow | undefined defaults to 1');
   equals((3).pow(0), 1, 'Number#pow | zero is allowed');
+  equalsWithException((3).pow(), 3, { mootools: 'NaN' }, 'Number#pow | undefined defaults to 1');
 
 
   equals((3).round(), 3, 'Number#round | 3');
@@ -212,18 +212,18 @@ test('Number', function () {
   equals((3.752).round(), 4, 'Number#round | 3.752');
   equals((-3.241).round(), -3, 'Number#round | -3.241');
   equals((-3.752).round(), -4, 'Number#round | -3.752');
-  equalsWithException((3.241).round(1), 3.2, { environment: 'prototype', result: 3 }, 'Number#round | 3.241 to 1 place');
+  equalsWithException((3.241).round(1), 3.2, { prototype: 3 }, 'Number#round | 3.241 to 1 place');
 
-  equalsWithException((3.752).round(1), 3.8, { environment: 'prototype', result: 4 }, 'Number#round | 3.752 to 1 place');
-  equalsWithException((3.241).round(2), 3.24, { environment: 'prototype', result: 3 },  'Number#round | 3.241 to 2 places');
-  equalsWithException((3.752).round(2), 3.75, { environment: 'prototype', result: 4 },  'Number#round | 3.752 to 2 places');
+  equalsWithException((3.752).round(1), 3.8, { prototype: 4 }, 'Number#round | 3.752 to 1 place');
+  equalsWithException((3.241).round(2), 3.24, { prototype: 3 },  'Number#round | 3.241 to 2 places');
+  equalsWithException((3.752).round(2), 3.75, { prototype: 4 },  'Number#round | 3.752 to 2 places');
 
-  equalsWithException((322855.241).round(-2), 322900, { environment: 'prototype', result: 322855 }, 'Number#round | 322855.241 to -2 places');
-  equalsWithException((322855.241).round(-3), 323000, { environment: 'prototype', result: 322855 }, 'Number#round | 322855.241 to -3 places');
-  equalsWithException((322855.241).round(-4), 320000, { environment: 'prototype', result: 322855 }, 'Number#round | 322855.241 to -4 places');
-  equalsWithException((322855.241).round(-6), 0, { environment: 'prototype', result: 322855 }, 'Number#round | 322855.241 to -6 places');
-  equalsWithException((722855.241).round(-6), 1000000, { environment: 'prototype', result: 722855 }, 'Number#round | 722855.241 to -6 places');
-  equalsWithException((722855.241).round(-8), 0, { environment: 'prototype', result: 722855 }, 'Number#round | 722855.241 to -8 places');
+  equalsWithException((322855.241).round(-2), 322900, { prototype: 322855 }, 'Number#round | 322855.241 to -2 places');
+  equalsWithException((322855.241).round(-3), 323000, { prototype: 322855 }, 'Number#round | 322855.241 to -3 places');
+  equalsWithException((322855.241).round(-4), 320000, { prototype: 322855 }, 'Number#round | 322855.241 to -4 places');
+  equalsWithException((322855.241).round(-6), 0, { prototype: 322855 }, 'Number#round | 322855.241 to -6 places');
+  equalsWithException((722855.241).round(-6), 1000000, { prototype: 722855 }, 'Number#round | 722855.241 to -6 places');
+  equalsWithException((722855.241).round(-8), 0, { prototype: 722855 }, 'Number#round | 722855.241 to -8 places');
 
 
   equals((65).chr(), 'A', 'Number#chr | 65');
@@ -389,11 +389,6 @@ test('Number', function () {
   equals((2.5).hex(), '2.8', 'Number#hex | 2.5')
   equals((2553423).hex(), '26f64f', 'Number#hex | 2553423')
 
-
-  equals((24).empty(), false, 'Number#empty | 24');
-  equals((0).empty(), false, 'Number#empty | 24');
-
-
   equals((0).seconds(), 0, 'Number#seconds | 0');
   equals((1).seconds(), 1000, 'Number#seconds | 1');
   equals((30).seconds(), 30000, 'Number#seconds | 30');
@@ -515,7 +510,7 @@ test('Number', function () {
   dateEquals((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore | 5 years before christmas');
   dateEquals((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter | 5 years after christmas');
 
-
+  dateEquals((5).hoursBefore(1965, 11, 25), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | accepts numbers');
 
   // Hooking it all up!!
 
@@ -558,9 +553,9 @@ test('String', function () {
 
   var test;
 
-  equalsWithException('reuben sandwich'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'Reuben Sandwich' }, 'String#capitalize | should capitalize first letter of first word only.');
-  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letter');
-  equalsWithException('Reuben sandwich'.capitalize(), 'Reuben sandwich', { environment: 'MooTools 1.2.4', result: 'Reuben Sandwich' }, 'String#capitalize | should leave the string alone');
+  equalsWithException('reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should capitalize first letter of first word only.');
+  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letter');
+  equalsWithException('Reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should leave the string alone');
 
   same('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
 
@@ -757,9 +752,9 @@ test('String', function () {
   equal('HELLO'.startsWith('HELL'), true, 'String#startsWith | HELLO starts with HELL');
   equal('HELLO'.startsWith('hell'), false, 'String#startsWith | HELLO starts with hell');
   equal('HELLO'.startsWith('hell', true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
-  equalsWithException('hello'.startsWith(/hell/), true, { environment: 'prototype', result: false }, 'String#startsWith | accepts regex');
-  equalsWithException('hello'.startsWith(/[a-h]/), true, { environment: 'prototype', result: false }, 'String#startsWith | accepts regex alternates');
-  equalsWithException('HELLO'.startsWith('hell', false), true, { environment: 'prototype', result: false }, 'String#startsWith | case insensitive | HELLO starts with hell');
+  equalsWithException('hello'.startsWith(/hell/), true, { prototype: false }, 'String#startsWith | accepts regex');
+  equalsWithException('hello'.startsWith(/[a-h]/), true, { prototype: false }, 'String#startsWith | accepts regex alternates');
+  equalsWithException('HELLO'.startsWith('hell', false), true, { prototype: false }, 'String#startsWith | case insensitive | HELLO starts with hell');
   equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith | valley girls rock starts with valley girls');
   equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith | valley girls rock starts with valley girls r');
 
@@ -768,23 +763,23 @@ test('String', function () {
   equal('VADER'.endsWith('DER'), true, 'String#endsWith | VADER ends with DER');
   equal('VADER'.endsWith('der'), false, 'String#endsWith | VADER ends with der');
   equal('VADER'.endsWith('DER', false), true, 'String#endsWith | case insensitive | VADER ends with DER');
-  equalsWithException('vader'.endsWith(/der/), true, { environment: 'prototype', result: false }, 'String#endsWith | accepts regex');
-  equalsWithException('vader'.endsWith(/[q-z]/), true, { environment: 'prototype', result: false }, 'String#endsWith | accepts regex alternates');
-  equalsWithException('VADER'.endsWith('der', false), true, { environment: 'prototype', result: false }, 'String#endsWith | case insensitive |  VADER ends with der');
+  equalsWithException('vader'.endsWith(/der/), true, { prototype: false }, 'String#endsWith | accepts regex');
+  equalsWithException('vader'.endsWith(/[q-z]/), true, { prototype: false }, 'String#endsWith | accepts regex alternates');
+  equalsWithException('VADER'.endsWith('der', false), true, { prototype: false }, 'String#endsWith | case insensitive |  VADER ends with der');
   equal('VADER'.endsWith('DER', true), true, 'String#endsWith | case sensitive | VADER ends with DER');
   equal('VADER'.endsWith('der', true), false, 'String#endsWith | case sensitive |  VADER ends with der');
   equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith | vader ends with der');
   equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith | vader ends with der');
 
 
-  equal(''.blank(), true, 'String#blank | blank string');
-  equal('0'.blank(), false, 'String#blank | 0');
-  equal('            '.blank(), true, 'String#blank | successive blanks');
-  equal('\n'.blank(), true, 'String#blank | new line');
-  equal('\t\t\t\t'.blank(), true, 'String#blank | tabs');
-  equal('　　　　　\n　　　'.blank(), true, 'String#blank | japanese zenkaku space');
-  equal('日本語では　「マス」　というの知ってた？'.blank(), false, 'String#blank | japanese');
-  equal('mayonnaise'.blank(), false, 'String#blank | mayonnaise');
+  equal(''.isBlank(), true, 'String#blank | blank string');
+  equal('0'.isBlank(), false, 'String#blank | 0');
+  equal('            '.isBlank(), true, 'String#blank | successive blanks');
+  equal('\n'.isBlank(), true, 'String#blank | new line');
+  equal('\t\t\t\t'.isBlank(), true, 'String#blank | tabs');
+  equal('　　　　　\n　　　'.isBlank(), true, 'String#blank | japanese zenkaku space');
+  equal('日本語では　「マス」　というの知ってた？'.isBlank(), false, 'String#blank | japanese');
+  equal('mayonnaise'.isBlank(), false, 'String#blank | mayonnaise');
 
 
   equal('foo'.has('f'), true, 'String#has | foo has f');
@@ -1016,21 +1011,21 @@ test('String', function () {
   same('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate | slash format');
   same(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
   same('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
-  same('the day after tomorrow'.toDate().toString(), Date.create('the day after tomorrow').toString(), 'String#toDate | relative format');
+  equals('August 25, 1978'.toDate().getTime(), 272818800000, 'String#toDate | relative format');
 
 
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
-  equalsWithException('HOP_ON_POP'.dasherize(), 'hop-on-pop', { environment: 'prototype', result: 'HOP-ON-POP' }, 'String#dasherize | capitals and underscores');
-  equalsWithException('hopOnPop'.dasherize(), 'hop-on-pop', { environment: 'prototype', result: 'hopOnPop' }, 'String#dasherize | camel-case');
-  equalsWithException('hop-on-pop'.camelize(), 'HopOnPop', { environment: 'prototype', result: 'hopOnPop' }, 'String#camelize | dashes');
-  equalsWithException('HOP-ON-POP'.camelize(), 'HopOnPop', { environment: 'prototype', result: 'HOPONPOP' }, 'String#camelize | capital dashes');
-  equalsWithException('hop_on_pop'.camelize(), 'HopOnPop', { environment: 'prototype', result: 'hop_on_pop' }, 'String#camelize | underscores');
+  equalsWithException('HOP_ON_POP'.dasherize(), 'hop-on-pop', { prototype: 'HOP-ON-POP' }, 'String#dasherize | capitals and underscores');
+  equalsWithException('hopOnPop'.dasherize(), 'hop-on-pop', { prototype: 'hopOnPop' }, 'String#dasherize | camel-case');
+  equalsWithException('hop-on-pop'.camelize(), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | dashes');
+  equalsWithException('HOP-ON-POP'.camelize(), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | capital dashes');
+  equalsWithException('hop_on_pop'.camelize(), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | underscores');
   equal('hop-on-pop'.camelize('lower'), 'hopOnPop', 'String#camelize | first false | dashes');
-  equalsWithException('HOP-ON-POP'.camelize('lower'), 'hopOnPop', { environment: 'prototype', result: 'HOPONPOP' }, 'String#camelize | first false | capital dashes');
-  equalsWithException('hop_on_pop'.camelize('lower'), 'hopOnPop', { environment: 'prototype', result: 'hop_on_pop' }, 'String#camelize | first false | underscores');
-  equalsWithException('hop-on-pop'.camelize('upper'), 'HopOnPop', { environment: 'prototype', result: 'hopOnPop' }, 'String#camelize | first true | dashes');
-  equalsWithException('HOP-ON-POP'.camelize('upper'), 'HopOnPop', { environment: 'prototype', result: 'HOPONPOP' }, 'String#camelize | first true | capital dashes');
-  equalsWithException('hop_on_pop'.camelize('upper'), 'HopOnPop', { environment: 'prototype', result: 'hop_on_pop' }, 'String#camelize | first true | underscores');
+  equalsWithException('HOP-ON-POP'.camelize('lower'), 'hopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first false | capital dashes');
+  equalsWithException('hop_on_pop'.camelize('lower'), 'hopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first false | underscores');
+  equalsWithException('hop-on-pop'.camelize('upper'), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | first true | dashes');
+  equalsWithException('HOP-ON-POP'.camelize('upper'), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first true | capital dashes');
+  equalsWithException('hop_on_pop'.camelize('upper'), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first true | underscores');
   equal('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
   equal('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
   equal('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps');
@@ -1189,7 +1184,7 @@ test('String', function () {
       '<p>text with links, &quot;entities&quot; and <b>bold</b> tags</p>' +
     '</div>';
 
-  equalsWithException(html.stripTags('a'), stripped, { environment: 'prototype', result: allStripped }, 'String#stripTags | stripped a tags');
+  equalsWithException(html.stripTags('a'), stripped, { prototype: allStripped }, 'String#stripTags | stripped a tags');
   equal(html.stripTags('a') == html, false, 'String#stripTags | stripped <a> tags was changed');
 
 
@@ -1197,18 +1192,18 @@ test('String', function () {
     '<div class="outer">' +
       '<p>text with links, &quot;entities&quot; and bold tags</p>' +
     '</div>';
-  equalsWithException(html.stripTags('a', 'b'), stripped, { environment: 'prototype', result: allStripped }, 'String#stripTags | stripped <a> and <b> tags');
+  equalsWithException(html.stripTags('a', 'b'), stripped, { prototype: allStripped}, 'String#stripTags | stripped <a> and <b> tags');
 
 
   stripped =
     '<div class="outer">' +
       'text with links, &quot;entities&quot; and <b>bold</b> tags' +
     '</div>';
-  equalsWithException(html.stripTags('p', 'a'), stripped, { environment: 'prototype', result: allStripped }, 'String#stripTags | stripped <p> and <a> tags');
+  equalsWithException(html.stripTags('p', 'a'), stripped, { prototype: allStripped}, 'String#stripTags | stripped <p> and <a> tags');
 
 
   stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>';
-  equalsWithException(html.stripTags('div'), stripped, { environment: 'prototype', result: allStripped }, 'String#stripTags | stripped <div> tags');
+  equalsWithException(html.stripTags('div'), stripped, { prototype: allStripped}, 'String#stripTags | stripped <div> tags');
 
 
   stripped = 'text with links, &quot;entities&quot; and bold tags';
@@ -1216,20 +1211,20 @@ test('String', function () {
 
 
   stripped = '<p>paragraph';
-  equalsWithException(malformed_html.stripTags('div'), stripped, { environment: 'prototype', result: 'paragraph' }, 'String#stripTags | malformed | div tag stripped');
+  equalsWithException(malformed_html.stripTags('div'), stripped, { prototype: 'paragraph' }, 'String#stripTags | malformed | div tag stripped');
 
   stripped = '<div class="outer">paragraph';
-  equalsWithException(malformed_html.stripTags('p'), stripped, { environment: 'prototype', result: 'paragraph' }, 'String#stripTags | malformed | p tags stripped');
+  equalsWithException(malformed_html.stripTags('p'), stripped, { prototype: 'paragraph' }, 'String#stripTags | malformed | p tags stripped');
 
   stripped = 'paragraph';
   equal(malformed_html.stripTags(), stripped, 'String#stripTags | malformed | all tags stripped');
 
 
 
-  equalsWithException('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', { environment: 'prototype', result: '' }, "String#stripTags | does not strip tags that aren't properly closed");
+  equalsWithException('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', { prototype: '' }, "String#stripTags | does not strip tags that aren't properly closed");
   equal('a < b'.stripTags(), 'a < b', 'String#stripTags | does not strip less than');
   equal('a > b'.stripTags(), 'a > b', 'String#stripTags | does not strip greater than');
-  equalsWithException('</foo  >>'.stripTags(), '>', { environment: 'prototype', result: '</foo  >>' }, 'String#stripTags | strips closing tags with white space');
+  equalsWithException('</foo  >>'.stripTags(), '>', { prototype: '</foo  >>' }, 'String#stripTags | strips closing tags with white space');
 
 
 
@@ -1246,17 +1241,17 @@ test('String', function () {
     '</form>';
 
   equal(html.stripTags(), 'label for text:', 'String#stripTags | form | all tags removed');
-  equalsWithException(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', { environment: 'prototype', result: 'label for text:' }, 'String#stripTags | form | input tags stripped');
-  equalsWithException(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', { environment: 'prototype', result: 'label for text:' }, 'String#stripTags | form | input, p, and form tags stripped');
+  equalsWithException(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', { prototype: 'label for text:' }, 'String#stripTags | form | input tags stripped');
+  equalsWithException(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', { prototype: 'label for text:' }, 'String#stripTags | form | input, p, and form tags stripped');
 
   /* Stripping namespaced tags */
-  equalsWithException('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', { environment: 'prototype', result: '<xsl:template>foobar</xsl:template>' }, 'String#stripTags | strips tags with xml namespaces');
-  equalsWithException('<xsl:template>foobar</xsl:template>'.stripTags('xsl:template'), 'foobar', { environment: 'prototype', result: '<xsl:template>foobar</xsl:template>' }, 'String#stripTags | strips xsl:template');
-  equalsWithException('<xsl/template>foobar</xsl/template>'.stripTags('xsl/template'), 'foobar', { environment: 'prototype', result: '<xsl/template>foobar</xsl/template>' }, 'String#stripTags | strips xsl/template');
+  equalsWithException('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', { prototype: '<xsl:template>foobar</xsl:template>' }, 'String#stripTags | strips tags with xml namespaces');
+  equalsWithException('<xsl:template>foobar</xsl:template>'.stripTags('xsl:template'), 'foobar', { prototype: '<xsl:template>foobar</xsl:template>' }, 'String#stripTags | strips xsl:template');
+  equalsWithException('<xsl/template>foobar</xsl/template>'.stripTags('xsl/template'), 'foobar', { prototype: '<xsl/template>foobar</xsl/template>' }, 'String#stripTags | strips xsl/template');
 
 
   /* No errors on RegExp */
-  equalsWithException('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', { environment: 'prototype', result: '<xsl(template>foobar</xsl(template>' }, 'String#stripTags | no regexp errors on tokens');
+  equalsWithException('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', { prototype: '<xsl(template>foobar</xsl(template>' }, 'String#stripTags | no regexp errors on tokens');
 
 
 
@@ -1385,11 +1380,11 @@ test('String', function () {
   strictlyEqual(''.to(0), '', 'String#to | blank');
   strictlyEqual('wasabi'.to(3), 'wasa', 'String#to | to pos 3');
   strictlyEqual(''.dasherize(), '', 'String#dasherize | blank');
-  strictlyEqualsWithException('noFingWay'.dasherize(), 'no-fing-way', { environment: 'prototype', result: false }, 'String#dasherize | noFingWay');
+  strictlyEqualsWithException('noFingWay'.dasherize(), 'no-fing-way', { prototype: false }, 'String#dasherize | noFingWay');
   strictlyEqual(''.underscore(), '', 'String#underscore | blank');
   strictlyEqual('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
   strictlyEqual(''.camelize(), '', 'String#camelize | blank');
-  strictlyEqualsWithException('no-fing-way'.camelize(), 'NoFingWay', { environment: 'prototype', result: false }, 'String#camelize | no-fing-way');
+  strictlyEqualsWithException('no-fing-way'.camelize(), 'NoFingWay', { prototype: false }, 'String#camelize | no-fing-way');
   strictlyEqual(''.titleize(), '', 'String#titleize | blank');
   strictlyEqual('chilled monkey brains'.titleize(), 'Chilled Monkey Brains', 'String#titleize | chilled monkey brains');
   strictlyEqual(''.stripTags(), '', 'String#stripTags | blank');
@@ -1551,7 +1546,7 @@ test('Array', function () {
   ['a'].every(function(el, i, a){
     equals(el, 'a', 'Array#every | First parameter is the element');
     equals(i, 0, 'Array#every | Second parameter is the index');
-    sameWithException(a, ['a'], { environment: 'prototype', result: undefined }, 'Array#every | Third parameter is the array');
+    sameWithException(a, ['a'], { prototype: undefined }, 'Array#every | Third parameter is the array');
     equals(this, 'this', 'Array#every | Scope is passed properly');
   }, 'this');
 
@@ -1560,7 +1555,7 @@ test('Array', function () {
     same([{name:'john',age:25}].all({name:'john',age:25}), true, 'Array#all | handles complex objects');
     same([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#all | simple string mistakenly passed for complex objects');
     same([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, "Array#all | john isn't all");
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
 
 
@@ -1738,7 +1733,7 @@ test('Array', function () {
     same(['foo','bar'].find(/f+/), 'foo', 'Array#find | /f+/');
     same(['foo','bar'].find(/r+/), 'bar', 'Array#find | /r+/');
     same(['foo','bar'].find(/q+/), undefined, 'Array#find | /q+/');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
   same([1,2,3].find(function(e){ return e > 0; }), 1, 'Array#find | greater than 0');
   same([1,2,3].find(function(e){ return e > 2; }), 3, 'Array#find | greater than 2');
@@ -1748,7 +1743,7 @@ test('Array', function () {
 
   testWithErrorHandling(function(){
     same([null, null].find(null), null, 'Array#find | first null');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
 
 
@@ -1769,7 +1764,7 @@ test('Array', function () {
     same(['foo','bar'].findAll(/f+/), ['foo'], 'Array#findAll | /f+/');
     same(['foo','bar'].findAll(/[a-f]/), ['foo','bar'], 'Array#findAll | /[a-f]/');
     same(['foo','bar'].findAll(/q+/), [], 'Array#findAll | /q+/');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
   same([1,2,3].findAll(function(e){ return e > 0; }), [1,2,3], 'Array#findAll | greater than 0');
   same([1,2,3].findAll(function(e){ return e > 1; }), [2,3], 'Array#findAll | greater than 1');
@@ -1780,7 +1775,7 @@ test('Array', function () {
 
   testWithErrorHandling(function(){
     same([null, null].findAll(null), [null, null], 'Array#findAll | null');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
 
 
@@ -1911,7 +1906,7 @@ test('Array', function () {
   same([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
   testWithErrorHandling(function(){
     same([1,2,3].intersect(1), [1], 'Array#intersect | 1,2,3 + 1');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
 
 
@@ -1939,29 +1934,29 @@ test('Array', function () {
 
 
 
-  same(['a','b','c'].at(0), 'a', 'Array#at | a,b,c | 0');
-  same(['a','b','c'].at(1), 'b', 'Array#at | a,b,c | 1');
-  same(['a','b','c'].at(2), 'c', 'Array#at | a,b,c | 2');
-  same(['a','b','c'].at(3), 'a', 'Array#at | a,b,c | 3');
-  same(['a','b','c'].at(-1), 'c', 'Array#at | a,b,c | -1');
-  same(['a','b','c'].at(-2), 'b', 'Array#at | a,b,c | -2');
-  same(['a','b','c'].at(-3), 'a', 'Array#at | a,b,c | -3');
-  same(['a','b','c'].at(-4), 'c', 'Array#at | a,b,c | -3');
+  equals(['a','b','c'].at(0), 'a', 'Array#at | a,b,c | 0');
+  equals(['a','b','c'].at(1), 'b', 'Array#at | a,b,c | 1');
+  equals(['a','b','c'].at(2), 'c', 'Array#at | a,b,c | 2');
+  equals(['a','b','c'].at(3), 'a', 'Array#at | a,b,c | 3');
+  equals(['a','b','c'].at(-1), 'c', 'Array#at | a,b,c | -1');
+  equals(['a','b','c'].at(-2), 'b', 'Array#at | a,b,c | -2');
+  equals(['a','b','c'].at(-3), 'a', 'Array#at | a,b,c | -3');
+  equals(['a','b','c'].at(-4), 'c', 'Array#at | a,b,c | -3');
 
-  same(['a','b','c'].at(0, false), 'a', 'Array#at | a,b,c | 0');
-  same(['a','b','c'].at(1, false), 'b', 'Array#at | a,b,c | 1');
-  same(['a','b','c'].at(2, false), 'c', 'Array#at | a,b,c | 2');
+  equals(['a','b','c'].at(0, false), 'a', 'Array#at | a,b,c | 0');
+  equals(['a','b','c'].at(1, false), 'b', 'Array#at | a,b,c | 1');
+  equals(['a','b','c'].at(2, false), 'c', 'Array#at | a,b,c | 2');
   equals(['a','b','c'].at(3, false), null, 'Array#at | a,b,c | 3');
-  same(['a','b','c'].at(-1, false), 'c', 'Array#at | a,b,c | -1');
-  same(['a','b','c'].at(-2, false), 'b', 'Array#at | a,b,c | -2');
-  same(['a','b','c'].at(-3, false), 'a', 'Array#at | a,b,c | -3');
+  equals(['a','b','c'].at(-1, false), null, 'Array#at | a,b,c | -1');
+  equals(['a','b','c'].at(-2, false), null, 'Array#at | a,b,c | -2');
+  equals(['a','b','c'].at(-3, false), null, 'Array#at | a,b,c | -3');
   equals(['a','b','c'].at(-4, false), null, 'Array#at | a,b,c | -4');
-  same(['a','b','c'].at(), null, 'Array#at | a,b,c | no argument');
-  same([false].at(0), false, 'Array#at | false | 0');
-  same(['a'].at(0), 'a', 'Array#at | a | 0');
+  equals(['a','b','c'].at(), null, 'Array#at | a,b,c | no argument');
+  equals([false].at(0), false, 'Array#at | false | 0');
+  equals(['a'].at(0), 'a', 'Array#at | a | 0');
   equals(['a'].at(1), 'a', 'Array#at | a | 1');
   equals(['a'].at(1, false), null, 'Array#at | a | 1');
-  same(['a'].at(-1), 'a', 'Array#at | a | -1');
+  equals(['a'].at(-1), 'a', 'Array#at | a | -1');
   same(['a','b','c','d','e','f'].at(0,2,4), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4');
   same(['a','b','c','d','e','f'].at(1,3,5), ['b','d','f'], 'Array#at | a,b,c,d,e,f | 1,3,5');
   same(['a','b','c','d','e','f'].at(0,2,4,6), ['a','c','e','a'], 'Array#at | a,b,c,d,e,f | 0,2,4,6');
@@ -2080,7 +2075,7 @@ test('Array', function () {
   contains(people.least(function(person){ return person.age; }).age, [52,13], 'Array#least | age');
   testWithErrorHandling(function(){
     same(people.least(function(person){ return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | age and sorted by age');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
   same(people.least(function(person){ return person.hair; }), [], 'Array#least | hair');
 
@@ -2132,7 +2127,7 @@ test('Array', function () {
   testWithErrorHandling(function(){
     people = people.sortBy('hair');
     same(people.groupBy(function(p){ return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
 
 
@@ -2323,14 +2318,14 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].empty(), false, 'Array#empty | 1,2,3');
-  equal([].empty(), true, 'Array#empty | empty array');
-  equal([null].empty(), true, 'Array#empty | [null]');
-  equal([undefined].empty(), true, 'Array#empty | [undefined]');
-  equal([null,null].empty(), true, 'Array#empty | [null,null]');
-  equal([undefined,undefined].empty(), true, 'Array#empty | [undefined,undefined]');
-  equal([false,false].empty(), false, 'Array#empty | [false,false]');
-  equal([0,0].empty(), false, 'Array#empty | [0,0]');
+  equal([1,2,3].isEmpty(), false, 'Array#empty | 1,2,3');
+  equal([].isEmpty(), true, 'Array#empty | empty array');
+  equal([null].isEmpty(), true, 'Array#empty | [null]');
+  equal([undefined].isEmpty(), true, 'Array#empty | [undefined]');
+  equal([null,null].isEmpty(), true, 'Array#empty | [null,null]');
+  equal([undefined,undefined].isEmpty(), true, 'Array#empty | [undefined,undefined]');
+  equal([false,false].isEmpty(), false, 'Array#empty | [false,false]');
+  equal([0,0].isEmpty(), false, 'Array#empty | [0,0]');
 
 
 
@@ -2347,7 +2342,7 @@ test('Array', function () {
     same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any | objects | 1');
     equal([0].any(0), true, 'Array#any | [0] | 0');
     same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any | objects | a:1');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
   equal(['a','b','c'].any(function(e){ return e.length > 1; }), false, 'Array#any | alphabet | length greater than 1');
   equal(['a','b','c'].any(function(e){ return e.length < 2; }), true, 'Array#any | alphabet | length less than 2');
@@ -2391,7 +2386,7 @@ test('Array', function () {
     equal(['a','b','c'].none(/[m-z]/), true, 'Array#none | alphabet | /[m-z]/');
     same([{a:1},{a:2},{a:1}].none(1), true, 'Array#none | objects | 1');
     same([{a:1},{a:2},{a:1}].none({a:1}), false, 'Array#none | objects | a:1');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
   equal(['a','b','c'].none(function(e){ return e.length > 1; }), true, 'Array#none | alphabet | length is greater than 1');
   equal(['a','b','c'].none(function(e){ return e.length < 2; }), false, 'Array#none | alphabet | length is less than 2');
@@ -2417,7 +2412,7 @@ test('Array', function () {
     same([{a:1},{a:2},{a:1}].all(1), false, 'Array#all | objects | 1');
     same([{a:1},{a:2},{a:1}].all({a:1}), false, 'Array#all | objects | a:1');
     same([{a:1},{a:1},{a:1}].all({a:1}), true, 'Array#all | objects | a:1 is true for all');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
   equal(['a','b','c'].all(function(e){ return e.length > 1; }), false, 'Array#all | alphabet | length is greater than 1');
   equal(['a','b','c'].all(function(e){ return e.length < 2; }), true, 'Array#all | alphabet | length is less than 2');
@@ -2461,7 +2456,7 @@ test('Array', function () {
     arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
     same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
     same(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy | desc | sort by key "a"');
-  }, [{ environment: 'prototype' }]);
+  }, ['prototype']);
 
 
 
@@ -2512,6 +2507,12 @@ test('Array', function () {
 
 test('Date', function () {
 
+  // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
+  // which interferes with class methods as classes themselves are functions. Taking back this class method
+  // for the sake of the tests.
+  if(Object.isFunction(Date.create())){
+    Date.create = Date.make;
+  };
 
   var day;
   var timezoneOffset = new Date().getTimezoneOffset();
@@ -2522,7 +2523,10 @@ test('Date', function () {
 
   // Invalid date
   equals(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
-  equals(new Date().isValid(), true, 'Date#isValid | new Date valid');
+  testWithErrorHandling(function(){
+    equals(new Date().isValid(), true, 'Date#isValid | new Date valid');
+  }, ['mootools']);
+
   equals(Date.create().isValid(), true, 'Date#isValid | created date is valid');
   equals(Date.create('a fridge too far').isValid(), false, 'Date#isValid | Date#create invalid');
 
@@ -4327,11 +4331,11 @@ test('Object', function () {
 
 
   equals(({}).keys, undefined, 'Object | native objects are not wrapped by default');
-  same(Object.extend(), Object.extend({}), 'Object#extend | null argument same as empty object');
+  same(Object.create(), Object.create({}), 'Object#create | null argument same as empty object');
 
   var keys,values;
   var d = new Date();
-  var obj = Object.extend({
+  var obj = Object.create({
     number: 3,
     person: 'jim',
     date: d
@@ -4346,10 +4350,11 @@ test('Object', function () {
     equal(key, keys[count], 'Object#keys | accepts a block');
     count++;
   });
+
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  same(Object.extend().keys(), [], 'Object#keys | empty object');
-  same(Object.keys(Object.extend()), [], 'Object#keys | empty object');
+  same(Object.create().keys(), [], 'Object#keys | empty object');
+  same(Object.keys(Object.create()), [], 'Object#keys | empty object');
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
@@ -4370,7 +4375,8 @@ test('Object', function () {
     equal(value, values[count], 'Object#values | accepts a block');
     count++;
   });
-  equal(count, 3, 'Object#values | accepts a block | iterated properly');
+
+  equals(count, 3, 'Object#values | accepts a block | iterated properly');
 
   same(Object.values(obj), values, "Object.values | returns object's values");
   count = 0;
@@ -4378,27 +4384,29 @@ test('Object', function () {
     equal(value, values[count], 'Object.values | accepts a block');
     count++;
   });
-  equal(count, 3, 'Object.values | accepts a block | iterated properly');
+  equals(count, 3, 'Object.values | accepts a block | iterated properly');
 
-  same(Object.extend().values(), [], 'Object#values | empty object');
-  same(Object.values(Object.extend()), [], 'Object#values | empty object');
+  same(Object.create().values(), [], 'Object#values | empty object');
+  same(Object.values(Object.create()), [], 'Object#values | empty object');
 
 
 
 
   count = 0;
-  obj.each(function(key, value){
-    equal(key, keys[count], 'Object#each | accepts a block');
-    equal(value, values[count], 'Object#each | accepts a block');
+  obj.each(function(key, value, o){
+    equalsWithException(key, keys[count], { mootools: values[count] }, 'Object#each | accepts a block | key is first param');
+    equalsWithException(value, values[count], { mootools: keys[count] }, 'Object#each | accepts a block | value is second param');
+    same(o, obj, 'Object#each | accepts a block | object is third param');
     count++;
   });
   equal(count, 3, 'Object#each | accepts a block | iterated properly');
 
 
   count = 0;
-  Object.each(obj, function(key, value){
-    equal(key, keys[count], 'Object.each | accepts a block');
-    equal(value, values[count], 'Object.each | accepts a block');
+  Object.each(obj, function(key, value, o){
+    equalsWithException(key, keys[count], { mootools: values[count] }, 'Object.each | accepts a block');
+    equalsWithException(value, values[count], { mootools: keys[count] }, 'Object.each | accepts a block');
+    same(o, obj, 'Object.each | accepts a block | object is third param');
     count++;
   });
   equal(count, 3, 'Object.each | accepts a block | iterated properly');
@@ -4407,20 +4415,40 @@ test('Object', function () {
   same(Object.merge({ foo: 'bar' }, { broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object.merge | basic');
   same(Object.merge({ foo: 'bar' }, { broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object.merge | merge 3');
   same(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object.merge | merge string');
-  same(Object.merge({ foo: 'bar' }, 8), { foo: 'bar' }, 'Object.merge | merge number');
   same(Object.merge({ foo: 'bar' }, null), { foo: 'bar' }, 'Object.merge | merge null');
-  same(Object.merge({ foo: 'bar' }, 'wear', 8, null), { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' }, 'Object.merge | merge multi invalid');
   same(Object.merge({}, {}, {}), {}, 'Object.merge | merge multi empty');
 
+  sameWithException(
+    Object.merge({ foo: 'bar' }, 8),
+    { foo: 'bar' },
+    { mootools: (function(){ var s = new Number(8); s.foo = 'bar'; return s; })() },
+    'Object.merge | merge number');
+
+  sameWithException(
+    Object.merge({ foo: 'bar' }, 'wear', 8, null),
+    { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' },
+    { mootools: { foo: 'bar', wear: 8 } },
+    'Object.merge | merge multi invalid');
 
 
-  same(Object.extend({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
-  same(Object.extend({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
-  same(Object.extend({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string');
-  same(Object.extend({ foo: 'bar' }).merge(8), { foo: 'bar' }, 'Object#merge | merge number');
-  same(Object.extend({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
-  same(Object.extend({ foo: 'bar' }).merge('wear', 8, null), { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' }, 'Object#merge | merge multi invalid');
-  same(Object.extend({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
+
+  same(Object.create({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
+  same(Object.create({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
+  same(Object.create({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string');
+  same(Object.create({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
+  same(Object.create({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
+
+  sameWithException(
+    Object.create({ foo: 'bar' }).merge(8),
+    { foo: 'bar' },
+    { mootools: (function(){ var s = new Number(8); s.foo = 'bar'; return s; })() },
+    'Object#merge | merge number');
+
+  sameWithException(
+    Object.create({ foo: 'bar' }).merge('wear', 8, null),
+    { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' },
+    { mootools: { foo: 'bar', wear: 8 } },
+    'Object#merge | merge multi invalid');
 
 
   same(Object.clone({ foo: 'bar' }), { foo: 'bar' }, 'Object.clone | basic clone');
@@ -4455,12 +4483,16 @@ test('Object', function () {
   same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
 
 
-  same(Object.extend({ foo: 'bar' }).clone(), { foo: 'bar' }, 'Object#clone | basic clone');
-  same(Object.extend({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }, 'Object#clone | complex clone');
-  same(Object.extend({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}, 'Object#clone | deep clone');
-  equals(Object.extend({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
 
-  var obj1 = Object.extend({
+  // Note here that the need for these complicated syntaxes is that Mootools Object.clone is incorrectly 
+  // cloning properties in the prototype chain directly into the object itself.
+  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: 'bar' }).clone(), { foo: 'bar' }), true, { mootools: false }, 'Object#clone | basic clone');
+  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, { mootools: false }, 'Object#clone | complex clone');
+  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, { mootools: false }, 'Object#clone | deep clone');
+
+  equals(Object.create({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
+
+  var obj1 = Object.create({
     broken: 'wear',
     foo: {
       jumpy: 'jump',
@@ -4469,13 +4501,16 @@ test('Object', function () {
       }
     }
   });
-  var obj2 = obj1.clone();
+  obj2 = obj1.clone();
+
   equals(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equals(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
   equals(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
 
-  obj1 = Object.extend({
+  sameWithException(obj2.keys(), ['broken','foo'], { mootools: ['broken','foo','keys','values','each','merge','clone','isEmpty','equals'] }, 'Object#clone | cloned objects are themselves extended');
+
+  obj1 = Object.create({
     foo: {
       bar: [1,2,3]
     }
@@ -4486,23 +4521,23 @@ test('Object', function () {
   same(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
   same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
 
-  equals(Object.empty({}), true, 'Object.empty | object is empty');
-  equals(Object.empty({ broken: 'wear' }), false, 'Object.empty | object is not empty');
+  equals(Object.isEmpty({}), true, 'Object.isEmpty | object is empty');
+  equals(Object.isEmpty({ broken: 'wear' }), false, 'Object.isEmpty | object is not empty');
 
-  equals(Object.extend({}).empty({}), true, 'Object#empty | object is empty');
-  equals(Object.extend({ broken: 'wear' }).empty(), false, 'Object#empty | object is not empty');
+  equals(Object.create({}).isEmpty({}), true, 'Object#isEmpty | object is empty');
+  equals(Object.create({ broken: 'wear' }).isEmpty(), false, 'Object#empty | object is not empty');
 
-  equals(Object.equals({ broken: 'wear'}, { broken: 'wear' }), true, 'Object.equals | objects are equal');
-  equals(Object.equals({ broken: 'wear'}, { broken: 'jumpy' }), false, 'Object.equals | objects are not equal');
+  equals(Object.equals({ broken: 'wear' }, { broken: 'wear' }), true, 'Object.equals | objects are equal');
+  equals(Object.equals({ broken: 'wear' }, { broken: 'jumpy' }), false, 'Object.equals | objects are not equal');
   equals(Object.equals({}, {}), true, 'Object.equals | empty objects are equal');
   equals(Object.equals({}, { broken: 'wear' }), false, 'Object.equals | 1st empty');
   equals(Object.equals({ broken: 'wear' }, {}), false, 'Object.equals | 2nd empty');
 
-  equals(Object.extend({ broken: 'wear'}).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
-  equals(Object.extend({ broken: 'wear'}).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
-  equals(Object.extend({}).equals({}), true, 'Object#equals | empty objects are equal');
-  equals(Object.extend({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
-  equals(Object.extend({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
+  equals(Object.create({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
+  equals(Object.create({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
+  equals(Object.create({}).equals({}), true, 'Object#equals | empty objects are equal');
+  equals(Object.create({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
+  equals(Object.create({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 
 
 
@@ -4517,7 +4552,7 @@ test('Object', function () {
 
   equals(count, 3, 'Object | Object.prototype should have correctly called all functions');
 
-  equals(({}).empty(), true, 'Object#empty | Object.prototype');
+  equals(({}).isEmpty(), true, 'Object#empty | Object.prototype');
   equals(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
   same(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype');
 
@@ -4587,15 +4622,17 @@ test('Function', function () {
 
   obj = { foo: 'bar' };
 
-  bound = (function(num, bool, str){
+  bound = (function(num, bool, str, fourth, fifth){
     equals(this === obj, true, 'Function#bind | Bound object is strictly equal');
     equals(num, 1, 'Function#bind | first parameter');
-    equals(bool, true, 'Function#bind | second parameter');
-    equals(str, 'wasabi', 'Function#bind | third parameter');
+    equalsWithException(bool, true, { mootools: undefined }, 'Function#bind | second parameter');
+    equalsWithException(str, 'wasabi', { mootools: undefined }, 'Function#bind | third parameter');
+    equalsWithException(fourth, 'fourth', { mootools: undefined }, 'Function#bind | fourth parameter');
+    equalsWithException(fifth, 'fifth', { mootools: undefined }, 'Function#bind | fifth parameter');
     return 'howdy';
-  }).bind(obj, [1, true, 'wasabi']);
+  }).bind(obj, 1, true, 'wasabi');
 
-  result = bound.call();
+  result = bound('fourth','fifth');
   equals(result, 'howdy', 'Function#bind | result is correctly returned');
 
   (function(first){
@@ -4609,16 +4646,15 @@ test('Function', function () {
   var delayedFunction,delayReturn;
 
 
-  var delayedFunction = function(num, bool, str){
-    equals(num, 1, 'Function#delay | first parameter');
-    equals(bool, true, 'Function#delay | second parameter');
-    equals(str, 'wasabi', 'Function#delay | third parameter');
+  var delayedFunction = function(one, two){
     start();
-    equals(shouldBeFalse, false, 'Function#delay | cancel is working');
+    equalsWithException(one, 'one', { mootools: 'two' }, 'Function#delay | first parameter');
+    equalsWithException(two, 'two', { mootools: undefined }, 'Function#delay | second parameter');
+    equalsWithException(shouldBeFalse, false, { mootools: true }, 'Function#delay | cancel is working');
   };
 
-  delayReturn = delayedFunction.delay(10, [1, true, 'wasabi']);
-  equals(typeof delayReturn, 'function', 'Function#delay | returns pointer to self');
+  delayReturn = delayedFunction.delay(10, 'one', 'two');
+  equals(typeof delayReturn, 'number', 'Function#delay | returns the timeout ID');
 
   var shouldBeFalse = false;
   delayedFunction = function(){
@@ -4631,13 +4667,13 @@ test('Function', function () {
 
   bound = (function(num, bool, str){}).delay(1, 'wasabi');
 
-  bound = (function(num, bool, str){
-    equals(num, 1, 'Function#defer | first parameter');
-    equals(bool, true, 'Function#defer | second parameter');
-    equals(str, 'wasabi', 'Function#defer | third parameter');
-  }).defer([1, true, 'wasabi']);
+  bound = (function(one, two){
+    equals(this, 'poo', 'Function#defer | bound object');
+    equalsWithException(one, 'one', { mootools: 'two' }, 'Function#defer | first parameter');
+    equalsWithException(two, 'two', { mootools: undefined }, 'Function#defer | second parameter');
+  }).bind('poo').defer('one', 'two');
 
-  bound = (function(num, bool, str){}).defer('wasabi');
+  bound = (function(num, bool, str){}).defer('three');
 
   stop();
 
