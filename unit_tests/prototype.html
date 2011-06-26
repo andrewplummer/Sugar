@@ -17,13 +17,12 @@
         </p>
       </div>
 
-      <iframe id="prototype_frame" src="prototype/test.html"></iframe>
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
       <script type="text/javascript" src="suite.js"></script>
       <script type="text/javascript" src="tooltip.js"></script>
       <script type="text/javascript">
 
-        $(document).ready(function(){
+        $(window).load(function(){
 
           $(document).bind('tests_finished', function(event, environment){
             $('#'+environment).removeClass('running');
@@ -66,6 +65,7 @@
 
       </script>
 
+      <iframe id="prototype_frame" src="prototype/test.html"></iframe>
     </div>
     <div id="tooltip">
       <div class="arrow"></div>
