@@ -17,7 +17,6 @@
         </p>
       </div>
 
-      <iframe id="mootools_frame" src="mootools/test.html"></iframe>
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/mootools/1.3.2/mootools-yui-compressed.js"></script>
       <!--<script type="text/javascript" src="../lib/sugar.js"></script>-->
@@ -26,7 +25,7 @@
       <script type="text/javascript" src="tooltip.js"></script>
       <script type="text/javascript">
 
-        $(document).ready(function(){
+        $(window).load(function(){
 
           $(document).bind('tests_finished', function(event, environment){
             $('#'+environment).removeClass('running');
@@ -69,6 +68,7 @@
 
       </script>
 
+      <iframe id="mootools_frame" src="mootools/test.html"></iframe>
     </div>
     <div id="tooltip">
       <div class="arrow"></div>
