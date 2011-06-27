@@ -1510,12 +1510,24 @@ test('String', function () {
   same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split | complex regex splitting | . | /(((.((.??)))))/');
   same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split | complex regex splitting | . | /(((((.??)))))/');
 
+  /*
+   * Patching the String#match method broke Prototype in IE in a very specific way:
+   *
+   *  var names = this.toString().match(/^[\s\(]*function[^(]*\(([^)]*)\)/)[1]
+   *    .replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '')
+   *    .replace(/\s+/g, '').split(',');
+   *
+   * Very unlikely that this would cause problems but after much debate I've decided not to
+   * patch the method, as it's simply too far-reaching with too few benefits, and too few unit tests
+   * to justify it. Will reconsider if the demand arises.
+   *
   var match = 'on'.match(/on(e)?/);
   equals(match[1], undefined, 'String#match | capturing group should be undefined');
 
   var match = 'on'.match(/\b/g);
   equals(match[0], '', 'String#match | first match should be empty string');
   equals(match[1], '', 'String#match | second match should be empty string');
+  */
 
 
 });
@@ -4315,7 +4327,7 @@ test('Date', function () {
   equals(new Date(1999,1).isBetween('1998', '1999'), true, 'Date#isBetween | string | 1998 - 1999');
   equals(new Date(1999,1).isBetween('1998', '1997'), false, 'Date#isBetween | string | 1998 - 1997');
   equals(new Date(1998,2).isBetween('February, 1998', 'April, 1998'), true, 'Date#isBetween | string | March, 1998 is between February, 1998 and April, 1998');
-  equals(new Date(1998,2).isBetween('January, 1998', 'February, 1998'), false, 'Date#isBetween | string | January, 1998 is between February, 1998 and April, 1998');
+  equals(new Date(1998,2).isBetween('January, 1998', 'February, 1998'), false, 'Date#isBetween | string | March, 1998 is not between January, 1998 and February, 1998');
 
   equals(new Date(1999,5).isBetween('1998','1999'), true, 'Date#isBetween | Any ambiguous period "reaches" as much as it can.');
   equals(new Date().isBetween('yesterday','tomorrow'), true, 'Date#isBetween | relative | now is between today and tomorrow');
