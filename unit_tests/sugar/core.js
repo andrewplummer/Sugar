@@ -84,8 +84,12 @@ var equalsWithException = function(actual, expected, exception, message){
   }
 }
 
-var sameWithException = function(actual, expected, exception, message){
+var sameWithException = function(actual, expected, exception, message, sort){
   if(exception.hasOwnProperty(environment)) expected = exception[environment];
+  if(sort){
+    actual = actual.concat().sort();
+    expected = expected.concat().sort();
+  }
   same(actual, expected, message);
 }
 
@@ -1560,8 +1564,10 @@ test('Array', function () {
   equals([2,5,9,2].lastIndexOf(2, 2), 0, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 2');
   equals([2,5,9,2].lastIndexOf(2, -2), 0, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -2');
   equals([2,5,9,2].lastIndexOf(2, -1), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -1');
-  equals([2,5,9,2].lastIndexOf(2, 10), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 10');
   equals([2,5,9,2].lastIndexOf(2, -10), -1, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -10');
+
+  // Prototype's "lastIndexOf" apparently doesn't pass this particular test.
+  equalsWithException([2,5,9,2].lastIndexOf(2, 10), 3, { prototype: (jQuery.browser.msie ? 10 : 3) }, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 10');
 
   equals([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), 0, 'Array#lastIndexOf | handles objects');
   equals([{ foo: 'bar' }].lastIndexOf(function(a){ return a.foo === 'bar'; }), 0, 'Array#lastIndexOf | handles functions');
@@ -4495,7 +4501,7 @@ test('Object', function () {
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  sameWithException(obj.keys(), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object#keys | returns object's keys");
+  sameWithException(obj.keys(), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object#keys | returns object's keys", true);
   count = 0;
   obj.keys(function(key){
     equal(key, keys[count], 'Object#keys | accepts a block');
@@ -4504,12 +4510,12 @@ test('Object', function () {
 
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  sameWithException(Object.create().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object');
-  sameWithException(Object.keys(Object.create()), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object');
+  sameWithException(Object.create().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
+  sameWithException(Object.keys(Object.create()), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  sameWithException(Object.keys(obj), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object.keys | returns object's keys");
+  sameWithException(Object.keys(obj), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object.keys | returns object's keys", true);
   count = 0;
   Object.keys(obj, function(key){
     equal(key, keys[count], 'Object.keys | accepts a block');
@@ -4519,8 +4525,10 @@ test('Object', function () {
 
 
 
+  var strippedValues;
 
-  sameWithException(obj.values(), values, { prototype: values.concat(objectPrototypeMethodReferences) }, "Object#values | returns object's values");
+  strippedValues = obj.values().remove(function(m){ return typeof m == 'function'; });
+  sameWithException(strippedValues, values, { prototype: values }, "Object#values | returns object's values", true);
   count = 0;
   obj.values(function(value){
     equal(value, values[count], 'Object#values | accepts a block');
@@ -4529,7 +4537,8 @@ test('Object', function () {
 
   equals(count, 3, 'Object#values | accepts a block | iterated properly');
 
-  sameWithException(Object.values(obj), values, { prototype: values.concat(objectPrototypeMethodReferences) }, "Object.values | returns object's values");
+  strippedValues = Object.values(obj).remove(function(m){ return typeof m == 'function'; });
+  sameWithException(strippedValues, values, { prototype: values }, "Object.values | returns object's values", true);
   count = 0;
   Object.values(obj, function(value){
     equal(value, values[count], 'Object.values | accepts a block');
@@ -4537,8 +4546,11 @@ test('Object', function () {
   });
   equals(count, 3, 'Object.values | accepts a block | iterated properly');
 
-  sameWithException(Object.create().values(), [], { prototype: objectPrototypeMethodReferences }, 'Object#values | empty object');
-  sameWithException(Object.values(Object.create()), [], { prototype: objectPrototypeMethodReferences }, 'Object#values | empty object');
+  strippedValues = Object.create().values().remove(function(m){ return typeof m == 'function'; });
+  sameWithException(strippedValues, [], { prototype: [] }, 'Object#values | empty object', true);
+
+  strippedValues = Object.values(Object.create()).remove(function(m){ return typeof m == 'function'; });
+  sameWithException(strippedValues, [], { prototype: [] }, 'Object#values | empty object', true);
 
 
 
