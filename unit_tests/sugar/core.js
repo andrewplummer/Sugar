@@ -570,12 +570,53 @@ test('String', function () {
 
 
 
-  equals('test regexp'.escapeRegExp(), 'test regexp', 'RegExp#escape | nothing to escape');
-  equals('test reg|exp'.escapeRegExp(), 'test reg\\|exp', 'RegExp#escape | should escape pipe');
-  equals('hey there (budday)'.escapeRegExp(), 'hey there \\(budday\\)', 'RegExp#escape | should escape parentheses');
-  equals('.'.escapeRegExp(), '\\.', 'RegExp#escape | should escape period');
-  equals('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'RegExp#escape | should escape many period');
-  equals('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape | complex regex tokens');
+  equals('test regexp'.escapeRegExp(), 'test regexp', 'String#escapeRegExp | nothing to escape');
+  equals('test reg|exp'.escapeRegExp(), 'test reg\\|exp', 'String#escapeRegExp | should escape pipe');
+  equals('hey there (budday)'.escapeRegExp(), 'hey there \\(budday\\)', 'String#escapeRegExp | should escape parentheses');
+  equals('.'.escapeRegExp(), '\\.', 'String#escapeRegExp | should escape period');
+  equals('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'String#escapeRegExp | should escape many period');
+  equals('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'String#escapeRegExp | complex regex tokens');
+
+
+  equals('test regexp'.unescapeRegExp(), 'test regexp', 'String#unescapeRegExp | nothing to unescape');
+  equals('test reg\\|exp'.unescapeRegExp(), 'test reg|exp', 'String#unescapeRegExp | should unescape pipe');
+  equals('hey there \\(budday\\)'.unescapeRegExp(), 'hey there (budday)', 'String#unescapeRegExp | should unescape parentheses');
+  equals('\\.'.unescapeRegExp(), '.', 'String#unescapeRegExp | should unescape period');
+  equals('what a day\\.\\.\\.'.unescapeRegExp(), 'what a day...', 'String#unescapeRegExp | should unescape many period');
+  equals('\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/'.unescapeRegExp(), '*.+[]{}()?|/', 'String#unescapeRegExp | complex regex tokens');
+
+
+  equals('what a day...'.escapeURL(), 'what%20a%20day...', 'String#escapeURL | ...');
+  equals('/?:@&=+$#'.escapeURL(), '/?:@&=+$#', 'String#escapeURL | url chars');
+  equals('!%^*()[]{}\\:'.escapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#escapeURL | non url special chars');
+  equals('http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846'.escapeURL(), 'http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846', 'String#escapeURL | amazon link');
+  equals('http://twitter.com/#!/nov/status/85613699410296833'.escapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#escapeURL | twitter link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#escapeURL | ebay link');
+
+
+  equals('what a day...'.escapeURL(true), 'what%20a%20day...', 'String#escapeURL | ...');
+  equals('/?:@&=+$#'.escapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#escapeURL | url chars');
+  equals('!%^*()[]{}\\:'.escapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#escapeURL | non url special chars');
+  equals('http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846'.escapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2Fgp%2Fproduct%2F0470178086%2Fref%3Ds9_qpp_gw_p14_ir03%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-2%26pf_rd_r%3D0W3QPFWGBHQNHQYCBXM5%26pf_rd_t%3D101%26pf_rd_p%3D470938631%26pf_rd_i%3D507846', 'String#escapeURL | amazon link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'String#escapeURL | ebay link');
+
+
+
+  equals('what%20a%20day...'.unescapeURL(), 'what a day...', 'String#unescapeURL | ...');
+  equals('/?:@&=+$#'.unescapeURL(), '/?:@&=+$#', 'String#unescapeURL | url chars');
+  equals('!%^*()[]{}\\:'.unescapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#unescapeURL | non url special chars');
+  equals('http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846'.unescapeURL(), 'http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846', 'String#unescapeURL | amazon link');
+  equals('http://twitter.com/#!/nov/status/85613699410296833'.unescapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#unescapeURL | twitter link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.unescapeURL(), ''.unescapeURL(), 'String#unescapeURL | ebay link');
+
+
+  equals('what a day...'.unescapeURL(true), 'what%20a%20day...', 'String#unescapeURL | ...');
+  equals('/?:@&=+$#'.unescapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#unescapeURL | url chars');
+  equals('!%^*()[]{}\\:'.unescapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#unescapeURL | non url special chars');
+  equals('http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846'.unescapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2Fgp%2Fproduct%2F0470178086%2Fref%3Ds9_qpp_gw_p14_ir03%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-2%26pf_rd_r%3D0W3QPFWGBHQNHQYCBXM5%26pf_rd_t%3D101%26pf_rd_p%3D470938631%26pf_rd_i%3D507846', 'String#unescapeURL | amazon link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716'.unescapeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%253DSIC%2526itu%253DUCI%25252BIA%25252BUA%25252BFICS%25252BUFI%25252BDDSIC%2526otn%253D10%2526pmod%253D260625794431%25252B370476659389%2526po%253DLVI%2526ps%253D63%2526clkid%253D962675460977455716', 'String#unescapeURL | ebay link');
+
+
 
 
   var test;
