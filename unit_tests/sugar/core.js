@@ -179,6 +179,16 @@ var restoreObjectPrototypeMethods = function(){
   }
 }
 
+var assertRaisesError = function(fn, message){
+  var raised = false;
+  try {
+    fn.call();
+  } catch(e){
+    raised = true;
+  }
+  equals(raised, true, message);
+}
+
 test('Number', function () {
 
   var counter;
@@ -587,37 +597,49 @@ test('String', function () {
 
 
   equals('what a day...'.escapeURL(), 'what%20a%20day...', 'String#escapeURL | ...');
-  equals('/?:@&=+$#'.escapeURL(), '/?:@&=+$#', 'String#escapeURL | url chars');
-  equals('!%^*()[]{}\\:'.escapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#escapeURL | non url special chars');
-  equals('http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846'.escapeURL(), 'http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846', 'String#escapeURL | amazon link');
-  equals('http://twitter.com/#!/nov/status/85613699410296833'.escapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#escapeURL | twitter link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#escapeURL | ebay link');
+  equals('/?:@&=+$#'.escapeURL(), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#escapeURL | url chars');
+  equals('!%^*()[]{}\\:'.escapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#escapeURL | non url special chars');
+  equals('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#escapeURL | amazon link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'String#escapeURL | ebay link');
 
 
-  equals('what a day...'.escapeURL(true), 'what%20a%20day...', 'String#escapeURL | ...');
-  equals('/?:@&=+$#'.escapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#escapeURL | url chars');
-  equals('!%^*()[]{}\\:'.escapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#escapeURL | non url special chars');
-  equals('http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846'.escapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2Fgp%2Fproduct%2F0470178086%2Fref%3Ds9_qpp_gw_p14_ir03%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-2%26pf_rd_r%3D0W3QPFWGBHQNHQYCBXM5%26pf_rd_t%3D101%26pf_rd_p%3D470938631%26pf_rd_i%3D507846', 'String#escapeURL | amazon link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'String#escapeURL | ebay link');
+  equals('what a day...'.escapeURL(true), 'what%20a%20day...', 'String#escapeURL | partial | ...');
+  equals('/?:@&=+$#'.escapeURL(true), '/?:@&=+$#', 'String#escapeURL | partial | url chars');
+  equals('!%^*()[]{}\\:'.escapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#escapeURL | partial | non url special chars');
+  equals('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(true), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#escapeURL | partial | amazon link');
+  equals('http://twitter.com/#!/nov/status/85613699410296833'.escapeURL(true), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#escapeURL | partial | twitter link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(true), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#escapeURL | partial | ebay link');
 
 
 
   equals('what%20a%20day...'.unescapeURL(), 'what a day...', 'String#unescapeURL | ...');
-  equals('/?:@&=+$#'.unescapeURL(), '/?:@&=+$#', 'String#unescapeURL | url chars');
-  equals('!%^*()[]{}\\:'.unescapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#unescapeURL | non url special chars');
-  equals('http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846'.unescapeURL(), 'http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846', 'String#unescapeURL | amazon link');
-  equals('http://twitter.com/#!/nov/status/85613699410296833'.unescapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#unescapeURL | twitter link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.unescapeURL(), ''.unescapeURL(), 'String#unescapeURL | ebay link');
-
-
-  equals('what a day...'.unescapeURL(true), 'what%20a%20day...', 'String#unescapeURL | ...');
-  equals('/?:@&=+$#'.unescapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#unescapeURL | url chars');
-  equals('!%^*()[]{}\\:'.unescapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#unescapeURL | non url special chars');
-  equals('http://www.amazon.com/gp/product/0470178086/ref=s9_qpp_gw_p14_ir03?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-2&pf_rd_r=0W3QPFWGBHQNHQYCBXM5&pf_rd_t=101&pf_rd_p=470938631&pf_rd_i=507846'.unescapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2Fgp%2Fproduct%2F0470178086%2Fref%3Ds9_qpp_gw_p14_ir03%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-2%26pf_rd_r%3D0W3QPFWGBHQNHQYCBXM5%26pf_rd_t%3D101%26pf_rd_p%3D470938631%26pf_rd_i%3D507846', 'String#unescapeURL | amazon link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716'.unescapeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%253DSIC%2526itu%253DUCI%25252BIA%25252BUA%25252BFICS%25252BUFI%25252BDDSIC%2526otn%253D10%2526pmod%253D260625794431%25252B370476659389%2526po%253DLVI%2526ps%253D63%2526clkid%253D962675460977455716', 'String#unescapeURL | ebay link');
+  equals('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(), '/?:@&=+$#', 'String#unescapeURL | url chars');
+  equals('!%25%5E*()%5B%5D%7B%7D%5C%3A'.unescapeURL(), '!%^*()[]{}\\:', 'String#unescapeURL | non url special chars');
+  equals('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#unescapeURL | amazon link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716'.unescapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2BUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716', 'String#unescapeURL | ebay link');
 
 
 
+  equals('what%20a%20day...'.unescapeURL(true), 'what a day...', 'String#unescapeURL | partial | ...');
+  equals('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#unescapeURL | partial | url chars');
+  equals('!%25%5E*()%5B%5D%7B%7D%5C:'.unescapeURL(true), '!%^*()[]{}\\:', 'String#unescapeURL | partial | non url special chars');
+  equals('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#unescapeURL | partial | amazon link');
+  equals('http://twitter.com/#!/nov/status/85613699410296833'.unescapeURL(true), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#unescapeURL | partial | twitter link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.unescapeURL(true), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#unescapeURL | ebay link');
+
+  assertRaisesError(function(){ '% 23'.unescapeURL(); }, 'String#unescapeURL | partial | should raise an error for malformed urls');
+  assertRaisesError(function(){ '% 23'.unescapeURL(true); }, 'String#unescapeURL | partial | should raise an error for malformed urls');
+
+
+  equals('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
+  equals('I grow, I prosper; Now, gods, stand up for bastards!'.encodeBase64(), 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'String#encodeBase64 | gods');
+  equals('räksmörgås'.encodeBase64(), 'cuRrc232cmflcw==', 'String#encodeBase64 | shrimp sandwich');
+  equals('rÃ¤ksmÃ¶rgÃ¥s'.encodeBase64(), 'csOka3Ntw7ZyZ8Olcw==', 'String#encodeBase64 | shrimp sandwich');
+
+  equals('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='.decodeBase64(), 'This webpage is not available', 'String#decodeBase64 | webpage');
+  equals('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ=='.decodeBase64(), 'I grow, I prosper; Now, gods, stand up for bastards!', 'String#decodeBase64 | gods');
+
+  assertRaisesError(function(){ '@#$^#$^#@$^'.decodeBase64(); }, 'String#decodeBase64 | should throw an error on non-base64 chars');
 
   var test;
 
