@@ -132,6 +132,7 @@ iframe {
 
 #tooltip p {
   margin: 0;
+  word-wrap: break-word;
 }
 
 #tooltip .pass {
