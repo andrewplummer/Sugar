@@ -4829,13 +4829,13 @@ test('Function', function () {
 
 
   var delayedFunction = function(one, two){
-    start();
     equalsWithException(one, 'one', { mootools: 'two' }, 'Function#delay | first parameter');
     equalsWithException(two, 'two', { mootools: undefined }, 'Function#delay | second parameter');
     equalsWithException(shouldBeFalse, false, { prototype: true, mootools: true }, 'Function#delay | cancel is working');
+    start();
   };
 
-  delayReturn = delayedFunction.delay(10, 'one', 'two');
+  delayReturn = delayedFunction.delay(20, 'one', 'two');
   equals(typeof delayReturn, 'number', 'Function#delay | returns the timeout ID');
 
   var shouldBeFalse = false;
