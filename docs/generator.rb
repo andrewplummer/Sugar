@@ -1,10 +1,11 @@
 
 require 'rubygems'
 require 'json'
+require 'pp'
 
 fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/methods.php'
 
-fileout_html  = File.open(fileout, 'r').read
+fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
 modules = []
 current_module = nil
@@ -113,7 +114,7 @@ end
 
 File.open('lib/sugar.js', 'r') do |f|
   i = 0
-  f.read.scan(/\/\*\*\*.*?\*\*\*/m) do |b|
+  f.read.scan(/\*\*\*.+?\*\*\*/m) do |b|
     if mod = b.match(/(\w+) module/)
       if current_module
         modules << current_module
@@ -127,11 +128,24 @@ File.open('lib/sugar.js', 'r') do |f|
       method[:module] = current_module[:name]
       get_html_parameters(method[:description])
       current_module[:methods] << method
+      if current_module[:name] == 'Object' && method[:name] != 'create'
+        instance_version = method.dup
+        instance_version[:class_method] = false
+        instance_version[:description].gsub!(/<span class=".*?">obj<\/span>/, 'the object')
+        if method[:name] == 'merge'
+          instance_version[:description].gsub!(/the first/, 'itself')
+        end
+        if method[:name] == 'equals'
+          instance_version[:description].gsub!(/(<span class=".*?">a<\/span>).+are equal/, 'the object is equal to \\1')
+        end
+        instance_version[:params].delete_if { |p| p[:name] == 'obj' || p[:name] == 'a' }
+        instance_version[:description] << ' This method is only available on objects created with the alternate constructor <span class="code">Object.create</span>.'
+      end
     end
   end
 end
 
-puts modules.to_json
+#puts pp modules
 
 
 modules.each do |mod|
@@ -144,6 +158,8 @@ modules.each do |mod|
   end
 end
 
-File.open(fileout, 'w') do |f|
-  f.puts fileout_html.gsub(/SugarModules = .+/, "SugarModules = #{modules.to_json};")
+if File.exists?(fileout)
+  File.open(fileout, 'w') do |f|
+    f.puts fileout_html.gsub(/SugarModules = .+/, "SugarModules = #{modules.to_json};")
+  end
 end
