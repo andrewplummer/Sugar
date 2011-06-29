@@ -598,39 +598,41 @@ test('String', function () {
   */
 
 
-  equals('what a day...'.encodeURL(), 'what%20a%20day...', 'String#encodeURL | partial | ...');
-  equals('/?:@&=+$#'.encodeURL(), '/?:@&=+$#', 'String#encodeURL | partial | url chars');
-  equals('!%^*()[]{}\\:'.encodeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#encodeURL | partial | non url special chars');
-  equals('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.encodeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#encodeURL | partial | amazon link');
-  equals('http://twitter.com/#!/nov/status/85613699410296833'.encodeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#encodeURL | partial | twitter link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.encodeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#encodeURL | partial | ebay link');
+  equals('what a day...'.escapeURL(), 'what%20a%20day...', 'String#escapeURL | ...');
+  equals('/?:@&=+$#'.escapeURL(), '/?:@&=+$#', 'String#escapeURL | url chars');
+  equals('!%^*()[]{}\\:'.escapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#escapeURL | non url special chars');
+  equals('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#escapeURL | amazon link');
+  equals('http://twitter.com/#!/nov/status/85613699410296833'.escapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#escapeURL | twitter link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#escapeURL | ebay link');
 
 
-  equals('what a day...'.encodeURL(true), 'what%20a%20day...', 'String#encodeURL | ...');
-  equals('/?:@&=+$#'.encodeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#encodeURL | url chars');
-  equals('!%^*()[]{}\\:'.encodeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#encodeURL | non url special chars');
-  equals('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.encodeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#encodeURL | amazon link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.encodeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'String#encodeURL | ebay link');
+  equals('what a day...'.escapeURL(true), 'what%20a%20day...', 'String#escapeURL | full | ...');
+  equals('/?:@&=+$#'.escapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#escapeURL | full | url chars');
+  equals('!%^*()[]{}\\:'.escapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#escapeURL | full | non url special chars');
+  equals('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#escapeURL | full | amazon link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'String#escapeURL | full | ebay link');
+
+
+  equals('what%20a%20day...'.unescapeURL(), 'what a day...', 'String#unescapeURL | ...');
+  equals('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#unescapeURL | url chars');
+  equals('!%25%5E*()%5B%5D%7B%7D%5C:'.unescapeURL(), '!%^*()[]{}\\:', 'String#unescapeURL | non url special chars');
+  equals('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22'.unescapeURL(), 'http%3A%2F%2Fsomedomain.com%3Fparam%3D"this%3A isn\'t an easy URL to escape"', 'String#unescapeURL | fake url')
+  equals('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#unescapeURL | amazon link');
+  equals('http://twitter.com/#!/nov/status/85613699410296833'.unescapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#unescapeURL | twitter link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.unescapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#unescapeURL | ebay link');
+
+
+  equals('what%20a%20day...'.unescapeURL(true), 'what a day...', 'String#unescapeURL | full | ...');
+  equals('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(true), '/?:@&=+$#', 'String#unescapeURL | full | url chars');
+  equals('!%25%5E*()%5B%5D%7B%7D%5C%3A'.unescapeURL(true), '!%^*()[]{}\\:', 'String#unescapeURL | full | non url special chars');
+  equals('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22'.unescapeURL(true), 'http://somedomain.com?param="this: isn\'t an easy URL to escape"', 'String#unescapeURL | full | fake url')
+  equals('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(true), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#unescapeURL | full | amazon link');
+  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716'.unescapeURL(true), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2BUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716', 'String#unescapeURL | full | ebay link');
 
 
 
-  equals('what%20a%20day...'.decodeURL(), 'what a day...', 'String#decodeURL | ...');
-  equals('%2F%3F%3A%40%26%3D%2B%24%23'.decodeURL(), '/?:@&=+$#', 'String#decodeURL | url chars');
-  equals('!%25%5E*()%5B%5D%7B%7D%5C%3A'.decodeURL(), '!%^*()[]{}\\:', 'String#decodeURL | non url special chars');
-  equals('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.decodeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#decodeURL | amazon link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716'.decodeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2BUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716', 'String#decodeURL | ebay link');
-
-
-
-  equals('what%20a%20day...'.decodeURL(true), 'what a day...', 'String#decodeURL | partial | ...');
-  equals('%2F%3F%3A%40%26%3D%2B%24%23'.decodeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#decodeURL | partial | url chars');
-  equals('!%25%5E*()%5B%5D%7B%7D%5C:'.decodeURL(true), '!%^*()[]{}\\:', 'String#decodeURL | partial | non url special chars');
-  equals('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.decodeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#decodeURL | partial | amazon link');
-  equals('http://twitter.com/#!/nov/status/85613699410296833'.decodeURL(true), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#decodeURL | partial | twitter link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.decodeURL(true), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#decodeURL | ebay link');
-
-  assertRaisesError(function(){ '% 23'.decodeURL(); }, 'String#decodeURL | partial | should raise an error for malformed urls');
-  assertRaisesError(function(){ '% 23'.decodeURL(true); }, 'String#decodeURL | partial | should raise an error for malformed urls');
+  assertRaisesError(function(){ '% 23'.unescapeURL(); }, 'String#unescapeURL | partial | should raise an error for malformed urls');
+  assertRaisesError(function(){ '% 23'.unescapeURL(true); }, 'String#unescapeURL | full | should raise an error for malformed urls');
 
 
   equals('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
@@ -2744,6 +2746,8 @@ test('Date', function () {
 
   var day;
   var timezoneOffset = new Date().getTimezoneOffset();
+  var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
+  var staticSummerTimezoneOffset = new Date(2011, 8, 1).getTimezoneOffset();
   var now = new Date();
   var thisYear = now.getFullYear();
 
@@ -2793,7 +2797,7 @@ test('Date', function () {
 
   dateEquals(new Date(new Date(2008, 6, 22)), new Date(2008, 6, 22), 'Date | date accepts itself as a constructor');
 
-  dateEquals(Date.create(0), new Date(1970, 0, 1, 0, -timezoneOffset) , 'Date#create | Accepts numbers');
+  dateEquals(Date.create(0), new Date(1970, 0, 1, 0, -staticWinterTimezoneOffset) , 'Date#create | Accepts numbers');
   dateEquals(Date.create('1999'), new Date(1999, 0), 'Date#create | Just the year');
 
   dateEquals(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
@@ -3695,7 +3699,7 @@ test('Date', function () {
   equals(getDateWithWeekdayAndOffset(0).is('the beginning of the week'), true, 'Date#is | the beginning of the week');
   equals(getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999).is('the end of the week'), true, 'Date#is | the end of the week');
 
-  equals(new Date(1970, 0, 1, 0, -timezoneOffset).is(0), true, 'Date#is | Accepts numbers');
+  equals(new Date(1970, 0, 1, 0, -staticWinterTimezoneOffset).is(0), true, 'Date#is | Accepts numbers');
 
 
 
@@ -3840,18 +3844,18 @@ test('Date', function () {
   d = new Date(2010,7,5,13,45,2,542);
 
   equals(d.getWeek(), 31, 'Date#getWeek | basic');
-  equals(dst(d).getUTCWeek(), timezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
+  equals(dst(d).getUTCWeek(), staticSummerTimezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
   equals(new Date(2010, 0, 1).getWeek(), 1, 'Date#getWeek | January 1st');
-  equals(new Date(2010, 0, 1).getUTCWeek(), timezoneOffset >= 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
+  equals(new Date(2010, 0, 1).getUTCWeek(), staticWinterTimezoneOffset >= 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
   equals(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th');
   equals(new Date(2010, 0, 6).getUTCWeek(), 1, 'Date#getUTCWeek | January 6th');
   equals(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th');
   equals(new Date(2010, 0, 7).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th');
   equals(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th 23:59:59.999');
-  equals(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), timezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
+  equals(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), staticWinterTimezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
   equals(new Date(2010, 0, 8).getWeek(), 2, 'Date#getWeek | January 8th');
-  equals(new Date(2010, 0, 8).getUTCWeek(), timezoneOffset >= 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
+  equals(new Date(2010, 0, 8).getUTCWeek(), staticWinterTimezoneOffset >= 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
   equals(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th');
   equals(new Date(2010, 3, 15).getUTCWeek(), 15, 'Date#getUTCWeek | April 15th');
 
