@@ -1101,12 +1101,11 @@ test('String', function () {
   equal('quack'.to(-4), 'qu', 'String#to | to -4');
 
 
-  same('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
-  same('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate | slash format');
-  same(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
-  same('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
-  equals('August 25, 1978'.toDate().getTime(), 272818800000, 'String#toDate | relative format');
-
+  dateEquals('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
+  dateEquals('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate | slash format');
+  equals(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
+  equals('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
+  dateEquals('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
 
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
   equalsWithException('HOP_ON_POP'.dasherize(), 'hop-on-pop', { prototype: 'HOP-ON-POP' }, 'String#dasherize | capitals and underscores');
