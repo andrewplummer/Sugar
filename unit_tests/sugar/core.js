@@ -4435,7 +4435,7 @@ test('RegExp', function () {
 
 test('Object', function () {
 
-  var count;
+  var count,result;
   var Person = function(){};
   var p = new Person();
 
@@ -4639,23 +4639,25 @@ test('Object', function () {
 
 
   count = 0;
-  obj.each(function(key, value, o){
+  result = obj.each(function(key, value, o){
     equalsWithException(key, keys[count], { mootools: values[count] }, 'Object#each | accepts a block | key is first param');
     equalsWithException(value, values[count], { mootools: keys[count] }, 'Object#each | accepts a block | value is second param');
     same(o, obj, 'Object#each | accepts a block | object is third param');
     count++;
   });
   equal(count, 3, 'Object#each | accepts a block | iterated properly');
+  equals(result, obj, 'Object#each | accepts a block | result should equal object passed in');
 
 
   count = 0;
-  Object.each(obj, function(key, value, o){
+  result = Object.each(obj, function(key, value, o){
     equalsWithException(key, keys[count], { mootools: values[count] }, 'Object.each | accepts a block');
     equalsWithException(value, values[count], { mootools: keys[count] }, 'Object.each | accepts a block');
     same(o, obj, 'Object.each | accepts a block | object is third param');
     count++;
   });
   equal(count, 3, 'Object.each | accepts a block | iterated properly');
+  equals(result, obj, 'Object.each | accepts a block | result should equal object passed in');
 
 
   same(Object.merge({ foo: 'bar' }, { broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object.merge | basic');
