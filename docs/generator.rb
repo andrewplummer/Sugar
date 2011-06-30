@@ -122,6 +122,9 @@ File.open('lib/sugar.js', 'r') do |f|
       method[:module] = current_module[:name]
       get_html_parameters(method[:description])
       current_module[:methods] << method
+      if method[:name] == 'stripTags' || method[:name] == 'removeTags'
+        method[:escape_html] = true
+      end
       #if current_module[:name] == 'Object' && method[:name] != 'create'
       #  instance_version = method.dup
       #  instance_version[:class_method] = false
