@@ -4436,6 +4436,8 @@ test('RegExp', function () {
 test('Object', function () {
 
   var count;
+  var Person = function(){};
+  var p = new Person();
 
   equals(Object.isObject({}), true, 'Object#isObject | {}');
   equals(Object.isObject(new Object({})), true, 'Object#isObject | new Object()');
@@ -4452,6 +4454,7 @@ test('Object', function () {
   equals(Object.isObject(), false, 'Object#isObject | blank');
   equals(Object.isObject(false), false, 'Object#isObject | false');
   equals(Object.isObject(true), false, 'Object#isObject | true');
+  equals(Object.isObject(p), false, 'Object#isObject | {}');
 
   equals(Object.isArray({}), false, 'Object#isArray | {}');
   equals(Object.isArray([]), true, 'Object#isArray | []');
