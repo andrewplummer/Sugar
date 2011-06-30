@@ -31,7 +31,6 @@ def get_method(s)
   raw = get_property(:method, s)
   match = raw.match(/(.+\.)?(.+)\((.+)?\)/)
   params = []
-  full_html = "<span class=\"name\">#{match[1]}</span><span class=\"parenthesis\">(</span>"
   accepts_unlimited_params = false
   if match[3]
     p = match[3].split(/,(?!')/)
@@ -46,7 +45,6 @@ def get_method(s)
       css = ''
       css << 'required ' if required
       css << 'parameter'
-      full_html << "<span class=\"#{css}\">#{name}</span>"
       if default
         d = default[1]
         if d =~ /['"].*['"]/
@@ -60,11 +58,11 @@ def get_method(s)
           type = :null
         elsif d =~ /true|false/
           type = :boolean
+        elsif d =~ /\{\}/
+          type = :object
         end
-        d = '<span class="' + type.to_s + ' value">' + d + '</span>'
-        full_html << "<span class=\"default\"><span class=\"equals\">=</span> #{d}</span>" if default
+        d = '<span class="' + type.to_s + ' monospace value">' + d + '</span>'
       end
-      full_html << '<span class="comma">,</span>' if i < p.length - 1
       {
         :name => name,
         :type => type,
@@ -72,14 +70,10 @@ def get_method(s)
         :default => default ? default[1] : nil
       }
     end
-    full_html << '<span class="ellipsis">, ...</span>' if accepts_unlimited_params
   else
     params = []
   end
-  full_html << '<span class="parenthesis">)</span>'
   {
-    :full_raw => raw,
-    :full_html => full_html,
     :name => match[2],
     :class_method => !!match[1],
     :params => params,
@@ -93,7 +87,7 @@ def get_examples(s)
   func = ''
   lines.each do |l|
     l.gsub!(/^[\s*]+/, '')
-    if l =~ /function/
+    if l =~ /function/ && l !~ /isFunction/
       func << l
     elsif l =~ /\}\);$/
       func << l.gsub(/\s+->.+$/, '')
@@ -114,7 +108,7 @@ end
 
 File.open('lib/sugar.js', 'r') do |f|
   i = 0
-  f.read.scan(/\*\*\*.+?\*\*\*/m) do |b|
+  f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
     if mod = b.match(/(\w+) module/)
       if current_module
         modules << current_module
@@ -128,19 +122,20 @@ File.open('lib/sugar.js', 'r') do |f|
       method[:module] = current_module[:name]
       get_html_parameters(method[:description])
       current_module[:methods] << method
-      if current_module[:name] == 'Object' && method[:name] != 'create'
-        instance_version = method.dup
-        instance_version[:class_method] = false
-        instance_version[:description].gsub!(/<span class=".*?">obj<\/span>/, 'the object')
-        if method[:name] == 'merge'
-          instance_version[:description].gsub!(/the first/, 'itself')
-        end
-        if method[:name] == 'equals'
-          instance_version[:description].gsub!(/(<span class=".*?">a<\/span>).+are equal/, 'the object is equal to \\1')
-        end
-        instance_version[:params].delete_if { |p| p[:name] == 'obj' || p[:name] == 'a' }
-        instance_version[:description] << ' This method is only available on objects created with the alternate constructor <span class="code">Object.create</span>.'
-      end
+      #if current_module[:name] == 'Object' && method[:name] != 'create'
+      #  instance_version = method.dup
+      #  instance_version[:class_method] = false
+      #  instance_version[:description].gsub!(/<span class=".*?">obj<\/span>/, 'the object')
+      #  if method[:name] == 'merge'
+      #    instance_version[:description].gsub!(/the first/, 'itself')
+      #  end
+      #  if method[:name] == 'equals'
+      #    instance_version[:description].gsub!(/(<span class=".*?">a<\/span>).+are equal/, 'the object is equal to \\1')
+      #  end
+      #  instance_version[:params].delete_if { |p| p[:name] == 'obj' || p[:name] == 'a' }
+      #  instance_version[:description] << ' This method is only available on objects created with the alternate constructor <span class="code">Object.create</span>.'
+      #  current_module[:methods] << instance_version
+      #end
     end
   end
 end
@@ -153,7 +148,7 @@ modules.each do |mod|
     if a[:class_method] == b[:class_method]
       a[:name] <=> b[:name]
     else
-      a[:class_method] ? 1 : -1
+      a[:class_method] ? -1 : 1
     end
   end
 end
