@@ -826,7 +826,7 @@ test('String', function () {
   equal('òóôõöø'.normalize(), 'oooooo', 'String#normalize | test basic o');
   equal('ĆćĈĉĊċČč'.normalize(), 'CcCcCcCc', 'String#normalize | test basic o');
   equal('ǖ'.normalize(), 'u', 'String#normalize | test basic o');
-
+  equal('ＦＵＬＬＷＩＤＴＨ'.normalize(), 'FULLWIDTH', 'String#normalize | fullwidth characters');
 
 
   equal('hello'.startsWith('hell'), true, 'String#startsWith | hello starts with hell');
@@ -889,6 +889,7 @@ test('String', function () {
 
   var barabara = 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）';
   equal(barabara.hankaku(), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hankaku | modes | full conversion');
+  equal(barabara.hankaku('all'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hankaku | modes all | full conversion');
   equal(barabara.hankaku('a'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | romaji only');
   equal(barabara.hankaku('n'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes | numbers only');
   equal(barabara.hankaku('k'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes | katakana only');
@@ -1084,12 +1085,13 @@ test('String', function () {
 
 
   equal('quack'.to(), 'quack', 'String#to | no params');
-  equal('quack'.to(0), 'q', 'String#to | to 0');
-  equal('quack'.to(2), 'qua', 'String#to | to 2');
-  equal('quack'.to(4), 'quack', 'String#to | to 4');
-  equal('quack'.to(-1), 'quack', 'String#to | to -1');
-  equal('quack'.to(-3), 'qua', 'String#to | to -3');
-  equal('quack'.to(-4), 'qu', 'String#to | to -4');
+  equal('quack'.to(0), '', 'String#to | to 0');
+  equal('quack'.to(1), 'q', 'String#to | to 1');
+  equal('quack'.to(2), 'qu', 'String#to | to 2');
+  equal('quack'.to(4), 'quac', 'String#to | to 4');
+  equal('quack'.to(-1), 'quac', 'String#to | to -1');
+  equal('quack'.to(-3), 'qu', 'String#to | to -3');
+  equal('quack'.to(-4), 'q', 'String#to | to -4');
 
 
   dateEquals('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
@@ -1460,7 +1462,7 @@ test('String', function () {
   strictlyEqual(''.from(0), '', 'String#from | blank');
   strictlyEqual('wasabi'.from(3), 'abi', 'String#from | from pos 3');
   strictlyEqual(''.to(0), '', 'String#to | blank');
-  strictlyEqual('wasabi'.to(3), 'wasa', 'String#to | to pos 3');
+  strictlyEqual('wasabi'.to(3), 'was', 'String#to | to pos 3');
   strictlyEqual(''.dasherize(), '', 'String#dasherize | blank');
   strictlyEqualsWithException('noFingWay'.dasherize(), 'no-fing-way', { prototype: false }, 'String#dasherize | noFingWay');
   strictlyEqual(''.underscore(), '', 'String#underscore | blank');
@@ -3602,16 +3604,16 @@ test('Date', function () {
   equals(d.format('ISO8601', true), iso, 'Date#format | internal formats | ISO8601 UTC');
 
 
-  var rfc1123 = getWeekday(d).to(2).capitalize()+', '+d.getDate().pad(2)+' '+getMonth(d).to(2).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
-  var rfc1036 = getWeekday(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonth(d).to(2).capitalize()+'-'+d.getFullYear().toString().last(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  var rfc1123 = getWeekday(d).to(3).capitalize()+', '+d.getDate().pad(2)+' '+getMonth(d).to(3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  var rfc1036 = getWeekday(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonth(d).to(3).capitalize()+'-'+d.getFullYear().toString().last(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
   equals(d.format(Date.RFC1123), rfc1123, 'Date#format | internal formats | RFC1123');
   equals(d.format(Date.RFC1036), rfc1036, 'Date#format | internal formats | RFC1036');
   equals(d.format('RFC1123'), rfc1123, 'Date#format | internal formats | RFC1123');
   equals(d.format('RFC1036'), rfc1036, 'Date#format | internal formats | RFC1036');
 
 
-  rfc1123 = getWeekday(d,true).to(2).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonth(d,true).to(2).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT'+d.getUTCOffset();
-  rfc1036 = getWeekday(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonth(d,true).to(2).capitalize()+'-'+d.getUTCFullYear().toString().last(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  rfc1123 = getWeekday(d,true).to(3).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonth(d,true).to(3).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  rfc1036 = getWeekday(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonth(d,true).to(3).capitalize()+'-'+d.getUTCFullYear().toString().last(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT'+d.getUTCOffset();
   equals(d.format('RFC1123', true), rfc1123, 'Date#format | internal formats | RFC1123 UTC');
   equals(d.format('RFC1036', true), rfc1036, 'Date#format | internal formats | RFC1036 UTC');
 
