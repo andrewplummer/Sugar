@@ -308,30 +308,30 @@ test('Number', function () {
 
 
 
-  equal((2).multipleOf(2), true, 'Number#multipleOf | 2 is a multiple of 2');
-  equal((6).multipleOf(2), true, 'Number#multipleOf | 6 is a multiple of 2');
-  equal((100).multipleOf(2), true, 'Number#multipleOf | 100 is a multiple of 2');
-  equal((2).multipleOf(100), false, 'Number#multipleOf | 2 is a multiple of 100');
-  equal((100).multipleOf(-2), true, 'Number#multipleOf | 100 is a multiple of -2');
-  equal((6).multipleOf(-2), true, 'Number#multipleOf | 6 is a multiple of -2');
-  equal((6).multipleOf(3), true, 'Number#multipleOf | 6 is a multiple of 3');
-  equal((7).multipleOf(3), false, 'Number#multipleOf | 7 is a multiple of 3');
-  equal((2.5).multipleOf(1.25), true, 'Number#multipleOf | 2.5 is a multiple of 1.25');
-  equal((2).multipleOf('a'), false, 'Number#multipleOf | string arguments');
-  equal((2).multipleOf(/af/), false, 'Number#multipleOf | other random arguments');
-  equal((2).multipleOf(null), false, 'Number#multipleOf | null');
-  equal((2).multipleOf(), false, 'Number#multipleOf | no argument passed');
+  equal((2).isMultipleOf(2), true, 'Number#multipleOf | 2 is a multiple of 2');
+  equal((6).isMultipleOf(2), true, 'Number#multipleOf | 6 is a multiple of 2');
+  equal((100).isMultipleOf(2), true, 'Number#multipleOf | 100 is a multiple of 2');
+  equal((2).isMultipleOf(100), false, 'Number#multipleOf | 2 is a multiple of 100');
+  equal((100).isMultipleOf(-2), true, 'Number#multipleOf | 100 is a multiple of -2');
+  equal((6).isMultipleOf(-2), true, 'Number#multipleOf | 6 is a multiple of -2');
+  equal((6).isMultipleOf(3), true, 'Number#multipleOf | 6 is a multiple of 3');
+  equal((7).isMultipleOf(3), false, 'Number#multipleOf | 7 is a multiple of 3');
+  equal((2.5).isMultipleOf(1.25), true, 'Number#multipleOf | 2.5 is a multiple of 1.25');
+  equal((2).isMultipleOf('a'), false, 'Number#multipleOf | string arguments');
+  equal((2).isMultipleOf(/af/), false, 'Number#multipleOf | other random arguments');
+  equal((2).isMultipleOf(null), false, 'Number#multipleOf | null');
+  equal((2).isMultipleOf(), false, 'Number#multipleOf | no argument passed');
 
 
 
-  equals((1).odd(), true, 'Number#odd | 1');
-  equals((2).odd(), false, 'Number#odd | 2');
+  equals((1).isOdd(), true, 'Number#odd | 1');
+  equals((2).isOdd(), false, 'Number#odd | 2');
 
 
 
 
-  equals((1).even(), false, 'Number#even | 1');
-  equals((2).even(), true, 'Number#even | 2');
+  equals((1).isEven(), false, 'Number#even | 1');
+  equals((2).isEven(), true, 'Number#even | 2');
 
 
 
