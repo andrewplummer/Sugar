@@ -1750,6 +1750,8 @@ test('Array', function () {
 
 
   same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map | length');
+  same(['foot','goose','moose'].map(2), ['o','o','o'], 'Array#map | can handle non-string arguments');
+  same([1,2,3].map(2), [undefined,undefined,undefined], 'Array#map | can handle non-string arguments');
   same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map | age');
   same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map | name');
   same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map | (nonexistent) cupsize');

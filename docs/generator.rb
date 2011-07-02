@@ -8,7 +8,7 @@ fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/methods.php
 fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
 modules = []
-current_module = nil
+@current_module = nil
 
 
 def get_property(prop, s, multiline = false)
@@ -24,7 +24,7 @@ end
 def get_html_parameters(str)
   str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
   str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
-  str.gsub!(/%(.+)%/, '<span class="code">\1</span>')
+  str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
 end
 
 def get_method(s)
@@ -81,23 +81,30 @@ def get_method(s)
   }
 end
 
-def get_examples(s)
+def get_examples(s, name)
   lines = get_property(:example, s, true)
   examples = []
   func = ''
+  force_result = false
   lines.each do |l|
     l.gsub!(/^[\s*]+/, '')
+    l.gsub!(/\s+->.+$/, '')
+    if l =~ /^\s*\+/
+      force_result = true
+      l.gsub!(/\+/, '')
+    end
     if l =~ /function/ && l !~ /isFunction/
       func << l
-    elsif l =~ /\}\);$/
+    elsif l =~ /\);$/
       func << l.gsub(/\s+->.+$/, '')
-      examples << { :multi_line => true, :html => func }
+      examples << { :multi_line => true, :force_result => force_result, :html => func }
       func = ''
     elsif func.length > 0
       func << '\n' + l
     elsif !l.empty?
       examples << {
         :multi_line => false,
+        :force_result => force_result,
         :html => l.gsub(/\s+->.+$/, '')
       }
     end
@@ -110,18 +117,18 @@ File.open('lib/sugar.js', 'r') do |f|
   i = 0
   f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
     if mod = b.match(/(\w+) module/)
-      if current_module
-        modules << current_module
+      if @current_module
+        modules << @current_module
       end
-      current_module = { :name => mod[1], :methods => [] }
+      @current_module = { :name => mod[1], :methods => [] }
     else
       method = get_method(b)
       method[:returns] = get_property(:returns, b)
       method[:description] = get_property(:description, b)
-      method[:examples] = get_examples(b)
-      method[:module] = current_module[:name]
+      method[:examples] = get_examples(b, method[:name])
+      method[:module] = @current_module[:name]
       get_html_parameters(method[:description])
-      current_module[:methods] << method
+      @current_module[:methods] << method
       if method[:name] == 'stripTags' || method[:name] == 'removeTags'
         method[:escape_html] = true
       end
