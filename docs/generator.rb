@@ -14,14 +14,16 @@ modules = []
 def get_property(prop, s, multiline = false)
   if multiline
     r = Regexp.new('@'+prop.to_s+'[\s*]+\*\n(.+)\*\n', Regexp::MULTILINE)
-    s.scan(r)[0][0].split(/\n/)
+    match = s.scan(r)
+    match[0][0].split(/\n/) if match[0]
   else
     match = s.match(Regexp.new('@'+prop.to_s+' (.*)'))
-    match[1]
+    match[1] if match
   end
 end
 
 def get_html_parameters(str)
+  return nil if !str
   str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
   str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
   str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
@@ -83,6 +85,7 @@ end
 
 def get_examples(s, name)
   lines = get_property(:example, s, true)
+  return nil if !lines
   examples = []
   func = ''
   force_result = false
@@ -126,11 +129,17 @@ File.open('lib/sugar.js', 'r') do |f|
       method[:returns] = get_property(:returns, b)
       method[:description] = get_property(:description, b)
       method[:examples] = get_examples(b, method[:name])
+      method[:alias] = get_property(:alias, b)
       method[:module] = @current_module[:name]
       get_html_parameters(method[:description])
       @current_module[:methods] << method
       if method[:name] == 'stripTags' || method[:name] == 'removeTags'
         method[:escape_html] = true
+      end
+      if method[:alias]
+        method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
+        href = "#{method[:module].downcase}_#{method[:alias]}"
+        method[:description] = "Alias for <a class=\"alias\" href=\"##{href}\">#{method[:alias]}</a>"
       end
       #if current_module[:name] == 'Object' && method[:name] != 'create'
       #  instance_version = method.dup
