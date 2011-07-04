@@ -1084,7 +1084,7 @@ test('String', function () {
   equal('quack'.from(-4), 'uack', 'String#from | from -4');
 
 
-  equal('quack'.to(), 'quack', 'String#to | no params');
+  equal('quack'.to(), '', 'String#to | no params');
   equal('quack'.to(0), '', 'String#to | to 0');
   equal('quack'.to(1), 'q', 'String#to | to 1');
   equal('quack'.to(2), 'qu', 'String#to | to 2');
@@ -2192,14 +2192,15 @@ test('Array', function () {
   same(['a','b','c'].from(-4), ['a','b','c'], 'Array#from | -4');
 
 
-  same(['a','b','c'].to(), ['a','b','c'], 'Array#to | no argument');
-  same(['a','b','c'].to(1), ['a','b'], 'Array#to | 1');
-  same(['a','b','c'].to(2), ['a','b','c'], 'Array#to | 2');
+  same(['a','b','c'].to(), [], 'Array#to | no argument');
+  same(['a','b','c'].to(0), [], 'Array#to | no argument');
+  same(['a','b','c'].to(1), ['a'], 'Array#to | 1');
+  same(['a','b','c'].to(2), ['a','b'], 'Array#to | 2');
   same(['a','b','c'].to(3), ['a','b','c'], 'Array#to | 3');
   same(['a','b','c'].to(4), ['a','b','c'], 'Array#to | 4');
-  same(['a','b','c'].to(-1), ['a','b','c'], 'Array#to | -1');
-  same(['a','b','c'].to(-2), ['a','b'], 'Array#to | -2');
-  same(['a','b','c'].to(-3), ['a'], 'Array#to | -3');
+  same(['a','b','c'].to(-1), ['a','b'], 'Array#to | -1');
+  same(['a','b','c'].to(-2), ['a'], 'Array#to | -2');
+  same(['a','b','c'].to(-3), [], 'Array#to | -3');
   same(['a','b','c'].to(-4), [], 'Array#to | -4');
 
 
@@ -2415,10 +2416,17 @@ test('Array', function () {
 
 
   same([1,2,3,4,5].split(3), [[1,2],[4,5]], 'Array#split | split on 3');
+  same([1,2,3,4,5].split(1), [[2,3,4,5]], 'Array#split | split on 1');
+  same([1,2,3,4,5].split(2), [[1],[3,4,5]], 'Array#split | split on 2');
+  same([1,2,3,4,5].split(4), [[1,2,3,4]], 'Array#split | split on 4');
+  same([1,2,3,4,5].split(5), [[1,2,3,4]], 'Array#split | split on 5');
+  same([1,2,3,4,5].split(0), [1,2,3,4,5], 'Array#split | split on 0');
+  same([1,2,3,4,5].split(6), [1,2,3,4,5], 'Array#split | split on 6');
   same([1,2,3,4,5,6,7,8,9,10].split(function(i){ return i % 3 == 0; }), [[1,2],[4,5],[7,8],[10]], 'Array#split | split on every 3rd');
   same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 2; }), [['wherever','you'],['whatever','you']], 'Array#split | split on strings with length of 2');
   same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 3; }), [['wherever'],['go','whatever'],['do']], 'Array#split | split on strings with length of 3');
   same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length < 4; }), [['wherever'],['whatever']], 'Array#split | split on strings with length less than 4');
+  same(['wherever','you','go','whatever','you','do'].split(/^[gd]o/), [['wherever','you'],['whatever','you']], 'Array#split | split on regex | split on strings with length of 2');
 
 
 
