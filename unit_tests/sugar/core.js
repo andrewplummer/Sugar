@@ -575,7 +575,6 @@ test('Number', function () {
 
 
 
-
 //  dateEquals(Date.create('Monday'), getDateWithWeekdayAndOffset(1), 'Date#create | Fuzzy Dates | Monday');
 });
 
@@ -3407,8 +3406,8 @@ test('Date', function () {
 
 
 
-  dateEquals(new Date().advance(1), Date.create('one year from now'), 'Date#advance | date instance is returned');
-  dateEquals(new Date().rewind(1), Date.create('one year ago'), 'Date#rewind | date instance is returned');
+  dateEquals(new Date().advance({ years: 1 }), Date.create('one year from now'), 'Date#advance | advancing 1 year');
+  dateEquals(new Date().rewind({ years: 1 }), Date.create('one year ago'), 'Date#rewind | rewinding 1 year');
 
 
 
@@ -4008,12 +4007,12 @@ test('Date', function () {
   dateEquals(new Date(d).endOfYear(), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | February 29, 2012');
 
 
-  dateEquals(new Date(d).beginningOfDay(false), new Date(2012, 1, 29, 22, 15, 42), 'Date#beginningOfDay | do not reset time | February 29, 2012');
+  dateEquals(new Date(d).beginningOfDay(false), new Date(2012, 1, 29, 0, 0, 0), 'Date#beginningOfDay | no time reset on day level makes no sense');
   dateEquals(new Date(d).beginningOfWeek(false), new Date(2012, 1, 26, 22, 15, 42), 'Date#beginningOfWeek | do not reset time | February 29, 2012');
   dateEquals(new Date(d).beginningOfMonth(false), new Date(2012, 1, 1, 22, 15, 42), 'Date#beginningOfMonth | do not reset time | February 29, 2012');
   dateEquals(new Date(d).beginningOfYear(false), new Date(2012, 0, 1, 22, 15, 42), 'Date#beginningOfYear | do not reset time | February 29, 2012');
 
-  dateEquals(new Date(d).endOfDay(false), new Date(2012, 1, 29, 22, 15, 42), 'Date#endOfDay | do not reset time | February 29, 2012');
+  dateEquals(new Date(d).endOfDay(false), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfDay | no time reset on day level makes no sense');
   dateEquals(new Date(d).endOfWeek(false), new Date(2012, 2, 3, 22, 15, 42), 'Date#endOfWeek | do not reset time | February 29, 2012');
   dateEquals(new Date(d).endOfMonth(false), new Date(2012, 1, 29, 22, 15, 42), 'Date#endOfMonth | do not reset time | February 29, 2012');
   dateEquals(new Date(d).endOfYear(false), new Date(2012, 11, 31, 22, 15, 42), 'Date#endOfYear | do not reset time | February 29, 2012');
@@ -4413,7 +4412,12 @@ test('Date', function () {
 
 
 
+  dateEquals(Date.create().rewind((1).day()), new Date(new Date().getTime() - 86400000), 'Date#rewind | can rewind milliseconds');
+  dateEquals(Date.create().advance((1).day()), new Date(new Date().getTime() + 86400000), 'Date#advance | can advance milliseconds');
 
+
+
+  equals(Date.create().beginningOfWeek().isLastWeek(), false, 'Date#isLastWeek | the beginning of this week is not last week');
 
 
 
