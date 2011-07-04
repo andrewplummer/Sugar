@@ -1087,7 +1087,7 @@ test('String', function () {
   equal('quack'.from(-4), 'uack', 'String#from | from -4');
 
 
-  equal('quack'.to(), '', 'String#to | no params');
+  equal('quack'.to(), 'quack', 'String#to | no params');
   equal('quack'.to(0), '', 'String#to | to 0');
   equal('quack'.to(1), 'q', 'String#to | to 1');
   equal('quack'.to(2), 'qu', 'String#to | to 2');
@@ -2194,7 +2194,7 @@ test('Array', function () {
   same(['a','b','c'].from(-4), ['a','b','c'], 'Array#from | -4');
 
 
-  same(['a','b','c'].to(), [], 'Array#to | no argument');
+  same(['a','b','c'].to(), ['a','b','c'], 'Array#to | no argument');
   same(['a','b','c'].to(0), [], 'Array#to | no argument');
   same(['a','b','c'].to(1), ['a'], 'Array#to | 1');
   same(['a','b','c'].to(2), ['a','b'], 'Array#to | 2');
