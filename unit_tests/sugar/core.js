@@ -426,6 +426,9 @@ test('Number', function () {
   equals((2.5).hex(), '2.8', 'Number#hex | 2.5')
   equals((2553423).hex(), '26f64f', 'Number#hex | 2553423')
 
+  equals((4).milliseconds(), 4, 'Number#milliseconds | 4');
+  equals((3.25).milliseconds(), 3, 'Number#milliseconds | rounded');
+
   equals((0).seconds(), 0, 'Number#seconds | 0');
   equals((1).seconds(), 1000, 'Number#seconds | 1');
   equals((30).seconds(), 30000, 'Number#seconds | 30');
