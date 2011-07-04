@@ -1750,7 +1750,6 @@ test('Array', function () {
 
 
   same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map | length');
-  same(['foot','goose','moose'].map(2), ['o','o','o'], 'Array#map | can handle non-string arguments');
   same([1,2,3].map(2), [undefined,undefined,undefined], 'Array#map | can handle non-string arguments');
   same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map | age');
   same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map | name');
@@ -1939,8 +1938,8 @@ test('Array', function () {
     count++;
   }, true);
 
-  equals(count, 0, 'Array#eachFromIndex | looping from index 3 | should have run 3 times')
-  same(result, [], 'Array#eachFromIndex | looping from index 3 | result');
+  equals(count, 3, 'Array#eachFromIndex | looping from index 3 | should have run 3 times')
+  same(result, ['a','b','c'], 'Array#eachFromIndex | looping from index 3 | result');
 
 
 
@@ -1951,8 +1950,8 @@ test('Array', function () {
     count++;
   }, true);
 
-  equals(count, 0, 'Array#eachFromIndex | looping from index 4 | should have run 3 times')
-  same(result, [], 'Array#eachFromIndex | looping from index 4 | result');
+  equals(count, 3, 'Array#eachFromIndex | looping from index 4 | should have run 3 times')
+  same(result, ['b','c','a'], 'Array#eachFromIndex | looping from index 4 | result');
 
 
 
@@ -1963,8 +1962,8 @@ test('Array', function () {
     count++;
   }, true);
 
-  equals(count, 0, 'Array#eachFromIndex | looping from index 49 | should have run 3 times')
-  same(result, [], 'Array#eachFromIndex | looping from index 49 | result');
+  equals(count, 3, 'Array#eachFromIndex | looping from index 49 | should have run 3 times')
+  same(result, ['b','c','a'], 'Array#eachFromIndex | looping from index 49 | result');
 
 
 
@@ -1975,104 +1974,102 @@ test('Array', function () {
 
 
 
-  /*
-  same(['a','b','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex | a');
-  same(['a','a','c'].findFromIndex(0, 'a'), 'a', 'Array#findFromIndex | first a');
-  same(['a','b','c'].findFromIndex(0, 'q'), undefined, 'Array#findFromIndex | q');
-  same([1,2,3].findFromIndex(0, 1), 1, 'Array#findFromIndex | 1');
-  same([2,2,3].findFromIndex(0, 2), 2, 'Array#findFromIndex | 2');
-  same([1,2,3].findFromIndex(0, 4), undefined, 'Array#findFromIndex | 4');
-  same([{a:1},{b:2},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex | a:1');
-  same([{a:1},{a:1},{c:3}].findFromIndex(0, {a:1}), {a:1}, 'Array#findFromIndex | first a:1');
-  same([{a:1},{b:2},{c:3}].findFromIndex(0, {d:4}), undefined, 'Array#findFromIndex | d:4');
-  same([{a:1},{b:2},{c:3}].findFromIndex(0, {c:4}), undefined, 'Array#findFromIndex | c:4');
-  same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex | 2,3');
-  same([[1,2],[2,3],[4,5]].findFromIndex(0, [2,4]), undefined, 'Array#findFromIndex | 2,4');
-  same([[1,2],[2,3],[2,3]].findFromIndex(0, [2,3]), [2,3], 'Array#findFromIndex | first 2,3');
-  same(['foo','bar'].findFromIndex(0, /f+/), 'foo', 'Array#findFromIndex | /f+/');
-  same(['foo','bar'].findFromIndex(0, /[a-f]/), 'foo', 'Array#findFromIndex | /a-f/');
-  same(['foo','bar'].findFromIndex(1, /[a-f]/), 'bar', 'Array#findFromIndex | /a-f/ from index 1');
-  same(['foo','bar'].findFromIndex(0, /q+/), undefined, 'Array#findFromIndex | /q+/');
-  same([1,2,3].findFromIndex(0, function(e){ return e > 0; }), 1, 'Array#findFromIndex | greater than 0 from index 0');
-  same([1,2,3].findFromIndex(1, function(e){ return e > 0; }), 2, 'Array#findFromIndex | greater than 0 from index 1');
-  same([1,2,3].findFromIndex(2, function(e){ return e > 0; }), 3, 'Array#findFromIndex | greater than 0 from index 2');
-  same([1,2,3].findFromIndex(3, function(e){ return e > 0; }), 1, 'Array#findFromIndex | greater than 0 from index 3');
-  same([1,2,3].findFromIndex(0, function(e){ return e > 1; }), 2, 'Array#findFromIndex | greater than 1 from index 0');
-  same([1,2,3].findFromIndex(1, function(e){ return e > 1; }), 2, 'Array#findFromIndex | greater than 1 from index 1');
-  same([1,2,3].findFromIndex(2, function(e){ return e > 1; }), 3, 'Array#findFromIndex | greater than 1 from index 2');
-  same([1,2,3].findFromIndex(0, function(e){ return e > 2; }), 3, 'Array#findFromIndex | greater than 2 from index 0');
-  same([1,2,3].findFromIndex(0, function(e){ return e > 3; }), undefined, 'Array#findFromIndex | greater than 3 from index 0');
+  same(['a','b','c'].find('a'), 'a', 'Array#find | a');
+  same(['a','a','c'].find('a'), 'a', 'Array#find | first a');
+  same(['a','b','c'].find('q'), undefined, 'Array#find | q');
+  same([1,2,3].find(1), 1, 'Array#find | 1');
+  same([2,2,3].find(2), 2, 'Array#find | 2');
+  same([1,2,3].find(4), undefined, 'Array#find | 4');
+  same([{a:1},{b:2},{c:3}].find({a:1}), {a:1}, 'Array#find | a:1');
+  same([{a:1},{a:1},{c:3}].find({a:1}), {a:1}, 'Array#find | first a:1');
+  same([{a:1},{b:2},{c:3}].find({d:4}), undefined, 'Array#find | d:4');
+  same([{a:1},{b:2},{c:3}].find({c:4}), undefined, 'Array#find | c:4');
+  same([[1,2],[2,3],[4,5]].find([2,3]), [2,3], 'Array#find | 2,3');
+  same([[1,2],[2,3],[4,5]].find([2,4]), undefined, 'Array#find | 2,4');
+  same([[1,2],[2,3],[2,3]].find([2,3]), [2,3], 'Array#find | first 2,3');
+  same(['foo','bar'].find(/f+/), 'foo', 'Array#find | /f+/');
+  same(['foo','bar'].find(/[a-f]/), 'foo', 'Array#find | /a-f/');
+  same(['foo','bar'].find(/[a-f]/, 1), 'bar', 'Array#find | /a-f/ from index 1');
+  same(['foo','bar'].find(/q+/), undefined, 'Array#find | /q+/');
+  same([1,2,3].find(function(e){ return e > 0; }, 0), 1, 'Array#find | greater than 0 from index 0');
+  same([1,2,3].find(function(e){ return e > 0; }, 1), 2, 'Array#find | greater than 0 from index 1');
+  same([1,2,3].find(function(e){ return e > 0; }, 2), 3, 'Array#find | greater than 0 from index 2');
+  same([1,2,3].find(function(e){ return e > 0; }, 3), undefined, 'Array#find | greater than 0 from index 3');
+  same([1,2,3].find(function(e){ return e > 1; }, 0), 2, 'Array#find | greater than 1 from index 0');
+  same([1,2,3].find(function(e){ return e > 1; }, 1), 2, 'Array#find | greater than 1 from index 1');
+  same([1,2,3].find(function(e){ return e > 1; }, 2), 3, 'Array#find | greater than 1 from index 2');
+  same([1,2,3].find(function(e){ return e > 2; }, 0), 3, 'Array#find | greater than 2 from index 0');
+  same([1,2,3].find(function(e){ return e > 3; }, 0), undefined, 'Array#find | greater than 3 from index 0');
 
-  same([{a:10},{a:8},{a:3}].findFromIndex(0, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex | key "a" greater than 5');
-  same([{a:10},{a:8},{a:3}].findFromIndex(1, function(e){ return e['a'] > 5; }), {a:8}, 'Array#findFromIndex | key "a" greater than 5 from index 1');
-  same([{a:10},{a:8},{a:3}].findFromIndex(2, function(e){ return e['a'] > 5; }), {a:10}, 'Array#findFromIndex | key "a" greater than 5 from index 2');
-  same([function(){}].findFromIndex(0, function(e){}), undefined, 'Array#findFromIndex | undefined function');
-  same([function(){}].findFromIndex(1, function(e){}), undefined, 'Array#findFromIndex | null function from index 1');
-  same([null, null].findFromIndex(0, null), null, 'Array#findFromIndex | null');
-  same([null, null].findFromIndex(1, null), null, 'Array#findFromIndex | null from index 1');
-  same([undefined, undefined].findFromIndex(0, undefined), undefined, 'Array#findFromIndex | undefined');
-  same([undefined, undefined].findFromIndex(1, undefined), undefined, 'Array#findFromIndex | undefined from index 1');
-  same([undefined, 'a'].findFromIndex(1, undefined), 'a', 'Array#findFromIndex | undefined finds the first element');
-  */
+  same([{a:10},{a:8},{a:3}].find(function(e){ return e['a'] > 5; }, 0), {a:10}, 'Array#find | key "a" greater than 5');
+  same([{a:10},{a:8},{a:3}].find(function(e){ return e['a'] > 5; }, 1), {a:8}, 'Array#find | key "a" greater than 5 from index 1');
+  same([{a:10},{a:8},{a:3}].find(function(e){ return e['a'] > 5; }, 2), undefined, 'Array#find | key "a" greater than 5 from index 2');
+  same([function(){}].find(function(e){}, 0), undefined, 'Array#find | undefined function');
+  same([function(){}].find(function(e){}, 1), undefined, 'Array#find | null function from index 1');
+  same([null, null].find(null, 0), null, 'Array#find | null');
+  same([null, null].find(null, 1), null, 'Array#find | null from index 1');
+  same([undefined, undefined].find(undefined, 0), undefined, 'Array#find | undefined');
+  same([undefined, undefined].find(undefined, 1), undefined, 'Array#find | undefined from index 1');
+  same([undefined, 'a'].find(undefined, 1), 'a', 'Array#find | undefined finds the first element');
 
 
 
-  same(['a','b','c'].findAllFromIndex(0, 'a'), ['a'], 'Array#findAllFromIndex | a');
-  same(['a','a','c'].findAllFromIndex(0, 'a'), ['a','a'], 'Array#findAllFromIndex | a,a');
-  same(['a','b','c'].findAllFromIndex(0, 'q'), [], 'Array#findAllFromIndex | q');
-  same([1,2,3].findAllFromIndex(0, 1), [1], 'Array#findAllFromIndex | 1');
-  same([2,2,3].findAllFromIndex(0, 2), [2,2], 'Array#findAllFromIndex | 2,2');
-  same([1,2,3].findAllFromIndex(0, 4), [], 'Array#findAllFromIndex | 4');
-  same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {a:1}), [{a:1}], 'Array#findAllFromIndex | a:1');
-  same([{a:1},{a:1},{c:3}].findAllFromIndex(0, {a:1}), [{a:1},{a:1}], 'Array#findAllFromIndex | a:1,a:1');
-  same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {d:4}), [], 'Array#findAllFromIndex | d:4');
-  same([{a:1},{b:2},{c:3}].findAllFromIndex(0, {c:4}), [], 'Array#findAllFromIndex | c:4');
-  same([[1,2],[2,3],[4,5]].findAllFromIndex(0, [2,3]), [[2,3]], 'Array#findAllFromIndex | 2,3');
-  same([[1,2],[2,3],[4,5]].findAllFromIndex(0, [2,4]), [], 'Array#findAllFromIndex | 2,4');
-  same([[1,2],[2,3],[2,3]].findAllFromIndex(0, [2,3]), [[2,3],[2,3]], 'Array#findAllFromIndex | [2,3],[2,3]');
-  same(['foo','bar'].findAllFromIndex(0, /f+/), ['foo'], 'Array#findAllFromIndex | /f+/');
-  same(['foo','bar'].findAllFromIndex(0, /[a-f]/), ['foo','bar'], 'Array#findAllFromIndex | /[a-f]/');
-  same(['foo','bar'].findAllFromIndex(1, /[a-f]/), ['bar'], 'Array#findAllFromIndex | /[a-f]/ from index 1');
-  same(['foo','bar'].findAllFromIndex(1, /[a-f]/, true), ['bar','foo'], 'Array#findAllFromIndex | /[a-f]/ from index 1');
-  same(['foo','bar'].findAllFromIndex(0, /q+/), [], 'Array#findAllFromIndex | /q+/');
-  same([1,2,3].findAllFromIndex(0, function(e){ return e > 0; }), [1,2,3], 'Array#findAllFromIndex | greater than 0 from index 0');
-  same([1,2,3].findAllFromIndex(1, function(e){ return e > 0; }), [2,3], 'Array#findAllFromIndex | greater than 0 from index 1');
-  same([1,2,3].findAllFromIndex(2, function(e){ return e > 0; }), [3], 'Array#findAllFromIndex | greater than 0 from index 2');
-  same([1,2,3].findAllFromIndex(3, function(e){ return e > 0; }), [], 'Array#findAllFromIndex | greater than 0 from index 3');
-  same([1,2,3].findAllFromIndex(4, function(e){ return e > 0; }), [], 'Array#findAllFromIndex | greater than 0 from index 4');
-  same([1,2,3].findAllFromIndex(0, function(e){ return e > 1; }), [2,3], 'Array#findAllFromIndex | greater than 1 from index 0');
-  same([1,2,3].findAllFromIndex(1, function(e){ return e > 1; }), [2,3], 'Array#findAllFromIndex | greater than 1 from index 1');
-  same([1,2,3].findAllFromIndex(2, function(e){ return e > 1; }), [3], 'Array#findAllFromIndex | greater than 1 from index 2');
-  same([1,2,3].findAllFromIndex(0, function(e){ return e > 2; }), [3], 'Array#findAllFromIndex | greater than 2 from index 0');
-  same([1,2,3].findAllFromIndex(0, function(e){ return e > 3; }), [], 'Array#findAllFromIndex | greater than 3 from index 0');
+  same(['a','b','c'].findAll('a'), ['a'], 'Array#findAll | a');
+  same(['a','a','c'].findAll('a'), ['a','a'], 'Array#findAll | a,a');
+  same(['a','b','c'].findAll('q'), [], 'Array#findAll | q');
+  same([1,2,3].findAll(1), [1], 'Array#findAll | 1');
+  same([2,2,3].findAll(2), [2,2], 'Array#findAll | 2,2');
+  same([1,2,3].findAll(4), [], 'Array#findAll | 4');
+  same([{a:1},{b:2},{c:3}].findAll({a:1}), [{a:1}], 'Array#findAll | a:1');
+  same([{a:1},{a:1},{c:3}].findAll({a:1}), [{a:1},{a:1}], 'Array#findAll | a:1,a:1');
+  same([{a:1},{b:2},{c:3}].findAll({d:4}), [], 'Array#findAll | d:4');
+  same([{a:1},{b:2},{c:3}].findAll({c:4}), [], 'Array#findAll | c:4');
+  same([[1,2],[2,3],[4,5]].findAll([2,3]), [[2,3]], 'Array#findAll | 2,3');
+  same([[1,2],[2,3],[4,5]].findAll([2,4]), [], 'Array#findAll | 2,4');
+  same([[1,2],[2,3],[2,3]].findAll([2,3]), [[2,3],[2,3]], 'Array#findAll | [2,3],[2,3]');
+  same(['foo','bar'].findAll(/f+/), ['foo'], 'Array#findAll | /f+/');
+  same(['foo','bar'].findAll(/[a-f]/), ['foo','bar'], 'Array#findAll | /[a-f]/');
+  same(['foo','bar'].findAll(/[a-f]/, 1), ['bar'], 'Array#findAll | /[a-f]/ from index 1');
+  same(['foo','bar'].findAll(/[a-f]/, 1, true), ['bar','foo'], 'Array#findAll | /[a-f]/ from index 1');
+  same(['foo','bar'].findAll( /q+/), [], 'Array#findAll | /q+/');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 0), [1,2,3], 'Array#findAll | greater than 0 from index 0');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 1), [2,3], 'Array#findAll | greater than 0 from index 1');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 2), [3], 'Array#findAll | greater than 0 from index 2');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 3), [], 'Array#findAll | greater than 0 from index 3');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 4), [], 'Array#findAll | greater than 0 from index 4');
+  same([1,2,3].findAll(function(e){ return e > 1; }, 0), [2,3], 'Array#findAll | greater than 1 from index 0');
+  same([1,2,3].findAll(function(e){ return e > 1; }, 1), [2,3], 'Array#findAll | greater than 1 from index 1');
+  same([1,2,3].findAll(function(e){ return e > 1; }, 2), [3], 'Array#findAll | greater than 1 from index 2');
+  same([1,2,3].findAll(function(e){ return e > 2; }, 0), [3], 'Array#findAll | greater than 2 from index 0');
+  same([1,2,3].findAll(function(e){ return e > 3; }, 0), [], 'Array#findAll | greater than 3 from index 0');
 
-  same([1,2,3].findAllFromIndex(0, function(e){ return e > 0; }, true), [1,2,3], 'Array#findAllFromIndex | looping | greater than 0 from index 0');
-  same([1,2,3].findAllFromIndex(1, function(e){ return e > 0; }, true), [2,3,1], 'Array#findAllFromIndex | looping | greater than 0 from index 1');
-  same([1,2,3].findAllFromIndex(2, function(e){ return e > 0; }, true), [3,1,2], 'Array#findAllFromIndex | looping | greater than 0 from index 2');
-  same([1,2,3].findAllFromIndex(3, function(e){ return e > 0; }, true), [], 'Array#findAllFromIndex | looping | greater than 0 from index 3');
-  same([1,2,3].findAllFromIndex(0, function(e){ return e > 1; }, true), [2,3], 'Array#findAllFromIndex | looping | greater than 1 from index 0');
-  same([1,2,3].findAllFromIndex(1, function(e){ return e > 1; }, true), [2,3], 'Array#findAllFromIndex | looping | greater than 1 from index 1');
-  same([1,2,3].findAllFromIndex(2, function(e){ return e > 1; }, true), [3,2], 'Array#findAllFromIndex | looping | greater than 1 from index 2');
-  same([1,2,3].findAllFromIndex(0, function(e){ return e > 2; }, true), [3], 'Array#findAllFromIndex | looping | greater than 2 from index 0');
-  same([1,2,3].findAllFromIndex(0, function(e){ return e > 3; }, true), [], 'Array#findAllFromIndex | looping | greater than 3 from index 0');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 0, true), [1,2,3], 'Array#findAll | looping | greater than 0 from index 0');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 1, true), [2,3,1], 'Array#findAll | looping | greater than 0 from index 1');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 2, true), [3,1,2], 'Array#findAll | looping | greater than 0 from index 2');
+  same([1,2,3].findAll(function(e){ return e > 0; }, 3, true), [1,2,3], 'Array#findAll | looping | greater than 0 from index 3');
+  same([1,2,3].findAll(function(e){ return e > 1; }, 0, true), [2,3], 'Array#findAll | looping | greater than 1 from index 0');
+  same([1,2,3].findAll(function(e){ return e > 1; }, 1, true), [2,3], 'Array#findAll | looping | greater than 1 from index 1');
+  same([1,2,3].findAll(function(e){ return e > 1; }, 2, true), [3,2], 'Array#findAll | looping | greater than 1 from index 2');
+  same([1,2,3].findAll(function(e){ return e > 2; }, 0, true), [3], 'Array#findAll | looping | greater than 2 from index 0');
+  same([1,2,3].findAll(function(e){ return e > 3; }, 0, true), [], 'Array#findAll | looping | greater than 3 from index 0');
 
-  same([{a:10},{a:8},{a:3}].findAllFromIndex(0, function(e){ return e['a'] > 5; }), [{a:10},{a:8}], 'Array#findAllFromIndex | key "a" is greater than 5');
-  same([{a:10},{a:8},{a:3}].findAllFromIndex(1, function(e){ return e['a'] > 5; }), [{a:8}], 'Array#findAllFromIndex | key "a" is greater than 5 from index 1');
-  same([{a:10},{a:8},{a:3}].findAllFromIndex(2, function(e){ return e['a'] > 5; }), [], 'Array#findAllFromIndex | key "a" is greater than 5 from index 2');
+  same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }, 0), [{a:10},{a:8}], 'Array#findAll | key "a" is greater than 5');
+  same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }, 1), [{a:8}], 'Array#findAll | key "a" is greater than 5 from index 1');
+  same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }, 2), [], 'Array#findAll | key "a" is greater than 5 from index 2');
 
-  same([{a:10},{a:8},{a:3}].findAllFromIndex(0, function(e){ return e['a'] > 5; }, true), [{a:10},{a:8}], 'Array#findAllFromIndex | looping | key "a" is greater than 5');
-  same([{a:10},{a:8},{a:3}].findAllFromIndex(1, function(e){ return e['a'] > 5; }, true), [{a:8},{a:10}], 'Array#findAllFromIndex | looping | key "a" is greater than 5 from index 1');
-  same([{a:10},{a:8},{a:3}].findAllFromIndex(2, function(e){ return e['a'] > 5; }, true), [{a:10},{a:8}], 'Array#findAllFromIndex | looping | key "a" is greater than 5 from index 2');
+  same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }, 0, true), [{a:10},{a:8}], 'Array#findAll | looping | key "a" is greater than 5');
+  same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }, 1, true), [{a:8},{a:10}], 'Array#findAll | looping | key "a" is greater than 5 from index 1');
+  same([{a:10},{a:8},{a:3}].findAll(function(e){ return e['a'] > 5; }, 2, true), [{a:10},{a:8}], 'Array#findAll | looping | key "a" is greater than 5 from index 2');
 
-  same([function(){}].findAllFromIndex(0, function(e){}), [], 'Array#findAllFromIndex | null function');
-  same([function(){}].findAllFromIndex(1, function(e){}), [], 'Array#findAllFromIndex | null function from index 1');
-  same([null, null].findAllFromIndex(0, null), [null, null], 'Array#findAllFromIndex | null');
-  same([null, null].findAllFromIndex(1, null), [null], 'Array#findAllFromIndex | null from index 1');
+  same([function(){}].findAll(function(e){}, 0), [], 'Array#findAll | null function');
+  same([function(){}].findAll(function(e){}, 1), [], 'Array#findAll | null function from index 1');
+  same([null, null].findAll(null, 0), [null, null], 'Array#findAll | null');
+  same([null, null].findAll(null, 1), [null], 'Array#findAll | null from index 1');
 
-  same([function(){}].findAllFromIndex(0, function(e){}, true), [], 'Array#findAllFromIndex | looping | null function');
-  same([function(){}].findAllFromIndex(1, function(e){}, true), [], 'Array#findAllFromIndex | looping | null function from index 1');
-  same([null, null].findAllFromIndex(0, null, true), [null, null], 'Array#findAllFromIndex | looping | null');
-  same([null, null].findAllFromIndex(1, null, true), [null, null], 'Array#findAllFromIndex | looping | null from index 1');
+  same([function(){}].findAll(function(e){}, 0, true), [], 'Array#findAll | looping | null function');
+  same([function(){}].findAll(function(e){}, 1, true), [], 'Array#findAll | looping | null function from index 1');
+  same([null, null].findAll(null, 0, true), [null, null], 'Array#findAll | looping | null');
+  same([null, null].findAll(null, 1, true), [null, null], 'Array#findAll | looping | null from index 1');
 
 
 
@@ -2080,12 +2077,12 @@ test('Array', function () {
   // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
   arr = [{name:'john',age:10,food:'sushi'},{name:'randy',age:23,food:'natto'},{name:'karen',age:32,food:'salad'}];
   arr = [1,2,3,4,5,6,7,8,9];
-  same(arr.findAllFromIndex(4, function(n){ return n % 3 == 0; }), [6,9], 'Array#findAllFromIndex | n % 3 from index 4');
-  same(arr.reverse().findAllFromIndex(4, function(n){ return n % 3 == 0; }), [3], 'Array#findAllFromIndex reversed | n % 3 from index 4 reversed');
+  same(arr.findAll(function(n){ return n % 3 == 0; }, 4), [6,9], 'Array#findAll | n % 3 from index 4');
+  same(arr.reverse().findAll(function(n){ return n % 3 == 0; }, 4), [3], 'Array#findAllreversed | n % 3 from index 4 reversed');
 
   arr.reverse(); // Array#reverse is destructive, dammit!
-  same(arr.findAllFromIndex(4, function(n){ return n % 3 == 0; }, true), [6,9,3], 'Array#findAllFromIndex | looping | n % 3 from index 4');
-  same(arr.reverse().findAllFromIndex(4, function(n){ return n % 3 == 0; }, true), [3,9,6], 'Array#findAllFromIndex | looping | reversed | n % 3 from index 4 reversed');
+  same(arr.findAll(function(n){ return n % 3 == 0; }, 4, true), [6,9,3], 'Array#findAll | looping | n % 3 from index 4');
+  same(arr.reverse().findAll(function(n){ return n % 3 == 0; }, 4, true), [3,9,6], 'Array#findAll | looping | reversed | n % 3 from index 4 reversed');
 
 
   same([1,1,3].unique(), [1,3], 'Array#unique | 1,1,3');
