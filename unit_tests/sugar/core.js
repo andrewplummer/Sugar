@@ -426,6 +426,9 @@ test('Number', function () {
   equals((2.5).hex(), '2.8', 'Number#hex | 2.5')
   equals((2553423).hex(), '26f64f', 'Number#hex | 2553423')
 
+  equals((4).milliseconds(), 4, 'Number#milliseconds | 4');
+  equals((3.25).milliseconds(), 3, 'Number#milliseconds | rounded');
+
   equals((0).seconds(), 0, 'Number#seconds | 0');
   equals((1).seconds(), 1000, 'Number#seconds | 1');
   equals((30).seconds(), 30000, 'Number#seconds | 30');
@@ -1084,7 +1087,7 @@ test('String', function () {
   equal('quack'.from(-4), 'uack', 'String#from | from -4');
 
 
-  equal('quack'.to(), 'quack', 'String#to | no params');
+  equal('quack'.to(), '', 'String#to | no params');
   equal('quack'.to(0), '', 'String#to | to 0');
   equal('quack'.to(1), 'q', 'String#to | to 1');
   equal('quack'.to(2), 'qu', 'String#to | to 2');
@@ -2191,14 +2194,15 @@ test('Array', function () {
   same(['a','b','c'].from(-4), ['a','b','c'], 'Array#from | -4');
 
 
-  same(['a','b','c'].to(), ['a','b','c'], 'Array#to | no argument');
-  same(['a','b','c'].to(1), ['a','b'], 'Array#to | 1');
-  same(['a','b','c'].to(2), ['a','b','c'], 'Array#to | 2');
+  same(['a','b','c'].to(), [], 'Array#to | no argument');
+  same(['a','b','c'].to(0), [], 'Array#to | no argument');
+  same(['a','b','c'].to(1), ['a'], 'Array#to | 1');
+  same(['a','b','c'].to(2), ['a','b'], 'Array#to | 2');
   same(['a','b','c'].to(3), ['a','b','c'], 'Array#to | 3');
   same(['a','b','c'].to(4), ['a','b','c'], 'Array#to | 4');
-  same(['a','b','c'].to(-1), ['a','b','c'], 'Array#to | -1');
-  same(['a','b','c'].to(-2), ['a','b'], 'Array#to | -2');
-  same(['a','b','c'].to(-3), ['a'], 'Array#to | -3');
+  same(['a','b','c'].to(-1), ['a','b'], 'Array#to | -1');
+  same(['a','b','c'].to(-2), ['a'], 'Array#to | -2');
+  same(['a','b','c'].to(-3), [], 'Array#to | -3');
   same(['a','b','c'].to(-4), [], 'Array#to | -4');
 
 
@@ -2243,6 +2247,7 @@ test('Array', function () {
   sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el){ return el['b']; }), [{a:-1,b:-5}], { prototype: -5 }, 'Array#min | key "b", 1 found');
   sameWithException(['short','and','mort'].min(function(el){ return el.length; }), ['and'], { prototype: 3 }, 'Array#min | length');
   sameWithException(['short','and','mort','fat'].min(function(el){ return el.length; }), ['and','fat'], { prototype: 3 }, 'Array#min | and,fat');
+  sameWithException(['short','and','mort'].min('length'), ['and'], { prototype: 3 }, 'Array#min | length with shortcut');
 
 
   sameWithException([12,87,55].max(), [87], { prototype: 87 }, 'Array#max | 87');
@@ -2413,10 +2418,17 @@ test('Array', function () {
 
 
   same([1,2,3,4,5].split(3), [[1,2],[4,5]], 'Array#split | split on 3');
+  same([1,2,3,4,5].split(1), [[2,3,4,5]], 'Array#split | split on 1');
+  same([1,2,3,4,5].split(2), [[1],[3,4,5]], 'Array#split | split on 2');
+  same([1,2,3,4,5].split(4), [[1,2,3,4]], 'Array#split | split on 4');
+  same([1,2,3,4,5].split(5), [[1,2,3,4]], 'Array#split | split on 5');
+  same([1,2,3,4,5].split(0), [1,2,3,4,5], 'Array#split | split on 0');
+  same([1,2,3,4,5].split(6), [1,2,3,4,5], 'Array#split | split on 6');
   same([1,2,3,4,5,6,7,8,9,10].split(function(i){ return i % 3 == 0; }), [[1,2],[4,5],[7,8],[10]], 'Array#split | split on every 3rd');
   same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 2; }), [['wherever','you'],['whatever','you']], 'Array#split | split on strings with length of 2');
   same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 3; }), [['wherever'],['go','whatever'],['do']], 'Array#split | split on strings with length of 3');
   same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length < 4; }), [['wherever'],['whatever']], 'Array#split | split on strings with length less than 4');
+  same(['wherever','you','go','whatever','you','do'].split(/^[gd]o/), [['wherever','you'],['whatever','you']], 'Array#split | split on regex | split on strings with length of 2');
 
 
 
@@ -2465,24 +2477,25 @@ test('Array', function () {
 
 
 
-  same([1,2,2,3].removeIndex(), [1,2,2,3], 'Array#removeIndex | numeric | no argument');
-  same([1,2,2,3].removeIndex(0), [2,2,3], 'Array#removeIndex | numeric | 0');
-  same([1,2,2,3].removeIndex(1), [1,2,3], 'Array#removeIndex | numeric | 1');
-  same([1,2,2,3].removeIndex(2), [1,2,3], 'Array#removeIndex | numeric | 2');
-  same([1,2,2,3].removeIndex(3), [1,2,2], 'Array#removeIndex | numeric | 3');
-  same([1,2,2,3].removeIndex(4), [1,2,2,3], 'Array#removeIndex | numeric | 4');
-  same(['a','b','c','c'].removeIndex(), ['a','b','c','c'], 'Array#removeIndex | alphabet | no argument');
-  same(['a','b','c','c'].removeIndex(0), ['b','c','c'], 'Array#removeIndex | alphabet | 0');
-  same(['a','b','c','c'].removeIndex(1), ['a','c','c'], 'Array#removeIndex | alphabet | 1');
-  same(['a','b','c','c'].removeIndex(2), ['a','b','c'], 'Array#removeIndex | alphabet | 2');
-  same(['a','b','c','c'].removeIndex(3), ['a','b','c'], 'Array#removeIndex | alphabet | 3');
-  same(['a','b','c','c'].removeIndex(4), ['a','b','c','c'], 'Array#removeIndex | alphabet | 4');
-  same([{a:1},{a:2},{a:1}].removeIndex(1), [{a:1},{a:1}], 'Array#removeIndex | objects | 1');
-  same([1,2,2,3].removeIndex(0,1), [2,3], 'Array#removeIndex | 0 to 1');
-  same([1,2,2,3].removeIndex(0,2), [3], 'Array#removeIndex | 0 to 2');
-  same([1,2,2,3].removeIndex(1,2), [1,3], 'Array#removeIndex | 1 to 2');
-  same([1,2,2,3].removeIndex(1,5), [1], 'Array#removeIndex | 1 to 5');
-  same([1,2,2,3].removeIndex(0,5), [], 'Array#removeIndex | 0 to 5');
+  same([1,2,2,3].removeAtIndex(), [1,2,2,3], 'Array#removeAtIndex | numeric | no argument');
+  same([1,2,2,3].removeAtIndex(0), [2,2,3], 'Array#removeAtIndex | numeric | 0');
+  same([1,2,2,3].removeAtIndex(1), [1,2,3], 'Array#removeAtIndex | numeric | 1');
+  same([1,2,2,3].removeAtIndex(2), [1,2,3], 'Array#removeAtIndex | numeric | 2');
+  same([1,2,2,3].removeAtIndex(3), [1,2,2], 'Array#removeAtIndex | numeric | 3');
+  same([1,2,2,3].removeAtIndex(4), [1,2,2,3], 'Array#removeAtIndex | numeric | 4');
+  same(['a','b','c','c'].removeAtIndex(), ['a','b','c','c'], 'Array#removeAtIndex | alphabet | no argument');
+  same(['a','b','c','c'].removeAtIndex(0), ['b','c','c'], 'Array#removeAtIndex | alphabet | 0');
+  same(['a','b','c','c'].removeAtIndex(1), ['a','c','c'], 'Array#removeAtIndex | alphabet | 1');
+  same(['a','b','c','c'].removeAtIndex(2), ['a','b','c'], 'Array#removeAtIndex | alphabet | 2');
+  same(['a','b','c','c'].removeAtIndex(3), ['a','b','c'], 'Array#removeAtIndex | alphabet | 3');
+  same(['a','b','c','c'].removeAtIndex(4), ['a','b','c','c'], 'Array#removeAtIndex | alphabet | 4');
+  same([{a:1},{a:2},{a:1}].removeAtIndex(1), [{a:1},{a:1}], 'Array#removeAtIndex | objects | 1');
+  same([1,2,2,3].removeAtIndex(0,1), [2,3], 'Array#removeAtIndex | 0 to 1');
+  same([1,2,2,3].removeAtIndex(0,2), [3], 'Array#removeAtIndex | 0 to 2');
+  same([1,2,2,3].removeAtIndex(1,2), [1,3], 'Array#removeAtIndex | 1 to 2');
+  same([1,2,2,3].removeAtIndex(1,5), [1], 'Array#removeAtIndex | 1 to 5');
+  same([1,2,2,3].removeAtIndex(0,5), [], 'Array#removeAtIndex | 0 to 5');
+  same([1,2,2,3].removeAtIndex(null,5), [], 'Array#removeAtIndex | also accepts null');
 
 
 
