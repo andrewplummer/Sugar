@@ -4415,11 +4415,9 @@ test('Date', function () {
   dateEquals(Date.create().rewind((1).day()), new Date(new Date().getTime() - 86400000), 'Date#rewind | can rewind milliseconds');
   dateEquals(Date.create().advance((1).day()), new Date(new Date().getTime() + 86400000), 'Date#advance | can advance milliseconds');
 
-
-
   equals(Date.create().beginningOfWeek().isLastWeek(), false, 'Date#isLastWeek | the beginning of this week is not last week');
 
-
+  dateEquals(Date.create().set(0), new Date(0), 'Date#set | handles timestamps');
 
 
 });
