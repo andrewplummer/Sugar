@@ -99,7 +99,7 @@ def get_examples(s, name)
     if l =~ /function/ && l !~ /isFunction/
       func << l
     elsif l =~ /\);$/
-      func << l.gsub(/\s+->.+$/, '')
+      func << l.gsub(/\s+->.+$/, '').gsub(/\}/, '\n}')
       examples << { :multi_line => true, :force_result => force_result, :html => func }
       func = ''
     elsif func.length > 0
@@ -128,10 +128,12 @@ File.open('lib/sugar.js', 'r') do |f|
       method = get_method(b)
       method[:returns] = get_property(:returns, b)
       method[:description] = get_property(:description, b)
+      method[:extra] = get_property(:extra, b)
       method[:examples] = get_examples(b, method[:name])
       method[:alias] = get_property(:alias, b)
       method[:module] = @current_module[:name]
       get_html_parameters(method[:description])
+      get_html_parameters(method[:extra])
       @current_module[:methods] << method
       if method[:name] == 'stripTags' || method[:name] == 'removeTags'
         method[:escape_html] = true
@@ -139,7 +141,7 @@ File.open('lib/sugar.js', 'r') do |f|
       if method[:alias]
         method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
         href = "#{method[:module].downcase}_#{method[:alias]}"
-        method[:description] = "Alias for <a class=\"alias\" href=\"##{href}\">#{method[:alias]}</a>"
+        method[:description] = "Alias for <a class=\"alias\" href=\"##{href}\">#{method[:alias]}</a>."
       end
       #if current_module[:name] == 'Object' && method[:name] != 'create'
       #  instance_version = method.dup
@@ -157,6 +159,7 @@ File.open('lib/sugar.js', 'r') do |f|
       #end
     end
   end
+  modules << @current_module
 end
 
 #puts pp modules
