@@ -4421,6 +4421,19 @@ test('Date', function () {
   dateEquals(Date.create().set(0), new Date(0), 'Date#set | handles timestamps');
 
 
+
+  var date1 = Date.create('July 4th, 1776');
+  var date2 = date1.clone().beginningOfYear();
+
+  equals(date2.getMonth(), 0, 'Date#clone | cloned element is reset to January');
+  equals(date1.getMonth(), 6, 'Date#clone | source element is reset to unchanged');
+
+  date1 = Date.create('invalid');
+  date2 = date1.clone();
+
+  equals(date1.isValid(), false, 'Date#clone | source element is invalid');
+  equals(date2.isValid(), false, 'Date#clone | cloned element is also invalid');
+
 });
 
 
