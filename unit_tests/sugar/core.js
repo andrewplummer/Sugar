@@ -2815,7 +2815,7 @@ test('Date', function () {
 
   // August 25, 0001... the numeral 1 gets interpreted as 1901...
   // freakin' unbelievable...
-  dateEquals(Date.create('08/25/0001'), new Date(-62115206400000).utc(), 'Date#create | American style slashes | mm/dd/0001');
+  dateEquals(Date.create('08/25/0001'), new Date(-62115206400000).toUTC(), 'Date#create | American style slashes | mm/dd/0001');
 
   // Dashes (American style)
   dateEquals(Date.create('08-25-1978'), new Date(1978, 7, 25), 'Date#create | American style dashes | mm-dd-yyyy');
@@ -3593,20 +3593,21 @@ test('Date', function () {
   equals(d.getUTCOffset(true), isotzd, 'Date#getUTCOffset | colon');
 
   equals(d.format(Date.AMERICAN_DATE), '8/5/2010', 'Date#format | internal formats | AMERICAN_DATE');
-  equals(d.format(Date.AMERICAN_DATETIME), '8/5/2010 4:03am', 'Date#format | internal formats | AMERICAN_DATETIME');
   equals(d.format(Date.EUROPEAN_DATE), '5/8/2010', 'Date#format | internal formats | EUROPEAN_DATE');
   equals(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
   equals(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
-  equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02.000Z', 'Date#format | internal formats | ISO8601_DATETIME');
+
+  // ISO8601 converts the date to UTC so we can only assert the general format, not the exact time.
+  equals(/2010-08-0[4-6]T\d{2}:03:02.000Z/.test(d.format(Date.ISO8601_DATETIME)), true, 'Date#format | internal formats | ISO8601_DATETIME');
 
 
   equals(d.format('AMERICAN_DATE'), '8/5/2010', 'Date#format | internal formats | AMERICAN_DATE');
-  equals(d.format('AMERICAN_DATETIME'), '8/5/2010 4:03am', 'Date#format | internal formats | AMERICAN_DATETIME');
   equals(d.format('EUROPEAN_DATE'), '5/8/2010', 'Date#format | internal formats | EUROPEAN_DATE');
   equals(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | internal formats | INTERNATIONAL_TIME');
   equals(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | internal formats | ISO8601_DATE');
-  equals(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02.000Z', 'Date#format | internal formats | ISO8601_DATETIME');
 
+  // ISO8601 converts the date to UTC so we can only assert the general format, not the exact time.
+  equals(/2010-08-0[4-6]T\d{2}:03:02.000Z/.test(d.format('ISO8601_DATETIME')), true, 'Date#format | internal formats | string version | ISO8601_DATETIME');
 
   var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+'.'+d.getUTCMilliseconds().pad(3)+'Z';
   equals(d.format(Date.ISO8601_DATETIME, true), iso, 'Date#format | internal formats | ISO8601_DATETIME UTC');
@@ -3824,19 +3825,19 @@ test('Date', function () {
   equals(new Date(2001,5,4,12,22,34,445).is(new Date(2001,5,4,12,22,34,446)), false, 'Date#is | straight dates passed in are accurate to the millisecond');
 
 
-  equals(Date.create('2008').leapYear(), true, 'Date#leapYear | 2008');
-  equals(Date.create('2009').leapYear(), false, 'Date#leapYear | 2009');
-  equals(Date.create('2010').leapYear(), false, 'Date#leapYear | 2010');
-  equals(Date.create('2011').leapYear(), false, 'Date#leapYear | 2011');
-  equals(Date.create('2012').leapYear(), true, 'Date#leapYear | 2012');
-  equals(Date.create('2016').leapYear(), true, 'Date#leapYear | 2016');
-  equals(Date.create('2020').leapYear(), true, 'Date#leapYear | 2020');
-  equals(Date.create('2021').leapYear(), false, 'Date#leapYear | 2021');
-  equals(Date.create('1600').leapYear(), true, 'Date#leapYear | 1600');
-  equals(Date.create('1700').leapYear(), false, 'Date#leapYear | 1700');
-  equals(Date.create('1800').leapYear(), false, 'Date#leapYear | 1800');
-  equals(Date.create('1900').leapYear(), false, 'Date#leapYear | 1900');
-  equals(Date.create('2000').leapYear(), true, 'Date#leapYear | 2000');
+  equals(Date.create('2008').isLeapYear(), true, 'Date#leapYear | 2008');
+  equals(Date.create('2009').isLeapYear(), false, 'Date#leapYear | 2009');
+  equals(Date.create('2010').isLeapYear(), false, 'Date#leapYear | 2010');
+  equals(Date.create('2011').isLeapYear(), false, 'Date#leapYear | 2011');
+  equals(Date.create('2012').isLeapYear(), true, 'Date#leapYear | 2012');
+  equals(Date.create('2016').isLeapYear(), true, 'Date#leapYear | 2016');
+  equals(Date.create('2020').isLeapYear(), true, 'Date#leapYear | 2020');
+  equals(Date.create('2021').isLeapYear(), false, 'Date#leapYear | 2021');
+  equals(Date.create('1600').isLeapYear(), true, 'Date#leapYear | 1600');
+  equals(Date.create('1700').isLeapYear(), false, 'Date#leapYear | 1700');
+  equals(Date.create('1800').isLeapYear(), false, 'Date#leapYear | 1800');
+  equals(Date.create('1900').isLeapYear(), false, 'Date#leapYear | 1900');
+  equals(Date.create('2000').isLeapYear(), true, 'Date#leapYear | 2000');
 
 
   d = new Date(2010,7,5,13,45,2,542);
@@ -4057,7 +4058,7 @@ test('Date', function () {
 
   dUTC = new Date(d.getTime() + (d.getTimezoneOffset() * 60 * 1000));
 
-  dateEquals(d.utc(), dUTC, 'Date#utc');
+  dateEquals(d.toUTC(), dUTC, 'Date#utc');
 
 
 
