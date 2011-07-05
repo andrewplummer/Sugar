@@ -3668,7 +3668,7 @@ test('Date', function () {
   equals(d.is(d), true, 'Date#is | self is true');
   equals(d.is(new Date(2010,7,5,13,45,2,542)), true, 'Date#is | equal date is true');
   equals(d.is(new Date()), false, 'Date#is | other dates are not true');
-
+  equals(d.is(1281015902542 + (offset * 60 * 1000)), true, 'Date#is | timestamps also accepted');
 
   equals(new Date().is('now', 2), true, 'Date#is | now is now');
   equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.324'), true, 'Date#is | August 5th, 2010 13:42:42.324');
