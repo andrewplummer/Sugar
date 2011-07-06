@@ -2526,23 +2526,23 @@ test('Array', function () {
 
 
 
-  same([1,2,3].addAtIndex(1, 4), [1,4,2,3], 'Array#addAtIndex | 1 | 4');
-  same(['a','b','c'].addAtIndex(1, 'd'), ['a','d','b','c'], 'Array#addAtIndex | 1 | d');
-  same([{a:1},{a:2}].addAtIndex(1, {a:3}), [{a:1},{a:3},{a:2}], 'Array#addAtIndex | 1 | a:3');
+  same([1,2,3].insert(4, 1), [1,4,2,3], 'Array#insert | 1 | 4');
+  same(['a','b','c'].insert('d', 1), ['a','d','b','c'], 'Array#insert | 1 | d');
+  same([{a:1},{a:2}].insert({a:3}, 1), [{a:1},{a:3},{a:2}], 'Array#insert | 1 | a:3');
 
-  same([1,2,3].addAtIndex(2, 4), [1,2,4,3], 'Array#addAtIndex | 2 | 4');
-  same(['a','b','c'].addAtIndex(2, 'd'), ['a','b','d','c'], 'Array#addAtIndex | 2 | d');
-  same([{a:1},{a:2}].addAtIndex(2, {a:3}), [{a:1},{a:2},{a:3}], 'Array#addAtIndex | 2 | a:3');
+  same([1,2,3].insert(4, 2), [1,2,4,3], 'Array#insert | 2 | 4');
+  same(['a','b','c'].insert('d', 2), ['a','b','d','c'], 'Array#insert | 2 | d');
+  same([{a:1},{a:2}].insert({a:3}, 2), [{a:1},{a:2},{a:3}], 'Array#insert | 2 | a:3');
 
-  same(['a','b','c'].addAtIndex(5, 'd'), ['a','b','c','d'], 'Array#addAtIndex | 5 | d');
-  same(['a','b','c'].addAtIndex(0, 'd'), ['d','a','b','c'], 'Array#addAtIndex | 0 | d');
-  same(['a','b','c'].addAtIndex(-1, 'd'), ['a','b','c','d'], 'Array#addAtIndex | -1 | d');
-  same(['a','b','c'].addAtIndex(-2, 'd'), ['a','b','d','c'], 'Array#addAtIndex | -2 | d');
-  same(['a','b','c'].addAtIndex(-3, 'd'), ['a','d','b','c'], 'Array#addAtIndex | -3 | d');
-  same(['a','b','c'].addAtIndex(null, 'd'), ['a','b','c','d'], 'Array#addAtIndex | null | d');
-  same(['a','b','c'].addAtIndex(undefined, 'd'), ['a','b','c','d'], 'Array#addAtIndex | undefined | d');
-  same(['a','b','c'].addAtIndex('a', 'd'), ['a','b','c','d'], 'Array#addAtIndex | a | d');
-  same(['a','b','c'].addAtIndex(NaN, 'd'), ['a','b','c','d'], 'Array#addAtIndex | NaN | d');
+  same(['a','b','c'].insert('d', 5), ['a','b','c','d'], 'Array#insert | 5 | d');
+  same(['a','b','c'].insert('d', 0), ['d','a','b','c'], 'Array#insert | 0 | d');
+  same(['a','b','c'].insert('d', -1), ['a','b','c','d'], 'Array#insert | -1 | d');
+  same(['a','b','c'].insert('d', -2), ['a','b','d','c'], 'Array#insert | -2 | d');
+  same(['a','b','c'].insert('d', -3), ['a','d','b','c'], 'Array#insert | -3 | d');
+  same(['a','b','c'].insert('d', null), ['a','b','c','d'], 'Array#insert | null | d');
+  same(['a','b','c'].insert('d', undefined), ['a','b','c','d'], 'Array#insert | undefined | d');
+  same(['a','b','c'].insert('d', 'a'), ['a','b','c','d'], 'Array#insert | a | d');
+  same(['a','b','c'].insert('d', NaN), ['a','b','c','d'], 'Array#insert | NaN | d');
 
 
 
