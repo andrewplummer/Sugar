@@ -127,12 +127,12 @@ File.open('lib/sugar.js', 'r') do |f|
     else
       method = get_method(b)
       method[:returns] = get_property(:returns, b)
-      method[:description] = get_property(:description, b)
+      method[:short] = get_property(:short, b)
       method[:extra] = get_property(:extra, b)
       method[:examples] = get_examples(b, method[:name])
       method[:alias] = get_property(:alias, b)
       method[:module] = @current_module[:name]
-      get_html_parameters(method[:description])
+      get_html_parameters(method[:short])
       get_html_parameters(method[:extra])
       @current_module[:methods] << method
       if method[:name] == 'stripTags' || method[:name] == 'removeTags'
@@ -141,20 +141,20 @@ File.open('lib/sugar.js', 'r') do |f|
       if method[:alias]
         method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
         href = "#{method[:module].downcase}_#{method[:alias]}"
-        method[:description] = "Alias for <a class=\"alias\" href=\"##{href}\">#{method[:alias]}</a>."
+        method[:short] = "Alias for <a class=\"alias\" href=\"##{href}\">#{method[:alias]}</a>."
       end
       #if current_module[:name] == 'Object' && method[:name] != 'create'
       #  instance_version = method.dup
       #  instance_version[:class_method] = false
-      #  instance_version[:description].gsub!(/<span class=".*?">obj<\/span>/, 'the object')
+      #  instance_version[:short].gsub!(/<span class=".*?">obj<\/span>/, 'the object')
       #  if method[:name] == 'merge'
-      #    instance_version[:description].gsub!(/the first/, 'itself')
+      #    instance_version[:short].gsub!(/the first/, 'itself')
       #  end
       #  if method[:name] == 'equals'
-      #    instance_version[:description].gsub!(/(<span class=".*?">a<\/span>).+are equal/, 'the object is equal to \\1')
+      #    instance_version[:short].gsub!(/(<span class=".*?">a<\/span>).+are equal/, 'the object is equal to \\1')
       #  end
       #  instance_version[:params].delete_if { |p| p[:name] == 'obj' || p[:name] == 'a' }
-      #  instance_version[:description] << ' This method is only available on objects created with the alternate constructor <span class="code">Object.create</span>.'
+      #  instance_version[:short] << ' This method is only available on objects created with the alternate constructor <span class="code">Object.create</span>.'
       #  current_module[:methods] << instance_version
       #end
     end
