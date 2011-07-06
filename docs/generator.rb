@@ -27,6 +27,7 @@ def get_html_parameters(str)
   str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
   str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
   str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
+  str.gsub!(/@date_format/, '<a target="_blank" href="/dates">dates</a>')
 end
 
 def get_method(s)
@@ -108,7 +109,7 @@ def get_examples(s, name)
       examples << {
         :multi_line => false,
         :force_result => force_result,
-        :html => l.gsub(/\s+->.+$/, '')
+        :html => l.gsub(/\s+->.+$/, '').gsub(/\\n/, '_NL_')
       }
     end
   end
@@ -141,7 +142,7 @@ File.open('lib/sugar.js', 'r') do |f|
       if method[:alias]
         method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
         href = "#{method[:module].downcase}_#{method[:alias]}"
-        method[:short] = "Alias for <a class=\"alias\" href=\"##{href}\">#{method[:alias]}</a>."
+        method[:short] = "Alias for <span class=\"code\">#{method[:alias]}</span>."
       end
       #if current_module[:name] == 'Object' && method[:name] != 'create'
       #  instance_version = method.dup
