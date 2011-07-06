@@ -1758,6 +1758,7 @@ test('Array', function () {
   same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map | (nonexistent) cupsize');
   same([].map('name'), [], 'Array#map');
 
+  same([1,2,3].map('toString'), ['1','2','3'], 'Array#map | calls a function on a shortcut string');
 
 
   same(['foot','goose','moose'].collect(function(el){ return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#collect | with regexp');
