@@ -4946,6 +4946,22 @@ test('Function', function () {
 
   bound = (function(num, bool, str){}).defer('three');
 
+
+  // Properly unit testing the exact throttle of Function.lazy will probably be a bitch...
+  // Will have to rethink strategy here.
+  var lazyCounter = 0;
+  var lazy = Function.lazy(function(){
+    lazyCounter++;
+  });
+  lazy();
+  lazy();
+  lazy();
+  equals(lazyCounter, 0, "Function.lazy | hasn't executed yet");
+  setTimeout(function(){
+    equals(lazyCounter, 3, 'Function.lazy | was executed by 10ms');
+  }, 10);
+
+
   stop();
 
 
