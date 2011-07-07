@@ -134,7 +134,7 @@ var deepEqualWithoutPrototyping = function(actual, expected){
 }
 
 same = function(actual, expected, message){
-  if(Object.isArray(actual)){
+  if(Object.isArray(actual) || !Object.isObject(actual)){
     sameProxy.apply(this, arguments);
   } else {
     equals(deepEqualWithoutPrototyping(actual, expected), true, message);
@@ -2420,10 +2420,10 @@ test('Array', function () {
   same([1,2,3,4,5].split(3), [[1,2],[4,5]], 'Array#split | split on 3');
   same([1,2,3,4,5].split(1), [[2,3,4,5]], 'Array#split | split on 1');
   same([1,2,3,4,5].split(2), [[1],[3,4,5]], 'Array#split | split on 2');
-  same([1,2,3,4,5].split(4), [[1,2,3,4]], 'Array#split | split on 4');
+  same([1,2,3,4,5].split(4), [[1,2,3],[5]], 'Array#split | split on 4');
   same([1,2,3,4,5].split(5), [[1,2,3,4]], 'Array#split | split on 5');
-  same([1,2,3,4,5].split(0), [1,2,3,4,5], 'Array#split | split on 0');
-  same([1,2,3,4,5].split(6), [1,2,3,4,5], 'Array#split | split on 6');
+  same([1,2,3,4,5].split(0), [[1,2,3,4,5]], 'Array#split | split on 0');
+  same([1,2,3,4,5].split(6), [[1,2,3,4,5]], 'Array#split | split on 6');
   same([1,2,3,4,5,6,7,8,9,10].split(function(i){ return i % 3 == 0; }), [[1,2],[4,5],[7,8],[10]], 'Array#split | split on every 3rd');
   same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 2; }), [['wherever','you'],['whatever','you']], 'Array#split | split on strings with length of 2');
   same(['wherever','you','go','whatever','you','do'].split(function(str){ return str.length == 3; }), [['wherever'],['go','whatever'],['do']], 'Array#split | split on strings with length of 3');
