@@ -101,6 +101,9 @@ def get_examples(s, name)
       func << l
     elsif l =~ /\);$/
       func << l.gsub(/\s+->.+$/, '').gsub(/\}/, '\n}')
+      func.gsub!(/(['"]).+?(\1)/) do |s|
+        s.gsub(/\\n/, '_NL_')
+      end
       examples << { :multi_line => true, :force_result => force_result, :html => func }
       func = ''
     elsif func.length > 0
