@@ -1108,12 +1108,12 @@ test('String', function () {
   equalsWithException('hop-on-pop'.camelize(), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | dashes');
   equalsWithException('HOP-ON-POP'.camelize(), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | capital dashes');
   equalsWithException('hop_on_pop'.camelize(), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | underscores');
-  equal('hop-on-pop'.camelize('lower'), 'hopOnPop', 'String#camelize | first false | dashes');
-  equalsWithException('HOP-ON-POP'.camelize('lower'), 'hopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first false | capital dashes');
-  equalsWithException('hop_on_pop'.camelize('lower'), 'hopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first false | underscores');
-  equalsWithException('hop-on-pop'.camelize('upper'), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | first true | dashes');
-  equalsWithException('HOP-ON-POP'.camelize('upper'), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first true | capital dashes');
-  equalsWithException('hop_on_pop'.camelize('upper'), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first true | underscores');
+  equal('hop-on-pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | dashes');
+  equalsWithException('HOP-ON-POP'.camelize(false), 'hopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first false | capital dashes');
+  equalsWithException('hop_on_pop'.camelize(false), 'hopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first false | underscores');
+  equalsWithException('hop-on-pop'.camelize(true), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | first true | dashes');
+  equalsWithException('HOP-ON-POP'.camelize(true), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first true | capital dashes');
+  equalsWithException('hop_on_pop'.camelize(true), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first true | underscores');
   equal('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
   equal('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
   equal('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps');
