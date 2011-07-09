@@ -84,6 +84,10 @@ def get_method(s)
   }
 end
 
+def get_url_name(method, klass)
+  return @current_module[:name] + (klass ? '.' : '#') + method
+end
+
 def get_examples(s, name)
   lines = get_property(:example, s, true)
   return nil if !lines
@@ -130,6 +134,7 @@ File.open('lib/sugar.js', 'r') do |f|
       @current_module = { :name => mod[1], :methods => [] }
     else
       method = get_method(b)
+      method[:url_name] = get_url_name(method[:name], method[:class_method])
       method[:returns] = get_property(:returns, b)
       method[:short] = get_property(:short, b)
       method[:extra] = get_property(:extra, b)
@@ -144,7 +149,6 @@ File.open('lib/sugar.js', 'r') do |f|
       end
       if method[:alias]
         method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
-        href = "#{method[:module].downcase}_#{method[:alias]}"
         method[:short] = "Alias for <span class=\"code\">#{method[:alias]}</span>."
       end
       #if current_module[:name] == 'Object' && method[:name] != 'create'
