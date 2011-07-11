@@ -3627,7 +3627,6 @@ test('Date', function () {
   equals(Date.create('12 months ago').format('{dynamic}'), '1 year ago', 'Date#format | dynamic foramtting | 12 months ago');
 
   equals(Date.create('6234 milliseconds from now').format('{dynamic}'), '6 seconds from now', 'Date#format | dynamic foramtting | future | 6 milliseconds');
-  equals(Date.create('6 seconds from now').format('{dynamic}'), '6 seconds from now', 'Date#format | dynamic foramtting | future | 6 seconds');
   equals(Date.create('361 seconds from now').format('{dynamic}'), '6 minutes from now', 'Date#format | dynamic foramtting | future | 360 seconds');
   equals(Date.create('361 minutes from now').format('{dynamic}'), '6 hours from now', 'Date#format | dynamic foramtting | future | minutes');
   equals(Date.create('360 hours from now').format('{dynamic}'), '2 weeks from now', 'Date#format | dynamic foramtting | future | hours');
@@ -3635,7 +3634,7 @@ test('Date', function () {
   equals(Date.create('360 weeks from now').format('{dynamic}'), '6 years from now', 'Date#format | dynamic foramtting | future | weeks');
   equals(Date.create('360 months from now').format('{dynamic}'), '30 years from now', 'Date#format | dynamic foramtting | future | months');
   equals(Date.create('360 years from now').format('{dynamic}'), '360 years from now', 'Date#format | dynamic foramtting | future | years');
-  equals(Date.create('12 months from now').format('{dynamic}'), '1 year from now', 'Date#format | dynamic foramtting | future | 12 months ago');
+  equals(Date.create('13 months from now').format('{dynamic}'), '1 year from now', 'Date#format | dynamic foramtting | future | 12 months ago');
 
 
   d = new Date(2010,7,5,13,45,2,542);
