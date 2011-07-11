@@ -3490,6 +3490,7 @@ test('Date', function () {
   equals(d.format('{12hr}'), '1', 'Date#format | custom formats | 12hr');
   equals(d.format('{d}'), '5', 'Date#format | custom formats | d');
   equals(d.format('{dd}'), '05', 'Date#format | custom formats | dd');
+  equals(d.format('{date}'), '5', 'Date#format | custom formats | date');
   equals(d.format('{dow}'), 'thu', 'Date#format | custom formats | dow');
   equals(d.format('{Dow}'), 'Thu', 'Date#format | custom formats | Dow');
   equals(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
@@ -3521,7 +3522,7 @@ test('Date', function () {
   equals(d.format('{min pad}'), '03', 'Date#format | custom formats | min pad');
   equals(d.format('{m pad}'), '03', 'Date#format | custom formats | m pad');
   equals(d.format('{d pad}'), '05', 'Date#format | custom formats | d pad');
-  equals(d.format('{days pad}'), '05', 'Date#format | custom formats | days pad');
+  equals(d.format('{date pad}'), '05', 'Date#format | custom formats | days pad');
   equals(d.format('{h pad}'), '04', 'Date#format | custom formats | h pad');
   equals(d.format('{hours pad}'), '04', 'Date#format | custom formats | hours pad');
   equals(d.format('{s pad}'), '02', 'Date#format | custom formats | s pad');
@@ -3599,6 +3600,31 @@ test('Date', function () {
   // shortcut for ISO format
   equals(d.iso(), d.format(Date.ISO8601_DATETIME, true), 'Date#iso is an alias for the ISO8601_DATETIME format');
 
+
+  var five = Date.create('5 minutes ago');
+
+  // relative time formatting
+  equals(five.format('{minutes ago}'), '5 minutes ago', 'Date#format | relative time formats | basic');
+
+  equals(d.format('{milliseconds ago}'), d.millisecondsAgo() + ' milliseconds ago', 'Date#format | relative time formats | milliseconds');
+  equals(d.format('{seconds ago}'), d.secondsAgo() + ' seconds ago', 'Date#format | relative time formats | seconds');
+  equals(d.format('{minutes ago}'), d.minutesAgo() + ' minutes ago', 'Date#format | relative time formats | minutes');
+  equals(d.format('{hours ago}'), d.hoursAgo() + ' hours ago', 'Date#format | relative time formats | hours');
+  equals(d.format('{days ago}'), d.daysAgo() + ' days ago', 'Date#format | relative time formats | days');
+  equals(d.format('{weeks ago}'), d.weeksAgo() + ' weeks ago', 'Date#format | relative time formats | weeks');
+  equals(d.format('{months ago}'), d.monthsAgo() + ' months ago', 'Date#format | relative time formats | months');
+  equals(d.format('{years ago}'), '1 year ago', 'Date#format | relative time formats | years');
+
+  equals(Date.create('6234 milliseconds ago').format('{dynamic}'), '6 seconds ago', 'Date#format | dynamic foramtting | 6 milliseconds');
+  equals(Date.create('6 seconds ago').format('{dynamic}'), '6 seconds ago', 'Date#format | dynamic foramtting | 6 seconds');
+  equals(Date.create('360 seconds ago').format('{dynamic}'), '6 minutes ago', 'Date#format | dynamic foramtting | 360 seconds');
+  equals(Date.create('360 minutes ago').format('{dynamic}'), '6 hours ago', 'Date#format | dynamic foramtting | minutes');
+  equals(Date.create('360 hours ago').format('{dynamic}'), '2 weeks ago', 'Date#format | dynamic foramtting | hours');
+  equals(Date.create('360 days ago').format('{dynamic}'), '11 months ago', 'Date#format | dynamic foramtting | days');
+  equals(Date.create('360 weeks ago').format('{dynamic}'), '6 years ago', 'Date#format | dynamic foramtting | weeks');
+  equals(Date.create('360 months ago').format('{dynamic}'), '30 years ago', 'Date#format | dynamic foramtting | months');
+  equals(Date.create('360 years ago').format('{dynamic}'), '360 years ago', 'Date#format | dynamic foramtting | years');
+  equals(Date.create('12 months ago').format('{dynamic}'), '1 year ago', 'Date#format | dynamic foramtting | 12 months ago');
 
 
   d = new Date(2010,7,5,13,45,2,542);
@@ -3859,6 +3885,25 @@ test('Date', function () {
   equals(new Date(2011,7,5,13,45,2,542).monthsUntil(d), -12, 'Date#monthsUntil | months until last year');
   equals(new Date(2011,7,5,13,45,2,542).yearsSince(d), 1, 'Date#yearsSince | years since last year');
   equals(new Date(2011,7,5,13,45,2,542).yearsUntil(d), -1, 'Date#yearsUntil | years until last year');
+
+
+
+  equals(new Date(2010,7,5,13,45,2,543).millisecondsFromNow(d), 1, 'Date#millisecondsFromNow | FromNow alias | milliseconds');
+  equals(new Date(2010,7,5,13,45,2,541).millisecondsAgo(d), 1, 'Date#millisecondsAgo | from now alias | milliseconds');
+  equals(new Date(2010,7,5,13,45,3,542).secondsFromNow(d), 1, 'Date#secondsFromNow | FromNow alias | seconds');
+  equals(new Date(2010,7,5,13,45,1,542).secondsAgo(d), 1, 'Date#secondsAgo | Ago alias | seconds');
+  equals(new Date(2010,7,5,13,46,2,542).minutesFromNow(d), 1, 'Date#minutesFromNow | FromNow alias | minutes');
+  equals(new Date(2010,7,5,13,44,2,542).minutesAgo(d), 1, 'Date#minutesAgo | Ago alias | minutes');
+  equals(new Date(2010,7,5,14,45,2,542).hoursFromNow(d), 1, 'Date#hoursFromNow | FromNow alias | hours');
+  equals(new Date(2010,7,5,12,45,2,542).hoursAgo(d), 1, 'Date#hoursAgo | Ago alias | hours');
+  equals(new Date(2010,7,6,13,45,2,542).daysFromNow(d), 1, 'Date#daysFromNow | FromNow alias | days');
+  equals(new Date(2010,7,4,13,45,2,542).daysAgo(d), 1, 'Date#daysAgo | Ago alias | days');
+  equals(new Date(2010,7,12,13,45,2,542).weeksFromNow(d), 1, 'Date#weeksFromNow | FromNow alias | weeks');
+  equals(new Date(2010,6,29,13,45,2,542).weeksAgo(d), 1, 'Date#weeksAgo | Ago alias | weeks');
+  equals(new Date(2010,8,5,13,45,2,542).monthsFromNow(d), 1, 'Date#monthsFromNow | FromNow alias | months');
+  equals(new Date(2010,6,5,13,45,2,542).monthsAgo(d), 1, 'Date#monthsAgo | Ago alias | months');
+  equals(new Date(2011,7,5,13,45,2,542).yearsFromNow(d), 1, 'Date#yearsFromNow | FromNow alias | years');
+  equals(new Date(2009,7,5,13,45,2,542).yearsAgo(d), 1, 'Date#yearsAgo | Ago alias | years');
 
 
   // Works with Date.create?
