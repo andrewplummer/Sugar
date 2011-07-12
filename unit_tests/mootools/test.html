@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MooTools 1.3.1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
+    <script type="text/javascript">
+      jQuery.noConflict();
+    </script>
+    <!-- qunit setup -->
+    <script type="text/javascript" src="../qunit.js"></script>
+    <script type="text/javascript" src="../environment.js"></script>
+    <!-- test adapter -->
+    <script type="text/javascript" src="adapter.js"></script>
+    <!-- environment -->
+    <script type="text/javascript" src="mootools-core-1.3.1-full-compat.js"></script>
+    <script type="text/javascript" src="../../lib/sugar.js"></script>
+    <!-- tests -->
+    <script type="text/javascript">
+      registerEnvironment('mootools', [
+        {
+          name: 'sugar',
+          tests: ['../sugar/core.js']
+        },
+        {
+          name: 'mootools',
+          tests: [
+            'Base/Core/Core.js',
+            'Base/Class/Class.js',
+            'Base/Types/Array.js',
+            //'Base/Fx/Fx.js',   These tests both require Jasmine, which is beyond me...
+            //'Base/Types/Function.js',
+            'Base/Types/Object.js',
+            //'Element/Element.js', Tests fail in chrome
+            'Element/Element.Style.js',
+            //'Element/Element.Dimensions.js',
+            'Utilities/Cookie.js'
+          ]
+        }
+      ]);
+    </script>
+  </head>
+  <body>
+    <div id="main">
+      <h1>test h1</h1>
+      <p>
+        <span>test paragraph</span>
+        <a rel="external" href="1">link one</a>
+        <a href="2" target="_blank">link two</a>
+        <a href="3" class="foo" target="_blow">link three</a>
+        <a href="4" class="foo">link four</a>
+        <a rel="externuts" href="5" class="foo">link four</a>
+      </p>
+    </div>
+  </body>
+</html>
