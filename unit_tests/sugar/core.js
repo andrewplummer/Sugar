@@ -3698,7 +3698,7 @@ test('Date', function () {
   dyn = function(value, unit, ms, dir){
     equals(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
     equals(unit, 'hours', 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
-    equalsWithMargin(ms, 14400000, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
+    equalsWithMargin(ms, 14400000, 5, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
     equals(dir, -1, 'Date#format | relative fn | 4 hours ago | dir indicates the offset from "now", negative if in the past');
     return value + strings[unit] + (dir < 0 ? '前' : '後');
   }
