@@ -2739,8 +2739,8 @@ test('Date', function () {
 
   d = Date.create('1998');
 
-  dateEquals(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset), 'Date#toUTC | should not affect original date');
-  dateEquals(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset), 'Date#toUTC | should not affect original date');
+  dateEquals(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | should not affect original date');
+  dateEquals(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | should not affect original date');
 
 
   // Date constructor accepts enumerated parameters
@@ -3613,7 +3613,6 @@ test('Date', function () {
 
   equals(d.toISOString(), d.toUTC().format(Date.ISO8601_DATETIME), 'Date#toISOString is an alias for the ISO8601_DATETIME format in UTC');
   equals(d.iso(), d.toUTC().format(Date.ISO8601_DATETIME), 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
-
 
 
 
