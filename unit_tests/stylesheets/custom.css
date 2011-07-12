@@ -1,0 +1,177 @@
+
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background-color: #f2f2f2;
+}
+
+ul,li,h1,h2,h3,h4,h5,h6,p {
+  margin: 0;
+  padding: 0;
+}
+
+ul,li {
+  list-style-type: none;
+}
+
+.header {
+  margin-bottom: 1em;
+}
+
+.header h2 {
+  color: #888;
+  font-size: 14px;
+}
+
+.environment {
+  clear: left;
+  overflow: hidden;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #aaa;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  color: #333;
+  background-color: #fff;
+}
+
+.environment .loading {
+  display: none;
+}
+
+.environment .run {
+  display: none;
+}
+
+.environments.fail {
+  border-color: #caa;
+}
+
+.environment h3 {
+  margin-bottom: 10px;
+}
+
+.environment h3 .subheader {
+  font-size: 10px;
+  margin-left: 10px;
+  color: #bbb;
+}
+
+.module {
+  margin: 5px 5px 0 0;
+  overflow: hidden;
+}
+
+.module h4 {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.module ul li {
+  float: left;
+  list-style-type: none;
+}
+
+.test {
+  padding: 2px;
+  cursor: help;
+}
+
+.test h3 {
+  font-size: 12px;
+  margin: 0;
+}
+
+.pass {
+  background-color: #cfc;
+  color: #040;
+}
+
+.test.fail {
+  background-color: #fcc;
+  color: #400;
+}
+
+iframe {
+  visibility: hidden;
+}
+
+.stats {
+  clear: left;
+  font-size: 12px;
+  color: #aaa;
+  padding-top: 5px;
+}
+
+.stats span {
+  margin-right: 10px;
+}
+
+#tooltip {
+  max-width: 500px;
+  position: absolute;
+  -moz-border-radius:6px;
+  -webkit-border-radius:6px;
+  background-color: #000;
+  opacity: 0.8;
+  color:#FFFFFF;
+  font-size:12px;
+  padding:6px;
+  position:absolute;
+  display: none;
+  margin-bottom: 10px;
+}
+
+#tooltip h4 {
+  margin: 0 0 0.5em 0;
+  max-width: 200px;
+  border-bottom: 2px solid #666;
+  color: #aaa;
+  font-size: 10px;
+}
+
+#tooltip p {
+  margin: 0;
+  word-wrap: break-word;
+}
+
+#tooltip .pass {
+  color: #5b5;
+  background-color: transparent;
+  font-weight: bold;
+}
+
+#tooltip .fail {
+  color: #d33;
+  background-color: transparent;
+  font-weight: bold;
+}
+
+#tooltip .arrow {
+  opacity: 0.8;
+  width: 13px;
+  height: 7px;
+  bottom: -7px;
+  left: 50%;
+  position: absolute;
+  background: url('../images/arrow.gif') no-repeat center center;
+  background: #000;
+}
+
+#sugar_override {
+  display: none;
+  background: url('../images/warning.gif') no-repeat 5px center;
+  font-size: 12px;
+  color: #c60;
+  background-color: #fea;
+  margin: 10px 0;
+  padding: 5px 10px 5px 25px;
+  border: 1px solid #eca;
+  -moz-border-radius:6px;
+  -webkit-border-radius:6px;
+  float: left;
+}
+
+h1,h3,h4 {
+  color: #666;
+}
