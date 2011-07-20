@@ -2442,9 +2442,9 @@ test('Array', function () {
 
 
 
-  same([1,2,2,3].remove(), [], 'Array#remove | no argument numeric');
+  same([1,2,2,3].remove(), [1,2,2,3], 'Array#remove | no argument numeric');
   same([1,2,2,3].remove(2), [1,3], 'Array#remove | remove 2s');
-  same(['a','b','c','c'].remove(), [], 'Array#remove | no argument alphabet');
+  same(['a','b','c','c'].remove(), ['a','b','c','c'], 'Array#remove | no argument alphabet');
   same(['a','b','c','c'].remove('c'), ['a','b'], 'Array#remove | remove "c"s');
   same([1,2,2,3].remove(function(el){ return el % 2 == 0; }), [1,3], 'Array#remove | remove all odd numbers');
   same([1,2,2,3].remove(function(el){ return el > 2; }), [1,2,2], 'Array#remove | remove all numbers greater than 2');
@@ -2455,6 +2455,29 @@ test('Array', function () {
     equals(i, 0, 'Array#remove | second param should be the index');
     same(arr, ['a'], 'Array#remove | third param should be the array');
   });
+
+  arr = [1,2,3];
+  arr.remove(2);
+  same(arr, [1,3], 'Array#remove | should affect the original array');
+
+
+  same([1,2,2,3].without(), [1,2,2,3], 'Array#without | no argument numeric');
+  same([1,2,2,3].without(2), [1,3], 'Array#without | without 2s');
+  same(['a','b','c','c'].without(), ['a','b','c','c'], 'Array#without | no argument alphabet');
+  same(['a','b','c','c'].without('c'), ['a','b'], 'Array#without | without "c"s');
+  same([1,2,2,3].without(function(el){ return el % 2 == 0; }), [1,3], 'Array#without | without all odd numbers');
+  same([1,2,2,3].without(function(el){ return el > 2; }), [1,2,2], 'Array#without | without all numbers greater than 2');
+  same([1,2,2,3].without(function(el){ return el > 20; }), [1,2,2,3], 'Array#without | without all numbers greater than 20');
+  same([{a:1},{a:2},{a:1}].without({a:1}), [{a:2}], 'Array#without | without all a:1');
+  ['a'].without(function(el,i,arr){
+    equals(el, 'a', 'Array#without | first param should be the element');
+    equals(i, 0, 'Array#without | second param should be the index');
+    same(arr, ['a'], 'Array#without | third param should be the array');
+  });
+
+  arr = [1,2,3];
+  arr.without(2);
+  same(arr, [1,2,3], 'Array#without | should not affect the original array');
 
 
 
@@ -2477,6 +2500,11 @@ test('Array', function () {
   same([1,2,2,3].removeAtIndex(1,5), [1], 'Array#removeAtIndex | 1 to 5');
   same([1,2,2,3].removeAtIndex(0,5), [], 'Array#removeAtIndex | 0 to 5');
   same([1,2,2,3].removeAtIndex(null,5), [], 'Array#removeAtIndex | also accepts null');
+
+  arr = [1,2,3];
+  arr.removeAtIndex(1);
+  same(arr, [1,3], 'Array#removeAtIndex | should affect the original array');
+
 
 
 
@@ -2504,26 +2532,120 @@ test('Array', function () {
   same([1,2,3].add([4,5,6]), [1,2,3,4,5,6], 'Array#add | 1,2,3 + 4,5,6');
   same([1,2,3].add(1), [1,2,3,1], 'Array#add | 1,2,3 + 1');
 
+  same([1,2,3].add(4, 1), [1,4,2,3], 'Array#add | index 1 | 4');
+  same(['a','b','c'].add('d', 1), ['a','d','b','c'], 'Array#add | index 1 | d');
+  same([{a:1},{a:2}].add({a:3}, 1), [{a:1},{a:3},{a:2}], 'Array#add | index 1 | a:3');
+  same([1,2,3].add(4, 2), [1,2,4,3], 'Array#add | index 2 | 4');
+  same(['a','b','c'].add('d', 2), ['a','b','d','c'], 'Array#add | index 2 | d');
+  same([{a:1},{a:2}].add({a:3}, 2), [{a:1},{a:2},{a:3}], 'Array#add | index 2 | a:3');
+  same(['a','b','c'].add('d', 5), ['a','b','c','d'], 'Array#add | index 5 | d');
+  same(['a','b','c'].add('d', 0), ['d','a','b','c'], 'Array#add | index 0 | d');
+  same(['a','b','c'].add('d', -1), ['a','b','d','c'], 'Array#add | index -1 | d');
+  same(['a','b','c'].add('d', -2), ['a','d','b','c'], 'Array#add | index -2 | d');
+  same(['a','b','c'].add('d', -3), ['d','a','b','c'], 'Array#add | index -3 | d');
+  same(['a','b','c'].add('d', null), ['a','b','c','d'], 'Array#add | null index | d');
+  same(['a','b','c'].add('d', undefined), ['a','b','c','d'], 'Array#add | undefined index | d');
+  same(['a','b','c'].add('d', 'a'), ['a','b','c','d'], 'Array#add | index a | d');
+  same(['a','b','c'].add('d', NaN), ['a','b','c','d'], 'Array#add | index NaN | d');
+
+  arr = [1,2,3];
+  arr.add(4);
+  same(arr, [1,2,3,4], 'Array#add | should affect the original array');
 
 
 
-  same([1,2,3].insert(4, 1), [1,4,2,3], 'Array#insert | 1 | 4');
-  same(['a','b','c'].insert('d', 1), ['a','d','b','c'], 'Array#insert | 1 | d');
-  same([{a:1},{a:2}].insert({a:3}, 1), [{a:1},{a:3},{a:2}], 'Array#insert | 1 | a:3');
+  same([1,2,3].insert(4), [1,2,3,4], 'Array#insert | 1,2,3 + 4');
+  same(['a','b','c'].insert('d'), ['a','b','c','d'], 'Array#insert | a,b,c + d');
+  same([{a:1},{a:2}].insert({a:3}), [{a:1},{a:2},{a:3}], 'Array#insert | a:1,a:2 + a:3');
+  same([1,2,3].insert([3,4,5]), [1,2,3,3,4,5], 'Array#insert | 1,2,3 + 3,4,5');
+  same(['a','b','c'].insert(['c','d','e']), ['a','b','c','c','d','e'], 'Array#insert | a,b,c + c,d,e');
+  same([1,2,3].insert([1,2,3]), [1,2,3,1,2,3], 'Array#insert | 1,2,3 + 1,2,3');
+  same([1,2,3].insert([3,2,1]), [1,2,3,3,2,1], 'Array#insert | 1,2,3 + 3,2,1');
+  same([].insert([3]), [3], 'Array#insert | empty array + 3');
+  same([3].insert([]), [3], 'Array#insert | 3 + empty array');
+  same([].insert([]), [], 'Array#insert | 2 empty arrays');
+  same([null].insert([]), [null], 'Array#insert | [null] + empty array');
+  same([null].insert([null]), [null, null], 'Array#insert | [null] + [null]');
+  same([false].insert([false]), [false, false], 'Array#insert | [false] + [false]');
+  same([false].insert([0]), [false, 0], 'Array#insert | [false] + [0]');
+  same([false].insert([null]), [false, null], 'Array#insert | [false] + [null]');
+  same([false].insert([undefined]), [false, undefined], 'Array#insert | [false] + [undefined]');
+  same([{a:1},{b:2}].insert([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#insert | a:1,b:2 + b:2,c:3');
+  same([1,1,3].insert([1,5,6]), [1,1,3,1,5,6], 'Array#insert | 1,1,3 + 1,5,6');
+  same([1,2,3].insert([4,5,6]), [1,2,3,4,5,6], 'Array#insert | 1,2,3 + 4,5,6');
+  same([1,2,3].insert(1), [1,2,3,1], 'Array#insert | 1,2,3 + 1');
 
-  same([1,2,3].insert(4, 2), [1,2,4,3], 'Array#insert | 2 | 4');
-  same(['a','b','c'].insert('d', 2), ['a','b','d','c'], 'Array#insert | 2 | d');
-  same([{a:1},{a:2}].insert({a:3}, 2), [{a:1},{a:2},{a:3}], 'Array#insert | 2 | a:3');
+  same([1,2,3].insert(4, 1), [1,4,2,3], 'Array#insert | index 1 | 4');
+  same(['a','b','c'].insert('d', 1), ['a','d','b','c'], 'Array#insert | index 1 | d');
+  same([{a:1},{a:2}].insert({a:3}, 1), [{a:1},{a:3},{a:2}], 'Array#insert | index 1 | a:3');
+  same([1,2,3].insert(4, 2), [1,2,4,3], 'Array#insert | index 2 | 4');
+  same(['a','b','c'].insert('d', 2), ['a','b','d','c'], 'Array#insert | index 2 | d');
+  same([{a:1},{a:2}].insert({a:3}, 2), [{a:1},{a:2},{a:3}], 'Array#insert | index 2 | a:3');
+  same(['a','b','c'].insert('d', 5), ['a','b','c','d'], 'Array#insert | index 5 | d');
+  same(['a','b','c'].insert('d', 0), ['d','a','b','c'], 'Array#insert | index 0 | d');
+  same(['a','b','c'].insert('d', -1), ['a','b','d','c'], 'Array#insert | index -1 | d');
+  same(['a','b','c'].insert('d', -2), ['a','d','b','c'], 'Array#insert | index -2 | d');
+  same(['a','b','c'].insert('d', -3), ['d','a','b','c'], 'Array#insert | index -3 | d');
+  same(['a','b','c'].insert('d', null), ['a','b','c','d'], 'Array#insert | null index | d');
+  same(['a','b','c'].insert('d', undefined), ['a','b','c','d'], 'Array#insert | undefined index | d');
+  same(['a','b','c'].insert('d', 'a'), ['a','b','c','d'], 'Array#insert | index a | d');
+  same(['a','b','c'].insert('d', NaN), ['a','b','c','d'], 'Array#insert | index NaN | d');
 
-  same(['a','b','c'].insert('d', 5), ['a','b','c','d'], 'Array#insert | 5 | d');
-  same(['a','b','c'].insert('d', 0), ['d','a','b','c'], 'Array#insert | 0 | d');
-  same(['a','b','c'].insert('d', -1), ['a','b','c','d'], 'Array#insert | -1 | d');
-  same(['a','b','c'].insert('d', -2), ['a','b','d','c'], 'Array#insert | -2 | d');
-  same(['a','b','c'].insert('d', -3), ['a','d','b','c'], 'Array#insert | -3 | d');
-  same(['a','b','c'].insert('d', null), ['a','b','c','d'], 'Array#insert | null | d');
-  same(['a','b','c'].insert('d', undefined), ['a','b','c','d'], 'Array#insert | undefined | d');
-  same(['a','b','c'].insert('d', 'a'), ['a','b','c','d'], 'Array#insert | a | d');
-  same(['a','b','c'].insert('d', NaN), ['a','b','c','d'], 'Array#insert | NaN | d');
+  arr = [1,2,3];
+  arr.insert(4);
+  same(arr, [1,2,3,4], 'Array#insert | should affect the original array');
+
+
+
+  same([1,2,3].with(4), [1,2,3,4], 'Array#with | 1,2,3 + 4');
+  same(['a','b','c'].with('d'), ['a','b','c','d'], 'Array#with | a,b,c + d');
+  same([{a:1},{a:2}].with({a:3}), [{a:1},{a:2},{a:3}], 'Array#with | a:1,a:2 + a:3');
+  same([1,2,3].with([3,4,5]), [1,2,3,3,4,5], 'Array#with | 1,2,3 + 3,4,5');
+  same(['a','b','c'].with(['c','d','e']), ['a','b','c','c','d','e'], 'Array#with | a,b,c + c,d,e');
+  same([1,2,3].with([1,2,3]), [1,2,3,1,2,3], 'Array#with | 1,2,3 + 1,2,3');
+  same([1,2,3].with([3,2,1]), [1,2,3,3,2,1], 'Array#with | 1,2,3 + 3,2,1');
+  same([].with([3]), [3], 'Array#with | empty array + 3');
+  same([3].with([]), [3], 'Array#with | 3 + empty array');
+  same([].with([]), [], 'Array#with | 2 empty arrays');
+  same([null].with([]), [null], 'Array#with | [null] + empty array');
+  same([null].with([null]), [null, null], 'Array#with | [null] + [null]');
+  same([false].with([false]), [false, false], 'Array#with | [false] + [false]');
+  same([false].with([0]), [false, 0], 'Array#with | [false] + [0]');
+  same([false].with([null]), [false, null], 'Array#with | [false] + [null]');
+  same([false].with([undefined]), [false, undefined], 'Array#with | [false] + [undefined]');
+  same([{a:1},{b:2}].with([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#with | a:1,b:2 + b:2,c:3');
+  same([1,1,3].with([1,5,6]), [1,1,3,1,5,6], 'Array#with | 1,1,3 + 1,5,6');
+  same([1,2,3].with([4,5,6]), [1,2,3,4,5,6], 'Array#with | 1,2,3 + 4,5,6');
+  same([1,2,3].with(1), [1,2,3,1], 'Array#with | 1,2,3 + 1');
+
+  same([1,2,3].with(4, 1), [1,4,2,3], 'Array#with | index 1 | 4');
+  same(['a','b','c'].with('d', 1), ['a','d','b','c'], 'Array#with | index 1 | d');
+  same([{a:1},{a:2}].with({a:3}, 1), [{a:1},{a:3},{a:2}], 'Array#with | index 1 | a:3');
+  same([1,2,3].with(4, 2), [1,2,4,3], 'Array#with | index 2 | 4');
+  same(['a','b','c'].with('d', 2), ['a','b','d','c'], 'Array#with | index 2 | d');
+  same([{a:1},{a:2}].with({a:3}, 2), [{a:1},{a:2},{a:3}], 'Array#with | index 2 | a:3');
+  same(['a','b','c'].with('d', 5), ['a','b','c','d'], 'Array#with | index 5 | d');
+  same(['a','b','c'].with('d', 0), ['d','a','b','c'], 'Array#with | index 0 | d');
+  same(['a','b','c'].with('d', -1), ['a','b','d','c'], 'Array#with | index -1 | d');
+  same(['a','b','c'].with('d', -2), ['a','d','b','c'], 'Array#with | index -2 | d');
+  same(['a','b','c'].with('d', -3), ['d','a','b','c'], 'Array#with | index -3 | d');
+  same(['a','b','c'].with('d', null), ['a','b','c','d'], 'Array#with | null index | d');
+  same(['a','b','c'].with('d', undefined), ['a','b','c','d'], 'Array#with | undefined index | d');
+  same(['a','b','c'].with('d', 'a'), ['a','b','c','d'], 'Array#with | index a | d');
+  same(['a','b','c'].with('d', NaN), ['a','b','c','d'], 'Array#with | index NaN | d');
+
+  arr = [1,2,3];
+  arr.with(4);
+  same(arr, [1,2,3], 'Array#with | should not affect the original array');
+
+
+  arr = [1,2,3];
+  var arr2 = arr.clone();
+  same(arr, arr2, 'Array#clone | should clone the array');
+  arr2.remove(2);
+  same(arr, [1,2,3], 'Array#clone | original array should be untouched');
+  same(arr2, [1,3], 'Array#clone | new array should be modified');
+
 
 
 
