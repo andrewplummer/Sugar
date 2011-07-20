@@ -919,6 +919,15 @@ test('String', function () {
   equal('foo'.has(/f$/), false, 'String#has | foo has /f$/');
 
 
+  equal('five'.add('schfifty '), 'schfifty five', 'String#add | schfiffy five');
+  equal('dopamine'.add('e', 3), 'dopeamine', 'String#add | dopeamine');
+  equal('spelling eror'.add('r', -3), 'spelling error', 'String#add | add from the end');
+  equal('flack'.add('a', 0), 'aflack', 'String#add | add at 0');
+  equal('five'.add('schfifty', 20), 'five', 'String#add | does not add out of positive range');
+  equal('five'.add('schfifty', -20), 'five', 'String#add | does not add out of negative range');
+  equal('five'.add('schfifty', 4), 'fiveschfifty', 'String#add | add at position 4');
+  equal('five'.add('schfifty', 5), 'five', 'String#add | add at position 5');
+
   equal('five'.insert('schfifty '), 'schfifty five', 'String#insert | schfiffy five');
   equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert | dopeamine');
   equal('spelling eror'.insert('r', -3), 'spelling error', 'String#insert | inserts from the end');
