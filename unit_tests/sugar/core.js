@@ -224,6 +224,22 @@ test('Number', function () {
   var counter;
   var ret;
 
+
+  var rand = Number.random();
+  equalsWithException(rand == 0 || rand == 1, true, { mootools: false }, 'Number.random | no params = 0 or 1');
+
+  rand = Number.random(10);
+  equalsWithException(rand >= 0 && rand <= 10, true, { mootools: false }, 'Number.random | min not defined, max is 10');
+  equalsWithException(rand % 1, 0, { mootools: 'NaN' }, 'Number.random | number is whole');
+
+  rand = Number.random(536224, 536280);
+  equals(rand >= 536224 && rand <= 536280, true, 'Number.random | min and max defined');
+
+  rand = Number.random(6, -5);
+  equals(rand >= -5 && rand <= 6, true, 'Number.random | min and max can be reversed');
+
+
+
   equals((4).toNumber(), 4, 'Number#toNumber | 4 is 4');
   equals((10000).toNumber(), 10000, 'Number#toNumber | 10000 is 10000');
   equals((5.2345).toNumber(), 5.2345, 'Number#toNumber | 5.2345 is 5.2345');
@@ -2741,6 +2757,8 @@ test('Date', function () {
 
   dateEquals(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | should not affect original date');
   dateEquals(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | should not affect original date');
+  dateEquals(d.toUTC().toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | cannot be chained');
+  equals(Date.create().toUTC().isUTC(), true, 'Date#isUTC | can be set by toUTC');
 
 
   // Date constructor accepts enumerated parameters
@@ -2753,6 +2771,7 @@ test('Date', function () {
   dateEquals(Date.create(1998,1,23,11,54,32), new Date(1998,1,23,11,54,32), 'Date#create | enumerated | January 23, 1998 11:54:32');
   dateEquals(Date.create(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,454), 'Date#create | enumerated | January 23, 1998 11:54:32.454');
 
+  dateEquals(Date.create('1998', true), new Date(1998, 0), 'Date#create | will not choke on a boolean as second param');
 
   // Date constructor accepts an object
 
@@ -2805,25 +2824,36 @@ test('Date', function () {
   dateEquals(Date.create('8.25.1978'), new Date(1978, 7, 25), 'Date#create | American style dots | m.dd.yyyy');
 
 
-  dateEquals(Date.create('08/10', true), new Date(thisYear, 9, 8), 'Date#create | European style slashes | dd/mm');
-  // Slashes (European style)
-  dateEquals(Date.create('8/10', true), new Date(thisYear, 9, 8), 'Date#create | European style slashes | d/mm');
-  dateEquals(Date.create('08/10/1978', true), new Date(1978, 9, 8), 'Date#create | European style slashes | dd/mm/yyyy');
-  dateEquals(Date.create('8/10/1978', true), new Date(1978, 9, 8), 'Date#create | European style slashes | d/mm/yyyy');
-  dateEquals(Date.create('8/10/78', true), new Date(1978, 9, 8), 'Date#create | European style slashes | d/mm/yy');
-  dateEquals(Date.create('08/10/78', true), new Date(1978, 9, 8), 'Date#create | European style slashes | dd/mm/yy');
-  dateEquals(Date.create('8/10/01', true), new Date(2001, 9, 8), 'Date#create | European style slashes | d/mm/01');
-  dateEquals(Date.create('8/10/49', true), new Date(2049, 9, 8), 'Date#create | European style slashes | d/mm/49');
-  dateEquals(Date.create('8/10/50', true), new Date(1950, 9, 8), 'Date#create | European style slashes | d/mm/50');
 
-  // Dashes (European style) 
-  dateEquals(Date.create('08-10-1978', true), new Date(1978, 9, 8), 'Date#create | European style dashes | dd-dd-dd is an ISO8601 format');
+
+
+
+  // Abbreviated reverse slash format yy/mm/dd cannot exist because it clashes with forward
+  // slash format dd/mm/yy (with european variant). This rule however, doesn't follow for dashes,
+  // which is abbreviated ISO8601 format: yy-mm-dd
+  dateEquals(Date.create('01/02/03'), new Date(2003, 0, 2), 'Date#create | Ambiguous 2 digit format mm/dd/yy');
+
+
+  Date.allowVariant = true;
+
+  dateEquals(Date.create('08/10'), new Date(thisYear, 9, 8), 'Date#create | European style slashes | dd/mm');
+  // Slashes (European style)
+  dateEquals(Date.create('8/10'), new Date(thisYear, 9, 8), 'Date#create | European style slashes | d/mm');
+  dateEquals(Date.create('08/10/1978'), new Date(1978, 9, 8), 'Date#create | European style slashes | dd/mm/yyyy');
+  dateEquals(Date.create('8/10/1978'), new Date(1978, 9, 8), 'Date#create | European style slashes | d/mm/yyyy');
+  dateEquals(Date.create('8/10/78'), new Date(1978, 9, 8), 'Date#create | European style slashes | d/mm/yy');
+  dateEquals(Date.create('08/10/78'), new Date(1978, 9, 8), 'Date#create | European style slashes | dd/mm/yy');
+  dateEquals(Date.create('8/10/01'), new Date(2001, 9, 8), 'Date#create | European style slashes | d/mm/01');
+  dateEquals(Date.create('8/10/49'), new Date(2049, 9, 8), 'Date#create | European style slashes | d/mm/49');
+  dateEquals(Date.create('8/10/50'), new Date(1950, 9, 8), 'Date#create | European style slashes | d/mm/50');
+
+  // Dashes (European style)
+  dateEquals(Date.create('08-10-1978'), new Date(1978, 9, 8), 'Date#create | European style dashes | dd-dd-dd is an ISO8601 format');
 
   // Dots (European style)
-  dateEquals(Date.create('08.10.1978', true), new Date(1978, 9, 8), 'Date#create | European style dots | dd.mm.yyyy');
-  dateEquals(Date.create('8.10.1978', true), new Date(1978, 9, 8), 'Date#create | European style dots | d.mm.yyyy');
+  dateEquals(Date.create('08.10.1978'), new Date(1978, 9, 8), 'Date#create | European style dots | dd.mm.yyyy');
+  dateEquals(Date.create('8.10.1978'), new Date(1978, 9, 8), 'Date#create | European style dots | d.mm.yyyy');
   dateEquals(Date.create('08-05-05'), new Date(2008, 4, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
-
 
 
 
@@ -2843,13 +2873,11 @@ test('Date', function () {
   dateEquals(Date.create('1978.08'), new Date(1978, 7), 'Date#create | Reverse dots | yyyy.mm');
   dateEquals(Date.create('1978.8'), new Date(1978, 7), 'Date#create | Reverse dots | yyyy.m');
 
-  // Abbreviated reverse slash format yy/mm/dd cannot exist because it clashes with forward
-  // slash format dd/mm/yy (with european variant). This rule however, doesn't follow for dashes,
-  // which is abbreviated ISO8601 format: yy-mm-dd
-  dateEquals(Date.create('01/02/03'), new Date(2003, 0, 2), 'Date#create | Ambiguous 2 digit format mm/dd/yy');
-  dateEquals(Date.create('01/02/03', true), new Date(2003, 1, 1), 'Date#create | Ambiguous 2 digit European variant dd/mm/yy');
   dateEquals(Date.create('01-02-03'), new Date(2001, 1, 3), 'Date#create | Ambiguous 2 digit ISO variant yy-mm-dd');
-  dateEquals(Date.create('01-02-03', true), new Date(2001, 1, 3), 'Date#create | Ambiguous 2 digit ISO variant has NO European variant of its own');
+
+  dateEquals(Date.create('01/02/03'), new Date(2003, 1, 1), 'Date#create | Ambiguous 2 digit European variant dd/mm/yy');
+  dateEquals(Date.create('01-02-03'), new Date(2001, 1, 3), 'Date#create | Ambiguous 2 digit ISO variant has NO European variant of its own');
+  Date.allowVariant = false;
 
 
   // Text based formats
@@ -3505,6 +3533,8 @@ test('Date', function () {
   equals(d.format('{d}'), '5', 'Date#format | custom formats | d');
   equals(d.format('{dd}'), '05', 'Date#format | custom formats | dd');
   equals(d.format('{date}'), '5', 'Date#format | custom formats | date');
+  equals(d.format('{day}'), '5', 'Date#format | custom formats | day');
+  equals(d.format('{days}'), '5', 'Date#format | custom formats | days');
   equals(d.format('{dow}'), 'thu', 'Date#format | custom formats | dow');
   equals(d.format('{Dow}'), 'Thu', 'Date#format | custom formats | Dow');
   equals(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
@@ -3569,15 +3599,11 @@ test('Date', function () {
   equals(d.getUTCOffset(), tzd, 'Date#getUTCOffset | no colon');
   equals(d.getUTCOffset(true), isotzd, 'Date#getUTCOffset | colon');
 
-  equals(d.format(Date.AMERICAN_DATE), '8/5/2010', 'Date#format | constants | AMERICAN_DATE');
-  equals(d.format(Date.EUROPEAN_DATE), '5/8/2010', 'Date#format | constants | EUROPEAN_DATE');
   equals(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | constants | INTERNATIONAL_TIME');
   equals(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | constants | ISO8601_DATE');
   equals(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
 
 
-  equals(d.format('AMERICAN_DATE'), '8/5/2010', 'Date#format | string constants | AMERICAN_DATE');
-  equals(d.format('EUROPEAN_DATE'), '5/8/2010', 'Date#format | string constants | EUROPEAN_DATE');
   equals(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | string constants | INTERNATIONAL_TIME');
   equals(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | string constants | ISO8601_DATE');
   equals(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
@@ -3619,6 +3645,8 @@ test('Date', function () {
 
   // relative time formatting
 
+  equals(Date.create().format('relative'), '1 second ago', 'Date#format | relative | now');
+  equals(Date.create('234 milliseconds ago').format('relative'), '1 second ago', 'Date#format | relative | 234 milliseconds');
   equals(Date.create('6234 milliseconds ago').format('relative'), '6 seconds ago', 'Date#format | relative | 6 milliseconds');
   equals(Date.create('6 seconds ago').format('relative'), '6 seconds ago', 'Date#format | relative | 6 seconds');
   equals(Date.create('360 seconds ago').format('relative'), '6 minutes ago', 'Date#format | relative | 360 seconds');
@@ -3704,8 +3732,39 @@ test('Date', function () {
 
   equals(Date.create('240 minutes ago').format(dyn), '4時間達前', 'Date#format | relative fn | 4 hours ago');
 
+  Date.create('223 milliseconds ago').format(function(value, unit){
+    equalsWithMargin(value, 223, 5, 'Date format | relative fn | still passes < 1 second');
+    equals(unit, 'milliseconds', 'Date format | relative fn | still passes "millisecond"');
+  });
+
+  equals(Date.create('300 minutes ago').format(function(){}), '5 hours ago', 'Date#format | function that returns undefined defaults to "relative"');
 
 
+  equals(Date.create('6234 milliseconds ago').relative(), '6 seconds ago', 'Date#relative | relative | 6 milliseconds');
+  equals(Date.create('6 seconds ago').relative(), '6 seconds ago', 'Date#relative | relative | 6 seconds');
+  equals(Date.create('360 seconds ago').relative(), '6 minutes ago', 'Date#relative | relative | 360 seconds');
+  equals(Date.create('360 minutes ago').relative(), '6 hours ago', 'Date#relative | relative | minutes');
+  equals(Date.create('360 hours ago').relative(), '2 weeks ago', 'Date#relative | relative | hours');
+  equals(Date.create('360 days ago').relative(), '11 months ago', 'Date#relative | relative | days');
+  equals(Date.create('360 weeks ago').relative(), '6 years ago', 'Date#relative | relative | weeks');
+  equals(Date.create('360 months ago').relative(), '30 years ago', 'Date#relative | relative | months');
+  equals(Date.create('360 years ago').relative(), '360 years ago', 'Date#relative | relative | years');
+  equals(Date.create('12 months ago').relative(), '1 year ago', 'Date#relative | relative | 12 months ago');
+
+  equals(Date.create('6234 milliseconds from now').relative(), '6 seconds from now', 'Date#relative | relative future | 6 milliseconds');
+  equals(Date.create('361 seconds from now').relative(), '6 minutes from now', 'Date#relative | relative future | 360 seconds');
+  equals(Date.create('361 minutes from now').relative(), '6 hours from now', 'Date#relative | relative future | minutes');
+  equals(Date.create('360 hours from now').relative(), '2 weeks from now', 'Date#relative | relative future | hours');
+  equals(Date.create('360 days from now').relative(), '11 months from now', 'Date#relative | relative future | days');
+  equals(Date.create('360 weeks from now').relative(), '6 years from now', 'Date#relative | relative future | weeks');
+  equals(Date.create('360 months from now').relative(), '30 years from now', 'Date#relative | relative future | months');
+  equals(Date.create('360 years from now').relative(), '360 years from now', 'Date#relative | relative future | years');
+  equals(Date.create('13 months from now').relative(), '1 year from now', 'Date#relative | relative future | 12 months ago');
+
+
+  equals(Date.create('13 months from now').relative(function(value, unit){
+    return value + ' ' + unit;
+  }), '1 year', 'Date#relative | relative future | 12 months ago');
 
 
   d = new Date(2010,7,5,13,45,2,542);
