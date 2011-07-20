@@ -2461,23 +2461,23 @@ test('Array', function () {
   same(arr, [1,3], 'Array#remove | should affect the original array');
 
 
-  same([1,2,2,3].without(), [1,2,2,3], 'Array#without | no argument numeric');
-  same([1,2,2,3].without(2), [1,3], 'Array#without | without 2s');
-  same(['a','b','c','c'].without(), ['a','b','c','c'], 'Array#without | no argument alphabet');
-  same(['a','b','c','c'].without('c'), ['a','b'], 'Array#without | without "c"s');
-  same([1,2,2,3].without(function(el){ return el % 2 == 0; }), [1,3], 'Array#without | without all odd numbers');
-  same([1,2,2,3].without(function(el){ return el > 2; }), [1,2,2], 'Array#without | without all numbers greater than 2');
-  same([1,2,2,3].without(function(el){ return el > 20; }), [1,2,2,3], 'Array#without | without all numbers greater than 20');
-  same([{a:1},{a:2},{a:1}].without({a:1}), [{a:2}], 'Array#without | without all a:1');
-  ['a'].without(function(el,i,arr){
-    equals(el, 'a', 'Array#without | first param should be the element');
-    equals(i, 0, 'Array#without | second param should be the index');
-    same(arr, ['a'], 'Array#without | third param should be the array');
+  same([1,2,2,3].exclude(), [1,2,2,3], 'Array#exclude | no argument numeric');
+  same([1,2,2,3].exclude(2), [1,3], 'Array#exclude | exclude 2s');
+  same(['a','b','c','c'].exclude(), ['a','b','c','c'], 'Array#exclude | no argument alphabet');
+  same(['a','b','c','c'].exclude('c'), ['a','b'], 'Array#exclude | exclude "c"s');
+  same([1,2,2,3].exclude(function(el){ return el % 2 == 0; }), [1,3], 'Array#exclude | exclude all odd numbers');
+  same([1,2,2,3].exclude(function(el){ return el > 2; }), [1,2,2], 'Array#exclude | exclude all numbers greater than 2');
+  same([1,2,2,3].exclude(function(el){ return el > 20; }), [1,2,2,3], 'Array#exclude | exclude all numbers greater than 20');
+  same([{a:1},{a:2},{a:1}].exclude({a:1}), [{a:2}], 'Array#exclude | exclude all a:1');
+  ['a'].exclude(function(el,i,arr){
+    equals(el, 'a', 'Array#exclude | first param should be the element');
+    equals(i, 0, 'Array#exclude | second param should be the index');
+    same(arr, ['a'], 'Array#exclude | third param should be the array');
   });
 
   arr = [1,2,3];
-  arr.without(2);
-  same(arr, [1,2,3], 'Array#without | should not affect the original array');
+  arr.exclude(2);
+  same(arr, [1,2,3], 'Array#exclude | should not affect the original array');
 
 
 
@@ -2597,45 +2597,45 @@ test('Array', function () {
 
 
 
-  same([1,2,3].with(4), [1,2,3,4], 'Array#with | 1,2,3 + 4');
-  same(['a','b','c'].with('d'), ['a','b','c','d'], 'Array#with | a,b,c + d');
-  same([{a:1},{a:2}].with({a:3}), [{a:1},{a:2},{a:3}], 'Array#with | a:1,a:2 + a:3');
-  same([1,2,3].with([3,4,5]), [1,2,3,3,4,5], 'Array#with | 1,2,3 + 3,4,5');
-  same(['a','b','c'].with(['c','d','e']), ['a','b','c','c','d','e'], 'Array#with | a,b,c + c,d,e');
-  same([1,2,3].with([1,2,3]), [1,2,3,1,2,3], 'Array#with | 1,2,3 + 1,2,3');
-  same([1,2,3].with([3,2,1]), [1,2,3,3,2,1], 'Array#with | 1,2,3 + 3,2,1');
-  same([].with([3]), [3], 'Array#with | empty array + 3');
-  same([3].with([]), [3], 'Array#with | 3 + empty array');
-  same([].with([]), [], 'Array#with | 2 empty arrays');
-  same([null].with([]), [null], 'Array#with | [null] + empty array');
-  same([null].with([null]), [null, null], 'Array#with | [null] + [null]');
-  same([false].with([false]), [false, false], 'Array#with | [false] + [false]');
-  same([false].with([0]), [false, 0], 'Array#with | [false] + [0]');
-  same([false].with([null]), [false, null], 'Array#with | [false] + [null]');
-  same([false].with([undefined]), [false, undefined], 'Array#with | [false] + [undefined]');
-  same([{a:1},{b:2}].with([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#with | a:1,b:2 + b:2,c:3');
-  same([1,1,3].with([1,5,6]), [1,1,3,1,5,6], 'Array#with | 1,1,3 + 1,5,6');
-  same([1,2,3].with([4,5,6]), [1,2,3,4,5,6], 'Array#with | 1,2,3 + 4,5,6');
-  same([1,2,3].with(1), [1,2,3,1], 'Array#with | 1,2,3 + 1');
+  same([1,2,3].include(4), [1,2,3,4], 'Array#include | 1,2,3 + 4');
+  same(['a','b','c'].include('d'), ['a','b','c','d'], 'Array#include | a,b,c + d');
+  same([{a:1},{a:2}].include({a:3}), [{a:1},{a:2},{a:3}], 'Array#include | a:1,a:2 + a:3');
+  same([1,2,3].include([3,4,5]), [1,2,3,3,4,5], 'Array#include | 1,2,3 + 3,4,5');
+  same(['a','b','c'].include(['c','d','e']), ['a','b','c','c','d','e'], 'Array#include | a,b,c + c,d,e');
+  same([1,2,3].include([1,2,3]), [1,2,3,1,2,3], 'Array#include | 1,2,3 + 1,2,3');
+  same([1,2,3].include([3,2,1]), [1,2,3,3,2,1], 'Array#include | 1,2,3 + 3,2,1');
+  same([].include([3]), [3], 'Array#include | empty array + 3');
+  same([3].include([]), [3], 'Array#include | 3 + empty array');
+  same([].include([]), [], 'Array#include | 2 empty arrays');
+  same([null].include([]), [null], 'Array#include | [null] + empty array');
+  same([null].include([null]), [null, null], 'Array#include | [null] + [null]');
+  same([false].include([false]), [false, false], 'Array#include | [false] + [false]');
+  same([false].include([0]), [false, 0], 'Array#include | [false] + [0]');
+  same([false].include([null]), [false, null], 'Array#include | [false] + [null]');
+  same([false].include([undefined]), [false, undefined], 'Array#include | [false] + [undefined]');
+  same([{a:1},{b:2}].include([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#include | a:1,b:2 + b:2,c:3');
+  same([1,1,3].include([1,5,6]), [1,1,3,1,5,6], 'Array#include | 1,1,3 + 1,5,6');
+  same([1,2,3].include([4,5,6]), [1,2,3,4,5,6], 'Array#include | 1,2,3 + 4,5,6');
+  same([1,2,3].include(1), [1,2,3,1], 'Array#include | 1,2,3 + 1');
 
-  same([1,2,3].with(4, 1), [1,4,2,3], 'Array#with | index 1 | 4');
-  same(['a','b','c'].with('d', 1), ['a','d','b','c'], 'Array#with | index 1 | d');
-  same([{a:1},{a:2}].with({a:3}, 1), [{a:1},{a:3},{a:2}], 'Array#with | index 1 | a:3');
-  same([1,2,3].with(4, 2), [1,2,4,3], 'Array#with | index 2 | 4');
-  same(['a','b','c'].with('d', 2), ['a','b','d','c'], 'Array#with | index 2 | d');
-  same([{a:1},{a:2}].with({a:3}, 2), [{a:1},{a:2},{a:3}], 'Array#with | index 2 | a:3');
-  same(['a','b','c'].with('d', 5), ['a','b','c','d'], 'Array#with | index 5 | d');
-  same(['a','b','c'].with('d', 0), ['d','a','b','c'], 'Array#with | index 0 | d');
-  same(['a','b','c'].with('d', -1), ['a','b','d','c'], 'Array#with | index -1 | d');
-  same(['a','b','c'].with('d', -2), ['a','d','b','c'], 'Array#with | index -2 | d');
-  same(['a','b','c'].with('d', -3), ['d','a','b','c'], 'Array#with | index -3 | d');
-  same(['a','b','c'].with('d', null), ['a','b','c','d'], 'Array#with | null index | d');
-  same(['a','b','c'].with('d', undefined), ['a','b','c','d'], 'Array#with | undefined index | d');
-  same(['a','b','c'].with('d', 'a'), ['a','b','c','d'], 'Array#with | index a | d');
-  same(['a','b','c'].with('d', NaN), ['a','b','c','d'], 'Array#with | index NaN | d');
+  same([1,2,3].include(4, 1), [1,4,2,3], 'Array#include | index 1 | 4');
+  same(['a','b','c'].include('d', 1), ['a','d','b','c'], 'Array#include | index 1 | d');
+  same([{a:1},{a:2}].include({a:3}, 1), [{a:1},{a:3},{a:2}], 'Array#include | index 1 | a:3');
+  same([1,2,3].include(4, 2), [1,2,4,3], 'Array#include | index 2 | 4');
+  same(['a','b','c'].include('d', 2), ['a','b','d','c'], 'Array#include | index 2 | d');
+  same([{a:1},{a:2}].include({a:3}, 2), [{a:1},{a:2},{a:3}], 'Array#include | index 2 | a:3');
+  same(['a','b','c'].include('d', 5), ['a','b','c','d'], 'Array#include | index 5 | d');
+  same(['a','b','c'].include('d', 0), ['d','a','b','c'], 'Array#include | index 0 | d');
+  same(['a','b','c'].include('d', -1), ['a','b','d','c'], 'Array#include | index -1 | d');
+  same(['a','b','c'].include('d', -2), ['a','d','b','c'], 'Array#include | index -2 | d');
+  same(['a','b','c'].include('d', -3), ['d','a','b','c'], 'Array#include | index -3 | d');
+  same(['a','b','c'].include('d', null), ['a','b','c','d'], 'Array#include | null index | d');
+  same(['a','b','c'].include('d', undefined), ['a','b','c','d'], 'Array#include | undefined index | d');
+  same(['a','b','c'].include('d', 'a'), ['a','b','c','d'], 'Array#include | index a | d');
+  same(['a','b','c'].include('d', NaN), ['a','b','c','d'], 'Array#include | index NaN | d');
 
   arr = [1,2,3];
-  arr.with(4);
+  arr.include(4);
   same(arr, [1,2,3], 'Array#with | should not affect the original array');
 
 
