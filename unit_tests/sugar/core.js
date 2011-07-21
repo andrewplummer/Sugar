@@ -171,6 +171,10 @@ same = function(actual, expected, message) {
   }
 }
 
+var equalsWithWarning = function(actual, expected, message){
+  equals(actual, expected, 'Warning: ' + message);
+}
+
 
 // A DST Safe version of equals for dates
 var equalsDST = function(actual, expected, multiplier, message) {
@@ -1649,6 +1653,18 @@ test('Array', function () {
 
   var arr;
   var count;
+
+
+  arr = [1,2,3];
+  count = 0;
+
+  for(var key in arr){
+    count++;
+  }
+
+  equalsWithWarning(count, 3, 'for..in loops will break on arrays.');
+
+
 
 
   equals(['a','b','c'].indexOf('b'), 1, 'Array#indexOf | b in a,b,c');
