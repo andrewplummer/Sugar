@@ -1,5 +1,5 @@
 
-(function(){
+(function($){
 
   var suite = $('#suite');
   var module;
@@ -99,4 +99,4 @@
     return s.replace(/[ \.]/g, '_');
   }
 
-})();
+})(jQuery);
