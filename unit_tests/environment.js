@@ -2,7 +2,7 @@
 var environment;
 var startTests;
 
-(function(){
+(function($){
 
   forwardCallback('begin');
   forwardCallback('log');
@@ -17,7 +17,7 @@ var startTests;
       var args = [];
       for(var i=0;i<arguments.length;i++){ if(typeof arguments[i] != 'undefined') args.push(arguments[i]); }
       args.push(environment);
-      window.parent.$(window.parent.document).trigger(name, [args]);
+      window.parent.jQuery(window.parent.document).trigger(name, [args]);
     }
   }
 
@@ -53,5 +53,5 @@ var startTests;
     initialize(modules);
   }
 
-})();
+})(jQuery);
 
