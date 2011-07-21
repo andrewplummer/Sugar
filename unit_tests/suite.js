@@ -6,6 +6,7 @@
   var test;
   var failedAssertions;
   var warnings;
+  var totalWarnings = 0;
   var totalAssertions;
   var time;
 
@@ -40,6 +41,7 @@
         text = '.';
         css = 'warning';
         title += failedAssertions;
+        totalWarnings += warnings;
       } else {
         text = 'F';
         css = 'fail';
@@ -67,6 +69,7 @@
       var runtime = new Date() - time;
       time = null;
       var stats = $('#'+underscore(environment)+' .stats');
+      failures -= totalWarnings;
       stats.append($('<span class="failures">' + failures + ' ' + (failures == 1 ? 'failure' : 'failures') + '</span>'));
       stats.append($('<span class="assertions">' + total + ' ' + (total == 1 ? 'assertion' : 'assertions') + '</span>'));
       stats.append($('<span class="runtime">Completed in ' + runtime / 1000 + ' seconds</span>'));
