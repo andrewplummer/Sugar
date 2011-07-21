@@ -2622,46 +2622,46 @@ test('Array', function () {
 
 
 
-  same([1,2,3].include(4), [1,2,3,4], 'Array#include | 1,2,3 + 4');
-  same(['a','b','c'].include('d'), ['a','b','c','d'], 'Array#include | a,b,c + d');
-  same([{a:1},{a:2}].include({a:3}), [{a:1},{a:2},{a:3}], 'Array#include | a:1,a:2 + a:3');
-  same([1,2,3].include([3,4,5]), [1,2,3,3,4,5], 'Array#include | 1,2,3 + 3,4,5');
-  same(['a','b','c'].include(['c','d','e']), ['a','b','c','c','d','e'], 'Array#include | a,b,c + c,d,e');
-  same([1,2,3].include([1,2,3]), [1,2,3,1,2,3], 'Array#include | 1,2,3 + 1,2,3');
-  same([1,2,3].include([3,2,1]), [1,2,3,3,2,1], 'Array#include | 1,2,3 + 3,2,1');
-  same([].include([3]), [3], 'Array#include | empty array + 3');
-  same([3].include([]), [3], 'Array#include | 3 + empty array');
-  same([].include([]), [], 'Array#include | 2 empty arrays');
-  same([null].include([]), [null], 'Array#include | [null] + empty array');
-  same([null].include([null]), [null, null], 'Array#include | [null] + [null]');
-  same([false].include([false]), [false, false], 'Array#include | [false] + [false]');
-  same([false].include([0]), [false, 0], 'Array#include | [false] + [0]');
-  same([false].include([null]), [false, null], 'Array#include | [false] + [null]');
-  same([false].include([undefined]), [false, undefined], 'Array#include | [false] + [undefined]');
-  same([{a:1},{b:2}].include([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], 'Array#include | a:1,b:2 + b:2,c:3');
-  same([1,1,3].include([1,5,6]), [1,1,3,1,5,6], 'Array#include | 1,1,3 + 1,5,6');
-  same([1,2,3].include([4,5,6]), [1,2,3,4,5,6], 'Array#include | 1,2,3 + 4,5,6');
-  same([1,2,3].include(1), [1,2,3,1], 'Array#include | 1,2,3 + 1');
+  sameWithException([1,2,3].include(4), [1,2,3,4], { prototype: false }, 'Array#include | 1,2,3 + 4');
+  sameWithException(['a','b','c'].include('d'), ['a','b','c','d'], { prototype: false }, 'Array#include | a,b,c + d');
+  sameWithException([{a:1},{a:2}].include({a:3}), [{a:1},{a:2},{a:3}], { prototype: false }, 'Array#include | a:1,a:2 + a:3');
+  sameWithException([1,2,3].include([3,4,5]), [1,2,3,3,4,5], { prototype: false, mootools: [1,2,3,[3,4,5]] }, 'Array#include | 1,2,3 + 3,4,5');
+  sameWithException(['a','b','c'].include(['c','d','e']), ['a','b','c','c','d','e'], { prototype: false, mootools: ['a','b','c',['c','d','e']] }, 'Array#include | a,b,c + c,d,e');
+  sameWithException([1,2,3].include([1,2,3]), [1,2,3,1,2,3], { prototype: false, mootools: [1,2,3,[1,2,3]] }, 'Array#include | 1,2,3 + 1,2,3');
+  sameWithException([1,2,3].include([3,2,1]), [1,2,3,3,2,1], { prototype: false, mootools: [1,2,3,[3,2,1]] }, 'Array#include | 1,2,3 + 3,2,1');
+  sameWithException([].include([3]), [3], { prototype: false, mootools: [[3]] }, 'Array#include | empty array + 3');
+  sameWithException([3].include([]), [3], { prototype: false, mootools: [3,[]] }, 'Array#include | 3 + empty array');
+  sameWithException([].include([]), [], { prototype: false, mootools: [[]] }, 'Array#include | 2 empty arrays');
+  sameWithException([null].include([]), [null], { prototype: false, mootools: [null,[]] }, 'Array#include | [null] + empty array');
+  sameWithException([null].include([null]), [null, null], { prototype: false, mootools: [null,[null]] }, 'Array#include | [null] + [null]');
+  sameWithException([false].include([false]), [false, false], { prototype: false, mootools: [false,[false]] }, 'Array#include | [false] + [false]');
+  sameWithException([false].include([0]), [false, 0], { prototype: true, mootools: [false,[0]] }, 'Array#include | [false] + [0]');
+  sameWithException([false].include([null]), [false, null], { prototype: true, mootools: [false, [null]] }, 'Array#include | [false] + [null]');
+  sameWithException([false].include([undefined]), [false, undefined], { prototype: true, mootools: [false,[undefined]] }, 'Array#include | [false] + [undefined]');
+  sameWithException([{a:1},{b:2}].include([{b:2},{c:3}]), [{a:1},{b:2},{b:2},{c:3}], { prototype: false, mootools: [{a:1},{b:2},[{b:2},{c:3}]] }, 'Array#include | a:1,b:2 + b:2,c:3');
+  sameWithException([1,1,3].include([1,5,6]), [1,1,3,1,5,6], { prototype: false, mootools: [1,1,3,[1,5,6]] }, 'Array#include | 1,1,3 + 1,5,6');
+  sameWithException([1,2,3].include([4,5,6]), [1,2,3,4,5,6], { prototype: false, mootools: [1,2,3,[4,5,6]] }, 'Array#include | 1,2,3 + 4,5,6');
+  sameWithException([1,2,3].include(1), [1,2,3,1], { prototype: true, mootools: [1,2,3] }, 'Array#include | 1,2,3 + 1');
 
-  same([1,2,3].include(4, 1), [1,4,2,3], 'Array#include | index 1 | 4');
-  same(['a','b','c'].include('d', 1), ['a','d','b','c'], 'Array#include | index 1 | d');
-  same([{a:1},{a:2}].include({a:3}, 1), [{a:1},{a:3},{a:2}], 'Array#include | index 1 | a:3');
-  same([1,2,3].include(4, 2), [1,2,4,3], 'Array#include | index 2 | 4');
-  same(['a','b','c'].include('d', 2), ['a','b','d','c'], 'Array#include | index 2 | d');
-  same([{a:1},{a:2}].include({a:3}, 2), [{a:1},{a:2},{a:3}], 'Array#include | index 2 | a:3');
-  same(['a','b','c'].include('d', 5), ['a','b','c','d'], 'Array#include | index 5 | d');
-  same(['a','b','c'].include('d', 0), ['d','a','b','c'], 'Array#include | index 0 | d');
-  same(['a','b','c'].include('d', -1), ['a','b','d','c'], 'Array#include | index -1 | d');
-  same(['a','b','c'].include('d', -2), ['a','d','b','c'], 'Array#include | index -2 | d');
-  same(['a','b','c'].include('d', -3), ['d','a','b','c'], 'Array#include | index -3 | d');
-  same(['a','b','c'].include('d', null), ['a','b','c','d'], 'Array#include | null index | d');
-  same(['a','b','c'].include('d', undefined), ['a','b','c','d'], 'Array#include | undefined index | d');
-  same(['a','b','c'].include('d', 'a'), ['a','b','c','d'], 'Array#include | index a | d');
-  same(['a','b','c'].include('d', NaN), ['a','b','c','d'], 'Array#include | index NaN | d');
+  sameWithException([1,2,3].include(4, 1), [1,4,2,3], { prototype: false, mootools: [1,2,3,4] }, 'Array#include | index 1 | 4');
+  sameWithException(['a','b','c'].include('d', 1), ['a','d','b','c'], { prototype: false, mootools: ['a','b','c','d'] }, 'Array#include | index 1 | d');
+  sameWithException([{a:1},{a:2}].include({a:3}, 1), [{a:1},{a:3},{a:2}], { prototype: false, mootools: [{a:1},{a:2},{a:3}] }, 'Array#include | index 1 | a:3');
+  sameWithException([1,2,3].include(4, 2), [1,2,4,3], { prototype: false, mootools: [1,2,3,4] }, 'Array#include | index 2 | 4');
+  sameWithException(['a','b','c'].include('d', 2), ['a','b','d','c'], { prototype: false, mootools: ['a','b','c','d'] }, 'Array#include | index 2 | d');
+  sameWithException([{a:1},{a:2}].include({a:3}, 2), [{a:1},{a:2},{a:3}], { prototype: false }, 'Array#include | index 2 | a:3');
+  sameWithException(['a','b','c'].include('d', 5), ['a','b','c','d'], { prototype: false }, 'Array#include | index 5 | d');
+  sameWithException(['a','b','c'].include('d', 0), ['d','a','b','c'], { prototype: false, mootools: ['a','b','c','d'] }, 'Array#include | index 0 | d');
+  sameWithException(['a','b','c'].include('d', -1), ['a','b','d','c'], { prototype: false, mootools: ['a','b','c','d'] }, 'Array#include | index -1 | d');
+  sameWithException(['a','b','c'].include('d', -2), ['a','d','b','c'], { prototype: false, mootools: ['a','b','c','d'] }, 'Array#include | index -2 | d');
+  sameWithException(['a','b','c'].include('d', -3), ['d','a','b','c'], { prototype: false, mootools: ['a','b','c','d'] }, 'Array#include | index -3 | d');
+  sameWithException(['a','b','c'].include('d', null), ['a','b','c','d'], { prototype: false }, 'Array#include | null index | d');
+  sameWithException(['a','b','c'].include('d', undefined), ['a','b','c','d'], { prototype: false }, 'Array#include | undefined index | d');
+  sameWithException(['a','b','c'].include('d', 'a'), ['a','b','c','d'], { prototype: false }, 'Array#include | index a | d');
+  sameWithException(['a','b','c'].include('d', NaN), ['a','b','c','d'], { prototype: false }, 'Array#include | index NaN | d');
 
   arr = [1,2,3];
   arr.include(4);
-  same(arr, [1,2,3], 'Array#with | should not affect the original array');
+  sameWithException(arr, [1,2,3], { mootools: [1,2,3,4] }, 'Array#include | should not affect the original array');
 
 
   arr = [1,2,3];
@@ -4927,7 +4927,7 @@ test('Object', function () {
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  sameWithException(obj.keys(), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object#keys | returns object's keys", true);
+  same(obj.keys(), keys, "Object#keys | returns object's keys", true);
   count = 0;
   obj.keys(function(key) {
     equal(key, keys[count], 'Object#keys | accepts a block');
@@ -4936,12 +4936,12 @@ test('Object', function () {
 
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  sameWithException(Object.extended().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
-  sameWithException(Object.keys(Object.extended()), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
+  same(Object.extended().keys(), [], 'Object#keys | empty object', true);
+  same(Object.keys(Object.extended()), [], 'Object#keys | empty object', true);
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  sameWithException(Object.keys(obj), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object.keys | returns object's keys", true);
+  same(Object.keys(obj), keys, "Object.keys | returns object's keys", true);
   count = 0;
   Object.keys(obj, function(key) {
     equal(key, keys[count], 'Object.keys | accepts a block');
@@ -5056,7 +5056,7 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equals(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
-  equalsWithException(obj2.foo.jumpy, 'jump', { prototype: 'hump' }, 'Object.clone | cloned object is not modified');
+  equals(obj2.foo.jumpy, 'jump', 'Object.clone | cloned object is not modified');
 
   obj1 = {
     foo: {
@@ -5067,15 +5067,15 @@ test('Object', function () {
 
   obj1.foo.bar = ['a','b','c'];
   same(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
-  sameWithException(obj2.foo.bar, [1,2,3], { prototype: ['a','b','c'] }, 'Object#clone | cloned object is not modified');
+  same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
 
 
 
   // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
   // cloning properties in the prototype chain directly into the object itself.
-  equalsWithException(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar' }).clone(), { foo: 'bar' }), true, { prototype: false, mootools: false }, 'Object#clone | basic clone');
-  equalsWithException(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, { prototype: false, mootools: false }, 'Object#clone | complex clone');
-  equalsWithException(deepEqualWithoutPrototyping(Object.extended({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, { prototype: false, mootools: false }, 'Object#clone | deep clone');
+  equals(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar' }).clone(), { foo: 'bar' }), true, 'Object#clone | basic clone');
+  equals(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, 'Object#clone | complex clone');
+  equals(deepEqualWithoutPrototyping(Object.extended({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, 'Object#clone | deep clone');
 
   equals(Object.extended({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
 
@@ -5093,10 +5093,9 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equals(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
-  equalsWithException(obj2.foo.jumpy, 'jump', { prototype: 'hump' }, 'Object#clone | cloned object is not modified');
+  equals(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
 
-  var withPrototypes = ['broken','foo'].concat(objectPrototypeMethods).sort();
-  sameWithException(obj2.keys().sort(), ['broken','foo'], { prototype: withPrototypes, mootools: withPrototypes }, 'Object#clone | cloned objects are themselves extended');
+  same(obj2.keys().sort(), ['broken','foo'], 'Object#clone | cloned objects are themselves extended');
 
   obj1 = Object.extended({
     foo: {
@@ -5107,7 +5106,7 @@ test('Object', function () {
 
   obj1.foo.bar[1] = 'b';
   same(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
-  sameWithException(obj2.foo.bar, [1,2,3], { prototype: [1,'b',3] }, 'Object#clone | cloned object is not modified');
+  same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
 
   equals(Object.isEmpty({}), true, 'Object.isEmpty | object is empty');
   equals(Object.isEmpty({ broken: 'wear' }), false, 'Object.isEmpty | object is not empty');
