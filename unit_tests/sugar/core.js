@@ -4893,11 +4893,11 @@ test('Object', function () {
 
 
   equals(({}).keys, undefined, 'Object | native objects are not wrapped by default');
-  same(Object.create(), Object.create({}), 'Object#create | null argument same as empty object');
+  same(Object.extended(), Object.extended({}), 'Object#create | null argument same as empty object');
 
   var keys,values;
   var d = new Date();
-  var obj = Object.create({
+  var obj = Object.extended({
     number: 3,
     person: 'jim',
     date: d
@@ -4907,7 +4907,7 @@ test('Object', function () {
   // Note here that the need for this complicated syntax is that Prototype's Object.keys method
   // is incorrectly reporting keys up the prototype chain.
   var objectPrototypeMethods = ['keys','values','each','merge','clone','isEmpty','equals'];
-  var objectPrototypeMethodReferences = objectPrototypeMethods.map(function(m) { return Object.create()[m]; });
+  var objectPrototypeMethodReferences = objectPrototypeMethods.map(function(m) { return Object.extended()[m]; });
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
@@ -4920,8 +4920,8 @@ test('Object', function () {
 
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  sameWithException(Object.create().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
-  sameWithException(Object.keys(Object.create()), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
+  sameWithException(Object.extended().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
+  sameWithException(Object.keys(Object.extended()), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
@@ -4956,10 +4956,10 @@ test('Object', function () {
   });
   equals(count, 3, 'Object.values | accepts a block | iterated properly');
 
-  strippedValues = Object.create().values().remove(function(m) { return typeof m == 'function'; });
+  strippedValues = Object.extended().values().remove(function(m) { return typeof m == 'function'; });
   sameWithException(strippedValues, [], { prototype: [] }, 'Object#values | empty object', true);
 
-  strippedValues = Object.values(Object.create()).remove(function(m) { return typeof m == 'function'; });
+  strippedValues = Object.values(Object.extended()).remove(function(m) { return typeof m == 'function'; });
   sameWithException(strippedValues, [], { prototype: [] }, 'Object#values | empty object', true);
 
 
@@ -5009,14 +5009,14 @@ test('Object', function () {
 
 
 
-  same(Object.create({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
-  same(Object.create({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
-  same(Object.create({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string');
-  same(Object.create({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
-  same(Object.create({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
+  same(Object.extended({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
+  same(Object.extended({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
+  same(Object.extended({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string');
+  same(Object.extended({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
+  same(Object.extended({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
 
   sameWithException(
-    Object.create({ foo: 'bar' }).merge('wear', 8, null),
+    Object.extended({ foo: 'bar' }).merge('wear', 8, null),
     { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' },
     { mootools: { foo: 'bar', wear: 8 } },
     'Object#merge | merge multi invalid');
@@ -5057,13 +5057,13 @@ test('Object', function () {
 
   // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
   // cloning properties in the prototype chain directly into the object itself.
-  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: 'bar' }).clone(), { foo: 'bar' }), true, { prototype: false, mootools: false }, 'Object#clone | basic clone');
-  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, { prototype: false, mootools: false }, 'Object#clone | complex clone');
-  equalsWithException(deepEqualWithoutPrototyping(Object.create({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, { prototype: false, mootools: false }, 'Object#clone | deep clone');
+  equalsWithException(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar' }).clone(), { foo: 'bar' }), true, { prototype: false, mootools: false }, 'Object#clone | basic clone');
+  equalsWithException(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, { prototype: false, mootools: false }, 'Object#clone | complex clone');
+  equalsWithException(deepEqualWithoutPrototyping(Object.extended({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, { prototype: false, mootools: false }, 'Object#clone | deep clone');
 
-  equals(Object.create({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
+  equals(Object.extended({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
 
-  var obj1 = Object.create({
+  var obj1 = Object.extended({
     broken: 'wear',
     foo: {
       jumpy: 'jump',
@@ -5082,7 +5082,7 @@ test('Object', function () {
   var withPrototypes = ['broken','foo'].concat(objectPrototypeMethods).sort();
   sameWithException(obj2.keys().sort(), ['broken','foo'], { prototype: withPrototypes, mootools: withPrototypes }, 'Object#clone | cloned objects are themselves extended');
 
-  obj1 = Object.create({
+  obj1 = Object.extended({
     foo: {
       bar: [1,2,3]
     }
@@ -5096,8 +5096,8 @@ test('Object', function () {
   equals(Object.isEmpty({}), true, 'Object.isEmpty | object is empty');
   equals(Object.isEmpty({ broken: 'wear' }), false, 'Object.isEmpty | object is not empty');
 
-  equals(Object.create({}).isEmpty({}), true, 'Object#isEmpty | object is empty');
-  equals(Object.create({ broken: 'wear' }).isEmpty(), false, 'Object#empty | object is not empty');
+  equals(Object.extended({}).isEmpty({}), true, 'Object#isEmpty | object is empty');
+  equals(Object.extended({ broken: 'wear' }).isEmpty(), false, 'Object#empty | object is not empty');
 
   equals(Object.equals({ broken: 'wear' }, { broken: 'wear' }), true, 'Object.equals | objects are equal');
   equals(Object.equals({ broken: 'wear' }, { broken: 'jumpy' }), false, 'Object.equals | objects are not equal');
@@ -5105,11 +5105,11 @@ test('Object', function () {
   equals(Object.equals({}, { broken: 'wear' }), false, 'Object.equals | 1st empty');
   equals(Object.equals({ broken: 'wear' }, {}), false, 'Object.equals | 2nd empty');
 
-  equals(Object.create({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
-  equals(Object.create({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
-  equals(Object.create({}).equals({}), true, 'Object#equals | empty objects are equal');
-  equals(Object.create({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
-  equals(Object.create({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
+  equals(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
+  equals(Object.extended({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
+  equals(Object.extended({}).equals({}), true, 'Object#equals | empty objects are equal');
+  equals(Object.extended({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
+  equals(Object.extended({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 
 
 
