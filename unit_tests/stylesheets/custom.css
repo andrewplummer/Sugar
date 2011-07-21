@@ -92,6 +92,10 @@ ul,li {
   color: #400;
 }
 
+.test.warning {
+  background-color: #f90;
+}
+
 iframe {
   visibility: hidden;
 }
@@ -143,6 +147,12 @@ iframe {
 
 #tooltip .fail {
   color: #d33;
+  background-color: transparent;
+  font-weight: bold;
+}
+
+#tooltip .warning {
+  color: #f90;
   background-color: transparent;
   font-weight: bold;
 }

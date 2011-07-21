@@ -5,12 +5,16 @@
   var module;
   var test;
   var failedAssertions;
+  var warnings;
   var totalAssertions;
   var time;
 
   var events = {
     log: function(result, message, environment){
-      if(!result){
+      if(!result && /warning/i.test(message)) {
+        failedAssertions += '<p class="warning">'+message.replace(/(&nbsp;)+/g, ' ') +'</p>';
+        warnings++;
+      } else if(!result) {
         failedAssertions += '<p class="fail">'+message.replace(/(&nbsp;)+/g, ' ') +'</p>';
       } else {
         totalAssertions++;
@@ -20,6 +24,7 @@
     testStart: function(){
       test = $('<ul class="test"/>');
       failedAssertions = '';
+      warnings = 0;
       totalAssertions = 1;
     },
 
@@ -31,6 +36,10 @@
         text = '.';
         css = 'pass';
         title += '<p class="pass">Pass ('+totalAssertions+' assertions)</p>';
+      } else if (failures == warnings) {
+        text = '.';
+        css = 'warning';
+        title += failedAssertions;
       } else {
         text = 'F';
         css = 'fail';
