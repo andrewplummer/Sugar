@@ -1,0 +1,9 @@
+== 0.9.1
+
+- Change Object.create to Object.extended to avoid collision with ES5
+- Use of defineProperty in modern browsers to prevent enumeration in for..in loops.
+- Add test for for..in loop breakage and allowed older browsers to have a "warning" message.
+- Object.isArray will now alias native Array.isArray if it is present.
+- Fix collisions with Prototype on Object.clone.
+- Test cleanup.
+
