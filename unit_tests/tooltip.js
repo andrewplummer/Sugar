@@ -1,4 +1,4 @@
-(function(){
+(function($){
 
   var tooltip;
   var arrow;
@@ -167,4 +167,4 @@
     $('[title]').tooltip();
   });
 
-})();
+})(jQuery);
