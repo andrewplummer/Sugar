@@ -149,7 +149,7 @@ test('Object', function () {
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  same(obj.keys(), keys, "Object#keys | returns object's keys", true);
+  sameWithException(obj.keys(), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object#keys | returns object's keys", true);
   count = 0;
   obj.keys(function(key) {
     equal(key, keys[count], 'Object#keys | accepts a block');
@@ -158,12 +158,12 @@ test('Object', function () {
 
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  same(Object.extended().keys(), [], 'Object#keys | empty object', true);
-  same(Object.keys(Object.extended()), [], 'Object#keys | empty object', true);
+  sameWithException(Object.extended().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
+  sameWithException(Object.keys(Object.extended()), [], { prototype: objectPrototypeMethods}, 'Object#keys | empty object', true);
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  same(Object.keys(obj), keys, "Object.keys | returns object's keys", true);
+  sameWithException(Object.keys(obj), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object.keys | returns object's keys", true);
   count = 0;
   Object.keys(obj, function(key) {
     equal(key, keys[count], 'Object.keys | accepts a block');
@@ -317,7 +317,7 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
   equals(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
 
-  same(obj2.keys().sort(), ['broken','foo'], 'Object#clone | cloned objects are themselves extended');
+  sameWithException(obj2.keys().sort(), ['broken','foo'], { prototype: ['broken','foo'].concat(objectPrototypeMethods).sort() }, 'Object#clone | cloned objects are themselves extended');
 
   obj1 = Object.extended({
     foo: {
