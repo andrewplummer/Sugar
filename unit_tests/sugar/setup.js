@@ -212,7 +212,7 @@ var restoreObjectPrototypeMethods = function() {
   }
 }
 
-var assertRaisesError = function(fn, message) {
+var raisesError = function(fn, message) {
   var raised = false;
   try {
     fn.call();
