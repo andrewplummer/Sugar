@@ -52,8 +52,8 @@ test('String', function () {
 
 
 
-  assertRaisesError(function() { '% 23'.unescapeURL(); }, 'String#unescapeURL | partial | should raise an error for malformed urls');
-  assertRaisesError(function() { '% 23'.unescapeURL(true); }, 'String#unescapeURL | full | should raise an error for malformed urls');
+  raisesError(function() { '% 23'.unescapeURL(); }, 'String#unescapeURL | partial | should raise an error for malformed urls');
+  raisesError(function() { '% 23'.unescapeURL(true); }, 'String#unescapeURL | full | should raise an error for malformed urls');
 
 
   equals('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
@@ -64,7 +64,7 @@ test('String', function () {
   equals('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='.decodeBase64(), 'This webpage is not available', 'String#decodeBase64 | webpage');
   equals('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ=='.decodeBase64(), 'I grow, I prosper; Now, gods, stand up for bastards!', 'String#decodeBase64 | gods');
 
-  assertRaisesError(function() { '@#$^#$^#@$^'.decodeBase64(); }, 'String#decodeBase64 | should throw an error on non-base64 chars');
+  raisesError(function() { '@#$^#$^#@$^'.decodeBase64(); }, 'String#decodeBase64 | should throw an error on non-base64 chars');
 
   var test;
 
