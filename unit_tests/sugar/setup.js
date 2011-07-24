@@ -51,12 +51,12 @@ var getDaysInMonth = function(year, month) {
   return 32 - new Date(year, month, 32).getDate();
 }
 
-var getWeekday = function(d, utc) {
+var getWeekdayFromDate = function(d, utc) {
   var day = utc ? d.getUTCDay() : d.getDay();
   return ['sunday','monday','tuesday','wednesday','thursday','friday','saturday','sunday'][day];
 }
 
-var getMonth = function(d, utc) {
+var getMonthFromDate = function(d, utc) {
   var month = utc ? d.getUTCMonth() : d.getMonth();
   return ['january','february','march','april','may','june','july','august','september','october','november','december'][month];
 }
