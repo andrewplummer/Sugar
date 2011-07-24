@@ -17,10 +17,6 @@ test('Array', function () {
   equalsWithWarning(count, 3, 'for..in loops will break on arrays.');
 
 
-  console.info('sfjsdf');
-  console.info('jdfjasdfjhsadfaskjd');
-
-
   equals(['a','b','c'].indexOf('b'), 1, 'Array#indexOf | b in a,b,c');
   equals(['a','b','c'].indexOf('b', 0), 1, 'Array#indexOf | b in a,b,c from 0');
   equals(['a','b','c'].indexOf('a'), 0, 'Array#indexOf | a in a,b,c');
