@@ -14,7 +14,16 @@
     <script type="text/javascript" src="adapter.js"></script>
     <!-- environment -->
     <script type="text/javascript" src="mootools-core-1.3.1-full-compat.js"></script>
-    <script type="text/javascript" src="../../lib/sugar.js"></script>
+    <!-- sugar -->
+    <script type="text/javascript" src="../../lib/first.js"></script>
+    <script type="text/javascript" src="../../lib/array.js"></script>
+    <script type="text/javascript" src="../../lib/number.js"></script>
+    <script type="text/javascript" src="../../lib/string.js"></script>
+    <script type="text/javascript" src="../../lib/date.js"></script>
+    <script type="text/javascript" src="../../lib/object.js"></script>
+    <script type="text/javascript" src="../../lib/regexp.js"></script>
+    <script type="text/javascript" src="../../lib/function.js"></script>
+    <script type="text/javascript" src="../../lib/last.js"></script>
     <!-- tests -->
     <script type="text/javascript">
       registerEnvironment('mootools', [
@@ -22,15 +31,15 @@
           name: 'sugar',
           tests: [
             '../sugar/setup.js',
-            '../sugar/array.js',
-            '../sugar/number.js',
-            '../sugar/string.js',
-            '../sugar/date.js',
-            '../sugar/object.js',
-            '../sugar/regexp.js',
-            '../sugar/function.js'
+            '../sugar/array.js'
+            //'../sugar/number.js',
+            //'../sugar/string.js',
+            //'../sugar/date.js',
+            //'../sugar/object.js',
+            //'../sugar/regexp.js',
+            //'../sugar/function.js'
           ]
-        },
+        }/*j,
         {
           name: 'mootools',
           tests: [
@@ -45,7 +54,7 @@
             //'Element/Element.Dimensions.js',
             'Utilities/Cookie.js'
           ]
-        }
+        }*/
       ]);
     </script>
   </head>

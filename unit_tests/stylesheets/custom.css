@@ -23,6 +23,10 @@ ul,li {
   font-size: 14px;
 }
 
+h3 {
+  display: none;
+}
+
 .environment {
   clear: left;
   overflow: hidden;
