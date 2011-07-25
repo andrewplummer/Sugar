@@ -8,13 +8,30 @@
     <script type="text/javascript" src="../qunit.js"></script>
     <script type="text/javascript" src="../environment.js"></script>
     <!-- sugar -->
-    <script type="text/javascript" src="../../lib/sugar.js"></script>
+    <script type="text/javascript" src="../../lib/setup.js"></script>
+    <script type="text/javascript" src="../../lib/array.js"></script>
+    <script type="text/javascript" src="../../lib/number.js"></script>
+    <script type="text/javascript" src="../../lib/string.js"></script>
+    <script type="text/javascript" src="../../lib/date.js"></script>
+    <script type="text/javascript" src="../../lib/object.js"></script>
+    <script type="text/javascript" src="../../lib/regexp.js"></script>
+    <script type="text/javascript" src="../../lib/function.js"></script>
+    <script type="text/javascript" src="../../lib/final.js"></script>
     <!-- tests -->
     <script type="text/javascript">
       registerEnvironment('core', [
         {
           name: 'core',
-          tests:['core.js']
+          tests:[
+            'setup.js',
+            'array.js',
+            'number.js',
+            'string.js',
+            'date.js',
+            'object.js',
+            'regexp.js',
+            'function.js'
+          ]
         }
       ]);
     </script>

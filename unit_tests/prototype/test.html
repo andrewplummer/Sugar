@@ -23,7 +23,16 @@
       registerEnvironment('prototype', [
         {
           name: 'sugar',
-          tests: ['../sugar/core.js']
+          tests: [
+            '../sugar/setup.js',
+            '../sugar/array.js',
+            '../sugar/number.js',
+            '../sugar/string.js',
+            '../sugar/date.js',
+            '../sugar/object.js',
+            '../sugar/regexp.js',
+            '../sugar/function.js'
+          ]
         },
         {
           name: 'prototype',
