@@ -74,11 +74,9 @@ test('Array', function () {
   }, 'this');
 
 
-  testWithErrorHandling(function() {
-    same([{name:'john',age:25}].all({name:'john',age:25}), true, 'Array#all | handles complex objects');
-    same([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#all | simple string mistakenly passed for complex objects');
-    same([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, "Array#all | john isn't all");
-  }, ['prototype']);
+  equalsWithException([{name:'john',age:25}].all({name:'john',age:25}), true, { prototype: false }, 'Array#all | handles complex objects');
+  equals([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#all | simple string mistakenly passed for complex objects');
+  equals([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, "Array#all | john isn't all");
 
 
 
@@ -157,7 +155,6 @@ test('Array', function () {
     sameWithException(a, ['a'], { prototype: undefined }, 'Array#each | third parameter is the array');
     equals(this, 'this', 'Array#each | scope is passed properly');
   }, 'this');
-
 
 
 
@@ -652,9 +649,10 @@ test('Array', function () {
 
 
 
-  contains(people.least(function(person) { return person.age; }).age, [52,13], 'Array#least | age');
+  same(people.least(function(person) { return person.age; }), [people[1], people[2]], 'Array#least | contains mary and ronnie');
+
   testWithErrorHandling(function() {
-    same(people.least(function(person) { return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | age and sorted by age');
+  same(people.least(function(person) { return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | age and sorted by age');
   }, ['prototype']);
 
   same(people.least(function(person) { return person.hair; }), [], 'Array#least | hair');
@@ -1035,21 +1033,17 @@ test('Array', function () {
   equal([0,0].isEmpty(), false, 'Array#empty | [0,0]');
 
 
-
-
-  testWithErrorHandling(function() {
-    equal([1,2,3].any(), true, 'Array#any | numeric | no argument');
-    equal([1,2,3].any(1), true, 'Array#any | numeric | 1');
-    equal([1,2,3].any(4), false, 'Array#any | numeric | 4');
-    equal([1,2,3].any('a'), false, 'Array#any | numeric | a');
-    equal(['a','b','c'].any('a'), true, 'Array#any | alphabet | a');
-    equal(['a','b','c'].any('f'), false, 'Array#any | alphabet | f');
-    equal(['a','b','c'].any(/[a-f]/), true, 'Array#any | alphabet | /[a-f]/');
-    equal(['a','b','c'].any(/[m-z]/), false, 'Array#any | alphabet | /[m-z]/');
-    same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any | objects | 1');
-    equal([0].any(0), true, 'Array#any | [0] | 0');
-    same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any | objects | a:1');
-  }, ['prototype']);
+  raisesError(function(){ [1,2,3].any() }, 'Array#any | no argument raises a TypeError', { prototype: false });
+  equal([1,2,3].any(1), true, 'Array#any | numeric | 1');
+  equal([1,2,3].any(4), false, 'Array#any | numeric | 4');
+  equal([1,2,3].any('a'), false, 'Array#any | numeric | a');
+  equal(['a','b','c'].any('a'), true, 'Array#any | alphabet | a');
+  equal(['a','b','c'].any('f'), false, 'Array#any | alphabet | f');
+  equalsWithException(['a','b','c'].any(/[a-f]/), true, { prototype: false }, 'Array#any | alphabet | /[a-f]/');
+  equal(['a','b','c'].any(/[m-z]/), false, 'Array#any | alphabet | /[m-z]/');
+  same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any | objects | 1');
+  equal([0].any(0), true, 'Array#any | [0] | 0');
+  equalsWithException([{a:1},{a:2},{a:1}].any({a:1}), true, { prototype: false }, 'Array#any | objects | a:1');
 
   equal(['a','b','c'].any(function(e) { return e.length > 1; }), false, 'Array#any | alphabet | length greater than 1');
   equal(['a','b','c'].any(function(e) { return e.length < 2; }), true, 'Array#any | alphabet | length less than 2');
@@ -1062,8 +1056,7 @@ test('Array', function () {
   }, 'wasabi');
 
 
-
-  equal([1,2,3].has(), true, 'Array#has | numeric | no argument');
+  raisesError(function(){ [1,2,3].has(); }, 'Array#has | no argument raises a TypeError');
   equal([1,2,3].has(1), true, 'Array#has | numeric | 1');
   equal([1,2,3].has(4), false, 'Array#has | numeric | 4');
   equal([1,2,3].has('a'), false, 'Array#has | numeric | a');
@@ -1074,52 +1067,47 @@ test('Array', function () {
   equal(['a','b','c'].has(function(e) { return e.length > 1; }), false, 'Array#has | alphabet | length greater than 1');
   equal(['a','b','c'].has(function(e) { return e.length < 2; }), true, 'Array#has | alphabet | length less than 2');
   equal(['a','bar','cat'].has(function(e) { return e.length < 2; }), true, 'Array#has | a,bar,cat | length less than 2');
-  same([{a:1},{a:2},{a:1}].has(1), false, 'Array#has | objects | 1');
-  same([{a:1},{a:2},{a:1}].has({a:1}), true, 'Array#has | objects | a:1');
-  same([{a:1},{a:2},{a:1}].has(function(e) { return e['a'] == 1; }), true, 'Array#has | objects | key "a" is 1');
-  same([{a:1},{a:2},{a:1}].has(function(e) { return e['b'] == 1; }), false, 'Array#has | objects | key "b" is 1');
+  equal([{a:1},{a:2},{a:1}].has(1), false, 'Array#has | objects | 1');
+  equal([{a:1},{a:2},{a:1}].has({a:1}), true, 'Array#has | objects | a:1');
+  equal([{a:1},{a:2},{a:1}].has(function(e) { return e['a'] == 1; }), true, 'Array#has | objects | key "a" is 1');
+  equal([{a:1},{a:2},{a:1}].has(function(e) { return e['b'] == 1; }), false, 'Array#has | objects | key "b" is 1');
 
 
 
 
-  testWithErrorHandling(function() {
-    equal([1,2,3].none(), false, 'Array#none | numeric | no argument');
-    equal([1,2,3].none(1), false, 'Array#none | numeric | 1');
-    equal([1,2,3].none(4), true, 'Array#none | numeric | 4');
-    equal([1,2,3].none('a'), true, 'Array#none | numeric | a');
-    equal(['a','b','c'].none('a'), false, 'Array#none | alphabet | a');
-    equal(['a','b','c'].none('f'), true, 'Array#none | alphabet | f');
-    equal(['a','b','c'].none(/[a-f]/), false, 'Array#none | alphabet | /[a-f]/');
-    equal(['a','b','c'].none(/[m-z]/), true, 'Array#none | alphabet | /[m-z]/');
-    same([{a:1},{a:2},{a:1}].none(1), true, 'Array#none | objects | 1');
-    same([{a:1},{a:2},{a:1}].none({a:1}), false, 'Array#none | objects | a:1');
-  }, ['prototype']);
+  raisesError(function() { [1,2,3].none(); }, 'Array#none | no argument raises a TypeError', { prototype: false });
+  equal([1,2,3].none(1), false, 'Array#none | numeric | 1');
+  equal([1,2,3].none(4), true, 'Array#none | numeric | 4');
+  equal([1,2,3].none('a'), true, 'Array#none | numeric | a');
+  equal(['a','b','c'].none('a'), false, 'Array#none | alphabet | a');
+  equal(['a','b','c'].none('f'), true, 'Array#none | alphabet | f');
+  equalsWithException(['a','b','c'].none(/[a-f]/), false, { prototype: true }, 'Array#none | alphabet | /[a-f]/');
+  equal(['a','b','c'].none(/[m-z]/), true, 'Array#none | alphabet | /[m-z]/');
+  equal([{a:1},{a:2},{a:1}].none(1), true, 'Array#none | objects | 1');
+  equalsWithException([{a:1},{a:2},{a:1}].none({a:1}), false, { prototype: true }, 'Array#none | objects | a:1');
 
   equal(['a','b','c'].none(function(e) { return e.length > 1; }), true, 'Array#none | alphabet | length is greater than 1');
   equal(['a','b','c'].none(function(e) { return e.length < 2; }), false, 'Array#none | alphabet | length is less than 2');
   equal(['a','bar','cat'].none(function(e) { return e.length < 2; }), false, 'Array#none | a,bar,cat | length is less than 2');
-  same([{a:1},{a:2},{a:1}].none(function(e) { return e['a'] == 1; }), false, 'Array#none | objects | key "a" is 1');
-  same([{a:1},{a:2},{a:1}].none(function(e) { return e['b'] == 1; }), true, 'Array#none | objects | key "b" is 1');
+  equal([{a:1},{a:2},{a:1}].none(function(e) { return e['a'] == 1; }), false, 'Array#none | objects | key "a" is 1');
+  equal([{a:1},{a:2},{a:1}].none(function(e) { return e['b'] == 1; }), true, 'Array#none | objects | key "b" is 1');
 
 
 
 
+  raisesError(function() { [1,2,3].all(); }, 'Array#all | no argument raises a type error', { prototype: false });
+  equal([1,2,3].all(1), false, 'Array#all | numeric | 1');
+  equal([1,1,1].all(1), true, 'Array#all | numeric | 1 is true for all');
+  equal([1,2,3].all(3), false, 'Array#all | numeric | 3');
+  equal(['a','b','c'].all('a'), false, 'Array#all | alphabet | a');
+  equal(['a','a','a'].all('a'), true, 'Array#all | alphabet | a is true for all');
+  equal(['a','b','c'].all('f'), false, 'Array#all | alphabet | f');
+  equalsWithException(['a','b','c'].all(/[a-f]/), true, { prototype: false }, 'Array#all | alphabet | /[a-f]/');
+  equal(['a','b','c'].all(/[a-b]/), false, 'Array#all | alphabet | /[m-z]/');
+  equal([{a:1},{a:2},{a:1}].all(1), false, 'Array#all | objects | 1');
+  equal([{a:1},{a:2},{a:1}].all({a:1}), false, 'Array#all | objects | a:1');
+  equalsWithException([{a:1},{a:1},{a:1}].all({a:1}), true, { prototype: false }, 'Array#all | objects | a:1 is true for all');
 
-  testWithErrorHandling(function() {
-    equal([1,2,3].all(), true, 'Array#all | numeric | no argument');
-    equal([0,2,3].all(), false, 'Array#all | numeric | 0 is not truthy');
-    equal([1,2,3].all(1), false, 'Array#all | numeric | 1');
-    equal([1,1,1].all(1), true, 'Array#all | numeric | 1 is true for all');
-    equal([1,2,3].all(3), false, 'Array#all | numeric | 3');
-    equal(['a','b','c'].all('a'), false, 'Array#all | alphabet | a');
-    equal(['a','a','a'].all('a'), true, 'Array#all | alphabet | a is true for all');
-    equal(['a','b','c'].all('f'), false, 'Array#all | alphabet | f');
-    equal(['a','b','c'].all(/[a-f]/), true, 'Array#all | alphabet | /[a-f]/');
-    equal(['a','b','c'].all(/[a-b]/), false, 'Array#all | alphabet | /[m-z]/');
-    same([{a:1},{a:2},{a:1}].all(1), false, 'Array#all | objects | 1');
-    same([{a:1},{a:2},{a:1}].all({a:1}), false, 'Array#all | objects | a:1');
-    same([{a:1},{a:1},{a:1}].all({a:1}), true, 'Array#all | objects | a:1 is true for all');
-  }, ['prototype']);
 
   equal(['a','b','c'].all(function(e) { return e.length > 1; }), false, 'Array#all | alphabet | length is greater than 1');
   equal(['a','b','c'].all(function(e) { return e.length < 2; }), true, 'Array#all | alphabet | length is less than 2');
@@ -1127,6 +1115,7 @@ test('Array', function () {
   same([{a:1},{a:2},{a:1}].all(function(e) { return e['a'] == 1; }), false, 'Array#all | objects | key "a" is 1');
   same([{a:1},{a:2},{a:1}].all(function(e) { return e['b'] == 1; }), false, 'Array#all | objects | key "b" is 1');
   same([{a:1},{a:1},{a:1}].all(function(e) { return e['a'] == 1; }), true, 'Array#all | objects | key "a" is 1 for all');
+
 
   [1].all(function() {
     equal(this, 'wasabi', 'Array#all | scope should be passable');
