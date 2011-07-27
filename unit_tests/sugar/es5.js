@@ -4,7 +4,7 @@ var windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
 
 test('ECMAScript', function () {
 
-  var arr, count, expected, result, previous, current, f1;
+  var arr, count, expected, result, previous, current, fn, reg, obj;
 
 
 
@@ -128,8 +128,14 @@ test('ECMAScript', function () {
   equals(arr.indexOf(1, 1.7), -1, 'Array#indexOf | index 1.7 becomes 1');
   equals(arr.indexOf(3, -1.7), 2, 'Array#indexOf | index -1.7 becomes -1');
 
-  f1 = function(){};
-  equals([f1].indexOf(f1), 0, 'Array#indexOf | finds functions');
+
+  fn  = function(){};
+  reg = /arf/;
+  obj = { moo: 'cow' };
+
+  equals([fn].indexOf(fn), 0, 'Array#indexOf | finds function references');
+  equals([reg].indexOf(reg), 0, 'Array#indexOf | finds regex references');
+  equals([obj].indexOf(obj), 0, 'Array#indexOf | finds object references');
 
   arr = [];
   arr[2] = 'c';
@@ -164,8 +170,13 @@ test('ECMAScript', function () {
   equals(arr.lastIndexOf('a', -3), 0, 'Array#lastIndexOf | from index -3');
   equals(arr.lastIndexOf('a', -4), -1, 'Array#lastIndexOf | from index -4');
 
-  f1 = function(){};
-  equals([f1].indexOf(f1), 0, 'Array#lastIndexOf | finds functions');
+  fn  = function(){};
+  reg = /arf/;
+  obj = { moo: 'cow' };
+
+  equals([fn].lastIndexOf(fn), 0, 'Array#lastIndexOf | finds function references');
+  equals([reg].lastIndexOf(reg), 0, 'Array#lastIndexOf | finds regex references');
+  equals([obj].lastIndexOf(obj), 0, 'Array#lastIndexOf | finds object references');
 
   arr = [];
   arr[2] = 'c';
@@ -247,8 +258,6 @@ test('ECMAScript', function () {
 
 
 
-
-
   // #some
 
   raisesError(function(){ [].some(); }, 'Array#some | should raise an error when no first param');
@@ -315,8 +324,6 @@ test('ECMAScript', function () {
     return false;
   });
   equals(count, 2, 'Array#some | elements deleted after the loop begins should not be visited');
-
-
 
 
 
@@ -450,8 +457,6 @@ test('ECMAScript', function () {
   });
   same(result, ['a','x'], 'Array#filter | modified array should appear as the result');
   equals(count, 2, 'Array#filter | elements deleted after the loop begins should not be visited');
-
-
 
 
   // #reduce
