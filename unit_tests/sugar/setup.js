@@ -65,11 +65,6 @@ var getHours = function(num) {
   return Math.floor(num < 0 ? 24 + num : num);
 }
 
-
-var contains = function(actual, expected, message) {
-  equals(expected.any(actual), true, message);
-}
-
 var strictlyEqual = function(actual, expected, message) {
   equals(actual === expected, true, message + ' | strict equality');
 }
@@ -104,6 +99,8 @@ var fixPrototypeIterators = function() {
   if(environment == 'prototype') {
     fixIterator('find');
     fixIterator('findAll');
+    fixIterator('any');
+    fixIterator('all');
     fixIterator('min', true);
     fixIterator('max', true);
   }
@@ -212,13 +209,18 @@ var restoreObjectPrototypeMethods = function() {
   }
 }
 
-var raisesError = function(fn, message) {
+var raisesError = function(fn, message, exceptions) {
   var raised = false;
   try {
     fn.call();
   } catch(e) {
     raised = true;
   }
-  equals(raised, true, message);
+  // TODO CLEAN THIS UP!
+  if (exceptions) {
+    equalsWithException(raised, true, exceptions, message);
+  } else {
+    equals(raised, true, message);
+  }
 }
 

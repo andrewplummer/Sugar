@@ -4,7 +4,7 @@ var windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
 
 test('ECMAScript', function () {
 
-  var arr, count, expected, result, previous, current;
+  var arr, count, expected, result, previous, current, f1;
 
 
 
@@ -128,6 +128,9 @@ test('ECMAScript', function () {
   equals(arr.indexOf(1, 1.7), -1, 'Array#indexOf | index 1.7 becomes 1');
   equals(arr.indexOf(3, -1.7), 2, 'Array#indexOf | index -1.7 becomes -1');
 
+  f1 = function(){};
+  equals([f1].indexOf(f1), 0, 'Array#indexOf | finds functions');
+
   arr = [];
   arr[2] = 'c';
   arr[1] = 'c';
@@ -160,6 +163,9 @@ test('ECMAScript', function () {
   equals(arr.lastIndexOf('a', -2), 0, 'Array#lastIndexOf | from index -2');
   equals(arr.lastIndexOf('a', -3), 0, 'Array#lastIndexOf | from index -3');
   equals(arr.lastIndexOf('a', -4), -1, 'Array#lastIndexOf | from index -4');
+
+  f1 = function(){};
+  equals([f1].indexOf(f1), 0, 'Array#lastIndexOf | finds functions');
 
   arr = [];
   arr[2] = 'c';
