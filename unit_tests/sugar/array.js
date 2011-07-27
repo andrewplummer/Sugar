@@ -64,6 +64,15 @@ test('Array', function () {
 
 
 
+  equals([1,1,1].every(1), true, 'Array#every | accepts a number shortcut match');
+  equals([1,1,2].every(1), false, 'Array#every | accepts a number shortcut no match');
+  equals(['a','a','a'].every('a'), true, 'Array#every | accepts a string shortcut match');
+  equals(['a','b','a'].every('a'), false, 'Array#every | accepts a string shortcut no match');
+  equals(['a','b','c'].every(/[a-f]/), true, 'Array#every | accepts a regex shortcut match');
+  equals(['a','b','c'].every(/[m-z]/), false, 'Array#every | accepts a regex shortcut no match');
+  equals([{a:1},{a:1}].every({a:1}), true, 'Array#every | checks objects match');
+  equals([{a:1},{a:2}].every({a:1}), false, 'Array#every | checks object no match');
+
   equals([12,5,8,130,44].every(function(el, i, a) { return el >= 10; }), false, 'Array#every | not every element is greater than 10');
   equals([12,54,18,130,44].every(function(el, i, a) { return el >= 10; }), true, 'Array#every | every element is greater than 10');
   ['a'].every(function(el, i, a) {
@@ -79,6 +88,16 @@ test('Array', function () {
   equals([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, "Array#all | john isn't all");
 
 
+
+
+  equals([1,2,3].some(1), true, 'Array#some | accepts a number shortcut match');
+  equals([2,3,4].some(1), false, 'Array#some | accepts a number shortcut no match');
+  equals(['a','b','c'].some('a'), true, 'Array#some | accepts a string shortcut match');
+  equals(['b','c','d'].some('a'), false, 'Array#some | accepts a string shortcut no match');
+  equals(['a','b','c'].some(/[a-f]/), true, 'Array#some | accepts a regex shortcut match');
+  equals(['a','b','c'].some(/[m-z]/), false, 'Array#some | accepts a regex shortcut no match');
+  equals([{a:1},{a:2}].some({a:1}), true, 'Array#some | checks objects match');
+  equals([{a:2},{a:3}].some({a:1}), false, 'Array#some | checks object no match');
 
   equals([12,5,8,130,44].some(function(el, i, a) { return el > 10 }), true, 'Array#some | some elements are greater than 10');
   equals([12,5,8,130,44].some(function(el, i, a) { return el < 10 }), true, 'Array#some | some elements are less than 10');
@@ -98,6 +117,15 @@ test('Array', function () {
 
 
 
+
+  same([1,2,3].filter(1), [1], 'Array#filter | accepts a number shortcut match');
+  same([2,3,4].filter(1), [], 'Array#filter | accepts a number shortcut no match');
+  same(['a','b','c'].filter('a'), ['a'], 'Array#filter | accepts a string shortcut match');
+  same(['b','c','d'].filter('a'), [], 'Array#filter | accepts a string shortcut no match');
+  same(['a','b','c'].filter(/[a-f]/), ['a','b','c'], 'Array#filter | accepts a regex shortcut match');
+  same(['a','b','c'].filter(/[m-z]/), [], 'Array#filter | accepts a regex shortcut no match');
+  same([{a:1},{a:2}].filter({a:1}), [{a:1}], 'Array#filter | checks objects match');
+  same([{a:2},{a:3}].filter({a:1}), [], 'Array#filter | checks object no match');
 
   same([12,4,8,130,44].filter(function(el, i, a) { return el > 10 }), [12,130,44], 'Array#filter | numbers above 10');
   same([12,4,8,130,44].filter(function(el, i, a) { return el < 10 }), [4,8], 'Array#filter | numbers below 10');
@@ -179,18 +207,6 @@ test('Array', function () {
   same([].map('name'), [], 'Array#map');
 
   same([1,2,3].map('toString'), ['1','2','3'], 'Array#map | calls a function on a shortcut string');
-
-
-  same(['foot','goose','moose'].collect(function(el) { return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#collect | with regexp');
-  same([1,4,9].collect(Math.sqrt), [1,2,3], 'Array#collect | passing Math.sqrt directly');
-  same([{ foo: 'bar' }].collect(function(el) { return el['foo']; }), ['bar'], 'Array#collect | with key "foo"');
-
-  ['a'].collect(function(el, i, a) {
-    sameWithException(a, ['a'], { prototype: undefined }, 'Array#collect | third paramteter is the array');
-    equals(el, 'a', 'Array#collect | first paramteter is the element');
-    equals(i, 0, 'Array#collect | second paramteter is the index');
-    equals(this, 'this', 'Array#collect | scope is passed properly');
-  }, 'this');
 
 
 
@@ -1220,27 +1236,6 @@ test('Array', function () {
 
   /* Note that there is a built-in 0.00000001% chance that this test will fail */
   equals(firsts.all(function(a) { return a == 1; }), false, 'Array#randomize');
-
-
-
-  // Shuffle is an alias
-
-  arr = [1,2,3,4,5,6,7,8,9,10];
-  var firsts = [];
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-
-  /* Note that there is a built-in 0.00000001% chance that this test will fail */
-  equals(firsts.all(function(a) { return a == 1; }), false, 'Array#shuffle');
-
 
 
 });
