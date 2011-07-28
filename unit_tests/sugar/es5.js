@@ -601,4 +601,7 @@ test('ECMAScript', function () {
   equals(whiteSpace.trimRight(), '', 'String#trimRight | should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
   equals(lineTerminators.trimRight(), '', 'String#trimRight | should trim all LineTerminator characters defined in 7.3');
 
+
+  equals(String.prototype.trim.call([1]), '1', 'String#trim | should handle objects as well');
+
 });
