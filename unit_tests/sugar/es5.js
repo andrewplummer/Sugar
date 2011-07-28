@@ -604,4 +604,30 @@ test('ECMAScript', function () {
 
   equals(String.prototype.trim.call([1]), '1', 'String#trim | should handle objects as well');
 
+
+
+
+
+  // Object#keys
+
+  raisesError(function(){ Object.keys(undefined); }, 'Object#keys | raises a TypeError for undefined');
+  raisesError(function(){ Object.keys(null); }, 'Object#keys | raises a TypeError for null');
+  raisesError(function(){ Object.keys(true); }, 'Object#keys | raises a TypeError for booleans');
+  raisesError(function(){ Object.keys(NaN); }, 'Object#keys | raises a TypeError for NaN');
+  raisesError(function(){ Object.keys(3); }, 'Object#keys | raises a TypeError for numbers');
+  raisesError(function(){ Object.keys('moofa'); }, 'Object#keys | raises a TypeError for strings');
+
+  same(Object.keys({ moo:'bar', broken:'wear' }), ['moo','broken'], 'Object#keys | returns keys of an object');
+  same(Object.keys(['a','b','c']), ['0','1','2'], 'Object#keys | returns indexes of an array');
+  same(Object.keys(/foobar/), [], 'Object#keys | regexes return a blank array');
+  same(Object.keys(new Date), [], 'Object#keys | regexes return a blank array');
+
+  var Person = function() {
+    this.broken = 'wear';
+  };
+  Person.prototype = { cat: 'dog' };
+
+  same(Object.keys(new Person), ['broken'], 'Object#keys | will get instance properties but not inherited properties');
+
+
 });
