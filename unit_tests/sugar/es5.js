@@ -630,4 +630,12 @@ test('ECMAScript', function () {
   same(Object.keys(new Person), ['broken'], 'Object#keys | will get instance properties but not inherited properties');
 
 
+  // Date#now
+
+
+  equals(Date.now(), new Date().getTime(), 'Date#now | basic functionality');
+
+
+
+
 });
