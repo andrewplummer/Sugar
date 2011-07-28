@@ -143,6 +143,8 @@ test('ECMAScript', function () {
   arr[0] = 'c';
 
   equals(arr.indexOf('c'), 0, 'Array#indexOf | walks array in order');
+  equals(Array.prototype.indexOf.call('moo', 'o'), 1, 'Array#indexOf | should work on strings as well');
+
 
 
   // Although Infinity appears to be allowable in the ECMA spec, both of these cases
@@ -184,6 +186,7 @@ test('ECMAScript', function () {
   arr[0] = 'c';
 
   equals(arr.lastIndexOf('c'), 2, 'Array#lastIndexOf | walks array in order');
+  equals(Array.prototype.lastIndexOf.call('moo', 'o'), 2, 'Array#lastIndexOf | should work on strings as well');
 
 
 
