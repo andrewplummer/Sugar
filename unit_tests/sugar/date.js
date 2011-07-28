@@ -1468,7 +1468,7 @@ test('Date', function () {
   dateEquals(new Date(d).addHours(12), new Date(2012, 2, 1, 10, 15, 42), 'Date#addHours | 12');
   dateEquals(new Date(d).addDays(12), new Date(2012, 2, 12, 22, 15, 42), 'Date#addDays | 12');
   dateEquals(new Date(d).addWeeks(12), new Date(2012, 4, 23, 22, 15, 42), 'Date#addWeeks | 12');
-  dateEquals(new Date(d).addMonths(12), new Date(2013, 2, 1, 22, 15, 42), 'Date#addMonths | 12');
+  dateEquals(new Date(d).addMonths(12), new Date(2013, 1, 28, 22, 15, 42), 'Date#addMonths | 12');
   dateEquals(new Date(d).addYears(12), new Date(2024, 1, 29, 22, 15, 42), 'Date#addYears | 12');
 
 
@@ -1478,7 +1478,7 @@ test('Date', function () {
   dateEquals(new Date(d).addHours(-12), new Date(2012, 1, 29, 10, 15, 42), 'Date#addHours | negative | 12');
   dateEquals(new Date(d).addDays(-12), new Date(2012, 1, 17, 22, 15, 42), 'Date#addDays | negative | 12');
   dateEquals(new Date(d).addWeeks(-12), new Date(2011, 11, 7, 22, 15, 42), 'Date#addWeeks | negative | 12');
-  dateEquals(new Date(d).addMonths(-12), new Date(2011, 2, 1, 22, 15, 42), 'Date#addMonths | negative | 12');
+  dateEquals(new Date(d).addMonths(-12), new Date(2011, 1, 28, 22, 15, 42), 'Date#addMonths | negative | 12');
   dateEquals(new Date(d).addYears(-12), new Date(2000, 1, 29, 22, 15, 42), 'Date#addYears | negative | 12');
 
 

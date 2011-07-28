@@ -509,7 +509,6 @@ test('Array', function () {
   same(['a','a','c'].unique(), ['a','c'], 'Array#unique | a,a,c');
 
 
-  console.info([].find);
   same([{foo:'bar'}, {foo:'bar'}].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well');
 
 
@@ -711,7 +710,7 @@ test('Array', function () {
 
 
 
-  same(people.least(function(person) { return person.age; }), [people[1], people[2]], 'Array#least | contains mary and ronnie');
+  same(people.least(function(person) { return person.age; }).sortBy('name'), [people[1], people[2]], 'Array#least | contains mary and ronnie');
 
   testWithErrorHandling(function() {
   same(people.least(function(person) { return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | age and sorted by age');

@@ -8,7 +8,7 @@ test('ECMAScript', function () {
 
 
 
-  // #forEach
+  // Array#forEach
 
   arr = ['a','b','c'];
 
@@ -99,7 +99,7 @@ test('ECMAScript', function () {
   same(result, ['a','b','c'], 'Array#forEach | walks array in order');
 
 
-  // #indexOf
+  // Array#indexOf
 
   arr = [1,2,3];
   arr[-2] = 4; // Throw a wrench in the gears by assigning a non-valid array index as object property.
@@ -151,7 +151,7 @@ test('ECMAScript', function () {
   // equals(arr.indexOf(1, -Infinity), 0, 'Array#indexOf | -infinity is valid');
 
 
-  // #lastIndexOf
+  // Array#lastIndexOf
 
   arr = ['a', 1, 'a'];
   arr[-2] = 'a'; // Throw a wrench in the gears by assigning a non-valid array index as object property.
@@ -187,7 +187,7 @@ test('ECMAScript', function () {
 
 
 
-  // #every
+  // Array#every
 
   raisesError(function(){ [].every(); }, 'Array#every | should raise an error when no first param');
   result = arr.every(function(){
@@ -258,7 +258,7 @@ test('ECMAScript', function () {
 
 
 
-  // #some
+  // Array#some
 
   raisesError(function(){ [].some(); }, 'Array#some | should raise an error when no first param');
   result = arr.some(function(){
@@ -328,7 +328,7 @@ test('ECMAScript', function () {
 
 
 
-  // #map
+  // Array#map
 
   raisesError(function(){ [].map(); }, 'Array#map | should raise an error when no first param');
   result = arr.map(function(){
@@ -390,7 +390,7 @@ test('ECMAScript', function () {
 
 
 
-  // #filter
+  // Array#filter
 
   raisesError(function(){ [].filter(); }, 'Array#filter | should raise an error when no first param');
   result = arr.filter(function(){
@@ -459,7 +459,7 @@ test('ECMAScript', function () {
   equals(count, 2, 'Array#filter | elements deleted after the loop begins should not be visited');
 
 
-  // #reduce
+  // Array#reduce
 
   raisesError(function(){ [].reduce(); }, 'Array#reduce | should raise an error when no callback provided');
   raisesError(function(){ [].reduce(function(){}); }, 'Array#reduce | should raise an error on an empty array with no initial value');
@@ -518,7 +518,7 @@ test('ECMAScript', function () {
 
 
 
-  // #reduceRight
+  // Array#reduceRight
 
   raisesError(function(){ [].reduceRight(); }, 'Array#reduceRight | should raise an error when no callback provided');
   raisesError(function(){ [].reduceRight(function(){}); }, 'Array#reduceRight | should raise an error on an empty array with no initial value');
@@ -576,38 +576,26 @@ test('ECMAScript', function () {
 
 
 
-  // #indexOf
+  // String#trim
 
-  arr = [1,2,3];
-  arr[-2] = 4; // Throw a wrench in the gears by assigning a non-valid array index as object property.
+  var whiteSpace = '\u0009\u000B\u000C\u0020\u00A0\uFEFF\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000';
+  var lineTerminators = '\u000A\u000D\u2028\u2029';
 
-  equals(arr.indexOf(1), 0, 'Array#indexOf | finds 1');
-  equals(arr.indexOf(1) === 0, true, 'Array#indexOf | finds 1 and is strictly equal');
-  equals(arr.indexOf(4), -1, 'Array#indexOf | does not find 4');
-  equals(arr.indexOf('1'), -1, 'Array#indexOf | Uses strict equality');
-  equals(arr.indexOf(2, 1), 1, 'Array#indexOf | from index 1');
-  equals(arr.indexOf(2, 2), -1, 'Array#indexOf | from index 2');
-  equals(arr.indexOf(2, 3), -1, 'Array#indexOf | from index 3');
-  equals(arr.indexOf(2, 4), -1, 'Array#indexOf | from index 4');
-  equals(arr.indexOf(3, -1), 2, 'Array#indexOf | from index -1');
-  equals(arr.indexOf(3, -2), 2, 'Array#indexOf | from index -2');
-  equals(arr.indexOf(3, -4), 2, 'Array#indexOf | from index -4');
+  equals(whiteSpace.trim(), '', 'String#trim | should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator and Unicode "space, separator""');
+  equals(lineTerminators.trim(), '', 'String#trim | should trim all LineTerminator characters defined in 7.3');
 
-  // These tests will by proxy be stress testing the toInteger internal private function.
-  equals(arr.indexOf(1, NaN), 0, 'Array#indexOf | index NaN becomes 0');
-  equals(arr.indexOf(1, true), -1, 'Array#indexOf | index true becomes 1');
-  equals(arr.indexOf(1, false), 0, 'Array#indexOf | index false becomes 0');
-  equals(arr.indexOf(1, 0.1), 0, 'Array#indexOf | index 0.1 becomes 0');
-  equals(arr.indexOf(1, 1.1), -1, 'Array#indexOf | index 1.1 becomes 1');
-  equals(arr.indexOf(3, -0.1), 2, 'Array#indexOf | index -0.1 becomes 0');
-  equals(arr.indexOf(3, -1.1), 2, 'Array#indexOf | index -1.1 becomes -1');
-  equals(arr.indexOf(1, 1.7), -1, 'Array#indexOf | index 1.7 becomes 1');
-  equals(arr.indexOf(3, -1.7), 2, 'Array#indexOf | index -1.7 becomes -1');
 
-  // Although Infinity appears to be allowable in the ECMA spec, both of these cases
-  // would appear to kill all modern browsers.
-  // equals(arr.indexOf(1, Infinity), -1, 'Array#indexOf | infinity is valid');  This locks the browser... should it??
-  // equals(arr.indexOf(1, -Infinity), 0, 'Array#indexOf | -infinity is valid');
 
+  // String#trimLeft (non standard)
+
+  equals(whiteSpace.trimLeft(), '', 'String#trimLeft | should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
+  equals(lineTerminators.trimLeft(), '', 'String#trimLeft | should trim all LineTerminator characters defined in 7.3');
+
+
+
+  // String#trimRight (non standard)
+
+  equals(whiteSpace.trimRight(), '', 'String#trimRight | should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
+  equals(lineTerminators.trimRight(), '', 'String#trimRight | should trim all LineTerminator characters defined in 7.3');
 
 });

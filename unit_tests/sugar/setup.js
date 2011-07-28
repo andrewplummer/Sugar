@@ -12,10 +12,20 @@ var dateEquals = function(a, b, message) {
 }
 
 var getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
-  var d = this.getFullYear  ? this : new Date();
-  d.setFullYear(d.getFullYear() + (year || 0));
-  d.setMonth(d.getMonth() + (month || 0));
-  d.setDate(d.getDate() + (day || 0));
+  var d = this.getFullYear ? this : new Date();
+  var setYear  = d.getFullYear() + (year || 0)
+  var setMonth = d.getMonth() + (month || 0)
+  var setDate  = d.getDate() + (day || 0);
+  // Relative dates that have no more specificity than months only walk
+  // the bounds of months, they can't traverse into a new month if the
+  // target month doesn't have the same number of days.
+  if(day === undefined && month !== undefined) {
+    setDate = Math.min(setDate, new Date(setYear, setMonth).daysInMonth());
+    d.setDate(setDate);
+  }
+  d.setFullYear(setYear);
+  d.setMonth(setMonth);
+  d.setDate(setDate);
   d.setHours(d.getHours() + (hours || 0));
   d.setMinutes(d.getMinutes() + (minutes || 0));
   d.setSeconds(d.getSeconds() + (seconds || 0));
