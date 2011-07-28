@@ -4,7 +4,7 @@ var windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
 
 test('ECMAScript', function () {
 
-  var arr, count, expected, result, previous, current, fn, reg, obj;
+  var arr, count, expected, result, previous, current, fn, reg, obj, Person;
 
 
 
@@ -622,7 +622,7 @@ test('ECMAScript', function () {
   same(Object.keys(/foobar/), [], 'Object#keys | regexes return a blank array');
   same(Object.keys(new Date), [], 'Object#keys | regexes return a blank array');
 
-  var Person = function() {
+  Person = function() {
     this.broken = 'wear';
   };
   Person.prototype = { cat: 'dog' };
@@ -630,12 +630,45 @@ test('ECMAScript', function () {
   same(Object.keys(new Person), ['broken'], 'Object#keys | will get instance properties but not inherited properties');
 
 
+
   // Date#now
 
+  equalsWithMargin(Date.now(), new Date().getTime(), 5, 'Date#now | basic functionality');
 
-  equals(Date.now(), new Date().getTime(), 'Date#now | basic functionality');
+  // Function#bind
 
+  var instance, BoundPerson;
 
+  raisesError(function(){ Function.prototype.bind.call('mooo'); }, 'Function#bind | Raises an error when used on anything un-callable');
+
+  equals((function(){ return this; }).bind('yellow')(), 'yellow', 'Function#bind | basic binding of this arg');
+  equals((function(){ return arguments[0]; }).bind('yellow', 'mellow')(), 'mellow', 'Function#bind | currying argument 1');
+  equals((function(){ return arguments[1]; }).bind('yellow', 'mellow', 'fellow')(), 'fellow', 'Function#bind | currying argument 2');
+  equals((function(){ return this; }).bind(undefined)(), windowOrUndefined, 'Function#bind | passing undefined as the scope');
+
+  (function(a, b){
+    equals(this, 'yellow', 'Function#bind | ensure only one call | this object');
+    equals(a, 'mellow', 'Function#bind | ensure only one call | argument 1');
+    equals(b, 'fellow', 'Function#bind | ensure only one call | argument 2');
+  }).bind('yellow', 'mellow', 'fellow')();
+
+  // It seems this functionality can't be achieved in a JS polyfill...
+  // equals((function(){}).bind().prototype, undefined, 'Function#bind | currying argument 2'); 
+
+  Person = function(a, b) {
+    this.first = a;
+    this.second = b;
+  };
+
+  BoundPerson = Person.bind({ mellow: 'yellow' }, 'jump');
+  instance = new BoundPerson('jumpy');
+
+  equals(instance.mellow, undefined, 'Function#bind | passed scope is ignored when used with the new keyword');
+  equals(instance.first, 'jump', 'Function#bind | curried argument makes it to the constructor');
+  equals(instance.second, 'jumpy', 'Function#bind | argument passed to the constructor makes it in as the second arg');
+  equals(instance instanceof Person, true, 'Function#bind | instance of the class');
+  equals(instance instanceof BoundPerson, true, 'Function#bind | instance of the bound class');
+  equals(new Person() instanceof BoundPerson, false, 'Function#bind | instance of unbound class is not an instance of the bound class');
 
 
 });
