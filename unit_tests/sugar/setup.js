@@ -234,3 +234,12 @@ var raisesError = function(fn, message, exceptions) {
   }
 }
 
+var benchmark = function(fn, iterations) {
+  var i = 0; d = new Date;
+  iterations = iterations || 1000;
+  for(i = 0; i < iterations; i++) {
+    fn.call();
+  }
+  console.info(new Date - d);
+}
+

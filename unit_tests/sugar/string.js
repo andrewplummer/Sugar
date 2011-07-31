@@ -8,7 +8,6 @@ test('String', function () {
   equals('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'String#escapeRegExp | should escape many period');
   equals('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'String#escapeRegExp | complex regex tokens');
 
-
   /* Leaving these tests but this method seems all but totally useless
   equals('test regexp'.unescapeRegExp(), 'test regexp', 'String#unescapeRegExp | nothing to unescape');
   equals('test reg\\|exp'.unescapeRegExp(), 'test reg|exp', 'String#unescapeRegExp | should unescape pipe');
@@ -131,7 +130,7 @@ test('String', function () {
   same(result, ['g','i','g','e'], "String#each | regexp argument | resulting array should have been ['g','i','g','e']");
 
 
-  /* .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups */
+  // .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups
   var testString = 'cruel world';
 
   result = testString.each(/\w+/g);
@@ -148,7 +147,21 @@ test('String', function () {
   same(result, ['cruel', 'world'], 'String#each non-global regexes should still be global');
 
 
-  /* test each char code */
+  // #shift
+
+
+  equal('ク'.shift(1), 'グ', 'String#shift | should shift 1 code up');
+  equal('グ'.shift(-1), 'ク', 'String#shift | should shift 1 code down');
+  equal('ヘ'.shift(2), 'ペ', 'String#shift | should shift 2 codes');
+  equal('ペ'.shift(-2), 'ヘ', 'String#shift | should shift -2 codes');
+  equal('ク'.shift(0), 'ク', 'String#shift | should shift 0 codes');
+  equal('ク'.shift(), 'ク', 'String#shift | no params simply returns the string');
+  equal('カキクケコ'.shift(1), 'ガギグゲゴ', 'String#shift | multiple characters up one');
+  equal('ガギグゲゴ'.shift(-1), 'カキクケコ', 'String#shift | multiple characters down one');
+
+
+
+  // test each char code
 
   same('jumpy'.codes(), [106,117,109,112,121], 'String#codes | jumpy');
 
@@ -161,7 +174,7 @@ test('String', function () {
   equal(counter, 6, 'String#codes | ginger codes | should have ran 6 times');
   same(result, test, 'String#codes | ginger codes | result should be an array');
 
-  /* test each char */
+  // test each char
   counter = 0;
   result = 'ginger'.chars(function(str, i) {
     equal(str, 'ginger'.charAt(counter), 'String#chars | ginger | char code should be the first argument in the block');
@@ -171,7 +184,7 @@ test('String', function () {
   equal(counter, 6, 'String#chars | ginger | should have run 6 times');
   same(result, ['g','i','n','g','e','r'], 'String#chars | result should be an array');
 
-  /* test each char collects when properly returned */
+  // test each char collects when properly returned
   counter = 0;
   result = 'ginger'.chars(function(str, i) {
     counter++;
@@ -313,7 +326,8 @@ test('String', function () {
   equal('こんにちは。ヤマダタロウです。'.hankaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku |  hankaku katakana inside a string');
   equal('こんにちは。ＴＡＲＯ　ＹＡＭＡＤＡです。'.hankaku(), 'こんにちは｡TARO YAMADAです｡', 'String#hankaku | hankaku romaji inside a string');
   equal('　'.hankaku(), ' ', 'String#hankaku | spaces');
-  equal('　'.hankaku('p'), ' ', 'String#hankaku | punctuation | spaces');
+  equal('　'.hankaku('p'), '　', 'String#hankaku | punctuation | spaces');
+  equal('　'.hankaku('s'), ' ', 'String#hankaku | spaces');
 
 
   var barabara = 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）';
@@ -322,39 +336,37 @@ test('String', function () {
   equal(barabara.hankaku('a'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | romaji only');
   equal(barabara.hankaku('n'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes | numbers only');
   equal(barabara.hankaku('k'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes | katakana only');
-  equal(barabara.hankaku('p'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku | modes | punctuation only');
-  equal(barabara.hankaku('s'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku | modes | special chars only');
+  equal(barabara.hankaku('p'), 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#hankaku | modes | punctuation only');
+  equal(barabara.hankaku('s'), 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes | spaces only');
 
   equal(barabara.hankaku('an'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku | modes | alphabet and numbers');
   equal(barabara.hankaku('ak'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | alphabet and katakana');
-  equal(barabara.hankaku('as'), 'こんにちは。タロウ　YAMADAです。１８才です！(笑)', 'String#hankaku | modes | alphabet and special');
-  equal(barabara.hankaku('ap'), 'こんにちは｡タロウ YAMADAです｡１８才です!（笑）', 'String#hankaku | modes | alphabet and punctuation');
+  equal(barabara.hankaku('as'), 'こんにちは。タロウ YAMADAです。１８才です！（笑）', 'String#hankaku | modes | alphabet and spaces');
+  equal(barabara.hankaku('ap'), 'こんにちは｡タロウ　YAMADAです｡１８才です!(笑)', 'String#hankaku | modes | alphabet and punctuation');
 
   equal(barabara.hankaku('na'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku | modes reverse | alphabet and numbers');
   equal(barabara.hankaku('ka'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes reverse | alphabet and katakana');
-  equal(barabara.hankaku('sa'), 'こんにちは。タロウ　YAMADAです。１８才です！(笑)', 'String#hankaku | modes reverse | alphabet and special');
-  equal(barabara.hankaku('pa'), 'こんにちは｡タロウ YAMADAです｡１８才です!（笑）', 'String#hankaku | modes reverse | alphabet and punctuation');
+  equal(barabara.hankaku('sa'), 'こんにちは。タロウ YAMADAです。１８才です！（笑）', 'String#hankaku | modes reverse | alphabet and spaces');
+  equal(barabara.hankaku('pa'), 'こんにちは｡タロウ　YAMADAです｡１８才です!(笑)', 'String#hankaku | modes reverse | alphabet and punctuation');
 
   equal(barabara.hankaku('alphabet'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes full | alphabet');
   equal(barabara.hankaku('numbers'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes full | numbers');
   equal(barabara.hankaku('katakana'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes full | katakana');
-  equal(barabara.hankaku('punctuation'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku | modes full | punctuation');
-  equal(barabara.hankaku('special'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku | modes full | special');
+  equal(barabara.hankaku('punctuation'), 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#hankaku | modes full | punctuation');
+  equal(barabara.hankaku('spaces'), 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes full | spaces');
 
-var allZenkakuChars = '　、。，．・：；？！ー～゛゜＾‐／｜（）［］｛｝「」〈〉《》＋－＝＜＞￥＄￠￡％＃＆＊＠０１２３４５６７８９ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロワヲン';
-var allHankakuChars = ' ､｡,.･:;?!ｰ~ﾞﾟ^-/|()[]{}｢｣<>«»+-=<>¥$¢£%#&*@0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzｧｱｨｲｩｳｪｴｫｵｶｶﾞｷｷﾞｸｸﾞｹｹﾞｺｺﾞｻｻﾞｼｼﾞｽｽﾞｾｾﾞｿｿﾞﾀﾀﾞﾁﾁﾞｯﾂﾂﾞﾃﾃﾞﾄﾄﾞﾅﾆﾇﾈﾉﾊﾊﾞﾊﾟﾋﾋﾞﾋﾟﾌﾌﾞﾌﾟﾍﾍﾞﾍﾟﾎﾎﾞﾎﾟﾏﾐﾑﾒﾓｬﾔｭﾕｮﾖﾗﾘﾙﾚﾛﾜｦﾝ';
-
-  //equals('‘’“”'.hankaku(), '\'\'""', 'String#hankaku | full width quotation marks can be converted to hankaku');
-  //equals('\'\'""'.zenkaku(), '\'\'""', 'String#zenkaku | the reverse however can never happen as there is ambiguity');
+  var allZenkakuChars = '　、。，．・：；？！ー～／｜（）［］｛｝「」＋－＝＜＞￥＄￠￡％＃＆＊＠０１２３４５６７８９ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロワヲン';
+  var allHankakuChars = ' ､｡,.･:;?!ｰ~/|()[]{}｢｣+-=<>¥$¢£%#&*@0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzｧｱｨｲｩｳｪｴｫｵｶｶﾞｷｷﾞｸｸﾞｹｹﾞｺｺﾞｻｻﾞｼｼﾞｽｽﾞｾｾﾞｿｿﾞﾀﾀﾞﾁﾁﾞｯﾂﾂﾞﾃﾃﾞﾄﾄﾞﾅﾆﾇﾈﾉﾊﾊﾞﾊﾟﾋﾋﾞﾋﾟﾌﾌﾞﾌﾟﾍﾍﾞﾍﾟﾎﾎﾞﾎﾟﾏﾐﾑﾒﾓｬﾔｭﾕｮﾖﾗﾘﾙﾚﾛﾜｦﾝ';
 
 
   equals(allZenkakuChars.hankaku(), allHankakuChars, 'String#hankaku | everything');
-  //equals(allHankakuChars.zenkaku(), allZenkakuChars, 'String#hankaku | everything');
+  equals(allHankakuChars.zenkaku(), allZenkakuChars, 'String#zenkaku | everything');
 
 
   equal('ｶﾀｶﾅ'.zenkaku(), 'カタカナ', 'String#zenkaku | katakana');
-  equal(' '.zenkaku(), '　', 'String#zenkaku | spaces');
-  equal(' '.zenkaku('p'), '　', 'String#zenkaku | punctuation | spaces');
+  equal(' '.zenkaku(), '　', 'String#zenkaku | spaces | all');
+  equal(' '.zenkaku('s'), '　', 'String#zenkaku | spaces | s');
+  equal(' '.zenkaku('p'), ' ', 'String#zenkaku | spaces | p');
 
 
   barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
@@ -363,24 +375,24 @@ var allHankakuChars = ' ､｡,.･:;?!ｰ~ﾞﾟ^-/|()[]{}｢｣<>«»+-=<>¥$�
   equal(barabara.zenkaku('a'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet');
   equal(barabara.zenkaku('n'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenkaku | modes | number');
   equal(barabara.zenkaku('k'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenkaku | modes | katakana');
-  equal(barabara.zenkaku('p'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenkaku | modes | punctuation');
-  equal(barabara.zenkaku('s'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenkaku | modes | special');
+  equal(barabara.zenkaku('p'), 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'String#zenkaku | modes | punctuation');
+  equal(barabara.zenkaku('s'), 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'String#zenkaku | modes | spaces');
 
   equal(barabara.zenkaku('an'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenkaku | modes | alphabet and numbers');
   equal(barabara.zenkaku('ak'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet and katakana');
-  equal(barabara.zenkaku('as'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!（笑）', 'String#zenkaku | modes | alphabet and special');
-  equal(barabara.zenkaku('ap'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。18才です！(笑)', 'String#zenkaku | modes | alphabet and punctuation');
+  equal(barabara.zenkaku('as'), 'こんにちは｡ﾀﾛｳ　ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet and spaces');
+  equal(barabara.zenkaku('ap'), 'こんにちは。ﾀﾛｳ ＹＡＭＡＤＡです。18才です！（笑）', 'String#zenkaku | modes | alphabet and punctuation');
 
   equal(barabara.zenkaku('na'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenkaku | modes reverse | alphabet and numbers');
   equal(barabara.zenkaku('ka'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes reverse | alphabet and katakana');
-  equal(barabara.zenkaku('sa'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!（笑）', 'String#zenkaku | modes reverse | alphabet and special');
-  equal(barabara.zenkaku('pa'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。18才です！(笑)', 'String#zenkaku | modes reverse | alphabet and punctuation');
+  equal(barabara.zenkaku('sa'), 'こんにちは｡ﾀﾛｳ　ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes reverse | alphabet and spaces');
+  equal(barabara.zenkaku('pa'), 'こんにちは。ﾀﾛｳ ＹＡＭＡＤＡです。18才です！（笑）', 'String#zenkaku | modes reverse | alphabet and punctuation');
 
   equal(barabara.zenkaku('alphabet'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes full | alphabet');
   equal(barabara.zenkaku('numbers'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenkaku | modes full | numbers');
   equal(barabara.zenkaku('katakana'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenkaku | modes full | katakana');
-  equal(barabara.zenkaku('special'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenkaku | modes full | special');
-  equal(barabara.zenkaku('punctuation'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenkaku | modes full | punctuation');
+  equal(barabara.zenkaku('spaces'), 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'String#zenkaku | modes full | spaces');
+  equal(barabara.zenkaku('punctuation'), 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'String#zenkaku | modes full | punctuation');
 
 
   equal('ガ'.hankaku(), 'ｶﾞ', 'String#hankaku | dakuten | ガ');
