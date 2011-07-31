@@ -635,6 +635,8 @@ test('ECMAScript', function () {
 
   equalsWithMargin(Date.now(), new Date().getTime(), 5, 'Date#now | basic functionality');
 
+
+
   // Function#bind
 
   var instance, BoundPerson;
