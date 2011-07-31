@@ -341,6 +341,16 @@ test('String', function () {
   equal(barabara.hankaku('punctuation'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku | modes full | punctuation');
   equal(barabara.hankaku('special'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku | modes full | special');
 
+var allZenkakuChars = '　、。，．・：；？！ー～゛゜＾‐／｜（）［］｛｝「」〈〉《》＋－＝＜＞￥＄￠￡％＃＆＊＠０１２３４５６７８９ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロワヲン';
+var allHankakuChars = ' ､｡,.･:;?!ｰ~ﾞﾟ^-/|()[]{}｢｣<>«»+-=<>¥$¢£%#&*@0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzｧｱｨｲｩｳｪｴｫｵｶｶﾞｷｷﾞｸｸﾞｹｹﾞｺｺﾞｻｻﾞｼｼﾞｽｽﾞｾｾﾞｿｿﾞﾀﾀﾞﾁﾁﾞｯﾂﾂﾞﾃﾃﾞﾄﾄﾞﾅﾆﾇﾈﾉﾊﾊﾞﾊﾟﾋﾋﾞﾋﾟﾌﾌﾞﾌﾟﾍﾍﾞﾍﾟﾎﾎﾞﾎﾟﾏﾐﾑﾒﾓｬﾔｭﾕｮﾖﾗﾘﾙﾚﾛﾜｦﾝ';
+
+  //equals('‘’“”'.hankaku(), '\'\'""', 'String#hankaku | full width quotation marks can be converted to hankaku');
+  //equals('\'\'""'.zenkaku(), '\'\'""', 'String#zenkaku | the reverse however can never happen as there is ambiguity');
+
+
+  equals(allZenkakuChars.hankaku(), allHankakuChars, 'String#hankaku | everything');
+  //equals(allHankakuChars.zenkaku(), allZenkakuChars, 'String#hankaku | everything');
+
 
   equal('ｶﾀｶﾅ'.zenkaku(), 'カタカナ', 'String#zenkaku | katakana');
   equal(' '.zenkaku(), '　', 'String#zenkaku | spaces');
