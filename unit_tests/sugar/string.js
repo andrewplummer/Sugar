@@ -408,14 +408,24 @@ test('String', function () {
   equal(barabara.hiragana(false), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hiragana | no widths | full string');
 
 
-
-
   equal('ひらがな'.katakana(), 'ヒラガナ', 'String#katakana | from hiragana');
   equal(barabara.katakana(), 'コンニチハ｡ﾀﾛｳ YAMADAデス｡18才デス!(笑)', 'String#katakana | full string');
   equal(barabara.zenkaku().katakana(), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'String#katakana full string to zenkaku');
 
 
   equal('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）'.katakana().hankaku(), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'String#katakana | full string to katakana and hankaku');
+
+  var allHiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ';
+  var allKatakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ';
+
+  allKatakana.hiragana().each(function(k, i){
+    if(k != allHiragana[i]){
+      console.info('ahahaha??', k, allHiragana[i]);
+    }
+  });
+  equal(allKatakana.hiragana(), allHiragana, 'String#hiragana | all');
+  equal(allHiragana.katakana(), allKatakana, 'String#katakana | all');
+
 
 
   equal('4em'.toNumber(), 4, 'String#toNumber | 4em');
