@@ -1014,6 +1014,7 @@ test('String', function () {
   same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split | complex regex splitting | . | /(((.((.??)))))/');
   same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split | complex regex splitting | . | /(((((.??)))))/');
 
+
   /*
    * Patching the String#match method broke Prototype in IE in a very specific way:
    *
