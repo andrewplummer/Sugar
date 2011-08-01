@@ -418,11 +418,6 @@ test('String', function () {
   var allHiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ';
   var allKatakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ';
 
-  allKatakana.hiragana().each(function(k, i){
-    if(k != allHiragana[i]){
-      console.info('ahahaha??', k, allHiragana[i]);
-    }
-  });
   equal(allKatakana.hiragana(), allHiragana, 'String#hiragana | all');
   equal(allHiragana.katakana(), allKatakana, 'String#katakana | all');
 
