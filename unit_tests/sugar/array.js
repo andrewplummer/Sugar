@@ -165,6 +165,8 @@ test('Array', function () {
 
 
 
+  // Array#each now splits functionality from forEach
+
   arr = [2, 5, 9];
   arr.each(function(el, i, a) {
     equals(el, arr[i], 'Array#each | looping successfully');
@@ -172,7 +174,7 @@ test('Array', function () {
 
   arr = ['a', [1], { foo: 'bar' }, 352];
   count = 0;
-  arr.each(function(el, i, a) {
+  arr.each(function() {
       count++;
   });
   equals(count, 4, 'Array#each | complex array | should have looped 4 times');
@@ -181,7 +183,7 @@ test('Array', function () {
     equals(el, 'a', 'Array#each | first parameter is the element');
     equals(i, 0, 'Array#each | second parameter is the index');
     sameWithException(a, ['a'], { prototype: undefined }, 'Array#each | third parameter is the array');
-    equals(this, 'this', 'Array#each | scope is passed properly');
+    equals(this, a, 'Array#each | scope is also the array');
   }, 'this');
 
 
@@ -256,96 +258,147 @@ test('Array', function () {
   var result = [];
   var indices = [1,2];
   var count = 0;
-  ['a','b','c'].eachFromIndex(1, function(s, i) {
+  ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#eachFromIndex | index should be correct')
+    equals(i, indices[count], 'Array#each | index should be correct')
     count++;
-  });
+  }, 1);
 
-  equals(count, 2, 'Array#eachFromIndex | should have run 2 times')
-  same(result, ['b','c'], 'Array#eachFromIndex | result');
+  equals(count, 2, 'Array#each | should have run 2 times')
+  same(result, ['b','c'], 'Array#each | result');
 
 
   result = [];
   indices = [1,2,0];
   count = 0;
-  ['a','b','c'].eachFromIndex(1, function(s, i) {
+  ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#eachFromIndex | looping from index 1 | index should be correct')
+    equals(i, indices[count], 'Array#each | looping from index 1 | index should be correct')
     count++;
-  }, true);
+  }, 1, true);
 
-  equals(count, 3, 'Array#eachFromIndex | looping from index 1 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#eachFromIndex | looping from index 1 | result');
+  equals(count, 3, 'Array#each | looping from index 1 | should have run 3 times')
+  same(result, ['b','c','a'], 'Array#each | looping from index 1 | result');
 
 
   result = [];
   indices = [0,1,2];
   count = 0;
-  ['a','b','c'].eachFromIndex(0, function(s, i) {
+  ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#eachFromIndex | looping from index 0 | index should be correct')
+    equals(i, indices[count], 'Array#each | looping from index 0 | index should be correct')
     count++;
-  }, true);
+  }, 0, true);
 
-  equals(count, 3, 'Array#eachFromIndex | looping from index 0 | should have run 3 times')
-  same(result, ['a','b','c'], 'Array#eachFromIndex | looping from index 0 | result');
+  equals(count, 3, 'Array#each | looping from index 0 | should have run 3 times')
+  same(result, ['a','b','c'], 'Array#each | looping from index 0 | result');
 
 
 
   result = [];
   indices = [2,0,1];
   count = 0;
-  ['a','b','c'].eachFromIndex(2, function(s, i) {
+  ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#eachFromIndex | looping from index 2 | index should be correct')
+    equals(i, indices[count], 'Array#each | looping from index 2 | index should be correct')
     count++;
-  }, true);
+  }, 2, true);
 
-  equals(count, 3, 'Array#eachFromIndex | looping from index 2 | should have run 3 times')
-  same(result, ['c','a','b'], 'Array#eachFromIndex | looping from index 2 | result');
+  equals(count, 3, 'Array#each | looping from index 2 | should have run 3 times')
+  same(result, ['c','a','b'], 'Array#each | looping from index 2 | result');
 
 
 
   result = [];
   count = 0;
-  ['a','b','c'].eachFromIndex(3, function(s, i) {
+  ['a','b','c'].each(function(s, i) {
     result.push(s);
     count++;
-  }, true);
+  }, 3, true);
 
-  equals(count, 3, 'Array#eachFromIndex | looping from index 3 | should have run 3 times')
-  same(result, ['a','b','c'], 'Array#eachFromIndex | looping from index 3 | result');
+  equals(count, 3, 'Array#each | looping from index 3 | should have run 3 times')
+  same(result, ['a','b','c'], 'Array#each | looping from index 3 | result');
 
 
 
   result = [];
   count = 0;
-  ['a','b','c'].eachFromIndex(4, function(s, i) {
+  ['a','b','c'].each(function(s, i) {
     result.push(s);
     count++;
-  }, true);
+  }, 4, true);
 
-  equals(count, 3, 'Array#eachFromIndex | looping from index 4 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#eachFromIndex | looping from index 4 | result');
+  equals(count, 3, 'Array#each | looping from index 4 | should have run 3 times')
+  same(result, ['b','c','a'], 'Array#each | looping from index 4 | result');
 
 
 
   result = [];
   count = 0;
-  ['a','b','c'].eachFromIndex(49, function(s, i) {
+  ['a','b','c'].each(function(s, i) {
     result.push(s);
     count++;
-  }, true);
+  }, 49, true);
 
-  equals(count, 3, 'Array#eachFromIndex | looping from index 49 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#eachFromIndex | looping from index 49 | result');
+  equals(count, 3, 'Array#each | looping from index 49 | should have run 3 times')
+  same(result, ['b','c','a'], 'Array#each | looping from index 49 | result');
 
 
 
-  ['a','b','c'].eachFromIndex(function() {
-    equals(false, true, 'Array#eachFromIndex | this test should never be run');
+  result = [];
+  count = 0;
+  ['a','b','c'].each(function(s, i) {
+    result.push(s);
+    count++;
+  }, 'hoofa');
+
+  equals(count, 3, 'Array#each | string index should default to 0 | should have run 3 times')
+  same(result, ['a','b','c'], 'Array#each | string index should default to 0 | result');
+
+
+  same(['a','b','c'].each(function(){}), ['a','b','c'], 'Array#each | null function returns the array');
+  raisesError(function(){ [1].each() }, 'Array#each | raises an error if no callback');
+
+  count = 0;
+  ['a','b','c'].each(function() {
+    count++;
+    return false;
   });
+  equals(count, 1, 'Array#each | returning false will break the loop');
+
+  count = 0;
+  ['a','b','c'].each(function() {
+    count++;
+    return true;
+  });
+  equals(count, 3, 'Array#each | returning true will not break the loop');
+
+  count = 0;
+  ['a','b','c'].each(function() {
+    count++;
+    return;
+  });
+  equals(count, 3, 'Array#each | returning undefined will not break the loop');
+
+
+  /*
+  arr = ['a'];
+  arr[Math.pow(2,32) - 2] = 'b';
+  count = 0;
+  arr.each(function() {
+    count++;
+  });
+  equals(count, 2, 'Array#each | sparse arrays should be properly handled');
+  */
+
+
+  arr = [undefined, undefined, undefined];
+  count = 0;
+  arr.each(function() {
+    count++;
+  });
+  equals(count, 3, 'Array#each | however, simply having an undefined in an array does not qualify it as sparse');
+
 
 
 
@@ -388,6 +441,12 @@ test('Array', function () {
   sameWithException([undefined, 'a'].find(undefined, 1), 'a', { prototype: undefined }, 'Array#find | undefined finds the first element');
 
 
+  count = 0;
+  [1,2,3].find(function(n) {
+    count++;
+    return n == 1;
+  });
+  equals(count, 1, 'Array#find | should immediately finish when it finds a match');
 
 
   same(['a','b','c'].findLast('a'), 'a', 'Array#findLast | a');
@@ -427,6 +486,13 @@ test('Array', function () {
   same([undefined, undefined].findLast(undefined, 0), undefined, 'Array#findLast | undefined');
   same([undefined, undefined].findLast(undefined, 1), undefined, 'Array#findLast | undefined from index 1');
   sameWithException([undefined, 'a'].findLast(undefined, 1), undefined, { prototype: undefined }, 'Array#findLast | undefined finds the first element');
+
+  count = 0;
+  [1,2,3].findLast(function(n) {
+    count++;
+    return n == 3;
+  });
+  equals(count, 1, 'Array#findLast | should immediately finish when it finds a match');
 
 
 
