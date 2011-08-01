@@ -631,11 +631,37 @@ test('ECMAScript', function () {
 
 
 
-  // Date#now
+  // Date.now
 
   equalsWithMargin(Date.now(), new Date().getTime(), 5, 'Date#now | basic functionality');
 
 
+  // Date.parse
+
+  // Returns 807937200000 in time zone GMT-0300, and other values in other
+  // timezones, since the argument does not specify a time zone.
+  equals(Date.parse("Aug 9, 1995"), new Date(1995, 7, 9).getTime(), 'Date#parse | No timezone');
+  // Returns 807926400000 no matter the local time zone.
+  console.log(Date.parse("Wed, 09 Aug 1995 00:00:00 GMT"), new Date(807926400000));
+  equals(Date.parse("Wed, 09 Aug 1995 00:00:00 GMT"), new Date(807926400000).getTime(), 'Date#parse | GMT');
+  // Returns 807937200000 in timezone GMT-0300, and other values in other
+  // timezones, since there is no time zone specifier in the argument.
+  equals(Date.parse("Wed, 09 Aug 1995 00:00:00"), new Date(1995, 7, 9).getTime(), 'Date#parse | No timezone with time');
+  equals(Date.parse("Thu, 09 Aug 1995 00:00:00 GMT-0400"), new Date(807926400000).addHours(4).getTime(), 'Date#parse | 1995/7/9 GMT-04:00');
+  // Returns 0 no matter the local time zone.
+  equals(Date.parse("Thu, 01 Jan 1970 00:00:00 GMT"), 0, 'Date#parse | 1970/1/1 GMT');
+
+  // Note: Avoiding non GMT dates around the epoch as they tend to be unreliable.
+  // Returns 14400000 in timezone GMT-0400, and other values in other
+  // timezones, since there is no time zone specifier in the argument.
+  //equals(Date.parse("Thu, 01 Jan 1970 00:00:00"), (new Date).getTimezoneOffset().minutes(), 'Date#parse | 1970/1/1 Local');
+  // Returns 14400000 no matter the local time zone.
+  //equals(Date.parse("Thu, 01 Jan 1970 00:00:00 GMT-0400"), new Date(1995, 7, 9).getTime(), 'Date#parse | 1970/1/1 GMT-04:00');
+
+  // Date#toJSON
+
+  // Essentially just an ISO string. Add more tests as needed.
+  equals(new Date(2002, 7, 25).toJSON(), new Date(2002, 7, 25).toISOString(), 'Date#toJSON | output');
 
   // Function#bind
 
