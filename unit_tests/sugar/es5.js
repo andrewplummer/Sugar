@@ -483,7 +483,7 @@ test('ECMAScript', function () {
 
   // Array#reduce
 
-  raisesError(function(){ [].reduce(); }, 'Array#reduce | should raise an error when no callback provided');
+  raisesError(function(){ [1].reduce(); }, 'Array#reduce | should raise an error when no callback provided');
   raisesError(function(){ [].reduce(function(){}); }, 'Array#reduce | should raise an error on an empty array with no initial value');
   [1].reduce(function(){
      equals(this, windowOrUndefined, 'Array#reduce | scope should be undefined');
@@ -542,7 +542,7 @@ test('ECMAScript', function () {
 
   // Array#reduceRight
 
-  raisesError(function(){ [].reduceRight(); }, 'Array#reduceRight | should raise an error when no callback provided');
+  raisesError(function(){ [1].reduceRight(); }, 'Array#reduceRight | should raise an error when no callback provided');
   raisesError(function(){ [].reduceRight(function(){}); }, 'Array#reduceRight | should raise an error on an empty array with no initial value');
   [1].reduceRight(function(){
      equals(this, windowOrUndefined, 'Array#reduceRight | scope should be undefined');
