@@ -10,6 +10,7 @@ test('Date', function () {
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
+  var staticJanDateNumber = 1000 * 60 * 60 * 24 * 14975; // 2011-01-01 00:00:00 
   var staticSummerTimezoneOffset = new Date(2011, 8, 1).getTimezoneOffset();
   var now = new Date();
   var thisYear = now.getFullYear();
@@ -70,7 +71,7 @@ test('Date', function () {
 
   dateEquals(new Date(new Date(2008, 6, 22)), new Date(2008, 6, 22), 'Date | date accepts itself as a constructor');
 
-  dateEquals(Date.create(0), new Date(1970, 0, 1, 0, -staticWinterTimezoneOffset) , 'Date#create | Accepts numbers');
+  dateEquals(Date.create(staticJanDateNumber), new Date(2011, 0, 1, 0, -staticWinterTimezoneOffset) , 'Date#create | Accepts numbers');
   dateEquals(Date.create('1999'), new Date(1999, 0), 'Date#create | Just the year');
 
   dateEquals(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
@@ -1107,7 +1108,7 @@ test('Date', function () {
   equals(getDateWithWeekdayAndOffset(0).is('the beginning of the week'), true, 'Date#is | the beginning of the week');
   equals(getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999).is('the end of the week'), true, 'Date#is | the end of the week');
 
-  equals(new Date(1970, 0, 1, 0, -staticWinterTimezoneOffset).is(0), true, 'Date#is | Accepts numbers');
+  equals(new Date(2011, 0, 1, 0, -staticWinterTimezoneOffset).is(staticJanDateNumber), true, 'Date#is | Accepts numbers');
 
 
 
