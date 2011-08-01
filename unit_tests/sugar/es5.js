@@ -7,6 +7,25 @@ test('ECMAScript', function () {
   var arr, count, expected, result, previous, current, fn, reg, obj, Person;
 
 
+  // Array.isArray
+
+
+  // all following calls return true
+  equals(Array.isArray([]), true, 'Array.isArray | empty array');
+  equals(Array.isArray([1]), true, 'Array.nArray | simple array');
+  equals(Array.isArray(new Array()), true, 'Array.nArray | new array with constructor');
+  equals(Array.isArray(Array.prototype), true, 'Array.nArray | Array.prototype'); // Little known fact: Array.prototype is itself an array.
+
+  // all following calls return false
+  equals(Array.isArray(), false, 'Array.nArray | no param');
+  equals(Array.isArray({}), false, 'Array.nArray | object');
+  equals(Array.isArray(null), false, 'Array.nArray | null');
+  equals(Array.isArray(undefined), false, 'Array.nArray | undefined');
+  equals(Array.isArray(17), false, 'Array.nArray | number');
+  equals(Array.isArray("Array"), false, 'Array.nArray | string');
+  equals(Array.isArray(true), false, 'Array.nArray | true');
+  equals(Array.isArray(false), false, 'Array.nArray | false');
+
 
   // Array#forEach
 
@@ -642,7 +661,6 @@ test('ECMAScript', function () {
   // timezones, since the argument does not specify a time zone.
   equals(Date.parse("Aug 9, 1995"), new Date(1995, 7, 9).getTime(), 'Date#parse | No timezone');
   // Returns 807926400000 no matter the local time zone.
-  console.log(Date.parse("Wed, 09 Aug 1995 00:00:00 GMT"), new Date(807926400000));
   equals(Date.parse("Wed, 09 Aug 1995 00:00:00 GMT"), new Date(807926400000).getTime(), 'Date#parse | GMT');
   // Returns 807937200000 in timezone GMT-0300, and other values in other
   // timezones, since there is no time zone specifier in the argument.
