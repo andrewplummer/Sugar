@@ -681,6 +681,13 @@ test('ECMAScript', function () {
   // Essentially just an ISO string. Add more tests as needed.
   equals(new Date(2002, 7, 25).toJSON(), new Date(2002, 7, 25).toISOString(), 'Date#toJSON | output');
 
+
+  // Date#toISOString
+
+  equals(new Date(Date.UTC(2000, 0, 1)).toISOString(), '2000-01-01T00:00:00.000Z', 'Date#toISOString | new millenium!');
+  equals(new Date(Date.UTC(1978, 7, 25)).toISOString(), '1978-08-25T00:00:00.000Z', 'Date#toISOString | happy birthday!');
+  equals(new Date(Date.UTC(1978, 7, 25, 11, 45, 33, 456)).toISOString(), '1978-08-25T11:45:33.456Z', 'Date#toISOString | with time');
+
   // Function#bind
 
   var instance, BoundPerson;
