@@ -680,6 +680,7 @@ test('String', function () {
   equal('庭には二羽鶏がいる。'.isKanji(), false, 'String#isKanji | full sentence');
   equal(' 語学 '.isKanji(), true, 'String#isKanji | kango with whitespace');
   equal(' 語学\t '.isKanji(), true, 'String#isKanji | kango with whitespace and tabs');
+  equal(' 語 学\t '.isKanji(), true, 'String#isKanji | middle whitespace is also not counted');
 
 
 
@@ -701,6 +702,7 @@ test('String', function () {
   equal('난 뻔데기를 싫어 한 사람 이다...너는?'.isHangul(), false, 'String#isHangul | full sentence');
   equal('안녕 하세요'.isHangul(), true, 'String#isHangul | how are you?');
   equal('ㅠブラじゃない！'.isHangul(), false, 'String#isHangul | mixed with kana');
+  equal('이것도 한굴이야'.isHangul(), true, 'String#isHangul | spaces do not count');
 
   equal('모'.hasHangul(), true, 'String#hasHangul | character');
   equal('난 뻔데기를 싫어 한 사람 이다...너는?'.hasHangul(), true, 'String#hasHangul | full sentence');
