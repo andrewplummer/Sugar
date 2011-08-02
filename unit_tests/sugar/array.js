@@ -380,38 +380,41 @@ test('Array', function () {
   equals(count, 3, 'Array#each | returning undefined will not break the loop');
 
 
+  return;
 
   // Sparse array handling with Array#each
+  // These tests cannot be run with Prototype/Mootools, as they will lock the browser
 
-  arr = ['a'];
-  arr[Math.pow(2,32) - 2] = 'b';
-  expected = ['a','b'];
-  expectedIndexes = [0, Math.pow(2,32) - 2];
-  count = 0;
-  arr.each(function(el, i, a) {
-    strictlyEqual(this, arr, 'Array#each | sparse arrays | this object should be the array');
-    strictlyEqual(el, expected[count], 'Array#each | sparse arrays | first argument should be the current element');
-    strictlyEqual(i, expectedIndexes[count], 'Array#each | sparse arrays | second argument should be the current index');
-    strictlyEqual(a, arr, 'Array#each | sparse arrays | third argument should be the array');
-    count++;
+  skipEnvironments(['prototype'], function() {
+
+    arr = ['a'];
+    arr[Math.pow(2,32) - 2] = 'b';
+    expected = ['a','b'];
+    expectedIndexes = [0, Math.pow(2,32) - 2];
+    count = 0;
+    arr.each(function(el, i, a) {
+      strictlyEqual(this, arr, 'Array#each | sparse arrays | this object should be the array');
+      strictlyEqual(el, expected[count], 'Array#each | sparse arrays | first argument should be the current element');
+      strictlyEqual(i, expectedIndexes[count], 'Array#each | sparse arrays | second argument should be the current index');
+      strictlyEqual(a, arr, 'Array#each | sparse arrays | third argument should be the array');
+      count++;
+    });
+    equals(count, 2, 'Array#each | sparse arrays | count should match');
+
+
+    arr = [];
+    arr[-2] = 'd';
+    arr[2]  = 'f';
+    arr[Math.pow(2,32)] = 'c';
+    count = 0;
+    arr.each(function(el, i) {
+      strictlyEqual(el, 'f', 'Array#each | sparse arrays | values outside range are not iterated over | el');
+      strictlyEqual(i, 2, 'Array#each | sparse arrays | values outside range are not iterated over | index');
+      count++;
+    });
+    equals(count, 1, 'Array#each | sparse arrays | values outside range are not iterated over | count');
+
   });
-  equals(count, 2, 'Array#each | sparse arrays | count should match');
-
-
-  // Using this or the constructor (new Array) will cause this test to fail in IE7/8. Evidently passing undefined to the
-  // contstructor will not push undefined as expected, however the length property will still appear as if it was pushed.
-  // arr = [undefined, undefined, undefined];
-  //
-  // However we can do it this will, which is a much more likely user scenario in any case:
-  arr = [];
-  arr.push(undefined);
-  arr.push(undefined);
-  arr.push(undefined);
-  count = 0;
-  arr.each(function() {
-    count++;
-  });
-  equals(count, 3, 'Array#each | however, simply having an undefined in an array does not qualify it as sparse');
 
   arr = [];
   arr[9] = 'd';
@@ -428,17 +431,20 @@ test('Array', function () {
   equals(count, 3, 'Array#each | sparse arrays | unordered array should match');
 
 
+  // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
+  // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
+  // arr = [undefined, undefined, undefined];
+  //
+  // However we can do it this way, which is a much more likely user scenario in any case:
   arr = [];
-  arr[-2] = 'd';
-  arr[2]  = 'f';
-  arr[Math.pow(2,32)] = 'c';
+  arr.push(undefined);
+  arr.push(undefined);
+  arr.push(undefined);
   count = 0;
-  arr.each(function(el, i) {
-    strictlyEqual(el, 'f', 'Array#each | sparse arrays | values outside range are not iterated over | el');
-    strictlyEqual(i, 2, 'Array#each | sparse arrays | values outside range are not iterated over | index');
+  arr.each(function() {
     count++;
   });
-  equals(count, 1, 'Array#each | sparse arrays | values outside range are not iterated over | count');
+  equals(count, 3, 'Array#each | however, simply having an undefined in an array does not qualify it as sparse');
 
 
 
