@@ -7,6 +7,15 @@ test('ECMAScript', function () {
   var arr, count, expected, result, previous, current, fn, reg, obj, Person;
 
 
+
+
+  arr = [];
+  arr[4294967295] = 'd';
+  // This will reset the array in < IE8. Modern browsers will ignore the element.
+  equals(arr.length, 0, 'Array internals will not allow more than a 32bit integer as a key. Anything higher will be ignored');
+
+
+
   // Array.isArray
 
 
@@ -59,10 +68,6 @@ test('ECMAScript', function () {
   // This will lock browsers, including native implementations. Sparse array
   // optimizations are NOT in the ECMA spec, it would seem.
   // arr[4294967294] = 'c';
-
-
-  // This will reset the array in < IE8. Modern browsers will ignore the element.
-  // arr[4294967295] = 'd';
 
 
   arr[256] = 'd';
