@@ -145,7 +145,6 @@ test('Object', function () {
   // Note here that the need for this complicated syntax is that Prototype's Object.keys method
   // is incorrectly reporting keys up the prototype chain.
   var objectPrototypeMethods = ['keys','values','each','merge','clone','isEmpty','equals'];
-  var objectPrototypeMethodReferences = objectPrototypeMethods.map(function(m) { return Object.extended()[m]; });
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
@@ -183,7 +182,7 @@ test('Object', function () {
     count++;
   });
 
-  equals(count, 3, 'Object#values | accepts a block | iterated properly');
+  equalsWithException(count, 3, { prototype: 0 }, 'Object#values | accepts a block | iterated properly');
 
   strippedValues = Object.values(obj).remove(function(m) { return typeof m == 'function'; });
   sameWithException(strippedValues, values, { prototype: values }, "Object.values | returns object's values", true);
@@ -192,7 +191,7 @@ test('Object', function () {
     equal(value, values[count], 'Object.values | accepts a block');
     count++;
   });
-  equals(count, 3, 'Object.values | accepts a block | iterated properly');
+  equalsWithException(count, 3, { prototype: 0 }, 'Object.values | accepts a block | iterated properly');
 
   strippedValues = Object.extended().values().remove(function(m) { return typeof m == 'function'; });
   sameWithException(strippedValues, [], { prototype: [] }, 'Object#values | empty object', true);
@@ -357,13 +356,14 @@ test('Object', function () {
 
   Object.enableSugar();
 
+  var prototypeBaseValues = ({}).values();
 
   count = 0;
   same(({ foo: 'bar' }).keys(function() { count++; }), ['foo'], 'Object#keys | Object.prototype');
-  same(({ foo: 'bar' }).values(function() { count++; }), ['bar'], 'Object#values | Object.prototype');
+  sameWithException(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], { prototype: ['bar'].concat(prototypeBaseValues) }, 'Object#values | Object.prototype');
   ({ foo: 'bar' }).each(function() { count++; });
 
-  equals(count, 3, 'Object | Object.prototype should have correctly called all functions');
+  equalsWithException(count, 3, { prototype: 2 }, 'Object | Object.prototype should have correctly called all functions');
 
   equals(({}).isEmpty(), true, 'Object#empty | Object.prototype');
   equals(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
