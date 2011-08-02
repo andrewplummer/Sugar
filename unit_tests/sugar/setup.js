@@ -150,6 +150,13 @@ var testWithErrorHandling = function(test, environments) {
   }
 }
 
+
+var skipEnvironments = function(environments, test) {
+  if(environments.has(environment)) {
+    test.call();
+  }
+}
+
 var sameProxy = same;
 
 var deepEqualWithoutPrototyping = function(actual, expected) {
