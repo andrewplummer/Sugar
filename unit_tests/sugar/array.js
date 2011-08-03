@@ -383,6 +383,7 @@ test('Array', function () {
 
   // Sparse array handling with Array#each
 
+  /*
   arr = ['a'];
   arr[Math.pow(2,32) - 2] = 'b';
   expected = ['a','b'];
@@ -439,6 +440,7 @@ test('Array', function () {
     count++;
   });
   equals(count, 1, 'Array#each | sparse arrays | values outside range are not iterated over | count');
+  */
 
 
 
