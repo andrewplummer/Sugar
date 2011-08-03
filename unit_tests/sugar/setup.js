@@ -111,6 +111,7 @@ var fixPrototypeIterators = function() {
     fixIterator('findAll');
     fixIterator('any');
     fixIterator('all');
+    fixIterator('sortBy');
     fixIterator('min', true);
     fixIterator('max', true);
   }
@@ -119,7 +120,7 @@ var fixPrototypeIterators = function() {
 var fixIterator = function(name, map) {
   var fn = Array.prototype[name];
   Array.prototype[name] = function(a) {
-    if(typeof a == 'function') {
+    if(typeof a == 'function' || arguments.length == 0) {
       return fn.apply(this, arguments);
     } else {
       return fn.apply(this, [function(s) {
@@ -197,6 +198,7 @@ var dst = function(d) {
 }
 
 var objectPrototypeMethods = {};
+var sugarEnabledMethods = ['isArray','isBoolean','isDate','isFunction','isNumber','isString','isRegExp','keys','values','each','merge','isEmpty','equals','clone'];
 
 var rememberObjectProtoypeMethods = function() {
   for(var m in Object.prototype) {
@@ -206,17 +208,18 @@ var rememberObjectProtoypeMethods = function() {
 }
 
 var restoreObjectPrototypeMethods = function() {
-  for(var m in Object.prototype) {
-    if(!Object.prototype.hasOwnProperty(m)) continue;
-    var actualProp = objectPrototypeMethods.hasOwnProperty(m) && objectPrototypeMethods[m];
-    if(Object.prototype[m] == actualProp) {
-      continue;
-    } else if(actualProp) {
-      Object.prototype[m] = objectPrototypeMethods[m];
+  // Cannot iterate over Object.prototype's methods if they've been defined in a modern browser
+  // that implements defineProperty, so we'll have to set back the known ones that have been overridden.
+  sugarEnabledMethods.each(function(name){
+    // This is a cute one. Checking for the name in the hash isn't enough because it itself is
+    // an object that has been extended, so each and every one of the methods being held here are being
+    // perfectly shadowed!
+    if(objectPrototypeMethods.hasOwnProperty(name) && objectPrototypeMethods[name]) {
+      Object.prototype[name] = objectPrototypeMethods[name];
     } else {
-      delete Object.prototype[m];
+      delete Object.prototype[name];
     }
-  }
+  });
 }
 
 var raisesError = function(fn, message, exceptions) {
