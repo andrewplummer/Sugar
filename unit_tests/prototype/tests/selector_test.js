@@ -95,11 +95,6 @@ new Test.Unit.Runner({
     this.assertEnumEqual([$('attr_with_dash')], $$('[foo-bar]'), "attribute with hyphen");
   },                                                            
   
-  testSelectorWithUniversalAndHyphenTokenizedAttributeValue: function() {
-    this.assertEnumEqual([$('item_3')], $$('*[xml:lang|="es"]'));
-    this.assertEnumEqual([$('item_3')], $$('*[xml:lang|="ES"]'));
-  },
-  
   testSelectorWithTagNameAndNegatedAttributeValue: function() {
     this.assertEnumEqual([], $$('a[href!="#"]'));
   },
@@ -170,17 +165,6 @@ new Test.Unit.Runner({
   },
   
   // AND NOW COME THOSE NEW TESTS AFTER ANDREW'S REWRITE!
-
-  testSelectorWithNamespacedAttributes: function() {
-    if (Prototype.BrowserFeatures.XPath) {
-      this.assertUndefined(new Selector('html[xml:lang]').xpath);
-      this.assertUndefined(new Selector('body p[xml:lang]').xpath);
-    } else
-      this.info("Could not test XPath bypass: no XPath to begin with!");
-    
-    this.assertElementsMatch($$('[xml:lang]'), 'html', '#item_3');
-    this.assertElementsMatch($$('*[xml:lang]'), 'html', '#item_3');
-  },
 
   testSelectorWithChild: function() {
     this.assertEnumEqual($('link_1', 'link_2'), $$('p.first > a'));
@@ -336,8 +320,8 @@ new Test.Unit.Runner({
   },
 
   testCommasFor$$: function() {
-    this.assertEnumEqual($('list', 'p', 'link_1', 'item_1', 'item_3', 'troubleForm'), $$('#list, .first,*[xml:lang="es-us"] , #troubleForm'));
-    this.assertEnumEqual($('list', 'p', 'link_1', 'item_1', 'item_3', 'troubleForm'), $$('#list, .first,', '*[xml:lang="es-us"] , #troubleForm'));
+    this.assertEnumEqual($('p', 'link_1', 'list', 'item_1', 'item_3', 'troubleForm'), $$('#list, .first,#item_3 , #troubleForm'));
+    this.assertEnumEqual($('p', 'link_1', 'list', 'item_1', 'item_3', 'troubleForm'), $$('#list, .first,', '#item_3 , #troubleForm'));
     this.assertEnumEqual($('commaParent', 'commaChild'), $$('form[title*="commas,"], input[value="#commaOne,#commaTwo"]'));
     this.assertEnumEqual($('commaParent', 'commaChild'), $$('form[title*="commas,"]', 'input[value="#commaOne,#commaTwo"]'));
   },

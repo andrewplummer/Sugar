@@ -180,31 +180,30 @@ new Test.Unit.Runner({
       catch(e){ return null }
     }
     
-    // Form.focusFirstElement shouldn't focus disabled elements
     var element = Form.findFirstElement('bigform');
-    this.assertEqual('submit', element.id);
+    this.assertEqual('submit', element.id, "Form.focusFirstElement shouldn't focus disabled elements");
     
-    // Test IE doesn't select text on buttons
     Form.focusFirstElement('bigform');
-    if(document.selection) this.assertEqual('', getSelection(element));
+    if (document.selection) this.assertEqual('', getSelection(element), "IE shouldn't select text on buttons");
     
-    // Form.Element.activate shouldn't select text on buttons
     element = $('focus_text');
-    this.assertEqual('', getSelection(element));
+    this.assertEqual('', getSelection(element), "Form.Element.activate shouldn't select text on buttons");
       
-    // Form.Element.activate should select text on text input elements
     element.activate();
-    this.assertEqual('Hello', getSelection(element));
+    this.assertEqual('Hello', getSelection(element), "Form.Element.activate should select text on text input elements");
 
-    // Form.Element.activate shouldn't raise an exception when the form or field is hidden
     this.assertNothingRaised(function() {
       $('form_focus_hidden').focusFirstElement();
-    });
+    }, "Form.Element.activate shouldn't raise an exception when the form or field is hidden");
+    
+    this.assertNothingRaised(function() {
+      $('form_empty').focusFirstElement();
+    }, "Form.focusFirstElement shouldn't raise an exception when the form has no fields");
   },
   
   testFormGetElements: function() {
     var elements = Form.getElements('various'),
-      names = $w('tf_selectOne tf_textarea tf_checkbox tf_selectMany tf_text tf_radio tf_hidden tf_password');
+      names = $w('tf_selectOne tf_textarea tf_checkbox tf_selectMany tf_text tf_radio tf_hidden tf_password tf_button');
     this.assertEnumEqual(names, elements.pluck('name'))
   },
   
@@ -226,7 +225,15 @@ new Test.Unit.Runner({
   testFormSerialize: function() {
     // form is initially empty
     var form = $('bigform');
-    var expected = { tf_selectOne:'', tf_textarea:'', tf_text:'', tf_hidden:'', tf_password:'' };
+    var expected = {
+      tf_selectOne: '',
+      tf_textarea:  '',
+      tf_text:      '',
+      tf_hidden:    '',
+      tf_password:  '',
+      tf_button:    ''
+    };
+    
     this.assertHashEqual(expected, Form.serialize('various', true));
       
     // set up some stuff
@@ -235,10 +242,19 @@ new Test.Unit.Runner({
     form['tf_text'].value = "123öäü";
     form['tf_hidden'].value = "moo%hoo&test";
     form['tf_password'].value = 'sekrit code';
+    form['tf_button'].value = 'foo bar';
     form['tf_checkbox'].checked = true;
     form['tf_radio'].checked = true;
-    var expected = { tf_selectOne:1, tf_textarea:"boo hoo!", tf_text:"123öäü",
-      tf_hidden:"moo%hoo&test", tf_password:'sekrit code', tf_checkbox:'on', tf_radio:'on' }
+    
+    var expected = {
+      tf_selectOne: 1, tf_textarea: "boo hoo!",
+      tf_text: "123öäü",
+      tf_hidden: "moo%hoo&test",
+      tf_password: 'sekrit code',
+      tf_button: 'foo bar',
+      tf_checkbox: 'on',
+      tf_radio: 'on'
+    };
 
     // return params
     this.assertHashEqual(expected, Form.serialize('various', true));
@@ -278,6 +294,14 @@ new Test.Unit.Runner({
 
     // file input should not be serialized  
     this.assertEqual('', $('form_with_file_input').serialize());   
+  },
+  
+  testFormSerializeWithDuplicateNames: function() {
+    this.assertEqual("fact=sea-wet&opinion=sea-cold&fact=sun-hot&opinion=sun-ugly", $('form_with_duplicate_input_names').serialize(false));
+  },
+  
+  testFormSerializeURIEncodesInputs: function() {
+    this.assertEqual("user%5Bwristbands%5D%5B%5D%5Bnickname%5D=H%C3%A4sslich", $('form_with_inputs_needing_encoding').serialize(false));
   },
   
   testFormMethodsOnExtendedElements: function() {
@@ -362,6 +386,7 @@ new Test.Unit.Runner({
   },
   
   testSerializeFormTroublesomeNames: function() {
+    var hash = { length: 'foo', bar: 'baz' };
     var el = new Element('form', { 
       action: '/' 
     });
@@ -377,6 +402,9 @@ new Test.Unit.Runner({
     });
     el.appendChild(input);
     el.appendChild(input2);
-    this.assertHashEqual({ length: 'foo', bar: 'baz' }, el.serialize(true));
+    this.assertHashEqual(hash, el.serialize(true));
+    
+    var form = $('form_with_troublesome_input_names');
+    this.assertHashEqual(hash, form.serialize(true));
   }
 });

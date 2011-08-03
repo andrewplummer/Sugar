@@ -34,8 +34,11 @@ new Test.Unit.Runner({
     function methodWithArguments()    { return this.hi + ',' + $A(arguments).join(',') };
     var func = Prototype.emptyFunction;
 
-    this.assertIdentical(func, func.bind());
-    this.assertIdentical(func, func.bind(undefined));
+    // AP: Removing these 2 tests as they are not to ES5 spec. bind should always return a
+    // bound function regardless of what was passed in, meaning they can never be strictly equal.
+    // this.assertIdentical(func, func.bind());
+    // this.assertIdentical(func, func.bind(undefined));
+
     this.assertNotIdentical(func, func.bind(null));
 
     this.assertEqual('without', methodWithoutArguments.bind({ hi: 'without' })());
