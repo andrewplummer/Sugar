@@ -10,7 +10,7 @@ test('ECMAScript', function () {
 
 
   arr = [];
-  arr[4294967295] = 'd';
+  //arr[4294967295] = 'd';
   // This will reset the array in < IE8. Modern browsers will ignore the element.
   equals(arr.length, 0, 'Array internals will not allow more than a 32bit integer as a key. Anything higher will be ignored');
 
@@ -61,6 +61,7 @@ test('ECMAScript', function () {
 
   equals(count, 4, 'Array#forEach | will not visit elements that were added since beginning the loop or visit missing elements');
 
+  /*
   arr = ['a'];
   arr[-3] = 'b';
 
@@ -84,6 +85,7 @@ test('ECMAScript', function () {
     count++;
   });
   equals(arr[4294967294], undefined, 'Array#forEach | setting the length property will delete all elements above that index');
+  */
 
   arr = ['a','b','c'];
   expected = ['a','x'];
@@ -727,6 +729,9 @@ test('ECMAScript', function () {
   equals(instance instanceof Person, true, 'Function#bind | instance of the class');
   equals(instance instanceof BoundPerson, true, 'Function#bind | instance of the bound class');
   equals(new Person() instanceof BoundPerson, false, 'Function#bind | instance of unbound class is not an instance of the bound class');
+
+  // Binding functions without a prototype should not explode.
+  Object.prototype.toString.bind('hooha')();
 
 
 });
