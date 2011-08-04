@@ -27,6 +27,9 @@ test('Function', function () {
 
   var delayedFunction,delayReturn;
 
+  // Prototype's delay function takes the value in seconds, so 20 makes the tests
+  // take at least 20 seconds to finish!
+  var delayTime = environment === 'prototype' ? 0.02 : 20;
 
   var delayedFunction = function(one, two) {
     equalsWithException(one, 'one', { mootools: 'two' }, 'Function#delay | first parameter');
@@ -35,7 +38,7 @@ test('Function', function () {
     start();
   };
 
-  delayReturn = delayedFunction.delay(20, 'one', 'two');
+  delayReturn = delayedFunction.delay(delayTime, 'one', 'two');
   equals(typeof delayReturn, 'number', 'Function#delay | returns the timeout ID');
 
   var shouldBeFalse = false;
@@ -43,7 +46,7 @@ test('Function', function () {
     shouldBeFalse = true;
   };
 
-  delayReturn = delayedFunction.delay(5);
+  delayReturn = delayedFunction.delay(delayTime / 4);
   delayedFunction.cancel();
 
 
