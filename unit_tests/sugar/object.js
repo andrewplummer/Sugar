@@ -142,13 +142,9 @@ test('Object', function () {
   });
 
 
-  // Note here that the need for this complicated syntax is that Prototype's Object.keys method
-  // is incorrectly reporting keys up the prototype chain.
-  var objectPrototypeMethods = ['keys','values','each','merge','clone','isEmpty','equals'];
-
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  sameWithException(obj.keys(), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object#keys | returns object's keys", true);
+  same(obj.keys(), keys, "Object#keys | returns object's keys", true);
   count = 0;
   obj.keys(function(key) {
     equal(key, keys[count], 'Object#keys | accepts a block');
@@ -157,12 +153,12 @@ test('Object', function () {
 
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  sameWithException(Object.extended().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
-  sameWithException(Object.keys(Object.extended()), [], { prototype: objectPrototypeMethods}, 'Object#keys | empty object', true);
+  same(Object.extended().keys(), [], 'Object#keys | empty object', true);
+  same(Object.keys(Object.extended()), [], 'Object#keys | empty object', true);
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  sameWithException(Object.keys(obj), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object.keys | returns object's keys", true);
+  same(Object.keys(obj), keys, "Object.keys | returns object's keys", true);
   count = 0;
   Object.keys(obj, function(key) {
     equal(key, keys[count], 'Object.keys | accepts a block');
@@ -316,7 +312,7 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
   equals(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
 
-  sameWithException(obj2.keys().sort(), ['broken','foo'], { prototype: ['broken','foo'].concat(objectPrototypeMethods).sort() }, 'Object#clone | cloned objects are themselves extended');
+  same(obj2.keys().sort(), ['broken','foo'], 'Object#clone | cloned objects are themselves extended');
 
   obj1 = Object.extended({
     foo: {
