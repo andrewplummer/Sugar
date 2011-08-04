@@ -493,52 +493,6 @@ test('Array', function () {
   equals(count, 1, 'Array#find | should immediately finish when it finds a match');
 
 
-  same(['a','b','c'].findLast('a'), 'a', 'Array#findLast | a');
-  same(['a','a','c'].findLast('a'), 'a', 'Array#findLast | first a');
-  same(['a','b','c'].findLast('q'), undefined, 'Array#findLast | q');
-  same([1,2,3].findLast(1), 1, 'Array#findLast | 1');
-  same([2,2,3].findLast(2), 2, 'Array#findLast | 2');
-  same([1,2,3].findLast(4), undefined, 'Array#findLast | 4');
-  sameWithException([{a:1},{b:2},{c:3}].findLast({a:1}), {a:1}, { prototype: undefined }, 'Array#findLast | a:1');
-  sameWithException([{a:1},{a:1},{c:3}].findLast({a:1}), {a:1}, { prototype: undefined }, 'Array#findLast | first a:1');
-  same([{a:1},{b:2},{c:3}].findLast({d:4}), undefined, 'Array#findLast | d:4');
-  same([{a:1},{b:2},{c:3}].findLast({c:4}), undefined, 'Array#findLast | c:4');
-  sameWithException([[1,2],[2,3],[4,5]].findLast([2,3]), [2,3], { prototype: undefined }, 'Array#findLast | 2,3');
-  same([[1,2],[2,3],[4,5]].findLast([2,4]), undefined, 'Array#findLast | 2,4');
-  sameWithException([[1,2],[2,3],[2,3]].findLast([2,3]), [2,3], { prototype: undefined }, 'Array#findLast | first 2,3');
-  sameWithException(['foo','bar'].findLast(/f+/), 'foo', { prototype: undefined }, 'Array#findLast | /f+/');
-  sameWithException(['foo','bar'].findLast(/[a-f]/), 'bar', { prototype: undefined }, 'Array#findLast | /a-f/');
-  sameWithException(['foo','bar'].findLast(/[a-f]/, 1), 'foo', { prototype: undefined }, 'Array#findLast | /a-f/ from index 1');
-  sameWithException(['foo','bar'].findLast(/q+/), undefined, 'Array#findLast | /q+/');
-  same([1,2,3].findLast(function(e) { return e > 0; }, 0), 3, 'Array#findLast | greater than 0 from index 0');
-  sameWithException([1,2,3].findLast(function(e) { return e > 0; }, 1), 2, { prototype: 3 }, 'Array#findLast | greater than 0 from index 1');
-  sameWithException([1,2,3].findLast(function(e) { return e > 0; }, 2), 1, { prototype: 3 }, 'Array#findLast | greater than 0 from index 2');
-  sameWithException([1,2,3].findLast(function(e) { return e > 0; }, 3), undefined, { prototype: 3 }, 'Array#findLast | greater than 0 from index 3');
-  same([1,2,3].findLast(function(e) { return e > 1; }, 0), 3, 'Array#findLast | greater than 1 from index 0');
-  sameWithException([1,2,3].findLast(function(e) { return e > 1; }, 1), 2, { prototype: 3 }, 'Array#findLast | greater than 1 from index 1');
-  sameWithException([1,2,3].findLast(function(e) { return e > 1; }, 2), undefined, { prototype: 3 }, 'Array#findLast | greater than 1 from index 2');
-  same([1,2,3].findLast(function(e) { return e > 2; }, 0), 3, 'Array#findLast | greater than 2 from index 0');
-  same([1,2,3].findLast(function(e) { return e > 3; }, 0), undefined, 'Array#findLast | greater than 3 from index 0');
-
-  same([{a:10},{a:8},{a:3}].findLast(function(e) { return e['a'] > 5; }, 0), {a:8}, 'Array#findLast | key "a" greater than 5');
-  same([{a:10},{a:8},{a:3}].findLast(function(e) { return e['a'] > 5; }, 1), {a:8}, 'Array#findLast | key "a" greater than 5 from index 1');
-  sameWithException([{a:10},{a:8},{a:3}].findLast(function(e) { return e['a'] > 5; }, 2), {a:10}, { prototype: {a:8} }, 'Array#findLast | key "a" greater than 5 from index 2');
-  same([function() {}].findLast(function(e) {}, 0), undefined, 'Array#findLast | undefined function');
-  same([function() {}].findLast(function(e) {}, 1), undefined, 'Array#findLast | null function from index 1');
-  same([null, null].findLast(null, 0), null, 'Array#findLast | null');
-  same([null, null].findLast(null, 1), null, 'Array#findLast | null from index 1');
-  same([undefined, undefined].findLast(undefined, 0), undefined, 'Array#findLast | undefined');
-  same([undefined, undefined].findLast(undefined, 1), undefined, 'Array#findLast | undefined from index 1');
-  sameWithException([undefined, 'a'].findLast(undefined, 1), undefined, { prototype: undefined }, 'Array#findLast | undefined finds the first element');
-
-  count = 0;
-  [1,2,3].findLast(function(n) {
-    count++;
-    return n == 3;
-  });
-  equals(count, 1, 'Array#findLast | should immediately finish when it finds a match');
-
-
 
 
 
