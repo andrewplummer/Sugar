@@ -5,7 +5,6 @@ test('Array', function () {
 
   var arr, expected, expectedIndexes, count;
 
-
   arr = [1,2,3];
   count = 0;
 
@@ -182,7 +181,7 @@ test('Array', function () {
     equals(el, 'a', 'Array#each | first parameter is the element');
     equals(i, 0, 'Array#each | second parameter is the index');
     sameWithException(a, ['a'], { prototype: undefined }, 'Array#each | third parameter is the array');
-    equals(this, a, 'Array#each | scope is also the array');
+    equalsWithException(this, a, { prototype: 'this' }, 'Array#each | scope is also the array');
   }, 'this');
 
 
@@ -255,16 +254,15 @@ test('Array', function () {
 
 
   var result = [];
-  var indices = [1,2];
   var count = 0;
   ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#each | index should be correct')
+    equalsWithException(i, count + 1, { prototype: count }, 'Array#each | index should be correct')
     count++;
   }, 1);
 
-  equals(count, 2, 'Array#each | should have run 2 times')
-  same(result, ['b','c'], 'Array#each | result');
+  equalsWithException(count, 2, { prototype: 3 }, 'Array#each | should have run 2 times')
+  sameWithException(result, ['b','c'], { prototype: ['a','b','c'] }, 'Array#each | result');
 
 
   result = [];
@@ -272,12 +270,12 @@ test('Array', function () {
   count = 0;
   ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#each | looping from index 1 | index should be correct')
+    equalsWithException(i, indices[count], { prototype: indices.at(count - 1) }, 'Array#each | looping from index 1 | index should be correct')
     count++;
   }, 1, true);
 
   equals(count, 3, 'Array#each | looping from index 1 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#each | looping from index 1 | result');
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'] }, 'Array#each | looping from index 1 | result');
 
 
   result = [];
@@ -299,12 +297,12 @@ test('Array', function () {
   count = 0;
   ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#each | looping from index 2 | index should be correct')
+    equalsWithException(i, indices[count], { prototype: indices.at(count + 1) }, 'Array#each | looping from index 2 | index should be correct')
     count++;
   }, 2, true);
 
   equals(count, 3, 'Array#each | looping from index 2 | should have run 3 times')
-  same(result, ['c','a','b'], 'Array#each | looping from index 2 | result');
+  sameWithException(result, ['c','a','b'], { prototype: ['a','b','c'] }, 'Array#each | looping from index 2 | result');
 
 
 
@@ -328,7 +326,7 @@ test('Array', function () {
   }, 4, true);
 
   equals(count, 3, 'Array#each | looping from index 4 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#each | looping from index 4 | result');
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'] }, 'Array#each | looping from index 4 | result');
 
 
 
@@ -340,7 +338,7 @@ test('Array', function () {
   }, 49, true);
 
   equals(count, 3, 'Array#each | looping from index 49 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#each | looping from index 49 | result');
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'] }, 'Array#each | looping from index 49 | result');
 
 
 
@@ -363,7 +361,7 @@ test('Array', function () {
     count++;
     return false;
   });
-  equals(count, 1, 'Array#each | returning false will break the loop');
+  equalsWithException(count, 1, { prototype: 3 }, 'Array#each | returning false will break the loop');
 
   count = 0;
   ['a','b','c'].each(function() {
@@ -379,8 +377,6 @@ test('Array', function () {
   });
   equals(count, 3, 'Array#each | returning undefined will not break the loop');
 
-
-  return;
 
   // Sparse array handling with Array#each
   // These tests cannot be run with Prototype/Mootools, as they will lock the browser
@@ -425,8 +421,9 @@ test('Array', function () {
   expected = ['f','c','d'];
   expectedIndexes = [2,5,9];
   arr.each(function(el, i) {
-    strictlyEqual(el, expected[count], 'Array#each | sparse arrays | elements are in expected order');
-    strictlyEqual(i, expectedIndexes[count], 'Array#each | sparse arrays | index is in expected order');
+    equals(el, expected[count], 'Array#each | sparse arrays | elements are in expected order');
+    // TODO REWORK THIS AS IT SHOULD BE STRICT!!
+    equalsWithException(i, expectedIndexes[count], { prototype: count }, 'Array#each | sparse arrays | index is in expected order');
     count++;
   });
   equals(count, 3, 'Array#each | sparse arrays | unordered array should match');
@@ -654,9 +651,11 @@ test('Array', function () {
   sameWithException([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], { prototype: [] }, 'Array#intersect | a:1,b:2 + b:2,c:3');
   same([1,1,3].intersect([1,5,6]), [1], 'Array#intersect | 1,1,3 + 1,5,6');
   same([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
-  testWithErrorHandling(function() {
+
+  // Prototype will blow up here
+  skipEnvironments(['prototype'], function(){
     same([1,2,3].intersect(1), [1], 'Array#intersect | 1,2,3 + 1');
-  }, ['prototype']);
+  });
 
 
 
@@ -822,12 +821,8 @@ test('Array', function () {
   equal(people.most(function(person) { return person.age; }).length, 2, 'Array#most | collect actual number of occurrences');
 
 
-
   same(people.least(function(person) { return person.age; }).sortBy('name'), [people[1], people[2]], 'Array#least | contains mary and ronnie');
-
-  testWithErrorHandling(function() {
-  same(people.least(function(person) { return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | age and sorted by age');
-  }, ['prototype']);
+  same(people.least(function(person) { return person.age; }).sortBy('age'), [{name:'ronnie',age:13,hair:'brown'}, {name:'mary',age:52,hair:'blonde'}], 'Array#least | age and sorted by age');
 
   same(people.least(function(person) { return person.hair; }), [], 'Array#least | hair');
 
@@ -868,6 +863,7 @@ test('Array', function () {
   same(isNaN(people.average(function(p) { return p.hair; })), true, 'Array#average | people average hair is NaN');
 
 
+  var grouped;
 
   same([].groupBy(), {}, 'Array#groupBy | empty array');
   same([1,1,2,2,3,3,4].groupBy(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#groupBy | 1,1,2,2,3,3,4');
@@ -876,10 +872,8 @@ test('Array', function () {
   same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy(function(el) { return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy | grouping by "a" by function');
 
 
-  testWithErrorHandling(function() {
-    people = people.sortBy('hair');
-    same(people.groupBy(function(p) { return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
-  }, ['prototype']);
+  people = people.sortBy('hair');
+  same(people.groupBy(function(p) { return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
 
 
 
@@ -1230,7 +1224,7 @@ test('Array', function () {
   }, 'wasabi');
 
 
-  raisesError(function(){ [1,2,3].has(); }, 'Array#has | no argument raises a TypeError');
+  raisesError(function(){ [1,2,3].has(); }, 'Array#has | no argument raises a TypeError', { prototype: false });
   equal([1,2,3].has(1), true, 'Array#has | numeric | 1');
   equal([1,2,3].has(4), false, 'Array#has | numeric | 4');
   equal([1,2,3].has('a'), false, 'Array#has | numeric | a');
@@ -1315,18 +1309,16 @@ test('Array', function () {
 
 
 
-  testWithErrorHandling(function() {
-    arr = ['more','everyone!','bring','the','family'];
-    same(arr.sortBy('length'), ['the','more','bring','family','everyone!'], 'Array#sortBy | sorting by length');
-    same(arr.sortBy('length', true), ['everyone!','family','bring','more','the'], 'Array#sortBy | desc | sorting by length');
+  arr = ['more','everyone!','bring','the','family'];
+  same(arr.sortBy('length'), ['the','more','bring','family','everyone!'], 'Array#sortBy | sorting by length');
+  sameWithException(arr.sortBy('length', true), ['everyone!','family','bring','more','the'], { prototype: ['the','more','bring','family','everyone!'] }, 'Array#sortBy | desc | sorting by length');
 
-    same(arr.sortBy(function(a) { return a.length; }), ['the','more','bring','family','everyone!'], 'Array#sortBy | sort by length by function');
-    same(arr.sortBy(function(a) { return a.length; }, true), ['everyone!','family','bring','more','the'], 'Array#sortBy | desc | sort by length by function');
+  same(arr.sortBy(function(a) { return a.length; }), ['the','more','bring','family','everyone!'], 'Array#sortBy | sort by length by function');
+  sameWithException(arr.sortBy(function(a) { return a.length; }, true), ['everyone!','family','bring','more','the'], { prototype: ['the','more','bring','family','everyone!'] }, 'Array#sortBy | desc | sort by length by function');
 
-    arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
-    same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
-    same(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy | desc | sort by key "a"');
-  }, ['prototype']);
+  arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
+  same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
+  sameWithException(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], { prototype: [{a:'bar'},{a:'foo'},{a:'skittles'}] }, 'Array#sortBy | desc | sort by key "a"');
 
 
 

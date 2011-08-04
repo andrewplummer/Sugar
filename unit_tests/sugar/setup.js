@@ -111,7 +111,7 @@ var fixPrototypeIterators = function() {
     fixIterator('findAll');
     fixIterator('any');
     fixIterator('all');
-    fixIterator('sortBy');
+    fixIterator('sortBy', true);
     fixIterator('min', true);
     fixIterator('max', true);
   }
@@ -153,7 +153,7 @@ var testWithErrorHandling = function(test, environments) {
 
 
 var skipEnvironments = function(environments, test) {
-  if(environments.has(environment)) {
+  if(!environments.has(environment)) {
     test.call();
   }
 }
@@ -252,4 +252,8 @@ var benchmark = function(fn, iterations) {
   }
   console.info(new Date - d);
 }
+
+
+// Passing undefined into .call will always set the scope as the window, so use this when available.
+var windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
 

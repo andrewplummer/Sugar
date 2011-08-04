@@ -1,7 +1,4 @@
 
-// Passing undefined into .call will always set the scope as the window, so use this when available.
-var windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
-
 test('ECMAScript', function () {
 
   var arr, count, expected, result, previous, current, fn, reg, obj, Person;
@@ -240,7 +237,7 @@ test('ECMAScript', function () {
   result = arr.every(function(el, i, a){
     equals(el, 'c', 'Array#every | first argument is element');
     equals(i, count, 'Array#every | second argument is index');
-    sameWithException(a, arr, { prototype: undefined }, 'Array#every | third argument is the array');
+    same(a, arr, 'Array#every | third argument is the array');
     count++;
     return el == 'c';
   });
@@ -311,7 +308,7 @@ test('ECMAScript', function () {
   result = arr.some(function(el, i, a){
     equals(el, 'c', 'Array#some | first argument is element');
     equals(i, count, 'Array#some | second argument is index');
-    sameWithException(a, arr, { prototype: undefined }, 'Array#some | third argument is the array');
+    sameWithException(a, arr, 'Array#some | third argument is the array');
     count++;
     return el == 'c';
   });
@@ -375,7 +372,7 @@ test('ECMAScript', function () {
   result = arr.map(function(el, i, a){
     equals(el, 'c', 'Array#map | first argument is element');
     equals(i, count, 'Array#map | second argument is index');
-    sameWithException(a, arr, { prototype: undefined }, 'Array#map | third argument is the array');
+    sameWithException(a, arr, 'Array#map | third argument is the array');
     count++;
     return 'a';
   });
@@ -398,7 +395,7 @@ test('ECMAScript', function () {
     count++;
     return 'c';
   });
-  sameWithException(result.length, 248, { prototype: 1 }, 'Array#map | resulting array should also be sparse if source was');
+  sameWithException(result.length, 248, 'Array#map | resulting array should also be sparse if source was');
   equals(count, 1, 'Array#map | callback should only have been called once');
 
 
@@ -443,7 +440,7 @@ test('ECMAScript', function () {
   result = arr.filter(function(el, i, a){
     equals(el, 'c', 'Array#filter | first argument is element');
     equals(i, count, 'Array#filter | second argument is index');
-    sameWithException(a, arr, { prototype: undefined }, 'Array#filter | third argument is the array');
+    sameWithException(a, arr, 'Array#filter | third argument is the array');
     count++;
     return el == 'c';
   });
@@ -636,29 +633,25 @@ test('ECMAScript', function () {
 
   // Object#keys
 
-  raisesError(function(){ Object.keys(undefined); }, 'Object#keys | raises a TypeError for undefined', { prototype: false });
-  raisesError(function(){ Object.keys(null); }, 'Object#keys | raises a TypeError for null', { prototype: false });
-  raisesError(function(){ Object.keys(true); }, 'Object#keys | raises a TypeError for booleans', { prototype: false });
-  raisesError(function(){ Object.keys(NaN); }, 'Object#keys | raises a TypeError for NaN', { prototype: false });
-  raisesError(function(){ Object.keys(3); }, 'Object#keys | raises a TypeError for numbers', { prototype: false });
-  raisesError(function(){ Object.keys('moofa'); }, 'Object#keys | raises a TypeError for strings', { prototype: false });
+  raisesError(function(){ Object.keys(undefined); }, 'Object#keys | raises a TypeError for undefined');
+  raisesError(function(){ Object.keys(null); }, 'Object#keys | raises a TypeError for null');
+  raisesError(function(){ Object.keys(true); }, 'Object#keys | raises a TypeError for booleans');
+  raisesError(function(){ Object.keys(NaN); }, 'Object#keys | raises a TypeError for NaN');
+  raisesError(function(){ Object.keys(3); }, 'Object#keys | raises a TypeError for numbers');
+  raisesError(function(){ Object.keys('moofa'); }, 'Object#keys | raises a TypeError for strings');
 
-
-  var prototypeArrayKeys = Object.keys([]);
-  var prototypeRegExpKeys = Object.keys(/g/);
-  var prototypeDateKeys = Object.keys(new Date);
 
   same(Object.keys({ moo:'bar', broken:'wear' }), ['moo','broken'], 'Object#keys | returns keys of an object');
-  sameWithException(Object.keys(['a','b','c']), ['0','1','2'], { prototype: ['0','1','2'].concat(prototypeArrayKeys) }, 'Object#keys | returns indexes of an array');
-  sameWithException(Object.keys(/foobar/), [], { prototype: prototypeRegExpKeys }, 'Object#keys | regexes return a blank array');
-  sameWithException(Object.keys(new Date), [], { prototype: prototypeDateKeys }, 'Object#keys | regexes return a blank array');
+  same(Object.keys(['a','b','c']), ['0','1','2'], 'Object#keys | returns indexes of an array');
+  same(Object.keys(/foobar/), [], 'Object#keys | regexes return a blank array');
+  same(Object.keys(new Date), [], 'Object#keys | dates return a blank array');
 
   Person = function() {
     this.broken = 'wear';
   };
   Person.prototype = { cat: 'dog' };
 
-  sameWithException(Object.keys(new Person), ['broken'], { prototype: ['broken', 'cat'] }, 'Object#keys | will get instance properties but not inherited properties');
+  same(Object.keys(new Person), ['broken'], 'Object#keys | will get instance properties but not inherited properties');
 
 
 
