@@ -25,12 +25,6 @@ new Test.Unit.Runner({
     this.assertEqual('100', (100).toPaddedString(3));
     this.assertEqual('1000', (1000).toPaddedString(3));
   },
-
-  testNumberToJSON: function() {
-    this.assertEqual('null', Number.NaN.toJSON());
-    this.assertEqual('0', (0).toJSON());
-    this.assertEqual('-293', (-293).toJSON());
-  },
   
   testNumberTimes: function() {
     var results = [];
