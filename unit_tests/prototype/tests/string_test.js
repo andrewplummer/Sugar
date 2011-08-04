@@ -370,7 +370,6 @@ new Test.Unit.Runner({
     this.assertEqual('#(name): Stephan', '\\#(name): #(name)'.interpolate(subject, pattern));
   },
 
-  /* AP: HIDING THESE TESTS WHICH BREAK IN IE FOR NOW...
   testToQueryParams: function() {
     // only the query part
     var result = {a:undefined, b:'c'};
@@ -396,7 +395,6 @@ new Test.Unit.Runner({
     this.assertEnumEqual(['', 'blue'],   'c=&c=blue'.toQueryParams()['c'], msg);
     this.assertEnumEqual(['blue', ''],   'c=blue&c='.toQueryParams()['c'], msg);
   },
-  */
   
   testInspect: function() {
     this.assertEqual('\'\'', ''.inspect());
@@ -487,11 +485,6 @@ new Test.Unit.Runner({
     }, 1000, 'previous: ');*/
   },
   
-  testToJSON: function() {
-    this.assertEqual('\"\"', ''.toJSON());
-    this.assertEqual('\"test\"', 'test'.toJSON());
-  },
-  
   testIsJSON: function() {
     this.assert(!''.isJSON());
     this.assert(!'     '.isJSON());
@@ -528,10 +521,6 @@ new Test.Unit.Runner({
     this.assertRaise('SyntaxError', function() { invalid.evalJSON() });
     this.assertRaise('SyntaxError', function() { invalid.evalJSON(true) });
 
-    attackTarget = "scared";
-    dangerous.evalJSON();
-    this.assertEqual("attack succeeded!", attackTarget);
-    
     attackTarget = "Not scared!";
     this.assertRaise('SyntaxError', function(){dangerous.evalJSON(true)});
     this.assertEqual("Not scared!", attackTarget);
