@@ -146,8 +146,8 @@ new Test.Unit.Runner({
   },
   
   testToJSON: function() {
-    this.assertEqual('{\"b\": [false, true], \"c\": {\"a\": \"hello!\"}}',
-      $H({'b': [undefined, false, true, undefined], c: {a: 'hello!'}}).toJSON());
+    this.assertEqual('{\"b\":[null,false,true,null],\"c\":{\"a\":\"hello!\"}}',
+      Object.toJSON({b: [undefined, false, true, undefined], c: {a: 'hello!'}}));
   },
   
   testAbilityToContainAnyKey: function() {
