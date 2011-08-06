@@ -71,6 +71,14 @@ var QUnitBridge = function(expression){
     equals(expression == null, true, currentBlock);
   }
 
+  this.toBeGreaterThan = function(num){
+    equals(expression > num, true, currentBlock);
+  }
+
+  this.toBeLessThan = function(num){
+    equals(expression < num, true, currentBlock);
+  }
+
   this.toContain = function(test){
     equals(arrayContains(expression, test), true, currentBlock);
   }
@@ -192,21 +200,34 @@ var describe = function(test_name, blocks){
 var jasmine = {
 
   createSpy: function(){
-    var f = function(){
-      f.wasCalled = true;
-      f.withParameters = arguments;
+    var ret;
+    var spy = function(){
+      spy.wasCalled = true;
+      spy.withParameters = arguments;
+      spy.callCount++;
+      spy.mostRecentCall = {
+        object: this
+      }
+      return ret;
     };
-    f.andReturn = function(){
-      return f;
+
+    spy.wasCalled = false;
+    spy.callCount = 0;
+
+    spy.andReturn = function(r){
+      ret = r;
+      return spy;
     };
-    return f;
+
+    spy.reset = function(){
+      spy.callCount = 0;
+      spy.wasCalled = false;
+      spy.withParameters = null;
+      spy.mostRecentCall = null;
+    };
+
+    return spy;
   }
 
 }
 
-var waitsFor = function(timeout, fn){
-  fn.call();
-  return true;
-}
-
-var Syn = { browser: {} };

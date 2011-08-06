@@ -181,7 +181,7 @@ test('Array', function () {
     equals(el, 'a', 'Array#each | first parameter is the element');
     equals(i, 0, 'Array#each | second parameter is the index');
     sameWithException(a, ['a'], { prototype: undefined }, 'Array#each | third parameter is the array');
-    equalsWithException(this, a, { prototype: 'this' }, 'Array#each | scope is also the array');
+    equalsWithException(this, a, { prototype: 'this', mootools: 'this' }, 'Array#each | scope is also the array');
   }, 'this');
 
 
@@ -257,33 +257,33 @@ test('Array', function () {
   var count = 0;
   ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equalsWithException(i, count + 1, { prototype: count }, 'Array#each | index should be correct')
+    equalsWithException(i, count + 1, { prototype: count, mootools: count }, 'Array#each | index should be correct')
     count++;
   }, 1);
 
-  equalsWithException(count, 2, { prototype: 3 }, 'Array#each | should have run 2 times')
-  sameWithException(result, ['b','c'], { prototype: ['a','b','c'] }, 'Array#each | result');
+  equalsWithException(count, 2, { prototype: 3, mootools: 3 }, 'Array#each | should have run 2 times')
+  sameWithException(result, ['b','c'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | result');
 
 
   result = [];
-  indices = [1,2,0];
+  indexes = [1,2,0];
   count = 0;
   ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equalsWithException(i, indices[count], { prototype: indices.at(count - 1) }, 'Array#each | looping from index 1 | index should be correct')
+    equalsWithException(i, indexes[count], { prototype: indexes.at(count - 1), mootools: indexes.at(count - 1) }, 'Array#each | looping from index 1 | index should be correct')
     count++;
   }, 1, true);
 
   equals(count, 3, 'Array#each | looping from index 1 | should have run 3 times')
-  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'] }, 'Array#each | looping from index 1 | result');
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | looping from index 1 | result');
 
 
   result = [];
-  indices = [0,1,2];
+  indexes = [0,1,2];
   count = 0;
   ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#each | looping from index 0 | index should be correct')
+    equals(i, indexes[count], 'Array#each | looping from index 0 | index should be correct')
     count++;
   }, 0, true);
 
@@ -293,16 +293,16 @@ test('Array', function () {
 
 
   result = [];
-  indices = [2,0,1];
+  indexes = [2,0,1];
   count = 0;
   ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equalsWithException(i, indices[count], { prototype: indices.at(count + 1) }, 'Array#each | looping from index 2 | index should be correct')
+    equalsWithException(i, indexes[count], { prototype: indexes.at(count + 1), mootools: indexes.at(count + 1) }, 'Array#each | looping from index 2 | index should be correct')
     count++;
   }, 2, true);
 
   equals(count, 3, 'Array#each | looping from index 2 | should have run 3 times')
-  sameWithException(result, ['c','a','b'], { prototype: ['a','b','c'] }, 'Array#each | looping from index 2 | result');
+  sameWithException(result, ['c','a','b'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | looping from index 2 | result');
 
 
 
@@ -326,7 +326,7 @@ test('Array', function () {
   }, 4, true);
 
   equals(count, 3, 'Array#each | looping from index 4 | should have run 3 times')
-  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'] }, 'Array#each | looping from index 4 | result');
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | looping from index 4 | result');
 
 
 
@@ -338,7 +338,7 @@ test('Array', function () {
   }, 49, true);
 
   equals(count, 3, 'Array#each | looping from index 49 | should have run 3 times')
-  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'] }, 'Array#each | looping from index 49 | result');
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | looping from index 49 | result');
 
 
 
@@ -361,7 +361,7 @@ test('Array', function () {
     count++;
     return false;
   });
-  equalsWithException(count, 1, { prototype: 3 }, 'Array#each | returning false will break the loop');
+  equalsWithException(count, 1, { prototype: 3, mootools: 3 }, 'Array#each | returning false will break the loop');
 
   count = 0;
   ['a','b','c'].each(function() {
@@ -381,7 +381,7 @@ test('Array', function () {
   // Sparse array handling with Array#each
   // These tests cannot be run with Prototype/Mootools, as they will lock the browser
 
-  skipEnvironments(['prototype'], function() {
+  skipEnvironments(['prototype','mootools'], function() {
 
     arr = ['a'];
     arr[Math.pow(2,32) - 2] = 'b';
@@ -411,6 +411,7 @@ test('Array', function () {
     equals(count, 1, 'Array#each | sparse arrays | values outside range are not iterated over | count');
 
   });
+
 
 
   arr = [];

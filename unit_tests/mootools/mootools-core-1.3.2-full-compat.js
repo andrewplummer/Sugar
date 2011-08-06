@@ -33,8 +33,8 @@ provides: [Core, MooTools, Type, typeOf, instanceOf, Native]
 (function(){
 
 this.MooTools = {
-	version: '1.3.1',
-	build: 'af48c8d589f43f32212f9bb8ff68a127e6a3ba6c'
+	version: '1.3.2',
+	build: 'c9f1ff10e9e7facb65e9481049ed1b450959d587'
 };
 
 // typeOf, instanceOf
@@ -518,7 +518,7 @@ this.$unlink = function(object){
 
 //</1.2compat>
 
-}).call(this);
+})();
 
 
 /*
@@ -539,13 +539,7 @@ provides: Array
 
 Array.implement({
 
-	invoke: function(methodName){
-		var args = Array.slice(arguments, 1);
-		return this.map(function(item){
-			return item[methodName].apply(item, args);
-		});
-	},
-
+	/*<!ES5>*/
 	every: function(fn, bind){
 		for (var i = 0, l = this.length; i < l; i++){
 			if ((i in this) && !fn.call(bind, this[i], i, this)) return false;
@@ -559,12 +553,6 @@ Array.implement({
 			if ((i in this) && fn.call(bind, this[i], i, this)) results.push(this[i]);
 		}
 		return results;
-	},
-
-	clean: function(){
-		return this.filter(function(item){
-			return item != null;
-		});
 	},
 
 	indexOf: function(item, from){
@@ -588,6 +576,20 @@ Array.implement({
 			if ((i in this) && fn.call(bind, this[i], i, this)) return true;
 		}
 		return false;
+	},
+	/*</!ES5>*/
+
+	clean: function(){
+		return this.filter(function(item){
+			return item != null;
+		});
+	},
+
+	invoke: function(methodName){
+		var args = Array.slice(arguments, 1);
+		return this.map(function(item){
+			return item[methodName].apply(item, args);
+		});
 	},
 
 	associate: function(keys){
@@ -876,6 +878,7 @@ Function.implement({
 		return null;
 	},
 
+	/*<!ES5>*/
 	bind: function(bind){
 		var self = this,
 			args = (arguments.length > 1) ? Array.slice(arguments, 1) : null;
@@ -886,6 +889,7 @@ Function.implement({
 			return self.apply(bind, args || arguments);
 		};
 	},
+	/*</!ES5>*/
 
 	pass: function(args, bind){
 		var self = this;
@@ -981,7 +985,7 @@ Object.extend({
 		var results = {};
 		for (var i = 0, l = keys.length; i < l; i++){
 			var k = keys[i];
-			results[k] = object[k];
+			if (k in object) results[k] = object[k];
 		}
 		return results;
 	},
@@ -996,9 +1000,10 @@ Object.extend({
 
 	filter: function(object, fn, bind){
 		var results = {};
-		Object.each(object, function(value, key){
-			if (fn.call(bind, value, key, object)) results[key] = value;
-		});
+		for (var key in object){
+			var value = object[key];
+			if (hasOwnProperty.call(object, key) && fn.call(bind, value, key, object)) results[key] = value;
+		}
 		return results;
 	},
 
@@ -1326,12 +1331,13 @@ Document.mirror(function(name, method){
 });
 
 document.html = document.documentElement;
-document.head = document.getElementsByTagName('head')[0];
+if (!document.head) document.head = document.getElementsByTagName('head')[0];
 
 if (document.execCommand) try {
 	document.execCommand("BackgroundImageCache", false, true);
 } catch (e){}
 
+/*<ltIE9>*/
 if (this.attachEvent && !this.addEventListener){
 	var unloadEvent = function(){
 		this.detachEvent('onunload', unloadEvent);
@@ -1363,6 +1369,7 @@ try {
 		};
 	});
 }
+/*</ltIE9>*/
 
 //<1.2compat>
 
@@ -1426,7 +1433,7 @@ this.$exec = Browser.exec;
 
 //</1.2compat>
 
-}).call(this);
+})();
 
 
 /*
@@ -1680,7 +1687,7 @@ Class.Mutators = {
 	}
 };
 
-}).call(this);
+})();
 
 
 /*
@@ -1803,7 +1810,7 @@ this.Options = new Class({
 
 });
 
-}).call(this);
+})();
 
 
 /*
@@ -2369,17 +2376,28 @@ local.search = function(context, expression, append, first){
 		/*<query-selector-override>*/
 		querySelector: if (context.querySelectorAll) {
 
-			if (!this.isHTMLDocument || this.brokenMixedCaseQSA || qsaFailExpCache[expression] ||
-			(this.brokenCheckedQSA && expression.indexOf(':checked') > -1) ||
-			(this.brokenEmptyAttributeQSA && reEmptyAttribute.test(expression)) || Slick.disableQSA) break querySelector;
+			if (!this.isHTMLDocument
+				|| qsaFailExpCache[expression]
+				//TODO: only skip when expression is actually mixed case
+				|| this.brokenMixedCaseQSA
+				|| (this.brokenCheckedQSA && expression.indexOf(':checked') > -1)
+				|| (this.brokenEmptyAttributeQSA && reEmptyAttribute.test(expression))
+				|| (!contextIsDocument //Abort when !contextIsDocument and...
+					//  there are multiple expressions in the selector
+					//  since we currently only fix non-document rooted QSA for single expression selectors
+					&& expression.indexOf(',') > -1
+				)
+				|| Slick.disableQSA
+			) break querySelector;
 
-			var _expression = expression;
+			var _expression = expression, _context = context;
 			if (!contextIsDocument){
 				// non-document rooted QSA
 				// credits to Andrew Dupont
-				var currentId = context.getAttribute('id'), slickid = 'slickid__';
-				context.setAttribute('id', slickid);
+				var currentId = _context.getAttribute('id'), slickid = 'slickid__';
+				_context.setAttribute('id', slickid);
 				_expression = '#' + slickid + ' ' + _expression;
+				context = _context.parentNode;
 			}
 
 			try {
@@ -2390,8 +2408,9 @@ local.search = function(context, expression, append, first){
 				break querySelector;
 			} finally {
 				if (!contextIsDocument){
-					if (currentId) context.setAttribute('id', currentId);
-					else context.removeAttribute('id');
+					if (currentId) _context.setAttribute('id', currentId);
+					else _context.removeAttribute('id');
+					context = _context;
 				}
 			}
 
@@ -3029,8 +3048,10 @@ var Element = function(tag, props){
 		var attributes = parsed.attributes;
 		if (attributes) for (var i = 0, l = attributes.length; i < l; i++){
 			var attr = attributes[i];
-			if (attr.value != null && attr.operator == '=' && props[attr.key] == null)
-				props[attr.key] = attr.value;
+			if (props[attr.key] != null) continue;
+
+			if (attr.value != null && attr.operator == '=') props[attr.key] = attr.value;
+			else if (!attr.value && !attr.operator) props[attr.key] = true;
 		}
 
 		if (parsed.classList && props['class'] == null) props['class'] = parsed.classList.join(' ');
@@ -3768,11 +3789,12 @@ Element.implement('hasChild', function(element){
 
 });
 
-// IE purge
+/*<ltIE9>*/
 if (window.attachEvent && !window.addEventListener) window.addListener('unload', function(){
 	Object.each(collected, clean);
 	if (window.CollectGarbage) CollectGarbage();
 });
+/*</ltIE9>*/
 
 })();
 
@@ -3808,6 +3830,7 @@ Element.Properties.tag = {
 
 };
 
+/*<ltIE9>*/
 (function(maxLength){
 	if (maxLength != null) Element.Properties.maxlength = Element.Properties.maxLength = {
 		get: function(){
@@ -3816,7 +3839,9 @@ Element.Properties.tag = {
 		}
 	};
 })(document.createElement('input').getAttribute('maxLength'));
+/*</ltIE9>*/
 
+/*<!webkit>*/
 Element.Properties.html = (function(){
 
 	var tableTest = Function.attempt(function(){
@@ -3853,6 +3878,7 @@ Element.Properties.html = (function(){
 
 	return html;
 })();
+/*</!webkit>*/
 
 
 /*
@@ -3887,7 +3913,8 @@ var setOpacity = function(element, opacity){
 	if (hasOpacity){
 		element.style.opacity = opacity;
 	} else {
-		opacity = (opacity == 1) ? '' : 'alpha(opacity=' + opacity * 100 + ')';
+		opacity = (opacity * 100).limit(0, 100).round();
+		opacity = (opacity == 100) ? '' : 'alpha(opacity=' + opacity + ')';
 		var filter = element.style.filter || element.getComputedStyle('filter') || '';
 		element.style.filter = reAlpha.test(filter) ? filter.replace(reAlpha, opacity) : filter + opacity;
 	}
@@ -4037,7 +4064,7 @@ Element.ShortStyles = {margin: {}, padding: {}, border: {}, borderWidth: {}, bor
 	Short.borderColor[bdc] = Short[bd][bdc] = All[bdc] = 'rgb(@, @, @)';
 });
 
-}).call(this);
+})();
 
 
 /*
@@ -4214,7 +4241,7 @@ Element.Events = new Hash(Element.Events);
 
 //</1.2compat>
 
-}).call(this);
+})();
 
 
 /*
@@ -4460,7 +4487,7 @@ function getCompatElement(element){
 	return (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
 }
 
-}).call(this);
+})();
 
 //aliases
 Element.alias({position: 'setPosition'}); //compatability
@@ -4680,7 +4707,7 @@ var pullInstance = function(fps){
 	}
 };
 
-}).call(this);
+})();
 
 
 /*
@@ -5575,7 +5602,7 @@ JSON.decode = function(string, secure){
 	return eval('(' + string + ')');
 };
 
-}).call(this);
+})();
 
 
 /*
@@ -5725,12 +5752,7 @@ var ready,
 	checks = [],
 	shouldPoll,
 	timer,
-	isFramed = true;
-
-// Thanks to Rich Dougherty <http://www.richdougherty.com/>
-try {
-	isFramed = window.frameElement != null;
-} catch(e){}
+	testElement = document.createElement('div');
 
 var domready = function(){
 	clearTimeout(timer);
@@ -5747,7 +5769,6 @@ var check = function(){
 		domready();
 		return true;
 	}
-
 	return false;
 };
 
@@ -5758,19 +5779,23 @@ var poll = function(){
 
 document.addListener('DOMContentLoaded', domready);
 
+/*<ltIE8>*/
 // doScroll technique by Diego Perini http://javascript.nwbox.com/IEContentLoaded/
-var testElement = document.createElement('div');
-if (testElement.doScroll && !isFramed){
-	checks.push(function(){
-		try {
-			testElement.doScroll();
-			return true;
-		} catch (e){}
-
-		return false;
-	});
+// testElement.doScroll() throws when the DOM is not ready, only in the top window
+var doScrollWorks = function(){
+	try {
+		testElement.doScroll();
+		return true;
+	} catch (e){}
+	return false;
+}
+// If doScroll works already, it can't be used to determine domready
+//   e.g. in an iframe
+if (testElement.doScroll && !doScrollWorks()){
+	checks.push(doScrollWorks);
 	shouldPoll = true;
 }
+/*</ltIE8>*/
 
 if (document.readyState) checks.push(function(){
 	var state = document.readyState;
@@ -5799,7 +5824,6 @@ Element.Events.load = {
 			domready();
 			delete Element.Events.load;
 		}
-		
 		return true;
 	}
 };
@@ -5924,5 +5948,5 @@ Swiff.remote = function(obj, fn){
 	return eval(rs);
 };
 
-}).call(this);
+})();
 
