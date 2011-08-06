@@ -11,44 +11,6 @@ var afterAll;
 var beforeEachFn;
 var afterEachFn;
 
-/*
-var QUnitBridge = function(value){
-
-  this.should_be_true = function(){
-    ok(value, currentBlock);
-  };
-
-  this.should_have = function(){
-  };
-
-  this.should_be = function(asserted){
-    var type = typeof asserted;
-    if(type == 'string' || type == 'number'){
-      equal(value, asserted, currentBlock);
-    } else {
-      same(value, asserted, currentBlock);
-    }
-  };
-
-  this.should_be_false = function(){
-    equal(value, false, currentBlock);
-  };
-
-  this.should_be_null = function(){
-    equal(value, null, currentBlock);
-  };
-
-  this.should_not_be = function(asserted){
-    ok(value != asserted, currentBlock);
-  };
-
-  this.should_match = function(reg){
-    ok(reg.test(value), currentBlock);
-  };
-
-}
-*/
-
 var QUnitBridge = function(expression){
 
   this.toBe = function(test){
@@ -133,12 +95,6 @@ var arrayContains = function(a, expr){
   }
   return false;
 }
-
-/*
-var value_of = function(value){
-  return new QUnitBridge(value);
-}
-*/
 
 var expect = function(expression){
   return new QUnitBridge(expression);
