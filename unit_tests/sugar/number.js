@@ -209,11 +209,11 @@ test('Number', function () {
   equals((100046546510000.022435451).format().replace(/\.\d+$/, ''), '100,046,546,510,000', 'Number#format | 100,046,546,510,000')
   equals((-100046546510000.022435451).format().replace(/\.\d+$/, ''), '-100,046,546,510,000', 'Number#format | -100,046,546,510,000')
 
-  equalsWithException((1000).format(' '), '1 000', { mootools: '1,000' }, 'Number#format | 1000')
-  equalsWithException((1532587).format(' '), '1 532 587', { mootools: '1,532,587', }, 'Number#format | larger number')
-  equalsWithException((1532587.5752).format(' ', ','), '1 532 587,5752', { mootools: '1,532,587.5752' }, 'Number#format | larger number with decimal')
+  equals((1000).format(' '), '1 000', 'Number#format | 1000')
+  equals((1532587).format(' '), '1 532 587', 'Number#format | larger number')
+  equals((1532587.5752).format(' ', ','), '1 532 587,5752', 'Number#format | larger number with decimal')
   equals((9999999.99).format(), '9,999,999.99', 'Number#format | Standard');
-  equalsWithException((9999999.99).format('.',','), '9.999.999,99', { mootools: '9,999,999.99' }, 'Number#format | Euro style!');
+  equals((9999999.99).format('.',','), '9.999.999,99', 'Number#format | Euro style!');
 
 
 
