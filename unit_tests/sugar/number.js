@@ -4,7 +4,6 @@ test('Number', function () {
   var counter;
   var ret;
 
-
   var rand = Number.random();
   equalsWithException(rand == 0 || rand == 1, true, { mootools: false }, 'Number.random | no params = 0 or 1');
 
@@ -210,11 +209,11 @@ test('Number', function () {
   equals((100046546510000.022435451).format().replace(/\.\d+$/, ''), '100,046,546,510,000', 'Number#format | 100,046,546,510,000')
   equals((-100046546510000.022435451).format().replace(/\.\d+$/, ''), '-100,046,546,510,000', 'Number#format | -100,046,546,510,000')
 
-  equals((1000).format(' '), '1 000', 'Number#format | 1000')
-  equals((1532587).format(' '), '1 532 587', 'Number#format | larger number')
-  equals((1532587.5752).format(' ', ','), '1 532 587,5752', 'Number#format | larger number with decimal')
+  equalsWithException((1000).format(' '), '1 000', { mootools: '1,000' }, 'Number#format | 1000')
+  equalsWithException((1532587).format(' '), '1 532 587', { mootools: '1,532,587', }, 'Number#format | larger number')
+  equalsWithException((1532587.5752).format(' ', ','), '1 532 587,5752', { mootools: '1,532,587.5752' }, 'Number#format | larger number with decimal')
   equals((9999999.99).format(), '9,999,999.99', 'Number#format | Standard');
-  equals((9999999.99).format('.',','), '9.999.999,99', 'Number#format | Euro style!');
+  equalsWithException((9999999.99).format('.',','), '9.999.999,99', { mootools: '9,999,999.99' }, 'Number#format | Euro style!');
 
 
 
@@ -388,15 +387,15 @@ test('Number', function () {
 
   dateEquals((5).minutesBefore('April 2rd, 1998'), new Date(1998, 3, 1, 23, 55), 'Number#minutesBefore | 5 minutes before April 3rd, 1998');
   dateEquals((5).minutesAfter('January 2nd, 2005'), new Date(2005, 0, 2, 0, 5), 'Number#minutesAfter | 5 minutes after January 2nd, 2005');
-  dateEquals((5).hoursBefore('the first day of 2005'), new Date(2004, 11, 31, 19), 'Number#minutesBefore | 5 hours before the first day of 2005');
-  dateEquals((5).hoursAfter('the last day of 2006'), new Date(2006, 11, 31, 5), 'Number#minutesAfter | 5 hours after the last day of 2006');
-  dateEquals((5).hoursAfter('the end of 2006'), new Date(2007, 0, 1, 4, 59, 59, 999), 'Number#minutesAfter | 5 hours after the end of 2006');
-  dateEquals((5).daysBefore('last week monday'), getDateWithWeekdayAndOffset(1, -7).rewind({ days: 5 }), 'Number#minutesAfter | 5 days before last week monday');
-  dateEquals((5).daysAfter('next tuesday'), getDateWithWeekdayAndOffset(2, 7).advance({ days: 5 }), 'Number#minutesAfter | 5 days after next week tuesday');
-  dateEquals((5).weeksBefore('today'), getRelativeDate(null, null, -35).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#minutesAfter | 5 weeks before today');
-  dateEquals((5).weeksAfter('now'), getRelativeDate(null, null, 35), 'Number#minutesAfter | 5 weeks after now');
-  dateEquals((5).monthsBefore('today'), getRelativeDate(null, -5).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#minutesAfter | 5 months before today');
-  dateEquals((5).monthsAfter('now'), getRelativeDate(null, 5), 'Number#minutesAfter | 5 months after now');
+  dateEquals((5).hoursBefore('the first day of 2005'), new Date(2004, 11, 31, 19), 'Number#hoursBefore | 5 hours before the first day of 2005');
+  dateEquals((5).hoursAfter('the last day of 2006'), new Date(2006, 11, 31, 5), 'Number#hoursAfter | 5 hours after the last day of 2006');
+  dateEquals((5).hoursAfter('the end of 2006'), new Date(2007, 0, 1, 4, 59, 59, 999), 'Number#hoursAfter | 5 hours after the end of 2006');
+  dateEquals((5).daysBefore('last week monday'), getDateWithWeekdayAndOffset(1, -7).rewind({ days: 5 }), 'Number#daysBefore | 5 days before last week monday');
+  dateEquals((5).daysAfter('next tuesday'), getDateWithWeekdayAndOffset(2, 7).advance({ days: 5 }), 'Number#daysAfter | 5 days after next week tuesday');
+  dateEquals((5).weeksBefore('today'), getRelativeDate(null, null, -35).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#weeksBefore | 5 weeks before today');
+  dateEquals((5).weeksAfter('now'), getRelativeDate(null, null, 35), 'Number#weeksAfter | 5 weeks after now');
+  dateEquals((5).monthsBefore('today'), getRelativeDate(null, -5).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#monthsBefore | 5 months before today');
+  dateEquals((5).monthsAfter('now'), getRelativeDate(null, 5), 'Number#monthsAfter | 5 months after now');
 
 
 

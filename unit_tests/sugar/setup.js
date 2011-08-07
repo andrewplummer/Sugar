@@ -106,15 +106,14 @@ var strictlyEqualsWithException = function(actual, expected, exception, message)
 }
 
 var fixPrototypeIterators = function() {
-  if(environment == 'prototype') {
-    fixIterator('find');
-    fixIterator('findAll');
-    fixIterator('any');
-    fixIterator('all');
-    fixIterator('sortBy', true);
-    fixIterator('min', true);
-    fixIterator('max', true);
-  }
+  if(environment != 'prototype') return;
+  fixIterator('find');
+  fixIterator('findAll');
+  fixIterator('any');
+  fixIterator('all');
+  fixIterator('sortBy', true);
+  fixIterator('min', true);
+  fixIterator('max', true);
 }
 
 var fixIterator = function(name, map) {
@@ -133,24 +132,6 @@ var fixIterator = function(name, map) {
     }
   };
 }
-
-var testWithErrorHandling = function(test, environments) {
-  try {
-    test.call();
-  } catch(error) {
-    for(var i = 0; i < environments.length; i++) {
-      if(environments[i] == environment) {
-        // Allow test to fail
-        if(console) {
-          console.info('Skipping test with exepction "' + error.message + '" for environment ' + environment);
-        }
-        return;
-      }
-    }
-    throw new Error('Test ' + test.toString() + ' errored with message ' + error.message);
-  }
-}
-
 
 var skipEnvironments = function(environments, test) {
   if(!environments.has(environment)) {
