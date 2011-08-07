@@ -73,6 +73,11 @@ test('Array', function () {
 
   equals([12,5,8,130,44].every(function(el, i, a) { return el >= 10; }), false, 'Array#every | not every element is greater than 10');
   equals([12,54,18,130,44].every(function(el, i, a) { return el >= 10; }), true, 'Array#every | every element is greater than 10');
+
+  equals([undefined, undefined].every(undefined), true, 'Array#every | all undefined');
+  equals([undefined, 'a'].every(undefined), false, 'Array#every | every undefined');
+  equals(['a', 'b'].every(undefined), false, 'Array#every | none undefined');
+
   ['a'].every(function(el, i, a) {
     equals(el, 'a', 'Array#every | First parameter is the element');
     equals(i, 0, 'Array#every | Second parameter is the index');
@@ -101,6 +106,11 @@ test('Array', function () {
   equals([12,5,8,130,44].some(function(el, i, a) { return el < 10 }), true, 'Array#some | some elements are less than 10');
   equals([12,54,18,130,44].some(function(el, i, a) { return el >= 10 }), true, 'Array#some | all elements are greater than 10');
   equals([12,5,8,130,44].some(function(el, i, a) { return el < 4 }), false, 'Array#some | no elements are less than 4');
+
+  equals([undefined, undefined].some(undefined), true, 'Array#some | all undefined');
+  equals([undefined, 'a'].some(undefined), true, 'Array#some | some undefined');
+  equals(['a', 'b'].some(undefined), false, 'Array#some | none undefined');
+
   equals([].some(function(el, i, a) { return el > 10 }), false, 'Array#some | no elements are greater than 10 in an empty array');
   ['a'].some(function(el, i, a) {
     equals(el, 'a', 'Array#some | first parameter is the element');
@@ -138,8 +148,6 @@ test('Array', function () {
   same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [], 'Array#filter | simple string mistakenly passed for complex objects');
   same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'john',age:25}), [{name:'john',age:25}], 'Array#filter | filtering john');
   same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'fred',age:85}), [{name:'fred',age:85}], 'Array#filter | filtering fred');
-
-
 
 
   arr = [2, 5, 9];
@@ -200,13 +208,18 @@ test('Array', function () {
 
 
   same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map | length');
-  same([1,2,3].map(2), [undefined,undefined,undefined], 'Array#map | can handle non-string arguments');
   same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map | age');
   same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map | name');
   same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map | (nonexistent) cupsize');
   same([].map('name'), [], 'Array#map');
 
   same([1,2,3].map('toString'), ['1','2','3'], 'Array#map | calls a function on a shortcut string');
+
+  raisesError(function(){ [1,2,3].map() }, 'Array#map | raises an error if no argument');
+  raisesError(function(){ [1,2,3].map(undefined) }, 'Array#map | raises an error on undefined');
+  raisesError(function(){ [1,2,3].map(null) }, 'Array#map | raises an error on null');
+  raisesError(function(){ [1,2,3].map(3) }, 'Array#map | raises an error on a number');
+
 
 
 
@@ -483,7 +496,7 @@ test('Array', function () {
   same([null, null].find(null, 1), null, 'Array#find | null from index 1');
   same([undefined, undefined].find(undefined, 0), undefined, 'Array#find | undefined');
   same([undefined, undefined].find(undefined, 1), undefined, 'Array#find | undefined from index 1');
-  sameWithException([undefined, 'a'].find(undefined, 1), 'a', { prototype: undefined }, 'Array#find | undefined finds the first element');
+  same([undefined, 'a'].find(undefined, 1), undefined, 'Array#find | undefined can be found');
 
 
   count = 0;
@@ -716,6 +729,9 @@ test('Array', function () {
 
 
 
+  raisesError(function() { [1,2,3].min(undefined); }, 'Array#min | raises an error on undefined');
+  raisesError(function() { [1,2,3].min(null); }, 'Array#min | raises an error on null');
+  raisesError(function() { [1,2,3].min(4); }, 'Array#min | raises an error on number');
 
   sameWithException([12,87,55].min(), [12], { prototype: 12 }, 'Array#min | 12');
   sameWithException([-12,-87,-55].min(), [-87], { prototype: -87 }, 'Array#min | -87');
@@ -733,6 +749,12 @@ test('Array', function () {
   sameWithException(['short','and','mort','fat'].min(function(el) { return el.length; }), ['and','fat'], { prototype: 3 }, 'Array#min | and,fat');
   sameWithException(['short','and','mort'].min('length'), ['and'], { prototype: 3 }, 'Array#min | length with shortcut');
 
+
+
+
+  raisesError(function() { [1,2,3].max(undefined); }, 'Array#max | raises an error on undefined');
+  raisesError(function() { [1,2,3].max(null); }, 'Array#max | raises an error on null');
+  raisesError(function() { [1,2,3].max(4); }, 'Array#max | raises an error on number');
 
   sameWithException([12,87,55].max(), [87], { prototype: 87 }, 'Array#max | 87');
   sameWithException([-12,-87,-55].max(), [-12], { prototype: -12 }, 'Array#max | -12');
@@ -761,6 +783,10 @@ test('Array', function () {
     { name: 'edmund', age: 27, hair: 'blonde' }
   ];
 
+  raisesError(function() { [1,2,3].most(undefined); }, 'Array#most | raises an error on undefined');
+  raisesError(function() { [1,2,3].most(null); }, 'Array#most | raises an error on null');
+  raisesError(function() { [1,2,3].most(4); }, 'Array#most | raises an error on number');
+
   same(people.most(function(person) { return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | age');
   same(people.most(function(person) { return person.hair; }), [], 'Array#most | hair');
 
@@ -775,6 +801,10 @@ test('Array', function () {
   // Leaving this here as a reference for how to collect the actual number of occurences.
   equal(people.most(function(person) { return person.age; }).length, 2, 'Array#most | collect actual number of occurrences');
 
+
+  raisesError(function() { [1,2,3].least(undefined); }, 'Array#least | raises an error on undefined');
+  raisesError(function() { [1,2,3].least(null); }, 'Array#least | raises an error on null');
+  raisesError(function() { [1,2,3].least(4); }, 'Array#least | raises an error on number');
 
   same(people.least(function(person) { return person.age; }).sortBy('name'), [people[1], people[2]], 'Array#least | contains mary and ronnie');
   same(people.least(function(person) { return person.age; }).sortBy('age'), [{name:'ronnie',age:13,hair:'brown'}, {name:'mary',age:52,hair:'blonde'}], 'Array#least | age and sorted by age');
@@ -829,6 +859,10 @@ test('Array', function () {
 
   people = people.sortBy('hair');
   same(people.groupBy(function(p) { return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
+
+  raisesError(function() { [1,2,3].groupBy(undefined); }, 'Array#groupBy | raises an error on undefined');
+  raisesError(function() { [1,2,3].groupBy(null); }, 'Array#groupBy | raises an error on null');
+  raisesError(function() { [1,2,3].groupBy(4); }, 'Array#groupBy | raises an error on number');
 
 
 
@@ -1274,6 +1308,10 @@ test('Array', function () {
   arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
   same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
   sameWithException(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], { prototype: [{a:'bar'},{a:'foo'},{a:'skittles'}] }, 'Array#sortBy | desc | sort by key "a"');
+
+  raisesError(function() { [1,2,3].sortBy(undefined); }, 'Array#sortBy | raises an error on undefined');
+  raisesError(function() { [1,2,3].sortBy(null); }, 'Array#sortBy | raises an error on null');
+  raisesError(function() { [1,2,3].sortBy(4); }, 'Array#sortBy | raises an error on number');
 
 
 
