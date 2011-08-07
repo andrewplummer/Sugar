@@ -1,5 +1,6 @@
 test('Date', function () {
 
+
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
@@ -17,9 +18,7 @@ test('Date', function () {
 
   // Invalid date
   equals(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
-  testWithErrorHandling(function() {
-    equals(new Date().isValid(), true, 'Date#isValid | new Date valid');
-  }, ['mootools']);
+  equals(new Date().isValid(), true, 'Date#isValid | new Date valid');
 
   equals(Date.create().isValid(), true, 'Date#isValid | created date is valid');
   equals(Date.create('a fridge too far').isValid(), false, 'Date#isValid | Date#create invalid');
@@ -951,75 +950,79 @@ test('Date', function () {
   equals(Date.create('13 months from now').format('relative'), '1 year from now', 'Date#format | relative future | 12 months ago');
 
 
-  var dyn = function(value, unit, ms, dir) {
-    if(ms > (1).year()) {
-      return '{Month} {date}, {year}';
-    } else {
-      return 'relative';
+  skipEnvironments(['mootools'], function() {
+
+    var dyn = function(value, unit, ms, dir) {
+      if(ms > (1).year()) {
+        return '{Month} {date}, {year}';
+      } else {
+        return 'relative';
+      }
     }
-  }
 
-  equals(Date.create('5 minutes ago').format(dyn), '5 minutes ago', 'Date#format | relative fn | 5 minutes should stay relative');
-  equals(Date.create('13 months ago').format(dyn), Date.create('13 months ago').format('{Month} {date}, {year}'), 'Date#format | relative fn | higher reverts to absolute');
+    equals(Date.create('5 minutes ago').format(dyn), '5 minutes ago', 'Date#format | relative fn | 5 minutes should stay relative');
+    equals(Date.create('13 months ago').format(dyn), Date.create('13 months ago').format('{Month} {date}, {year}'), 'Date#format | relative fn | higher reverts to absolute');
 
-  // globalize system with plurals
+    // globalize system with plurals
 
-  var strings = {
-    second: '秒',
-    seconds: '秒達',
-    minute: '分',
-    minutes: '分達',
-    hour: '時間',
-    hours: '時間達',
-    day: '日',
-    days: '日達',
-    week: '週間',
-    weeks: '週間達',
-    month: '月',
-    months: '月達',
-    year: '年',
-    years: '年達'
-  }
+    var strings = {
+      second: '秒',
+      seconds: '秒達',
+      minute: '分',
+      minutes: '分達',
+      hour: '時間',
+      hours: '時間達',
+      day: '日',
+      days: '日達',
+      week: '週間',
+      weeks: '週間達',
+      month: '月',
+      months: '月達',
+      year: '年',
+      years: '年達'
+    }
 
-  dyn = function(value, unit, ms, dir) {
-    equals(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
-    equals(unit, 'minutes', 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
-    equalsWithMargin(ms, 300000, 5, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
-    equals(dir, -1, 'Date#format | relative fn | 5 minutes ago | dir indicates the offset from "now", negative if in the past');
-    return value + strings[unit] + (dir < 0 ? '前' : '後');
-  }
+    dyn = function(value, unit, ms, dir) {
+      equals(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
+      equals(unit, 'minutes', 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
+      equalsWithMargin(ms, 300000, 5, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
+      equals(dir, -1, 'Date#format | relative fn | 5 minutes ago | dir indicates the offset from "now", negative if in the past');
+      return value + strings[unit] + (dir < 0 ? '前' : '後');
+    }
 
-  equals(Date.create('5 minutes ago').format(dyn), '5分達前', 'Date#format | relative fn | 5 minutes ago');
-
-
-  dyn = function(value, unit, ms, dir) {
-    equals(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
-    equals(unit, 'minute', 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
-    equalsWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
-    equals(dir, 1, 'Date#format | relative fn | 1 minute from now | dir indicates the offset from "now", negative if in the past');
-    return value + strings[unit] + (dir < 0 ? '前' : '後');
-  }
-
-  equals(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
+    equals(Date.create('5 minutes ago').format(dyn), '5分達前', 'Date#format | relative fn | 5 minutes ago');
 
 
+    dyn = function(value, unit, ms, dir) {
+      equals(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
+      equals(unit, 'minute', 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
+      equalsWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
+      equals(dir, 1, 'Date#format | relative fn | 1 minute from now | dir indicates the offset from "now", negative if in the past');
+      return value + strings[unit] + (dir < 0 ? '前' : '後');
+    }
 
-  dyn = function(value, unit, ms, dir) {
-    equals(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
-    equals(unit, 'hours', 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
-    equalsWithMargin(ms, 14400000, 5, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
-    equals(dir, -1, 'Date#format | relative fn | 4 hours ago | dir indicates the offset from "now", negative if in the past');
-    return value + strings[unit] + (dir < 0 ? '前' : '後');
-  }
+    equals(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
 
-  equals(Date.create('240 minutes ago').format(dyn), '4時間達前', 'Date#format | relative fn | 4 hours ago');
 
-  Date.create('223 milliseconds ago').format(function(value, unit) {
-    equalsWithMargin(value, 223, 5, 'Date format | relative fn | still passes < 1 second');
-    equals(unit, 'milliseconds', 'Date format | relative fn | still passes "millisecond"');
+
+    dyn = function(value, unit, ms, dir) {
+      equals(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
+      equals(unit, 'hours', 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
+      equalsWithMargin(ms, 14400000, 5, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
+      equals(dir, -1, 'Date#format | relative fn | 4 hours ago | dir indicates the offset from "now", negative if in the past');
+      return value + strings[unit] + (dir < 0 ? '前' : '後');
+    }
+
+    equals(Date.create('240 minutes ago').format(dyn), '4時間達前', 'Date#format | relative fn | 4 hours ago');
+
+    Date.create('223 milliseconds ago').format(function(value, unit) {
+      equalsWithMargin(value, 223, 5, 'Date format | relative fn | still passes < 1 second');
+      equals(unit, 'milliseconds', 'Date format | relative fn | still passes "millisecond"');
+    });
+
+    equals(Date.create('300 minutes ago').format(function() {}), '5 hours ago', 'Date#format | function that returns undefined defaults to "relative"');
+
   });
-
-  equals(Date.create('300 minutes ago').format(function() {}), '5 hours ago', 'Date#format | function that returns undefined defaults to "relative"');
 
 
   equals(Date.create('6234 milliseconds ago').relative(), '6 seconds ago', 'Date#relative | relative | 6 milliseconds');

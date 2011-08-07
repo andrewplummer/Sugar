@@ -85,21 +85,23 @@ test('String', function () {
   equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim | should trim left whitespace only');
   equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim | should trim right whitespace only');
 
-  equal('wasabi'.pad(), 'wasabi', 'String#pad | passing no params');
+  skipEnvironments(['mootools'], function() { 
+    equal('wasabi'.pad(), 'wasabi', 'String#pad | passing no params');
+  });
+
   equal('wasabi'.pad(-1), 'wasabi', 'String#pad | passing in -1');
-  equal('wasabi'.pad(3), '   wasabi   ', 'String#pad | should pad the string with 3 spaces');
-  equal('wasabi'.pad(5), '     wasabi     ', 'String#pad | should pad the string with 5 spaces');
-  equal('wasabi'.pad(5, '-'), '-----wasabi-----', 'String#pad | should pad the string with 5 hyphens');
-  equal('wasabi'.pad(2).pad(3, '-'), '---  wasabi  ---', 'String#pad | should pad the string with 2 spaces and 3 hyphens');
+  equalsWithException('wasabi'.pad(3), '   wasabi   ', { mootools: 'wasabi' }, 'String#pad | should pad the string with 3 spaces');
+  equalsWithException('wasabi'.pad(5), '     wasabi     ', { mootools: 'wasabi' }, 'String#pad | should pad the string with 5 spaces');
+  equalsWithException('wasabi'.pad(5, '-'), '-----wasabi-----', { mootools: 'wasabi' }, 'String#pad | should pad the string with 5 hyphens');
+  equalsWithException('wasabi'.pad(2).pad(3, '-'), '---  wasabi  ---', { mootools: 'wasabi' }, 'String#pad | should pad the string with 2 spaces and 3 hyphens');
 
   equal('wasabi'.padRight(3, '-'), 'wasabi---', 'String#pad | should pad the string with 3 hyphens on the right');
   equal('4'.padLeft(3, '0'), '0004', 'String#pad | should pad the string with 4 zeroes on the left');
   equal('wasabi'.padLeft(3), '   wasabi', 'String#pad | should pad the string with 3 spaces on the left');
   equal('wasabi'.padRight(3), 'wasabi   ', 'String#pad | should pad the string with 3 spaces on the right');
-  equal('wasabi'.pad() === 'wasabi', true, 'String#pad | strict equality works');
 
   equal('wasabi'.repeat(0), '', 'String#repeat | 0 should repeat the string 0 times');
-  equal('wasabi'.repeat(-1), 'wasabi', 'String#repeat | -1 should do nothing to the string');
+  equalsWithException('wasabi'.repeat(-1), 'wasabi', { mootools: '' }, 'String#repeat | -1 should do nothing to the string');
   equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | 2 should repeat the string 2 times');
 
   // "each" will return an array of everything that was matched, defaulting to individual characters
@@ -725,6 +727,9 @@ test('String', function () {
     '</div>';
   var allStripped = 'text with links, &quot;entities&quot; and bold tags';
 
+  var aRemoved = '<div class="outer"><p>text with , &quot;entities&quot; and <b>bold</b> tags</p></div>';
+  var pRemoved = '<div class="outer"></div>';
+
   var malformed_html = '<div class="outer"><p>paragraph';
 
 
@@ -741,14 +746,14 @@ test('String', function () {
     '<div class="outer">' +
       '<p>text with links, &quot;entities&quot; and bold tags</p>' +
     '</div>';
-  equalsWithException(html.stripTags('a', 'b'), stripped, { prototype: allStripped}, 'String#stripTags | stripped <a> and <b> tags');
+  equalsWithException(html.stripTags('a', 'b'), stripped, { prototype: allStripped, mootools: aRemoved }, 'String#stripTags | stripped <a> and <b> tags');
 
 
   stripped =
     '<div class="outer">' +
       'text with links, &quot;entities&quot; and <b>bold</b> tags' +
     '</div>';
-  equalsWithException(html.stripTags('p', 'a'), stripped, { prototype: allStripped}, 'String#stripTags | stripped <p> and <a> tags');
+  equalsWithException(html.stripTags('p', 'a'), stripped, { prototype: allStripped, mootools: pRemoved }, 'String#stripTags | stripped <p> and <a> tags');
 
 
   stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>';
@@ -770,7 +775,7 @@ test('String', function () {
 
 
 
-  equalsWithException('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', { prototype: '' }, "String#stripTags | does not strip tags that aren't properly closed");
+  equalsWithException('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', { prototype: '', mootools: '' }, "String#stripTags | does not strip tags that aren't properly closed");
   equal('a < b'.stripTags(), 'a < b', 'String#stripTags | does not strip less than');
   equal('a > b'.stripTags(), 'a > b', 'String#stripTags | does not strip greater than');
   equalsWithException('</foo  >>'.stripTags(), '>', { prototype: '</foo  >>' }, 'String#stripTags | strips closing tags with white space');
@@ -789,9 +794,11 @@ test('String', function () {
     '</p>' +
     '</form>';
 
+  var inputRemoved = '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>';
+
   equal(html.stripTags(), 'label for text:', 'String#stripTags | form | all tags removed');
   equalsWithException(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', { prototype: 'label for text:' }, 'String#stripTags | form | input tags stripped');
-  equalsWithException(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', { prototype: 'label for text:' }, 'String#stripTags | form | input, p, and form tags stripped');
+  equalsWithException(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', { prototype: 'label for text:', mootools: html }, 'String#stripTags | form | input, p, and form tags stripped');
 
   /* Stripping namespaced tags */
   equalsWithException('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', { prototype: '<xsl:template>foobar</xsl:template>' }, 'String#stripTags | strips tags with xml namespaces');
@@ -800,7 +807,9 @@ test('String', function () {
 
 
   /* No errors on RegExp */
-  equalsWithException('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', { prototype: '<xsl(template>foobar</xsl(template>' }, 'String#stripTags | no regexp errors on tokens');
+  skipEnvironments(['mootools'], function() {
+    equalsWithException('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', { prototype: '<xsl(template>foobar</xsl(template>' }, 'String#stripTags | no regexp errors on tokens');
+  });
 
 
 
@@ -894,8 +903,11 @@ test('String', function () {
   strictlyEqual(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft | wasabi with whitespace');
   strictlyEqual(''.trimRight(), '', 'String#trimRight | blank');
   strictlyEqual(' wasabi '.trimRight(), ' wasabi', 'String#trimRight | wasabi with whitespace');
-  strictlyEqual(''.pad(0), '', 'String#pad | blank');
-  strictlyEqual('wasabi'.pad(1), ' wasabi ', 'String#pad | wasabi padded to 1');
+
+  // TODO fix this when cleaning up tests
+  equalsWithException(''.pad(0) === '', true, { mootools: false }, 'String#pad | blank');
+  equalsWithException('wasabi'.pad(1) === ' wasabi ', true, { mootools: false }, 'String#pad | wasabi padded to 1');
+
   strictlyEqual('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
   strictlyEqual('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
   strictlyEqual('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
