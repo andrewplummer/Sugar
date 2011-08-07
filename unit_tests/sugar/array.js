@@ -1011,29 +1011,29 @@ test('Array', function () {
 
 
 
-  same([1,2,2,3].removeAtIndex(), [1,2,2,3], 'Array#removeAtIndex | numeric | no argument');
-  same([1,2,2,3].removeAtIndex(0), [2,2,3], 'Array#removeAtIndex | numeric | 0');
-  same([1,2,2,3].removeAtIndex(1), [1,2,3], 'Array#removeAtIndex | numeric | 1');
-  same([1,2,2,3].removeAtIndex(2), [1,2,3], 'Array#removeAtIndex | numeric | 2');
-  same([1,2,2,3].removeAtIndex(3), [1,2,2], 'Array#removeAtIndex | numeric | 3');
-  same([1,2,2,3].removeAtIndex(4), [1,2,2,3], 'Array#removeAtIndex | numeric | 4');
-  same(['a','b','c','c'].removeAtIndex(), ['a','b','c','c'], 'Array#removeAtIndex | alphabet | no argument');
-  same(['a','b','c','c'].removeAtIndex(0), ['b','c','c'], 'Array#removeAtIndex | alphabet | 0');
-  same(['a','b','c','c'].removeAtIndex(1), ['a','c','c'], 'Array#removeAtIndex | alphabet | 1');
-  same(['a','b','c','c'].removeAtIndex(2), ['a','b','c'], 'Array#removeAtIndex | alphabet | 2');
-  same(['a','b','c','c'].removeAtIndex(3), ['a','b','c'], 'Array#removeAtIndex | alphabet | 3');
-  same(['a','b','c','c'].removeAtIndex(4), ['a','b','c','c'], 'Array#removeAtIndex | alphabet | 4');
-  same([{a:1},{a:2},{a:1}].removeAtIndex(1), [{a:1},{a:1}], 'Array#removeAtIndex | objects | 1');
-  same([1,2,2,3].removeAtIndex(0,1), [2,3], 'Array#removeAtIndex | 0 to 1');
-  same([1,2,2,3].removeAtIndex(0,2), [3], 'Array#removeAtIndex | 0 to 2');
-  same([1,2,2,3].removeAtIndex(1,2), [1,3], 'Array#removeAtIndex | 1 to 2');
-  same([1,2,2,3].removeAtIndex(1,5), [1], 'Array#removeAtIndex | 1 to 5');
-  same([1,2,2,3].removeAtIndex(0,5), [], 'Array#removeAtIndex | 0 to 5');
-  same([1,2,2,3].removeAtIndex(null,5), [], 'Array#removeAtIndex | also accepts null');
+  same([1,2,2,3].removeAt(), [1,2,2,3], 'Array#removeAt | numeric | no argument');
+  same([1,2,2,3].removeAt(0), [2,2,3], 'Array#removeAt | numeric | 0');
+  same([1,2,2,3].removeAt(1), [1,2,3], 'Array#removeAt | numeric | 1');
+  same([1,2,2,3].removeAt(2), [1,2,3], 'Array#removeAt | numeric | 2');
+  same([1,2,2,3].removeAt(3), [1,2,2], 'Array#removeAt | numeric | 3');
+  same([1,2,2,3].removeAt(4), [1,2,2,3], 'Array#removeAt | numeric | 4');
+  same(['a','b','c','c'].removeAt(), ['a','b','c','c'], 'Array#removeAt | alphabet | no argument');
+  same(['a','b','c','c'].removeAt(0), ['b','c','c'], 'Array#removeAt | alphabet | 0');
+  same(['a','b','c','c'].removeAt(1), ['a','c','c'], 'Array#removeAt | alphabet | 1');
+  same(['a','b','c','c'].removeAt(2), ['a','b','c'], 'Array#removeAt | alphabet | 2');
+  same(['a','b','c','c'].removeAt(3), ['a','b','c'], 'Array#removeAt | alphabet | 3');
+  same(['a','b','c','c'].removeAt(4), ['a','b','c','c'], 'Array#removeAt | alphabet | 4');
+  same([{a:1},{a:2},{a:1}].removeAt(1), [{a:1},{a:1}], 'Array#removeAt | objects | 1');
+  same([1,2,2,3].removeAt(0,1), [2,3], 'Array#removeAt | 0 to 1');
+  same([1,2,2,3].removeAt(0,2), [3], 'Array#removeAt | 0 to 2');
+  same([1,2,2,3].removeAt(1,2), [1,3], 'Array#removeAt | 1 to 2');
+  same([1,2,2,3].removeAt(1,5), [1], 'Array#removeAt | 1 to 5');
+  same([1,2,2,3].removeAt(0,5), [], 'Array#removeAt | 0 to 5');
+  same([1,2,2,3].removeAt(null,5), [], 'Array#removeAt | also accepts null');
 
   arr = [1,2,3];
-  arr.removeAtIndex(1);
-  same(arr, [1,3], 'Array#removeAtIndex | should affect the original array');
+  arr.removeAt(1);
+  same(arr, [1,3], 'Array#removeAt | should affect the original array');
 
 
 
