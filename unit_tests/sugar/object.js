@@ -273,7 +273,7 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equals(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
-  equals(obj2.foo.jumpy, 'jump', 'Object.clone | cloned object is not modified');
+  equalsWithException(obj2.foo.jumpy, 'jump', { prototype: 'hump' }, 'Object.clone | cloned object is not modified');
 
   obj1 = {
     foo: {
@@ -284,15 +284,15 @@ test('Object', function () {
 
   obj1.foo.bar = ['a','b','c'];
   same(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
-  same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+  sameWithException(obj2.foo.bar, [1,2,3], { prototype: ['a','b','c'] }, 'Object#clone | cloned object is not modified');
 
 
 
   // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
   // cloning properties in the prototype chain directly into the object itself.
-  equals(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar' }).clone(), { foo: 'bar' }), true, 'Object#clone | basic clone');
-  equals(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, 'Object#clone | complex clone');
-  equals(deepEqualWithoutPrototyping(Object.extended({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, 'Object#clone | deep clone');
+  same(Object.extended({ foo: 'bar' }).clone(), { foo: 'bar' }, 'Object#clone | basic clone');
+  same(Object.extended({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }, 'Object#clone | complex clone');
+  same(Object.extended({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}, 'Object#clone | deep clone');
 
   equals(Object.extended({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
 
@@ -356,7 +356,7 @@ test('Object', function () {
 
   count = 0;
   same(({ foo: 'bar' }).keys(function() { count++; }), ['foo'], 'Object#keys | Object.prototype');
-  sameWithException(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], { prototype: ['bar'].concat(prototypeBaseValues) }, 'Object#values | Object.prototype');
+  sameWithException(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], { prototype: ['bar'].concat(prototypeBaseValues.sort()) }, 'Object#values | Object.prototype');
   ({ foo: 'bar' }).each(function() { count++; });
 
   equalsWithException(count, 3, { prototype: 2, mootools: 2 }, 'Object | Object.prototype should have correctly called all functions');
