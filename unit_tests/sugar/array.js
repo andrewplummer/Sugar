@@ -215,7 +215,7 @@ test('Array', function () {
 
   same([1,2,3].map('toString'), ['1','2','3'], 'Array#map | calls a function on a shortcut string');
 
-  raisesError(function(){ [1,2,3].map() }, 'Array#map | raises an error if no argument');
+  raisesError(function(){ [1,2,3].map() }, 'Array#map | raises an error if no argument', { prototype: false });
   raisesError(function(){ [1,2,3].map(undefined) }, 'Array#map | raises an error on undefined');
   raisesError(function(){ [1,2,3].map(null) }, 'Array#map | raises an error on null');
   raisesError(function(){ [1,2,3].map(3) }, 'Array#map | raises an error on a number');
@@ -729,9 +729,9 @@ test('Array', function () {
 
 
 
-  raisesError(function() { [1,2,3].min(undefined); }, 'Array#min | raises an error on undefined', { mootools: false });
-  raisesError(function() { [1,2,3].min(null); }, 'Array#min | raises an error on null', { mootools: false });
-  raisesError(function() { [1,2,3].min(4); }, 'Array#min | raises an error on number', { mootools: false });
+  raisesError(function() { [1,2,3].min(undefined); }, 'Array#min | raises an error on undefined', { prototype: false, mootools: false });
+  raisesError(function() { [1,2,3].min(null); }, 'Array#min | raises an error on null', { prototype: false, mootools: false });
+  raisesError(function() { [1,2,3].min(4); }, 'Array#min | raises an error on number', { prototype: false, mootools: false });
 
   sameWithException([12,87,55].min(), [12], { prototype: 12, mootools: 12 }, 'Array#min | 12');
   sameWithException([-12,-87,-55].min(), [-87], { prototype: -87, mootools: -87 }, 'Array#min | -87');
@@ -752,9 +752,9 @@ test('Array', function () {
 
 
 
-  raisesError(function() { [1,2,3].max(undefined); }, 'Array#max | raises an error on undefined', { mootools: false });
-  raisesError(function() { [1,2,3].max(null); }, 'Array#max | raises an error on null', { mootools: false });
-  raisesError(function() { [1,2,3].max(4); }, 'Array#max | raises an error on number', { mootools: false });
+  raisesError(function() { [1,2,3].max(undefined); }, 'Array#max | raises an error on undefined', { prototype: false, mootools: false });
+  raisesError(function() { [1,2,3].max(null); }, 'Array#max | raises an error on null', { prototype: false, mootools: false });
+  raisesError(function() { [1,2,3].max(4); }, 'Array#max | raises an error on number', { prototype: false, mootools: false });
 
   sameWithException([12,87,55].max(), [87], { prototype: 87, mootools: 87 }, 'Array#max | 87');
   sameWithException([-12,-87,-55].max(), [-12], { prototype: -12, mootools: -12 }, 'Array#max | -12');
@@ -1309,9 +1309,9 @@ test('Array', function () {
   same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
   sameWithException(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], { prototype: [{a:'bar'},{a:'foo'},{a:'skittles'}] }, 'Array#sortBy | desc | sort by key "a"');
 
-  raisesError(function() { [1,2,3].sortBy(undefined); }, 'Array#sortBy | raises an error on undefined');
-  raisesError(function() { [1,2,3].sortBy(null); }, 'Array#sortBy | raises an error on null');
-  raisesError(function() { [1,2,3].sortBy(4); }, 'Array#sortBy | raises an error on number');
+  raisesError(function() { [1,2,3].sortBy(undefined); }, 'Array#sortBy | raises an error on undefined', { prototype: false });
+  raisesError(function() { [1,2,3].sortBy(null); }, 'Array#sortBy | raises an error on null', { prototype: false });
+  raisesError(function() { [1,2,3].sortBy(4); }, 'Array#sortBy | raises an error on number', { prototype: false });
 
 
 
