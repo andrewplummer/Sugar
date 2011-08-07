@@ -352,11 +352,11 @@ test('Object', function () {
 
   Object.enableSugar();
 
-  var prototypeBaseValues = ({}).values();
+  var prototypeBaseValues = ({}).values().sort();
 
   count = 0;
   same(({ foo: 'bar' }).keys(function() { count++; }), ['foo'], 'Object#keys | Object.prototype');
-  sameWithException(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], { prototype: ['bar'].concat(prototypeBaseValues.sort()) }, 'Object#values | Object.prototype');
+  sameWithException(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], { prototype: ['bar'].concat(prototypeBaseValues) }, 'Object#values | Object.prototype');
   ({ foo: 'bar' }).each(function() { count++; });
 
   equalsWithException(count, 3, { prototype: 2, mootools: 2 }, 'Object | Object.prototype should have correctly called all functions');
