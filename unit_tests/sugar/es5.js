@@ -708,6 +708,7 @@ test('ECMAScript', function () {
   var instance, BoundPerson;
 
   raisesError(function(){ Function.prototype.bind.call('mooo'); }, 'Function#bind | Raises an error when used on anything un-callable');
+  raisesError(function(){ Function.prototype.bind.call(/mooo/); }, 'Function#bind | Regexes are functions in chrome');
 
   equals((function(){ return this; }).bind('yellow')(), 'yellow', 'Function#bind | basic binding of this arg');
   equals((function(){ return arguments[0]; }).bind('yellow', 'mellow')(), 'mellow', 'Function#bind | currying argument 1');
