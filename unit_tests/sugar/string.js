@@ -67,8 +67,17 @@ test('String', function () {
   var test;
 
   equalsWithException('reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should capitalize first letter of first word only.');
-  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letter');
   equalsWithException('Reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should leave the string alone');
+  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letters');
+
+  equals('reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize all first letters');
+  equals('Reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize the second letter only');
+  equalsWithException('REUBEN SANDWICH'.capitalize(true), 'Reuben Sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | all | should uncapitalize all other letters');
+  equal('what a shame of a title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | all lower-case');
+  equal('What A Shame Of A Title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | already capitalized');
+  equal(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', 'String#capitalize | all | preserves whitespace');
+  equal(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', 'String#capitalize | all | preserves new lines');
+
 
   same('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
 
@@ -575,12 +584,6 @@ test('String', function () {
   equal('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore | lower-case and dashes');
 
 
-  equal('what a shame of a title'.titleize(), 'What A Shame Of A Title', 'String#titleize | all lower-case');
-  equal('What A Shame Of A Title'.titleize(), 'What A Shame Of A Title', 'String#titleize | already titleized');
-  equal(' what a shame of a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize | with whitespace');
-  equal(' what a shame of\n a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize | with whitespace and newlines');
-
-
 
   equal('ア'.isKatakana(), true, 'String#isKatakana | ア');
   equal('ｱ'.isKatakana(), true, 'String#isKatakana | ｱ');
@@ -929,8 +932,6 @@ test('String', function () {
   strictlyEqual('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
   strictlyEqual(''.camelize(), '', 'String#camelize | blank');
   strictlyEqualsWithException('no-fing-way'.camelize(), 'NoFingWay', { prototype: false }, 'String#camelize | no-fing-way');
-  strictlyEqual(''.titleize(), '', 'String#titleize | blank');
-  strictlyEqual('chilled monkey brains'.titleize(), 'Chilled Monkey Brains', 'String#titleize | chilled monkey brains');
   strictlyEqual(''.stripTags(), '', 'String#stripTags | blank');
   strictlyEqual('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags | chilled <b>monkey</b> brains');
   strictlyEqual(''.removeTags(), '', 'String#removeTags | blank');
