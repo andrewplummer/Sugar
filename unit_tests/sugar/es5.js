@@ -122,6 +122,16 @@ test('ECMAScript', function () {
   same(result, ['a','b','c'], 'Array#forEach | walks array in order');
 
 
+
+  count = 0;
+  [1,2,3].forEach(function(el) {
+    count++;
+    return false;
+  });
+  equals(count, 3, 'Array#forEach | returning false will not break the loop');
+
+
+
   // Array#indexOf
 
   arr = [1,2,3];
