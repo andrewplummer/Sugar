@@ -321,23 +321,30 @@ test('String', function () {
   equal('foo'.has(/f$/), false, 'String#has | foo has /f$/');
 
 
-  equal('five'.add('schfifty '), 'schfifty five', 'String#add | schfiffy five');
+  equal('schfifty'.add(' five'), 'schfifty five', 'String#add | schfifty five');
   equal('dopamine'.add('e', 3), 'dopeamine', 'String#add | dopeamine');
   equal('spelling eror'.add('r', -3), 'spelling error', 'String#add | add from the end');
   equal('flack'.add('a', 0), 'aflack', 'String#add | add at 0');
-  equal('five'.add('schfifty', 20), 'five', 'String#add | does not add out of positive range');
-  equal('five'.add('schfifty', -20), 'five', 'String#add | does not add out of negative range');
+  equal('five'.add('schfifty', 20), 'fiveschfifty', 'String#add | adds out of positive range');
+  equal('five'.add('schfifty ', -20), 'schfifty five', 'String#add | adds out of negative range');
   equal('five'.add('schfifty', 4), 'fiveschfifty', 'String#add | add at position 4');
-  equal('five'.add('schfifty', 5), 'five', 'String#add | add at position 5');
+  equal('five'.add('schfifty', 5), 'fiveschfifty', 'String#add | add at position 5');
+  equal(''.add(['schfifty', ' five']), 'schfifty five', 'String#add | also concats arrays');
 
-  equal('five'.insert('schfifty '), 'schfifty five', 'String#insert | schfiffy five');
+  equal('schfifty five'.remove('five'), 'schfifty ', 'String#remove | five');
+  equal('schfifty five'.remove(/five/), 'schfifty ', 'String#remove | /five/');
+  equal('schfifty five'.remove(/f/), 'schifty five', 'String#remove | /f/');
+  equal('schfifty five'.remove(/f/g), 'schity ive', 'String#remove | /f/g');
+  equal('schfifty five'.remove(/[a-f]/g), 'shity iv', 'String#remove | /[a-f]/');
+
+  equal('schfifty'.insert(' five'), 'schfifty five', 'String#insert | schfifty five');
   equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert | dopeamine');
   equal('spelling eror'.insert('r', -3), 'spelling error', 'String#insert | inserts from the end');
   equal('flack'.insert('a', 0), 'aflack', 'String#insert | inserts at 0');
-  equal('five'.insert('schfifty', 20), 'five', 'String#insert | does not insert out of positive range');
-  equal('five'.insert('schfifty', -20), 'five', 'String#insert | does not insert out of negative range');
+  equal('five'.insert('schfifty', 20), 'fiveschfifty', 'String#insert | adds out of positive range');
+  equal('five'.insert('schfifty', -20), 'schfiftyfive', 'String#insert | adds out of negative range');
   equal('five'.insert('schfifty', 4), 'fiveschfifty', 'String#insert | inserts at position 4');
-  equal('five'.insert('schfifty', 5), 'five', 'String#insert | inserts at position 5');
+  equal('five'.insert('schfifty', 5), 'fiveschfifty', 'String#insert | inserts at position 5');
 
   equal('カタカナ'.hankaku(), 'ｶﾀｶﾅ', 'String#hankaku | katakana');
   equal('こんにちは。ヤマダタロウです。'.hankaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku |  hankaku katakana inside a string');
