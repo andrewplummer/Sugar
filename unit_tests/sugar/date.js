@@ -1008,7 +1008,7 @@ test('Date', function () {
     dyn = function(value, unit, ms, dir) {
       equals(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
       equals(unit, 'hours', 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
-      equalsWithMargin(ms, 14400000, 5, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
+      equalsWithMargin(ms, 14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
       equals(dir, -1, 'Date#format | relative fn | 4 hours ago | dir indicates the offset from "now", negative if in the past');
       return value + strings[unit] + (dir < 0 ? '前' : '後');
     }
@@ -1016,7 +1016,7 @@ test('Date', function () {
     equals(Date.create('240 minutes ago').format(dyn), '4時間達前', 'Date#format | relative fn | 4 hours ago');
 
     Date.create('223 milliseconds ago').format(function(value, unit) {
-      equalsWithMargin(value, 223, 5, 'Date format | relative fn | still passes < 1 second');
+      equalsWithMargin(value, 223, 10, 'Date format | relative fn | still passes < 1 second');
       equals(unit, 'milliseconds', 'Date format | relative fn | still passes "millisecond"');
     });
 
@@ -1083,7 +1083,7 @@ test('Date', function () {
   equals(d.is(new Date()), false, 'Date#is | other dates are not true');
   equals(d.is(1281015902542 + (offset * 60 * 1000)), true, 'Date#is | timestamps also accepted');
 
-  equals(new Date().is('now', 2), true, 'Date#is | now is now');
+  equals(new Date().is('now', 10), true, 'Date#is | now is now');
   equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.324'), true, 'Date#is | August 5th, 2010 13:42:42.324');
   equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.319'), false, 'Date#is | August 5th, 2010 13:42:42.319');
   equals(new Date(2010,7,5,13,42,42,324).is('August 5th, 2010 13:42:42.325'), false, 'Date#is | August 5th, 2010 13:42:42.325');
