@@ -1,0 +1,26 @@
+name: "Core-Specs-1.3client"
+
+license: "[MIT License](http://mootools.net/license.txt)"
+
+copyright: "&copy; [MooTools](http://mootools.net)"
+
+authors: "[MooTools Development Team](http://mootools.net/developers)"
+
+sources:
+  - "Core/Core.js"
+  - "Types/Object.js"
+  - "Browser/Browser.js"
+  - "Class/Class.Extras.js"
+  - "Element/Element.js"
+  - "Element/Element.Style.js"
+  - "Element/Element.Event.js"
+  - "Element/Element.Dimensions.js"
+  - "Element/IFrame.js"
+  - "Element/NewElement.js"
+  - "Fx/Fx.Morph.js"
+  - "Fx/Fx.Tween.js"
+  - "Request/Request.js"
+  - "Request/Request.HTML.js"
+  - "Request/Request.JSON.js"
+  - "Utilities/Cookie.js"
+  - "Utilities/JSON.js"
