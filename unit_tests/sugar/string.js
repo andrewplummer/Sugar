@@ -714,7 +714,6 @@ test('String', function () {
 
   equal('सभी मनुष्यों'.hasDevanagari(), true, 'String#hasDevanagari');
   equal('सभी मनुष्यों'.isDevanagari(), true, 'String#isDevanagari');
-  equal('सभी मनुष्यों'.isDevanagari(), true, 'String#isDevanagari');
 
   var stripped;
   var html =
