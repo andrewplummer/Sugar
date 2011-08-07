@@ -119,7 +119,7 @@ var fixPrototypeIterators = function() {
 var fixIterator = function(name, map) {
   var fn = Array.prototype[name];
   Array.prototype[name] = function(a) {
-    if(typeof a == 'function' || arguments.length == 0) {
+    if((a && a.call) || arguments.length == 0) {
       return fn.apply(this, arguments);
     } else {
       return fn.apply(this, [function(s) {
