@@ -343,6 +343,7 @@ test('ECMAScript', function () {
     count++;
     return el == 'a';
   });
+
   equals(result, true, 'Array#some | sparse arrays should not count missing elements');
   equals(count, 1, 'Array#some | sparse arrays should have called once only');
 
@@ -633,6 +634,7 @@ test('ECMAScript', function () {
 
   equals(whiteSpace.trimRight(), '', 'String#trimRight | should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
   equals(lineTerminators.trimRight(), '', 'String#trimRight | should trim all LineTerminator characters defined in 7.3');
+
 
 
   equals(String.prototype.trim.call([1]), '1', 'String#trim | should handle objects as well');

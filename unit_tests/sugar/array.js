@@ -5,6 +5,18 @@ test('Array', function () {
 
   var arr, expected, expectedIndexes, count;
 
+  // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
+  // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
+  // arr = [undefined, undefined, undefined];
+  //
+  // However we can do it this way, which is a much more likely user scenario in any case:
+  var arrayOfUndefined = [];
+  arrayOfUndefined.push(undefined);
+  arrayOfUndefined.push(undefined);
+  arrayOfUndefined.push(undefined);
+
+
+
   arr = [1,2,3];
   count = 0;
 
@@ -74,8 +86,8 @@ test('Array', function () {
   equals([12,5,8,130,44].every(function(el, i, a) { return el >= 10; }), false, 'Array#every | not every element is greater than 10');
   equals([12,54,18,130,44].every(function(el, i, a) { return el >= 10; }), true, 'Array#every | every element is greater than 10');
 
-  equals([undefined, undefined].every(undefined), true, 'Array#every | all undefined');
-  equals([undefined, 'a'].every(undefined), false, 'Array#every | every undefined');
+  equals(arrayOfUndefined.every(undefined), true, 'Array#every | all undefined');
+  equals(arrayOfUndefined.clone().add('a').every(undefined), false, 'Array#every | every undefined');
   equals(['a', 'b'].every(undefined), false, 'Array#every | none undefined');
 
   ['a'].every(function(el, i, a) {
@@ -89,7 +101,6 @@ test('Array', function () {
   equalsWithException([{name:'john',age:25}].all({name:'john',age:25}), true, { prototype: false }, 'Array#all | handles complex objects');
   equals([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#all | simple string mistakenly passed for complex objects');
   equals([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, "Array#all | john isn't all");
-
 
 
 
@@ -107,9 +118,13 @@ test('Array', function () {
   equals([12,54,18,130,44].some(function(el, i, a) { return el >= 10 }), true, 'Array#some | all elements are greater than 10');
   equals([12,5,8,130,44].some(function(el, i, a) { return el < 4 }), false, 'Array#some | no elements are less than 4');
 
-  equals([undefined, undefined].some(undefined), true, 'Array#some | all undefined');
-  equals([undefined, 'a'].some(undefined), true, 'Array#some | some undefined');
+
+  equals(arrayOfUndefined.some(undefined), true, 'Array#some | all undefined');
+  equals(arrayOfUndefined.clone().add('a').some(undefined), true, 'Array#some | some undefined');
   equals(['a', 'b'].some(undefined), false, 'Array#some | none undefined');
+
+
+
 
   equals([].some(function(el, i, a) { return el > 10 }), false, 'Array#some | no elements are greater than 10 in an empty array');
   ['a'].some(function(el, i, a) {
@@ -219,8 +234,6 @@ test('Array', function () {
   raisesError(function(){ [1,2,3].map(undefined) }, 'Array#map | raises an error on undefined');
   raisesError(function(){ [1,2,3].map(null) }, 'Array#map | raises an error on null');
   raisesError(function(){ [1,2,3].map(3) }, 'Array#map | raises an error on a number');
-
-
 
 
 
@@ -443,17 +456,8 @@ test('Array', function () {
   equals(count, 3, 'Array#each | sparse arrays | unordered array should match');
 
 
-  // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
-  // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
-  // arr = [undefined, undefined, undefined];
-  //
-  // However we can do it this way, which is a much more likely user scenario in any case:
-  arr = [];
-  arr.push(undefined);
-  arr.push(undefined);
-  arr.push(undefined);
   count = 0;
-  arr.each(function() {
+  arrayOfUndefined.each(function() {
     count++;
   });
   equals(count, 3, 'Array#each | however, simply having an undefined in an array does not qualify it as sparse');
