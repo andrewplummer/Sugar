@@ -70,13 +70,13 @@ test('String', function () {
   equalsWithException('Reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should leave the string alone');
   equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letters');
 
-  equals('reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize all first letters');
-  equals('Reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize the second letter only');
-  equalsWithException('REUBEN SANDWICH'.capitalize(true), 'Reuben Sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | all | should uncapitalize all other letters');
-  equal('what a shame of a title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | all lower-case');
-  equal('What A Shame Of A Title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | already capitalized');
-  equal(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', 'String#capitalize | all | preserves whitespace');
-  equal(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', 'String#capitalize | all | preserves new lines');
+  equalsWithException('reuben sandwich'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich' }, 'String#capitalize | all | should capitalize all first letters');
+  equalsWithException('Reuben sandwich'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich' }, 'String#capitalize | all | should capitalize the second letter only');
+  equalsWithException('REUBEN SANDWICH'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich', mootools: 'REUBEN SANDWICH' }, 'String#capitalize | all | should uncapitalize all other letters');
+  equalsWithException('what a shame of a title'.capitalize(true), 'What A Shame Of A Title', { prototype: 'What a shame of a title' }, 'String#capitalize | all | all lower-case');
+  equalsWithException('What A Shame Of A Title'.capitalize(true), 'What A Shame Of A Title', { prototype: 'What a shame of a title' }, 'String#capitalize | all | already capitalized');
+  equalsWithException(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', { prototype: ' what a shame of a title    ' }, 'String#capitalize | all | preserves whitespace');
+  equalsWithException(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', { prototype: ' what a shame of\n a title    ' }, 'String#capitalize | all | preserves new lines');
 
 
   same('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
