@@ -712,6 +712,9 @@ test('String', function () {
   equal('שְׂרָאֵל'.isHebrew(), true, 'String#isHebrew');
   equal('שְׂרָאֵל'.hasHebrew(), true, 'String#hasHebrew');
 
+  equal('सभी मनुष्यों'.hasDevanagari(), true, 'String#hasDevanagari');
+  equal('सभी मनुष्यों'.isDevanagari(), true, 'String#isDevanagari');
+  equal('सभी मनुष्यों'.isDevanagari(), true, 'String#isDevanagari');
 
   var stripped;
   var html =
