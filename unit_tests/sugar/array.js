@@ -587,7 +587,7 @@ test('Array', function () {
   same(['a','a','c'].unique(), ['a','c'], 'Array#unique | a,a,c');
 
 
-  sameWithException([{foo:'bar'}, {foo:'bar'}].unique(), [{foo:'bar'}], { mootools: [{foo:'bar'},{foo:'bar'}] }, 'Array#unique | objects uniqued as well');
+  same([{foo:'bar'}, {foo:'bar'}].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well');
 
 
 
@@ -729,49 +729,49 @@ test('Array', function () {
 
 
 
-  raisesError(function() { [1,2,3].min(undefined); }, 'Array#min | raises an error on undefined', { prototype: false, mootools: false });
-  raisesError(function() { [1,2,3].min(null); }, 'Array#min | raises an error on null', { prototype: false, mootools: false });
-  raisesError(function() { [1,2,3].min(4); }, 'Array#min | raises an error on number', { prototype: false, mootools: false });
+  raisesError(function() { [1,2,3].min(undefined); }, 'Array#min | raises an error on undefined', { prototype: false });
+  raisesError(function() { [1,2,3].min(null); }, 'Array#min | raises an error on null', { prototype: false });
+  raisesError(function() { [1,2,3].min(4); }, 'Array#min | raises an error on number', { prototype: false });
 
-  sameWithException([12,87,55].min(), [12], { prototype: 12, mootools: 12 }, 'Array#min | 12');
-  sameWithException([-12,-87,-55].min(), [-87], { prototype: -87, mootools: -87 }, 'Array#min | -87');
-  sameWithException([5,5,5].min(), [5], { prototype: 5, mootools: 5 }, 'Array#min | 5 is uniqued');
-  sameWithException(['a','b','c'].min(), [], { prototype: 'a', mootools: NaN }, 'Array#min | strings are not counted');
-  sameWithException([].min(), [], { prototype: undefined, mootools: Infinity }, 'Array#min | empty array');
-  sameWithException([null].min(), [], { prototype: null, mootools: 0 }, 'Array#min | [null]');
-  sameWithException([undefined].min(), [], { prototype: undefined, mootools: NaN }, 'Array#min | [undefined]');
-  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el) { return el['a']; }), [{a:1,b:5}], { prototype: 1, mootools: NaN }, 'Array#min | key "a"');
-  sameWithException([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el) { return el['b']; }), [{a:3,b:3}], { prototype: 3, mootools: NaN }, 'Array#min | key "b", 1 found');
-  sameWithException([{a:1,b:5},{a:3,b:3},{a:3,b:3}].min(function(el) { return el['b']; }), [{a:3,b:3}], { prototype: 3, mootools: NaN }, 'Array#min | key "b", 1 found');
-  sameWithException([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(function(el) { return el['b']; }), [{a:1,b:3},{a:3,b:3}], { prototype: 3, mootools: NaN }, 'Array#min | key "b", 2 found');
-  sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el) { return el['b']; }), [{a:-1,b:-5}], { prototype: -5, mootools: NaN }, 'Array#min | key "b", 1 found');
-  sameWithException(['short','and','mort'].min(function(el) { return el.length; }), ['and'], { prototype: 3, mootools: NaN }, 'Array#min | length');
-  sameWithException(['short','and','mort','fat'].min(function(el) { return el.length; }), ['and','fat'], { prototype: 3, mootools: NaN }, 'Array#min | and,fat');
-  sameWithException(['short','and','mort'].min('length'), ['and'], { prototype: 3, mootools: NaN }, 'Array#min | length with shortcut');
-
-
+  sameWithException([12,87,55].min(), [12], { prototype: 12 }, 'Array#min | 12');
+  sameWithException([-12,-87,-55].min(), [-87], { prototype: -87 }, 'Array#min | -87');
+  sameWithException([5,5,5].min(), [5], { prototype: 5 }, 'Array#min | 5 is uniqued');
+  sameWithException(['a','b','c'].min(), [], { prototype: 'a' }, 'Array#min | strings are not counted');
+  sameWithException([].min(), [], { prototype: undefined }, 'Array#min | empty array');
+  sameWithException([null].min(), [], { prototype: null }, 'Array#min | [null]');
+  sameWithException([undefined].min(), [], { prototype: undefined }, 'Array#min | [undefined]');
+  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el) { return el['a']; }), [{a:1,b:5}], { prototype: 1 }, 'Array#min | key "a"');
+  sameWithException([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el) { return el['b']; }), [{a:3,b:3}], { prototype: 3 }, 'Array#min | key "b", 1 found');
+  sameWithException([{a:1,b:5},{a:3,b:3},{a:3,b:3}].min(function(el) { return el['b']; }), [{a:3,b:3}], { prototype: 3 }, 'Array#min | key "b", 1 found');
+  sameWithException([{a:1,b:3},{a:2,b:4},{a:3,b:3}].min(function(el) { return el['b']; }), [{a:1,b:3},{a:3,b:3}], { prototype: 3 }, 'Array#min | key "b", 2 found');
+  sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].min(function(el) { return el['b']; }), [{a:-1,b:-5}], { prototype: -5 }, 'Array#min | key "b", 1 found');
+  sameWithException(['short','and','mort'].min(function(el) { return el.length; }), ['and'], { prototype: 3 }, 'Array#min | length');
+  sameWithException(['short','and','mort','fat'].min(function(el) { return el.length; }), ['and','fat'], { prototype: 3 }, 'Array#min | and,fat');
+  sameWithException(['short','and','mort'].min('length'), ['and'], { prototype: 3 }, 'Array#min | length with shortcut');
 
 
-  raisesError(function() { [1,2,3].max(undefined); }, 'Array#max | raises an error on undefined', { prototype: false, mootools: false });
-  raisesError(function() { [1,2,3].max(null); }, 'Array#max | raises an error on null', { prototype: false, mootools: false });
-  raisesError(function() { [1,2,3].max(4); }, 'Array#max | raises an error on number', { prototype: false, mootools: false });
 
-  sameWithException([12,87,55].max(), [87], { prototype: 87, mootools: 87 }, 'Array#max | 87');
-  sameWithException([-12,-87,-55].max(), [-12], { prototype: -12, mootools: -12 }, 'Array#max | -12');
-  sameWithException([5,5,128].max(), [128], { prototype: 128, mootools: 128 }, 'Array#max | 128');
-  sameWithException([128,128,128].max(), [128], { prototype: 128, mootools: 128 }, 'Array#max | 128 is uniqued');
-  sameWithException(['a','b','c'].max(), [], { prototype: 'c', mootools: NaN }, 'Array#max | strings are not counted');
-  sameWithException([].max(), [], { prototype: undefined, mootools: -Infinity }, 'Array#max | empty array');
-  sameWithException([null].max(), [], { prototype: null, mootools: 0 }, 'Array#max | [null]');
-  sameWithException([undefined].max(), [], { prototype: undefined, mootools: NaN }, 'Array#max | [undefined]');
-  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el) { return el['a']; }), [{a:3,b:5}], { prototype: 3, mootools: NaN }, 'Array#max | key "a"');
-  sameWithException([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el) { return el['b']; }), [{a:1,b:5}], { prototype: 5, mootools: NaN }, 'Array#max | key "b" returns b:5');
-  sameWithException([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(function(el) { return el['b']; }), [{a:2,b:4}], { prototype: 4, mootools: NaN }, 'Array#max | key "b" returns b:4');
-  sameWithException([{a:1,b:3},{a:2,b:4},{a:2,b:4}].max(function(el) { return el['b']; }), [{a:2,b:4}], { prototype: 4, mootools: NaN }, 'Array#max | key "b" returns b:4 uniqued');
-  sameWithException([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(function(el) { return el['b']; }), [{a:1,b:3},{a:3,b:3}], { prototype: 3, mootools: NaN }, 'Array#max | key "b", 2 found');
-  sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el) { return el['b']; }), [{a:-3,b:-3}], { prototype: -3, mootools: NaN }, 'Array#max | key "b" returns b:-3');
-  sameWithException(['short','and', 'mort'].max(function(el) { return el.length; }), ['short'], { prototype: 5, mootools: NaN }, 'Array#max | length');
-  sameWithException(['short','and', 'morts', 'fat'].max(function(el) { return el.length; }), ['short','morts'], { prototype: 5, mootools: NaN }, 'Array#max | short,morts');
+
+  raisesError(function() { [1,2,3].max(undefined); }, 'Array#max | raises an error on undefined', { prototype: false });
+  raisesError(function() { [1,2,3].max(null); }, 'Array#max | raises an error on null', { prototype: false });
+  raisesError(function() { [1,2,3].max(4); }, 'Array#max | raises an error on number', { prototype: false });
+
+  sameWithException([12,87,55].max(), [87], { prototype: 87 }, 'Array#max | 87');
+  sameWithException([-12,-87,-55].max(), [-12], { prototype: -12 }, 'Array#max | -12');
+  sameWithException([5,5,128].max(), [128], { prototype: 128 }, 'Array#max | 128');
+  sameWithException([128,128,128].max(), [128], { prototype: 128 }, 'Array#max | 128 is uniqued');
+  sameWithException(['a','b','c'].max(), [], { prototype: 'c' }, 'Array#max | strings are not counted');
+  sameWithException([].max(), [], { prototype: undefined }, 'Array#max | empty array');
+  sameWithException([null].max(), [], { prototype: null }, 'Array#max | [null]');
+  sameWithException([undefined].max(), [], { prototype: undefined }, 'Array#max | [undefined]');
+  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el) { return el['a']; }), [{a:3,b:5}], { prototype: 3 }, 'Array#max | key "a"');
+  sameWithException([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el) { return el['b']; }), [{a:1,b:5}], { prototype: 5 }, 'Array#max | key "b" returns b:5');
+  sameWithException([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(function(el) { return el['b']; }), [{a:2,b:4}], { prototype: 4 }, 'Array#max | key "b" returns b:4');
+  sameWithException([{a:1,b:3},{a:2,b:4},{a:2,b:4}].max(function(el) { return el['b']; }), [{a:2,b:4}], { prototype: 4 }, 'Array#max | key "b" returns b:4 uniqued');
+  sameWithException([{a:1,b:3},{a:2,b:1},{a:3,b:3}].max(function(el) { return el['b']; }), [{a:1,b:3},{a:3,b:3}], { prototype: 3 }, 'Array#max | key "b", 2 found');
+  sameWithException([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el) { return el['b']; }), [{a:-3,b:-3}], { prototype: -3 }, 'Array#max | key "b" returns b:-3');
+  sameWithException(['short','and', 'mort'].max(function(el) { return el.length; }), ['short'], { prototype: 5 }, 'Array#max | length');
+  sameWithException(['short','and', 'morts', 'fat'].max(function(el) { return el.length; }), ['short','morts'], { prototype: 5 }, 'Array#max | short,morts');
 
 
 
@@ -830,8 +830,8 @@ test('Array', function () {
   same([12,87,128].sum(), 227, 'Array#sum | 12,87,128');
   same([].sum(), 0, 'Array#sum | empty array is 0');
   same([null, false].sum(), 0, 'Array#sum | [null,false] is 0');
-  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum(function(el) { return el['a']; }), 6, { mootools: '0[object Object][object Object][object Object]' }, 'Array#sum | key "a"');
-  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum('a'), 6, { mootools: '0[object Object][object Object][object Object]' }, 'Array#sum | shortcut for key "a"');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum(function(el) { return el['a']; }), 6, 'Array#sum | key "a"');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].sum('a'), 6, 'Array#sum | shortcut for key "a"');
 
   same([13,18,13,14,13,16,14,21,13].average(), 15, 'Array#average | 13,18,13,14,13,16,14,21,13');
   same([2,2,2].average(), 2, 'Array#average | 2,2,2');
@@ -839,12 +839,12 @@ test('Array', function () {
   same([2,3,4,2].average(), 2.75, 'Array#average | 2,3,4,2');
   same([].average(), 0, 'Array#average | empty array is 0');
   same([null, false].average(), 0, 'Array#average | [null, false] is 0');
-  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average(function(el) { return el['a']; }), 2, { mootools: NaN }, 'Array#average | key "a"');
-  sameWithException([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average('a'), 2, { mootools: NaN }, 'Array#average | shortcut for key "a"');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average(function(el) { return el['a']; }), 2, 'Array#average | key "a"');
+  same([{a:1,b:5},{a:2,b:5},{a:3,b:5}].average('a'), 2, 'Array#average | shortcut for key "a"');
 
 
-  sameWithException(people.average('age'), 29.75, { mootools: NaN }, 'Array#average | people average age is 29.75');
-  sameWithException(people.average(function(p) { return p.age; }), 29.75, { mootools: NaN }, 'Array#average | people average age is 29.75 by function');
+  same(people.average('age'), 29.75, 'Array#average | people average age is 29.75');
+  same(people.average(function(p) { return p.age; }), 29.75, 'Array#average | people average age is 29.75 by function');
   same(isNaN(people.average(function(p) { return p.hair; })), true, 'Array#average | people average hair is NaN');
 
 
