@@ -36,16 +36,45 @@ function startTests(){
 }
 */
 
+// Stole this from unittest_js. same() won't work because one of the following two parties got something wrong:
+// 1. Either Prototype is incorrect for asserting hash equality on objects whose prototype is knowingly modified.
+// 2. QUnit is incorrect for not using hasOwnProperty when testing for deep equality.
+//
+// Signs point to option 2...
+
+var hashIsDeeplyEqual = function(expected, actual) {
+  expected = $H(expected);
+  actual = $H(actual);
+  var expected_array = expected.toArray().sort(), actual_array = actual.toArray().sort();
+  return expected_array.length == actual_array.length && expected_array.zip(actual_array).all(allEqual);
+
+};
+
+var allEqual = function(a, b) {
+  var match = true;
+  for(var i = 0; i < a[0].length; i++){
+    if(typeof a[0][i] == 'object' || typeof a[1][i] == 'object'){
+      match = hashIsDeeplyEqual(a[0][i], a[1][i]);
+    } else if(a[0][i] != a[1][i]){
+      match = false;
+    }
+  }
+  return match;
+}
+
 QUnitBridge = {
   assertEnumEqual: function(){
     // Enumerables need to be changed to an array before they can be tested
-    same(arguments[1].toArray(), arguments[0], currentTest);
+    same(arguments[1].toArray(), arguments[0].toArray(), currentTest);
   },
   assertEqual: function(){
     equal(arguments[1], arguments[0], currentTest);
   },
   assertHashEqual: function(){
-    same(arguments[1], arguments[0], currentTest);
+    equal(hashIsDeeplyEqual(arguments[1], arguments[0]), true, currentTest);
+  },
+  assertHashNotEqual: function(){
+    equal(hashIsDeeplyEqual(arguments[1], arguments[0]), false, currentTest);
   },
   assertIdentical: function(){
     equal(arguments[1], arguments[0], currentTest);
@@ -93,11 +122,13 @@ QUnitBridge = {
     }
   },
   assertRaise: function(){
+    var error;
     try {
       arguments[1].call();
-    } catch(error){
-      equal(error.name, arguments[0], currentTest);
+    } catch(e){
+      error = e;
     }
+    equal(error.name, arguments[0], currentTest);
   },
   assertMatch: function(reg, test){
     if(typeof reg != 'object'){
@@ -110,6 +141,9 @@ QUnitBridge = {
   },
   assertNotNull: function(){
     ok(arguments[0] != null, currentTest)
+  },
+  assertInstanceOf: function(klass, n){
+    equals(n instanceof klass, true, currentTest);
   },
   fail: function(occurrence){
 

@@ -2,7 +2,7 @@ var extendDefault = function(options) {
   return Object.extend({
     asynchronous: false,
     method: 'get',
-    onException: function(e) { throw e }
+    onException: function(r, e) { throw e; }
   }, options);
 };
 
@@ -274,8 +274,7 @@ new Test.Unit.Runner({
         sanitizeJSON: true,
         parameters: Fixtures.invalidJson,
         onException: function(request, error) {
-          this.assert(error.message.include('Badly formed JSON string'));
-          this.assertInstanceOf(Ajax.Request, request);
+          this.assertEqual('SyntaxError', error.name);
         }.bind(this)
       }));
     } else {
@@ -338,6 +337,19 @@ new Test.Unit.Runner({
     }
   },
   
+  testParametersStringOrderIsPreserved: function() {
+    if (this.isRunningFromRake) {
+      new Ajax.Request("/inspect", extendDefault({
+        parameters: "cool=1&bad=2&cool=3&bad=4",
+        method: 'post',
+        onComplete: function(transport) {
+          var body_without_wart = transport.responseJSON.body.match(/((?:(?!&_=$).)*)/)[1];
+          this.assertEqual("cool=1&bad=2&cool=3&bad=4", body_without_wart);
+        }.bind(this)
+      }));
+    }
+  },
+  
   testIsSameOriginMethod: function() {
     var isSameOrigin = Ajax.Request.prototype.isSameOrigin;
     this.assert(isSameOrigin.call({ url: '/foo/bar.html' }), '/foo/bar.html');
@@ -360,14 +372,14 @@ new Test.Unit.Runner({
       new Ajax.Request("/response", extendDefault({
         parameters: Fixtures.invalidJson,
         onException: function(request, error) {
-          this.assert(error.message.include('Badly formed JSON string'));
+          this.assertEqual('SyntaxError', error.name);
         }.bind(this)
       }));
 
       new Ajax.Request("/response", extendDefault({
         parameters: { 'X-JSON': '{});window.attacked = true;({}' },
         onException: function(request, error) {
-          this.assert(error.message.include('Badly formed JSON string'));
+          this.assertEqual('SyntaxError', error.name);
         }.bind(this)
       }));
 
