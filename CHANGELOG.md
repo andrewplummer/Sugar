@@ -1,7 +1,7 @@
 0.9.3
 =====
 
-## API Changes ##
+### API Changes ###
 
 - Array.isArray polyfill added and aliased by Object.isArray (es5)
 - Array#every/some/map/filter now throws a TypeError if no arguments passed (es5)
@@ -60,7 +60,7 @@
 - added devanagari and ethiopic scripts
 
 
-## Internal Changes ##
+### Internal Changes ###
 
 - refactored unicode script methods to use .test instead of .match
 - extendWithNativeCondition refactored to allow a "supported" flag
