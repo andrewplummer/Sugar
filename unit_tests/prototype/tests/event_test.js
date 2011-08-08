@@ -222,6 +222,17 @@ new Test.Unit.Runner({
     this.assert(event.stopped, "event.stopped should be true for an observer that calls stop");
     span.stopObserving("test:somethingHappened");
   },
+  
+  testNonBubblingCustomEvent: function() {
+    var span = $('span'), outer = $('outer'), event;
+    
+    var outerRespondedToEvent = false;
+    outer.observe("test:bubbleEvent", function(e) { outerRespondedToEvent = true });
+    span.fire("test:bubbleEvent", {}, false);
+    
+    this.assertEqual(false, outerRespondedToEvent,
+     'parent element should not respond to non-bubbling event fired on child');
+  },
 
   testEventFindElement: function() {
     var span = $("span"), event;

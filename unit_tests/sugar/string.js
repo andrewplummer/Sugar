@@ -8,7 +8,6 @@ test('String', function () {
   equals('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'String#escapeRegExp | should escape many period');
   equals('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'String#escapeRegExp | complex regex tokens');
 
-
   /* Leaving these tests but this method seems all but totally useless
   equals('test regexp'.unescapeRegExp(), 'test regexp', 'String#unescapeRegExp | nothing to unescape');
   equals('test reg\\|exp'.unescapeRegExp(), 'test reg|exp', 'String#unescapeRegExp | should unescape pipe');
@@ -51,7 +50,6 @@ test('String', function () {
 
 
 
-
   raisesError(function() { '% 23'.unescapeURL(); }, 'String#unescapeURL | partial | should raise an error for malformed urls');
   raisesError(function() { '% 23'.unescapeURL(true); }, 'String#unescapeURL | full | should raise an error for malformed urls');
 
@@ -69,8 +67,17 @@ test('String', function () {
   var test;
 
   equalsWithException('reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should capitalize first letter of first word only.');
-  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letter');
   equalsWithException('Reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should leave the string alone');
+  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letters');
+
+  equalsWithException('reuben sandwich'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich' }, 'String#capitalize | all | should capitalize all first letters');
+  equalsWithException('Reuben sandwich'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich' }, 'String#capitalize | all | should capitalize the second letter only');
+  equalsWithException('REUBEN SANDWICH'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich', mootools: 'REUBEN SANDWICH' }, 'String#capitalize | all | should uncapitalize all other letters');
+  equalsWithException('what a shame of a title'.capitalize(true), 'What A Shame Of A Title', { prototype: 'What a shame of a title' }, 'String#capitalize | all | all lower-case');
+  equalsWithException('What A Shame Of A Title'.capitalize(true), 'What A Shame Of A Title', { prototype: 'What a shame of a title' }, 'String#capitalize | all | already capitalized');
+  equalsWithException(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', { prototype: ' what a shame of a title    ' }, 'String#capitalize | all | preserves whitespace');
+  equalsWithException(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', { prototype: ' what a shame of\n a title    ' }, 'String#capitalize | all | preserves new lines');
+
 
   same('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
 
@@ -79,20 +86,28 @@ test('String', function () {
   equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim | should trim right whitespace only');
 
   equal('wasabi'.pad(), 'wasabi', 'String#pad | passing no params');
-  equal('wasabi'.pad(-1), 'wasabi', 'String#pad | passing in -1');
-  equal('wasabi'.pad(3), '   wasabi   ', 'String#pad | should pad the string with 3 spaces');
-  equal('wasabi'.pad(5), '     wasabi     ', 'String#pad | should pad the string with 5 spaces');
-  equal('wasabi'.pad(5, '-'), '-----wasabi-----', 'String#pad | should pad the string with 5 hyphens');
-  equal('wasabi'.pad(2).pad(3, '-'), '---  wasabi  ---', 'String#pad | should pad the string with 2 spaces and 3 hyphens');
+  equal('wasabi'.pad('"'), '"wasabi"', 'String#pad | padding with quotes');
+  equal('wasabi'.pad('s'), 'swasabis', 'String#pad | padding with s');
+  equal('wasabi'.pad(5), '5wasabi5', 'String#pad | padding with a number');
+  equal('wasabi'.pad(null), 'wasabi', 'String#pad | padding with a null');
+  equal('wasabi'.pad(undefined), 'wasabi', 'String#pad | padding with undefined');
+  equal('wasabi'.pad(NaN), 'wasabi', 'String#pad | padding with NaN');
+  equal('wasabi'.pad(' ', 0), 'wasabi', 'String#pad | passing in 0');
+  equal('wasabi'.pad(' ', -1), 'wasabi', 'String#pad | passing in -1');
+  equal('wasabi'.pad(' ', 3), '   wasabi   ', 'String#pad | should pad the string with 3 spaces');
+  equal('wasabi'.pad(' ', 5), '     wasabi     ', 'String#pad | should pad the string with 5 spaces');
+  equal('wasabi'.pad('-', 5), '-----wasabi-----', 'String#pad | should pad the string with 5 hyphens');
+  equal('wasabi'.pad(' ', 2).pad('-', 3), '---  wasabi  ---', 'String#pad | should pad the string with 2 spaces and 3 hyphens');
 
-  equal('wasabi'.padRight(3, '-'), 'wasabi---', 'String#pad | should pad the string with 3 hyphens on the right');
-  equal('4'.padLeft(3, '0'), '0004', 'String#pad | should pad the string with 4 zeroes on the left');
-  equal('wasabi'.padLeft(3), '   wasabi', 'String#pad | should pad the string with 3 spaces on the left');
-  equal('wasabi'.padRight(3), 'wasabi   ', 'String#pad | should pad the string with 3 spaces on the right');
-  equal('wasabi'.pad() === 'wasabi', true, 'String#pad | strict equality works');
+  equal('wasabi'.padRight('-', 0), 'wasabi', 'String#padRight | 0 does not pad');
+  equal('wasabi'.padRight('-', 3), 'wasabi---', 'String#padRight | should pad the string with 3 hyphens on the right');
+  equal('wasabi'.padRight(' ', 3), 'wasabi   ', 'String#padRight | should pad the string with 3 spaces on the right');
+  equal('wasabi'.padLeft('-', 0), 'wasabi', 'String#padLeft | 0 does not pad');
+  equal('4'.padLeft('0', 3), '0004', 'String#padLeft | should pad the string with 4 zeroes on the left');
+  equal('wasabi'.padLeft(' ', 3), '   wasabi', 'String#padLeft | should pad the string with 3 spaces on the left');
 
   equal('wasabi'.repeat(0), '', 'String#repeat | 0 should repeat the string 0 times');
-  equal('wasabi'.repeat(-1), 'wasabi', 'String#repeat | -1 should do nothing to the string');
+  equal('wasabi'.repeat(-1), '', 'String#repeat | -1 should repeat the string 0 times');
   equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | 2 should repeat the string 2 times');
 
   // "each" will return an array of everything that was matched, defaulting to individual characters
@@ -132,7 +147,7 @@ test('String', function () {
   same(result, ['g','i','g','e'], "String#each | regexp argument | resulting array should have been ['g','i','g','e']");
 
 
-  /* .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups */
+  // .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups
   var testString = 'cruel world';
 
   result = testString.each(/\w+/g);
@@ -149,7 +164,21 @@ test('String', function () {
   same(result, ['cruel', 'world'], 'String#each non-global regexes should still be global');
 
 
-  /* test each char code */
+  // #shift
+
+
+  equal('ク'.shift(1), 'グ', 'String#shift | should shift 1 code up');
+  equal('グ'.shift(-1), 'ク', 'String#shift | should shift 1 code down');
+  equal('ヘ'.shift(2), 'ペ', 'String#shift | should shift 2 codes');
+  equal('ペ'.shift(-2), 'ヘ', 'String#shift | should shift -2 codes');
+  equal('ク'.shift(0), 'ク', 'String#shift | should shift 0 codes');
+  equal('ク'.shift(), 'ク', 'String#shift | no params simply returns the string');
+  equal('カキクケコ'.shift(1), 'ガギグゲゴ', 'String#shift | multiple characters up one');
+  equal('ガギグゲゴ'.shift(-1), 'カキクケコ', 'String#shift | multiple characters down one');
+
+
+
+  // test each char code
 
   same('jumpy'.codes(), [106,117,109,112,121], 'String#codes | jumpy');
 
@@ -162,7 +191,7 @@ test('String', function () {
   equal(counter, 6, 'String#codes | ginger codes | should have ran 6 times');
   same(result, test, 'String#codes | ginger codes | result should be an array');
 
-  /* test each char */
+  // test each char
   counter = 0;
   result = 'ginger'.chars(function(str, i) {
     equal(str, 'ginger'.charAt(counter), 'String#chars | ginger | char code should be the first argument in the block');
@@ -172,7 +201,7 @@ test('String', function () {
   equal(counter, 6, 'String#chars | ginger | should have run 6 times');
   same(result, ['g','i','n','g','e','r'], 'String#chars | result should be an array');
 
-  /* test each char collects when properly returned */
+  // test each char collects when properly returned
   counter = 0;
   result = 'ginger'.chars(function(str, i) {
     counter++;
@@ -292,29 +321,37 @@ test('String', function () {
   equal('foo'.has(/f$/), false, 'String#has | foo has /f$/');
 
 
-  equal('five'.add('schfifty '), 'schfifty five', 'String#add | schfiffy five');
+  equal('schfifty'.add(' five'), 'schfifty five', 'String#add | schfifty five');
   equal('dopamine'.add('e', 3), 'dopeamine', 'String#add | dopeamine');
   equal('spelling eror'.add('r', -3), 'spelling error', 'String#add | add from the end');
   equal('flack'.add('a', 0), 'aflack', 'String#add | add at 0');
-  equal('five'.add('schfifty', 20), 'five', 'String#add | does not add out of positive range');
-  equal('five'.add('schfifty', -20), 'five', 'String#add | does not add out of negative range');
+  equal('five'.add('schfifty', 20), 'fiveschfifty', 'String#add | adds out of positive range');
+  equal('five'.add('schfifty ', -20), 'schfifty five', 'String#add | adds out of negative range');
   equal('five'.add('schfifty', 4), 'fiveschfifty', 'String#add | add at position 4');
-  equal('five'.add('schfifty', 5), 'five', 'String#add | add at position 5');
+  equal('five'.add('schfifty', 5), 'fiveschfifty', 'String#add | add at position 5');
+  equal(''.add(['schfifty', ' five']), 'schfifty five', 'String#add | also concats arrays');
 
-  equal('five'.insert('schfifty '), 'schfifty five', 'String#insert | schfiffy five');
+  equal('schfifty five'.remove('five'), 'schfifty ', 'String#remove | five');
+  equal('schfifty five'.remove(/five/), 'schfifty ', 'String#remove | /five/');
+  equal('schfifty five'.remove(/f/), 'schifty five', 'String#remove | /f/');
+  equal('schfifty five'.remove(/f/g), 'schity ive', 'String#remove | /f/g');
+  equal('schfifty five'.remove(/[a-f]/g), 'shity iv', 'String#remove | /[a-f]/');
+
+  equal('schfifty'.insert(' five'), 'schfifty five', 'String#insert | schfifty five');
   equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert | dopeamine');
   equal('spelling eror'.insert('r', -3), 'spelling error', 'String#insert | inserts from the end');
   equal('flack'.insert('a', 0), 'aflack', 'String#insert | inserts at 0');
-  equal('five'.insert('schfifty', 20), 'five', 'String#insert | does not insert out of positive range');
-  equal('five'.insert('schfifty', -20), 'five', 'String#insert | does not insert out of negative range');
+  equal('five'.insert('schfifty', 20), 'fiveschfifty', 'String#insert | adds out of positive range');
+  equal('five'.insert('schfifty', -20), 'schfiftyfive', 'String#insert | adds out of negative range');
   equal('five'.insert('schfifty', 4), 'fiveschfifty', 'String#insert | inserts at position 4');
-  equal('five'.insert('schfifty', 5), 'five', 'String#insert | inserts at position 5');
+  equal('five'.insert('schfifty', 5), 'fiveschfifty', 'String#insert | inserts at position 5');
 
   equal('カタカナ'.hankaku(), 'ｶﾀｶﾅ', 'String#hankaku | katakana');
   equal('こんにちは。ヤマダタロウです。'.hankaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku |  hankaku katakana inside a string');
   equal('こんにちは。ＴＡＲＯ　ＹＡＭＡＤＡです。'.hankaku(), 'こんにちは｡TARO YAMADAです｡', 'String#hankaku | hankaku romaji inside a string');
   equal('　'.hankaku(), ' ', 'String#hankaku | spaces');
-  equal('　'.hankaku('p'), ' ', 'String#hankaku | punctuation | spaces');
+  equal('　'.hankaku('p'), '　', 'String#hankaku | punctuation | spaces');
+  equal('　'.hankaku('s'), ' ', 'String#hankaku | spaces');
 
 
   var barabara = 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）';
@@ -323,29 +360,37 @@ test('String', function () {
   equal(barabara.hankaku('a'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | romaji only');
   equal(barabara.hankaku('n'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes | numbers only');
   equal(barabara.hankaku('k'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes | katakana only');
-  equal(barabara.hankaku('p'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku | modes | punctuation only');
-  equal(barabara.hankaku('s'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku | modes | special chars only');
+  equal(barabara.hankaku('p'), 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#hankaku | modes | punctuation only');
+  equal(barabara.hankaku('s'), 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes | spaces only');
 
   equal(barabara.hankaku('an'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku | modes | alphabet and numbers');
   equal(barabara.hankaku('ak'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | alphabet and katakana');
-  equal(barabara.hankaku('as'), 'こんにちは。タロウ　YAMADAです。１８才です！(笑)', 'String#hankaku | modes | alphabet and special');
-  equal(barabara.hankaku('ap'), 'こんにちは｡タロウ YAMADAです｡１８才です!（笑）', 'String#hankaku | modes | alphabet and punctuation');
+  equal(barabara.hankaku('as'), 'こんにちは。タロウ YAMADAです。１８才です！（笑）', 'String#hankaku | modes | alphabet and spaces');
+  equal(barabara.hankaku('ap'), 'こんにちは｡タロウ　YAMADAです｡１８才です!(笑)', 'String#hankaku | modes | alphabet and punctuation');
 
   equal(barabara.hankaku('na'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku | modes reverse | alphabet and numbers');
   equal(barabara.hankaku('ka'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes reverse | alphabet and katakana');
-  equal(barabara.hankaku('sa'), 'こんにちは。タロウ　YAMADAです。１８才です！(笑)', 'String#hankaku | modes reverse | alphabet and special');
-  equal(barabara.hankaku('pa'), 'こんにちは｡タロウ YAMADAです｡１８才です!（笑）', 'String#hankaku | modes reverse | alphabet and punctuation');
+  equal(barabara.hankaku('sa'), 'こんにちは。タロウ YAMADAです。１８才です！（笑）', 'String#hankaku | modes reverse | alphabet and spaces');
+  equal(barabara.hankaku('pa'), 'こんにちは｡タロウ　YAMADAです｡１８才です!(笑)', 'String#hankaku | modes reverse | alphabet and punctuation');
 
   equal(barabara.hankaku('alphabet'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes full | alphabet');
   equal(barabara.hankaku('numbers'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes full | numbers');
   equal(barabara.hankaku('katakana'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes full | katakana');
-  equal(barabara.hankaku('punctuation'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡１８才です!（笑）', 'String#hankaku | modes full | punctuation');
-  equal(barabara.hankaku('special'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！(笑)', 'String#hankaku | modes full | special');
+  equal(barabara.hankaku('punctuation'), 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#hankaku | modes full | punctuation');
+  equal(barabara.hankaku('spaces'), 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes full | spaces');
+
+  var allZenkakuChars = '　、。，．・：；？！ー～／｜（）［］｛｝「」＋－＝＜＞￥＄￠￡％＃＆＊＠０１２３４５６７８９ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロワヲン';
+  var allHankakuChars = ' ､｡,.･:;?!ｰ~/|()[]{}｢｣+-=<>¥$¢£%#&*@0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzｧｱｨｲｩｳｪｴｫｵｶｶﾞｷｷﾞｸｸﾞｹｹﾞｺｺﾞｻｻﾞｼｼﾞｽｽﾞｾｾﾞｿｿﾞﾀﾀﾞﾁﾁﾞｯﾂﾂﾞﾃﾃﾞﾄﾄﾞﾅﾆﾇﾈﾉﾊﾊﾞﾊﾟﾋﾋﾞﾋﾟﾌﾌﾞﾌﾟﾍﾍﾞﾍﾟﾎﾎﾞﾎﾟﾏﾐﾑﾒﾓｬﾔｭﾕｮﾖﾗﾘﾙﾚﾛﾜｦﾝ';
+
+
+  equals(allZenkakuChars.hankaku(), allHankakuChars, 'String#hankaku | everything');
+  equals(allHankakuChars.zenkaku(), allZenkakuChars, 'String#zenkaku | everything');
 
 
   equal('ｶﾀｶﾅ'.zenkaku(), 'カタカナ', 'String#zenkaku | katakana');
-  equal(' '.zenkaku(), '　', 'String#zenkaku | spaces');
-  equal(' '.zenkaku('p'), '　', 'String#zenkaku | punctuation | spaces');
+  equal(' '.zenkaku(), '　', 'String#zenkaku | spaces | all');
+  equal(' '.zenkaku('s'), '　', 'String#zenkaku | spaces | s');
+  equal(' '.zenkaku('p'), ' ', 'String#zenkaku | spaces | p');
 
 
   barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
@@ -354,24 +399,24 @@ test('String', function () {
   equal(barabara.zenkaku('a'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet');
   equal(barabara.zenkaku('n'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenkaku | modes | number');
   equal(barabara.zenkaku('k'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenkaku | modes | katakana');
-  equal(barabara.zenkaku('p'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenkaku | modes | punctuation');
-  equal(barabara.zenkaku('s'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenkaku | modes | special');
+  equal(barabara.zenkaku('p'), 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'String#zenkaku | modes | punctuation');
+  equal(barabara.zenkaku('s'), 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'String#zenkaku | modes | spaces');
 
   equal(barabara.zenkaku('an'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenkaku | modes | alphabet and numbers');
   equal(barabara.zenkaku('ak'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet and katakana');
-  equal(barabara.zenkaku('as'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!（笑）', 'String#zenkaku | modes | alphabet and special');
-  equal(barabara.zenkaku('ap'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。18才です！(笑)', 'String#zenkaku | modes | alphabet and punctuation');
+  equal(barabara.zenkaku('as'), 'こんにちは｡ﾀﾛｳ　ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet and spaces');
+  equal(barabara.zenkaku('ap'), 'こんにちは。ﾀﾛｳ ＹＡＭＡＤＡです。18才です！（笑）', 'String#zenkaku | modes | alphabet and punctuation');
 
   equal(barabara.zenkaku('na'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenkaku | modes reverse | alphabet and numbers');
   equal(barabara.zenkaku('ka'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes reverse | alphabet and katakana');
-  equal(barabara.zenkaku('sa'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!（笑）', 'String#zenkaku | modes reverse | alphabet and special');
-  equal(barabara.zenkaku('pa'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。18才です！(笑)', 'String#zenkaku | modes reverse | alphabet and punctuation');
+  equal(barabara.zenkaku('sa'), 'こんにちは｡ﾀﾛｳ　ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes reverse | alphabet and spaces');
+  equal(barabara.zenkaku('pa'), 'こんにちは。ﾀﾛｳ ＹＡＭＡＤＡです。18才です！（笑）', 'String#zenkaku | modes reverse | alphabet and punctuation');
 
   equal(barabara.zenkaku('alphabet'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes full | alphabet');
   equal(barabara.zenkaku('numbers'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenkaku | modes full | numbers');
   equal(barabara.zenkaku('katakana'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenkaku | modes full | katakana');
-  equal(barabara.zenkaku('special'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!（笑）', 'String#zenkaku | modes full | special');
-  equal(barabara.zenkaku('punctuation'), 'こんにちは。ﾀﾛｳ　YAMADAです。18才です！(笑)', 'String#zenkaku | modes full | punctuation');
+  equal(barabara.zenkaku('spaces'), 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'String#zenkaku | modes full | spaces');
+  equal(barabara.zenkaku('punctuation'), 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'String#zenkaku | modes full | punctuation');
 
 
   equal('ガ'.hankaku(), 'ｶﾞ', 'String#hankaku | dakuten | ガ');
@@ -387,14 +432,19 @@ test('String', function () {
   equal(barabara.hiragana(false), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hiragana | no widths | full string');
 
 
-
-
   equal('ひらがな'.katakana(), 'ヒラガナ', 'String#katakana | from hiragana');
   equal(barabara.katakana(), 'コンニチハ｡ﾀﾛｳ YAMADAデス｡18才デス!(笑)', 'String#katakana | full string');
   equal(barabara.zenkaku().katakana(), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'String#katakana full string to zenkaku');
 
 
   equal('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）'.katakana().hankaku(), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'String#katakana | full string to katakana and hankaku');
+
+  var allHiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ';
+  var allKatakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ';
+
+  equal(allKatakana.hiragana(), allHiragana, 'String#hiragana | all');
+  equal(allHiragana.katakana(), allKatakana, 'String#katakana | all');
+
 
 
   equal('4em'.toNumber(), 4, 'String#toNumber | 4em');
@@ -533,6 +583,13 @@ test('String', function () {
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
   equalsWithException('HOP_ON_POP'.dasherize(), 'hop-on-pop', { prototype: 'HOP-ON-POP' }, 'String#dasherize | capitals and underscores');
   equalsWithException('hopOnPop'.dasherize(), 'hop-on-pop', { prototype: 'hopOnPop' }, 'String#dasherize | camel-case');
+  equalsWithException('watch me fail'.dasherize(), 'watch-me-fail', { prototype: 'watch me fail' }, 'String#dasherize | whitespace');
+  equalsWithException('watch me fail_sad_face'.dasherize(), 'watch-me-fail-sad-face', { prototype: 'watch me fail-sad-face' }, 'String#dasherize | whitespace sad face');
+  equalsWithException('waTch me su_cCeed'.dasherize(), 'wa-tch-me-su-c-ceed', { prototype: 'waTch me su-cCeed' }, 'String#dasherize | complex whitespace');
+
+
+
+
   equalsWithException('hop-on-pop'.camelize(), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | dashes');
   equalsWithException('HOP-ON-POP'.camelize(), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | capital dashes');
   equalsWithException('hop_on_pop'.camelize(), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | underscores');
@@ -542,17 +599,27 @@ test('String', function () {
   equalsWithException('hop-on-pop'.camelize(true), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | first true | dashes');
   equalsWithException('HOP-ON-POP'.camelize(true), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first true | capital dashes');
   equalsWithException('hop_on_pop'.camelize(true), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first true | underscores');
+
+  equalsWithException('watch me fail'.camelize(), 'WatchMeFail', { prototype: 'watch me fail' }, 'String#camelize | whitespace');
+  equalsWithException('watch me fail-sad-face'.camelize(), 'WatchMeFailSadFace', { prototype: 'watch me failSadFace' }, 'String#camelize | whitespace sad face');
+  equalsWithException('waTch me su-cCeed'.camelize(), 'WaTchMeSuCCeed', { prototype: 'waTch me suCCeed' }, 'String#camelize | complex whitespace');
+
+  equalsWithException('watch me fail'.camelize(false), 'watchMeFail', { prototype: 'watch me fail' }, 'String#camelize | first false | whitespace');
+  equalsWithException('watch me fail-sad-face'.camelize(false), 'watchMeFailSadFace', { prototype: 'watch me failSadFace' }, 'String#camelize | first false | whitespace sad face');
+  equalsWithException('waTch me su-cCeed'.camelize(false), 'waTchMeSuCCeed', { prototype: 'waTch me suCCeed' }, 'String#camelize | first false | complex whitespace');
+
+
+
+
   equal('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
   equal('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
   equal('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps');
   equal('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore | caps and dashes');
   equal('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore | lower-case and dashes');
 
-
-  equal('what a shame of a title'.titleize(), 'What A Shame Of A Title', 'String#titleize | all lower-case');
-  equal('What A Shame Of A Title'.titleize(), 'What A Shame Of A Title', 'String#titleize | already titleized');
-  equal(' what a shame of a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize | with whitespace');
-  equal(' what a shame of\n a title    '.titleize(), 'What A Shame Of A Title', 'String#titleize | with whitespace and newlines');
+  equalsWithException('watch me fail'.underscore(), 'watch_me_fail', { prototype: 'watch me fail' }, 'String#underscore | whitespace');
+  equalsWithException('watch me fail-sad-face'.underscore(), 'watch_me_fail_sad_face', { prototype: 'watch me fail_sad_face' }, 'String#underscore | whitespace sad face');
+  equalsWithException('waTch me su-cCeed'.underscore(), 'wa_tch_me_su_c_ceed', { prototype: 'wa_tch me su_c_ceed' }, 'String#underscore | complex whitespace');
 
 
 
@@ -654,6 +721,7 @@ test('String', function () {
   equal('庭には二羽鶏がいる。'.isKanji(), false, 'String#isKanji | full sentence');
   equal(' 語学 '.isKanji(), true, 'String#isKanji | kango with whitespace');
   equal(' 語学\t '.isKanji(), true, 'String#isKanji | kango with whitespace and tabs');
+  equal(' 語 学\t '.isKanji(), true, 'String#isKanji | middle whitespace is also not counted');
 
 
 
@@ -675,6 +743,7 @@ test('String', function () {
   equal('난 뻔데기를 싫어 한 사람 이다...너는?'.isHangul(), false, 'String#isHangul | full sentence');
   equal('안녕 하세요'.isHangul(), true, 'String#isHangul | how are you?');
   equal('ㅠブラじゃない！'.isHangul(), false, 'String#isHangul | mixed with kana');
+  equal('이것도 한굴이야'.isHangul(), true, 'String#isHangul | spaces do not count');
 
   equal('모'.hasHangul(), true, 'String#hasHangul | character');
   equal('난 뻔데기를 싫어 한 사람 이다...너는?'.hasHangul(), true, 'String#hasHangul | full sentence');
@@ -684,6 +753,8 @@ test('String', function () {
   equal('שְׂרָאֵל'.isHebrew(), true, 'String#isHebrew');
   equal('שְׂרָאֵל'.hasHebrew(), true, 'String#hasHebrew');
 
+  equal('सभी मनुष्यों'.hasDevanagari(), true, 'String#hasDevanagari');
+  equal('सभी मनुष्यों'.isDevanagari(), true, 'String#isDevanagari');
 
   var stripped;
   var html =
@@ -708,14 +779,14 @@ test('String', function () {
     '<div class="outer">' +
       '<p>text with links, &quot;entities&quot; and bold tags</p>' +
     '</div>';
-  equalsWithException(html.stripTags('a', 'b'), stripped, { prototype: allStripped}, 'String#stripTags | stripped <a> and <b> tags');
+  equalsWithException(html.stripTags('a', 'b'), stripped, { prototype: allStripped }, 'String#stripTags | stripped <a> and <b> tags');
 
 
   stripped =
     '<div class="outer">' +
       'text with links, &quot;entities&quot; and <b>bold</b> tags' +
     '</div>';
-  equalsWithException(html.stripTags('p', 'a'), stripped, { prototype: allStripped}, 'String#stripTags | stripped <p> and <a> tags');
+  equalsWithException(html.stripTags('p', 'a'), stripped, { prototype: allStripped }, 'String#stripTags | stripped <p> and <a> tags');
 
 
   stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>';
@@ -861,8 +932,8 @@ test('String', function () {
   strictlyEqual(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft | wasabi with whitespace');
   strictlyEqual(''.trimRight(), '', 'String#trimRight | blank');
   strictlyEqual(' wasabi '.trimRight(), ' wasabi', 'String#trimRight | wasabi with whitespace');
-  strictlyEqual(''.pad(0), '', 'String#pad | blank');
-  strictlyEqual('wasabi'.pad(1), ' wasabi ', 'String#pad | wasabi padded to 1');
+  strictlyEqual(''.pad(' ', 0), '', 'String#pad | blank');
+  strictlyEqual('wasabi'.pad(' ', 1), ' wasabi ', 'String#pad | wasabi padded to 1');
   strictlyEqual('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
   strictlyEqual('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
   strictlyEqual('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
@@ -899,8 +970,6 @@ test('String', function () {
   strictlyEqual('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
   strictlyEqual(''.camelize(), '', 'String#camelize | blank');
   strictlyEqualsWithException('no-fing-way'.camelize(), 'NoFingWay', { prototype: false }, 'String#camelize | no-fing-way');
-  strictlyEqual(''.titleize(), '', 'String#titleize | blank');
-  strictlyEqual('chilled monkey brains'.titleize(), 'Chilled Monkey Brains', 'String#titleize | chilled monkey brains');
   strictlyEqual(''.stripTags(), '', 'String#stripTags | blank');
   strictlyEqual('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags | chilled <b>monkey</b> brains');
   strictlyEqual(''.removeTags(), '', 'String#removeTags | blank');
@@ -992,6 +1061,7 @@ test('String', function () {
   same('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split | complex regex splitting | test | /(t)(e)(s)(t)/');
   same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split | complex regex splitting | . | /(((.((.??)))))/');
   same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split | complex regex splitting | . | /(((((.??)))))/');
+
 
   /*
    * Patching the String#match method broke Prototype in IE in a very specific way:

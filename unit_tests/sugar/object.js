@@ -142,14 +142,9 @@ test('Object', function () {
   });
 
 
-  // Note here that the need for this complicated syntax is that Prototype's Object.keys method
-  // is incorrectly reporting keys up the prototype chain.
-  var objectPrototypeMethods = ['keys','values','each','merge','clone','isEmpty','equals'];
-  var objectPrototypeMethodReferences = objectPrototypeMethods.map(function(m) { return Object.extended()[m]; });
-
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  sameWithException(obj.keys(), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object#keys | returns object's keys", true);
+  same(obj.keys(), keys, "Object#keys | returns object's keys", true);
   count = 0;
   obj.keys(function(key) {
     equal(key, keys[count], 'Object#keys | accepts a block');
@@ -158,12 +153,12 @@ test('Object', function () {
 
   equal(count, 3, 'Object#keys | accepts a block | iterated properly');
 
-  sameWithException(Object.extended().keys(), [], { prototype: objectPrototypeMethods }, 'Object#keys | empty object', true);
-  sameWithException(Object.keys(Object.extended()), [], { prototype: objectPrototypeMethods}, 'Object#keys | empty object', true);
+  same(Object.extended().keys(), [], 'Object#keys | empty object', true);
+  same(Object.keys(Object.extended()), [], 'Object#keys | empty object', true);
 
   keys = ['number','person','date'];
   values = [3,'jim',d];
-  sameWithException(Object.keys(obj), keys, { prototype: keys.concat(objectPrototypeMethods) }, "Object.keys | returns object's keys", true);
+  same(Object.keys(obj), keys, "Object.keys | returns object's keys", true);
   count = 0;
   Object.keys(obj, function(key) {
     equal(key, keys[count], 'Object.keys | accepts a block');
@@ -183,7 +178,7 @@ test('Object', function () {
     count++;
   });
 
-  equals(count, 3, 'Object#values | accepts a block | iterated properly');
+  equalsWithException(count, 3, { prototype: 0, mootools: 0 }, 'Object#values | accepts a block | iterated properly');
 
   strippedValues = Object.values(obj).remove(function(m) { return typeof m == 'function'; });
   sameWithException(strippedValues, values, { prototype: values }, "Object.values | returns object's values", true);
@@ -192,13 +187,13 @@ test('Object', function () {
     equal(value, values[count], 'Object.values | accepts a block');
     count++;
   });
-  equals(count, 3, 'Object.values | accepts a block | iterated properly');
+  equalsWithException(count, 3, { prototype: 0, mootools: 0 }, 'Object.values | accepts a block | iterated properly');
 
   strippedValues = Object.extended().values().remove(function(m) { return typeof m == 'function'; });
-  sameWithException(strippedValues, [], { prototype: [] }, 'Object#values | empty object', true);
+  same(strippedValues, [], 'Object#values | empty object', true);
 
   strippedValues = Object.values(Object.extended()).remove(function(m) { return typeof m == 'function'; });
-  sameWithException(strippedValues, [], { prototype: [] }, 'Object#values | empty object', true);
+  same(strippedValues, [], 'Object#values | empty object', true);
 
 
 
@@ -278,7 +273,7 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equals(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
-  equals(obj2.foo.jumpy, 'jump', 'Object.clone | cloned object is not modified');
+  equalsWithException(obj2.foo.jumpy, 'jump', { prototype: 'hump' }, 'Object.clone | cloned object is not modified');
 
   obj1 = {
     foo: {
@@ -289,15 +284,15 @@ test('Object', function () {
 
   obj1.foo.bar = ['a','b','c'];
   same(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
-  same(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+  sameWithException(obj2.foo.bar, [1,2,3], { prototype: ['a','b','c'] }, 'Object#clone | cloned object is not modified');
 
 
 
   // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
   // cloning properties in the prototype chain directly into the object itself.
-  equals(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar' }).clone(), { foo: 'bar' }), true, 'Object#clone | basic clone');
-  equals(deepEqualWithoutPrototyping(Object.extended({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }), true, 'Object#clone | complex clone');
-  equals(deepEqualWithoutPrototyping(Object.extended({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}), true, 'Object#clone | deep clone');
+  same(Object.extended({ foo: 'bar' }).clone(), { foo: 'bar' }, 'Object#clone | basic clone');
+  same(Object.extended({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }, 'Object#clone | complex clone');
+  same(Object.extended({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}, 'Object#clone | deep clone');
 
   equals(Object.extended({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
 
@@ -317,7 +312,7 @@ test('Object', function () {
   equals(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
   equals(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
 
-  sameWithException(obj2.keys().sort(), ['broken','foo'], { prototype: ['broken','foo'].concat(objectPrototypeMethods).sort() }, 'Object#clone | cloned objects are themselves extended');
+  same(obj2.keys().sort(), ['broken','foo'], 'Object#clone | cloned objects are themselves extended');
 
   obj1 = Object.extended({
     foo: {
@@ -357,13 +352,14 @@ test('Object', function () {
 
   Object.enableSugar();
 
+  var prototypeBaseValues = ({}).values().sort();
 
   count = 0;
   same(({ foo: 'bar' }).keys(function() { count++; }), ['foo'], 'Object#keys | Object.prototype');
-  same(({ foo: 'bar' }).values(function() { count++; }), ['bar'], 'Object#values | Object.prototype');
+  sameWithException(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], { prototype: ['bar'].concat(prototypeBaseValues) }, 'Object#values | Object.prototype');
   ({ foo: 'bar' }).each(function() { count++; });
 
-  equals(count, 3, 'Object | Object.prototype should have correctly called all functions');
+  equalsWithException(count, 3, { prototype: 2, mootools: 2 }, 'Object | Object.prototype should have correctly called all functions');
 
   equals(({}).isEmpty(), true, 'Object#empty | Object.prototype');
   equals(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');

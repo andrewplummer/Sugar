@@ -72,6 +72,7 @@
     <input type="radio" name="tf_radio" value="on" />
     <input type="hidden" name="tf_hidden" />
     <input type="password" name="tf_password" />
+    <button name="tf_button"></button>
   </div>
 </form>
 
@@ -82,6 +83,8 @@
 <form id="form_with_file_input">
   <input type="file" name="file_name" value="foo" />
 </form>
+
+<form id="form_empty"></form>
 
 <!-- tabindexed forms -->
 <div id="tabindex">
@@ -106,3 +109,19 @@
   </form>
   
 </div>
+
+<form id="form_with_duplicate_input_names" style="display:none">
+  <input type="hidden" name="fact"    id="fdn_f_1" value="sea-wet" />
+  <input type="hidden" name="opinion" id="fnd_o_1" value="sea-cold" />
+  <input type="hidden" name="fact"    id="fnd_f_2" value="sun-hot" />
+  <input type="hidden" name="opinion" id="fnd_o_2" value="sun-ugly" />
+</form>
+
+<form id="form_with_inputs_needing_encoding" style="display:none">
+  <input type="hidden" name="user[wristbands][][nickname]" id="fine_1" value="Hässlich" />
+</form>
+
+<form id="form_with_troublesome_input_names">
+  <input type="text" name="length" value="foo" />
+  <input type="text" name="bar"    value="baz" />
+</form>

@@ -16,7 +16,7 @@
         failedAssertions += '<p class="warning">'+message.replace(/(&nbsp;)+/g, ' ') +'</p>';
         warnings++;
       } else if(!result) {
-        failedAssertions += '<p class="fail">'+message.replace(/(&nbsp;)+/g, ' ') +'</p>';
+        failedAssertions += '<p class="fail">'+message.replace(/(&nbsp;)+/g, ' ').replace(/</g, '&lt;').replace(/>/, '&gt;') +'</p>';
       } else {
         totalAssertions++;
       }

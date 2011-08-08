@@ -1,0 +1,211 @@
+<div id="box_with_negative_margins">
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</div> <!-- #box_with_negative_margins -->
+
+<style type="text/css" media="screen">
+  #box_with_negative_margins {
+    margin: -10px;
+    margin-right: 2px;
+    margin-left: -3px;
+  }
+</style>
+
+
+<!-- Absolutely-positioned element with BODY as offset parent. -->
+<div id="box1">  
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>  
+</div> <!-- #box1 -->
+
+<style type="text/css" media="screen">
+  #box1 {
+    position: absolute;    
+    top: 1020px;
+    left: 25px;
+    width: 242px;
+    height: 555px;
+    padding: 10px;
+    margin: 5px;
+    border: 3px solid #000;
+  }  
+</style>
+
+
+<!-- Hidden, statically-positioned element. -->
+<div id="box2">
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+</div> <!-- #box2 -->
+
+<style type="text/css" media="screen">
+  #box2 {
+    display: none;
+    width: 500px;
+    padding: 10px;
+    margin: 5px;
+    border: 3px solid #000;
+  }
+</style>
+
+<!-- Hidden, statically positioned element with width constrained by parent. -->
+<div id="box3_parent">
+  <div id="box3">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div> <!-- #box3 -->
+</div> <!-- #box3_parent -->
+
+<style type="text/css" media="screen">
+  /* When an element itself has display: none, we can still figure out what
+     its dimensions will be _when_ it is made visible. */
+
+  #box3_parent {
+    width: 400px;
+  }
+  
+  #box3 {
+    display: none;
+    padding: 10px;
+    margin: 5px;
+    border: 3px solid #000;
+  }
+</style>
+
+<!-- Deeply hidden, statically-positioned element with width constrained by ancestor. -->
+<div id="box4_ancestor">
+  <div id="box4_parent">
+    <div id="box4">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </div> <!-- #box4 -->
+  </div> <!-- #box4_parent -->
+</div> <!-- #box4_ancestor -->
+
+<style type="text/css" media="screen">
+  /* But when an _ancestor_ of an element has display: none, the situation
+     is too complex for us to speculate. Instead, we'll return `0` for any
+     height/width measurements. */
+  #box4_ancestor {
+    width: 600px;
+  }
+  
+  #box4_parent {
+    display: none;
+  }
+  
+  #box4 {
+    padding: 13px;
+    margin: 2px;
+    border: none;
+  }  
+</style>
+
+<!-- Absolutely-positioned element with non-BODY offset parent and positioning by percentage. -->
+<div id="box5_ancestor">
+  <div id="box5_parent">
+    <div id="box5">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </div> <!-- #box5 -->
+  </div> <!-- #box5_parent -->
+</div> <!-- #box5_ancestor -->
+
+<style type="text/css" media="screen">
+  #box5_ancestor {
+    width: 600px;
+  }
+  
+  #box5_parent {
+    position: relative;
+  }
+  
+  #box5 {
+    position: absolute;
+    width: 200px;
+    top: 30px;
+    right: 10%;
+  }
+</style>
+
+<!-- Element positioned to the exact top-left corner of its parent. -->
+<div id="box6_parent">
+  <div id="box6">
+    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div> <!-- #box6 -->
+</div> <!-- #box6_parent -->
+
+<style type="text/css" media="screen">
+  #box6_parent {
+    position: relative;
+  }
+  
+  #box6 {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+</style>
+
+<!-- Statically-positioned element with percentage width. -->
+
+<div id="box7_parent">
+  <div id="box7">
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  </div> <!-- #box7 -->
+</div> <!-- #box7_parent -->
+
+<style type="text/css" media="screen">
+  #box7_parent {
+    width: 500px;
+  }
+  
+  #box7 {
+    width: 30%;
+  }
+</style>
+
+<!-- Absolutely-positioned element with percentage width. -->
+<div id="box8_parent">
+  <div id="box8">
+    Duis aute.
+  </div>
+</div> <!-- #box8_outer -->
+
+<style type="text/css" media="screen">
+  #box8_parent {
+    position: relative;
+    width: 500px;
+  }
+  
+  #box8 {
+    width: 30%;
+  }
+</style>
+
+<!-- Fixed-position element with percentage width. -->
+<div id="box9">
+  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</div> <!-- #box9 -->
+
+<style type="text/css" media="screen">
+  #box9 {
+    position: fixed;
+    width: 25%;
+  }
+</style>
+
+<!-- Absolutely-positioned, hidden element with BODY as offset parent, and a child to wrap around -->
+<div id="box10">  
+  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>  
+</div> <!-- #box10 -->
+
+<style type="text/css" media="screen">
+  #box10 {
+    position: absolute;    
+    display: none;
+  }
+  #box10 p {
+    width: 242px;
+    height: 555px;
+    padding: 10px;
+    margin: 5px;
+    border: 3px solid #000;
+  }
+</style>
+
+
