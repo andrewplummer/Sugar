@@ -1,4 +1,5 @@
-## Sugar
+Sugar
+=====
 
-Sugar - A Javascript library for working with native objects.
+A Javascript library for working with native objects.
 http://sugarjs.com/
