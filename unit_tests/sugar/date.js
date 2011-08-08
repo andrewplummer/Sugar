@@ -985,7 +985,7 @@ test('Date', function () {
     dyn = function(value, unit, ms, dir) {
       equals(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
       equals(unit, 'minutes', 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
-      equalsWithMargin(ms, 300000, 5, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
+      equalsWithMargin(ms, 300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
       equals(dir, -1, 'Date#format | relative fn | 5 minutes ago | dir indicates the offset from "now", negative if in the past');
       return value + strings[unit] + (dir < 0 ? '前' : '後');
     }
