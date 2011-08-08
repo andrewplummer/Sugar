@@ -1,3 +1,90 @@
+== 0.9.3
+
+- refactored extendWithNativeCondition to allow a "supported" boolean
+- added iterateOverSparseArray (.each)
+- multiMatch now does a straight check for undefined (not truthy value)
+- transformArgument returns the element if no arguments, and throws an error if not a function or a string. This means that .map() or .map(8) will now throw a TypeError (es5)
+- refactored getMinOrMax to use iterateOverObject
+- renamed getFromIndexes > getAtIndexes
+- added toIntegerWithDefault
+- added arrayFind
+- added arrayEach
+- added arrayUnique
+- added isArrayIndex (es5)
+- added toUint32 (es5)
+- added checkCallback (es5)
+- added checkFirstArgumentExists (es5)
+- added Array.isArray polyfill and aliased Object.isArray
+- refactored buildObject to be less invasive
+- refactored Object.keys to defer to native if < 2 arguments instead of == 1
+- Object.keys will now throw a TypeError if non-object passed (es5)
+- Array#every/some/map/filter now defers to native if available
+- Array#every/some/map/filter now throws a TypeError if no arguments passed
+- Array#every/some/map/filter now uses isArrayIndex instead of hasOwnProperty (es5)
+- Array#indexOf/lastIndexOf no longer regexes, callbacks, or deep objects, but instead they perform a simple strict equality check. This fix was put into v0.9.2 but added separately and refactored here (es5)
+- Array#indexOf/lastIndexOf refactored to defer to string methods (same name) if a string is passed as the scope (es5)
+- Array#forEach/reduce/reduceRight now all throw a TypeError if callback is not callable (es5)
+- Array#reduce/reduceRight now throw a TypeError if the array is empty and no initial value passed (es5)
+- Array#each is now no longer an alias of forEach and has different behavior:
+- * second parameter is the index to start from
+- * third parameter is a boolean that runs the loop from the beginning if true
+- * returns the array
+- * fn returning false will break out of the loop
+- * will throw a TypeError if fn isn't callable (same as forEach)
+- * array is now passed as the scope
+- * each now detects sparse arrays and switches to a different algorithm to handle them
+- Array#find refactored to use an internal method insted of Array#findAll to avoid collisions
+- Array#find now breaks as soon as it finds an element
+- removed Array#eachFromIndex
+- Array#none will now throw a TypeError if no arguments passed (es5)
+- Array#any  will now throw a TypeError if no arguments passed (es5)
+- Array#all  will now throw a TypeError if no arguments passed (es5)
+- Array#has  will now throw a TypeError if no arguments passed (es5)
+- renamed Array#removeAtIndex > Array#removeAt
+- Array#unique   refactored to use an internal method instead of Array#find to avoid collisions
+- Array#subtract refactored to use an internal method instead of Array#find to avoid collisions
+- Array#union refactored to use an internal method instead of Array#unique to avoid collisions
+- Array#intersect refactored to use an internal method instead of Array#unique to avoid collisions
+- Array#min refactored to use an internal method instead of Array#unique to avoid collisions
+- Array#max refactored to use an internal method instead of Array#unique to avoid collisions
+- Array#intersect refactored to use Array.isArray instead of Object.isArray
+- Array#subtract  refactored to use Array.isArray instead of Object.isArray
+- Array#most will now throw a TypeError if the first argument exists, but is not a string or function
+- Array#least will now throw a TypeError if the first argument exists, but is not a string or function
+- Array#groupBy will now throw a TypeError if the first argument exists, but is not a string or function
+- Array#sortBy will now throw a TypeError if the first argument exists, but is not a string or function
+- Array#most refactored to use an internal method instead of Array#unique to avoid collisions
+- Array#least refactored to use an internal method instead of Array#unique to avoid collisions
+- Array#compact now internally uses Array.isArray instead of Object.isArray
+- Array#flatten now internally uses Array.isArray instead of Object.isArray
+- removed Array#collect alias
+- removed Array#shuffle alias
+- fixed Number.random, which had implied globals min & max
+- refactored hankaku/zenkaku/hiragana/katakana to shift char codes instead of using a hash table
+- refactored hankaku/zenkaku to be much more accurate & strictly defined
+- added documentation for unicode block methods
+- added devanagari and ethiopic scripts
+- refactored unicode script methods to use .test instead of .match
+- refactored String#trim to handle all characters covered in es5/unicode (es5)
+- refactored String#trim to check for support and polyfill as needed
+- removed String#titleize
+- refactored String#capitalize to allow capitalization of all letters
+- refactored String#pad/padLeft/padRight to accept the number as the second param and padding as the first
+- refactored String#repeat to return a blank string on num < 1
+- refactored String#add to act in parallel with Array#add
+- added String#remove as a reciprocal of String#add and a parallel of Array#remove
+- refactored String#dasherize/underscore to strip whitespace
+- fixed date methods in ambiguous situations such as "5 months ago" when the target month doesn't have enough days
+- refactored Date#toISOString polyfill to check for native browser support (es5)
+- added Date#toJSON as a polyfill alias to Date#toISOString with similar native checks (es5)
+- added Date#now polyfill (es5)
+- refactored Date#format/relative to point to an internal method to avoid collisions
+- refactored Function#bind to check for native support and behave much more closely to spec (es5)
+
+== 0.9.2
+
+- Emergency fix to alleviate issues with indexOf/lastIndexOf breaking on functions/deep objects
+
 == 0.9.1
 
 - Change Object.create to Object.extended to avoid collision with ES5
