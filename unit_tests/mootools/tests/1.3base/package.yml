@@ -1,0 +1,15 @@
+name: "Core-Specs-1.3base"
+
+license: "[MIT License](http://mootools.net/license.txt)"
+
+copyright: "&copy; [MooTools](http://mootools.net)"
+
+authors: "[MooTools Development Team](http://mootools.net/developers)"
+
+sources:
+  - "Core/Core.js"
+  - "Types/Array.js"
+  - "Types/Function.js"
+  - "Types/Object.js"
+  - "Class/Class.js"
+  - "Fx/Fx.js"

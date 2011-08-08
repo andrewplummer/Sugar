@@ -12,10 +12,20 @@ var dateEquals = function(a, b, message) {
 }
 
 var getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
-  var d = this.getFullYear  ? this : new Date();
-  d.setFullYear(d.getFullYear() + (year || 0));
-  d.setMonth(d.getMonth() + (month || 0));
-  d.setDate(d.getDate() + (day || 0));
+  var d = this.getFullYear ? this : new Date();
+  var setYear  = d.getFullYear() + (year || 0)
+  var setMonth = d.getMonth() + (month || 0)
+  var setDate  = d.getDate() + (day || 0);
+  // Relative dates that have no more specificity than months only walk
+  // the bounds of months, they can't traverse into a new month if the
+  // target month doesn't have the same number of days.
+  if(day === undefined && month !== undefined) {
+    setDate = Math.min(setDate, new Date(setYear, setMonth).daysInMonth());
+    d.setDate(setDate);
+  }
+  d.setFullYear(setYear);
+  d.setMonth(setMonth);
+  d.setDate(setDate);
   d.setHours(d.getHours() + (hours || 0));
   d.setMinutes(d.getMinutes() + (minutes || 0));
   d.setSeconds(d.getSeconds() + (seconds || 0));
@@ -65,11 +75,6 @@ var getHours = function(num) {
   return Math.floor(num < 0 ? 24 + num : num);
 }
 
-
-var contains = function(actual, expected, message) {
-  equals(expected.any(actual), true, message);
-}
-
 var strictlyEqual = function(actual, expected, message) {
   equals(actual === expected, true, message + ' | strict equality');
 }
@@ -101,18 +106,20 @@ var strictlyEqualsWithException = function(actual, expected, exception, message)
 }
 
 var fixPrototypeIterators = function() {
-  if(environment == 'prototype') {
-    fixIterator('find');
-    fixIterator('findAll');
-    fixIterator('min', true);
-    fixIterator('max', true);
-  }
+  if(environment != 'prototype') return;
+  fixIterator('find');
+  fixIterator('findAll');
+  fixIterator('any');
+  fixIterator('all');
+  fixIterator('sortBy', true);
+  fixIterator('min', true);
+  fixIterator('max', true);
 }
 
 var fixIterator = function(name, map) {
   var fn = Array.prototype[name];
   Array.prototype[name] = function(a) {
-    if(typeof a == 'function') {
+    if((a && a.call) || arguments.length == 0) {
       return fn.apply(this, arguments);
     } else {
       return fn.apply(this, [function(s) {
@@ -126,20 +133,9 @@ var fixIterator = function(name, map) {
   };
 }
 
-var testWithErrorHandling = function(test, environments) {
-  try {
+var skipEnvironments = function(environments, test) {
+  if(!environments.has(environment)) {
     test.call();
-  } catch(error) {
-    for(var i = 0; i < environments.length; i++) {
-      if(environments[i] == environment) {
-        // Allow test to fail
-        if(console) {
-          console.info('Skipping test with exepction "' + error.message + '" for environment ' + environment);
-        }
-        return;
-      }
-    }
-    throw new Error('Test ' + test.toString() + ' errored with message ' + error.message);
   }
 }
 
@@ -190,6 +186,7 @@ var dst = function(d) {
 }
 
 var objectPrototypeMethods = {};
+var sugarEnabledMethods = ['isArray','isBoolean','isDate','isFunction','isNumber','isString','isRegExp','keys','values','each','merge','isEmpty','equals','clone'];
 
 var rememberObjectProtoypeMethods = function() {
   for(var m in Object.prototype) {
@@ -199,26 +196,45 @@ var rememberObjectProtoypeMethods = function() {
 }
 
 var restoreObjectPrototypeMethods = function() {
-  for(var m in Object.prototype) {
-    if(!Object.prototype.hasOwnProperty(m)) continue;
-    var actualProp = objectPrototypeMethods.hasOwnProperty(m) && objectPrototypeMethods[m];
-    if(Object.prototype[m] == actualProp) {
-      continue;
-    } else if(actualProp) {
-      Object.prototype[m] = objectPrototypeMethods[m];
+  // Cannot iterate over Object.prototype's methods if they've been defined in a modern browser
+  // that implements defineProperty, so we'll have to set back the known ones that have been overridden.
+  sugarEnabledMethods.each(function(name){
+    // This is a cute one. Checking for the name in the hash isn't enough because it itself is
+    // an object that has been extended, so each and every one of the methods being held here are being
+    // perfectly shadowed!
+    if(objectPrototypeMethods.hasOwnProperty(name) && objectPrototypeMethods[name]) {
+      Object.prototype[name] = objectPrototypeMethods[name];
     } else {
-      delete Object.prototype[m];
+      delete Object.prototype[name];
     }
-  }
+  });
 }
 
-var raisesError = function(fn, message) {
+var raisesError = function(fn, message, exceptions) {
   var raised = false;
   try {
     fn.call();
   } catch(e) {
     raised = true;
   }
-  equals(raised, true, message);
+  // TODO CLEAN THIS UP!
+  if (exceptions) {
+    equalsWithException(raised, true, exceptions, message);
+  } else {
+    equals(raised, true, message);
+  }
 }
+
+var benchmark = function(fn, iterations) {
+  var i = 0; d = new Date;
+  iterations = iterations || 1000;
+  for(i = 0; i < iterations; i++) {
+    fn.call();
+  }
+  console.info(new Date - d);
+}
+
+
+// Passing undefined into .call will always set the scope as the window, so use this when available.
+var windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
 
