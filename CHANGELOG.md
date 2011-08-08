@@ -1,4 +1,4 @@
-0.9.3
+v0.9.3
 =====
 
 ### API Changes ###
@@ -78,14 +78,14 @@
 
 
 
-0.9.2
+v0.9.2
 =====
 
 - Emergency fix to alleviate issues with indexOf/lastIndexOf breaking on functions/deep objects
 
 
 
-0.9.1
+v0.9.1
 =====
 
 - Change Object.create to Object.extended to avoid collision with ES5
