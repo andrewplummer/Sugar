@@ -3,8 +3,18 @@ test('Array', function () {
 
   fixPrototypeIterators();
 
-  var arr;
-  var count;
+  var arr, expected, expectedIndexes, count;
+
+  // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
+  // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
+  // arr = [undefined, undefined, undefined];
+  //
+  // However we can do it this way, which is a much more likely user scenario in any case:
+  var arrayOfUndefined = [];
+  arrayOfUndefined.push(undefined);
+  arrayOfUndefined.push(undefined);
+  arrayOfUndefined.push(undefined);
+
 
 
   arr = [1,2,3];
@@ -34,8 +44,8 @@ test('Array', function () {
   equals([5,2,4,4].indexOf(4, -10), 2, 'Array#indexOf | 4 in 5,2,4,4 from index -10');
   equals([5,2,4,4].indexOf(4, -1), 3, 'Array#indexOf | 4 in 5,2,4,4 from index -1');
 
-  equals([{ foo: 'bar' }].indexOf({ foo: 'bar' }), 0, 'Array#indexOf | handles objects');
-  equals([{ foo: 'bar' }].indexOf(function(a) { return a.foo === 'bar'; }), 0, 'Array#indexOf | handles functions');
+  equals([{ foo: 'bar' }].indexOf({ foo: 'bar' }), -1, 'Array#indexOf | will not find deep objects (use find)');
+  equals([{ foo: 'bar' }].indexOf(function(a) { return a.foo === 'bar'; }), -1, 'Array#indexOf | will not run against a function (use find)');
 
   equals(['a','b','c','d','a','b'].lastIndexOf('b'), 5, 'Array#lastIndexOf | b');
   equals(['a','b','c','d','a','b'].lastIndexOf('b', 4), 1, 'Array#lastIndexOf | b from index 4');
@@ -59,13 +69,27 @@ test('Array', function () {
   // Prototype's "lastIndexOf" apparently doesn't pass this particular test.
   //equalsWithException([2,5,9,2].lastIndexOf(2, 10), 3, { prototype: (jQuery.browser.msie ? 10 : 3) }, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 10');
 
-  equals([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), 0, 'Array#lastIndexOf | handles objects');
-  equals([{ foo: 'bar' }].lastIndexOf(function(a) { return a.foo === 'bar'; }), 0, 'Array#lastIndexOf | handles functions');
+  equals([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), -1, 'Array#lastIndexOf | will not find deep objects (use find)');
+  equals([{ foo: 'bar' }].lastIndexOf(function(a) { return a.foo === 'bar'; }), -1, 'Array#lastIndexOf | will not run against a function (use find)');
 
 
+
+  equals([1,1,1].every(1), true, 'Array#every | accepts a number shortcut match');
+  equals([1,1,2].every(1), false, 'Array#every | accepts a number shortcut no match');
+  equals(['a','a','a'].every('a'), true, 'Array#every | accepts a string shortcut match');
+  equals(['a','b','a'].every('a'), false, 'Array#every | accepts a string shortcut no match');
+  equals(['a','b','c'].every(/[a-f]/), true, 'Array#every | accepts a regex shortcut match');
+  equals(['a','b','c'].every(/[m-z]/), false, 'Array#every | accepts a regex shortcut no match');
+  equals([{a:1},{a:1}].every({a:1}), true, 'Array#every | checks objects match');
+  equals([{a:1},{a:2}].every({a:1}), false, 'Array#every | checks object no match');
 
   equals([12,5,8,130,44].every(function(el, i, a) { return el >= 10; }), false, 'Array#every | not every element is greater than 10');
   equals([12,54,18,130,44].every(function(el, i, a) { return el >= 10; }), true, 'Array#every | every element is greater than 10');
+
+  equals(arrayOfUndefined.every(undefined), true, 'Array#every | all undefined');
+  equals(arrayOfUndefined.clone().add('a').every(undefined), false, 'Array#every | every undefined');
+  equals(['a', 'b'].every(undefined), false, 'Array#every | none undefined');
+
   ['a'].every(function(el, i, a) {
     equals(el, 'a', 'Array#every | First parameter is the element');
     equals(i, 0, 'Array#every | Second parameter is the index');
@@ -74,18 +98,34 @@ test('Array', function () {
   }, 'this');
 
 
-  testWithErrorHandling(function() {
-    same([{name:'john',age:25}].all({name:'john',age:25}), true, 'Array#all | handles complex objects');
-    same([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#all | simple string mistakenly passed for complex objects');
-    same([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, "Array#all | john isn't all");
-  }, ['prototype']);
+  equalsWithException([{name:'john',age:25}].all({name:'john',age:25}), true, { prototype: false }, 'Array#all | handles complex objects');
+  equals([{name:'john',age:25},{name:'fred',age:85}].all('age'), false, 'Array#all | simple string mistakenly passed for complex objects');
+  equals([{name:'john',age:25},{name:'fred',age:85}].all({name:'john',age:25}), false, "Array#all | john isn't all");
 
 
+
+  equals([1,2,3].some(1), true, 'Array#some | accepts a number shortcut match');
+  equals([2,3,4].some(1), false, 'Array#some | accepts a number shortcut no match');
+  equals(['a','b','c'].some('a'), true, 'Array#some | accepts a string shortcut match');
+  equals(['b','c','d'].some('a'), false, 'Array#some | accepts a string shortcut no match');
+  equals(['a','b','c'].some(/[a-f]/), true, 'Array#some | accepts a regex shortcut match');
+  equals(['a','b','c'].some(/[m-z]/), false, 'Array#some | accepts a regex shortcut no match');
+  equals([{a:1},{a:2}].some({a:1}), true, 'Array#some | checks objects match');
+  equals([{a:2},{a:3}].some({a:1}), false, 'Array#some | checks object no match');
 
   equals([12,5,8,130,44].some(function(el, i, a) { return el > 10 }), true, 'Array#some | some elements are greater than 10');
   equals([12,5,8,130,44].some(function(el, i, a) { return el < 10 }), true, 'Array#some | some elements are less than 10');
   equals([12,54,18,130,44].some(function(el, i, a) { return el >= 10 }), true, 'Array#some | all elements are greater than 10');
   equals([12,5,8,130,44].some(function(el, i, a) { return el < 4 }), false, 'Array#some | no elements are less than 4');
+
+
+  equals(arrayOfUndefined.some(undefined), true, 'Array#some | all undefined');
+  equals(arrayOfUndefined.clone().add('a').some(undefined), true, 'Array#some | some undefined');
+  equals(['a', 'b'].some(undefined), false, 'Array#some | none undefined');
+
+
+
+
   equals([].some(function(el, i, a) { return el > 10 }), false, 'Array#some | no elements are greater than 10 in an empty array');
   ['a'].some(function(el, i, a) {
     equals(el, 'a', 'Array#some | first parameter is the element');
@@ -101,6 +141,15 @@ test('Array', function () {
 
 
 
+  same([1,2,3].filter(1), [1], 'Array#filter | accepts a number shortcut match');
+  same([2,3,4].filter(1), [], 'Array#filter | accepts a number shortcut no match');
+  same(['a','b','c'].filter('a'), ['a'], 'Array#filter | accepts a string shortcut match');
+  same(['b','c','d'].filter('a'), [], 'Array#filter | accepts a string shortcut no match');
+  same(['a','b','c'].filter(/[a-f]/), ['a','b','c'], 'Array#filter | accepts a regex shortcut match');
+  same(['a','b','c'].filter(/[m-z]/), [], 'Array#filter | accepts a regex shortcut no match');
+  same([{a:1},{a:2}].filter({a:1}), [{a:1}], 'Array#filter | checks objects match');
+  same([{a:2},{a:3}].filter({a:1}), [], 'Array#filter | checks object no match');
+
   same([12,4,8,130,44].filter(function(el, i, a) { return el > 10 }), [12,130,44], 'Array#filter | numbers above 10');
   same([12,4,8,130,44].filter(function(el, i, a) { return el < 10 }), [4,8], 'Array#filter | numbers below 10');
   ['a'].filter(function(el, i, a) {
@@ -114,8 +163,6 @@ test('Array', function () {
   same([{name:'john',age:25},{name:'fred',age:85}].filter('age'), [], 'Array#filter | simple string mistakenly passed for complex objects');
   same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'john',age:25}), [{name:'john',age:25}], 'Array#filter | filtering john');
   same([{name:'john',age:25},{name:'fred',age:85}].filter({name:'fred',age:85}), [{name:'fred',age:85}], 'Array#filter | filtering fred');
-
-
 
 
   arr = [2, 5, 9];
@@ -139,6 +186,8 @@ test('Array', function () {
 
 
 
+  // Array#each now splits functionality from forEach
+
   arr = [2, 5, 9];
   arr.each(function(el, i, a) {
     equals(el, arr[i], 'Array#each | looping successfully');
@@ -146,7 +195,7 @@ test('Array', function () {
 
   arr = ['a', [1], { foo: 'bar' }, 352];
   count = 0;
-  arr.each(function(el, i, a) {
+  arr.each(function() {
       count++;
   });
   equals(count, 4, 'Array#each | complex array | should have looped 4 times');
@@ -155,9 +204,8 @@ test('Array', function () {
     equals(el, 'a', 'Array#each | first parameter is the element');
     equals(i, 0, 'Array#each | second parameter is the index');
     sameWithException(a, ['a'], { prototype: undefined }, 'Array#each | third parameter is the array');
-    equals(this, 'this', 'Array#each | scope is passed properly');
+    equalsWithException(this, a, { prototype: 'this', mootools: 'this' }, 'Array#each | scope is also the array');
   }, 'this');
-
 
 
 
@@ -175,7 +223,6 @@ test('Array', function () {
 
 
   same(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map | length');
-  same([1,2,3].map(2), [undefined,undefined,undefined], 'Array#map | can handle non-string arguments');
   same([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map | age');
   same([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map | name');
   same([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map | (nonexistent) cupsize');
@@ -183,18 +230,10 @@ test('Array', function () {
 
   same([1,2,3].map('toString'), ['1','2','3'], 'Array#map | calls a function on a shortcut string');
 
-
-  same(['foot','goose','moose'].collect(function(el) { return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#collect | with regexp');
-  same([1,4,9].collect(Math.sqrt), [1,2,3], 'Array#collect | passing Math.sqrt directly');
-  same([{ foo: 'bar' }].collect(function(el) { return el['foo']; }), ['bar'], 'Array#collect | with key "foo"');
-
-  ['a'].collect(function(el, i, a) {
-    sameWithException(a, ['a'], { prototype: undefined }, 'Array#collect | third paramteter is the array');
-    equals(el, 'a', 'Array#collect | first paramteter is the element');
-    equals(i, 0, 'Array#collect | second paramteter is the index');
-    equals(this, 'this', 'Array#collect | scope is passed properly');
-  }, 'this');
-
+  raisesError(function(){ [1,2,3].map() }, 'Array#map | raises an error if no argument', { prototype: false });
+  raisesError(function(){ [1,2,3].map(undefined) }, 'Array#map | raises an error on undefined');
+  raisesError(function(){ [1,2,3].map(null) }, 'Array#map | raises an error on null');
+  raisesError(function(){ [1,2,3].map(3) }, 'Array#map | raises an error on a number');
 
 
 
@@ -241,98 +280,187 @@ test('Array', function () {
 
 
   var result = [];
-  var indices = [1,2];
   var count = 0;
-  ['a','b','c'].eachFromIndex(1, function(s, i) {
+  ['a','b','c'].each(function(s, i) {
     result.push(s);
-    equals(i, indices[count], 'Array#eachFromIndex | index should be correct')
+    equalsWithException(i, count + 1, { prototype: count, mootools: count }, 'Array#each | index should be correct')
     count++;
+  }, 1);
+
+  equalsWithException(count, 2, { prototype: 3, mootools: 3 }, 'Array#each | should have run 2 times')
+  sameWithException(result, ['b','c'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | result');
+
+
+  result = [];
+  indexes = [1,2,0];
+  count = 0;
+  ['a','b','c'].each(function(s, i) {
+    result.push(s);
+    equalsWithException(i, indexes[count], { prototype: indexes.at(count - 1), mootools: indexes.at(count - 1) }, 'Array#each | looping from index 1 | index should be correct')
+    count++;
+  }, 1, true);
+
+  equals(count, 3, 'Array#each | looping from index 1 | should have run 3 times')
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | looping from index 1 | result');
+
+
+  result = [];
+  indexes = [0,1,2];
+  count = 0;
+  ['a','b','c'].each(function(s, i) {
+    result.push(s);
+    equals(i, indexes[count], 'Array#each | looping from index 0 | index should be correct')
+    count++;
+  }, 0, true);
+
+  equals(count, 3, 'Array#each | looping from index 0 | should have run 3 times')
+  same(result, ['a','b','c'], 'Array#each | looping from index 0 | result');
+
+
+
+  result = [];
+  indexes = [2,0,1];
+  count = 0;
+  ['a','b','c'].each(function(s, i) {
+    result.push(s);
+    equalsWithException(i, indexes[count], { prototype: indexes.at(count + 1), mootools: indexes.at(count + 1) }, 'Array#each | looping from index 2 | index should be correct')
+    count++;
+  }, 2, true);
+
+  equals(count, 3, 'Array#each | looping from index 2 | should have run 3 times')
+  sameWithException(result, ['c','a','b'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | looping from index 2 | result');
+
+
+
+  result = [];
+  count = 0;
+  ['a','b','c'].each(function(s, i) {
+    result.push(s);
+    count++;
+  }, 3, true);
+
+  equals(count, 3, 'Array#each | looping from index 3 | should have run 3 times')
+  same(result, ['a','b','c'], 'Array#each | looping from index 3 | result');
+
+
+
+  result = [];
+  count = 0;
+  ['a','b','c'].each(function(s, i) {
+    result.push(s);
+    count++;
+  }, 4, true);
+
+  equals(count, 3, 'Array#each | looping from index 4 | should have run 3 times')
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | looping from index 4 | result');
+
+
+
+  result = [];
+  count = 0;
+  ['a','b','c'].each(function(s, i) {
+    result.push(s);
+    count++;
+  }, 49, true);
+
+  equals(count, 3, 'Array#each | looping from index 49 | should have run 3 times')
+  sameWithException(result, ['b','c','a'], { prototype: ['a','b','c'], mootools: ['a','b','c'] }, 'Array#each | looping from index 49 | result');
+
+
+
+  result = [];
+  count = 0;
+  ['a','b','c'].each(function(s, i) {
+    result.push(s);
+    count++;
+  }, 'hoofa');
+
+  equals(count, 3, 'Array#each | string index should default to 0 | should have run 3 times')
+  same(result, ['a','b','c'], 'Array#each | string index should default to 0 | result');
+
+
+  same(['a','b','c'].each(function(){}), ['a','b','c'], 'Array#each | null function returns the array');
+  raisesError(function(){ [1].each() }, 'Array#each | raises an error if no callback');
+
+  count = 0;
+  ['a','b','c'].each(function() {
+    count++;
+    return false;
+  });
+  equalsWithException(count, 1, { prototype: 3, mootools: 3 }, 'Array#each | returning false will break the loop');
+
+  count = 0;
+  ['a','b','c'].each(function() {
+    count++;
+    return true;
+  });
+  equals(count, 3, 'Array#each | returning true will not break the loop');
+
+  count = 0;
+  ['a','b','c'].each(function() {
+    count++;
+    return;
+  });
+  equals(count, 3, 'Array#each | returning undefined will not break the loop');
+
+
+  // Sparse array handling with Array#each
+  // These tests cannot be run with Prototype/Mootools, as they will lock the browser
+
+  skipEnvironments(['prototype','mootools'], function() {
+
+    arr = ['a'];
+    arr[Math.pow(2,32) - 2] = 'b';
+    expected = ['a','b'];
+    expectedIndexes = [0, Math.pow(2,32) - 2];
+    count = 0;
+    arr.each(function(el, i, a) {
+      strictlyEqual(this, arr, 'Array#each | sparse arrays | this object should be the array');
+      strictlyEqual(el, expected[count], 'Array#each | sparse arrays | first argument should be the current element');
+      strictlyEqual(i, expectedIndexes[count], 'Array#each | sparse arrays | second argument should be the current index');
+      strictlyEqual(a, arr, 'Array#each | sparse arrays | third argument should be the array');
+      count++;
+    });
+    equals(count, 2, 'Array#each | sparse arrays | count should match');
+
+
+    arr = [];
+    arr[-2] = 'd';
+    arr[2]  = 'f';
+    arr[Math.pow(2,32)] = 'c';
+    count = 0;
+    arr.each(function(el, i) {
+      strictlyEqual(el, 'f', 'Array#each | sparse arrays | values outside range are not iterated over | el');
+      strictlyEqual(i, 2, 'Array#each | sparse arrays | values outside range are not iterated over | index');
+      count++;
+    });
+    equals(count, 1, 'Array#each | sparse arrays | values outside range are not iterated over | count');
+
   });
 
-  equals(count, 2, 'Array#eachFromIndex | should have run 2 times')
-  same(result, ['b','c'], 'Array#eachFromIndex | result');
 
 
-  result = [];
-  indices = [1,2,0];
+  arr = [];
+  arr[9] = 'd';
+  arr[2] = 'f';
+  arr[5] = 'c';
   count = 0;
-  ['a','b','c'].eachFromIndex(1, function(s, i) {
-    result.push(s);
-    equals(i, indices[count], 'Array#eachFromIndex | looping from index 1 | index should be correct')
+  expected = ['f','c','d'];
+  expectedIndexes = [2,5,9];
+  arr.each(function(el, i) {
+    equals(el, expected[count], 'Array#each | sparse arrays | elements are in expected order');
+    // TODO REWORK THIS AS IT SHOULD BE STRICT!!
+    equalsWithException(i, expectedIndexes[count], { prototype: count }, 'Array#each | sparse arrays | index is in expected order');
     count++;
-  }, true);
-
-  equals(count, 3, 'Array#eachFromIndex | looping from index 1 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#eachFromIndex | looping from index 1 | result');
-
-
-  result = [];
-  indices = [0,1,2];
-  count = 0;
-  ['a','b','c'].eachFromIndex(0, function(s, i) {
-    result.push(s);
-    equals(i, indices[count], 'Array#eachFromIndex | looping from index 0 | index should be correct')
-    count++;
-  }, true);
-
-  equals(count, 3, 'Array#eachFromIndex | looping from index 0 | should have run 3 times')
-  same(result, ['a','b','c'], 'Array#eachFromIndex | looping from index 0 | result');
-
-
-
-  result = [];
-  indices = [2,0,1];
-  count = 0;
-  ['a','b','c'].eachFromIndex(2, function(s, i) {
-    result.push(s);
-    equals(i, indices[count], 'Array#eachFromIndex | looping from index 2 | index should be correct')
-    count++;
-  }, true);
-
-  equals(count, 3, 'Array#eachFromIndex | looping from index 2 | should have run 3 times')
-  same(result, ['c','a','b'], 'Array#eachFromIndex | looping from index 2 | result');
-
-
-
-  result = [];
-  count = 0;
-  ['a','b','c'].eachFromIndex(3, function(s, i) {
-    result.push(s);
-    count++;
-  }, true);
-
-  equals(count, 3, 'Array#eachFromIndex | looping from index 3 | should have run 3 times')
-  same(result, ['a','b','c'], 'Array#eachFromIndex | looping from index 3 | result');
-
-
-
-  result = [];
-  count = 0;
-  ['a','b','c'].eachFromIndex(4, function(s, i) {
-    result.push(s);
-    count++;
-  }, true);
-
-  equals(count, 3, 'Array#eachFromIndex | looping from index 4 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#eachFromIndex | looping from index 4 | result');
-
-
-
-  result = [];
-  count = 0;
-  ['a','b','c'].eachFromIndex(49, function(s, i) {
-    result.push(s);
-    count++;
-  }, true);
-
-  equals(count, 3, 'Array#eachFromIndex | looping from index 49 | should have run 3 times')
-  same(result, ['b','c','a'], 'Array#eachFromIndex | looping from index 49 | result');
-
-
-
-  ['a','b','c'].eachFromIndex(function() {
-    equals(false, true, 'Array#eachFromIndex | this test should never be run');
   });
+  equals(count, 3, 'Array#each | sparse arrays | unordered array should match');
+
+
+  count = 0;
+  arrayOfUndefined.each(function() {
+    count++;
+  });
+  equals(count, 3, 'Array#each | however, simply having an undefined in an array does not qualify it as sparse');
 
 
 
@@ -372,7 +500,17 @@ test('Array', function () {
   same([null, null].find(null, 1), null, 'Array#find | null from index 1');
   same([undefined, undefined].find(undefined, 0), undefined, 'Array#find | undefined');
   same([undefined, undefined].find(undefined, 1), undefined, 'Array#find | undefined from index 1');
-  sameWithException([undefined, 'a'].find(undefined, 1), 'a', { prototype: undefined }, 'Array#find | undefined finds the first element');
+  same([undefined, 'a'].find(undefined, 1), undefined, 'Array#find | undefined can be found');
+
+
+  count = 0;
+  [1,2,3].find(function(n) {
+    count++;
+    return n == 1;
+  });
+  equals(count, 1, 'Array#find | should immediately finish when it finds a match');
+
+
 
 
 
@@ -451,6 +589,8 @@ test('Array', function () {
   same([0,0,0].unique(), [0], 'Array#unique | 0,0,0');
   same(['a','b','c'].unique(), ['a','b','c'], 'Array#unique | a,b,c');
   same(['a','a','c'].unique(), ['a','c'], 'Array#unique | a,a,c');
+
+
   same([{foo:'bar'}, {foo:'bar'}].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well');
 
 
@@ -483,9 +623,11 @@ test('Array', function () {
   sameWithException([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], { prototype: [] }, 'Array#intersect | a:1,b:2 + b:2,c:3');
   same([1,1,3].intersect([1,5,6]), [1], 'Array#intersect | 1,1,3 + 1,5,6');
   same([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
-  testWithErrorHandling(function() {
+
+  // Prototype will blow up here
+  skipEnvironments(['prototype'], function(){
     same([1,2,3].intersect(1), [1], 'Array#intersect | 1,2,3 + 1');
-  }, ['prototype']);
+  });
 
 
 
@@ -591,6 +733,9 @@ test('Array', function () {
 
 
 
+  raisesError(function() { [1,2,3].min(undefined); }, 'Array#min | raises an error on undefined', { prototype: false });
+  raisesError(function() { [1,2,3].min(null); }, 'Array#min | raises an error on null', { prototype: false });
+  raisesError(function() { [1,2,3].min(4); }, 'Array#min | raises an error on number', { prototype: false });
 
   sameWithException([12,87,55].min(), [12], { prototype: 12 }, 'Array#min | 12');
   sameWithException([-12,-87,-55].min(), [-87], { prototype: -87 }, 'Array#min | -87');
@@ -608,6 +753,12 @@ test('Array', function () {
   sameWithException(['short','and','mort','fat'].min(function(el) { return el.length; }), ['and','fat'], { prototype: 3 }, 'Array#min | and,fat');
   sameWithException(['short','and','mort'].min('length'), ['and'], { prototype: 3 }, 'Array#min | length with shortcut');
 
+
+
+
+  raisesError(function() { [1,2,3].max(undefined); }, 'Array#max | raises an error on undefined', { prototype: false });
+  raisesError(function() { [1,2,3].max(null); }, 'Array#max | raises an error on null', { prototype: false });
+  raisesError(function() { [1,2,3].max(4); }, 'Array#max | raises an error on number', { prototype: false });
 
   sameWithException([12,87,55].max(), [87], { prototype: 87 }, 'Array#max | 87');
   sameWithException([-12,-87,-55].max(), [-12], { prototype: -12 }, 'Array#max | -12');
@@ -636,6 +787,10 @@ test('Array', function () {
     { name: 'edmund', age: 27, hair: 'blonde' }
   ];
 
+  raisesError(function() { [1,2,3].most(undefined); }, 'Array#most | raises an error on undefined');
+  raisesError(function() { [1,2,3].most(null); }, 'Array#most | raises an error on null');
+  raisesError(function() { [1,2,3].most(4); }, 'Array#most | raises an error on number');
+
   same(people.most(function(person) { return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | age');
   same(people.most(function(person) { return person.hair; }), [], 'Array#most | hair');
 
@@ -651,11 +806,12 @@ test('Array', function () {
   equal(people.most(function(person) { return person.age; }).length, 2, 'Array#most | collect actual number of occurrences');
 
 
+  raisesError(function() { [1,2,3].least(undefined); }, 'Array#least | raises an error on undefined');
+  raisesError(function() { [1,2,3].least(null); }, 'Array#least | raises an error on null');
+  raisesError(function() { [1,2,3].least(4); }, 'Array#least | raises an error on number');
 
-  contains(people.least(function(person) { return person.age; }).age, [52,13], 'Array#least | age');
-  testWithErrorHandling(function() {
-    same(people.least(function(person) { return person.age; }).sortBy('age', true), [{name:'mary',age:52,hair:'blonde'},{name:'ronnie',age:13,hair:'brown'}], 'Array#least | age and sorted by age');
-  }, ['prototype']);
+  same(people.least(function(person) { return person.age; }).sortBy('name'), [people[1], people[2]], 'Array#least | contains mary and ronnie');
+  same(people.least(function(person) { return person.age; }).sortBy('age'), [{name:'ronnie',age:13,hair:'brown'}, {name:'mary',age:52,hair:'blonde'}], 'Array#least | age and sorted by age');
 
   same(people.least(function(person) { return person.hair; }), [], 'Array#least | hair');
 
@@ -696,6 +852,7 @@ test('Array', function () {
   same(isNaN(people.average(function(p) { return p.hair; })), true, 'Array#average | people average hair is NaN');
 
 
+  var grouped;
 
   same([].groupBy(), {}, 'Array#groupBy | empty array');
   same([1,1,2,2,3,3,4].groupBy(), {1:[1,1],2:[2,2],3:[3,3],4:[4]}, 'Array#groupBy | 1,1,2,2,3,3,4');
@@ -704,10 +861,12 @@ test('Array', function () {
   same([{a:1,b:5},{a:8,b:5},{a:8,b:3}].groupBy(function(el) { return el['a']; }), {8:[{a:8,b:5},{a:8,b:3}],1:[{a:1,b:5}]}, 'Array#groupBy | grouping by "a" by function');
 
 
-  testWithErrorHandling(function() {
-    people = people.sortBy('hair');
-    same(people.groupBy(function(p) { return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
-  }, ['prototype']);
+  people = people.sortBy('hair');
+  same(people.groupBy(function(p) { return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
+
+  raisesError(function() { [1,2,3].groupBy(undefined); }, 'Array#groupBy | raises an error on undefined');
+  raisesError(function() { [1,2,3].groupBy(null); }, 'Array#groupBy | raises an error on null');
+  raisesError(function() { [1,2,3].groupBy(4); }, 'Array#groupBy | raises an error on number');
 
 
 
@@ -856,29 +1015,29 @@ test('Array', function () {
 
 
 
-  same([1,2,2,3].removeAtIndex(), [1,2,2,3], 'Array#removeAtIndex | numeric | no argument');
-  same([1,2,2,3].removeAtIndex(0), [2,2,3], 'Array#removeAtIndex | numeric | 0');
-  same([1,2,2,3].removeAtIndex(1), [1,2,3], 'Array#removeAtIndex | numeric | 1');
-  same([1,2,2,3].removeAtIndex(2), [1,2,3], 'Array#removeAtIndex | numeric | 2');
-  same([1,2,2,3].removeAtIndex(3), [1,2,2], 'Array#removeAtIndex | numeric | 3');
-  same([1,2,2,3].removeAtIndex(4), [1,2,2,3], 'Array#removeAtIndex | numeric | 4');
-  same(['a','b','c','c'].removeAtIndex(), ['a','b','c','c'], 'Array#removeAtIndex | alphabet | no argument');
-  same(['a','b','c','c'].removeAtIndex(0), ['b','c','c'], 'Array#removeAtIndex | alphabet | 0');
-  same(['a','b','c','c'].removeAtIndex(1), ['a','c','c'], 'Array#removeAtIndex | alphabet | 1');
-  same(['a','b','c','c'].removeAtIndex(2), ['a','b','c'], 'Array#removeAtIndex | alphabet | 2');
-  same(['a','b','c','c'].removeAtIndex(3), ['a','b','c'], 'Array#removeAtIndex | alphabet | 3');
-  same(['a','b','c','c'].removeAtIndex(4), ['a','b','c','c'], 'Array#removeAtIndex | alphabet | 4');
-  same([{a:1},{a:2},{a:1}].removeAtIndex(1), [{a:1},{a:1}], 'Array#removeAtIndex | objects | 1');
-  same([1,2,2,3].removeAtIndex(0,1), [2,3], 'Array#removeAtIndex | 0 to 1');
-  same([1,2,2,3].removeAtIndex(0,2), [3], 'Array#removeAtIndex | 0 to 2');
-  same([1,2,2,3].removeAtIndex(1,2), [1,3], 'Array#removeAtIndex | 1 to 2');
-  same([1,2,2,3].removeAtIndex(1,5), [1], 'Array#removeAtIndex | 1 to 5');
-  same([1,2,2,3].removeAtIndex(0,5), [], 'Array#removeAtIndex | 0 to 5');
-  same([1,2,2,3].removeAtIndex(null,5), [], 'Array#removeAtIndex | also accepts null');
+  same([1,2,2,3].removeAt(), [1,2,2,3], 'Array#removeAt | numeric | no argument');
+  same([1,2,2,3].removeAt(0), [2,2,3], 'Array#removeAt | numeric | 0');
+  same([1,2,2,3].removeAt(1), [1,2,3], 'Array#removeAt | numeric | 1');
+  same([1,2,2,3].removeAt(2), [1,2,3], 'Array#removeAt | numeric | 2');
+  same([1,2,2,3].removeAt(3), [1,2,2], 'Array#removeAt | numeric | 3');
+  same([1,2,2,3].removeAt(4), [1,2,2,3], 'Array#removeAt | numeric | 4');
+  same(['a','b','c','c'].removeAt(), ['a','b','c','c'], 'Array#removeAt | alphabet | no argument');
+  same(['a','b','c','c'].removeAt(0), ['b','c','c'], 'Array#removeAt | alphabet | 0');
+  same(['a','b','c','c'].removeAt(1), ['a','c','c'], 'Array#removeAt | alphabet | 1');
+  same(['a','b','c','c'].removeAt(2), ['a','b','c'], 'Array#removeAt | alphabet | 2');
+  same(['a','b','c','c'].removeAt(3), ['a','b','c'], 'Array#removeAt | alphabet | 3');
+  same(['a','b','c','c'].removeAt(4), ['a','b','c','c'], 'Array#removeAt | alphabet | 4');
+  same([{a:1},{a:2},{a:1}].removeAt(1), [{a:1},{a:1}], 'Array#removeAt | objects | 1');
+  same([1,2,2,3].removeAt(0,1), [2,3], 'Array#removeAt | 0 to 1');
+  same([1,2,2,3].removeAt(0,2), [3], 'Array#removeAt | 0 to 2');
+  same([1,2,2,3].removeAt(1,2), [1,3], 'Array#removeAt | 1 to 2');
+  same([1,2,2,3].removeAt(1,5), [1], 'Array#removeAt | 1 to 5');
+  same([1,2,2,3].removeAt(0,5), [], 'Array#removeAt | 0 to 5');
+  same([1,2,2,3].removeAt(null,5), [], 'Array#removeAt | also accepts null');
 
   arr = [1,2,3];
-  arr.removeAtIndex(1);
-  same(arr, [1,3], 'Array#removeAtIndex | should affect the original array');
+  arr.removeAt(1);
+  same(arr, [1,3], 'Array#removeAt | should affect the original array');
 
 
 
@@ -1035,21 +1194,17 @@ test('Array', function () {
   equal([0,0].isEmpty(), false, 'Array#empty | [0,0]');
 
 
-
-
-  testWithErrorHandling(function() {
-    equal([1,2,3].any(), true, 'Array#any | numeric | no argument');
-    equal([1,2,3].any(1), true, 'Array#any | numeric | 1');
-    equal([1,2,3].any(4), false, 'Array#any | numeric | 4');
-    equal([1,2,3].any('a'), false, 'Array#any | numeric | a');
-    equal(['a','b','c'].any('a'), true, 'Array#any | alphabet | a');
-    equal(['a','b','c'].any('f'), false, 'Array#any | alphabet | f');
-    equal(['a','b','c'].any(/[a-f]/), true, 'Array#any | alphabet | /[a-f]/');
-    equal(['a','b','c'].any(/[m-z]/), false, 'Array#any | alphabet | /[m-z]/');
-    same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any | objects | 1');
-    equal([0].any(0), true, 'Array#any | [0] | 0');
-    same([{a:1},{a:2},{a:1}].any({a:1}), true, 'Array#any | objects | a:1');
-  }, ['prototype']);
+  raisesError(function(){ [1,2,3].any() }, 'Array#any | no argument raises a TypeError', { prototype: false });
+  equal([1,2,3].any(1), true, 'Array#any | numeric | 1');
+  equal([1,2,3].any(4), false, 'Array#any | numeric | 4');
+  equal([1,2,3].any('a'), false, 'Array#any | numeric | a');
+  equal(['a','b','c'].any('a'), true, 'Array#any | alphabet | a');
+  equal(['a','b','c'].any('f'), false, 'Array#any | alphabet | f');
+  equalsWithException(['a','b','c'].any(/[a-f]/), true, { prototype: false }, 'Array#any | alphabet | /[a-f]/');
+  equal(['a','b','c'].any(/[m-z]/), false, 'Array#any | alphabet | /[m-z]/');
+  same([{a:1},{a:2},{a:1}].any(1), false, 'Array#any | objects | 1');
+  equal([0].any(0), true, 'Array#any | [0] | 0');
+  equalsWithException([{a:1},{a:2},{a:1}].any({a:1}), true, { prototype: false }, 'Array#any | objects | a:1');
 
   equal(['a','b','c'].any(function(e) { return e.length > 1; }), false, 'Array#any | alphabet | length greater than 1');
   equal(['a','b','c'].any(function(e) { return e.length < 2; }), true, 'Array#any | alphabet | length less than 2');
@@ -1062,8 +1217,7 @@ test('Array', function () {
   }, 'wasabi');
 
 
-
-  equal([1,2,3].has(), true, 'Array#has | numeric | no argument');
+  raisesError(function(){ [1,2,3].has(); }, 'Array#has | no argument raises a TypeError', { prototype: false });
   equal([1,2,3].has(1), true, 'Array#has | numeric | 1');
   equal([1,2,3].has(4), false, 'Array#has | numeric | 4');
   equal([1,2,3].has('a'), false, 'Array#has | numeric | a');
@@ -1074,52 +1228,47 @@ test('Array', function () {
   equal(['a','b','c'].has(function(e) { return e.length > 1; }), false, 'Array#has | alphabet | length greater than 1');
   equal(['a','b','c'].has(function(e) { return e.length < 2; }), true, 'Array#has | alphabet | length less than 2');
   equal(['a','bar','cat'].has(function(e) { return e.length < 2; }), true, 'Array#has | a,bar,cat | length less than 2');
-  same([{a:1},{a:2},{a:1}].has(1), false, 'Array#has | objects | 1');
-  same([{a:1},{a:2},{a:1}].has({a:1}), true, 'Array#has | objects | a:1');
-  same([{a:1},{a:2},{a:1}].has(function(e) { return e['a'] == 1; }), true, 'Array#has | objects | key "a" is 1');
-  same([{a:1},{a:2},{a:1}].has(function(e) { return e['b'] == 1; }), false, 'Array#has | objects | key "b" is 1');
+  equal([{a:1},{a:2},{a:1}].has(1), false, 'Array#has | objects | 1');
+  equal([{a:1},{a:2},{a:1}].has({a:1}), true, 'Array#has | objects | a:1');
+  equal([{a:1},{a:2},{a:1}].has(function(e) { return e['a'] == 1; }), true, 'Array#has | objects | key "a" is 1');
+  equal([{a:1},{a:2},{a:1}].has(function(e) { return e['b'] == 1; }), false, 'Array#has | objects | key "b" is 1');
 
 
 
 
-  testWithErrorHandling(function() {
-    equal([1,2,3].none(), false, 'Array#none | numeric | no argument');
-    equal([1,2,3].none(1), false, 'Array#none | numeric | 1');
-    equal([1,2,3].none(4), true, 'Array#none | numeric | 4');
-    equal([1,2,3].none('a'), true, 'Array#none | numeric | a');
-    equal(['a','b','c'].none('a'), false, 'Array#none | alphabet | a');
-    equal(['a','b','c'].none('f'), true, 'Array#none | alphabet | f');
-    equal(['a','b','c'].none(/[a-f]/), false, 'Array#none | alphabet | /[a-f]/');
-    equal(['a','b','c'].none(/[m-z]/), true, 'Array#none | alphabet | /[m-z]/');
-    same([{a:1},{a:2},{a:1}].none(1), true, 'Array#none | objects | 1');
-    same([{a:1},{a:2},{a:1}].none({a:1}), false, 'Array#none | objects | a:1');
-  }, ['prototype']);
+  raisesError(function() { [1,2,3].none(); }, 'Array#none | no argument raises a TypeError', { prototype: false });
+  equal([1,2,3].none(1), false, 'Array#none | numeric | 1');
+  equal([1,2,3].none(4), true, 'Array#none | numeric | 4');
+  equal([1,2,3].none('a'), true, 'Array#none | numeric | a');
+  equal(['a','b','c'].none('a'), false, 'Array#none | alphabet | a');
+  equal(['a','b','c'].none('f'), true, 'Array#none | alphabet | f');
+  equalsWithException(['a','b','c'].none(/[a-f]/), false, { prototype: true }, 'Array#none | alphabet | /[a-f]/');
+  equal(['a','b','c'].none(/[m-z]/), true, 'Array#none | alphabet | /[m-z]/');
+  equal([{a:1},{a:2},{a:1}].none(1), true, 'Array#none | objects | 1');
+  equalsWithException([{a:1},{a:2},{a:1}].none({a:1}), false, { prototype: true }, 'Array#none | objects | a:1');
 
   equal(['a','b','c'].none(function(e) { return e.length > 1; }), true, 'Array#none | alphabet | length is greater than 1');
   equal(['a','b','c'].none(function(e) { return e.length < 2; }), false, 'Array#none | alphabet | length is less than 2');
   equal(['a','bar','cat'].none(function(e) { return e.length < 2; }), false, 'Array#none | a,bar,cat | length is less than 2');
-  same([{a:1},{a:2},{a:1}].none(function(e) { return e['a'] == 1; }), false, 'Array#none | objects | key "a" is 1');
-  same([{a:1},{a:2},{a:1}].none(function(e) { return e['b'] == 1; }), true, 'Array#none | objects | key "b" is 1');
+  equal([{a:1},{a:2},{a:1}].none(function(e) { return e['a'] == 1; }), false, 'Array#none | objects | key "a" is 1');
+  equal([{a:1},{a:2},{a:1}].none(function(e) { return e['b'] == 1; }), true, 'Array#none | objects | key "b" is 1');
 
 
 
 
+  raisesError(function() { [1,2,3].all(); }, 'Array#all | no argument raises a type error', { prototype: false });
+  equal([1,2,3].all(1), false, 'Array#all | numeric | 1');
+  equal([1,1,1].all(1), true, 'Array#all | numeric | 1 is true for all');
+  equal([1,2,3].all(3), false, 'Array#all | numeric | 3');
+  equal(['a','b','c'].all('a'), false, 'Array#all | alphabet | a');
+  equal(['a','a','a'].all('a'), true, 'Array#all | alphabet | a is true for all');
+  equal(['a','b','c'].all('f'), false, 'Array#all | alphabet | f');
+  equalsWithException(['a','b','c'].all(/[a-f]/), true, { prototype: false }, 'Array#all | alphabet | /[a-f]/');
+  equal(['a','b','c'].all(/[a-b]/), false, 'Array#all | alphabet | /[m-z]/');
+  equal([{a:1},{a:2},{a:1}].all(1), false, 'Array#all | objects | 1');
+  equal([{a:1},{a:2},{a:1}].all({a:1}), false, 'Array#all | objects | a:1');
+  equalsWithException([{a:1},{a:1},{a:1}].all({a:1}), true, { prototype: false }, 'Array#all | objects | a:1 is true for all');
 
-  testWithErrorHandling(function() {
-    equal([1,2,3].all(), true, 'Array#all | numeric | no argument');
-    equal([0,2,3].all(), false, 'Array#all | numeric | 0 is not truthy');
-    equal([1,2,3].all(1), false, 'Array#all | numeric | 1');
-    equal([1,1,1].all(1), true, 'Array#all | numeric | 1 is true for all');
-    equal([1,2,3].all(3), false, 'Array#all | numeric | 3');
-    equal(['a','b','c'].all('a'), false, 'Array#all | alphabet | a');
-    equal(['a','a','a'].all('a'), true, 'Array#all | alphabet | a is true for all');
-    equal(['a','b','c'].all('f'), false, 'Array#all | alphabet | f');
-    equal(['a','b','c'].all(/[a-f]/), true, 'Array#all | alphabet | /[a-f]/');
-    equal(['a','b','c'].all(/[a-b]/), false, 'Array#all | alphabet | /[m-z]/');
-    same([{a:1},{a:2},{a:1}].all(1), false, 'Array#all | objects | 1');
-    same([{a:1},{a:2},{a:1}].all({a:1}), false, 'Array#all | objects | a:1');
-    same([{a:1},{a:1},{a:1}].all({a:1}), true, 'Array#all | objects | a:1 is true for all');
-  }, ['prototype']);
 
   equal(['a','b','c'].all(function(e) { return e.length > 1; }), false, 'Array#all | alphabet | length is greater than 1');
   equal(['a','b','c'].all(function(e) { return e.length < 2; }), true, 'Array#all | alphabet | length is less than 2');
@@ -1127,6 +1276,7 @@ test('Array', function () {
   same([{a:1},{a:2},{a:1}].all(function(e) { return e['a'] == 1; }), false, 'Array#all | objects | key "a" is 1');
   same([{a:1},{a:2},{a:1}].all(function(e) { return e['b'] == 1; }), false, 'Array#all | objects | key "b" is 1');
   same([{a:1},{a:1},{a:1}].all(function(e) { return e['a'] == 1; }), true, 'Array#all | objects | key "a" is 1 for all');
+
 
   [1].all(function() {
     equal(this, 'wasabi', 'Array#all | scope should be passable');
@@ -1152,18 +1302,20 @@ test('Array', function () {
 
 
 
-  testWithErrorHandling(function() {
-    arr = ['more','everyone!','bring','the','family'];
-    same(arr.sortBy('length'), ['the','more','bring','family','everyone!'], 'Array#sortBy | sorting by length');
-    same(arr.sortBy('length', true), ['everyone!','family','bring','more','the'], 'Array#sortBy | desc | sorting by length');
+  arr = ['more','everyone!','bring','the','family'];
+  same(arr.sortBy('length'), ['the','more','bring','family','everyone!'], 'Array#sortBy | sorting by length');
+  sameWithException(arr.sortBy('length', true), ['everyone!','family','bring','more','the'], { prototype: ['the','more','bring','family','everyone!'] }, 'Array#sortBy | desc | sorting by length');
 
-    same(arr.sortBy(function(a) { return a.length; }), ['the','more','bring','family','everyone!'], 'Array#sortBy | sort by length by function');
-    same(arr.sortBy(function(a) { return a.length; }, true), ['everyone!','family','bring','more','the'], 'Array#sortBy | desc | sort by length by function');
+  same(arr.sortBy(function(a) { return a.length; }), ['the','more','bring','family','everyone!'], 'Array#sortBy | sort by length by function');
+  sameWithException(arr.sortBy(function(a) { return a.length; }, true), ['everyone!','family','bring','more','the'], { prototype: ['the','more','bring','family','everyone!'] }, 'Array#sortBy | desc | sort by length by function');
 
-    arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
-    same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
-    same(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy | desc | sort by key "a"');
-  }, ['prototype']);
+  arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
+  same(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
+  sameWithException(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], { prototype: [{a:'bar'},{a:'foo'},{a:'skittles'}] }, 'Array#sortBy | desc | sort by key "a"');
+
+  raisesError(function() { [1,2,3].sortBy(undefined); }, 'Array#sortBy | raises an error on undefined', { prototype: false });
+  raisesError(function() { [1,2,3].sortBy(null); }, 'Array#sortBy | raises an error on null', { prototype: false });
+  raisesError(function() { [1,2,3].sortBy(4); }, 'Array#sortBy | raises an error on number', { prototype: false });
 
 
 
@@ -1185,27 +1337,6 @@ test('Array', function () {
 
   /* Note that there is a built-in 0.00000001% chance that this test will fail */
   equals(firsts.all(function(a) { return a == 1; }), false, 'Array#randomize');
-
-
-
-  // Shuffle is an alias
-
-  arr = [1,2,3,4,5,6,7,8,9,10];
-  var firsts = [];
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-  firsts.push(arr.shuffle().first());
-
-  /* Note that there is a built-in 0.00000001% chance that this test will fail */
-  equals(firsts.all(function(a) { return a == 1; }), false, 'Array#shuffle');
-
 
 
 });
