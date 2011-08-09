@@ -8,7 +8,18 @@
     <script src="../../lib/analyze.js" type="text/javascript"></script>
     <script type="text/javascript">
 
-      [1,2,3].find(function(a){ return a == 1; }, 'OHNOOO');
+      //[1,2,3].find(function(a){ return a == 1; }, 'OHNOOO');
+      //[1,2,3].findAll(function(a){ return a == 1; }, 'OHNOOO');
+      //[1,2,3].each(function(a){ return a == 1; }, 'OHNOOO');
+      //[1,2,3].each(function(a){ return false; });
+      //[1,2,3].include(1);
+      //[1,2,3].min(function(){}, 'hahah');
+      //[1,2,3].max(function(){}, 'hahah');
+      //['moo','me'].sortBy(function(el){ return el.length; }, 'ohmeohmy');
+      //['moo','me'].collect(function(el){ return el.length; });
+      ['moo','me'].detect(function(el){ return el.length > 1; });
+      //Object.clone({ foo: { moo: 'bar' } });
+      //[NaN].compact();
 
     </script>
   </body>
