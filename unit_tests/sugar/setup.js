@@ -1,5 +1,5 @@
 
-var dateEquals = function(a, b, message) {
+dateEquals = function(a, b, message) {
   var format = '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}'
   var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number') {
@@ -11,7 +11,7 @@ var dateEquals = function(a, b, message) {
   equals(offset < buffer, true, message + ' | expected: ' + b.format(format) + ' got: ' + a.format(format));
 }
 
-var getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
+getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   var d = this.getFullYear ? this : new Date();
   var setYear  = d.getFullYear() + (year || 0)
   var setMonth = d.getMonth() + (month || 0)
@@ -33,7 +33,7 @@ var getRelativeDate = function(year, month, day, hours, minutes, seconds, millis
   return d;
 }
 
-var getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
+getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   var d = new Date();
   if(year) d.setFullYear(year);
   d.setUTCDate(15); // Pre-emptively preventing a month overflow situation
@@ -46,7 +46,7 @@ var getUTCDate = function(year, month, day, hours, minutes, seconds, millisecond
   return d;
 }
 
-var getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds, milliseconds) {
+getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds, milliseconds) {
   var d = new Date();
   if(offset) d.setDate(d.getDate() + offset);
   d.setDate(d.getDate() + (weekday - d.getDay()));
@@ -57,33 +57,33 @@ var getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seco
   return d;
 }
 
-var getDaysInMonth = function(year, month) {
+getDaysInMonth = function(year, month) {
   return 32 - new Date(year, month, 32).getDate();
 }
 
-var getWeekdayFromDate = function(d, utc) {
+getWeekdayFromDate = function(d, utc) {
   var day = utc ? d.getUTCDay() : d.getDay();
   return ['sunday','monday','tuesday','wednesday','thursday','friday','saturday','sunday'][day];
 }
 
-var getMonthFromDate = function(d, utc) {
+getMonthFromDate = function(d, utc) {
   var month = utc ? d.getUTCMonth() : d.getMonth();
   return ['january','february','march','april','may','june','july','august','september','october','november','december'][month];
 }
 
-var getHours = function(num) {
+getHours = function(num) {
   return Math.floor(num < 0 ? 24 + num : num);
 }
 
-var strictlyEqual = function(actual, expected, message) {
+strictlyEqual = function(actual, expected, message) {
   equals(actual === expected, true, message + ' | strict equality');
 }
 
-var equalsWithMargin = function(actual, expected, margin, message) {
+equalsWithMargin = function(actual, expected, margin, message) {
   equals((actual > expected - margin) && (actual < expected + margin), true, message);
 }
 
-var equalsWithException = function(actual, expected, exception, message) {
+equalsWithException = function(actual, expected, exception, message) {
   if(exception.hasOwnProperty(environment)) expected = exception[environment];
   if(expected == 'NaN') {
     equals(isNaN(actual), true, message);
@@ -92,7 +92,7 @@ var equalsWithException = function(actual, expected, exception, message) {
   }
 }
 
-var sameWithException = function(actual, expected, exception, message, sort) {
+sameWithException = function(actual, expected, exception, message, sort) {
   if(exception.hasOwnProperty(environment)) expected = exception[environment];
   if(sort) {
     actual = actual.concat().sort();
@@ -101,11 +101,11 @@ var sameWithException = function(actual, expected, exception, message, sort) {
   same(actual, expected, message);
 }
 
-var strictlyEqualsWithException = function(actual, expected, exception, message) {
+strictlyEqualsWithException = function(actual, expected, exception, message) {
   equalsWithException(actual === expected, true, exception, message + ' | strict equality');
 }
 
-var fixPrototypeIterators = function() {
+fixPrototypeIterators = function() {
   if(environment != 'prototype') return;
   fixIterator('find');
   fixIterator('findAll');
@@ -116,7 +116,7 @@ var fixPrototypeIterators = function() {
   fixIterator('max', true);
 }
 
-var fixIterator = function(name, map) {
+fixIterator = function(name, map) {
   var fn = Array.prototype[name];
   Array.prototype[name] = function(a) {
     if((a && a.call) || arguments.length == 0) {
@@ -133,15 +133,15 @@ var fixIterator = function(name, map) {
   };
 }
 
-var skipEnvironments = function(environments, test) {
+skipEnvironments = function(environments, test) {
   if(!environments.has(environment)) {
     test.call();
   }
 }
 
-var sameProxy = same;
+sameProxy = same;
 
-var deepEqualWithoutPrototyping = function(actual, expected) {
+deepEqualWithoutPrototyping = function(actual, expected) {
   for(var key in actual) {
     if(!actual.hasOwnProperty(key)) continue;
     if(Object.isObject(actual[key]) || Object.isArray(actual[key])) {
@@ -166,13 +166,13 @@ same = function(actual, expected, message) {
   }
 }
 
-var equalsWithWarning = function(actual, expected, message){
+equalsWithWarning = function(actual, expected, message){
   equals(actual, expected, 'Warning: ' + message);
 }
 
 
 // A DST Safe version of equals for dates
-var equalsDST = function(actual, expected, multiplier, message) {
+equalsDST = function(actual, expected, multiplier, message) {
   if(multiplier === undefined) multiplier = 1;
   var dst = Date.DSTOffset;
   dst /= multiplier;
@@ -181,21 +181,21 @@ var equalsDST = function(actual, expected, multiplier, message) {
   equals(actual, expected.round(4), message + ' | DST offset applied');
 }
 
-var dst = function(d) {
+dst = function(d) {
   return new Date(d.getTime() - Date.DSTOffset);
 }
 
-var objectPrototypeMethods = {};
-var sugarEnabledMethods = ['isArray','isBoolean','isDate','isFunction','isNumber','isString','isRegExp','keys','values','each','merge','isEmpty','equals','clone'];
+objectPrototypeMethods = {};
+sugarEnabledMethods = ['isArray','isBoolean','isDate','isFunction','isNumber','isString','isRegExp','keys','values','each','merge','isEmpty','equals','clone'];
 
-var rememberObjectProtoypeMethods = function() {
+rememberObjectProtoypeMethods = function() {
   for(var m in Object.prototype) {
     if(!Object.prototype.hasOwnProperty(m)) continue;
     objectPrototypeMethods[m] = Object.prototype[m];
   }
 }
 
-var restoreObjectPrototypeMethods = function() {
+restoreObjectPrototypeMethods = function() {
   // Cannot iterate over Object.prototype's methods if they've been defined in a modern browser
   // that implements defineProperty, so we'll have to set back the known ones that have been overridden.
   sugarEnabledMethods.each(function(name){
@@ -210,7 +210,7 @@ var restoreObjectPrototypeMethods = function() {
   });
 }
 
-var raisesError = function(fn, message, exceptions) {
+raisesError = function(fn, message, exceptions) {
   var raised = false;
   try {
     fn.call();
@@ -225,7 +225,7 @@ var raisesError = function(fn, message, exceptions) {
   }
 }
 
-var benchmark = function(fn, iterations) {
+benchmark = function(fn, iterations) {
   var i = 0; d = new Date;
   iterations = iterations || 1000;
   for(i = 0; i < iterations; i++) {
@@ -236,5 +236,5 @@ var benchmark = function(fn, iterations) {
 
 
 // Passing undefined into .call will always set the scope as the window, so use this when available.
-var windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
+windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
 
