@@ -1339,5 +1339,47 @@ test('Array', function () {
   equals(firsts.all(function(a) { return a == 1; }), false, 'Array#randomize');
 
 
+  // Inherits from array...
+
+  var Soup = function(){}, x;
+  Soup.prototype = [1,2,3];
+
+  x = new Soup();
+  count = 0;
+
+  x.each(function() {
+    count++;
+  });
+  x.find(function() {
+    count++;
+  });
+  x.findAll(function() {
+    count++;
+  });
+
+  equals(count, 9, 'Array | array elements in the prototype chain are also properly iterated');
+
+
+  // Inherits from sparse array...
+
+  arr = ['a'];
+  arr[20] = 'b';
+
+  Soup.prototype = arr;
+
+  x = new Soup();
+  count = 0;
+
+  x.each(function() {
+    count++;
+  });
+
+  equals(count, 2, 'Array | sparse array elements in the prototype chain are also properly iterated');
+
+  //Array.prototype.each.
+  // This test cannot be framed in a meaninful way... IE will not set the length property
+  // when pushing new elements and other browsers will not work on sparse arrays...
+  // equals(count, 6, 'Array | objects that inherit from arrays can still iterate');
+
 });
 
