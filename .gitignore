@@ -1,2 +1,22 @@
+## MAC OS
+.DS_Store
+
+## TEXTMATE
+*.tmproj
+tmtags
+
+## EMACS
+*~
+\#*
+.\#*
+
+## VIM
 *.swp
-logs/
+
+## PROJECT::GENERAL
+logs
+log
+tmp
+node_modules
+
+## PROJECT::SPECIFIC
