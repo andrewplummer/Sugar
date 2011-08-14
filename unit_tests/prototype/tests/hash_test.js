@@ -80,8 +80,8 @@ new Test.Unit.Runner({
   testIndex: function() {
     this.assertUndefined($H().index('foo'));
     
-    this.assert('a', $H(Fixtures.one).index('A#'));
-    this.assert('a', $H(Fixtures.many).index('A'));
+    this.assertEqual('a', $H(Fixtures.one).index('A#'));
+    this.assertEqual('a', $H(Fixtures.many).index('A'));
     this.assertUndefined($H(Fixtures.many).index('Z'))
   
     var hash = $H({a:1,b:'2',c:1});

@@ -1,213 +1,146 @@
 
-dateEquals = function(a, b, message) {
-  var format = '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}'
-  var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
-  if(typeof b == 'number') {
-    var d = new Date();
-    d.setTime(d.getTime() + b);
-    b = d;
-  }
-  var offset = Math.abs(a.getTime() - b.getTime());
-  equals(offset < buffer, true, message + ' | expected: ' + b.format(format) + ' got: ' + a.format(format));
-}
 
-getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
-  var d = this.getFullYear ? this : new Date();
-  var setYear  = d.getFullYear() + (year || 0)
-  var setMonth = d.getMonth() + (month || 0)
-  var setDate  = d.getDate() + (day || 0);
-  // Relative dates that have no more specificity than months only walk
-  // the bounds of months, they can't traverse into a new month if the
-  // target month doesn't have the same number of days.
-  if(day === undefined && month !== undefined) {
-    setDate = Math.min(setDate, new Date(setYear, setMonth).daysInMonth());
-    d.setDate(setDate);
-  }
-  d.setFullYear(setYear);
-  d.setMonth(setMonth);
-  d.setDate(setDate);
-  d.setHours(d.getHours() + (hours || 0));
-  d.setMinutes(d.getMinutes() + (minutes || 0));
-  d.setSeconds(d.getSeconds() + (seconds || 0));
-  d.setMilliseconds(d.getMilliseconds() + (milliseconds || 0));
-  return d;
-}
 
-getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
-  var d = new Date();
-  if(year) d.setFullYear(year);
-  d.setUTCDate(15); // Pre-emptively preventing a month overflow situation
-  d.setUTCMonth(month === undefined ? 0 : month - 1);
-  d.setUTCDate(day === undefined ? 1 : day);
-  d.setUTCHours(hours === undefined ? 0 : hours);
-  d.setUTCMinutes(minutes === undefined ? 0 : minutes);
-  d.setUTCSeconds(seconds === undefined ? 0 : seconds);
-  d.setUTCMilliseconds(milliseconds === undefined ? 0 : milliseconds);
-  return d;
-}
+var results;
+var currentTest;
 
-getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds, milliseconds) {
-  var d = new Date();
-  if(offset) d.setDate(d.getDate() + offset);
-  d.setDate(d.getDate() + (weekday - d.getDay()));
-  d.setHours(hours || 0);
-  d.setMinutes(minutes || 0);
-  d.setSeconds(seconds || 0);
-  d.setMilliseconds(milliseconds || 0);
-  return d;
-}
+var syncTestsRunning = true;
+var runningAsyncTests = 0;
 
-getDaysInMonth = function(year, month) {
-  return 32 - new Date(year, month, 32).getDate();
-}
+var nativeSetTimeout = setTimeout;
+var nativeClearTimeout = clearTimeout;
 
-getWeekdayFromDate = function(d, utc) {
-  var day = utc ? d.getUTCDay() : d.getDay();
-  return ['sunday','monday','tuesday','wednesday','thursday','friday','saturday','sunday'][day];
-}
+// The scope when none is set.
+nullScope = (function(){ return this; }).call();
 
-getMonthFromDate = function(d, utc) {
-  var month = utc ? d.getUTCMonth() : d.getMonth();
-  return ['january','february','march','april','may','june','july','august','september','october','november','december'][month];
-}
 
-getHours = function(num) {
-  return Math.floor(num < 0 ? 24 + num : num);
-}
 
-strictlyEqual = function(actual, expected, message) {
-  equals(actual === expected, true, message + ' | strict equality');
-}
-
-equalsWithMargin = function(actual, expected, margin, message) {
-  equals((actual > expected - margin) && (actual < expected + margin), true, message);
-}
-
-equalsWithException = function(actual, expected, exception, message) {
-  if(exception.hasOwnProperty(environment)) expected = exception[environment];
-  if(expected == 'NaN') {
-    equals(isNaN(actual), true, message);
-  } else {
-    equals(actual, expected, message);
-  }
-}
-
-sameWithException = function(actual, expected, exception, message, sort) {
-  if(exception.hasOwnProperty(environment)) expected = exception[environment];
-  if(sort) {
-    actual = actual.concat().sort();
-    expected = expected.concat().sort();
-  }
-  same(actual, expected, message);
-}
-
-strictlyEqualsWithException = function(actual, expected, exception, message) {
-  equalsWithException(actual === expected, true, exception, message + ' | strict equality');
-}
-
-fixPrototypeIterators = function() {
-  if(environment != 'prototype') return;
-  fixIterator('find');
-  fixIterator('findAll');
-  fixIterator('any');
-  fixIterator('all');
-  fixIterator('sortBy', true);
-  fixIterator('min', true);
-  fixIterator('max', true);
-}
-
-fixIterator = function(name, map) {
-  var fn = Array.prototype[name];
-  Array.prototype[name] = function(a) {
-    if((a && a.call) || arguments.length == 0) {
-      return fn.apply(this, arguments);
-    } else {
-      return fn.apply(this, [function(s) {
-        if(map) {
-          return s && s[a] ? s[a] : s;
-        } else {
-          return s == a;
-        }
-      }].concat(Array.prototype.slice.call(arguments, 1)));
-    }
-  };
-}
-
-skipEnvironments = function(environments, test) {
-  if(!environments.has(environment)) {
-    test.call();
-  }
-}
-
-sameProxy = same;
-
-deepEqualWithoutPrototyping = function(actual, expected) {
-  for(var key in actual) {
-    if(!actual.hasOwnProperty(key)) continue;
-    if(Object.isObject(actual[key]) || Object.isArray(actual[key])) {
-      if(!deepEqualWithoutPrototyping(actual[key], expected[key])) {
-        return false;
-      }
-    } else if(actual[key] !== expected[key]) {
+var deepEqual = function(one, two) {
+  var onep = 0, twop = 0, key;
+  for(key in one) {
+    if(!one.hasOwnProperty(key)) continue;
+    onep++;
+    if(typeof one[key] == 'object' && !deepEqual(one[key], two[key])) {
       return false;
     }
   }
-  if((actual && !expected) || (expected && !actual)) {
-    return false;
+  for(key in two) {
+    if(!two.hasOwnProperty(key)) continue;
+    twop++;
   }
-  return true;
+  return onep === twop;
 }
 
-same = function(actual, expected, message) {
-  if(Object.isObject(actual) || Object.isObject(expected)) {
-    equals(deepEqualWithoutPrototyping(actual, expected), true, message);
-  } else {
-    sameProxy.apply(this, arguments);
+var addFailure = function(actual, expected, message, stack) {
+  var meta = getMeta(stack);
+  currentTest.failures.push({ actual: actual, expected: expected, message: message, file: meta.file, line: meta.line });
+}
+
+var getMeta = function(stack) {
+  var level = 4;
+  if(stack !== undefined) {
+    level += stack;
   }
+  var s = new Error().stack.split('\n');
+  var match = s[level].match(/\/(.+?):(\d+)(?:(\d+))?/);
+  return { file: match[1], line: match[2] };
 }
 
-equalsWithWarning = function(actual, expected, message){
-  equals(actual, expected, 'Warning: ' + message);
-}
-
-
-// A DST Safe version of equals for dates
-equalsDST = function(actual, expected, multiplier, message) {
-  if(multiplier === undefined) multiplier = 1;
-  var dst = Date.DSTOffset;
-  dst /= multiplier;
-  if(expected < 0) expected += dst;
-  else expected -= dst;
-  equals(actual, expected.round(4), message + ' | DST offset applied');
-}
-
-dst = function(d) {
-  return new Date(d.getTime() - Date.DSTOffset);
-}
-
-objectPrototypeMethods = {};
-sugarEnabledMethods = ['isArray','isBoolean','isDate','isFunction','isNumber','isString','isRegExp','keys','values','each','merge','isEmpty','equals','clone'];
-
-rememberObjectProtoypeMethods = function() {
-  for(var m in Object.prototype) {
-    if(!Object.prototype.hasOwnProperty(m)) continue;
-    objectPrototypeMethods[m] = Object.prototype[m];
+var checkCanFinish = function() {
+  if(!syncTestsRunning && runningAsyncTests == 0) {
+    testsFinished();
   }
 }
 
-restoreObjectPrototypeMethods = function() {
-  // Cannot iterate over Object.prototype's methods if they've been defined in a modern browser
-  // that implements defineProperty, so we'll have to set back the known ones that have been overridden.
-  sugarEnabledMethods.each(function(name){
-    // This is a cute one. Checking for the name in the hash isn't enough because it itself is
-    // an object that has been extended, so each and every one of the methods being held here are being
-    // perfectly shadowed!
-    if(objectPrototypeMethods.hasOwnProperty(name) && objectPrototypeMethods[name]) {
-      Object.prototype[name] = objectPrototypeMethods[name];
-    } else {
-      delete Object.prototype[name];
+var testsStarted = function() {
+  if(typeof testsStartedCallback != 'undefined') {
+    testsStartedCallback(results);
+  }
+  if(environment == 'node') {
+    console.info('\n----------------------- STARTING TESTS ----------------------------\n');
+  }
+}
+
+var testsFinished = function() {
+  if(typeof testsFinishedCallback != 'undefined') {
+    testsFinishedCallback(results);
+  }
+  if(environment == 'node') {
+    displayResults();
+  }
+}
+
+var displayResults = function() {
+  var i, j, failure, totalAssertions = 0, totalFailures = 0;
+  for (i = 0; i < results.length; i += 1) {
+    totalAssertions += results[i].assertions;
+    totalFailures += results[i].failures.length;
+    for(j = 0; j < results[i].failures.length; j++) {
+      failure = results[i].failures[j];
+      console.info('\n'+ (j + 1) + ') Failure:');
+      console.info(failure.message);
+      console.info('Expected: ' + JSON.stringify(failure.expected) + ' but was: ' + JSON.stringify(failure.actual));
+      console.info('File: ' + failure.file + ', Line: ' + failure.line + '\n');
     }
-  });
+  };
+  console.info(results.length + ' tests, ' + totalAssertions + ' assertions, ' + totalFailures + ' failures' + '\n');
+}
+
+test = function(name, fn) {
+  if(!results) {
+    results = [];
+    testsStarted();
+  }
+  currentTest = {
+    name: name,
+    assertions: 0,
+    failures: []
+  };
+  fn.call();
+  results.push(currentTest);
+}
+
+setTimeout = function(fn, delay) {
+  runningAsyncTests++;
+  return nativeSetTimeout(function() {
+    fn.apply(this, arguments);
+    runningAsyncTests--;
+    checkCanFinish();
+  }, delay);
+}
+
+clearTimeout = function() {
+  runningAsyncTests--;
+  return nativeClearTimeout.apply(this, arguments);
+}
+
+nativeTimeoutReturnType = typeof setTimeout(function(){}, 0);
+
+equal = function(actual, expected, message, exceptions, stack) {
+  exceptions = exceptions || {};
+  if(environment in exceptions) {
+    expected = exceptions[environment];
+  }
+  currentTest.assertions++;
+  if(actual === nullScope && expected === nullScope) {
+    // Null scope should always be a strict equal check
+  } else if(typeof expected == 'number' && typeof actual == 'number' && isNaN(expected) && isNaN(actual)) {
+    // NaN == NaN: equal
+  } else if(typeof expected == 'object' && typeof actual == 'object' && deepEqual(expected, actual)) {
+    // Deeply equal
+  } else if(expected == actual) {
+    // Strictly equal
+  } else {
+    addFailure(actual, expected, message, stack);
+  }
+}
+
+strictlyEqual = function(actual, expected, message, exceptions) {
+  equal(actual === expected, true, message + ' | strict equality', exceptions, 1);
+}
+
+equalWithMargin = function(actual, expected, margin, message) {
+  equal((actual > expected - margin) && (actual < expected + margin), true, message, null, 1);
 }
 
 raisesError = function(fn, message, exceptions) {
@@ -217,24 +150,19 @@ raisesError = function(fn, message, exceptions) {
   } catch(e) {
     raised = true;
   }
-  // TODO CLEAN THIS UP!
-  if (exceptions) {
-    equalsWithException(raised, true, exceptions, message);
-  } else {
-    equals(raised, true, message);
+  equal(raised, true, message, exceptions, 1);
+}
+
+skipEnvironments = function(environments, test) {
+  if(!environments.has(environment)) {
+    test.call();
   }
 }
 
-benchmark = function(fn, iterations) {
-  var i = 0; d = new Date;
-  iterations = iterations || 1000;
-  for(i = 0; i < iterations; i++) {
-    fn.call();
-  }
-  console.info(new Date - d);
+
+syncTestsFinished = function() {
+  syncTestsRunning = false;
+  checkCanFinish();
 }
 
-
-// Passing undefined into .call will always set the scope as the window, so use this when available.
-windowOrUndefined = (typeof window !== 'undefined' ? window : undefined);
 

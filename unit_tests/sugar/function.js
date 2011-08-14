@@ -5,43 +5,43 @@ test('Function', function () {
   obj = { foo: 'bar' };
 
   bound = (function(num, bool, str, fourth, fifth) {
-    equals(this === obj, true, 'Function#bind | Bound object is strictly equal');
-    equals(num, 1, 'Function#bind | first parameter');
-    equalsWithException(bool, true, { mootools: undefined }, 'Function#bind | second parameter');
-    equalsWithException(str, 'wasabi', { mootools: undefined }, 'Function#bind | third parameter');
-    equalsWithException(fourth, 'fourth', { mootools: undefined }, 'Function#bind | fourth parameter');
-    equalsWithException(fifth, 'fifth', { mootools: undefined }, 'Function#bind | fifth parameter');
+    equal(this === obj, true, 'Function#bind | Bound object is strictly equal');
+    equal(num, 1, 'Function#bind | first parameter');
+    equal(bool, true, 'Function#bind | second parameter', { mootools: undefined });
+    equal(str, 'wasabi', 'Function#bind | third parameter', { mootools: undefined });
+    equal(fourth, 'fourth', 'Function#bind | fourth parameter', { mootools: undefined });
+    equal(fifth, 'fifth', 'Function#bind | fifth parameter', { mootools: undefined });
     return 'howdy';
   }).bind(obj, 1, true, 'wasabi');
 
   result = bound('fourth','fifth');
-  equals(result, 'howdy', 'Function#bind | result is correctly returned');
+  equal(result, 'howdy', 'Function#bind | result is correctly returned');
 
   (function(first) {
-    same(Array.prototype.slice.call(arguments), [], 'Function#bind | arguments array is empty');
-    equals(first, undefined, 'Function#bind | first argument is undefined');
+    equal(Array.prototype.slice.call(arguments), [], 'Function#bind | arguments array is empty');
+    equal(first, undefined, 'Function#bind | first argument is undefined');
   }).bind('foo')();
 
   bound = (function(num, bool, str) {}).bind('wasabi', 'moo')();
 
 
-  var delayedFunction,delayReturn;
+  var delayedFunction, delayReturn, shouldBeFalse;
 
   // Prototype's delay function takes the value in seconds, so 20 makes the tests
   // take at least 20 seconds to finish!
   var delayTime = environment === 'prototype' ? 0.02 : 20;
 
-  var delayedFunction = function(one, two) {
-    equalsWithException(one, 'one', { mootools: 'two' }, 'Function#delay | first parameter');
-    equalsWithException(two, 'two', { mootools: undefined }, 'Function#delay | second parameter');
-    equalsWithException(shouldBeFalse, false, { prototype: true, mootools: true }, 'Function#delay | cancel is working');
-    start();
+  delayedFunction = function(one, two) {
+    equal(one, 'one', 'Function#delay | first parameter', { mootools: 'two' });
+    equal(two, 'two', 'Function#delay | second parameter', { mootools: undefined });
+    equal(shouldBeFalse, false, 'Function#delay | cancel is working', { prototype: true, mootools: true });
+    //start();
   };
 
   delayReturn = delayedFunction.delay(delayTime, 'one', 'two');
-  equals(typeof delayReturn, 'number', 'Function#delay | returns the timeout ID');
+  equal(typeof delayReturn, nativeTimeoutReturnType, 'Function#delay | returns the timeout ID');
 
-  var shouldBeFalse = false;
+  shouldBeFalse = false;
   delayedFunction = function() {
     shouldBeFalse = true;
   };
@@ -53,9 +53,9 @@ test('Function', function () {
   bound = (function(num, bool, str) {}).delay(1, 'wasabi');
 
   bound = (function(one, two) {
-    equals(this, 'poo', 'Function#defer | bound object');
-    equalsWithException(one, 'one', { mootools: 'two' }, 'Function#defer | first parameter');
-    equalsWithException(two, 'two', { mootools: undefined }, 'Function#defer | second parameter');
+    equal(this, 'poo', 'Function#defer | bound object');
+    equal(one, 'one', 'Function#defer | first parameter', { mootools: 'two' });
+    equal(two, 'two', 'Function#defer | second parameter', { mootools: undefined });
   }).bind('poo').defer('one', 'two');
 
   bound = (function(num, bool, str) {}).defer('three');
@@ -70,13 +70,13 @@ test('Function', function () {
   lazy();
   lazy();
   lazy();
-  equals(lazyCounter, 0, "Function.lazy | hasn't executed yet");
+  equal(lazyCounter, 0, "Function.lazy | hasn't executed yet");
   setTimeout(function() {
-    equals(lazyCounter, 3, 'Function.lazy | was executed by 10ms');
+    equal(lazyCounter, 3, 'Function.lazy | was executed by 10ms');
   }, 10);
 
 
-  stop();
+  //stop();
 
 
 
