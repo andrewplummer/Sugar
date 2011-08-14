@@ -23,4 +23,3 @@ restoreObjectPrototypeMethods = function() {
     }
   });
 }
-

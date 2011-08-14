@@ -1,2 +1,4 @@
 #!/bin/bash
-node environments/node/runner.js
+
+# Assuming you are running from the project root
+node unit_tests/environments/node/test.js
