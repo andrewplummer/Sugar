@@ -1,5 +1,4 @@
 
-
 dateEqual = function(a, b, message) {
   var format = '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}'
   var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
