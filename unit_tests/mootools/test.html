@@ -7,23 +7,23 @@
     <script type="text/javascript">
       jQuery.noConflict();
     </script>
-    <!-- qunit setup -->
-    <script type="text/javascript" src="../qunit.js"></script>
-    <script type="text/javascript" src="../environment.js"></script>
-    <!-- test adapter -->
-    <script type="text/javascript" src="adapter.js"></script>
-    <script type="text/javascript" src="sinon-1.1.1.js"></script>
     <!-- environment -->
     <script type="text/javascript" src="mootools-core-1.3.2-full-compat.js"></script>
     <!-- sugar -->
     <script type="text/javascript" src="../../lib/sugar.js"></script>
+    <!-- test suite -->
+    <script type="text/javascript" src="../sugar/setup.js"></script>
+    <script type="text/javascript" src="../sugar/date_helper.js"></script>
+    <script type="text/javascript" src="../sugar/object_helper.js"></script>
+    <script type="text/javascript" src="../environment.js"></script>
+    <!-- test adapter -->
+    <script type="text/javascript" src="adapter.js"></script>
     <!-- tests -->
     <script type="text/javascript">
       registerEnvironment('mootools', [
         {
           name: 'sugar',
           tests: [
-            '../sugar/setup.js',
             '../sugar/array.js',
             '../sugar/number.js',
             '../sugar/string.js',

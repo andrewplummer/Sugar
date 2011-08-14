@@ -9,7 +9,7 @@ test('Number', function () {
 
   rand = Number.random(10);
   equal(rand >= 0 && rand <= 10, true, 'Number.random | min not defined, max is 10', { mootools: false });
-  equal(rand % 1, 0, 'Number.random | number is whole', { mootools: 'NaN' });
+  equal(rand % 1, 0, 'Number.random | number is whole', { mootools: NaN });
 
   rand = Number.random(536224, 536280);
  equal(rand >= 536224 && rand <= 536280, true, 'Number.random | min and max defined');
@@ -66,7 +66,7 @@ test('Number', function () {
   equal((12).pow(2), 144, 'Number#pow | 12 ^ 2');
   equal((3).pow(3), 27, 'Number#pow | 3 ^ 3');
   equal((3).pow(0), 1, 'Number#pow | zero is allowed');
-  equal((3).pow(), 3, 'Number#pow | undefined defaults to 1', { mootools: 'NaN' });
+  equal((3).pow(), 3, 'Number#pow | undefined defaults to 1', { mootools: NaN });
 
 
   equal((3).round(), 3, 'Number#round | 3');
