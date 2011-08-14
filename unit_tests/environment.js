@@ -1,4 +1,50 @@
 
+var modules;
+var allResults = [];
+var current;
+
+registerEnvironment = function(name, mod) {
+  environment = name;
+  modules = mod;
+}
+
+startTests = function() {
+  nextModule();
+}
+
+var nextModule = function() {
+  current = modules.shift();
+  if(current) {
+    loadScripts(current.tests);
+  } else {
+    modulesFinished();
+  }
+}
+
+var modulesFinished = function() {
+  if(window.parent && window != window.parent && window.parent.modulesFinishedCallback) {
+    window.parent.modulesFinishedCallback(environment, allResults);
+  }
+}
+
+testsFinishedCallback = function(r) {
+  allResults.push({ module: current.name, results: r });
+  nextModule();
+}
+
+var loadScripts = function(scripts) {
+  var loaded = 0, i;
+  for(i = 0; i < scripts.length; i++){
+    jQuery.getScript(scripts[i], function(){
+      loaded++;
+      if(loaded == scripts.length){
+        syncTestsFinished();
+      }
+    });
+  }
+}
+
+/*
 var environment;
 var startTests;
 
@@ -54,4 +100,4 @@ var startTests;
   }
 
 })(jQuery);
-
+*/

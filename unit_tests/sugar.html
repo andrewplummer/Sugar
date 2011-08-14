@@ -4,11 +4,11 @@
     <title>Unit Tests</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="stylesheets/custom.css" type="text/css" />
+    <link rel="stylesheet" href="stylesheets/tooltip.css" type="text/css" />
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
     <script type="text/javascript" src="../lib/sugar.js"></script>
-    <script type="text/javascript" src="qunit.js"></script>
     <script type="text/javascript" src="suite.js"></script>
-    <script type="text/javascript" src="tooltip.js"></script>
+    <script type="text/javascript" src="javascripts/tooltip.js"></script>
   </head>
   <body>
     <div id="tests" class="centered">
@@ -47,17 +47,6 @@
             });
           });
 
-          var runButtons = $('a.run');
-          var runIndex = 0;
-
-          $(document).bind('tests_finished', function(){
-            runIndex++;
-            var el = runButtons.eq(runIndex);
-            if(el.length > 0){
-              el.click();
-            }
-          });
-
           $('#core_frame').get(0).contentWindow.startTests();
 
 
@@ -66,10 +55,6 @@
 
       </script>
 
-    </div>
-    <div id="tooltip">
-      <div class="arrow"></div>
-      <div class="content"></div>
     </div>
   </body>
 </html>

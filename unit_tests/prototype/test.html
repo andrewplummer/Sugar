@@ -4,15 +4,18 @@
     <title>Prototype 1.6.1</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
-    <!-- qunit setup -->
-    <script type="text/javascript" src="../qunit.js"></script>
-    <script type="text/javascript" src="../environment.js"></script>
     <!-- test adapter -->
     <script type="text/javascript" src="adapter.js"></script>
     <!-- environment -->
     <script type="text/javascript" src="prototype-1.7.js"></script>
     <!-- sugar -->
     <script type="text/javascript" src="../../lib/sugar.js"></script>
+    <!-- test suite -->
+    <script type="text/javascript" src="../sugar/setup.js"></script>
+    <script type="text/javascript" src="../sugar/date_helper.js"></script>
+    <script type="text/javascript" src="../sugar/object_helper.js"></script>
+    <script type="text/javascript" src="../sugar/fix_prototype_iterators.js"></script>
+    <script type="text/javascript" src="../environment.js"></script>
     <!-- script fixtures -->
     <script type="text/javascript" src="fixtures/enumerable.js"></script>
     <script type="text/javascript" src="fixtures/function.js"></script>
@@ -26,7 +29,6 @@
         {
           name: 'sugar',
           tests: [
-            '../sugar/setup.js',
             '../sugar/array.js',
             '../sugar/number.js',
             '../sugar/string.js',
