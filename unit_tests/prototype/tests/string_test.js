@@ -535,10 +535,10 @@ new Test.Unit.Runner({
     
     this.assertEqual('', '""'.evalJSON());
     this.assertEqual('foo', '"foo"'.evalJSON());
-    this.assert('object', typeof '{}'.evalJSON());
+    this.assertEqual('object', typeof '{}'.evalJSON());
     this.assert(Object.isArray('[]'.evalJSON()));
     this.assertNull('null'.evalJSON());
-    this.assert(123, '123'.evalJSON());
+    this.assertEqual(123, '123'.evalJSON());
     this.assertIdentical(true, 'true'.evalJSON());
     this.assertIdentical(false, 'false'.evalJSON());
     this.assertEqual('"', '"\\""'.evalJSON());

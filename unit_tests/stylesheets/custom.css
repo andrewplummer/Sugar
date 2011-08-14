@@ -14,6 +14,10 @@ ul,li {
   list-style-type: none;
 }
 
+.hidden {
+  display: none;
+}
+
 .header {
   margin-bottom: 1em;
 }
@@ -71,7 +75,7 @@ h3 {
   color: #aaa;
 }
 
-.module ul li {
+.module li {
   float: left;
   list-style-type: none;
 }
@@ -115,21 +119,6 @@ iframe {
   margin-right: 10px;
 }
 
-#tooltip {
-  max-width: 500px;
-  position: absolute;
-  -moz-border-radius:6px;
-  -webkit-border-radius:6px;
-  background-color: #000;
-  opacity: 0.8;
-  color:#FFFFFF;
-  font-size:12px;
-  padding:6px;
-  position:absolute;
-  display: none;
-  margin-bottom: 10px;
-}
-
 #tooltip h4 {
   margin: 0 0 0.5em 0;
   max-width: 200px;
@@ -159,17 +148,6 @@ iframe {
   color: #f90;
   background-color: transparent;
   font-weight: bold;
-}
-
-#tooltip .arrow {
-  opacity: 0.8;
-  width: 13px;
-  height: 7px;
-  bottom: -7px;
-  left: 50%;
-  position: absolute;
-  background: url('../images/arrow.gif') no-repeat center center;
-  background: #000;
 }
 
 #sugar_override {
