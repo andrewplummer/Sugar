@@ -9,6 +9,9 @@ var capturedTimers = [];
 var nativeSetTimeout = setTimeout;
 var nativeClearTimeout = clearTimeout;
 
+var testStartTime;
+var runtime;
+
 // The scope when none is set.
 nullScope = (function(){ return this; }).call();
 
@@ -57,11 +60,13 @@ var testsStarted = function() {
   if(environment == 'node') {
     console.info('\n----------------------- STARTING TESTS ----------------------------\n');
   }
+  testStartTime = new Date();
 }
 
 var testsFinished = function() {
+  runtime = new Date() - testStartTime;
   if(typeof testsFinishedCallback != 'undefined') {
-    testsFinishedCallback(results);
+    testsFinishedCallback(results, runtime);
   }
   if(environment == 'node') {
     displayResults();
@@ -82,7 +87,8 @@ var displayResults = function() {
       console.info('File: ' + failure.file + ', Line: ' + failure.line + '\n');
     }
   };
-  console.info(results.length + ' tests, ' + totalAssertions + ' assertions, ' + totalFailures + ' failures' + '\n');
+  var time = (runtime / 1000);
+  console.info(results.length + ' tests, ' + totalAssertions + ' assertions, ' + totalFailures + ' failures, ' + time + 's\n');
 }
 
 test = function(name, fn) {
