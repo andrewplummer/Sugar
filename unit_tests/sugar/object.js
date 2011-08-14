@@ -1,5 +1,6 @@
 test('Object', function () {
 
+
   var count,result;
   var Person = function() {};
   var p = new Person();
@@ -222,12 +223,12 @@ test('Object', function () {
 
   equal(Object.merge({ foo: 'bar' }, { broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object.merge | basic');
   equal(Object.merge({ foo: 'bar' }, { broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object.merge | merge 3');
-  equal(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object.merge | merge string');
+  equal(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object.merge | merge string', { mootools: { foo: 'bar', aha: undefined } });
   equal(Object.merge({ foo: 'bar' }, null), { foo: 'bar' }, 'Object.merge | merge null');
   equal(Object.merge({}, {}, {}), {}, 'Object.merge | merge multi empty');
 
 
-  equal(Object.merge({ foo: 'bar' }, 8), { foo: 'bar' }, 'Object.merge | merge number', { mootools: (function() { var s = new Number(8); s.foo = 'bar'; return s; })() });
+  equal(Object.merge({ foo: 'bar' }, 8), { foo: 'bar' }, 'Object.merge | merge number', { mootools: (function() { var s = Object.clone(8); s.foo = 'bar'; return s; })() });
 
 
   equal(Object.merge({ foo: 'bar' }, 'wear', 8, null), { foo: 'bar', 0: 'w', 1: 'e', 2: 'a', 3: 'r' }, 'Object.merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
@@ -236,7 +237,7 @@ test('Object', function () {
 
   equal(Object.extended({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
   equal(Object.extended({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
-  equal(Object.extended({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string');
+  equal(Object.extended({ foo: 'bar' }).merge('aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a'  }, 'Object#merge | merge string', { mootools: { foo: 'bar', aha: undefined } });
   equal(Object.extended({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
   equal(Object.extended({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
 
@@ -351,7 +352,7 @@ test('Object', function () {
 
   equal(({}).isEmpty(), true, 'Object#empty | Object.prototype');
   equal(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
-  equal(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype');
+  equal(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype', { mootools: Object.clone({ foo: 'bar', moo: 'car' }) });
 
   obj1 = { foo: 'bar' };
   obj2 = obj1.clone();

@@ -14,44 +14,44 @@ var afterEachFn;
 var QUnitBridge = function(expression){
 
   this.toBe = function(test){
-    equals(expression, test, currentBlock);
+    equal(expression, test, currentBlock);
   }
 
   this.toEqual = function(test){
-    same(expression, test, currentBlock);
+    equal(expression, test, currentBlock);
   };
 
   this.toBeFalsy = function(){
-    equals(!expression, true, currentBlock);
+    equal(!expression, true, currentBlock);
   }
 
   this.toBeTruthy = function(){
-    equals(!!expression, true, currentBlock);
+    equal(!!expression, true, currentBlock);
   }
 
   this.toBeNull = function(){
-    equals(expression == null, true, currentBlock);
+    equal(expression == null, true, currentBlock);
   }
 
   this.toBeGreaterThan = function(num){
-    equals(expression > num, true, currentBlock);
+    equal(expression > num, true, currentBlock);
   }
 
   this.toBeLessThan = function(num){
-    equals(expression < num, true, currentBlock);
+    equal(expression < num, true, currentBlock);
   }
 
   this.toContain = function(test){
-    equals(arrayContains(expression, test), true, currentBlock);
+    equal(arrayContains(expression, test), true, currentBlock);
   }
 
   this.toHaveBeenCalled = function(){
-    equals(!!expression.wasCalled, true, currentBlock);
+    equal(!!expression.wasCalled, true, currentBlock);
   }
 
   this.toHaveBeenCalledWith = function(){
-    equals(!!expression.wasCalled, true, currentBlock);
-    same(expression.withParameters, arguments, currentBlock);
+    equal(!!expression.wasCalled, true, currentBlock);
+    equal(expression.withParameters, arguments, currentBlock);
   }
 
   this.toMatch = function(reg){
@@ -61,11 +61,11 @@ var QUnitBridge = function(expression){
   this.not = {
 
     toBe: function(test){
-      equals(expression != test, true, currentBlock);
+      equal(expression != test, true, currentBlock);
     },
 
     toEqual: function(test){
-      equals(expression != test, true, currentBlock);
+      equal(expression != test, true, currentBlock);
     },
 
     toThrow: function(){
@@ -75,11 +75,11 @@ var QUnitBridge = function(expression){
       } catch(e){
         error = true;
       }
-      equals(error, false, currentBlock);
+      equal(error, false, currentBlock);
     },
 
     toHaveBeenCalled: function(){
-      equals(expression.wasCalled, false, currentBlock);
+      equal(expression.wasCalled, false, currentBlock);
     }
 
 

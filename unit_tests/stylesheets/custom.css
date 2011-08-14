@@ -65,9 +65,13 @@ h3 {
   color: #bbb;
 }
 
-.module {
-  margin: 5px 5px 0 0;
+.environment .tests {
   overflow: hidden;
+}
+
+.module {
+  margin-right: 5px;
+  display: inline-block;
 }
 
 .module h4 {
@@ -119,16 +123,21 @@ iframe {
   margin-right: 10px;
 }
 
-#tooltip h4 {
+#tooltip {
+  -moz-border-radius: 4px;
+}
+
+#tooltip h5 {
   margin: 0 0 0.5em 0;
   max-width: 200px;
-  border-bottom: 2px solid #666;
-  color: #aaa;
-  font-size: 10px;
+  border-bottom: 1px solid #555;
+  color: #eee;
+  font-size: 11px;
 }
 
 #tooltip p {
   margin: 0;
+  font-size: 12px;
   word-wrap: break-word;
 }
 

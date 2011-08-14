@@ -27,8 +27,8 @@
           title += '<p class="pass">Pass (' + r.assertions + ' assertions)</p>';
         }
 
-        li.attr('title', '#tip_' + totalTests);
-        $(document.body).append('<div class="hidden" id="tip_' + totalTests + '">' + title + '</div>');
+        li.attr('title', '#'+ environment +'_tip_' + totalTests);
+        $(document.body).append('<div class="hidden" id="'+ environment +'_tip_' + totalTests + '">' + title + '</div>');
         mod.append(li);
       });
       $('.tests', env).append(mod);
