@@ -20,7 +20,7 @@ new Test.Unit.Runner({
     this.assertUndefined(pet.superclass);
 
     var Empty = Class.create();
-    this.assert('object', typeof new Empty);
+    this.assertEqual('object', typeof new Empty);
   },
 
   testInheritance: function() {

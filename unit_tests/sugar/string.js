@@ -1,52 +1,52 @@
 
 test('String', function () {
 
-  equals('test regexp'.escapeRegExp(), 'test regexp', 'String#escapeRegExp | nothing to escape');
-  equals('test reg|exp'.escapeRegExp(), 'test reg\\|exp', 'String#escapeRegExp | should escape pipe');
-  equals('hey there (budday)'.escapeRegExp(), 'hey there \\(budday\\)', 'String#escapeRegExp | should escape parentheses');
-  equals('.'.escapeRegExp(), '\\.', 'String#escapeRegExp | should escape period');
-  equals('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'String#escapeRegExp | should escape many period');
-  equals('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'String#escapeRegExp | complex regex tokens');
+  equal('test regexp'.escapeRegExp(), 'test regexp', 'String#escapeRegExp | nothing to escape');
+  equal('test reg|exp'.escapeRegExp(), 'test reg\\|exp', 'String#escapeRegExp | should escape pipe');
+  equal('hey there (budday)'.escapeRegExp(), 'hey there \\(budday\\)', 'String#escapeRegExp | should escape parentheses');
+  equal('.'.escapeRegExp(), '\\.', 'String#escapeRegExp | should escape period');
+  equal('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'String#escapeRegExp | should escape many period');
+  equal('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'String#escapeRegExp | complex regex tokens');
 
   /* Leaving these tests but this method seems all but totally useless
-  equals('test regexp'.unescapeRegExp(), 'test regexp', 'String#unescapeRegExp | nothing to unescape');
-  equals('test reg\\|exp'.unescapeRegExp(), 'test reg|exp', 'String#unescapeRegExp | should unescape pipe');
-  equals('hey there \\(budday\\)'.unescapeRegExp(), 'hey there (budday)', 'String#unescapeRegExp | should unescape parentheses');
-  equals('\\.'.unescapeRegExp(), '.', 'String#unescapeRegExp | should unescape period');
-  equals('what a day\\.\\.\\.'.unescapeRegExp(), 'what a day...', 'String#unescapeRegExp | should unescape many period');
-  equals('\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/'.unescapeRegExp(), '*.+[]{}()?|/', 'String#unescapeRegExp | complex regex tokens');
-  */
+   equal('test regexp'.unescapeRegExp(), 'test regexp', 'String#unescapeRegExp | nothing to unescape');
+   equal('test reg\\|exp'.unescapeRegExp(), 'test reg|exp', 'String#unescapeRegExp | should unescape pipe');
+   equal('hey there \\(budday\\)'.unescapeRegExp(), 'hey there (budday)', 'String#unescapeRegExp | should unescape parentheses');
+   equal('\\.'.unescapeRegExp(), '.', 'String#unescapeRegExp | should unescape period');
+   equal('what a day\\.\\.\\.'.unescapeRegExp(), 'what a day...', 'String#unescapeRegExp | should unescape many period');
+   equal('\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/'.unescapeRegExp(), '*.+[]{}()?|/', 'String#unescapeRegExp | complex regex tokens');
+   */
 
 
-  equals('what a day...'.escapeURL(), 'what%20a%20day...', 'String#escapeURL | ...');
-  equals('/?:@&=+$#'.escapeURL(), '/?:@&=+$#', 'String#escapeURL | url chars');
-  equals('!%^*()[]{}\\:'.escapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#escapeURL | non url special chars');
-  equals('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#escapeURL | amazon link');
-  equals('http://twitter.com/#!/nov/status/85613699410296833'.escapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#escapeURL | twitter link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#escapeURL | ebay link');
+  equal('what a day...'.escapeURL(), 'what%20a%20day...', 'String#escapeURL | ...');
+  equal('/?:@&=+$#'.escapeURL(), '/?:@&=+$#', 'String#escapeURL | url chars');
+  equal('!%^*()[]{}\\:'.escapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#escapeURL | non url special chars');
+  equal('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#escapeURL | amazon link');
+  equal('http://twitter.com/#!/nov/status/85613699410296833'.escapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#escapeURL | twitter link');
+  equal('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#escapeURL | ebay link');
 
 
-  equals('what a day...'.escapeURL(true), 'what%20a%20day...', 'String#escapeURL | full | ...');
-  equals('/?:@&=+$#'.escapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#escapeURL | full | url chars');
-  equals('!%^*()[]{}\\:'.escapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#escapeURL | full | non url special chars');
-  equals('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#escapeURL | full | amazon link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'String#escapeURL | full | ebay link');
+  equal('what a day...'.escapeURL(true), 'what%20a%20day...', 'String#escapeURL | full | ...');
+  equal('/?:@&=+$#'.escapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#escapeURL | full | url chars');
+  equal('!%^*()[]{}\\:'.escapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#escapeURL | full | non url special chars');
+  equal('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#escapeURL | full | amazon link');
+  equal('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'String#escapeURL | full | ebay link');
 
-  equals('what%20a%20day...'.unescapeURL(), 'what a day...', 'String#unescapeURL | full | ...');
-  equals('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(), '/?:@&=+$#', 'String#unescapeURL | full | url chars');
-  equals('!%25%5E*()%5B%5D%7B%7D%5C%3A'.unescapeURL(), '!%^*()[]{}\\:', 'String#unescapeURL | full | non url special chars');
-  equals('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22'.unescapeURL(), 'http://somedomain.com?param="this: isn\'t an easy URL to escape"', 'String#unescapeURL | full | fake url')
-  equals('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#unescapeURL | full | amazon link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716'.unescapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2BUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716', 'String#unescapeURL | full | ebay link');
+  equal('what%20a%20day...'.unescapeURL(), 'what a day...', 'String#unescapeURL | full | ...');
+  equal('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(), '/?:@&=+$#', 'String#unescapeURL | full | url chars');
+  equal('!%25%5E*()%5B%5D%7B%7D%5C%3A'.unescapeURL(), '!%^*()[]{}\\:', 'String#unescapeURL | full | non url special chars');
+  equal('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22'.unescapeURL(), 'http://somedomain.com?param="this: isn\'t an easy URL to escape"', 'String#unescapeURL | full | fake url')
+  equal('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#unescapeURL | full | amazon link');
+  equal('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716'.unescapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2BUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716', 'String#unescapeURL | full | ebay link');
 
 
-  equals('what%20a%20day...'.unescapeURL(true), 'what a day...', 'String#unescapeURL | ...');
-  equals('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#unescapeURL | url chars');
-  equals('!%25%5E*()%5B%5D%7B%7D%5C:'.unescapeURL(true), '!%^*()[]{}\\:', 'String#unescapeURL | non url special chars');
-  equals('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22'.unescapeURL(true), 'http%3A%2F%2Fsomedomain.com%3Fparam%3D"this%3A isn\'t an easy URL to escape"', 'String#unescapeURL | fake url')
-  equals('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#unescapeURL | amazon link');
-  equals('http://twitter.com/#!/nov/status/85613699410296833'.unescapeURL(true), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#unescapeURL | twitter link');
-  equals('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.unescapeURL(true), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#unescapeURL | ebay link');
+  equal('what%20a%20day...'.unescapeURL(true), 'what a day...', 'String#unescapeURL | ...');
+  equal('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#unescapeURL | url chars');
+  equal('!%25%5E*()%5B%5D%7B%7D%5C:'.unescapeURL(true), '!%^*()[]{}\\:', 'String#unescapeURL | non url special chars');
+  equal('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22'.unescapeURL(true), 'http%3A%2F%2Fsomedomain.com%3Fparam%3D"this%3A isn\'t an easy URL to escape"', 'String#unescapeURL | fake url')
+  equal('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#unescapeURL | amazon link');
+  equal('http://twitter.com/#!/nov/status/85613699410296833'.unescapeURL(true), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#unescapeURL | twitter link');
+  equal('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.unescapeURL(true), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#unescapeURL | ebay link');
 
 
 
@@ -54,32 +54,32 @@ test('String', function () {
   raisesError(function() { '% 23'.unescapeURL(true); }, 'String#unescapeURL | full | should raise an error for malformed urls');
 
 
-  equals('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
-  equals('I grow, I prosper; Now, gods, stand up for bastards!'.encodeBase64(), 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'String#encodeBase64 | gods');
-  equals('räksmörgås'.encodeBase64(), 'cuRrc232cmflcw==', 'String#encodeBase64 | shrimp sandwich');
-  equals('rÃ¤ksmÃ¶rgÃ¥s'.encodeBase64(), 'csOka3Ntw7ZyZ8Olcw==', 'String#encodeBase64 | shrimp sandwich');
+  equal('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
+  equal('I grow, I prosper; Now, gods, stand up for bastards!'.encodeBase64(), 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'String#encodeBase64 | gods');
+  equal('räksmörgås'.encodeBase64(), 'cuRrc232cmflcw==', 'String#encodeBase64 | shrimp sandwich');
+  equal('rÃ¤ksmÃ¶rgÃ¥s'.encodeBase64(), 'csOka3Ntw7ZyZ8Olcw==', 'String#encodeBase64 | shrimp sandwich');
 
-  equals('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='.decodeBase64(), 'This webpage is not available', 'String#decodeBase64 | webpage');
-  equals('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ=='.decodeBase64(), 'I grow, I prosper; Now, gods, stand up for bastards!', 'String#decodeBase64 | gods');
+  equal('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='.decodeBase64(), 'This webpage is not available', 'String#decodeBase64 | webpage');
+  equal('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ=='.decodeBase64(), 'I grow, I prosper; Now, gods, stand up for bastards!', 'String#decodeBase64 | gods');
 
   raisesError(function() { '@#$^#$^#@$^'.decodeBase64(); }, 'String#decodeBase64 | should throw an error on non-base64 chars');
 
   var test;
 
-  equalsWithException('reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should capitalize first letter of first word only.');
-  equalsWithException('Reuben sandwich'.capitalize(), 'Reuben sandwich', { mootools: 'Reuben Sandwich' }, 'String#capitalize | should leave the string alone');
-  equalsWithException('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', { mootools: 'REUBEN SANDWICH' }, 'String#capitalize | should uncapitalize all other letters');
+  equal('reuben sandwich'.capitalize(), 'Reuben sandwich', 'String#capitalize | should capitalize first letter of first word only.', { mootools: 'Reuben Sandwich' });
+  equal('Reuben sandwich'.capitalize(), 'Reuben sandwich', 'String#capitalize | should leave the string alone', { mootools: 'Reuben Sandwich' });
+  equal('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', 'String#capitalize | should uncapitalize all other letters', { mootools: 'REUBEN SANDWICH' });
 
-  equalsWithException('reuben sandwich'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich' }, 'String#capitalize | all | should capitalize all first letters');
-  equalsWithException('Reuben sandwich'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich' }, 'String#capitalize | all | should capitalize the second letter only');
-  equalsWithException('REUBEN SANDWICH'.capitalize(true), 'Reuben Sandwich', { prototype: 'Reuben sandwich', mootools: 'REUBEN SANDWICH' }, 'String#capitalize | all | should uncapitalize all other letters');
-  equalsWithException('what a shame of a title'.capitalize(true), 'What A Shame Of A Title', { prototype: 'What a shame of a title' }, 'String#capitalize | all | all lower-case');
-  equalsWithException('What A Shame Of A Title'.capitalize(true), 'What A Shame Of A Title', { prototype: 'What a shame of a title' }, 'String#capitalize | all | already capitalized');
-  equalsWithException(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', { prototype: ' what a shame of a title    ' }, 'String#capitalize | all | preserves whitespace');
-  equalsWithException(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', { prototype: ' what a shame of\n a title    ' }, 'String#capitalize | all | preserves new lines');
+  equal('reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize all first letters', { prototype: 'Reuben sandwich' });
+  equal('Reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize the second letter only', { prototype: 'Reuben sandwich' });
+  equal('REUBEN SANDWICH'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should uncapitalize all other letters', { prototype: 'Reuben sandwich', mootools: 'REUBEN SANDWICH' });
+  equal('what a shame of a title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | all lower-case', { prototype: 'What a shame of a title' });
+  equal('What A Shame Of A Title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | already capitalized', { prototype: 'What a shame of a title' });
+  equal(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', 'String#capitalize | all | preserves whitespace', { prototype: ' what a shame of a title    ' });
+  equal(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', 'String#capitalize | all | preserves new lines', { prototype: ' what a shame of\n a title    ' });
 
 
-  same('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
+  equal('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
 
   equal('   wasabi   '.trim(), 'wasabi', 'String#chars | should trim both left and right whitespace');
   equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim | should trim left whitespace only');
@@ -111,14 +111,14 @@ test('String', function () {
   equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | 2 should repeat the string 2 times');
 
   // "each" will return an array of everything that was matched, defaulting to individual characters
-  same('g'.each(), ['g'], 'String#each | each should return an array of each char');
+  equal('g'.each(), ['g'], 'String#each | each should return an array of each char');
 
   // Each without a first parameter assumes "each character"
   var result = 'g'.each(function(str, i) {
     strictlyEqual(str, 'g', 'String#each | char should be passed as the first argument');
   });
 
-  same(result, ['g'], "String#each | ['g'] should be the resulting value");
+  equal(result, ['g'], "String#each | ['g'] should be the resulting value");
 
   var counter = 0;
   result = 'ginger'.each(function(str, i) {
@@ -127,7 +127,7 @@ test('String', function () {
     counter++;
   });
   equal(counter, 6, 'String#each | ginger | should have ran 6 times');
-  same(result, ['g','i','n','g','e','r'], 'String#each | ginger | resulting array should contain all the characters');
+  equal(result, ['g','i','n','g','e','r'], 'String#each | ginger | resulting array should contain all the characters');
 
   counter = 0;
   result = 'ginger'.each('g', function(str, i) {
@@ -135,7 +135,7 @@ test('String', function () {
     counter++;
   });
   equal(counter, 2, 'String#each | string argument | should have ran 2 times');
-  same(result, ['g','g'], "String#each | string argument | resulting array should be ['g','g']");
+  equal(result, ['g','g'], "String#each | string argument | resulting array should be ['g','g']");
 
   counter = 0;
   test = ['g','i','g','e'];
@@ -144,24 +144,24 @@ test('String', function () {
     counter++;
   });
   equal(counter, 4, 'String#each | regexp argument | should have ran 4 times');
-  same(result, ['g','i','g','e'], "String#each | regexp argument | resulting array should have been ['g','i','g','e']");
+  equal(result, ['g','i','g','e'], "String#each | regexp argument | resulting array should have been ['g','i','g','e']");
 
 
   // .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups
   var testString = 'cruel world';
 
   result = testString.each(/\w+/g);
-  same(result, ['cruel', 'world'], 'String#each | complex regexp | /\\w+/g');
+  equal(result, ['cruel', 'world'], 'String#each | complex regexp | /\\w+/g');
 
   result = testString.each(/.../g);
-  same(result, ['cru', 'el ', 'wor'], 'String#each | complex regexp | /.../');
+  equal(result, ['cru', 'el ', 'wor'], 'String#each | complex regexp | /.../');
 
   result = testString.each(/(..)(..)/g);
-  same(result, ['crue', 'l wo'], 'String#each | complex regexp | /(..)(..)/');
+  equal(result, ['crue', 'l wo'], 'String#each | complex regexp | /(..)(..)/');
 
 
   result = testString.each(/\w+/);
-  same(result, ['cruel', 'world'], 'String#each non-global regexes should still be global');
+  equal(result, ['cruel', 'world'], 'String#each non-global regexes should still be global');
 
 
   // #shift
@@ -180,7 +180,7 @@ test('String', function () {
 
   // test each char code
 
-  same('jumpy'.codes(), [106,117,109,112,121], 'String#codes | jumpy');
+  equal('jumpy'.codes(), [106,117,109,112,121], 'String#codes | jumpy');
 
   counter = 0;
   test = [103,105,110,103,101,114];
@@ -189,7 +189,7 @@ test('String', function () {
     counter++;
   });
   equal(counter, 6, 'String#codes | ginger codes | should have ran 6 times');
-  same(result, test, 'String#codes | ginger codes | result should be an array');
+  equal(result, test, 'String#codes | ginger codes | result should be an array');
 
   // test each char
   counter = 0;
@@ -199,7 +199,7 @@ test('String', function () {
     counter++;
   });
   equal(counter, 6, 'String#chars | ginger | should have run 6 times');
-  same(result, ['g','i','n','g','e','r'], 'String#chars | result should be an array');
+  equal(result, ['g','i','n','g','e','r'], 'String#chars | result should be an array');
 
   // test each char collects when properly returned
   counter = 0;
@@ -207,7 +207,7 @@ test('String', function () {
     counter++;
     return str.toUpperCase();
   });
-  same(result, ['G','I','N','G','E','R'], 'String#chars | ginger | resulting array is properly collected');
+  equal(result, ['G','I','N','G','E','R'], 'String#chars | ginger | resulting array is properly collected');
 
   counter = 0;
   var sentence = 'these pretzels are \n\n making me         thirsty!\n\n';
@@ -217,7 +217,7 @@ test('String', function () {
     counter++;
   });
   equal(counter, 6, 'String#words | should have run 6 times');
-  same(result, test, 'String#words | result should be an array of matches');
+  equal(result, test, 'String#words | result should be an array of matches');
 
   counter = 0;
   var paragraph = 'these\npretzels\nare\n\nmaking\nme\n         thirsty!\n\n\n\n';
@@ -227,12 +227,12 @@ test('String', function () {
     counter++;
   });
   equal(counter, 7, 'String#lines | should have run 7 times');
-  same(result, test, 'String#lines | result should be an array of matches');
+  equal(result, test, 'String#lines | result should be an array of matches');
 
   result = 'one\ntwo'.lines(function(str, i) {
     return str.capitalize();
   });
-  same(['One','Two'], result, 'String#lines | lines can be modified');
+  equal(['One','Two'], result, 'String#lines | lines can be modified');
 
   counter = 0;
   var essay = 'the history of the united states\n\n';
@@ -247,17 +247,17 @@ test('String', function () {
     counter ++;
   });
   equal(counter, 4, 'String#paragraphs | should have run 4 times');
-  same(result, test, 'String#paragraphs | result should be an array of matches');
+  equal(result, test, 'String#paragraphs | result should be an array of matches');
 
 
-  same(''.codes(), [], 'String#codes | empty string');
-  same(''.chars(), [], 'String#chars | empty string');
-  same(''.words(), [], 'String#words | empty string');
-  same(''.lines(), [''], 'String#lines | empty string');
-  same(''.paragraphs(), [''], 'String#paragraphs | empty string');
-  same(''.each('f'), [], 'String#each | empty string | each f');
-  same(''.each(/foo/), [], 'String#each | empty string | each /foo/');
-  same(''.each(function() {}), [], 'String#each | empty string | passing a block');
+  equal(''.codes(), [], 'String#codes | empty string');
+  equal(''.chars(), [], 'String#chars | empty string');
+  equal(''.words(), [], 'String#words | empty string');
+  equal(''.lines(), [''], 'String#lines | empty string');
+  equal(''.paragraphs(), [''], 'String#paragraphs | empty string');
+  equal(''.each('f'), [], 'String#each | empty string | each f');
+  equal(''.each(/foo/), [], 'String#each | empty string | each /foo/');
+  equal(''.each(function() {}), [], 'String#each | empty string | passing a block');
 
 
 
@@ -283,9 +283,9 @@ test('String', function () {
   equal('HELLO'.startsWith('HELL'), true, 'String#startsWith | HELLO starts with HELL');
   equal('HELLO'.startsWith('hell'), false, 'String#startsWith | HELLO starts with hell');
   equal('HELLO'.startsWith('hell', true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
-  equalsWithException('hello'.startsWith(/hell/), true, { prototype: false }, 'String#startsWith | accepts regex');
-  equalsWithException('hello'.startsWith(/[a-h]/), true, { prototype: false }, 'String#startsWith | accepts regex alternates');
-  equalsWithException('HELLO'.startsWith('hell', false), true, { prototype: false }, 'String#startsWith | case insensitive | HELLO starts with hell');
+  equal('hello'.startsWith(/hell/), true, 'String#startsWith | accepts regex', { prototype: false });
+  equal('hello'.startsWith(/[a-h]/), true, 'String#startsWith | accepts regex alternates', { prototype: false });
+  equal('HELLO'.startsWith('hell', false), true, 'String#startsWith | case insensitive | HELLO starts with hell', { prototype: false });
   equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith | valley girls rock starts with valley girls');
   equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith | valley girls rock starts with valley girls r');
 
@@ -294,9 +294,9 @@ test('String', function () {
   equal('VADER'.endsWith('DER'), true, 'String#endsWith | VADER ends with DER');
   equal('VADER'.endsWith('der'), false, 'String#endsWith | VADER ends with der');
   equal('VADER'.endsWith('DER', false), true, 'String#endsWith | case insensitive | VADER ends with DER');
-  equalsWithException('vader'.endsWith(/der/), true, { prototype: false }, 'String#endsWith | accepts regex');
-  equalsWithException('vader'.endsWith(/[q-z]/), true, { prototype: false }, 'String#endsWith | accepts regex alternates');
-  equalsWithException('VADER'.endsWith('der', false), true, { prototype: false }, 'String#endsWith | case insensitive |  VADER ends with der');
+  equal('vader'.endsWith(/der/), true, 'String#endsWith | accepts regex', { prototype: false });
+  equal('vader'.endsWith(/[q-z]/), true, 'String#endsWith | accepts regex alternates', { prototype: false });
+  equal('VADER'.endsWith('der', false), true, 'String#endsWith | case insensitive |  VADER ends with der', { prototype: false });
   equal('VADER'.endsWith('DER', true), true, 'String#endsWith | case sensitive | VADER ends with DER');
   equal('VADER'.endsWith('der', true), false, 'String#endsWith | case sensitive |  VADER ends with der');
   equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith | vader ends with der');
@@ -310,7 +310,6 @@ test('String', function () {
   equal('\t\t\t\t'.isBlank(), true, 'String#blank | tabs');
   equal('日本語では　「マス」　というの知ってた？'.isBlank(), false, 'String#blank | japanese');
   equal('mayonnaise'.isBlank(), false, 'String#blank | mayonnaise');
-  //equalsWithException('　　　　　\n　　　'.isBlank(), true, { mootools: (jQuery.browser.msie ? false : true) }, 'String#blank | japanese zenkaku space');
 
 
   equal('foo'.has('f'), true, 'String#has | foo has f');
@@ -383,8 +382,8 @@ test('String', function () {
   var allHankakuChars = ' ､｡,.･:;?!ｰ~/|()[]{}｢｣+-=<>¥$¢£%#&*@0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzｧｱｨｲｩｳｪｴｫｵｶｶﾞｷｷﾞｸｸﾞｹｹﾞｺｺﾞｻｻﾞｼｼﾞｽｽﾞｾｾﾞｿｿﾞﾀﾀﾞﾁﾁﾞｯﾂﾂﾞﾃﾃﾞﾄﾄﾞﾅﾆﾇﾈﾉﾊﾊﾞﾊﾟﾋﾋﾞﾋﾟﾌﾌﾞﾌﾟﾍﾍﾞﾍﾟﾎﾎﾞﾎﾟﾏﾐﾑﾒﾓｬﾔｭﾕｮﾖﾗﾘﾙﾚﾛﾜｦﾝ';
 
 
-  equals(allZenkakuChars.hankaku(), allHankakuChars, 'String#hankaku | everything');
-  equals(allHankakuChars.zenkaku(), allZenkakuChars, 'String#zenkaku | everything');
+  equal(allZenkakuChars.hankaku(), allHankakuChars, 'String#hankaku | everything');
+  equal(allHankakuChars.zenkaku(), allZenkakuChars, 'String#zenkaku | everything');
 
 
   equal('ｶﾀｶﾅ'.zenkaku(), 'カタカナ', 'String#zenkaku | katakana');
@@ -497,7 +496,6 @@ test('String', function () {
   var largeJapaneseSpaces = '　　　日本語　　　　　の　　　　　スペース　　　　　も　　';
   var compactedWithoutJapaneseSpaces = '日本語　の　スペース　も';
   var compactedWithTrailingJapaneseSpaces = '　日本語　の　スペース　も　';
-  //equalsWithException(largeJapaneseSpaces.compact(), compactedWithoutJapaneseSpaces, { mootools: (jQuery.browser.msie ? compactedWithTrailingJapaneseSpaces : compactedWithoutJapaneseSpaces) }, 'String#compact | japanese spaces');
 
 
 
@@ -529,7 +527,7 @@ test('String', function () {
   equal('foop'.at(-5, false), '', 'String#at | negative | pos -5');
   equal('foop'.at(-1224, false), '', 'String#at | negative | out of bounds');
 
-  same('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at | handles enumerated params');
+  equal('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at | handles enumerated params');
 
 
   equal('quack'.first(), 'q', 'String#first | first character');
@@ -574,39 +572,39 @@ test('String', function () {
   equal('quack'.to(-4), 'q', 'String#to | to -4');
 
 
-  dateEquals('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
-  dateEquals('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate | slash format');
-  equals(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
-  equals('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
-  dateEquals('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
+  dateEqual('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
+  dateEqual('11/5/56'.toDate(), new Date('11/5/56'), 'String#toDate | slash format');
+  equal(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
+  equal('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
+  dateEqual('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
 
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
-  equalsWithException('HOP_ON_POP'.dasherize(), 'hop-on-pop', { prototype: 'HOP-ON-POP' }, 'String#dasherize | capitals and underscores');
-  equalsWithException('hopOnPop'.dasherize(), 'hop-on-pop', { prototype: 'hopOnPop' }, 'String#dasherize | camel-case');
-  equalsWithException('watch me fail'.dasherize(), 'watch-me-fail', { prototype: 'watch me fail' }, 'String#dasherize | whitespace');
-  equalsWithException('watch me fail_sad_face'.dasherize(), 'watch-me-fail-sad-face', { prototype: 'watch me fail-sad-face' }, 'String#dasherize | whitespace sad face');
-  equalsWithException('waTch me su_cCeed'.dasherize(), 'wa-tch-me-su-c-ceed', { prototype: 'waTch me su-cCeed' }, 'String#dasherize | complex whitespace');
+  equal('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
+  equal('hopOnPop'.dasherize(), 'hop-on-pop', 'String#dasherize | camel-case', { prototype: 'hopOnPop' });
+  equal('watch me fail'.dasherize(), 'watch-me-fail', 'String#dasherize | whitespace', { prototype: 'watch me fail' });
+  equal('watch me fail_sad_face'.dasherize(), 'watch-me-fail-sad-face', 'String#dasherize | whitespace sad face', { prototype: 'watch me fail-sad-face' });
+  equal('waTch me su_cCeed'.dasherize(), 'wa-tch-me-su-c-ceed', 'String#dasherize | complex whitespace', { prototype: 'waTch me su-cCeed' });
 
 
 
 
-  equalsWithException('hop-on-pop'.camelize(), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | dashes');
-  equalsWithException('HOP-ON-POP'.camelize(), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | capital dashes');
-  equalsWithException('hop_on_pop'.camelize(), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | underscores');
+  equal('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize | dashes', { prototype: 'hopOnPop' });
+  equal('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize | capital dashes', { prototype: 'HOPONPOP' });
+  equal('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize | underscores', { prototype: 'hop_on_pop' });
   equal('hop-on-pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | dashes');
-  equalsWithException('HOP-ON-POP'.camelize(false), 'hopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first false | capital dashes');
-  equalsWithException('hop_on_pop'.camelize(false), 'hopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first false | underscores');
-  equalsWithException('hop-on-pop'.camelize(true), 'HopOnPop', { prototype: 'hopOnPop' }, 'String#camelize | first true | dashes');
-  equalsWithException('HOP-ON-POP'.camelize(true), 'HopOnPop', { prototype: 'HOPONPOP' }, 'String#camelize | first true | capital dashes');
-  equalsWithException('hop_on_pop'.camelize(true), 'HopOnPop', { prototype: 'hop_on_pop' }, 'String#camelize | first true | underscores');
+  equal('HOP-ON-POP'.camelize(false), 'hopOnPop', 'String#camelize | first false | capital dashes', { prototype: 'HOPONPOP' });
+  equal('hop_on_pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | underscores', { prototype: 'hop_on_pop' });
+  equal('hop-on-pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | dashes', { prototype: 'hopOnPop' });
+  equal('HOP-ON-POP'.camelize(true), 'HopOnPop', 'String#camelize | first true | capital dashes', { prototype: 'HOPONPOP' });
+  equal('hop_on_pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | underscores', { prototype: 'hop_on_pop' });
 
-  equalsWithException('watch me fail'.camelize(), 'WatchMeFail', { prototype: 'watch me fail' }, 'String#camelize | whitespace');
-  equalsWithException('watch me fail-sad-face'.camelize(), 'WatchMeFailSadFace', { prototype: 'watch me failSadFace' }, 'String#camelize | whitespace sad face');
-  equalsWithException('waTch me su-cCeed'.camelize(), 'WaTchMeSuCCeed', { prototype: 'waTch me suCCeed' }, 'String#camelize | complex whitespace');
+  equal('watch me fail'.camelize(), 'WatchMeFail', 'String#camelize | whitespace', { prototype: 'watch me fail' });
+  equal('watch me fail-sad-face'.camelize(), 'WatchMeFailSadFace', 'String#camelize | whitespace sad face', { prototype: 'watch me failSadFace' });
+  equal('waTch me su-cCeed'.camelize(), 'WaTchMeSuCCeed', 'String#camelize | complex whitespace', { prototype: 'waTch me suCCeed' });
 
-  equalsWithException('watch me fail'.camelize(false), 'watchMeFail', { prototype: 'watch me fail' }, 'String#camelize | first false | whitespace');
-  equalsWithException('watch me fail-sad-face'.camelize(false), 'watchMeFailSadFace', { prototype: 'watch me failSadFace' }, 'String#camelize | first false | whitespace sad face');
-  equalsWithException('waTch me su-cCeed'.camelize(false), 'waTchMeSuCCeed', { prototype: 'waTch me suCCeed' }, 'String#camelize | first false | complex whitespace');
+  equal('watch me fail'.camelize(false), 'watchMeFail', 'String#camelize | first false | whitespace', { prototype: 'watch me fail' });
+  equal('watch me fail-sad-face'.camelize(false), 'watchMeFailSadFace', 'String#camelize | first false | whitespace sad face', { prototype: 'watch me failSadFace' });
+  equal('waTch me su-cCeed'.camelize(false), 'waTchMeSuCCeed', 'String#camelize | first false | complex whitespace', { prototype: 'waTch me suCCeed' });
 
 
 
@@ -617,9 +615,9 @@ test('String', function () {
   equal('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore | caps and dashes');
   equal('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore | lower-case and dashes');
 
-  equalsWithException('watch me fail'.underscore(), 'watch_me_fail', { prototype: 'watch me fail' }, 'String#underscore | whitespace');
-  equalsWithException('watch me fail-sad-face'.underscore(), 'watch_me_fail_sad_face', { prototype: 'watch me fail_sad_face' }, 'String#underscore | whitespace sad face');
-  equalsWithException('waTch me su-cCeed'.underscore(), 'wa_tch_me_su_c_ceed', { prototype: 'wa_tch me su_c_ceed' }, 'String#underscore | complex whitespace');
+  equal('watch me fail'.underscore(), 'watch_me_fail', 'String#underscore | whitespace', { prototype: 'watch me fail' });
+  equal('watch me fail-sad-face'.underscore(), 'watch_me_fail_sad_face', 'String#underscore | whitespace sad face', { prototype: 'watch me fail_sad_face' });
+  equal('waTch me su-cCeed'.underscore(), 'wa_tch_me_su_c_ceed', 'String#underscore | complex whitespace', { prototype: 'wa_tch me su_c_ceed' });
 
 
 
@@ -758,39 +756,39 @@ test('String', function () {
 
   var stripped;
   var html =
-    '<div class="outer">' +
-      '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>' +
-    '</div>';
+  '<div class="outer">' +
+  '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>' +
+  '</div>';
   var allStripped = 'text with links, &quot;entities&quot; and bold tags';
 
   var malformed_html = '<div class="outer"><p>paragraph';
 
 
   stripped =
-    '<div class="outer">' +
-      '<p>text with links, &quot;entities&quot; and <b>bold</b> tags</p>' +
-    '</div>';
+  '<div class="outer">' +
+  '<p>text with links, &quot;entities&quot; and <b>bold</b> tags</p>' +
+  '</div>';
 
-  equalsWithException(html.stripTags('a'), stripped, { prototype: allStripped }, 'String#stripTags | stripped a tags');
+  equal(html.stripTags('a'), stripped, 'String#stripTags | stripped a tags', { prototype: allStripped });
   equal(html.stripTags('a') == html, false, 'String#stripTags | stripped <a> tags was changed');
 
 
   stripped =
-    '<div class="outer">' +
-      '<p>text with links, &quot;entities&quot; and bold tags</p>' +
-    '</div>';
-  equalsWithException(html.stripTags('a', 'b'), stripped, { prototype: allStripped }, 'String#stripTags | stripped <a> and <b> tags');
+  '<div class="outer">' +
+  '<p>text with links, &quot;entities&quot; and bold tags</p>' +
+  '</div>';
+  equal(html.stripTags('a', 'b'), stripped, 'String#stripTags | stripped <a> and <b> tags', { prototype: allStripped });
 
 
   stripped =
-    '<div class="outer">' +
-      'text with links, &quot;entities&quot; and <b>bold</b> tags' +
-    '</div>';
-  equalsWithException(html.stripTags('p', 'a'), stripped, { prototype: allStripped }, 'String#stripTags | stripped <p> and <a> tags');
+  '<div class="outer">' +
+  'text with links, &quot;entities&quot; and <b>bold</b> tags' +
+  '</div>';
+  equal(html.stripTags('p', 'a'), stripped, 'String#stripTags | stripped <p> and <a> tags', { prototype: allStripped });
 
 
   stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>';
-  equalsWithException(html.stripTags('div'), stripped, { prototype: allStripped}, 'String#stripTags | stripped <div> tags');
+  equal(html.stripTags('div'), stripped, 'String#stripTags | stripped <div> tags', { prototype: allStripped});
 
 
   stripped = 'text with links, &quot;entities&quot; and bold tags';
@@ -798,20 +796,20 @@ test('String', function () {
 
 
   stripped = '<p>paragraph';
-  equalsWithException(malformed_html.stripTags('div'), stripped, { prototype: 'paragraph' }, 'String#stripTags | malformed | div tag stripped');
+  equal(malformed_html.stripTags('div'), stripped, 'String#stripTags | malformed | div tag stripped', { prototype: 'paragraph' });
 
   stripped = '<div class="outer">paragraph';
-  equalsWithException(malformed_html.stripTags('p'), stripped, { prototype: 'paragraph' }, 'String#stripTags | malformed | p tags stripped');
+  equal(malformed_html.stripTags('p'), stripped, 'String#stripTags | malformed | p tags stripped', { prototype: 'paragraph' });
 
   stripped = 'paragraph';
   equal(malformed_html.stripTags(), stripped, 'String#stripTags | malformed | all tags stripped');
 
 
 
-  equalsWithException('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', { prototype: '' }, "String#stripTags | does not strip tags that aren't properly closed");
+  equal('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', "String#stripTags | does not strip tags that aren't properly closed", { prototype: '' });
   equal('a < b'.stripTags(), 'a < b', 'String#stripTags | does not strip less than');
   equal('a > b'.stripTags(), 'a > b', 'String#stripTags | does not strip greater than');
-  equalsWithException('</foo  >>'.stripTags(), '>', { prototype: '</foo  >>' }, 'String#stripTags | strips closing tags with white space');
+  equal('</foo  >>'.stripTags(), '>', 'String#stripTags | strips closing tags with white space', { prototype: '</foo  >>' });
 
 
 
@@ -819,53 +817,53 @@ test('String', function () {
   equal('<input type="text" class="blech" />'.stripTags(), '', 'String#stripTags | full input stripped');
 
   html =
-    '<form action="poo.php" method="post">' +
-    '<p>' +
-      '<label>label for text:</label>' +
-      '<input type="text" value="brabra" />' +
-      '<input type="submit" value="submit" />' +
-    '</p>' +
-    '</form>';
+  '<form action="poo.php" method="post">' +
+  '<p>' +
+  '<label>label for text:</label>' +
+  '<input type="text" value="brabra" />' +
+  '<input type="submit" value="submit" />' +
+  '</p>' +
+  '</form>';
 
   equal(html.stripTags(), 'label for text:', 'String#stripTags | form | all tags removed');
-  equalsWithException(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', { prototype: 'label for text:' }, 'String#stripTags | form | input tags stripped');
-  equalsWithException(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', { prototype: 'label for text:' }, 'String#stripTags | form | input, p, and form tags stripped');
+  equal(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#stripTags | form | input tags stripped', { prototype: 'label for text:' });
+  equal(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', 'String#stripTags | form | input, p, and form tags stripped', { prototype: 'label for text:' });
 
   /* Stripping namespaced tags */
-  equalsWithException('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', { prototype: '<xsl:template>foobar</xsl:template>' }, 'String#stripTags | strips tags with xml namespaces');
-  equalsWithException('<xsl:template>foobar</xsl:template>'.stripTags('xsl:template'), 'foobar', { prototype: '<xsl:template>foobar</xsl:template>' }, 'String#stripTags | strips xsl:template');
-  equalsWithException('<xsl/template>foobar</xsl/template>'.stripTags('xsl/template'), 'foobar', { prototype: '<xsl/template>foobar</xsl/template>' }, 'String#stripTags | strips xsl/template');
+  equal('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', 'String#stripTags | strips tags with xml namespaces', { prototype: '<xsl:template>foobar</xsl:template>' });
+  equal('<xsl:template>foobar</xsl:template>'.stripTags('xsl:template'), 'foobar', 'String#stripTags | strips xsl:template', { prototype: '<xsl:template>foobar</xsl:template>' });
+  equal('<xsl/template>foobar</xsl/template>'.stripTags('xsl/template'), 'foobar', 'String#stripTags | strips xsl/template', { prototype: '<xsl/template>foobar</xsl/template>' });
 
 
   /* No errors on RegExp */
-  equalsWithException('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', { prototype: '<xsl(template>foobar</xsl(template>' }, 'String#stripTags | no regexp errors on tokens');
+  equal('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', 'String#stripTags | no regexp errors on tokens', { prototype: '<xsl(template>foobar</xsl(template>' });
 
 
 
 
   html =
-    '<div class="outer">' +
-      '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>' +
-    '</div>';
+  '<div class="outer">' +
+  '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>' +
+  '</div>';
   var removed;
 
   removed =
-    '<div class="outer">' +
-      '<p>text with , &quot;entities&quot; and <b>bold</b> tags</p>' +
-    '</div>';
+  '<div class="outer">' +
+  '<p>text with , &quot;entities&quot; and <b>bold</b> tags</p>' +
+  '</div>';
   equal(html.removeTags('a'), removed, 'String#removeTags | <a> tag removed');
   equal(html.removeTags('a') == html, false, 'String#removeTags | html was changed');
 
 
   removed =
-    '<div class="outer">' +
-      '<p>text with , &quot;entities&quot; and  tags</p>' +
-    '</div>';
+  '<div class="outer">' +
+  '<p>text with , &quot;entities&quot; and  tags</p>' +
+  '</div>';
   equal(html.removeTags('a', 'b'), removed, 'String#removeTags | <a> and <b> tags removed');
 
 
   removed =
-    '<div class="outer"></div>';
+  '<div class="outer"></div>';
   equal(html.removeTags('p', 'a'), removed, 'String#removeTags | <p> and <a> tags removed');
 
 
@@ -889,13 +887,13 @@ test('String', function () {
   equal('<input type="text" class="blech" />'.removeTags(), '', 'String#removeTags');
 
   html =
-    '<form action="poo.php" method="post">' +
-    '<p>' +
-      '<label>label for text:</label>' +
-      '<input type="text" value="brabra" />' +
-      '<input type="submit" value="submit" />' +
-    '</p>' +
-    '</form>';
+  '<form action="poo.php" method="post">' +
+  '<p>' +
+  '<label>label for text:</label>' +
+  '<input type="text" value="brabra" />' +
+  '<input type="submit" value="submit" />' +
+  '</p>' +
+  '</form>';
 
   equal(html.removeTags(), '', 'String#removeTags | form | removing all tags');
   equal(html.removeTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#removeTags | form | removing input tags');
@@ -912,10 +910,10 @@ test('String', function () {
 
 
 
-  same('foo=bar&moo=car'.toObject(), {foo:'bar',moo:'car'}, 'String#toObject | basic');
-  same('foo=bar&moo=3'.toObject(), {foo:'bar',moo:3}, 'String#toObject | with numbers');
-  same('foo=bar&moo=true'.toObject(), {foo:'bar',moo:true}, 'String#toObject | with true');
-  same('foo=bar&moo=false'.toObject(), {foo:'bar',moo:false}, 'String#toObject | with false');
+  equal('foo=bar&moo=car'.toObject(), {foo:'bar',moo:'car'}, 'String#toObject | basic');
+  equal('foo=bar&moo=3'.toObject(), {foo:'bar',moo:3}, 'String#toObject | with numbers');
+  equal('foo=bar&moo=true'.toObject(), {foo:'bar',moo:true}, 'String#toObject | with true');
+  equal('foo=bar&moo=false'.toObject(), {foo:'bar',moo:false}, 'String#toObject | with false');
 
 
 
@@ -965,11 +963,11 @@ test('String', function () {
   strictlyEqual(''.to(0), '', 'String#to | blank');
   strictlyEqual('wasabi'.to(3), 'was', 'String#to | to pos 3');
   strictlyEqual(''.dasherize(), '', 'String#dasherize | blank');
-  strictlyEqualsWithException('noFingWay'.dasherize(), 'no-fing-way', { prototype: false }, 'String#dasherize | noFingWay');
+  strictlyEqual('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize | noFingWay', { prototype: false });
   strictlyEqual(''.underscore(), '', 'String#underscore | blank');
   strictlyEqual('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
   strictlyEqual(''.camelize(), '', 'String#camelize | blank');
-  strictlyEqualsWithException('no-fing-way'.camelize(), 'NoFingWay', { prototype: false }, 'String#camelize | no-fing-way');
+  strictlyEqual('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize | no-fing-way', { prototype: false });
   strictlyEqual(''.stripTags(), '', 'String#stripTags | blank');
   strictlyEqual('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags | chilled <b>monkey</b> brains');
   strictlyEqual(''.removeTags(), '', 'String#removeTags | blank');
@@ -979,88 +977,88 @@ test('String', function () {
   // Thanks to Steven Levitah (http://stevenlevithan.com/demo/split.cfm) for inspiration and information here.
 
 
-  same('a,b,c,d,e'.split(',') , ['a','b','c','d','e'] , 'Array#split | splits on standard commas');
-  same('a|b|c|d|e'.split(',') , ['a|b|c|d|e'] , "Array#split | doesn't split on standard commas");
-  same('a|b|c|d|e'.split('|') , ['a','b','c','d','e'] , 'Array#split | splits on pipes');
-  same('a,b,c,d,e'.split(/,/) , ['a','b','c','d','e'] , 'Array#split | splits on standard regexp commas');
-  same('a|b|c|d|e'.split(/\|/) , ['a','b','c','d','e'] , 'Array#split | splits on standard regexp pipes');
-  same('a|b|c|d|e'.split(/[,|]/) , ['a','b','c','d','e'] , 'Array#split | splits on classes');
-  same('a|b|c|d|e'.split(/[a-z]/) , ['','|','|','|','|',''] , 'Array#split | splits on classes with ranges');
-  same('a|b|c|d|e'.split(/\|*/) , ['a','b','c','d','e'] , 'Array#split | splits on star');
-  same('a|b|c|d|e'.split(/\|?/) , ['a','b','c','d','e'] , 'Array#split | splits on optionals');
+  equal('a,b,c,d,e'.split(',') , ['a','b','c','d','e'] , 'Array#split | splits on standard commas');
+  equal('a|b|c|d|e'.split(',') , ['a|b|c|d|e'] , "Array#split | doesn't split on standard commas");
+  equal('a|b|c|d|e'.split('|') , ['a','b','c','d','e'] , 'Array#split | splits on pipes');
+  equal('a,b,c,d,e'.split(/,/) , ['a','b','c','d','e'] , 'Array#split | splits on standard regexp commas');
+  equal('a|b|c|d|e'.split(/\|/) , ['a','b','c','d','e'] , 'Array#split | splits on standard regexp pipes');
+  equal('a|b|c|d|e'.split(/[,|]/) , ['a','b','c','d','e'] , 'Array#split | splits on classes');
+  equal('a|b|c|d|e'.split(/[a-z]/) , ['','|','|','|','|',''] , 'Array#split | splits on classes with ranges');
+  equal('a|b|c|d|e'.split(/\|*/) , ['a','b','c','d','e'] , 'Array#split | splits on star');
+  equal('a|b|c|d|e'.split(/\|?/) , ['a','b','c','d','e'] , 'Array#split | splits on optionals');
 
-  same('a,b,c,d,e'.split(',', 2) , ['a','b'] , 'Array#split | handles limits');
+  equal('a,b,c,d,e'.split(',', 2) , ['a','b'] , 'Array#split | handles limits');
 
-  same('a|||b|c|d|e'.split('|') , ['a', '', '', 'b','c','d','e'] , 'Array#split | splits back-to-back separators on a string');
-  same('a|||b|c|d|e'.split(/\|/) , ['a', '', '', 'b','c','d','e'] , 'Array#split | splits back-to-back separators on a regexp');
+  equal('a|||b|c|d|e'.split('|') , ['a', '', '', 'b','c','d','e'] , 'Array#split | splits back-to-back separators on a string');
+  equal('a|||b|c|d|e'.split(/\|/) , ['a', '', '', 'b','c','d','e'] , 'Array#split | splits back-to-back separators on a regexp');
 
-  same('paragraph one\n\nparagraph two\n\n\n'.split(/\n/) , ['paragraph one', '', 'paragraph two','','',''] , 'Array#split | splits on new lines');
-  same(''.split() , [''] , 'Array#split | has a single null string for null separators on null strings');
-  same(''.split(/./) , [''] , 'Array#split | has a single null string for separators on null strings');
+  equal('paragraph one\n\nparagraph two\n\n\n'.split(/\n/) , ['paragraph one', '', 'paragraph two','','',''] , 'Array#split | splits on new lines');
+  equal(''.split() , [''] , 'Array#split | has a single null string for null separators on null strings');
+  equal(''.split(/./) , [''] , 'Array#split | has a single null string for separators on null strings');
 
-  same(''.split(/.?/) , [] , 'Array#split | has a single null string for optionals on null strings');
-  same(''.split(/.??/) , [] , 'Array#split | has a single null string for double optionals on null strings');
+  equal(''.split(/.?/) , [] , 'Array#split | has a single null string for optionals on null strings');
+  equal(''.split(/.??/) , [] , 'Array#split | has a single null string for double optionals on null strings');
 
-  same('a'.split(/./) , ['',''] , 'Array#split | has two entries when splitting on the only character in the string');
-  same('a'.split(/-/) , ['a'] , 'Array#split | has one entry when only one character and no match');
-  same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split | properly splits hyphens');
-  same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split | properly splits optional hyphens');
-
-
-  same('a:b:c'.split(/(:)/) , ['a',':','b',':','c'] , 'Array#split | respects capturing groups');
+  equal('a'.split(/./) , ['',''] , 'Array#split | has two entries when splitting on the only character in the string');
+  equal('a'.split(/-/) , ['a'] , 'Array#split | has one entry when only one character and no match');
+  equal('a-b'.split(/-/) , ['a', 'b'] , 'Array#split | properly splits hyphens');
+  equal('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split | properly splits optional hyphens');
 
 
-  same('ab'.split(/a*/) , ['', 'b'] , 'Array#split | complex regex splitting | /a*/');
-  same('ab'.split(/a*?/) , ['a', 'b'] , 'Array#split | complex regex splitting | /a*?/');
-  same('ab'.split(/(?:ab)/) , ['', ''] , 'Array#split | complex regex splitting | /(?:ab)/');
-  same('ab'.split(/(?:ab)*/) , ['', ''] , 'Array#split | complex regex splitting | /(?:ab)*/');
-  same('ab'.split(/(?:ab)*?/) , ['a', 'b'] , 'Array#split | complex regex splitting | /(?:ab)*?/');
-  same('test'.split('') , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | empty string');
-  same('test'.split() , ['test'] , 'Array#split | complex regex splitting | no argument');
-  same('111'.split(1) , ['', '', '', ''] , 'Array#split | complex regex splitting | 1');
-  same('test'.split(/(?:)/, 2) , ['t', 'e'] , 'Array#split | complex regex splitting | index is 2');
-  same('test'.split(/(?:)/, -1) , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | index is -1');
-  same('test'.split(/(?:)/, undefined) , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | index is undefined');
-  same('test'.split(/(?:)/, null) , [] , 'Array#split | complex regex splitting | index is undefined');
-  same('test'.split(/(?:)/, NaN) , [] , 'Array#split | complex regex splitting | index is NaN');
-  same('test'.split(/(?:)/, true) , ['t'] , 'Array#split | complex regex splitting | index is true');
-  same('test'.split(/(?:)/, '2') , ['t', 'e'] , 'Array#split | complex regex splitting | index is "2"');
-  same('test'.split(/(?:)/, 'two') , [] , 'Array#split | complex regex splitting | index is two');
-  same('a'.split(/-/) , ['a'] , 'Array#split | complex regex splitting | a | /-/');
-  same('a'.split(/-?/) , ['a'] , 'Array#split | complex regex splitting | a | /-?/');
-  same('a'.split(/-??/) , ['a'] , 'Array#split | complex regex splitting | a | /-??/');
-  same('a'.split(/a/) , ['', ''] , 'Array#split | complex regex splitting | a | /a/');
-  same('a'.split(/a?/) , ['', ''] , 'Array#split | complex regex splitting | a | /a?/');
-  same('a'.split(/a??/) , ['a'] , 'Array#split | complex regex splitting | a | /a??/');
-  same('ab'.split(/-/) , ['ab'] , 'Array#split | complex regex splitting | ab | /-/');
-  same('ab'.split(/-?/) , ['a', 'b'] , 'Array#split | complex regex splitting | ab | /-?/');
-  same('ab'.split(/-??/) , ['a', 'b'] , 'Array#split | complex regex splitting | ab | /-??/');
-  same('a-b'.split(/-/) , ['a', 'b'] , 'Array#split | complex regex splitting | a-b | /-/');
-  same('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split | complex regex splitting | a-b | /-?/');
-  same('a-b'.split(/-??/) , ['a', '-', 'b'] , 'Array#split | complex regex splitting | a-b | /-??/');
-  same('a--b'.split(/-/) , ['a', '', 'b'] , 'Array#split | complex regex splitting | a--b | /-/');
-  same('a--b'.split(/-?/) , ['a', '', 'b'] , 'Array#split | complex regex splitting | a--b | /-?/');
-  same('a--b'.split(/-??/) , ['a', '-', '-', 'b'] , 'Array#split | complex regex splitting | a--b | /-??/');
-  same(''.split(/()()/) , [] , 'Array#split | complex regex splitting | empty string | /()()/');
-  same('.'.split(/()()/) , ['.'] , 'Array#split | complex regex splitting | . | /()()/');
-  same('.'.split(/(.?)(.?)/) , ['', '.', '', ''] , 'Array#split | complex regex splitting | . | /(.?)(.?)/');
-  same('.'.split(/(.??)(.??)/) , ['.'] , 'Array#split | complex regex splitting | . | /(.??)(.??)/');
-  same('.'.split(/(.)?(.)?/) , ['', '.', undefined, ''] , 'Array#split | complex regex splitting | . | /(.)?(.)?/');
-  same('tesst'.split(/(s)*/) , ['t', undefined, 'e', 's', 't'] , 'Array#split | complex regex splitting | tesst | /(s)*/');
-  same('tesst'.split(/(s)*?/) , ['t', undefined, 'e', undefined, 's', undefined, 's', undefined, 't'] , 'Array#split | complex regex splitting | tesst | /(s)*?/');
-  same('tesst'.split(/(s*)/) , ['t', '', 'e', 'ss', 't'] , 'Array#split | complex regex splitting | tesst | /(s*)/');
-  same('tesst'.split(/(s*?)/) , ['t', '', 'e', '', 's', '', 's', '', 't'] , 'Array#split | complex regex splitting | tesst | /(s*?)/');
-  same('tesst'.split(/(?:s)*/) , ['t', 'e', 't'] , 'Array#split | complex regex splitting | tesst | /(?:s)*/');
-  same('tesst'.split(/(?=s+)/) , ['te', 's', 'st'] , 'Array#split | complex regex splitting | tesst | /(?=s+)/');
-  same('test'.split('t') , ['', 'es', ''] , 'Array#split | complex regex splitting | test | t');
-  same('test'.split('es') , ['t', 't'] , 'Array#split | complex regex splitting | test | es');
-  same('test'.split(/t/) , ['', 'es', ''] , 'Array#split | complex regex splitting | test | /t/');
-  same('test'.split(/es/) , ['t', 't'] , 'Array#split | complex regex splitting | test | /es/');
-  same('test'.split(/(t)/) , ['', 't', 'es', 't', ''] , 'Array#split | complex regex splitting | test | /(t)/');
-  same('test'.split(/(es)/) , ['t', 'es', 't'] , 'Array#split | complex regex splitting | test | /(es)/');
-  same('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split | complex regex splitting | test | /(t)(e)(s)(t)/');
-  same('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split | complex regex splitting | . | /(((.((.??)))))/');
-  same('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split | complex regex splitting | . | /(((((.??)))))/');
+  equal('a:b:c'.split(/(:)/) , ['a',':','b',':','c'] , 'Array#split | respects capturing groups');
+
+
+  equal('ab'.split(/a*/) , ['', 'b'] , 'Array#split | complex regex splitting | /a*/');
+  equal('ab'.split(/a*?/) , ['a', 'b'] , 'Array#split | complex regex splitting | /a*?/');
+  equal('ab'.split(/(?:ab)/) , ['', ''] , 'Array#split | complex regex splitting | /(?:ab)/');
+  equal('ab'.split(/(?:ab)*/) , ['', ''] , 'Array#split | complex regex splitting | /(?:ab)*/');
+  equal('ab'.split(/(?:ab)*?/) , ['a', 'b'] , 'Array#split | complex regex splitting | /(?:ab)*?/');
+  equal('test'.split('') , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | empty string');
+  equal('test'.split() , ['test'] , 'Array#split | complex regex splitting | no argument');
+  equal('111'.split(1) , ['', '', '', ''] , 'Array#split | complex regex splitting | 1');
+  equal('test'.split(/(?:)/, 2) , ['t', 'e'] , 'Array#split | complex regex splitting | index is 2');
+  equal('test'.split(/(?:)/, -1) , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | index is -1');
+  equal('test'.split(/(?:)/, undefined) , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | index is undefined');
+  equal('test'.split(/(?:)/, null) , [] , 'Array#split | complex regex splitting | index is undefined');
+  equal('test'.split(/(?:)/, NaN) , [] , 'Array#split | complex regex splitting | index is NaN');
+  equal('test'.split(/(?:)/, true) , ['t'] , 'Array#split | complex regex splitting | index is true');
+  equal('test'.split(/(?:)/, '2') , ['t', 'e'] , 'Array#split | complex regex splitting | index is "2"');
+  equal('test'.split(/(?:)/, 'two') , [] , 'Array#split | complex regex splitting | index is two');
+  equal('a'.split(/-/) , ['a'] , 'Array#split | complex regex splitting | a | /-/');
+  equal('a'.split(/-?/) , ['a'] , 'Array#split | complex regex splitting | a | /-?/');
+  equal('a'.split(/-??/) , ['a'] , 'Array#split | complex regex splitting | a | /-??/');
+  equal('a'.split(/a/) , ['', ''] , 'Array#split | complex regex splitting | a | /a/');
+  equal('a'.split(/a?/) , ['', ''] , 'Array#split | complex regex splitting | a | /a?/');
+  equal('a'.split(/a??/) , ['a'] , 'Array#split | complex regex splitting | a | /a??/');
+  equal('ab'.split(/-/) , ['ab'] , 'Array#split | complex regex splitting | ab | /-/');
+  equal('ab'.split(/-?/) , ['a', 'b'] , 'Array#split | complex regex splitting | ab | /-?/');
+  equal('ab'.split(/-??/) , ['a', 'b'] , 'Array#split | complex regex splitting | ab | /-??/');
+  equal('a-b'.split(/-/) , ['a', 'b'] , 'Array#split | complex regex splitting | a-b | /-/');
+  equal('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split | complex regex splitting | a-b | /-?/');
+  equal('a-b'.split(/-??/) , ['a', '-', 'b'] , 'Array#split | complex regex splitting | a-b | /-??/');
+  equal('a--b'.split(/-/) , ['a', '', 'b'] , 'Array#split | complex regex splitting | a--b | /-/');
+  equal('a--b'.split(/-?/) , ['a', '', 'b'] , 'Array#split | complex regex splitting | a--b | /-?/');
+  equal('a--b'.split(/-??/) , ['a', '-', '-', 'b'] , 'Array#split | complex regex splitting | a--b | /-??/');
+  equal(''.split(/()()/) , [] , 'Array#split | complex regex splitting | empty string | /()()/');
+  equal('.'.split(/()()/) , ['.'] , 'Array#split | complex regex splitting | . | /()()/');
+  equal('.'.split(/(.?)(.?)/) , ['', '.', '', ''] , 'Array#split | complex regex splitting | . | /(.?)(.?)/');
+  equal('.'.split(/(.??)(.??)/) , ['.'] , 'Array#split | complex regex splitting | . | /(.??)(.??)/');
+  equal('.'.split(/(.)?(.)?/) , ['', '.', undefined, ''] , 'Array#split | complex regex splitting | . | /(.)?(.)?/');
+  equal('tesst'.split(/(s)*/) , ['t', undefined, 'e', 's', 't'] , 'Array#split | complex regex splitting | tesst | /(s)*/');
+  equal('tesst'.split(/(s)*?/) , ['t', undefined, 'e', undefined, 's', undefined, 's', undefined, 't'] , 'Array#split | complex regex splitting | tesst | /(s)*?/');
+  equal('tesst'.split(/(s*)/) , ['t', '', 'e', 'ss', 't'] , 'Array#split | complex regex splitting | tesst | /(s*)/');
+  equal('tesst'.split(/(s*?)/) , ['t', '', 'e', '', 's', '', 's', '', 't'] , 'Array#split | complex regex splitting | tesst | /(s*?)/');
+  equal('tesst'.split(/(?:s)*/) , ['t', 'e', 't'] , 'Array#split | complex regex splitting | tesst | /(?:s)*/');
+  equal('tesst'.split(/(?=s+)/) , ['te', 's', 'st'] , 'Array#split | complex regex splitting | tesst | /(?=s+)/');
+  equal('test'.split('t') , ['', 'es', ''] , 'Array#split | complex regex splitting | test | t');
+  equal('test'.split('es') , ['t', 't'] , 'Array#split | complex regex splitting | test | es');
+  equal('test'.split(/t/) , ['', 'es', ''] , 'Array#split | complex regex splitting | test | /t/');
+  equal('test'.split(/es/) , ['t', 't'] , 'Array#split | complex regex splitting | test | /es/');
+  equal('test'.split(/(t)/) , ['', 't', 'es', 't', ''] , 'Array#split | complex regex splitting | test | /(t)/');
+  equal('test'.split(/(es)/) , ['t', 'es', 't'] , 'Array#split | complex regex splitting | test | /(es)/');
+  equal('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split | complex regex splitting | test | /(t)(e)(s)(t)/');
+  equal('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split | complex regex splitting | . | /(((.((.??)))))/');
+  equal('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split | complex regex splitting | . | /(((((.??)))))/');
 
 
   /*
@@ -1074,15 +1072,13 @@ test('String', function () {
    * patch the method, as it's simply too far-reaching with too few benefits, and too few unit tests
    * to justify it. Will reconsider if the demand arises.
    *
-  var match = 'on'.match(/on(e)?/);
-  equals(match[1], undefined, 'String#match | capturing group should be undefined');
+   var match = 'on'.match(/on(e)?/);
+   equal(match[1], undefined, 'String#match | capturing group should be undefined');
 
-  var match = 'on'.match(/\b/g);
-  equals(match[0], '', 'String#match | first match should be empty string');
-  equals(match[1], '', 'String#match | second match should be empty string');
-  */
+   var match = 'on'.match(/\b/g);
+   equal(match[0], '', 'String#match | first match should be empty string');
+   equal(match[1], '', 'String#match | second match should be empty string');
+   */
 
 
 });
-
-
