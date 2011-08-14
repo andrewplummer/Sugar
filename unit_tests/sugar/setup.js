@@ -68,6 +68,7 @@ var testsFinished = function() {
   if(environment == 'node') {
     displayResults();
   }
+  results = [];
 }
 
 var displayResults = function() {
@@ -100,17 +101,26 @@ test = function(name, fn) {
   results.push(currentTest);
 }
 
+
+var capturedTimers = [];
+
 setTimeout = function(fn, delay) {
   runningAsyncTests++;
-  return nativeSetTimeout(function() {
+  var timer = nativeSetTimeout(function() {
     fn.apply(this, arguments);
     runningAsyncTests--;
     checkCanFinish();
   }, delay);
+  capturedTimers.push(timer);
+  return timer;
 }
 
-clearTimeout = function() {
-  runningAsyncTests--;
+clearTimeout = function(timer) {
+  var index = capturedTimers.indexOf(timer);
+  if(index != -1) {
+    capturedTimers.splice(index, 1);
+    runningAsyncTests--;
+  }
   return nativeClearTimeout.apply(this, arguments);
 }
 
@@ -137,6 +147,9 @@ equal = function(actual, expected, message, exceptions, stack) {
 
 strictlyEqual = function(actual, expected, message, exceptions) {
   equal(actual === expected, true, message + ' | strict equality', exceptions, 1);
+}
+
+equalWithWarning = function() {
 }
 
 equalWithMargin = function(actual, expected, margin, message) {

@@ -4,6 +4,7 @@
     <title>Unit Tests</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="stylesheets/custom.css" type="text/css" />
+    <link rel="stylesheet" href="stylesheets/tooltip.css" type="text/css" />
   </head>
   <body>
     <div id="tests" class="centered">
@@ -16,64 +17,59 @@
           <a class="run" href="#run">Run Test</a>
         </p>
       </div>
-
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
       <script type="text/javascript" src="mootools/mootools-core-1.3.2-full-compat.js"></script>
       <!-- sugar -->
       <script type="text/javascript" src="../lib/sugar.js"></script>
-
       <script type="text/javascript" src="suite.js"></script>
-      <script type="text/javascript" src="tooltip.js"></script>
+      <script type="text/javascript" src="javascripts/tooltip.js"></script>
       <script type="text/javascript">
 
-        $(window).load(function(){
+        (function($){
 
-          $(document).bind('tests_finished', function(event, environment){
-            $('#'+environment).removeClass('running');
-            $('[title]').tooltip();
-          });
+          $(window).load(function(){
 
-          $('.environment').each(function(){
-            var id = this.id;
-            var env = $(this);
-            var tests = $('.tests', this);
-            var stats = $('.stats', this);
-            $('a', this).click(function(){
-              $(this).remove();
-              env.addClass('running').removeClass('finished');
-              tests.empty();
-              stats.empty();
-              setTimeout(function(){
-                $('#'+id+'_frame').get(0).contentWindow.startTests();
-              }, 100);
-              return false;
+            $(document).bind('tests_finished', function(event, environment){
+              $('#'+environment).removeClass('running');
+              $('[title]').tooltip();
             });
+
+            $('.environment').each(function(){
+              var id = this.id;
+              var env = $(this);
+              var tests = $('.tests', this);
+              var stats = $('.stats', this);
+              $('a', this).click(function(){
+                $(this).remove();
+                env.addClass('running').removeClass('finished');
+                tests.empty();
+                stats.empty();
+                setTimeout(function(){
+                  $('#'+id+'_frame').get(0).contentWindow.startTests();
+                }, 100);
+                return false;
+              });
+            });
+
+            var runButtons = $('a.run');
+            var runIndex = 0;
+
+            $(document).bind('tests_finished', function(){
+              runIndex++;
+              var el = runButtons.eq(runIndex);
+              if(el.length > 0){
+                el.click();
+              }
+            });
+
+            runButtons.eq(0).click();
           });
 
-          var runButtons = $('a.run');
-          var runIndex = 0;
-
-          $(document).bind('tests_finished', function(){
-            runIndex++;
-            var el = runButtons.eq(runIndex);
-            if(el.length > 0){
-              el.click();
-            }
-          });
-
-          runButtons.eq(0).click();
-
-
-        });
+        })(jQuery);
 
 
       </script>
-
       <iframe id="mootools_frame" src="mootools/test.html"></iframe>
-    </div>
-    <div id="tooltip">
-      <div class="arrow"></div>
-      <div class="content"></div>
     </div>
   </body>
 </html>

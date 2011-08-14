@@ -12,6 +12,11 @@ startTests = function() {
   nextModule();
 }
 
+testsFinishedCallback = function(r) {
+  allResults.push({ module: current.name, results: r });
+  nextModule();
+}
+
 var nextModule = function() {
   current = modules.shift();
   if(current) {
@@ -25,11 +30,6 @@ var modulesFinished = function() {
   if(window.parent && window != window.parent && window.parent.modulesFinishedCallback) {
     window.parent.modulesFinishedCallback(environment, allResults);
   }
-}
-
-testsFinishedCallback = function(r) {
-  allResults.push({ module: current.name, results: r });
-  nextModule();
 }
 
 var loadScripts = function(scripts) {

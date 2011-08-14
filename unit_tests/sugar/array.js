@@ -26,8 +26,7 @@ test('Array', function () {
     count++;
   }
 
-
-  //equalsWithWarning(count, 3, 'for..in loops will break on arrays.');
+  equalWithWarning(count, 3, 'for..in loops will break on arrays.');
 
 
   equal(['a','b','c'].indexOf('b'), 1, 'Array#indexOf | b in a,b,c');
