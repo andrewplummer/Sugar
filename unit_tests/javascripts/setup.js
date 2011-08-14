@@ -1,18 +1,16 @@
 
-
-
 var results;
 var currentTest;
 
 var syncTestsRunning = true;
 var runningAsyncTests = 0;
+var capturedTimers = [];
 
 var nativeSetTimeout = setTimeout;
 var nativeClearTimeout = clearTimeout;
 
 // The scope when none is set.
 nullScope = (function(){ return this; }).call();
-
 
 
 var deepEqual = function(one, two) {
@@ -31,9 +29,9 @@ var deepEqual = function(one, two) {
   return onep === twop;
 }
 
-var addFailure = function(actual, expected, message, stack) {
+var addFailure = function(actual, expected, message, stack, warning) {
   var meta = getMeta(stack);
-  currentTest.failures.push({ actual: actual, expected: expected, message: message, file: meta.file, line: meta.line });
+  currentTest.failures.push({ actual: actual, expected: expected, message: message, file: meta.file, line: meta.line, warning: !!warning });
 }
 
 var getMeta = function(stack) {
@@ -101,9 +99,6 @@ test = function(name, fn) {
   results.push(currentTest);
 }
 
-
-var capturedTimers = [];
-
 setTimeout = function(fn, delay) {
   runningAsyncTests++;
   var timer = nativeSetTimeout(function() {
@@ -149,7 +144,10 @@ strictlyEqual = function(actual, expected, message, exceptions) {
   equal(actual === expected, true, message + ' | strict equality', exceptions, 1);
 }
 
-equalWithWarning = function() {
+equalWithWarning = function(expected, actual, message) {
+  if(expected != actual) {
+    addFailure(actual, expected, message, null, true);
+  }
 }
 
 equalWithMargin = function(actual, expected, margin, message) {
@@ -172,10 +170,8 @@ skipEnvironments = function(environments, test) {
   }
 }
 
-
 syncTestsFinished = function() {
   syncTestsRunning = false;
   checkCanFinish();
 }
-
 
