@@ -1,7 +1,7 @@
 {
   'name': 'sugar',
   'version': '',
-  'description': 'A javascript library for working with native objects',
+  'description': 'A javascript library for working with native objects.',
   'keywords': '',
   'homepage': 'http://sugarjs.com',
   'author': 'Andrew Plummer',
@@ -9,6 +9,5 @@
   'main': './lib/sugar',
   "directories" : {"lib" : "./lib"},
   "repository" : {"type" : "git", "url": "https://github.com/andrewplummer/Sugar.git"},
-  "dependencies" : {"qunit": ">= 0.1.5"},
   "engines" : {"node" : ">= 0.4.0"}
 }
