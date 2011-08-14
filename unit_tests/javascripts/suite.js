@@ -43,7 +43,7 @@
     stats.append($('<span class="failures">' + totalFailed + ' ' + (totalFailed == 1 ? 'failure' : 'failures') + '</span>'));
     stats.append($('<span class="tests">' + totalTests + ' ' + (totalTests == 1 ? 'test' : 'tests') + '</span>'));
     stats.append($('<span class="assertions">' + totalAssertions + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>'));
-    //stats.append($('<span class="runtime">Completed in ' + runtime / 1000 + ' seconds</span>'));
+    stats.append($('<span class="runtime">Completed in ' + results[0].time / 1000 + ' seconds</span>'));
     env.addClass('finished');
     if(totalFailed != 0){
       env.addClass('fail');

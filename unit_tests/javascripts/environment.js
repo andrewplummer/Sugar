@@ -12,8 +12,8 @@ startTests = function() {
   nextModule();
 }
 
-testsFinishedCallback = function(r) {
-  allResults.push({ module: current.name, results: r });
+testsFinishedCallback = function(r, time) {
+  allResults.push({ module: current.name, results: r, time: time });
   nextModule();
 }
 
