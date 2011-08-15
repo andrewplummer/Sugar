@@ -1,10 +1,6 @@
 
 test('Array', function () {
 
-  if(environment == 'prototype'){
-    fixPrototypeIterators();
-  }
-
   var arr, expected, expectedIndexes, count;
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
@@ -1325,9 +1321,6 @@ test('Array', function () {
 
 
 
-
-
-
   arr = [1,2,3,4,5,6,7,8,9,10];
   var firsts = [];
   firsts.push(arr.randomize().first());
@@ -1344,6 +1337,50 @@ test('Array', function () {
   /* Note that there is a built-in 0.00000001% chance that this test will fail */
   equal(firsts.all(function(a) { return a == 1; }), false, 'Array#randomize');
 
+
+
+
+  // Inherits from array...
+
+  var Soup = function(){}, x;
+  Soup.prototype = [1,2,3];
+
+  x = new Soup();
+  count = 0;
+
+  x.each(function() {
+    count++;
+  });
+  x.find(function() {
+    count++;
+  });
+  x.findAll(function() {
+    count++;
+  });
+
+  equal(count, 9, 'Array | array elements in the prototype chain are also properly iterated');
+
+
+  // Inherits from sparse array...
+
+  arr = ['a'];
+  arr[20] = 'b';
+
+  Soup.prototype = arr;
+
+  x = new Soup();
+  count = 0;
+
+  x.each(function() {
+    count++;
+  });
+
+  equal(count, 2, 'Array | sparse array elements in the prototype chain are also properly iterated');
+
+  //Array.prototype.each.
+  // This test cannot be framed in a meaninful way... IE will not set the length property
+  // when pushing new elements and other browsers will not work on sparse arrays...
+  // equal(count, 6, 'Array | objects that inherit from arrays can still iterate');
 
 });
 
