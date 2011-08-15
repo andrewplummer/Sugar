@@ -171,7 +171,7 @@ raisesError = function(fn, message, exceptions) {
 }
 
 skipEnvironments = function(environments, test) {
-  if(!environments.indexOf(environment) !== -1) {
+  if(environments.indexOf(environment) === -1) {
     test.call();
   }
 }
