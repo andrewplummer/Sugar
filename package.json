@@ -3,7 +3,7 @@
   "version": "0.9.4",
   "description": "A Javascript library for working with native objects.",
   "keywords": ["functional", "utility"],
-  "homepage": "http://sugarjs.com",
+  "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
   "main": "./lib/sugar",
   "directories" : {"lib" : "./lib"},
