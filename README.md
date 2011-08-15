@@ -31,7 +31,7 @@ have to keep the following dependencies in addition to this module. The Array Mo
 skipped if you don't care about < IE8 or if you are using another library that provides them.
 
 
- ### Global private methods (at the top of the file)
+### Global private methods (at the top of the file)
 
  - extend
  - extendWithNativeCondition
@@ -39,23 +39,23 @@ skipped if you don't care about < IE8 or if you are using another library that p
  - defineProperty
  - iterateOverObject
 
- ### Object private methods
+### Object private methods
 
  - instance
  - typeMethods
  - buildTypeMethods
 
- ### Number instance methods
+### Number instance methods
 
  - ordinalize
  - pad
 
- ### String private methods
+### String private methods
 
  - padstring
  - NPCGMatch
 
- ### String instance methods
+### String instance methods
 
  - capitalize
  - first
@@ -63,7 +63,7 @@ skipped if you don't care about < IE8 or if you are using another library that p
  - repeat
  - to
 
- ### Array instance methods (polyfill)
+### Array instance methods (polyfill)
 
  - indexOf
  - filter
