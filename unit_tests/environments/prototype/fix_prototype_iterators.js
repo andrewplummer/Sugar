@@ -1,6 +1,5 @@
 
 fixPrototypeIterators = function() {
-  if(environment != 'prototype') return;
   fixIterator('find');
   fixIterator('findAll');
   fixIterator('any');
@@ -27,3 +26,4 @@ fixIterator = function(name, map) {
   };
 }
 
+fixPrototypeIterators();
