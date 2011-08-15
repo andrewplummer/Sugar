@@ -947,6 +947,8 @@ test('Array', function () {
   same(['wherever','you','go','whatever','you','do'].split(/^[gd]o/), [['wherever','you'],['whatever','you']], 'Array#split | split on regex | split on strings with length of 2');
 
 
+  var f1 = function(){};
+  var f2 = function(){};
 
   same([1,2,3].compact(), [1,2,3], 'Array#compact | 1,2,3');
   same([1,2,null,3].compact(), [1,2,3], 'Array#compact | 1,2,null,3');
@@ -958,6 +960,8 @@ test('Array', function () {
   same([false,false,false].compact(), [false,false,false], 'Array#compact | false is left alone');
   same([0,1,2].compact(), [0,1,2], 'Array#compact | 0,1,2');
   same([].compact(), [], 'Array#compact | empty array');
+  same(['a','b','c'].compact(), ['a','b','c'], 'Array#compact | a,b,c');
+  same([f1, f2].compact(), [f1, f2], 'Array#compact | functions');
   sameWithException([null,[null],[false,[null,undefined,3]]].compact(), [[],[false,[3]]], { prototype: [[null],[false,[null,undefined,3]]] }, 'Array#compact | deep compacts as well');
   sameWithException([null,null,null,[null],null].compact(), [[]], { prototype: [[null]] }, "Array#compact | deep compact doesn't have index conflicts");
 
