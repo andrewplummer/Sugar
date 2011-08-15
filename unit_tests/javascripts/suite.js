@@ -16,6 +16,10 @@
         if(r.failures.length > 0) {
           r.failures.forEach(function(f) {
             title += getFailureHTML(f);
+            if(f.warning) {
+              totalFailed--;
+            }
+
           });
           var warning = r.failures.every(function(f){ return f.warning; });
           if(warning) {
@@ -52,11 +56,34 @@
   }
 
   var getFailureHTML = function(f) {
+    var expected, actual;
     if(f.warning) {
       return '<p class="warning">Warning: ' + f.message + '</p>';
     } else {
-      return '<p class="fail">' + f.message + ', expected: ' + f.expected + ' actual: ' + f.actual + '</p>';
+      expected = getStringified(f.expected);
+      actual = getStringified(f.actual);
+      return '<p class="fail">' + f.message + ', expected: ' + expected + ' actual: ' + actual + '</p>';
     }
+  };
+
+  var getStringified = function(p) {
+    if(typeof JSON !== 'undefined') return JSON.stringify(p);
+    if(typeof p !== 'object') return p.toString();
+    var isArray = p.join;
+    var str = isArray ? '[' : '{';
+    var arr;
+      arr = [];
+      for(var key in p){
+        if(!p.hasOwnProperty(key)) continue;
+        if(p[key] === undefined) {
+          arr.push('undefined');
+        } else {
+          arr.push(p[key]);
+        }
+      }
+    str += arr.join(',');
+    str += isArray ? ']' : '}';
+    return str;
   };
 
 })(jQuery);

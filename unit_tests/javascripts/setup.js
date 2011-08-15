@@ -1,4 +1,7 @@
 
+// The scope when none is set.
+nullScope = (function(){ return this; }).call();
+
 var results;
 var currentTest;
 
@@ -6,22 +9,53 @@ var syncTestsRunning = true;
 var runningAsyncTests = 0;
 var capturedTimers = [];
 
-var nativeSetTimeout = setTimeout;
-var nativeClearTimeout = clearTimeout;
+// This declaration has the effect of pulling setTimeout/clearTimeout off the window's prototype
+// object and setting it directly on the window itself. From here it can be globally reset while
+// retaining the reference to the native setTimeout method. More about this here:
+//
+// http://www.adequatelygood.com/2011/4/Replacing-setTimeout-Globally
+
+nullScope.setTimeout = nullScope.setTimeout;
+nullScope.clearTimeout = nullScope.clearTimeout;
+
+var nativeSetTimeout = nullScope.setTimeout;
+var nativeClearTimeout = nullScope.clearTimeout;
 
 var testStartTime;
 var runtime;
 
-// The scope when none is set.
-nullScope = (function(){ return this; }).call();
 
-
+// Arrays and objects must be treated separately here because in IE arrays with undefined
+// elements will not pass the .hasOwnProperty check. For example [undefined].hasOwnProperty('0')
+// will report false.
 var deepEqual = function(one, two) {
+  if(one.length && two.length) {
+    return arrayEqual(one, two);
+  } else {
+    return objectEqual(one, two);
+  }
+}
+
+var arrayEqual = function(one, two) {
+  var i;
+  for(i = 0; i < one.length; i++) {
+    if(typeof one[i] == 'object' && one[i] != null && !deepEqual(one[i], two[i])) {
+      return false;
+    } else if((typeof one != 'object' && typeof two != 'object') && one[i] !== two[i]) {
+      return false;
+    }
+  }
+  return one.length === two.length;
+}
+
+var objectEqual = function(one, two) {
   var onep = 0, twop = 0, key;
   for(key in one) {
     if(!one.hasOwnProperty(key)) continue;
     onep++;
-    if(typeof one[key] == 'object' && !deepEqual(one[key], two[key])) {
+    if(typeof one[key] == 'object' && one[key] != null && !deepEqual(one[key], two[key])) {
+      return false;
+    } else if((typeof one != 'object' && typeof two != 'object') && one[key] !== two[key]) {
       return false;
     }
   }
@@ -42,7 +76,11 @@ var getMeta = function(stack) {
   if(stack !== undefined) {
     level += stack;
   }
-  var s = new Error().stack.split('\n');
+  var e = new Error();
+  if(!e.stack) {
+    return {};
+  }
+  var s = e.stack.split('\n');
   var match = s[level].match(/\/(.+?):(\d+)(?:(\d+))?/);
   return { file: match[1], line: match[2] };
 }
@@ -122,7 +160,7 @@ clearTimeout = function(timer) {
     capturedTimers.splice(index, 1);
     runningAsyncTests--;
   }
-  return nativeClearTimeout.apply(this, arguments);
+  return nativeClearTimeout(timer);
 }
 
 nativeTimeoutReturnType = typeof setTimeout(function(){}, 0);
@@ -137,7 +175,7 @@ equal = function(actual, expected, message, exceptions, stack) {
     // Null scope should always be a strict equal check
   } else if(typeof expected == 'number' && typeof actual == 'number' && isNaN(expected) && isNaN(actual)) {
     // NaN == NaN: equal
-  } else if(typeof expected == 'object' && typeof actual == 'object' && deepEqual(expected, actual)) {
+  } else if(typeof expected == 'object' && typeof actual == 'object' && expected != null && actual != null && deepEqual(expected, actual)) {
     // Deeply equal
   } else if(expected == actual) {
     // Strictly equal
