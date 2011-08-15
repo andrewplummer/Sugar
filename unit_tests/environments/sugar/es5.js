@@ -611,7 +611,40 @@ test('ECMAScript', function () {
   equal(count, 2, 'Array#reduceRight | elements deleted after the loop begins should not be visited');
 
 
+  // Polyfills can be run on objects that inherit from Arrays
 
+  var Soup = function(){};
+  Soup.prototype = [1,2,3];
+
+  var x = new Soup();
+
+  count = 0;
+  x.every(function() {
+    count++;
+    return true;
+  });
+  x.some(function() {
+    count++;
+  });
+  x.map(function() {
+    count++;
+  });
+  x.filter(function() {
+    count++;
+  });
+  x.forEach(function() {
+    count++;
+  });
+  x.reduce(function() {
+    count++;
+  });
+  x.reduceRight(function() {
+    count++;
+  });
+
+  equal(count, 19, 'Array | array elements in the prototype chain are also properly iterated');
+  equal(x.indexOf(2), 1, 'Array | indexOf | array elements in the prototype chain are also properly iterated');
+  equal(x.lastIndexOf(2), 1, 'Array | lastIndexOf | array elements in the prototype chain are also properly iterated');
 
 
   // String#trim
