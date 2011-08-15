@@ -5,19 +5,19 @@
     var totalAssertions = 0;
     var totalFailed = 0;
     var env = $('#' + environment);
-    results.each(function(module) {
+    results.forEach(function(module) {
       var mod = $('<ul class="module" />');
-      module.results.each(function(r) {
+      module.results.forEach(function(r) {
         totalTests++;
         totalAssertions += r.assertions;
         totalFailed += r.failures.length;
         var li = $('<li class="test" />');
         var title = '<h5>' + r.name + '</h5>';
         if(r.failures.length > 0) {
-          r.failures.each(function(f) {
+          r.failures.forEach(function(f) {
             title += getFailureHTML(f);
           });
-          var warning = r.failures.all(function(f){ return f.warning; });
+          var warning = r.failures.every(function(f){ return f.warning; });
           if(warning) {
             li.addClass('warning');
             li.text('.');

@@ -8,6 +8,7 @@ test('Date', function () {
     Date.create = Date.make;
   };
 
+
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -762,265 +763,265 @@ test('Date', function () {
 
   // Catch for DST inequivalencies
   // FAILS IN DAMASCUS IN XP!
-equal(new Date(2010, 11, 9, 17).set({ year: 1998, month: 3, day: 3}, true).getHours(), 0, 'Date#set | handles DST properly');
+  equal(new Date(2010, 11, 9, 17).set({ year: 1998, month: 3, day: 3}, true).getHours(), 0, 'Date#set | handles DST properly');
 
 
 
 
-d = new Date('August 25, 2010 11:45:20');
-d.setWeek(1);
-dateEqual(d, new Date(2010,0,8,11,45,20), 'Date#setWeek | week 1');
-d.setWeek(15);
-dateEqual(d, new Date(2010,3,16,11,45,20), 'Date#setWeek | week 15');
-d.setWeek(27);
-dateEqual(d, new Date(2010,6,9,11,45,20), 'Date#setWeek | week 27');
-d.setWeek(52);
-dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week 52');
-d.setWeek();
-dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week stays set');
+  d = new Date('August 25, 2010 11:45:20');
+  d.setWeek(1);
+  dateEqual(d, new Date(2010,0,8,11,45,20), 'Date#setWeek | week 1');
+  d.setWeek(15);
+  dateEqual(d, new Date(2010,3,16,11,45,20), 'Date#setWeek | week 15');
+  d.setWeek(27);
+  dateEqual(d, new Date(2010,6,9,11,45,20), 'Date#setWeek | week 27');
+  d.setWeek(52);
+  dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week 52');
+  d.setWeek();
+  dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week stays set');
 
 
-// Date formatting. Much thanks to inspiration taken from Date.js here.
-// I quite like the formatting patterns in Date.js, however there are a few
-// notable limitations. One example is a format such as 4m23s which would have
-// to be formatted as mmss and wouldn't parse at all without special massaging.
-// Going to take a different tack here with a format that's more explicit and
-// easy to remember, if not quite as terse and elegant.
+  // Date formatting. Much thanks to inspiration taken from Date.js here.
+  // I quite like the formatting patterns in Date.js, however there are a few
+  // notable limitations. One example is a format such as 4m23s which would have
+  // to be formatted as mmss and wouldn't parse at all without special massaging.
+  // Going to take a different tack here with a format that's more explicit and
+  // easy to remember, if not quite as terse and elegant.
 
 
-d = new Date('August 5, 2010 13:45:02');
+  d = new Date('August 5, 2010 13:45:02');
 
 
-equal(d.format('{ms}'), '000', 'Date#format | custom formats | ms');
-equal(d.format('{millisec}'), '0', 'Date#format | custom formats | millisec');
-equal(d.format('{millisecond}'), '0', 'Date#format | custom formats | millisecond');
-equal(d.format('{milliseconds}'), '0', 'Date#format | custom formats | milliseconds');
-equal(d.format('{s}'), '2', 'Date#format | custom formats | s');
-equal(d.format('{ss}'), '02', 'Date#format | custom formats | ss');
-equal(d.format('{sec}'), '2', 'Date#format | custom formats | sec');
-equal(d.format('{second}'), '2', 'Date#format | custom formats | second');
-equal(d.format('{seconds}'), '2', 'Date#format | custom formats | seconds');
-equal(d.format('{m}'), '45', 'Date#format | custom formats | m');
-equal(d.format('{mm}'), '45', 'Date#format | custom formats | mm');
-equal(d.format('{min}'), '45', 'Date#format | custom formats | min');
-equal(d.format('{minute}'), '45', 'Date#format | custom formats | minute');
-equal(d.format('{minutes}'), '45', 'Date#format | custom formats | minutes');
-equal(d.format('{h}'), '13', 'Date#format | custom formats | h');
-equal(d.format('{hh}'), '13', 'Date#format | custom formats | hh');
-equal(d.format('{hour}'), '13', 'Date#format | custom formats | hour');
-equal(d.format('{hours}'), '13', 'Date#format | custom formats | hours');
-equal(d.format('{24hr}'), '13', 'Date#format | custom formats | 24hr');
-equal(d.format('{12hr}'), '1', 'Date#format | custom formats | 12hr');
-equal(d.format('{d}'), '5', 'Date#format | custom formats | d');
-equal(d.format('{dd}'), '05', 'Date#format | custom formats | dd');
-equal(d.format('{date}'), '5', 'Date#format | custom formats | date');
-equal(d.format('{day}'), '5', 'Date#format | custom formats | day');
-equal(d.format('{days}'), '5', 'Date#format | custom formats | days');
-equal(d.format('{dow}'), 'thu', 'Date#format | custom formats | dow');
-equal(d.format('{Dow}'), 'Thu', 'Date#format | custom formats | Dow');
-equal(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
-equal(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
-equal(d.format('{weekday}'), 'thursday', 'Date#format | custom formats | weekday');
-equal(d.format('{Weekday short}'), 'Thu', 'Date#format | custom formats | Weekday short');
-equal(d.format('{Weekday}'), 'Thursday', 'Date#format | custom formats | Weekday');
-equal(d.format('{M}'), '8', 'Date#format | custom formats | M');
-equal(d.format('{MM}'), '08', 'Date#format | custom formats | MM');
-equal(d.format('{Month short}'), 'Aug', 'Date#format | custom formats | Month short');
-equal(d.format('{month short}'), 'aug', 'Date#format | custom formats | month short');
-equal(d.format('{month}'), 'august', 'Date#format | custom formats | month');
-equal(d.format('{Month short}'), 'Aug', 'Date#format | custom formats | Month short');
-equal(d.format('{Mon}'), 'Aug', 'Date#format | custom formats | Mon');
-equal(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');
-equal(d.format('{yy}'), '10', 'Date#format | custom formats | yy');
-equal(d.format('{yyyy}'), '2010', 'Date#format | custom formats | yyyy');
-equal(d.format('{year}'), '2010', 'Date#format | custom formats | year');
-equal(d.format('{Year}'), '2010', 'Date#format | custom formats | Year');
-equal(d.format('{t}'), 'p', 'Date#format | custom formats | t');
-equal(d.format('{T}'), 'P', 'Date#format | custom formats | T');
-equal(d.format('{tt}'), 'pm', 'Date#format | custom formats | tt');
-equal(d.format('{TT}'), 'PM', 'Date#format | custom formats | TT');
-equal(d.format('{ord}'), '5th', 'Date#format | custom formats | ord');
+  equal(d.format('{ms}'), '000', 'Date#format | custom formats | ms');
+  equal(d.format('{millisec}'), '0', 'Date#format | custom formats | millisec');
+  equal(d.format('{millisecond}'), '0', 'Date#format | custom formats | millisecond');
+  equal(d.format('{milliseconds}'), '0', 'Date#format | custom formats | milliseconds');
+  equal(d.format('{s}'), '2', 'Date#format | custom formats | s');
+  equal(d.format('{ss}'), '02', 'Date#format | custom formats | ss');
+  equal(d.format('{sec}'), '2', 'Date#format | custom formats | sec');
+  equal(d.format('{second}'), '2', 'Date#format | custom formats | second');
+  equal(d.format('{seconds}'), '2', 'Date#format | custom formats | seconds');
+  equal(d.format('{m}'), '45', 'Date#format | custom formats | m');
+  equal(d.format('{mm}'), '45', 'Date#format | custom formats | mm');
+  equal(d.format('{min}'), '45', 'Date#format | custom formats | min');
+  equal(d.format('{minute}'), '45', 'Date#format | custom formats | minute');
+  equal(d.format('{minutes}'), '45', 'Date#format | custom formats | minutes');
+  equal(d.format('{h}'), '13', 'Date#format | custom formats | h');
+  equal(d.format('{hh}'), '13', 'Date#format | custom formats | hh');
+  equal(d.format('{hour}'), '13', 'Date#format | custom formats | hour');
+  equal(d.format('{hours}'), '13', 'Date#format | custom formats | hours');
+  equal(d.format('{24hr}'), '13', 'Date#format | custom formats | 24hr');
+  equal(d.format('{12hr}'), '1', 'Date#format | custom formats | 12hr');
+  equal(d.format('{d}'), '5', 'Date#format | custom formats | d');
+  equal(d.format('{dd}'), '05', 'Date#format | custom formats | dd');
+  equal(d.format('{date}'), '5', 'Date#format | custom formats | date');
+  equal(d.format('{day}'), '5', 'Date#format | custom formats | day');
+  equal(d.format('{days}'), '5', 'Date#format | custom formats | days');
+  equal(d.format('{dow}'), 'thu', 'Date#format | custom formats | dow');
+  equal(d.format('{Dow}'), 'Thu', 'Date#format | custom formats | Dow');
+  equal(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
+  equal(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
+  equal(d.format('{weekday}'), 'thursday', 'Date#format | custom formats | weekday');
+  equal(d.format('{Weekday short}'), 'Thu', 'Date#format | custom formats | Weekday short');
+  equal(d.format('{Weekday}'), 'Thursday', 'Date#format | custom formats | Weekday');
+  equal(d.format('{M}'), '8', 'Date#format | custom formats | M');
+  equal(d.format('{MM}'), '08', 'Date#format | custom formats | MM');
+  equal(d.format('{Month short}'), 'Aug', 'Date#format | custom formats | Month short');
+  equal(d.format('{month short}'), 'aug', 'Date#format | custom formats | month short');
+  equal(d.format('{month}'), 'august', 'Date#format | custom formats | month');
+  equal(d.format('{Month short}'), 'Aug', 'Date#format | custom formats | Month short');
+  equal(d.format('{Mon}'), 'Aug', 'Date#format | custom formats | Mon');
+  equal(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');
+  equal(d.format('{yy}'), '10', 'Date#format | custom formats | yy');
+  equal(d.format('{yyyy}'), '2010', 'Date#format | custom formats | yyyy');
+  equal(d.format('{year}'), '2010', 'Date#format | custom formats | year');
+  equal(d.format('{Year}'), '2010', 'Date#format | custom formats | Year');
+  equal(d.format('{t}'), 'p', 'Date#format | custom formats | t');
+  equal(d.format('{T}'), 'P', 'Date#format | custom formats | T');
+  equal(d.format('{tt}'), 'pm', 'Date#format | custom formats | tt');
+  equal(d.format('{TT}'), 'PM', 'Date#format | custom formats | TT');
+  equal(d.format('{ord}'), '5th', 'Date#format | custom formats | ord');
 
 
-d = new Date('August 5, 2010 04:03:02');
+  d = new Date('August 5, 2010 04:03:02');
 
-equal(d.format('{min pad}'), '03', 'Date#format | custom formats | min pad');
-equal(d.format('{m pad}'), '03', 'Date#format | custom formats | m pad');
-equal(d.format('{d pad}'), '05', 'Date#format | custom formats | d pad');
-equal(d.format('{date pad}'), '05', 'Date#format | custom formats | days pad');
-equal(d.format('{h pad}'), '04', 'Date#format | custom formats | h pad');
-equal(d.format('{hours pad}'), '04', 'Date#format | custom formats | hours pad');
-equal(d.format('{s pad}'), '02', 'Date#format | custom formats | s pad');
-equal(d.format('{sec pad}'), '02', 'Date#format | custom formats | sec pad');
-equal(d.format('{seconds pad}'), '02', 'Date#format | custom formats | seconds pad');
-
-
-equal(d.format('{M}/{d}/{yyyy}'), '8/5/2010', 'Date#format | full formats | slashes');
-equal(d.format('{Weekday}, {Month} {dd}, {yyyy}'), 'Thursday, August 05, 2010', 'Date#format | full formats | text date');
-equal(d.format('{Weekday}, {Month} {dd}, {yyyy} {12hr}:{mm}:{ss} {tt}'), 'Thursday, August 05, 2010 4:03:02 am', 'Date#format | full formats | text date with time');
-equal(d.format('{Month} {dd}'), 'August 05', 'Date#format | full formats | month and day');
-equal(d.format('{Dow}, {dd} {Mon} {yyyy} {hh}:{mm}:{ss} GMT'), 'Thu, 05 Aug 2010 04:03:02 GMT', 'Date#format | full formats | full GMT');
-equal(d.format('{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}'), '2010-08-05T04:03:02', 'Date#format | full formats | ISO8601 without timezone');
-equal(d.format('{12hr}:{mm} {tt}'), '4:03 am', 'Date#format | full formats | hr:min');
-equal(d.format('{12hr}:{mm}:{ss} {tt}'), '4:03:02 am', 'Date#format | full formats | hr:min:sec');
-equal(d.format('{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'), '2010-08-05 04:03:02Z', 'Date#format | full formats | ISO8601 UTC');
-equal(d.format('{Month}, {yyyy}'), 'August, 2010', 'Date#format | full formats | month and year');
+  equal(d.format('{min pad}'), '03', 'Date#format | custom formats | min pad');
+  equal(d.format('{m pad}'), '03', 'Date#format | custom formats | m pad');
+  equal(d.format('{d pad}'), '05', 'Date#format | custom formats | d pad');
+  equal(d.format('{date pad}'), '05', 'Date#format | custom formats | days pad');
+  equal(d.format('{h pad}'), '04', 'Date#format | custom formats | h pad');
+  equal(d.format('{hours pad}'), '04', 'Date#format | custom formats | hours pad');
+  equal(d.format('{s pad}'), '02', 'Date#format | custom formats | s pad');
+  equal(d.format('{sec pad}'), '02', 'Date#format | custom formats | sec pad');
+  equal(d.format('{seconds pad}'), '02', 'Date#format | custom formats | seconds pad');
 
 
-// Be VERY careful here. Timezone offset is NOT always guaranteed to be the same for a given timezone,
-// as DST may come into play.
-var offset = d.getTimezoneOffset();
-var isotzd = Math.round(-offset / 60).pad(2, true) + ':' + (offset % 60).pad(2);
-var tzd = isotzd.replace(/:/, '');
-if(d.isUTC()) {
-  isotzd = 'Z';
-  tzd = '+0000';
-}
-
-equal(d.getUTCOffset(), tzd, 'Date#getUTCOffset | no colon');
-equal(d.getUTCOffset(true), isotzd, 'Date#getUTCOffset | colon');
-
-equal(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | constants | INTERNATIONAL_TIME');
-equal(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | constants | ISO8601_DATE');
-equal(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
+  equal(d.format('{M}/{d}/{yyyy}'), '8/5/2010', 'Date#format | full formats | slashes');
+  equal(d.format('{Weekday}, {Month} {dd}, {yyyy}'), 'Thursday, August 05, 2010', 'Date#format | full formats | text date');
+  equal(d.format('{Weekday}, {Month} {dd}, {yyyy} {12hr}:{mm}:{ss} {tt}'), 'Thursday, August 05, 2010 4:03:02 am', 'Date#format | full formats | text date with time');
+  equal(d.format('{Month} {dd}'), 'August 05', 'Date#format | full formats | month and day');
+  equal(d.format('{Dow}, {dd} {Mon} {yyyy} {hh}:{mm}:{ss} GMT'), 'Thu, 05 Aug 2010 04:03:02 GMT', 'Date#format | full formats | full GMT');
+  equal(d.format('{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}'), '2010-08-05T04:03:02', 'Date#format | full formats | ISO8601 without timezone');
+  equal(d.format('{12hr}:{mm} {tt}'), '4:03 am', 'Date#format | full formats | hr:min');
+  equal(d.format('{12hr}:{mm}:{ss} {tt}'), '4:03:02 am', 'Date#format | full formats | hr:min:sec');
+  equal(d.format('{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'), '2010-08-05 04:03:02Z', 'Date#format | full formats | ISO8601 UTC');
+  equal(d.format('{Month}, {yyyy}'), 'August, 2010', 'Date#format | full formats | month and year');
 
 
-equal(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | string constants | INTERNATIONAL_TIME');
-equal(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | string constants | ISO8601_DATE');
-equal(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
-
-var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+'.'+d.getUTCMilliseconds().pad(3)+'Z';
-
-equal(d.toUTC().format(Date.ISO8601_DATETIME), iso, 'Date#format | constants | ISO8601_DATETIME UTC HOLY');
-equal(d.toUTC().format(Date.ISO8601), iso, 'Date#format | constants | ISO8601 UTC');
-equal(d.toUTC().format('ISO8601_DATETIME'), iso, 'Date#format | string constants | ISO8601_DATETIME UTC');
-equal(d.toUTC().format('ISO8601'), iso, 'Date#format | string constants | ISO8601 UTC');
-
-
-var rfc1123 = getWeekdayFromDate(d).to(3).capitalize()+', '+d.getDate().pad(2)+' '+getMonthFromDate(d).to(3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
-var rfc1036 = getWeekdayFromDate(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonthFromDate(d).to(3).capitalize()+'-'+d.getFullYear().toString().last(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
-equal(d.format(Date.RFC1123), rfc1123, 'Date#format | constants | RFC1123');
-equal(d.format(Date.RFC1036), rfc1036, 'Date#format | constants | RFC1036');
-equal(d.format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123');
-equal(d.format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036');
-
-
-rfc1123 = getWeekdayFromDate(d,true).to(3).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonthFromDate(d,true).to(3).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT+0000';
-rfc1036 = getWeekdayFromDate(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonthFromDate(d,true).to(3).capitalize()+'-'+d.getUTCFullYear().toString().last(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT+0000';
-equal(d.toUTC().format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123 UTC');
-equal(d.toUTC().format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036 UTC');
-
-
-equal(Date.create('totally invalid').format(), 'Invalid Date', 'Date#format | invalid');
-equal(Date.create('totally invalid').format(Date.ISO8601_DATETIME), 'Invalid Date', 'Date#format | invalid');
-
-
-
-// ISO format
-
-equal(d.toISOString(), d.toUTC().format(Date.ISO8601_DATETIME), 'Date#toISOString is an alias for the ISO8601_DATETIME format in UTC');
-equal(d.iso(), d.toUTC().format(Date.ISO8601_DATETIME), 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
-
-
-
-
-// relative time formatting
-
-equal(Date.create().format('relative'), '1 second ago', 'Date#format | relative | now');
-equal(Date.create('234 milliseconds ago').format('relative'), '1 second ago', 'Date#format | relative | 234 milliseconds');
-equal(Date.create('6234 milliseconds ago').format('relative'), '6 seconds ago', 'Date#format | relative | 6 milliseconds');
-equal(Date.create('6 seconds ago').format('relative'), '6 seconds ago', 'Date#format | relative | 6 seconds');
-equal(Date.create('360 seconds ago').format('relative'), '6 minutes ago', 'Date#format | relative | 360 seconds');
-equal(Date.create('360 minutes ago').format('relative'), '6 hours ago', 'Date#format | relative | minutes');
-equal(Date.create('360 hours ago').format('relative'), '2 weeks ago', 'Date#format | relative | hours');
-equal(Date.create('360 days ago').format('relative'), '11 months ago', 'Date#format | relative | days');
-equal(Date.create('360 weeks ago').format('relative'), '6 years ago', 'Date#format | relative | weeks');
-equal(Date.create('360 months ago').format('relative'), '30 years ago', 'Date#format | relative | months');
-equal(Date.create('360 years ago').format('relative'), '360 years ago', 'Date#format | relative | years');
-equal(Date.create('12 months ago').format('relative'), '1 year ago', 'Date#format | relative | 12 months ago');
-
-equal(Date.create('6234 milliseconds from now').format('relative'), '6 seconds from now', 'Date#format | relative future | 6 milliseconds');
-equal(Date.create('361 seconds from now').format('relative'), '6 minutes from now', 'Date#format | relative future | 360 seconds');
-equal(Date.create('361 minutes from now').format('relative'), '6 hours from now', 'Date#format | relative future | minutes');
-equal(Date.create('360 hours from now').format('relative'), '2 weeks from now', 'Date#format | relative future | hours');
-equal(Date.create('360 days from now').format('relative'), '11 months from now', 'Date#format | relative future | days');
-equal(Date.create('360 weeks from now').format('relative'), '6 years from now', 'Date#format | relative future | weeks');
-equal(Date.create('360 months from now').format('relative'), '30 years from now', 'Date#format | relative future | months');
-equal(Date.create('360 years from now').format('relative'), '360 years from now', 'Date#format | relative future | years');
-equal(Date.create('13 months from now').format('relative'), '1 year from now', 'Date#format | relative future | 12 months ago');
-
-
-skipEnvironments(['mootools'], function() {
-
-  var dyn = function(value, unit, ms, dir) {
-    if(ms > (1).year()) {
-    return '{Month} {date}, {year}';
-  } else {
-    return 'relative';
+  // Be VERY careful here. Timezone offset is NOT always guaranteed to be the same for a given timezone,
+  // as DST may come into play.
+  var offset = d.getTimezoneOffset();
+  var isotzd = Math.round(-offset / 60).pad(2, true) + ':' + (offset % 60).pad(2);
+  var tzd = isotzd.replace(/:/, '');
+  if(d.isUTC()) {
+    isotzd = 'Z';
+    tzd = '+0000';
   }
-}
 
-equal(Date.create('5 minutes ago').format(dyn), '5 minutes ago', 'Date#format | relative fn | 5 minutes should stay relative');
-equal(Date.create('13 months ago').format(dyn), Date.create('13 months ago').format('{Month} {date}, {year}'), 'Date#format | relative fn | higher reverts to absolute');
+  equal(d.getUTCOffset(), tzd, 'Date#getUTCOffset | no colon');
+  equal(d.getUTCOffset(true), isotzd, 'Date#getUTCOffset | colon');
 
-// globalize system with plurals
-
-var strings = {
-  second: '秒',
-  seconds: '秒達',
-  minute: '分',
-  minutes: '分達',
-  hour: '時間',
-  hours: '時間達',
-  day: '日',
-  days: '日達',
-  week: '週間',
-  weeks: '週間達',
-  month: '月',
-  months: '月達',
-  year: '年',
-  years: '年達'
-}
-
-dyn = function(value, unit, ms, dir) {
-  equal(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
-  equal(unit, 'minutes', 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
-  equalWithMargin(ms, 300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
-  equal(dir, -1, 'Date#format | relative fn | 5 minutes ago | dir indicates the offset from "now", negative if in the past');
-  return value + strings[unit] + (dir < 0 ? '前' : '後');
-}
-
-equal(Date.create('5 minutes ago').format(dyn), '5分達前', 'Date#format | relative fn | 5 minutes ago');
+  equal(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | constants | INTERNATIONAL_TIME');
+  equal(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | constants | ISO8601_DATE');
+  equal(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
 
 
-dyn = function(value, unit, ms, dir) {
-  equal(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
-  equal(unit, 'minute', 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
-  equalWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
-  equal(dir, 1, 'Date#format | relative fn | 1 minute from now | dir indicates the offset from "now", negative if in the past');
-  return value + strings[unit] + (dir < 0 ? '前' : '後');
-}
+  equal(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | string constants | INTERNATIONAL_TIME');
+  equal(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | string constants | ISO8601_DATE');
+  equal(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
 
-equal(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
+  var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+'.'+d.getUTCMilliseconds().pad(3)+'Z';
+
+  equal(d.toUTC().format(Date.ISO8601_DATETIME), iso, 'Date#format | constants | ISO8601_DATETIME UTC HOLY');
+  equal(d.toUTC().format(Date.ISO8601), iso, 'Date#format | constants | ISO8601 UTC');
+  equal(d.toUTC().format('ISO8601_DATETIME'), iso, 'Date#format | string constants | ISO8601_DATETIME UTC');
+  equal(d.toUTC().format('ISO8601'), iso, 'Date#format | string constants | ISO8601 UTC');
+
+
+  var rfc1123 = getWeekdayFromDate(d).to(3).capitalize()+', '+d.getDate().pad(2)+' '+getMonthFromDate(d).to(3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  var rfc1036 = getWeekdayFromDate(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonthFromDate(d).to(3).capitalize()+'-'+d.getFullYear().toString().slice(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  equal(d.format(Date.RFC1123), rfc1123, 'Date#format | constants | RFC1123');
+  equal(d.format(Date.RFC1036), rfc1036, 'Date#format | constants | RFC1036');
+  equal(d.format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123');
+  equal(d.format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036');
+
+
+  rfc1123 = getWeekdayFromDate(d,true).to(3).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonthFromDate(d,true).to(3).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT+0000';
+  rfc1036 = getWeekdayFromDate(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonthFromDate(d,true).to(3).capitalize()+'-'+d.getUTCFullYear().toString().slice(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT+0000';
+  equal(d.toUTC().format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123 UTC');
+  equal(d.toUTC().format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036 UTC');
+
+
+  raisesError(function(){ Date.create('totally invalid').format(); }, 'Date#format | null format raises a type error');
+  equal(Date.create('totally invalid').format(Date.ISO8601_DATETIME), 'Invalid Date', 'Date#format | invalid');
 
 
 
-dyn = function(value, unit, ms, dir) {
-  equal(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
-  equal(unit, 'hours', 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
-  equalWithMargin(ms, 14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
-  equal(dir, -1, 'Date#format | relative fn | 4 hours ago | dir indicates the offset from "now", negative if in the past');
-  return value + strings[unit] + (dir < 0 ? '前' : '後');
-}
+  // ISO format
 
-equal(Date.create('240 minutes ago').format(dyn), '4時間達前', 'Date#format | relative fn | 4 hours ago');
+  equal(d.toISOString(), d.toUTC().format(Date.ISO8601_DATETIME), 'Date#toISOString is an alias for the ISO8601_DATETIME format in UTC');
+  equal(d.iso(), d.toUTC().format(Date.ISO8601_DATETIME), 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
 
-Date.create('223 milliseconds ago').format(function(value, unit) {
-  equalWithMargin(value, 223, 10, 'Date format | relative fn | still passes < 1 second');
-  equal(unit, 'milliseconds', 'Date format | relative fn | still passes "millisecond"');
-});
 
-equal(Date.create('300 minutes ago').format(function() {}), '5 hours ago', 'Date#format | function that returns undefined defaults to "relative"');
+
+
+  // relative time formatting
+
+  equal(Date.create().format('relative'), '1 second ago', 'Date#format | relative | now');
+  equal(Date.create('234 milliseconds ago').format('relative'), '1 second ago', 'Date#format | relative | 234 milliseconds');
+  equal(Date.create('6234 milliseconds ago').format('relative'), '6 seconds ago', 'Date#format | relative | 6 milliseconds');
+  equal(Date.create('6 seconds ago').format('relative'), '6 seconds ago', 'Date#format | relative | 6 seconds');
+  equal(Date.create('360 seconds ago').format('relative'), '6 minutes ago', 'Date#format | relative | 360 seconds');
+  equal(Date.create('360 minutes ago').format('relative'), '6 hours ago', 'Date#format | relative | minutes');
+  equal(Date.create('360 hours ago').format('relative'), '2 weeks ago', 'Date#format | relative | hours');
+  equal(Date.create('360 days ago').format('relative'), '11 months ago', 'Date#format | relative | days');
+  equal(Date.create('360 weeks ago').format('relative'), '6 years ago', 'Date#format | relative | weeks');
+  equal(Date.create('360 months ago').format('relative'), '30 years ago', 'Date#format | relative | months');
+  equal(Date.create('360 years ago').format('relative'), '360 years ago', 'Date#format | relative | years');
+  equal(Date.create('12 months ago').format('relative'), '1 year ago', 'Date#format | relative | 12 months ago');
+
+  equal(Date.create('6234 milliseconds from now').format('relative'), '6 seconds from now', 'Date#format | relative future | 6 milliseconds');
+  equal(Date.create('361 seconds from now').format('relative'), '6 minutes from now', 'Date#format | relative future | 360 seconds');
+  equal(Date.create('361 minutes from now').format('relative'), '6 hours from now', 'Date#format | relative future | minutes');
+  equal(Date.create('360 hours from now').format('relative'), '2 weeks from now', 'Date#format | relative future | hours');
+  equal(Date.create('360 days from now').format('relative'), '11 months from now', 'Date#format | relative future | days');
+  equal(Date.create('360 weeks from now').format('relative'), '6 years from now', 'Date#format | relative future | weeks');
+  equal(Date.create('360 months from now').format('relative'), '30 years from now', 'Date#format | relative future | months');
+  equal(Date.create('360 years from now').format('relative'), '360 years from now', 'Date#format | relative future | years');
+  equal(Date.create('13 months from now').format('relative'), '1 year from now', 'Date#format | relative future | 12 months ago');
+
+
+  skipEnvironments(['mootools'], function() {
+
+    var dyn = function(value, unit, ms, dir) {
+      if(ms > (1).year()) {
+      return '{Month} {date}, {year}';
+    } else {
+      return 'relative';
+    }
+  }
+
+  equal(Date.create('5 minutes ago').format(dyn), '5 minutes ago', 'Date#format | relative fn | 5 minutes should stay relative');
+  equal(Date.create('13 months ago').format(dyn), Date.create('13 months ago').format('{Month} {date}, {year}'), 'Date#format | relative fn | higher reverts to absolute');
+
+  // globalize system with plurals
+
+  var strings = {
+    second: '秒',
+    seconds: '秒達',
+    minute: '分',
+    minutes: '分達',
+    hour: '時間',
+    hours: '時間達',
+    day: '日',
+    days: '日達',
+    week: '週間',
+    weeks: '週間達',
+    month: '月',
+    months: '月達',
+    year: '年',
+    years: '年達'
+  }
+
+  dyn = function(value, unit, ms, dir) {
+    equal(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
+    equal(unit, 'minutes', 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
+    equalWithMargin(ms, 300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
+    equal(dir, -1, 'Date#format | relative fn | 5 minutes ago | dir indicates the offset from "now", negative if in the past');
+    return value + strings[unit] + (dir < 0 ? '前' : '後');
+  }
+
+  equal(Date.create('5 minutes ago').format(dyn), '5分達前', 'Date#format | relative fn | 5 minutes ago');
+
+
+  dyn = function(value, unit, ms, dir) {
+    equal(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
+    equal(unit, 'minute', 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
+    equalWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
+    equal(dir, 1, 'Date#format | relative fn | 1 minute from now | dir indicates the offset from "now", negative if in the past');
+    return value + strings[unit] + (dir < 0 ? '前' : '後');
+  }
+
+  equal(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
+
+
+
+  dyn = function(value, unit, ms, dir) {
+    equal(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
+    equal(unit, 'hours', 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
+    equalWithMargin(ms, 14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
+    equal(dir, -1, 'Date#format | relative fn | 4 hours ago | dir indicates the offset from "now", negative if in the past');
+    return value + strings[unit] + (dir < 0 ? '前' : '後');
+  }
+
+  equal(Date.create('240 minutes ago').format(dyn), '4時間達前', 'Date#format | relative fn | 4 hours ago');
+
+  Date.create('223 milliseconds ago').format(function(value, unit) {
+    equalWithMargin(value, 223, 10, 'Date format | relative fn | still passes < 1 second');
+    equal(unit, 'milliseconds', 'Date format | relative fn | still passes "millisecond"');
+  });
+
+  equal(Date.create('300 minutes ago').format(function() {}), '5 hours ago', 'Date#format | function that returns undefined defaults to "relative"');
 
   });
 
@@ -1359,32 +1360,32 @@ equal(Date.create('300 minutes ago').format(function() {}), '5 hours ago', 'Date
   //
   var msSince = d.millisecondsSince('last week');
   var msUntil = d.millisecondsUntil('last week');
-  var actualMsSince = offset.round();
-  var actualMsUntil = -offset.round();
+  var actualMsSince = Math.round(offset);
+  var actualMsUntil = Math.round(-offset);
 
   equal((msSince <= actualMsSince + 1000) && (msSince >= actualMsSince - 1000), true, 'Date#millisecondsSince | milliseconds since last week');
   equal((msUntil <= actualMsUntil + 1000) && (msUntil >= actualMsUntil - 1000), true, 'Date#millisecondsUntil | milliseconds until last week');
 
   var secSince = d.secondsSince('last week');
   var secUntil = d.secondsUntil('last week');
-  var actualSecSince = (offset / 1000).round();
-  var actualSecUntil = (-offset / 1000).round();
+  var actualSecSince = Math.round(offset / 1000);
+  var actualSecUntil = Math.round(-offset / 1000);
 
   equal((secSince <= actualSecSince + 1) && (secSince >= actualSecSince - 1), true, 'Date#secondsSince | seconds since last week');
   equal((secUntil <= actualSecUntil + 1) && (secUntil >= actualSecUntil - 1), true, 'Date#secondsUntil | seconds until last week');
 
-  equal(d.minutesSince('last week'), (offset / 1000 / 60).round(), 'Date#minutesSince | minutes since last week');
-  equal(d.minutesUntil('last week'), (-offset / 1000 / 60).round(), 'Date#minutesUntil | minutes until last week');
-  equal(d.hoursSince('last week'), (offset / 1000 / 60 / 60).round(), 'Date#hoursSince | hours since last week');
-  equal(d.hoursUntil('last week'), (-offset / 1000 / 60 / 60).round(), 'Date#hoursUntil | hours until last week');
-  equal(d.daysSince('last week'), (offset / 1000 / 60 / 60 / 24).round(), 'Date#daysSince | days since last week');
-  equal(d.daysUntil('last week'), (-offset / 1000 / 60 / 60 / 24).round(), 'Date#daysUntil | days until last week');
-  equal(d.weeksSince('last week'), (offset / 1000 / 60 / 60 / 24 / 7).round(), 'Date#weeksSince | weeks since last week');
-  equal(d.weeksUntil('last week'), (-offset / 1000 / 60 / 60 / 24 / 7).round(), 'Date#weeksUntil | weeks until last week');
-  equal(d.monthsSince('last week'), (offset / 1000 / 60 / 60 / 24 / 30.4375).round(), 'Date#monthsSince | months since last week');
-  equal(d.monthsUntil('last week'), (-offset / 1000 / 60 / 60 / 24 / 30.4375).round(), 'Date#monthsUntil | months until last week');
-  equal(d.yearsSince('last week'), (offset / 1000 / 60 / 60 / 24 / 365.25).round(), 'Date#yearsSince | years since last week');
-  equal(d.yearsUntil('last week'), (-offset / 1000 / 60 / 60 / 24 / 365.25).round(), 'Date#yearsUntil | years until the last day of 2011');
+  equal(d.minutesSince('last week'), Math.round(offset / 1000 / 60), 'Date#minutesSince | minutes since last week');
+  equal(d.minutesUntil('last week'), Math.round(-offset / 1000 / 60), 'Date#minutesUntil | minutes until last week');
+  equal(d.hoursSince('last week'), Math.round(offset / 1000 / 60 / 60), 'Date#hoursSince | hours since last week');
+  equal(d.hoursUntil('last week'), Math.round(-offset / 1000 / 60 / 60), 'Date#hoursUntil | hours until last week');
+  equal(d.daysSince('last week'), Math.round(offset / 1000 / 60 / 60 / 24), 'Date#daysSince | days since last week');
+  equal(d.daysUntil('last week'), Math.round(-offset / 1000 / 60 / 60 / 24), 'Date#daysUntil | days until last week');
+  equal(d.weeksSince('last week'), Math.round(offset / 1000 / 60 / 60 / 24 / 7), 'Date#weeksSince | weeks since last week');
+  equal(d.weeksUntil('last week'), Math.round(-offset / 1000 / 60 / 60 / 24 / 7), 'Date#weeksUntil | weeks until last week');
+  equal(d.monthsSince('last week'), Math.round(offset / 1000 / 60 / 60 / 24 / 30.4375), 'Date#monthsSince | months since last week');
+  equal(d.monthsUntil('last week'), Math.round(-offset / 1000 / 60 / 60 / 24 / 30.4375), 'Date#monthsUntil | months until last week');
+  equal(d.yearsSince('last week'), Math.round(offset / 1000 / 60 / 60 / 24 / 365.25), 'Date#yearsSince | years since last week');
+  equal(d.yearsUntil('last week'), Math.round(-offset / 1000 / 60 / 60 / 24 / 365.25), 'Date#yearsUntil | years until the last day of 2011');
 
 
 
