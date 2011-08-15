@@ -28,7 +28,8 @@ Note about using Dates as a standalone module
 
 The Date module depends on a number of Sugar methods. It can be used on its own, but you will
 have to keep the following dependencies in addition to this module. The Array Module's polyfill methods can be
-skipped if you don't care about < IE8 or if you are using another library that provides them.
+skipped if you don't care about < IE8 or if you are using another library that provides them. Finally, you
+must keep "buildDate" in the initialization script at the very bottom of the file.
 
 
 ### Global private methods (at the top of the file)
