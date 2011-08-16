@@ -123,7 +123,6 @@ test('Array', function () {
 
 
 
-
   equal([].some(function(el, i, a) { return el > 10 }), false, 'Array#some | no elements are greater than 10 in an empty array');
   ['a'].some(function(el, i, a) {
     equal(el, 'a', 'Array#some | first parameter is the element');
