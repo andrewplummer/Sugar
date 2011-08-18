@@ -11,7 +11,7 @@ var afterAll;
 var beforeEachFn;
 var afterEachFn;
 
-var QUnitBridge = function(expression){
+var TestBridge = function(expression){
 
   this.toBe = function(test){
     equal(expression, test, currentBlock);
@@ -97,7 +97,7 @@ var arrayContains = function(a, expr){
 }
 
 var expect = function(expression){
-  return new QUnitBridge(expression);
+  return new TestBridge(expression);
 }
 
 var it = function(block_name, fn){
@@ -115,6 +115,7 @@ var afterEach = function(fn){
   afterEachFn = fn;
 }
 
+/*
 var waits = function(delay){
   stop();
 }
@@ -122,6 +123,7 @@ var waits = function(delay){
 var runs = function(delay){
   start();
 }
+*/
 
 var describe = function(test_name, blocks){
   beforeEachFn = null;
