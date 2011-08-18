@@ -39,7 +39,7 @@ test('Function', function () {
   };
 
   delayReturn = delayedFunction.delay(delayTime, 'one', 'two');
-  equal(typeof delayReturn, 'function', 'Function#delay | returns the timeout ID');
+  equal(typeof delayReturn, 'function', 'Function#delay | returns the timeout ID', { mootools: 'number' });
 
   shouldBeFalse = false;
   delayedFunction = function() {
