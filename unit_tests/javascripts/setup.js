@@ -156,7 +156,7 @@ setTimeout = function(fn, delay) {
 
 clearTimeout = function(timer) {
   var index = capturedTimers.indexOf(timer);
-  if(index != -1) {
+  if(index > 0) {
     capturedTimers.splice(index, 1);
     runningAsyncTests--;
   }
