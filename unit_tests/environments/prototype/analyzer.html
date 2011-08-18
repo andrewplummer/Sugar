@@ -8,6 +8,13 @@
     <script src="../../../lib/analyzer.js" type="text/javascript"></script>
     <script type="text/javascript">
 
+      var h = new Hash({ foo: { moo: 'bar' } });
+
+      //$A({ foo: { moo: 'bar' } });
+      //$H({ foo: { moo: 'bar' } });
+      //$R(0, 10);
+      //$w('');
+
       //[1,2,3].find(function(a){ return a == 1; }, 'OHNOOO');
       //[1,2,3].findAll(function(a){ return a == 1; }, 'OHNOOO');
       //[1,2,3].each(function(a){ return a == 1; }, 'OHNOOO');
@@ -44,9 +51,6 @@
       //Object.isUndefined({ foo: { moo: 'bar' } });
       //Object.toJSON({ foo: { moo: 'bar' } });
       //Array.from({ foo: { moo: 'bar' } });
-      //$A({ foo: { moo: 'bar' } });
-      //$H({ foo: { moo: 'bar' } });
-      var h = new Hash({ foo: { moo: 'bar' } });
       //h.each(function(){}, 'hadha');
       //h.get('foo');
       //h.index('foo');
@@ -55,9 +59,51 @@
       //h.set('foo', 3);
       //h.toJSON();
       //h.toObject();
+      h.toTemplateReplacements();
       //h.unset('foo');
-      h.update('foo');
+      //h.update('foo');
       //[NaN].compact();
+
+      //''.blank();
+      //'foo-on my-bar'.camelize();
+      //'foo_onmy_bar'.dasherize();
+      //'moof'.empty();
+      //'8'.evalJSON();
+      //'8'.evalScripts();
+      //'8'.extractScripts();
+      //'8'.gsub(/f/, '');
+      //'8'.include('ka');
+      //'8'.inspect();
+      //'8'.interpolate();
+      //'8'.isJSON();
+      //'8'.toQueryParams();
+      //'8'.scan('haha', function(){});
+      //'8'.strip();
+      //'8'.stripScripts();
+      //'<span>fdafa</span>'.stripTags();
+      //'<xsl:span>fdafa</xsl:span>'.stripTags();
+      //'foobar'.sub(' ', '');
+      //'foobar'.succ();
+      //'foobar'.times(3);
+      //'foobar'.toArray();
+      //'foobar'.truncate();
+      //'foo bar'.underscore();
+      //'foo bar'.unfilterJSON();
+      //String.interpret(156);
+
+      //(8).succ();
+      //(8).times(function(){}, 'wasabi');
+      //(8).toColorPart();
+      //(8).toPaddedString(3);
+
+      //(function(){}).argumentNames();
+      //(function(){}).bindAsEventListener();
+      //(function(){}).curry();
+      //(function(){}).defer();
+      //(function(){}).delay();
+      //(function(){}).methodize();
+     // (function(){}).wrap();
+
 
     </script>
   </body>

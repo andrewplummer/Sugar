@@ -54,6 +54,19 @@ test('String', function () {
   raisesError(function() { '% 23'.unescapeURL(true); }, 'String#unescapeURL | full | should raise an error for malformed urls');
 
 
+
+
+  equal('<p>some text</p>'.escapeHTML(), '&lt;p&gt;some text&lt;/p&gt;', 'String#escapeHTML | <p>some text</p>');
+  equal('war & peace & food'.escapeHTML(), 'war &amp; peace &amp; food', 'String#escapeHTML | war & peace');
+  equal('&lt;span&gt;already escaped, yo&lt;/span&gt;', '&lt;span&gt;already escaped, yo&lt;/span&gt;', 'String#escapeHTML | already escaped will stay escaped');
+
+
+  equal('&lt;p&gt;some text&lt;/p&gt;'.unescapeHTML(), '<p>some text</p>', 'String#unescapeHTML | <p>some text</p>');
+  equal('war &amp; peace &amp; food'.unescapeHTML(), 'war & peace & food', 'String#unescapeHTML | war & peace');
+  equal('<span>already escaped, yo</span>', '<span>already escaped, yo</span>', 'String#escapeHTML | already escaped will stay escaped');
+
+
+
   equal('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
   equal('I grow, I prosper; Now, gods, stand up for bastards!'.encodeBase64(), 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'String#encodeBase64 | gods');
   equal('räksmörgås'.encodeBase64(), 'cuRrc232cmflcw==', 'String#encodeBase64 | shrimp sandwich');
