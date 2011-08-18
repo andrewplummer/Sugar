@@ -53,6 +53,7 @@
       env.addClass('fail');
     }
     $('[title]', env).tooltip({ color: 'black' });
+    $(document).trigger('tests_finished', [environment]);
   }
 
   var getFailureHTML = function(f) {
