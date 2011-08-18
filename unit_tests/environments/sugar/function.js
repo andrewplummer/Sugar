@@ -39,7 +39,7 @@ test('Function', function () {
   };
 
   delayReturn = delayedFunction.delay(delayTime, 'one', 'two');
-  equal(typeof delayReturn, nativeTimeoutReturnType, 'Function#delay | returns the timeout ID');
+  equal(typeof delayReturn, 'function', 'Function#delay | returns the timeout ID');
 
   shouldBeFalse = false;
   delayedFunction = function() {
