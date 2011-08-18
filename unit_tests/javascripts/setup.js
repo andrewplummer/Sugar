@@ -163,8 +163,6 @@ clearTimeout = function(timer) {
   return nativeClearTimeout(timer);
 }
 
-nativeTimeoutReturnType = typeof setTimeout(function(){}, 0);
-
 equal = function(actual, expected, message, exceptions, stack) {
   exceptions = exceptions || {};
   if(environment in exceptions) {

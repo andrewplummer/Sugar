@@ -241,15 +241,30 @@ test('Number', function () {
   equal((1).pad(3, true), '+001', 'Number#pad | 1 padded to 3 places and sign')
   equal((1).pad(4, true), '+0001', 'Number#pad | 1 padded to 4 places and sign')
   equal((0).pad(1, true), '+0', 'Number#pad | 0 padded to 1 place and sign')
+  equal((547.528).pad(4), '0547.528', 'Number#pad | does not take decimal places into account')
 
+  equal((255).pad(4, false, 16), '00ff', 'Number#pad | handles hex')
+  equal((2).pad(4, false, 2), '0010', 'Number#pad | handles binary')
 
 
   equal((0).hex(), '0', 'Number#hex | 0')
   equal((10).hex(), 'a', 'Number#hex | 10')
   equal((255).hex(), 'ff', 'Number#hex | 255')
   equal((0.5).hex(), '0.8', 'Number#hex | 0.5')
-  equal((2.5).hex(), '2.8', 'Number#hex | 2.5')
+  equal((2.5).hex(), '2.8', 'Number#hex | 2.8')
   equal((2553423).hex(), '26f64f', 'Number#hex | 2553423')
+
+  equal((0).hex(2), '00', 'Number#hex | padding 2 places | 0')
+  equal((10).hex(2), '0a', 'Number#hex | padding 2 places | 10')
+  equal((255).hex(2), 'ff', 'Number#hex | padding 2 places | 10')
+  equal((0.5).hex(2), '00.8', 'Number#hex | padding 2 places | 0.5')
+  equal((2.5).hex(2), '02.8', 'Number#hex | padding 2 places | 2.8')
+
+  equal((0).hex(4), '0000', 'Number#hex | padding 4 places | 0')
+  equal((10).hex(4), '000a', 'Number#hex | padding 4 places | 10')
+  equal((255).hex(4), '00ff', 'Number#hex | padding 4 places | 10')
+  equal((0.5).hex(4), '0000.8', 'Number#hex | padding 4 places | 0.5')
+  equal((2.5).hex(4), '0002.8', 'Number#hex | padding 4 places | 2.8')
 
   equal((4).milliseconds(), 4, 'Number#milliseconds | 4');
   equal((3.25).milliseconds(), 3, 'Number#milliseconds | rounded');
