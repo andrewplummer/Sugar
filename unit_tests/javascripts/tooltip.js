@@ -129,7 +129,7 @@
   }
 
   function animateTooltip(s, options, el, fn){
-    var color = getDefault('color', options, el, 'white');
+    var color = getDefault('color', options, el, 'black');
     var duration = getDefault('duration', options, el, 250);
     tooltip.attr('class', color + ' ' + s.direction);
     tooltip.stop(true, true).css(s.css);
