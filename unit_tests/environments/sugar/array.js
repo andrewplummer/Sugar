@@ -1,7 +1,7 @@
 
 test('Array', function () {
 
-  var arr, expected, expectedIndexes, count;
+  var arr, expected, expectedIndexes, count, fn = function(){};
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
   // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
@@ -603,6 +603,14 @@ test('Array', function () {
   equal([{a:1},{b:2}].union([{b:2},{c:3}]), [{a:1},{b:2},{c:3}], 'Array#intersect | a:1,b:2 + b:2,c:3');
   equal([1,2,3].union(4), [1,2,3,4], 'Array#union | 1,2,3 + 4');
 
+  equal([1,2,3].union(4,8,10), [1,2,3,4,8,10], 'Array#union | 1,2,3 + 4 8 10');
+  equal([1,2,3].union([4],[8],[10]), [1,2,3,4,8,10], 'Array#union | 1,2,3 + [4] [8] [10]');
+
+  arr = [1,2,3];
+  arr.union([4,5,6]);
+  equal(arr, [1,2,3], 'Array#union | is non-destructive');
+
+
 
   equal([1,2,3].intersect([3,4,5]), [3], 'Array#intersect | 1,2,3 + 3,4,5');
   equal(['a','b','c'].intersect(['c','d','e']), ['c'], 'Array#intersect | a,b,c + c,d,e');
@@ -620,6 +628,13 @@ test('Array', function () {
   equal([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], 'Array#intersect | a:1,b:2 + b:2,c:3', { prototype: [] });
   equal([1,1,3].intersect([1,5,6]), [1], 'Array#intersect | 1,1,3 + 1,5,6');
   equal([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
+
+  equal([1,2,3].intersect([3,4,5],[0,1]), [1,3], 'Array#intersect | handles multiple arguments');
+
+  arr = [1,2,3];
+  arr.intersect([3,4,5]);
+  equal(arr, [1,2,3], 'Array#intersect | is non-destructive');
+
 
   // Prototype will blow up here
   skipEnvironments(['prototype'], function(){
@@ -647,6 +662,12 @@ test('Array', function () {
   equal([1,1,3].subtract([1,5,6]), [3], 'Array#subtract | 1,1,3 + 1,5,6');
   equal([1,2,3].subtract([4,5,6]), [1,2,3], 'Array#subtract | 1,2,3 + 4,5,6');
   equal([1,2,3].subtract(1), [2,3], 'Array#subtract | 1,2,3 + 1');
+
+  equal([1,2,3,4,5].subtract([1],[3],[5]), [2,4], 'Array#subtract | handles multiple arguments');
+
+  arr = [1,2,3];
+  arr.subtract([3]);
+  equal(arr, [1,2,3], 'Array#subtract | is non-destructive');
 
 
 
@@ -962,6 +983,12 @@ test('Array', function () {
   equal([null,[null],[false,[null,undefined,3]]].compact(), [[],[false,[3]]], 'Array#compact | deep compacts as well', { prototype: [[null],[false,[null,undefined,3]]] });
   equal([null,null,null,[null],null].compact(), [[]], "Array#compact | deep compact doesn't have index conflicts", { prototype: [[null]] });
 
+  equal([false,false,false].compact(true), [], 'Array#compact | falsy | false is removed');
+  equal([0,0].compact(true), [], 'Array#compact | falsy | 0');
+  equal(['',''].compact(true), [], 'Array#compact | falsy | empty string');
+  equal([' ',' '].compact(true), [' ',' '], 'Array#compact | falsy | strings with spaces are kept');
+  equal([8,3].compact(true), [8,3], 'Array#compact | falsy | numbers are kept');
+  equal([false,undefined,false,null,NaN].compact(true), [], 'Array#compact | falsy | others are also handled');
 
   equal([1,2,2,3].count(), 4, 'Array#count | no arugment numeric');
   equal([1,2,2,3].count(2), 2, 'Array#count | count 2s');
@@ -976,9 +1003,9 @@ test('Array', function () {
 
 
 
-
   equal([1,2,2,3].remove(), [1,2,2,3], 'Array#remove | no argument numeric');
   equal([1,2,2,3].remove(2), [1,3], 'Array#remove | remove 2s');
+  equal([0,1,2].exclude(0), [1,2], 'Array#remove | finds 0');
   equal(['a','b','c','c'].remove(), ['a','b','c','c'], 'Array#remove | no argument alphabet');
   equal(['a','b','c','c'].remove('c'), ['a','b'], 'Array#remove | remove "c"s');
   equal([1,2,2,3].remove(function(el) { return el % 2 == 0; }), [1,3], 'Array#remove | remove all odd numbers');
@@ -995,9 +1022,15 @@ test('Array', function () {
   arr.remove(2);
   equal(arr, [1,3], 'Array#remove | should affect the original array');
 
+  arr = [1,2,3];
+  arr.remove(2,3);
+  equal(arr, [1], 'Array#remove | can remove multiple elements');
+
+  equal([fn].remove(fn), [], 'Array#remove | can find via strict equality');
 
   equal([1,2,2,3].exclude(), [1,2,2,3], 'Array#exclude | no argument numeric');
   equal([1,2,2,3].exclude(2), [1,3], 'Array#exclude | exclude 2s');
+  equal([0,1,2].exclude(0), [1,2], 'Array#exclude | finds 0');
   equal(['a','b','c','c'].exclude(), ['a','b','c','c'], 'Array#exclude | no argument alphabet');
   equal(['a','b','c','c'].exclude('c'), ['a','b'], 'Array#exclude | exclude "c"s');
   equal([1,2,2,3].exclude(function(el){ return el % 2 == 0; }), [1,3], 'Array#exclude | exclude all odd numbers');
@@ -1014,6 +1047,7 @@ test('Array', function () {
   arr.exclude(2);
   equal(arr, [1,2,3], 'Array#exclude | should not affect the original array');
 
+  equal([1,2,2,3].exclude(2,3), [1], 'Array#exclude | can handle multiple arguments');
 
 
   equal([1,2,2,3].removeAt(), [1,2,2,3], 'Array#removeAt | numeric | no argument');
