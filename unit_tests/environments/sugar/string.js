@@ -919,7 +919,7 @@ test('String', function () {
 
 
   /* No errors on RegExp */
-  equal('<xsl(template>foobar</xsl(template>'.removeTags('xsl(template'), '', 'String#removeTags | form | no regexp token errors');
+  raisesError(function(){ '<xsl(template>foobar</xsl(template>'.removeTags('xsl(template') }, 'String#removeTags | form | you now have the power to cause your own regex pain');
 
 
 
