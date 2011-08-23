@@ -120,8 +120,16 @@ test('Number', function () {
 
   counter = 0;
   ret = (5).upto(1, function() {});
-  equal(counter, 0, 'Number#downto | 5 up to 1 | iterates 0 times');
-  equal(ret, [], 'Number#downto | 5 up to 1 | returns empty array');
+  equal(counter, 0, 'Number#upto | 5 up to 1 | iterates 0 times');
+  equal(ret, [], 'Number#upto | 5 up to 1 | returns empty array');
+
+  equal((3).upto(9, null, 3), [3,6,9], 'Number#upto | can handle multiples');
+  equal((3).upto(10, null, 3), [3,6,9], 'Number#upto | can handle multiples stops at 9');
+  equal((3).upto(8, null, 3), [3,6], 'Number#upto | can handle multiples stops at 8');
+  equal((9).downto(3, null, 3), [9,6,3], 'Number#downto | can handle multiples');
+  equal((9).downto(4, null, 3), [9,6], 'Number#downto | can handle multiples stops at 4');
+  equal((9).downto(2, null, 3), [9,6,3], 'Number#downto | can handle multiples stops at 2');
+
 
 
   counter = 0;
