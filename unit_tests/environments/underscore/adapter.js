@@ -2,13 +2,23 @@
 
 // Don't need this for our purposes
 module = function(){};
-equals = equal;
+if(typeof equal != 'undefined') {
+  equals = equal;
+}
 ok = function(actual, message) {
   equal(actual, true, message);
 }
 
 var ensureArray = function(obj) {
-  return Object.isArray(obj) ? obj : Array.prototype.slice.call(obj);
+  if(obj === null) {
+    return [];
+  } else if(Object.isArray(obj) && (!obj.indexOf || !obj.lastIndexOf)) {
+    return obj.concat();
+  } else if(!Object.isArray(obj) && typeof obj == 'object') {
+    return Array.prototype.slice.call(obj);
+  } else {
+    return obj;
+  }
 }
 
 var CompatibleMethods = [
@@ -82,6 +92,29 @@ var CompatibleMethods = [
           arr = ensureArray(arr);
           var args = Array.prototype.slice.call(arguments, 1);
           return Array.prototype.subtract.apply(arr, args);
+        }
+      },
+      {
+        name: 'indexOf',
+        method: function(arr, a){
+          return ensureArray(arr).indexOf(a);
+        }
+      },
+      {
+        name: 'lastIndexOf',
+        method: function(arr, a){
+          return ensureArray(arr).lastIndexOf(a);
+        }
+      },
+      {
+        name: 'range',
+        method: function(start, stop, step){
+          if(arguments.length == 1){
+            stop = arguments[0];
+            start = 0;
+          }
+          var shift = step < 0 ? 1 : -1;
+          return start.upto(stop + shift, null, step);
         }
       }
     ]
