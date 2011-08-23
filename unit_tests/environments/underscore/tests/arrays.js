@@ -90,6 +90,7 @@ $(document).ready(function() {
     var result = _.difference([1, 2, 3], [2, 30, 40]);
     equals(result.join(' '), '1 3', 'takes the difference of two arrays');
   });
+  /*
 
   test('arrays: zip', function() {
     var names = ['moe', 'larry', 'curly'], ages = [30, 40, 50], leaders = [true];
@@ -138,5 +139,6 @@ $(document).ready(function() {
     equals(_.range(12, 7, -2).join(' '), '12 10 8', 'range with three arguments a &amp; b &amp; c, a &gt; b, c &lt; 0 generates an array of elements a,a-c,a-2c and ends with the number not less than b');
     equals(_.range(0, -10, -1).join(' '), '0 -1 -2 -3 -4 -5 -6 -7 -8 -9', 'final example in the Python docs');
   });
+  */
 
 });
