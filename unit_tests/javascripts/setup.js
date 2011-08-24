@@ -25,6 +25,10 @@ var testStartTime;
 var runtime;
 
 
+var isInstanceOf = function(obj, str) {
+  return Object.prototype.toString.call(obj).toLowerCase() === '[object '+str+']';
+};
+
 // Arrays and objects must be treated separately here because in IE arrays with undefined
 // elements will not pass the .hasOwnProperty check. For example [undefined].hasOwnProperty('0')
 // will report false.
@@ -172,10 +176,14 @@ equal = function(actual, expected, message, exceptions, stack) {
   if(actual === nullScope && expected === nullScope) {
     // Null scope should always be a strict equal check
   } else if(typeof expected == 'number' && typeof actual == 'number' && isNaN(expected) && isNaN(actual)) {
-    // NaN == NaN: equal
+    // NaN is NaN: equal
   } else if(typeof expected == 'object' && typeof actual == 'object' && expected != null && actual != null && deepEqual(expected, actual)) {
     // Deeply equal
-  } else if(expected == actual) {
+  } else if(expected === null && actual === null) {
+    // null is null: equal
+  } else if(expected === undefined && actual === undefined) {
+    // undefined is undefined: equal
+  } else if(isInstanceOf(actual, typeof expected) && expected == actual) {
     // Strictly equal
   } else {
     addFailure(actual, expected, message, stack);
