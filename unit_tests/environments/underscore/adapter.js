@@ -40,7 +40,10 @@ var CompatibleMethods = [
     methods: [
       {
         name: 'first',
-        method: function(arr, n){
+        method: function(arr, n, guard){
+          if(guard) {
+            return arr[0];
+          }
           return ensureArray(arr).first(n);
         }
       },
@@ -52,8 +55,11 @@ var CompatibleMethods = [
       },
       {
         name: 'rest',
-        method: function(arr, n){
+        method: function(arr, n, guard){
           if(n === undefined) n = 1;
+          if(guard) {
+            return arr.slice(1);
+          }
           return ensureArray(arr).from(n);
         }
       },
