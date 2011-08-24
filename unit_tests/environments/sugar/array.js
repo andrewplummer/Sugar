@@ -1048,6 +1048,7 @@ test('Array', function () {
   equal(arr, [1,2,3], 'Array#exclude | should not affect the original array');
 
   equal([1,2,2,3].exclude(2,3), [1], 'Array#exclude | can handle multiple arguments');
+  equal([fn].exclude(fn), [], 'Array#exclude | can find via strict equality');
 
 
   equal([1,2,2,3].removeAt(), [1,2,2,3], 'Array#removeAt | numeric | no argument');

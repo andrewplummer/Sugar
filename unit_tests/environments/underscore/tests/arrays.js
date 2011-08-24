@@ -50,7 +50,8 @@ $(document).ready(function() {
     equals(result.join(', '), '2, 3, 4', 'works on an arguments object');
 
     var list = [{one : 1}, {two : 2}];
-    ok(_.without(list, {one : 1}).length == 2, 'uses real object identity for comparisons.');
+    // AP: Array#exclude will use real object identities AND object equivalencies, so this test can never pass...
+    // ok(_.without(list, {one : 1}).length == 2, 'uses real object identity for comparisons.');
     ok(_.without(list, list[0]).length == 1, 'ditto.');
   });
 
