@@ -261,7 +261,7 @@ test('Object', function () {
   equal(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equal(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
-  equal(obj2.foo.jumpy, 'jump', 'Object.clone | cloned object is not modified', { prototype: 'hump' });
+  equal(obj2.foo.jumpy, 'hump', 'Object.clone | clone is shallow');
 
   obj1 = {
     foo: {
@@ -272,8 +272,12 @@ test('Object', function () {
 
   obj1.foo.bar = ['a','b','c'];
   equal(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
-  equal(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified', { prototype: ['a','b','c'] });
+  equal(obj2.foo.bar, ['a','b','c'], 'Object#clone | clone is shallow');
 
+
+  obj2 = Object.clone(obj1, true);
+  obj1.foo.bar = ['a','b','c'];
+  equal(obj2.foo.bar, [1,2,3], 'Object#clone | clone is deep', { prototype: ['a','b','c'] });
 
 
   // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
@@ -294,11 +298,13 @@ test('Object', function () {
     }
   });
   obj2 = obj1.clone();
+  var obj3 = obj1.clone(true);
 
   equal(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equal(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
-  equal(obj2.foo.jumpy, 'jump', 'Object#clone | cloned object is not modified');
+  equal(obj2.foo.jumpy, 'hump', 'Object#clone | clone is shallow');
+  equal(obj3.foo.jumpy, 'jump', 'Object#clone | clone is deep');
 
   equal(obj2.keys().sort(), ['broken','foo'], 'Object#clone | cloned objects are themselves extended');
 
@@ -313,8 +319,16 @@ test('Object', function () {
   equal(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
   equal(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
 
+
+
   equal(Object.isEmpty({}), true, 'Object.isEmpty | object is empty');
   equal(Object.isEmpty({ broken: 'wear' }), false, 'Object.isEmpty | object is not empty');
+
+  equal(Object.isEmpty(null), true, 'Object.isEmpty | null is empty');
+  equal(Object.isEmpty(undefined), true, 'Object.isEmpty | undefined is empty');
+  equal(Object.isEmpty(''), true, 'Object.isEmpty | empty string is empty');
+  equal(Object.isEmpty(NaN), true, 'Object.isEmpty | NaN is empty');
+  equal(Object.isEmpty(0), true, 'Object.isEmpty | 0 is empty');
 
   equal(Object.extended({}).isEmpty({}), true, 'Object#isEmpty | object is empty');
   equal(Object.extended({ broken: 'wear' }).isEmpty(), false, 'Object#empty | object is not empty');
@@ -324,6 +338,9 @@ test('Object', function () {
   equal(Object.equals({}, {}), true, 'Object.equals | empty objects are equal');
   equal(Object.equals({}, { broken: 'wear' }), false, 'Object.equals | 1st empty');
   equal(Object.equals({ broken: 'wear' }, {}), false, 'Object.equals | 2nd empty');
+
+  equal(Object.equals({x: 1, y: undefined}, {x: 1, z: 2}), false, 'Object.equals | undefined keys');
+
 
   equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
   equal(Object.extended({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
