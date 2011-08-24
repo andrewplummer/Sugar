@@ -194,6 +194,10 @@ strictlyEqual = function(actual, expected, message, exceptions) {
   equal(actual === expected, true, message + ' | strict equality', exceptions, 1);
 }
 
+notEqual = function(actual, expected, message, exceptions) {
+  equal(actual !== expected, true, message + ' | strict equality', exceptions, 1);
+}
+
 equalWithWarning = function(expected, actual, message) {
   if(expected != actual) {
     addFailure(actual, expected, message, null, true);
