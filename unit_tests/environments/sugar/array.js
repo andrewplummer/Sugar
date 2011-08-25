@@ -1027,6 +1027,9 @@ test('Array', function () {
   equal(arr, [1], 'Array#remove | can remove multiple elements');
 
   equal([fn].remove(fn), [], 'Array#remove | can find via strict equality');
+  equal([1,2,3].remove([1,3]), [2], 'Array#remove | reverse concat like add');
+
+
 
   equal([1,2,2,3].exclude(), [1,2,2,3], 'Array#exclude | no argument numeric');
   equal([1,2,2,3].exclude(2), [1,3], 'Array#exclude | exclude 2s');
@@ -1049,6 +1052,10 @@ test('Array', function () {
 
   equal([1,2,2,3].exclude(2,3), [1], 'Array#exclude | can handle multiple arguments');
   equal([fn].exclude(fn), [], 'Array#exclude | can find via strict equality');
+
+  equal([1,2,3].exclude([1,3]), [2], 'Array#exclude | reverse concat like include');
+
+
 
 
   equal([1,2,2,3].removeAt(), [1,2,2,3], 'Array#removeAt | numeric | no argument');

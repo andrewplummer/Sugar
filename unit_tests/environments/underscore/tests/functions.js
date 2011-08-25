@@ -105,7 +105,7 @@ $(document).ready(function() {
     setTimeout(debouncedIncr, 90);
     setTimeout(debouncedIncr, 120);
     setTimeout(debouncedIncr, 150);
-    _.delay(function(){ ok(counter == 1, "incr was debounced"); start(); }, 220);
+    _.delay(function(){ ok(counter == 1, "incr was debounced"); start(); }, 500);
   });
 
   test("functions: once", function() {
