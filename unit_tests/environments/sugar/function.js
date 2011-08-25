@@ -47,35 +47,34 @@ test('Function', function () {
   };
 
   delayReturn = delayedFunction.delay(delayTime / 4);
-  delayedFunction.cancel();
+  var cancelReturn = delayedFunction.cancel();
+
+  equal(cancelReturn, delayedFunction, 'Function#cancel | returns a reference to itself');
 
 
   bound = (function(num, bool, str) {}).delay(1, 'wasabi');
 
-  bound = (function(one, two) {
-    equal(this, 'poo', 'Function#defer | bound object');
-    equal(one, 'one', 'Function#defer | first parameter', { mootools: 'two' });
-    equal(two, 'two', 'Function#defer | second parameter', { mootools: undefined });
-  }).bind('poo').defer('one', 'two');
-
-  bound = (function(num, bool, str) {}).defer('three');
-
-
-  // Properly unit testing the exact throttle of Function.lazy will probably be a bitch...
+  // Properly unit testing the exact throttle of Function#throttle will probably be a bitch...
   // Will have to rethink strategy here.
   var lazyCounter = 0;
-  var lazy = Function.lazy(function() {
-    lazyCounter++;
-  });
+  var lazy = (function() { lazyCounter++; }).lazy();
   lazy();
   lazy();
   lazy();
-  equal(lazyCounter, 0, "Function.lazy | hasn't executed yet");
+  equal(lazyCounter, 0, "Function#lazy | hasn't executed yet");
   setTimeout(function() {
-    equal(lazyCounter, 3, 'Function.lazy | was executed by 10ms');
+    equal(lazyCounter, 3, 'Function#lazy | was executed by 10ms');
   }, 10);
 
 
+  var lazyCounter2 = 0;
+  var lazy2 = (function() { lazyCounter2++; }).lazy();
+  lazy2();
+  lazy2();
+  lazy2.cancel();
+  setTimeout(function() {
+    equal(lazyCounter2, 0, 'Function#lazy | lazy functions can also be canceled');
+  }, 10);
   //stop();
 
 
