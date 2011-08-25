@@ -1,7 +1,8 @@
 
 test('Array', function () {
 
-  var arr, expected, expectedIndexes, count, fn = function(){};
+  var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
+
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
   // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
@@ -951,22 +952,7 @@ test('Array', function () {
   // Emulating example of Enumerable#each_slice
   equal((1).upto(10).inGroupsOf(3).map(function(g) { return g[1]; }).compact(), [2,5,8], 'Array#inGroupsOf | 1 to 10 in groups of 3 compacted');
 
-  equal([1,2,3,4,5].split(3), [[1,2],[4,5]], 'Array#split | split on 3');
-  equal([1,2,3,4,5].split(1), [[2,3,4,5]], 'Array#split | split on 1');
-  equal([1,2,3,4,5].split(2), [[1],[3,4,5]], 'Array#split | split on 2');
-  equal([1,2,3,4,5].split(4), [[1,2,3],[5]], 'Array#split | split on 4');
-  equal([1,2,3,4,5].split(5), [[1,2,3,4]], 'Array#split | split on 5');
-  equal([1,2,3,4,5].split(0), [[1,2,3,4,5]], 'Array#split | split on 0');
-  equal([1,2,3,4,5].split(6), [[1,2,3,4,5]], 'Array#split | split on 6');
-  equal([1,2,3,4,5,6,7,8,9,10].split(function(i) { return i % 3 == 0; }), [[1,2],[4,5],[7,8],[10]], 'Array#split | split on every 3rd');
-  equal(['wherever','you','go','whatever','you','do'].split(function(str) { return str.length == 2; }), [['wherever','you'],['whatever','you']], 'Array#split | split on strings with length of 2');
-  equal(['wherever','you','go','whatever','you','do'].split(function(str) { return str.length == 3; }), [['wherever'],['go','whatever'],['do']], 'Array#split | split on strings with length of 3');
-  equal(['wherever','you','go','whatever','you','do'].split(function(str) { return str.length < 4; }), [['wherever'],['whatever']], 'Array#split | split on strings with length less than 4');
-  equal(['wherever','you','go','whatever','you','do'].split(/^[gd]o/), [['wherever','you'],['whatever','you']], 'Array#split | split on regex | split on strings with length of 2');
 
-
-  var f1 = function(){};
-  var f2 = function(){};
 
   equal([1,2,3].compact(), [1,2,3], 'Array#compact | 1,2,3');
   equal([1,2,null,3].compact(), [1,2,3], 'Array#compact | 1,2,null,3');
@@ -1026,7 +1012,7 @@ test('Array', function () {
   arr.remove(2,3);
   equal(arr, [1], 'Array#remove | can remove multiple elements');
 
-  equal([fn].remove(fn), [], 'Array#remove | can find via strict equality');
+  equal([f1].remove(f1), [], 'Array#remove | can find via strict equality');
   equal([1,2,3].remove([1,3]), [2], 'Array#remove | reverse concat like add');
 
 
@@ -1051,7 +1037,7 @@ test('Array', function () {
   equal(arr, [1,2,3], 'Array#exclude | should not affect the original array');
 
   equal([1,2,2,3].exclude(2,3), [1], 'Array#exclude | can handle multiple arguments');
-  equal([fn].exclude(fn), [], 'Array#exclude | can find via strict equality');
+  equal([f1].exclude(f1), [], 'Array#exclude | can find via strict equality');
 
   equal([1,2,3].exclude([1,3]), [2], 'Array#exclude | reverse concat like include');
 
