@@ -336,13 +336,13 @@ var CompatibleMethods = [
         name: 'defer',
         method: function(fn){
           var args = Array.prototype.slice.call(arguments, 1);
-          return Function.prototype.defer.apply(fn, args);
+          return Function.prototype.lazy.apply(fn, args);
         }
       },
       {
         name: 'throttle',
         method: function(fn, wait){
-          return Function.lazy(fn, wait);
+          return Function.prototype.lazy.apply(fn, wait);
         }
       },
       // Utility
