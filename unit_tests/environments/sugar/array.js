@@ -631,6 +631,7 @@ test('Array', function () {
   equal([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
 
   equal([1,2,3].intersect([3,4,5],[0,1]), [1,3], 'Array#intersect | handles multiple arguments');
+  equal([1,1].intersect(1,1,[1,1]), [1], 'Array#intersect | assure uniqueness');
 
   arr = [1,2,3];
   arr.intersect([3,4,5]);

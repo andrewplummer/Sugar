@@ -6,7 +6,9 @@ var results;
 var currentTest;
 
 var syncTestsRunning = true;
-var runningAsyncTests = 0;
+
+// Capturing the timers here b/c Mootools (and maybe other frameworks) may clear a timeout that
+// it kicked off after this script is loaded, which would throw off a simple incrementing mechanism.
 var capturedTimers = [];
 
 // This declaration has the effect of pulling setTimeout/clearTimeout off the window's prototype
@@ -45,7 +47,7 @@ var arrayEqual = function(one, two) {
   for(i = 0; i < one.length; i++) {
     if(typeof one[i] == 'object' && one[i] != null && !deepEqual(one[i], two[i])) {
       return false;
-    } else if((typeof one != 'object' && typeof two != 'object') && one[i] !== two[i]) {
+    } else if((typeof one[i] != 'object' && typeof two[i] != 'object') && one[i] !== two[i]) {
       return false;
     }
   }
@@ -90,7 +92,7 @@ var getMeta = function(stack) {
 }
 
 var checkCanFinish = function() {
-  if(!syncTestsRunning && runningAsyncTests == 0) {
+  if(!syncTestsRunning && capturedTimers.length == 0) {
     testsFinished();
   }
 }
@@ -148,10 +150,9 @@ test = function(name, fn) {
 }
 
 setTimeout = function(fn, delay) {
-  runningAsyncTests++;
   var timer = nativeSetTimeout(function() {
     fn.apply(this, arguments);
-    runningAsyncTests--;
+    removeCapturedTimer(timer);
     checkCanFinish();
   }, delay);
   capturedTimers.push(timer);
@@ -159,13 +160,16 @@ setTimeout = function(fn, delay) {
 }
 
 clearTimeout = function(timer) {
-  var index = capturedTimers.indexOf(timer);
-  if(index > 0) {
-    capturedTimers.splice(index, 1);
-    runningAsyncTests--;
-  }
+  removeCapturedTimer(timer);
   return nativeClearTimeout(timer);
 }
+
+var removeCapturedTimer = function(timer) {
+  var index = capturedTimers.indexOf(timer);
+  if(index !== -1) {
+    capturedTimers.splice(index, 1);
+  }
+};
 
 equal = function(actual, expected, message, exceptions, stack) {
   exceptions = exceptions || {};
