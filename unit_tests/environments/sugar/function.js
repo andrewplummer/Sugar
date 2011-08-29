@@ -1,6 +1,6 @@
 test('Function', function () {
 
-  var bound,obj,result;
+  var bound,obj,result,num,fn;
 
   obj = { foo: 'bar' };
 
@@ -35,7 +35,6 @@ test('Function', function () {
     equal(one, 'one', 'Function#delay | first parameter', { mootools: 'two' });
     equal(two, 'two', 'Function#delay | second parameter', { mootools: undefined });
     equal(shouldBeFalse, false, 'Function#delay | cancel is working', { prototype: true, mootools: true });
-    //start();
   };
 
   delayReturn = delayedFunction.delay(delayTime, 'one', 'two');
@@ -54,13 +53,18 @@ test('Function', function () {
 
   bound = (function(num, bool, str) {}).delay(1, 'wasabi');
 
-  // Properly unit testing the exact throttle of Function#throttle will probably be a bitch...
+  // Properly unit testing Function#lazy will probably be a bitch...
   // Will have to rethink strategy here.
+
   var lazyCounter = 0;
-  var lazy = (function() { lazyCounter++; }).lazy();
-  lazy();
-  lazy();
-  lazy();
+  var lazyExpected = [['maybe','a',1],['baby','b',2],['you lazy','c',3]];
+  var fn = (function(one, two) {
+    equal([this, one, two], lazyExpected[lazyCounter], 'Function#lazy | scope and arguments are correct');
+    lazyCounter++;
+  }).lazy();
+  fn.call('maybe', 'a', 1);
+  fn.call('baby', 'b', 2);
+  fn.call('you lazy', 'c', 3);
   equal(lazyCounter, 0, "Function#lazy | hasn't executed yet");
   setTimeout(function() {
     equal(lazyCounter, 3, 'Function#lazy | was executed by 10ms');
@@ -75,7 +79,39 @@ test('Function', function () {
   setTimeout(function() {
     equal(lazyCounter2, 0, 'Function#lazy | lazy functions can also be canceled');
   }, 10);
-  //stop();
+
+
+
+
+
+  // Debounce
+
+  var debounceCounter = 0;
+  var debounceExpected = [['leia', 4],['han solo', 6]];
+  var debounced = (function(one){
+    equal([this, one], debounceExpected[debounceCounter], 'Function#debounce | scope and arguments are correct');
+    debounceCounter++;
+  }).debounce(50);
+
+  debounced.call('3p0', 1);
+  debounced.call('r2d2', 2);
+  debounced.call('chewie', 3);
+
+  setTimeout(function() {
+    debounced.call('leia', 4);
+  }, 5);
+
+  setTimeout(function() {
+    debounced.call('luke', 5);
+    debounced.call('han solo', 6);
+  }, 200);
+
+
+  setTimeout(function() {
+    equal(debounceCounter, 2, 'Function#debounce | counter is correct');
+  }, 300);
+
+
 
 
 
