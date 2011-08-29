@@ -248,7 +248,12 @@ test('Object', function () {
   equal(Object.clone({ foo: { broken: 'wear' }}), { foo: { broken: 'wear' }}, 'Object.clone | deep clone');
   equal(Object.clone({ foo: 'bar', broken: 1, wear: /foo/ }) == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object.clone | fully cloned');
 
-  var obj1 = {
+
+  var obj1, obj2, obj3;
+
+
+
+  obj1 = {
     broken: 'wear',
     foo: {
       jumpy: 'jump',
@@ -257,7 +262,7 @@ test('Object', function () {
       }
     }
   }
-  var obj2 = Object.clone(obj1);
+  obj2 = Object.clone(obj1);
   equal(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equal(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
@@ -269,15 +274,15 @@ test('Object', function () {
     }
   };
   obj2 = Object.clone(obj1);
+  obj3 = Object.clone(obj1, true);
 
   obj1.foo.bar = ['a','b','c'];
   equal(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
   equal(obj2.foo.bar, ['a','b','c'], 'Object#clone | clone is shallow');
 
 
-  obj2 = Object.clone(obj1, true);
   obj1.foo.bar = ['a','b','c'];
-  equal(obj2.foo.bar, [1,2,3], 'Object#clone | clone is deep', { prototype: ['a','b','c'] });
+  equal(obj3.foo.bar, [1,2,3], 'Object#clone | clone is deep', { prototype: ['a','b','c'] });
 
 
   // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
@@ -288,7 +293,9 @@ test('Object', function () {
 
   equal(Object.extended({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
 
-  var obj1 = Object.extended({
+  var obj1, obj2, obj3;
+
+  obj1 = Object.extended({
     broken: 'wear',
     foo: {
       jumpy: 'jump',
@@ -298,7 +305,7 @@ test('Object', function () {
     }
   });
   obj2 = obj1.clone();
-  var obj3 = obj1.clone(true);
+  obj3 = obj1.clone(true);
 
   equal(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
@@ -314,10 +321,11 @@ test('Object', function () {
     }
   });
   obj2 = obj1.clone();
+  obj3 = obj1.clone(true);
 
   obj1.foo.bar[1] = 'b';
   equal(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
-  equal(obj2.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+  equal(obj3.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
 
 
 
