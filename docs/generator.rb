@@ -3,7 +3,7 @@ require 'rubygems'
 require 'json'
 require 'pp'
 
-fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/methods.php'
+fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/javascripts/methods.js'
 
 fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
@@ -185,6 +185,6 @@ end
 
 if File.exists?(fileout)
   File.open(fileout, 'w') do |f|
-    f.puts fileout_html.gsub(/SugarModules = .+/, "SugarModules = #{modules.to_json};")
+    f.puts "SugarModules = #{modules.to_json};"
   end
 end
