@@ -139,6 +139,43 @@ test('Function', function () {
   })();
 
 
+  // Function#once
+
+  (function() {
+    var fn, obj = { foo:'bar' }, counter = 0;
+    fn = (function(one, two) {
+      counter++;
+      equal(this, obj, 'Function#once | scope is properly set');
+      equal(one, 'one', 'Function#once | first argument is passed');
+      equal(two, 'two', 'Function#once | second argument is passed');
+      return counter * 30;
+    }).once();
+
+    equal(fn.call(obj, 'one', 'two'), 30, 'Function#once | first call calculates the result');
+    equal(fn.call(obj, 'one', 'two'), 30, 'Function#once | second call memoizes the result');
+    equal(fn.call(obj, 'one', 'two'), 30, 'Function#once | third call memoizes the result');
+    equal(fn.call(obj, 'one', 'two'), 30, 'Function#once | fourth call memoizes the result');
+    equal(fn.call(obj, 'one', 'two'), 30, 'Function#once | fifth call memoizes the result');
+
+    equal(counter, 1, 'Function#once | counter is only incremented once');
+  })();
+
+
+  (function() {
+    var fn, counter = 0;
+    fn = (function(one, two) {
+      counter++;
+    }).once();
+
+    fn.call();
+    fn.call();
+    fn.call();
+
+    equal(counter, 1, 'Function#once | returning undefined will not affect the number of calls');
+  })();
+
+
+
 
 
 });
