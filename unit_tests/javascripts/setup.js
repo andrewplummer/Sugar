@@ -59,9 +59,7 @@ var objectEqual = function(one, two) {
   for(key in one) {
     if(!one.hasOwnProperty(key)) continue;
     onep++;
-    if(typeof one[key] == 'object' && one[key] != null && !deepEqual(one[key], two[key])) {
-      return false;
-    } else if((typeof one != 'object' && typeof two != 'object') && one[key] !== two[key]) {
+    if(!isEqual(one[key], two[key])) {
       return false;
     }
   }
@@ -70,6 +68,30 @@ var objectEqual = function(one, two) {
     twop++;
   }
   return onep === twop;
+}
+
+var isEqual = function(one, two) {
+  if(one === nullScope && two === nullScope) {
+    // Null scope should always be a strict equal check
+    return true;
+  } else if(typeof two == 'number' && typeof one == 'number' && isNaN(two) && isNaN(one)) {
+    // NaN is NaN: equal
+    return true;
+  } else if(typeof two == 'object' && typeof one == 'object' && two != null && one != null && deepEqual(two, one)) {
+    // Deeply equal
+    return true;
+  } else if(two === null && one === null) {
+    // null is null: equal
+    return true;
+  } else if(two === undefined && one === undefined) {
+    // undefined is undefined: equal
+    return true;
+  } else if(isInstanceOf(one, typeof two) && two == one) {
+    // Strictly equal
+    return true;
+  } else {
+    return false;
+  }
 }
 
 var addFailure = function(actual, expected, message, stack, warning) {
@@ -177,19 +199,7 @@ equal = function(actual, expected, message, exceptions, stack) {
     expected = exceptions[environment];
   }
   currentTest.assertions++;
-  if(actual === nullScope && expected === nullScope) {
-    // Null scope should always be a strict equal check
-  } else if(typeof expected == 'number' && typeof actual == 'number' && isNaN(expected) && isNaN(actual)) {
-    // NaN is NaN: equal
-  } else if(typeof expected == 'object' && typeof actual == 'object' && expected != null && actual != null && deepEqual(expected, actual)) {
-    // Deeply equal
-  } else if(expected === null && actual === null) {
-    // null is null: equal
-  } else if(expected === undefined && actual === undefined) {
-    // undefined is undefined: equal
-  } else if(isInstanceOf(actual, typeof expected) && expected == actual) {
-    // Strictly equal
-  } else {
+  if(!isEqual(actual, expected)) {
     addFailure(actual, expected, message, stack);
   }
 }
