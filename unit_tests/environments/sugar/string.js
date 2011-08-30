@@ -926,15 +926,6 @@ test('String', function () {
   equal('<b>bold</b> and <i>italic</i> and <a>link</a>'.removeTags(['b','i']), ' and  and <a>link</a>', 'String#removeTags | handles multi args');
 
 
-  equal('foo=bar&moo=car'.toObject(), {foo:'bar',moo:'car'}, 'String#toObject | basic');
-  equal('foo=bar&moo=3'.toObject(), {foo:'bar',moo:3}, 'String#toObject | with numbers');
-  equal('foo=bar&moo=true'.toObject(), {foo:'bar',moo:true}, 'String#toObject | with true');
-  equal('foo=bar&moo=false'.toObject(), {foo:'bar',moo:false}, 'String#toObject | with false');
-
-
-
-
-
 
   strictlyEqual(''.escapeRegExp(), '', 'String#escapeRegExp | blank');
   strictlyEqual('|'.escapeRegExp(), '\\|', 'String#escapeRegExp | pipe');

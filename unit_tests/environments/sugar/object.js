@@ -436,5 +436,33 @@ test('Object', function () {
 
   restoreObjectPrototypeMethods();
 
+
+
+
+  // Object.fromQueryString
+
+  equal(Object.fromQueryString('foo=bar&moo=car'), {foo:'bar',moo:'car'}, 'String#fromQueryString | basic');
+  equal(Object.fromQueryString('foo=bar&moo=3'), {foo:'bar',moo:3}, 'String#fromQueryString | with numbers');
+  equal(Object.fromQueryString('foo=bar&moo=true'), {foo:'bar',moo:true}, 'String#fromQueryString | with true');
+  equal(Object.fromQueryString('foo=bar&moo=false'), {foo:'bar',moo:false}, 'String#fromQueryString | with false');
+  equal(Object.fromQueryString('foo=bar3'), { foo: 'bar3' }, 'String#fromQueryString | number in back');
+  equal(Object.fromQueryString('foo=3bar'), { foo: '3bar' }, 'String#fromQueryString | number up front');
+  equal(Object.fromQueryString('foo=345'), { foo: 345 }, 'String#fromQueryString | numbers only');
+  equal(Object.fromQueryString('foo=&bar='), { foo: '', bar: '' }, 'String#fromQueryString | undefined params');
+  equal(Object.fromQueryString('foo[]=bar&foo[]=car'), { foo: ['bar','car'] }, 'String#fromQueryString | handles array params');
+  equal(Object.fromQueryString('foo[bar]=tee&foo[car]=hee'), { foo: { bar: 'tee', car: 'hee' } }, 'String#fromQueryString | handles hash params');
+  equal(Object.fromQueryString('foo[0]=a&foo[1]=b&foo[2]=c'), { foo: ['a','b','c'] }, 'String#fromQueryString | handles hash params');
+
+  var sparse = [];
+  sparse[3] = 'hardy';
+  sparse[10] = 'har har';
+  equal(Object.fromQueryString('foo[3]=hardy&foo[10]=har har'), { foo: sparse }, 'String#fromQueryString | handles hash params');
+
+  //equal('text=What%20is%20going%20on%20here??&url=http://animalsbeingdicks.com/page/2'.fromQueryString(), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles escaped params');
+
+
+
+
+
 });
 
