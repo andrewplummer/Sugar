@@ -1,3 +1,53 @@
+v0.9.5
+=====
+
+### API Changes ###
+
+- .sugar method added to all classes to reinstate Sugar methods conditionally.
+- Object.clone is now shallow by default, with an option for deep cloning
+- Object.clone arguments must now be of type "object"
+- Object.fromQueryString now takes the place of String#toObject.
+- Nested object/array param parsing now possible with Object.fromQueryString.
+- Array#remove now accepts unlimited parameters
+- Array#exclude now accepts unlimited parameters
+- Array#union now accepts unlimited parameters
+- Array#subtract now accepts unlimited parameters
+- Array#intersect now accepts unlimited parameters
+- Array#split deprecated
+- Array#compact no longer removes functions (bug)
+- Array#compact now accepts flag to compact all falsy values
+- Number#upto and Number#downto now accept a third parameter to traverse in multiples of > 1
+- Number#pad now accepts a third parameter that is the base of the number
+- Number#hex now accepts a parameter to pad the resulting string with a default of 1
+- String#escapeHTML <<< THIS IS NEW?!?!?
+- String#truncate added. Will truncate a string without breaking words.
+- String#toObject now refactored to Object.fromQueryString
+
+
+STOPPED AT DATE MODULE LINE 3564
+
+### Internal Changes ###
+
+- extendWithNativeCondition removed. Functionality now contained in extend
+- shuffled and removed some dependencies to make it easier to extract the date module
+- more robust equality comparison:
+- multiArgs added to collect arguments
+- array indexes now checked with hasProperty instead of hasOwnProperty
+- object builders are now going through extend so they can store their references
+- Object.clone refactored to use multiArgs
+- Object.isEmpty now returns false if passed argument itself is falsy
+- String#stripTags refactored to use multiArgs
+- String#removeTags refactored to use multiArgs
+-- "null" now taken into consideration for objects
+-- object key length compared
+-- strict equality matches in multiMatch
+
+
+v0.9.4
+=====
+
+- Emergency fix for Array#compact incorrectly detecting NaN.
+
 v0.9.3
 =====
 
