@@ -58,7 +58,7 @@ test('Function', function () {
     var counter = 0;
     var expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3]];
     var fn = (function(one, two) {
-      equal([this, one, two], expected[counter], 'Function#lazy | scope and arguments are correct');
+      equal([this.toString(), one, two], expected[counter], 'Function#lazy | scope and arguments are correct');
       counter++;
     }).lazy();
     fn.call('maybe', 'a', 1);
@@ -94,7 +94,7 @@ test('Function', function () {
   setTimeout(function(){
     var fn, ret, counter = 0; expected = [['leia', 5],['han solo', 7]];
     var fn = (function(one){
-      equal([this, one], expected[counter], 'Function#debounce | scope and arguments are correct');
+      equal([this.toString(), one], expected[counter], 'Function#debounce | scope and arguments are correct');
       counter++;
     }).debounce(50);
 
