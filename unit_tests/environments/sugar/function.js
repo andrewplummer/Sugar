@@ -36,7 +36,7 @@ test('Function', function () {
       equal(two, 'two', 'Function#delay | second parameter', { mootools: undefined });
     };
     ref = fn.delay(delayTime, 'one', 'two');
-    equal(ref, fn, 'Function#delay | returns the function', { mootools: 'number' });
+    equal(typeof ref, 'function', 'Function#delay | returns the function', { prototype: 'number', mootools: 'number' });
   })();
 
   (function(){

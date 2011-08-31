@@ -11,7 +11,9 @@
     <!-- jquery -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
     <!-- environment -->
-    <script type="text/javascript" src="prototype-1.7.js"></script>
+    <!--<script type="text/javascript" src="prototype-1.7.js"></script>-->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js"></script>
+
     <!-- sugar -->
     <script type="text/javascript" src="../../../lib/sugar.js"></script>
     <!--<script type="text/javascript" src="../../../javascripts/sugar-0.9.4.min.js"></script>-->
@@ -28,7 +30,7 @@
     <!-- tests -->
     <script type="text/javascript">
       registerEnvironment('prototype', [
-        /*{
+        {
           name: 'sugar',
           tests: [
             '../sugar/array.js',
@@ -41,7 +43,7 @@
             '../sugar/es5.js'
           ]
         },
-        {
+       {
           name: 'prototype',
           tests: [
             'tests/array_test.js',
@@ -57,7 +59,7 @@
             'tests/regexp_test.js',
             'tests/string_test.js'
           ]
-        },*/
+        },
         {
           name: 'prototype overridden',
           tests: [

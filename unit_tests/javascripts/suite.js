@@ -69,7 +69,7 @@
 
   var getStringified = function(p) {
     if(typeof JSON !== 'undefined') return JSON.stringify(p);
-    if(typeof p !== 'object') return p.toString();
+    if(typeof p !== 'object') return String(p);
     var isArray = p.join;
     var str = isArray ? '[' : '{';
     var arr;
