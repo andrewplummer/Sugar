@@ -451,16 +451,25 @@ test('Object', function () {
   equal(Object.fromQueryString('foo=&bar='), { foo: '', bar: '' }, 'String#fromQueryString | undefined params');
   equal(Object.fromQueryString('foo[]=bar&foo[]=car'), { foo: ['bar','car'] }, 'String#fromQueryString | handles array params');
   equal(Object.fromQueryString('foo[bar]=tee&foo[car]=hee'), { foo: { bar: 'tee', car: 'hee' } }, 'String#fromQueryString | handles hash params');
-  equal(Object.fromQueryString('foo[0]=a&foo[1]=b&foo[2]=c'), { foo: ['a','b','c'] }, 'String#fromQueryString | handles hash params');
+  equal(Object.fromQueryString('foo[0]=a&foo[1]=b&foo[2]=c'), { foo: ['a','b','c'] }, 'String#fromQueryString | handles array indexes');
+  equal(Object.fromQueryString('foo[cap][map]=3'), { foo: { cap: { map: 3 } } }, 'String#fromQueryString | handles array indexes');
+  equal(Object.fromQueryString('foo[cap][map][]=3'), { foo: { cap: { map: [3] } } }, 'String#fromQueryString | nested with trailing array');
+  equal(Object.fromQueryString('foo[moo]=1&bar[far]=2'), { foo: { moo: 1 }, bar: { far: 2 }}, 'String#fromQueryString | sister objects');
+  equal(Object.fromQueryString('f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f'), { f: ['a','b','c','d','e','f'] }, 'String#fromQueryString | large array');
+  equal(Object.fromQueryString('foo[0][]=a&foo[1][]=b'), { foo: [['a'],['b']] }, 'String#fromQueryString | nested arrays separate');
+  equal(Object.fromQueryString('foo[0][0]=3&foo[0][1]=4'), { foo: [[3,4]] }, 'String#fromQueryString | nested arrays together');
+  equal(Object.fromQueryString('foo[][]=3&foo[][]=4'), { foo: [[3],[4]] }, 'String#fromQueryString | nested arrays');
+
+  equal(Object.fromQueryString('foo[]=bar&foo[]=car', false), { 'foo[]': 'car' }, 'String#fromQueryString | disallows nested params');
 
   var sparse = [];
   sparse[3] = 'hardy';
   sparse[10] = 'har har';
-  equal(Object.fromQueryString('foo[3]=hardy&foo[10]=har har'), { foo: sparse }, 'String#fromQueryString | handles hash params');
+  equal(Object.fromQueryString('foo[3]=hardy&foo[10]=har har'), { foo: sparse }, 'String#fromQueryString | constructed arrays can be sparse');
 
-  //equal('text=What%20is%20going%20on%20here??&url=http://animalsbeingdicks.com/page/2'.fromQueryString(), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles escaped params');
+  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles escaped params');
 
-
+  equal(Object.fromQueryString('http://fake.com?foo=bar'), { foo: 'bar' }, 'String#fromQueryString | handles whole URLs');
 
 
 
