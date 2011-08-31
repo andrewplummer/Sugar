@@ -266,7 +266,7 @@ test('Object', function () {
   equal(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equal(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
-  equal(obj2.foo.jumpy, 'hump', 'Object.clone | clone is shallow');
+  equal(obj2.foo.jumpy, 'hump', 'Object.clone | clone is shallow', { mootools: 'jump' });
 
   obj1 = {
     foo: {
@@ -278,7 +278,7 @@ test('Object', function () {
 
   obj1.foo.bar = ['a','b','c'];
   equal(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
-  equal(obj2.foo.bar, ['a','b','c'], 'Object#clone | clone is shallow');
+  equal(obj2.foo.bar, ['a','b','c'], 'Object#clone | clone is shallow', { mootools: [1,2,3] });
 
 
   obj1.foo.bar = ['a','b','c'];
