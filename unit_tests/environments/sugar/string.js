@@ -1105,20 +1105,20 @@ test('String', function () {
   equal('almost there'.truncate(11), 'almost there', 'String#truncate | will not add more than the original string');
 
 
-  equal('Gotta be an entire sentence.'.truncate(20, true), 'Gotta be an entire s...', 'String#truncate | split words | 20');
-  equal('Gotta be an entire sentence.'.truncate(18, true), 'Gotta be an entire...', 'String#truncate | split words | 18');
-  equal('Gotta be an entire sentence.'.truncate(17, true), 'Gotta be an entir...', 'String#truncate | split words | 17');
-  equal('Gotta be an entire sentence.'.truncate(11, true), 'Gotta be an...', 'String#truncate | split words | 11');
-  equal('Gotta be an entire sentence.'.truncate(10, true), 'Gotta be a...', 'String#truncate | split words | 10');
-  equal('Gotta be an entire sentence.'.truncate(8, true), 'Gotta be...', 'String#truncate | split words | 8');
-  equal('Gotta be an entire sentence.'.truncate(7, true), 'Gotta b...', 'String#truncate | split words | 7');
-  equal('Gotta be an entire sentence.'.truncate(3, true), 'Got...', 'String#truncate | split words | 3');
+  equal('Gotta be an entire sentence.'.truncate(20, '...', true), 'Gotta be an entire s...', 'String#truncate | split words | 20');
+  equal('Gotta be an entire sentence.'.truncate(18, '...', true), 'Gotta be an entire...', 'String#truncate | split words | 18');
+  equal('Gotta be an entire sentence.'.truncate(17, '...', true), 'Gotta be an entir...', 'String#truncate | split words | 17');
+  equal('Gotta be an entire sentence.'.truncate(11, '...', true), 'Gotta be an...', 'String#truncate | split words | 11');
+  equal('Gotta be an entire sentence.'.truncate(10, '...', true), 'Gotta be a...', 'String#truncate | split words | 10');
+  equal('Gotta be an entire sentence.'.truncate(8, '...', true), 'Gotta be...', 'String#truncate | split words | 8');
+  equal('Gotta be an entire sentence.'.truncate(7, '...', true), 'Gotta b...', 'String#truncate | split words | 7');
+  equal('Gotta be an entire sentence.'.truncate(3, '...', true), 'Got...', 'String#truncate | split words | 3');
 
 
-  equal('Gotta be an entire sentence.'.truncate(22, false, 'hooha'), 'Gotta be an entirehooha', 'String#truncate | different ellipsis');
-  equal('Gotta be an entire sentence.'.truncate(22, true, 'hooha'), 'Gotta be an entire senhooha', 'String#truncate | different ellipsis');
+  equal('Gotta be an entire sentence.'.truncate(22, 'hooha', false), 'Gotta be an entirehooha', 'String#truncate | different ellipsis');
+  equal('Gotta be an entire sentence.'.truncate(22, 'hooha', true), 'Gotta be an entire senhooha', 'String#truncate | different ellipsis');
 
-  equal('booh pooh mooh'.truncate(6, false, 'hooha'), 'boohhooha', 'String#truncate | only not include when the ellipsis is all the same character');
+  equal('booh pooh mooh'.truncate(6, 'hooha', false), 'boohhooha', 'String#truncate | only not include when the ellipsis is all the same character');
 
   equal('こんな　ストリングは　あまり　ない　と　思う　けど。。。'.truncate(6), 'こんな...', 'String#truncate | correctly finds spaces in Japanese');
   equal('한국어 도 이렇게 할 수 있어요?'.truncate(7), '한국어 도...', 'String#truncate | correctly finds spaces in Korean');
