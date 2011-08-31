@@ -630,8 +630,7 @@ test('Array', function () {
   equal([1,1,3].intersect([1,5,6]), [1], 'Array#intersect | 1,1,3 + 1,5,6');
   equal([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
 
-  equal([1,2,3].intersect([3,4,5],[0,1]), [1,3], 'Array#intersect | handles multiple arguments');
-  equal([1,1].intersect(1,1,[1,1]), [1], 'Array#intersect | assure uniqueness');
+  equal([1,2,3].intersect([3,4,5],[0,1]), [1,3], 'Array#intersect | handles multiple arguments', { prototype: [3] });
 
   arr = [1,2,3];
   arr.intersect([3,4,5]);
@@ -640,6 +639,7 @@ test('Array', function () {
 
   // Prototype will blow up here
   skipEnvironments(['prototype'], function(){
+    equal([1,1].intersect(1,1,[1,1]), [1], 'Array#intersect | assure uniqueness');
     equal([1,2,3].intersect(1), [1], 'Array#intersect | 1,2,3 + 1');
   });
 
@@ -970,12 +970,12 @@ test('Array', function () {
   equal([null,[null],[false,[null,undefined,3]]].compact(), [[],[false,[3]]], 'Array#compact | deep compacts as well', { prototype: [[null],[false,[null,undefined,3]]] });
   equal([null,null,null,[null],null].compact(), [[]], "Array#compact | deep compact doesn't have index conflicts", { prototype: [[null]] });
 
-  equal([false,false,false].compact(true), [], 'Array#compact | falsy | false is removed');
-  equal([0,0].compact(true), [], 'Array#compact | falsy | 0');
-  equal(['',''].compact(true), [], 'Array#compact | falsy | empty string');
+  equal([false,false,false].compact(true), [], 'Array#compact | falsy | false is removed', { prototype: [false,false,false] });
+  equal([0,0].compact(true), [], 'Array#compact | falsy | 0', { prototype: [0,0] });
+  equal(['',''].compact(true), [], 'Array#compact | falsy | empty string', { prototype: ['',''] });
   equal([' ',' '].compact(true), [' ',' '], 'Array#compact | falsy | strings with spaces are kept');
   equal([8,3].compact(true), [8,3], 'Array#compact | falsy | numbers are kept');
-  equal([false,undefined,false,null,NaN].compact(true), [], 'Array#compact | falsy | others are also handled');
+  equal([false,undefined,false,null,NaN].compact(true), [], 'Array#compact | falsy | others are also handled', { prototype: [false,false,NaN] });
 
   equal([1,2,2,3].count(), 4, 'Array#count | no arugment numeric');
   equal([1,2,2,3].count(2), 2, 'Array#count | count 2s');
