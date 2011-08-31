@@ -621,7 +621,7 @@ test('Array', function () {
   equal([3].intersect([]), [], 'Array#intersect | 3 + empty array');
   equal([].intersect([]), [], 'Array#intersect | 2 empty arrays');
   equal([null].intersect([]), [], 'Array#intersect | [null] + empty array');
-  equal([null].intersect([null]), [null], 'Array#intersect | [null] + [null]', { prototype: [] });
+  equal([null].intersect([null]), [null], 'Array#intersect | [null] + [null]', { prototype: [], mootools: [] });
   equal([false].intersect([false]), [false], 'Array#intersect | [false] + [false]', { prototype: [] });
   equal([false].intersect([0]), [], 'Array#intersect | [false] + [0]');
   equal([false].intersect([null]), [], 'Array#intersect | [false] + [null]');
@@ -655,7 +655,7 @@ test('Array', function () {
   equal([3].subtract([]), [3], 'Array#subtract | [3] + empty array');
   equal([].subtract([]), [], 'Array#subtract | 2 empty arrays');
   equal([null].subtract([]), [null], 'Array#subtract | [null] + empty array');
-  equal([null].subtract([null]), [], 'Array#subtract | [null] + [null]');
+  equal([null].subtract([null]), [], 'Array#subtract | [null] + [null]', { mootools: [null] });
   equal([false].subtract([false]), [], 'Array#subtract | [false] + [false]');
   equal([false].subtract([0]), [false], 'Array#subtract | [false] + [0]');
   equal([false].subtract([null]), [false], 'Array#subtract | [false] + [null]');
