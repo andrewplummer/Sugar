@@ -45,9 +45,7 @@ var deepEqual = function(one, two) {
 var arrayEqual = function(one, two) {
   var i;
   for(i = 0; i < one.length; i++) {
-    if(typeof one[i] == 'object' && one[i] != null && !deepEqual(one[i], two[i])) {
-      return false;
-    } else if((typeof one[i] != 'object' && typeof two[i] != 'object') && one[i] !== two[i]) {
+    if(!isEqual(one[i], two[i])) {
       return false;
     }
   }
