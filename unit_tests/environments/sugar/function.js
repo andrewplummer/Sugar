@@ -45,6 +45,8 @@ test('Function', function () {
       shouldBeFalse = true;
     };
     fn.delay(delayTime / 4);
+    fn.delay(delayTime / 5);
+    fn.delay(delayTime / 6);
     ref = fn.cancel();
     equal(ref, fn, 'Function#cancel | returns a reference to the function');
     setTimeout(function() {
