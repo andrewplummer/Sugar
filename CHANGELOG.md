@@ -5,7 +5,7 @@ v0.9.5
 
 - .sugar method added to all classes to reinstate Sugar methods conditionally.
 - Object.clone is now shallow by default, with an option for deep cloning
-- Object.clone arguments must now be of type "object"
+- Object.merge will now ignore non-objects
 - Object.fromQueryString now takes the place of String#toObject.
 - Nested object/array param parsing now possible with Object.fromQueryString.
 - Array#remove now accepts unlimited parameters
@@ -29,8 +29,6 @@ v0.9.5
 - Function#after added
 - Function#once added
 
-
-STOPPED AT DATE MODULE LINE 3564
 
 ### Internal Changes ###
 
