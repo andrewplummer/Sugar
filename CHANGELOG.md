@@ -19,9 +19,15 @@ v0.9.5
 - Number#upto and Number#downto now accept a third parameter to traverse in multiples of > 1
 - Number#pad now accepts a third parameter that is the base of the number
 - Number#hex now accepts a parameter to pad the resulting string with a default of 1
-- String#escapeHTML <<< THIS IS NEW?!?!?
+- String#escapeHTML added
 - String#truncate added. Will truncate a string without breaking words.
 - String#toObject now refactored to Object.fromQueryString
+- Function.lazy refactored to Function#lazy
+- Function#lazy functions can now be cancelled via Function#cancel
+- Function#defer deprecated -> use Function#delay instead
+- Function#debounce added
+- Function#after added
+- Function#once added
 
 
 STOPPED AT DATE MODULE LINE 3564
