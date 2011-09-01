@@ -1,12 +1,16 @@
 test('Date', function () {
 
 
+  Date.registerLanguage('en', {
+    months: ['January','February','March','April','May','June','July','September','October','November','December']
+  });
+
+  return;
+
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
-  if(Object.isFunction(Date.create())) {
-    Date.create = Date.make;
-  };
+  Date.sugar('create');
 
 
   var day, d, o;
@@ -1869,5 +1873,18 @@ test('Date', function () {
 
   equal(date1.isValid(), false, 'Date#clone | source element is invalid');
   equal(date2.isValid(), false, 'Date#clone | cloned element is also invalid');
+
+
+
+
+  // Begin multi-lingual dates
+
+
+
+  //equal(Date.create('5 de enero de 2012', 'es').isValid(), true, 'Date#create | handles a language code');
+
+
+
+
 
 });
