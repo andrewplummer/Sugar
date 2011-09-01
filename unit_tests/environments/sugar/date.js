@@ -1238,6 +1238,9 @@ test('Date', function () {
   equal(new Date(2001,5,4,12,22,34,445).is(new Date(2001,5,4,12,22,34,444)), false, 'Date#is | straight dates passed in are accurate to the millisecond');
   equal(new Date(2001,5,4,12,22,34,445).is(new Date(2001,5,4,12,22,34,446)), false, 'Date#is | straight dates passed in are accurate to the millisecond');
 
+  equal(Date.create('3 hours ago').is('now', 'day'), true, 'Date#is | accepts string precision');
+  equal(Date.create('3 hours ago').is('now', 'bloopie'), false, 'Date#is | does not die on bad string-based precision');
+
 
   equal(Date.create('2008').isLeapYear(), true, 'Date#leapYear | 2008');
   equal(Date.create('2009').isLeapYear(), false, 'Date#leapYear | 2009');
