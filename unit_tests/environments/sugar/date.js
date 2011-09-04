@@ -2,9 +2,20 @@ test('Date', function () {
 
 
   Date.registerLanguage('en', {
-    months: ['January','February','March','April','May','June','July','September','October','November','December']
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+    units: ['millisecond','second','minute','hour','day','month','week','year'],
+    pluralizedSuffix: 's',
+    articles: ['a','the'],
+    dateSuffix: 'st|nd|rd|th',
+    abbreviatedMonthLength: 3,
+    formatOrders: ['mdy']
+    fromNow: 'fromNow',
+    ago: 'ago'
   });
 
+  console.info(Date.create('a minute ago'));
+  dateEqual(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
   return;
 
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
