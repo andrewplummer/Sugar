@@ -4,22 +4,39 @@ test('Date', function () {
   Date.registerLanguage('en', {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
-    units: ['millisecond','second','minute','hour','day','month','week','year'],
+    units: ['millisecond','second','minute','hour','day','week','month','year'],
     modifiers: [
-      { name: 'sign', text: 'ago', value: -1 },
-      { name: 'sign', text: 'from now', value: 1 },
-      { name: 'sign', text: 'last', value: -1 },
-      { name: 'sign', text: 'this', value: 0 },
-      { name: 'sign', text: 'next', value: 1 }
+      { type: 'sign', text: 'ago', value: -1 },
+      { type: 'sign', text: 'from now', value:  1 },
+      { type: 'num', text: 'a|an|the', value: 1 },
+      { type: 'ord', text: 'st|nd|rd|th' },
+      { type: 'mod', text: 'last', value: -1 },
+      { type: 'mod', text: 'this', value: 0 },
+      { type: 'mod', text: 'the', value: 0 },
+      { type: 'mod', text: 'next', value: 1 },
+      { type: 'edge', text: 'first day', value: 1 },
+      { type: 'edge', text: 'beginning', value: 1 },
+      { type: 'edge', text: 'last day', value: -1 },
+      { type: 'edge', text: 'end', value: -1 }
     ],
     pluralSuffix: 's',
-    articles: 'a|an|the',
     abbreviatedMonthLength: 3,
-    formats: ['{num} {unit} {sign}']
+    formats: [
+      '{num} {unit} {sign}',
+      '{weekday?},? {month} {day}{ord},? {year}?',
+      'the {edge} of {mod?} {month}',
+      '{mod} {unit 5-7}'
+    ]
   });
 
-  console.info(Date.create('1 second ago'));
-  dateEqual(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
+    //{ reg: '(?:the\\s)?(first day|last day)?(\\d{1,2}(?:st|nd|rd|th))? of (?:(the|this|next|last) (month)|({MONTHS}))', to: ['modifier_edge', 'day','modifier_sign','modifier_unit','month'] },
+
+  console.info(Date.create('the first day of February'));
+  //console.info(Date.create('Thursday, January 15th, 2008'));
+  //console.info(Date.create('January 15th, 2008'));
+  //console.info(Date.create('January 15th'));
+  //console.info(Date.create('1 month from now'));
+  //dateEqual(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
   return;
 
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
