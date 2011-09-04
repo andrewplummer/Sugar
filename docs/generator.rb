@@ -144,7 +144,7 @@ File.open('lib/sugar.js', 'r') do |f|
       get_html_parameters(method[:short])
       get_html_parameters(method[:extra])
       @current_module[:methods] << method
-      if method[:name] == 'stripTags' || method[:name] == 'removeTags'
+      if method[:name] == 'stripTags' || method[:name] == 'removeTags' || method[:name] == 'escapeHTML' || method[:name] == 'unescapeHTML'
         method[:escape_html] = true
       end
       if method[:alias]
