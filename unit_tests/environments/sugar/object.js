@@ -471,6 +471,8 @@ test('Object', function () {
 
   equal(Object.fromQueryString('http://fake.com?foo=bar'), { foo: 'bar' }, 'String#fromQueryString | handles whole URLs');
 
+  equal(Object.fromQueryString('foo=bar&moo=car').keys(), ['foo', 'moo'], 'String#fromQueryString | should be extended');
+
 
 
 });
