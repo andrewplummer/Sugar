@@ -5,16 +5,20 @@ test('Date', function () {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
     units: ['millisecond','second','minute','hour','day','month','week','year'],
-    pluralizedSuffix: 's',
-    articles: ['a','the'],
-    dateSuffix: 'st|nd|rd|th',
+    modifiers: [
+      { name: 'sign', text: 'ago', value: -1 },
+      { name: 'sign', text: 'from now', value: 1 },
+      { name: 'sign', text: 'last', value: -1 },
+      { name: 'sign', text: 'this', value: 0 },
+      { name: 'sign', text: 'next', value: 1 }
+    ],
+    pluralSuffix: 's',
+    articles: 'a|an|the',
     abbreviatedMonthLength: 3,
-    formatOrders: ['mdy']
-    fromNow: 'fromNow',
-    ago: 'ago'
+    formats: ['{num} {unit} {sign}']
   });
 
-  console.info(Date.create('a minute ago'));
+  console.info(Date.create('1 second ago'));
   dateEqual(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
   return;
 
@@ -341,6 +345,10 @@ test('Date', function () {
   dateEqual(Date.create('2 minutes from now'), getRelativeDate(null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 minutes from now');
   dateEqual(Date.create('2 seconds from now'), getRelativeDate(null, null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 seconds from now');
   dateEqual(Date.create('2 milliseconds from now'), getRelativeDate(null, null, null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 milliseconds from now');
+
+  // Article trouble
+  dateEqual(Date.create('an hour ago'), getRelativeDate(null, null, null, -1), 'Date#create | Fuzzy Dates | an hours ago');
+  dateEqual(Date.create('an hour from now'), getRelativeDate(null, null, null, 1), 'Date#create | Fuzzy Dates | an hour from now');
 
   dateEqual(Date.create('Monday'), getDateWithWeekdayAndOffset(1), 'Date#create | Fuzzy Dates | Monday');
   dateEqual(Date.create('The day after Monday'), getDateWithWeekdayAndOffset(2), 'Date#create | Fuzzy Dates | The day after Monday');
