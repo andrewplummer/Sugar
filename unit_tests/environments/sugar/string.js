@@ -1130,4 +1130,12 @@ test('String', function () {
   equal('한국어 도 이렇게 할 수 있어요?'.truncate(9), '한국어 도...', 'String#truncate | correctly finds spaces in Korean', { prototype: '한국어 도 ...' });
 
 
+  // String#assign
+
+  equal('Welcome, {name}.'.assign({ name: 'program' }), 'Welcome, program.', 'String#assign | basic functionality');
+  equal('Welcome, {1}.'.assign('program'), 'Welcome, program.', 'String#assign | numeric params');
+
+
+
+
 });
