@@ -470,6 +470,12 @@ test('Object', function () {
   equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles escaped params');
 
   equal(Object.fromQueryString('http://fake.com?foo=bar'), { foo: 'bar' }, 'String#fromQueryString | handles whole URLs');
+  equal(Object.fromQueryString('foo=bar&moo=car').keys(), ['foo', 'moo'], 'String#fromQueryString | should be extended');
+  equal(Object.fromQueryString(), {}, 'String#fromQueryString | will not die if no arguments');
+
+  if(typeof window !== 'undefined') {
+    equal(Object.isArray(Object.fromQueryString(window.location).keys()), true, 'String#fromQueryString | can handle just window.location');
+  }
 
 
 
