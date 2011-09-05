@@ -10,7 +10,9 @@ test('Date', function () {
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
-  Date.sugar('create');
+  if(Object.isFunction(Date.create())) {
+    Date.sugar('create');
+  };
 
 
   var day, d, o;
