@@ -3,50 +3,50 @@ test('Date', function () {
 
   Date.registerLanguage('en', {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-    weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+    weekdays: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     units: ['millisecond','second','minute','hour','day','week','month','year'],
     articles: ['a|an|the'],
     optionals: ['st|nd|rd|th'],
-    day: ['yesterday','today','tomorrow'],
-    sign: ['ago','from now'],
-    edge: ['first|beginning','last|end'],
-    mod: ['last','this','next'],
-
-
-    /*
     modifiers: [
-      { type: 'sign', text: 'ago', value: -1 },
-      { type: 'sign', text: 'from now', value:  1 },
-      { type: 'num', text: 'a|an|the', value: 1 },
-      { type: 'ord', text: 'st|nd|rd|th' },
-      { type: 'mod', text: 'last', value: -1 },
-      { type: 'mod', text: 'this', value: 0 },
-      { type: 'mod', text: 'the', value: 0 },
-      { type: 'mod', text: 'next', value: 1 },
-      { type: 'edge', text: 'first day', value: 1 },
-      { type: 'edge', text: 'beginning', value: 1 },
-      { type: 'edge', text: 'last day', value: -1 },
-      { type: 'edge', text: 'end', value: -1 }
+      { name: 'day', text: 'yesterday', value: -1 },
+      { name: 'day', text: 'today', value: 0 },
+      { name: 'day', text: 'tomorrow', value: 1 },
+      { name: 'sign', text: 'ago', value: -1 },
+      { name: 'sign', text: 'from now', value: 1 },
+      { name: 'edge', text: 'first day', value: 1 },
+      { name: 'edge', text: 'beginning', value: 1 },
+      { name: 'edge', text: 'last day', value: -1 },
+      { name: 'edge', text: 'end', value: -1 },
+      { name: 'shift', text: 'last', value: -1 },
+      { name: 'shift', text: 'this', value: 0 },
+      { name: 'shift', text: 'next', value: 1 },
     ],
-    */
     pluralSuffix: 's',
     abbreviatedMonthLength: 3,
     formats: [
       '{num} {unit} {sign}',
       '{weekday?} {month} {date}{1} {year?}',
-      'the {edge} {unit=4?} of {mod?} {month?}{year?}',
-      '{mod} {unit=5-8}'
+      'the {edge} of {shift?} {month?}{year?}',
+      '{shift} {unit=5-8}'
     ]
   });
 
     //{ reg: '(?:the\\s)?(first day|last day)?(\\d{1,2}(?:st|nd|rd|th))? of (?:(the|this|next|last) (month)|({MONTHS}))', to: ['modifier_edge', 'day','modifier_sign','modifier_unit','month'] },
 
-    console.info('===================================');
-  console.info(Date.create('the first day of February'));
+  console.info('===================================');
+  //console.info(Date.create('last month'));
+  //console.info(Date.create('this month'));
+  //console.info(Date.create('next month'));
+  //console.info(Date.create('the beginning of February'));
+  //console.info(Date.create('March'));
+  //console.info(Date.create('Wednesday'));
+  //console.info(Date.create('tomorrow'));
+  console.info(Date.create('today'));
   //console.info(Date.create('Thursday, January 15th, 2008'));
   //console.info(Date.create('January 15th, 2008'));
   //console.info(Date.create('January 15th'));
   //console.info(Date.create('1 month from now'));
+  //console.info(Date.create('1 month ago'));
   //dateEqual(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
   return;
 
