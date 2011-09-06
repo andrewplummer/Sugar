@@ -5,6 +5,15 @@ test('Date', function () {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     weekdays: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
     units: ['millisecond','second','minute','hour','day','week','month','year'],
+    articles: ['a|an|the'],
+    optionals: ['st|nd|rd|th'],
+    day: ['yesterday','today','tomorrow'],
+    sign: ['ago','from now'],
+    edge: ['first|beginning','last|end'],
+    mod: ['last','this','next'],
+
+
+    /*
     modifiers: [
       { type: 'sign', text: 'ago', value: -1 },
       { type: 'sign', text: 'from now', value:  1 },
@@ -19,18 +28,20 @@ test('Date', function () {
       { type: 'edge', text: 'last day', value: -1 },
       { type: 'edge', text: 'end', value: -1 }
     ],
+    */
     pluralSuffix: 's',
     abbreviatedMonthLength: 3,
     formats: [
       '{num} {unit} {sign}',
-      '{weekday?},? {month} {day}{ord},? {year}?',
-      'the {edge} of {mod?} {month}',
-      '{mod} {unit 5-7}'
+      '{weekday?} {month} {date}{1} {year?}',
+      'the {edge} {unit=4?} of {mod?} {month?}{year?}',
+      '{mod} {unit=5-8}'
     ]
   });
 
     //{ reg: '(?:the\\s)?(first day|last day)?(\\d{1,2}(?:st|nd|rd|th))? of (?:(the|this|next|last) (month)|({MONTHS}))', to: ['modifier_edge', 'day','modifier_sign','modifier_unit','month'] },
 
+    console.info('===================================');
   console.info(Date.create('the first day of February'));
   //console.info(Date.create('Thursday, January 15th, 2008'));
   //console.info(Date.create('January 15th, 2008'));
