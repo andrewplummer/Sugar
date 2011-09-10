@@ -898,16 +898,16 @@ test('Date', function () {
   equal(d.toUTC().format('ISO8601'), iso, 'Date#format | string constants | ISO8601 UTC');
 
 
-  var rfc1123 = getWeekdayFromDate(d).to(3).capitalize()+', '+d.getDate().pad(2)+' '+getMonthFromDate(d).to(3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
-  var rfc1036 = getWeekdayFromDate(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonthFromDate(d).to(3).capitalize()+'-'+d.getFullYear().toString().slice(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' GMT'+d.getUTCOffset();
+  var rfc1123 = getWeekdayFromDate(d).to(3).capitalize()+', '+d.getDate().pad(2)+' '+getMonthFromDate(d).to(3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
+  var rfc1036 = getWeekdayFromDate(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonthFromDate(d).to(3).capitalize()+'-'+d.getFullYear().toString().slice(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
   equal(d.format(Date.RFC1123), rfc1123, 'Date#format | constants | RFC1123');
   equal(d.format(Date.RFC1036), rfc1036, 'Date#format | constants | RFC1036');
   equal(d.format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123');
   equal(d.format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036');
 
 
-  rfc1123 = getWeekdayFromDate(d,true).to(3).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonthFromDate(d,true).to(3).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT+0000';
-  rfc1036 = getWeekdayFromDate(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonthFromDate(d,true).to(3).capitalize()+'-'+d.getUTCFullYear().toString().slice(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' GMT+0000';
+  rfc1123 = getWeekdayFromDate(d,true).to(3).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonthFromDate(d,true).to(3).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' +0000';
+  rfc1036 = getWeekdayFromDate(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonthFromDate(d,true).to(3).capitalize()+'-'+d.getUTCFullYear().toString().slice(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' +0000';
   equal(d.toUTC().format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123 UTC');
   equal(d.toUTC().format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036 UTC');
 
