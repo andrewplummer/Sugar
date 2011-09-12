@@ -1,7 +1,7 @@
 test('Date', function () {
 
 
-  Date.registerLanguage('en', {
+  var poopy = {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     weekdays: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     units: ['millisecond','second','minute','hour','day','week','month','year'],
@@ -29,26 +29,10 @@ test('Date', function () {
       'the {edge} of {shift?} {month?}{year?}',
       '{shift} {unit=5-8}'
     ]
-  });
+  };
 
-    //{ reg: '(?:the\\s)?(first day|last day)?(\\d{1,2}(?:st|nd|rd|th))? of (?:(the|this|next|last) (month)|({MONTHS}))', to: ['modifier_edge', 'day','modifier_sign','modifier_unit','month'] },
-
-  console.info('===================================');
-  //console.info(Date.create('last month'));
-  //console.info(Date.create('this month'));
-  //console.info(Date.create('next month'));
-  //console.info(Date.create('the beginning of February'));
-  //console.info(Date.create('March'));
-  //console.info(Date.create('Wednesday'));
-  //console.info(Date.create('tomorrow'));
-  console.info(Date.create('today'));
-  //console.info(Date.create('Thursday, January 15th, 2008'));
-  //console.info(Date.create('January 15th, 2008'));
-  //console.info(Date.create('January 15th'));
-  //console.info(Date.create('1 month from now'));
-  //console.info(Date.create('1 month ago'));
-  //dateEqual(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
-  return;
+  Date.registerLanguage('en', poopy);
+  //window.parent.Date.registerLanguage('en', poopy);
 
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
@@ -104,6 +88,8 @@ test('Date', function () {
 
   dateEqual(Date.create('1998', true), new Date(1998, 0), 'Date#create | will not choke on a boolean as second param');
 
+
+  return; // HERE!!!
   // Date constructor accepts an object
 
   dateEqual(Date.create({ year: 1998 }), new Date(1998, 0), 'Date#create | object | 1998');
@@ -511,6 +497,12 @@ test('Date', function () {
   equal(d.getDate(), 17, 'Date#set | object | weekday 2');
   d.set({ weekday: 5 });
   equal(d.getDate(), 20, 'Date#set | object | weekday 5');
+
+
+  d.set({ weekday: 2 }, true);
+  equal(d.getDate(), 17, 'Date#set | object | reset time | weekday 2');
+  d.set({ weekday: 5 }, true);
+  equal(d.getDate(), 20, 'Date#set | object | reset time | weekday 5');
 
 
   d = new Date('August 25, 2010 11:45:20');
