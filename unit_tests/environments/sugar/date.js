@@ -34,6 +34,7 @@ test('Date', function () {
   Date.registerLanguage('en', poopy);
   //window.parent.Date.registerLanguage('en', poopy);
 
+
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
@@ -89,7 +90,6 @@ test('Date', function () {
   dateEqual(Date.create('1998', true), new Date(1998, 0), 'Date#create | will not choke on a boolean as second param');
 
 
-  return; // HERE!!!
   // Date constructor accepts an object
 
   dateEqual(Date.create({ year: 1998 }), new Date(1998, 0), 'Date#create | object | 1998');
@@ -164,6 +164,7 @@ test('Date', function () {
   dateEqual(Date.create('8/10/49'), new Date(2049, 9, 8), 'Date#create | European style slashes | d/mm/49');
   dateEqual(Date.create('8/10/50'), new Date(1950, 9, 8), 'Date#create | European style slashes | d/mm/50');
 
+
   // Dashes (European style)
   dateEqual(Date.create('08-10-1978'), new Date(1978, 9, 8), 'Date#create | European style dashes | dd-dd-dd is an ISO8601 format');
 
@@ -215,6 +216,8 @@ test('Date', function () {
   dateEqual(Date.create('15 July, 2008'), new Date(2008, 6, 15), 'Date#create | Full text | dd Month, yyyy');
   dateEqual(Date.create('15 July 2008'), new Date(2008, 6, 15), 'Date#create | Full text | dd Month yyyy');
   dateEqual(Date.create('juNe 1St 2008'), new Date(2008, 5, 1), 'Date#create | Full text | Month 1st yyyy case insensitive');
+
+  return; // HERE!!!
 
   // Special cases
   dateEqual(Date.create(' July 4th, 1987 '), new Date(1987, 6, 4), 'Date#create | Special Cases | Untrimmed full text');
