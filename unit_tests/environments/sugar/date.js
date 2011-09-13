@@ -23,9 +23,12 @@ test('Date', function () {
     ],
     pluralSuffix: 's',
     abbreviatedMonthLength: 3,
+    abbreviatedWeekdayLength: 3,
     formats: [
       '{num} {unit} {sign}',
       '{weekday?} {month} {date}{1} {year?}',
+      '{date} {month} {year}',
+      '{month} {yyyy}',
       'the {edge} of {shift?} {month?}{year?}',
       '{shift} {unit=5-8}'
     ]
@@ -217,7 +220,6 @@ test('Date', function () {
   dateEqual(Date.create('15 July 2008'), new Date(2008, 6, 15), 'Date#create | Full text | dd Month yyyy');
   dateEqual(Date.create('juNe 1St 2008'), new Date(2008, 5, 1), 'Date#create | Full text | Month 1st yyyy case insensitive');
 
-  return; // HERE!!!
 
   // Special cases
   dateEqual(Date.create(' July 4th, 1987 '), new Date(1987, 6, 4), 'Date#create | Special Cases | Untrimmed full text');
@@ -234,8 +236,8 @@ test('Date', function () {
 
   dateEqual(Date.create('May-09-78'), new Date(1978, 4, 9), 'Date#create | Abbreviated | Mon.-dd-yy');
   dateEqual(Date.create('Wednesday July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week');
-  dateEqual(Date.create('Wed July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week');
-  dateEqual(Date.create('Wed. July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week');
+  dateEqual(Date.create('Wed July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week abbreviated');
+  dateEqual(Date.create('Wed. July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week abbreviated plus dot');
 
 
 
@@ -257,6 +259,8 @@ test('Date', function () {
   dateEqual(Date.create('08-25-1978 12:04'), new Date(1978, 7, 25, 12, 4), 'Date#create | Date/Time | Dash format');
   dateEqual(Date.create('1978/08/25 12:04'), new Date(1978, 7, 25, 12, 4), 'Date#create | Date/Time | Reverse slash format');
   dateEqual(Date.create('June 1st, 2008 12:04'), new Date(2008, 5, 1, 12, 4), 'Date#create | Date/Time | Full text format');
+
+  return; // HERE!!!
 
   dateEqual(Date.create('08-25-1978 12:04:57'), new Date(1978, 7, 25, 12, 4, 57), 'Date#create | Date/Time | with seconds');
   dateEqual(Date.create('08-25-1978 12:04:57.322'), new Date(1978, 7, 25, 12, 4, 57, 322), 'Date#create | Date/Time | with milliseconds');
