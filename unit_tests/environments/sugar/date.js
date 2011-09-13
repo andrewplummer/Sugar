@@ -26,16 +26,18 @@ test('Date', function () {
     abbreviatedWeekdayLength: 3,
     formats: [
       '{num} {unit} {sign}',
-      '{weekday?} {month} {date}{1} {year?}',
-      '{date} {month} {year}',
+      '{weekday?} {month} {date}{1} {yyyy?} {time}',
+      '{date} {month} {yyyy}',
       '{month} {yyyy}',
-      'the {edge} of {shift?} {month?}{year?}',
+      'the {edge} of {shift?} {month?}{yyyy?}',
       '{shift} {unit=5-8}'
     ]
   };
 
   Date.registerLanguage('en', poopy);
   //window.parent.Date.registerLanguage('en', poopy);
+
+
 
 
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
@@ -72,6 +74,7 @@ test('Date', function () {
 
   // All date modifications are clones
 
+  console.info("KILLMEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
   d = Date.create('1998');
 
   dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | should not affect original date');
@@ -234,10 +237,14 @@ test('Date', function () {
   dateEqual(Date.create('1 Dec, 2008'), new Date(2008, 11, 1), 'Date#create | Abbreviated | reversed with comma and no dot');
 
 
-  dateEqual(Date.create('May-09-78'), new Date(1978, 4, 9), 'Date#create | Abbreviated | Mon.-dd-yy');
+  // http://en.wikipedia.org/wiki/Calendar_date
+  dateEqual(Date.create('09-May-78'), new Date(1978, 4, 9), 'Date#create | Abbreviated | little endian yy');
+  dateEqual(Date.create('09-May-1978'), new Date(1978, 4, 9), 'Date#create | Abbreviated | little endian yyyy');
+  dateEqual(Date.create('1978-May-09'), new Date(1978, 4, 9), 'Date#create | Abbreviated | big endian');
   dateEqual(Date.create('Wednesday July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week');
   dateEqual(Date.create('Wed July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week abbreviated');
   dateEqual(Date.create('Wed. July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week abbreviated plus dot');
+  dateEqual(Date.create('Wed, 03 Jul 2008 08:00:00 EST').toUTC(), new Date(2008, 6, 3, 13), 'Date#create | RFC822');
 
 
 
@@ -260,7 +267,6 @@ test('Date', function () {
   dateEqual(Date.create('1978/08/25 12:04'), new Date(1978, 7, 25, 12, 4), 'Date#create | Date/Time | Reverse slash format');
   dateEqual(Date.create('June 1st, 2008 12:04'), new Date(2008, 5, 1, 12, 4), 'Date#create | Date/Time | Full text format');
 
-  return; // HERE!!!
 
   dateEqual(Date.create('08-25-1978 12:04:57'), new Date(1978, 7, 25, 12, 4, 57), 'Date#create | Date/Time | with seconds');
   dateEqual(Date.create('08-25-1978 12:04:57.322'), new Date(1978, 7, 25, 12, 4, 57, 322), 'Date#create | Date/Time | with milliseconds');
@@ -331,6 +337,8 @@ test('Date', function () {
   dateEqual(Date.create('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Date#create | Fuzzy Dates | Yesterday');
   dateEqual(Date.create('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Date#create | Fuzzy Dates | Tomorrow');
   dateEqual(Date.create('today at 4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Date#create | Fuzzy Dates | Today at 4pm');
+
+  return; // HERE!!!
 
   dateEqual(Date.create('The day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'Date#create | Fuzzy Dates | The day after tomorrow');
   dateEqual(Date.create('The day before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'Date#create | Fuzzy Dates | The day before yesterday');
