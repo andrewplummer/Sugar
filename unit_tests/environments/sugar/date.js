@@ -5,39 +5,47 @@ test('Date', function () {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     weekdays: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
     units: ['millisecond','second','minute','hour','day','week','month','year'],
+    numbers: ['one','two','three','four','five','six','seven','eight','nine','ten'],
     articles: ['a|an|the'],
-    optionals: ['st|nd|rd|th'],
+    optionals: ['st|nd|rd|th','of', 'the'],
     modifiers: [
       { name: 'day', text: 'yesterday', value: -1 },
       { name: 'day', text: 'today', value: 0 },
       { name: 'day', text: 'tomorrow', value: 1 },
       { name: 'sign', text: 'ago', value: -1 },
+      { name: 'sign', text: 'before', value: -1 },
       { name: 'sign', text: 'from now', value: 1 },
+      { name: 'sign', text: 'from', value: 1 },
+      { name: 'sign', text: 'after', value: 1 },
       { name: 'edge', text: 'first day', value: 1 },
       { name: 'edge', text: 'beginning', value: 1 },
       { name: 'edge', text: 'last day', value: -1 },
       { name: 'edge', text: 'end', value: -1 },
       { name: 'shift', text: 'last', value: -1 },
       { name: 'shift', text: 'this', value: 0 },
+      { name: 'shift', text: 'the', value: 0 },
       { name: 'shift', text: 'next', value: 1 },
     ],
     pluralSuffix: 's',
     abbreviatedMonthLength: 3,
     abbreviatedWeekdayLength: 3,
     formats: [
-      '{num} {unit} {sign}',
-      '{weekday?} {month} {date}{1} {yyyy?} {time}',
-      '{date} {month} {yyyy}',
-      '{month} {yyyy}',
-      'the {edge} of {shift?} {month?}{yyyy?}',
-      '{shift} {unit=5-8}'
+      '{num} {unit} {sign} {day?}',
+      '{weekday?} {month} {date}{1} {year?} {time}',
+      '{date} {month} {year}',
+      '{month} {year}',
+      '{shift?} {weekday} {time}',
+      '{shift} week {weekday?} {time}',
+      '{shift} {unit=5-7}',
+      '{3} {edge} of {shift?} {unit=4-7}',
+      '{weekday} {2} {shift} week',
+      '{day} at {time}',
+      '{time} {day}'
     ]
   };
 
   Date.registerLanguage('en', poopy);
   //window.parent.Date.registerLanguage('en', poopy);
-
-
 
 
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
@@ -74,7 +82,6 @@ test('Date', function () {
 
   // All date modifications are clones
 
-  console.info("KILLMEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
   d = Date.create('1998');
 
   dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | should not affect original date');
@@ -337,8 +344,8 @@ test('Date', function () {
   dateEqual(Date.create('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Date#create | Fuzzy Dates | Yesterday');
   dateEqual(Date.create('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Date#create | Fuzzy Dates | Tomorrow');
   dateEqual(Date.create('today at 4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Date#create | Fuzzy Dates | Today at 4pm');
+  dateEqual(Date.create('4pm today'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Date#create | Fuzzy Dates | 4pm today');
 
-  return; // HERE!!!
 
   dateEqual(Date.create('The day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'Date#create | Fuzzy Dates | The day after tomorrow');
   dateEqual(Date.create('The day before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'Date#create | Fuzzy Dates | The day before yesterday');
@@ -355,6 +362,7 @@ test('Date', function () {
   dateEqual(Date.create('2 day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), 'Date#create | Fuzzy Dates | 2 day after tomorrow');
   dateEqual(Date.create('18 days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 19), 'Date#create | Fuzzy Dates | 18 days after tomorrow');
   dateEqual(Date.create('18 day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 19), 'Date#create | Fuzzy Dates | 18 day after tomorrow');
+
 
   dateEqual(Date.create('2 years ago'), getRelativeDate(-2), 'Date#create | Fuzzy Dates | 2 years ago');
   dateEqual(Date.create('2 months ago'), getRelativeDate(null, -2), 'Date#create | Fuzzy Dates | 2 months ago');
@@ -430,6 +438,7 @@ test('Date', function () {
   dateEqual(Date.create('beginning of the month'), new Date(now.getFullYear(), now.getMonth()), 'Date#create | Fuzzy Dates | beginning of the month');
   dateEqual(Date.create('beginning of this month'), new Date(now.getFullYear(), now.getMonth()), 'Date#create | Fuzzy Dates | beginning of this month');
   dateEqual(Date.create('beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | beginning of next month');
+  return; // HERE!!!
   dateEqual(Date.create('the beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | the beginning of next month');
   dateEqual(Date.create('the end of next month'), new Date(now.getFullYear(), now.getMonth() + 1, getDaysInMonth(now.getFullYear(), now.getMonth() + 1), 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of next month');
 
