@@ -2,6 +2,7 @@ test('Date', function () {
 
 
 
+
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
@@ -1570,7 +1571,6 @@ test('Date', function () {
   equal(getDateWithWeekdayAndOffset(6).isLastWeek(), false, 'Date#isLastWeek | this week friday');
   equal(getDateWithWeekdayAndOffset(6).isThisWeek(), true, 'Date#isThisWeek | this week friday');
   equal(getDateWithWeekdayAndOffset(6).isNextWeek(), false, 'Date#isNextWeek | this week friday');
-  return; // HERE!!!
 
   equal(Date.create('last sunday').isLastWeek(), true, 'Date#isLastWeek | last sunday');
   equal(Date.create('last sunday').isThisWeek(), false, 'Date#isThisWeek | last sunday');
@@ -1889,7 +1889,7 @@ test('Date', function () {
   //equal(Date.create('5 de enero de 2012', 'es').isValid(), true, 'Date#create | handles a language code');
 
 
-
+console.info("HOSDFODSIFDSOIFJDOIF!!!!!!!!!!");
 
 
 });
