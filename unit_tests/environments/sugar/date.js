@@ -11,6 +11,7 @@ test('Date', function () {
   };
 
 
+
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -101,8 +102,10 @@ test('Date', function () {
   dateEqual(Date.create('8-25-1978'), new Date(1978, 7, 25), 'Date#create | American style dashes | m-dd-yyyy');
 
 
-  // dd-dd-dd is NOT American style as it is a reserved ISO8601 date format
-  dateEqual(Date.create('08-05-05'), new Date(2008, 4, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
+  // dd-dd-dd is NOT a valid ISO 8601 representation as of 2004, hence this format will
+  // revert to a little endian representation, where year truncation is allowed. See:
+  // http://en.wikipedia.org/wiki/ISO_8601#Truncated_representations
+  dateEqual(Date.create('08-05-05'), new Date(2005, 7, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
 
   // Dots (American style)
   dateEqual(Date.create('08.25.1978'), new Date(1978, 7, 25), 'Date#create | American style dots | mm.dd.yyyy');
@@ -134,20 +137,28 @@ test('Date', function () {
 
 
   // Dashes (European style)
-  dateEqual(Date.create('08-10-1978'), new Date(1978, 9, 8), 'Date#create | European style dashes | dd-dd-dd is an ISO8601 format');
+  dateEqual(Date.create('08-10-1978'), new Date(1978, 9, 8), 'Date#create | European style dashes | mm-dd-yyyy');
 
   // Dots (European style)
   dateEqual(Date.create('08.10.1978'), new Date(1978, 9, 8), 'Date#create | European style dots | dd.mm.yyyy');
   dateEqual(Date.create('8.10.1978'), new Date(1978, 9, 8), 'Date#create | European style dots | d.mm.yyyy');
-  dateEqual(Date.create('08-05-05'), new Date(2008, 4, 5), 'Date#create | dd-dd-dd is an ISO8601 format');
+  dateEqual(Date.create('08-05-05'), new Date(2005, 4, 8), 'Date#create | dd-dd-dd is NOT an ISO8601 format');
 
 
 
-  // Reverse slashes
-  dateEqual(Date.create('1978/08/25'), new Date(1978, 7, 25), 'Date#create | Reverse slashes | yyyy/mm/dd');
-  dateEqual(Date.create('1978/8/25'), new Date(1978, 7, 25), 'Date#create | Reverse slashes | yyyy/m/dd');
-  dateEqual(Date.create('1978/08'), new Date(1978, 7), 'Date#create | Reverse slashes | yyyy/mm');
-  dateEqual(Date.create('1978/8'), new Date(1978, 7), 'Date#create | Reverse slashes | yyyy/m');
+  /*
+   * Reverse slashes
+   * This seems like it should be invalid. Looking at the link below it seems that there isn't a format
+   * that uses slashes in combination with the "big endian" format. If this changes or there is a valid
+   * use case here then we can rethink...
+   *
+   * http://en.wikipedia.org/wiki/Calendar_date
+   *
+   */
+  //dateEqual(Date.create('1978/08/25'), new Date(1978, 7, 25), 'Date#create | Reverse slashes | yyyy/mm/dd');
+  //dateEqual(Date.create('1978/8/25'), new Date(1978, 7, 25), 'Date#create | Reverse slashes | yyyy/m/dd');
+  //dateEqual(Date.create('1978/08'), new Date(1978, 7), 'Date#create | Reverse slashes | yyyy/mm');
+  //dateEqual(Date.create('1978/8'), new Date(1978, 7), 'Date#create | Reverse slashes | yyyy/m');
 
   // Reverse dashes
   dateEqual(Date.create('1978-08-25'), new Date(1978, 7, 25), 'Date#create | Reverse dashes | yyyy-mm-dd');
@@ -158,11 +169,9 @@ test('Date', function () {
   dateEqual(Date.create('1978.08.25'), new Date(1978, 7, 25), 'Date#create | Reverse dots | yyyy.mm.dd');
   dateEqual(Date.create('1978.08'), new Date(1978, 7), 'Date#create | Reverse dots | yyyy.mm');
   dateEqual(Date.create('1978.8'), new Date(1978, 7), 'Date#create | Reverse dots | yyyy.m');
-
-  dateEqual(Date.create('01-02-03'), new Date(2001, 1, 3), 'Date#create | Ambiguous 2 digit ISO variant yy-mm-dd');
-
+  dateEqual(Date.create('01-02-03'), new Date(2003, 1, 1), 'Date#create | Ambiguous 2 digit variant yy-mm-dd is NOT ISO 8601');
   dateEqual(Date.create('01/02/03'), new Date(2003, 1, 1), 'Date#create | Ambiguous 2 digit European variant dd/mm/yy');
-  dateEqual(Date.create('01-02-03'), new Date(2001, 1, 3), 'Date#create | Ambiguous 2 digit ISO variant has NO European variant of its own');
+
   Date.allowVariant = false;
 
 
@@ -298,6 +307,7 @@ test('Date', function () {
   dateEqual(Date.create('today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'Date#create | Fuzzy Dates | Today');
   dateEqual(Date.create('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Date#create | Fuzzy Dates | Yesterday');
   dateEqual(Date.create('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Date#create | Fuzzy Dates | Tomorrow');
+  dateEqual(Date.create('4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Date#create | Fuzzy Dates | 4pm');
   dateEqual(Date.create('today at 4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Date#create | Fuzzy Dates | Today at 4pm');
   dateEqual(Date.create('4pm today'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Date#create | Fuzzy Dates | 4pm today');
 
@@ -433,6 +443,7 @@ test('Date', function () {
   dateEqual(Date.create('1:30:22.432pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30, 22, 432), 'Date#create | ISO8601 | 1:30:22.432pm');
   dateEqual(Date.create('17:48:03.947'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 48, 3, 947), 'Date#create | ISO8601 | 17:48:03.947');
 
+  dateEqual(Date.create('the first day of next January'), new Date(now.getFullYear() + 1, 0, 1), 'Date#create | Fuzzy Dates | the first day of next january');
 
   var d;
 
