@@ -10,6 +10,15 @@ test('Date', function () {
     Date.sugar('create');
   };
 
+
+
+
+
+
+
+
+
+
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -798,6 +807,8 @@ test('Date', function () {
   equal(new Date(2010, 11, 9, 17).set({ year: 1998, month: 3, day: 3}, true).getHours(), 0, 'Date#set | handles DST properly');
 
 
+  d = new Date(2010, 0, 31);
+  dateEqual(d.set({ month: 1 }, true), new Date(2010,1), 'Date#set | reset dates will not accidentally traverse into a different month');
 
 
   d = new Date('August 25, 2010 11:45:20');
