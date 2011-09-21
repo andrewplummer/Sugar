@@ -10,10 +10,6 @@ test('Date', function () {
     Date.sugar('create');
   };
 
-
-
-
-
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -414,6 +410,8 @@ test('Date', function () {
   dateEqual(Date.create('the beginning of last year'), new Date(now.getFullYear() - 1, 0), 'Date#create | Fuzzy Dates | the beginning of last year');
   dateEqual(Date.create('the end of next year'), new Date(now.getFullYear() + 1, 11, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of next year');
   dateEqual(Date.create('the end of last year'), new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of last year');
+
+  dateEqual(Date.create('the beginning of the day'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'Date#create | Fuzzy Dates | the beginning of the day');
 
   dateEqual(Date.create('beginning of March'), new Date(now.getFullYear(), 2), 'Date#create | Fuzzy Dates | beginning of March');
   dateEqual(Date.create('end of March'), new Date(now.getFullYear(), 2, 31, 23, 59, 59, 999), 'Date#create | Fuzzy Dates | end of March');
@@ -1757,10 +1755,10 @@ test('Date', function () {
   equal(new Date(1998,1,23,11,54,33).isAfter('February 23, 1998 11:54:32am'), true, 'Date#isAfter | string | February 23, 1998 11:54:32am');
   equal(new Date(1998,1,23,11,54,32,455).isAfter('February 23, 1998 11:54:32.454am'), true, 'Date#isAfter | string | February 23, 1998 11:54:32.454am');
 
-  equal(new Date(1999,5).isAfter('1999'), false, 'Date#isAfter | June 1999 is not after 1999 in general');
+  equal(new Date(1999,5).isAfter('1999'), true, 'Date#isAfter | June 1999 is after implied January 1999');
   equal(getRelativeDate(1).isAfter('tomorrow'), true, 'Date#isAfter | relative | next year');
   equal(getRelativeDate(null, 1).isAfter('tomorrow'), true, 'Date#isAfter | relative | next month');
-  equal(getRelativeDate(null, null, 1).isAfter('tomorrow'), false, 'Date#isAfter | relative | tomorrow');
+  equal(getRelativeDate(null, null, 1).isAfter('tomorrow'), true, 'Date#isAfter | relative | tomorrow');
 
   equal(getDateWithWeekdayAndOffset(0).isAfter('monday'), false, 'Date#isAfter | relative | sunday');
   equal(getDateWithWeekdayAndOffset(2).isAfter('monday'), true, 'Date#isAfter | relative | tuesday');
@@ -1771,7 +1769,8 @@ test('Date', function () {
   equal(getDateWithWeekdayAndOffset(0).isAfter('the end of this week'), false, 'Date#isAfter | relative | the end of this week');
 
   equal(new Date(2001,1,23).isAfter(new Date(2000,1,24), 24 * 60 * 60 * 1000), true, 'Date#isAfter | buffers work');
-  equal(new Date(1999,1).isAfter({ year: 1999 }), false, 'Date#isAfter | February 1999 should not be after 1999 in general');
+  equal(new Date(1999,1).isAfter({ year: 1999 }), true, 'Date#isAfter | February 1999 is after implied January 1999');
+  equal(new Date(1998,10).isAfter({ year: 1999 }, 90 * 24 * 60 * 60 * 1000), true, 'Date#isAfter | November 1998 is after implied January 1999 with 90 days of margin');
 
 
 
@@ -1844,21 +1843,24 @@ test('Date', function () {
   equal(new Date(1998,1,23,11,54,32,455).isBetween(new Date(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,452)), false, 'Date#isBetween | February 23, 1998 11:54:32.454am - February 23, 1998 11:54:32:452am');
   equal(new Date(1998,1,23,11,54,32,455).isBetween(new Date(1998,1,23,11,54,32,456), new Date(1998,1,23,11,54,32,458)), false, 'Date#isBetween | February 23, 1998 11:54:32.456am - February 23, 1998 11:54:32:458am');
 
-  equal(new Date(1999,1).isBetween({ year: 1998 }, { year: 1999 }), true, 'Date#isBetween | object | 1998 - 1999');
-  equal(new Date(1999,1).isBetween({ year: 1998 }, { year: 1997 }), false, 'Date#isBetween | object | 1998 - 1997');
+  equal(new Date(1998,1).isBetween({ year: 1998 }, { year: 1999 }), true, 'Date#isBetween | object | Feb 1998 is between 1998 - 1999');
+  equal(new Date(1999,1).isBetween({ year: 1998 }, { year: 1999 }), false, 'Date#isBetween | object | Feb 1999 is between 1998 - 1999');
+  equal(new Date(1999,1).isBetween({ year: 1998 }, { year: 1997 }), false, 'Date#isBetween | object | Feb 1999 is between 1998 - 1997');
   equal(new Date(1998,2).isBetween({ year: 1998, month: 1 }, { year: 1998, month: 3 }), true, 'Date#isBetween | object | March, 1998 is between February, 1998 and April, 1998');
   equal(new Date(1998,2).isBetween({ year: 1998, month: 0 }, { year: 1998, month: 1 }), false, 'Date#isBetween | object | March, 1998 is between January, 1998 and February, 1998');
 
-  equal(new Date(1999,1).isBetween('1998', '1999'), true, 'Date#isBetween | string | 1998 - 1999');
-  equal(new Date(1999,1).isBetween('1998', '1997'), false, 'Date#isBetween | string | 1998 - 1997');
+  equal(new Date(1998,1).isBetween('1998', '1999'), true, 'Date#isBetween | string | Feb 1998 is between 1998 - 1999');
+  equal(new Date(1999,1).isBetween('1998', '1999'), false, 'Date#isBetween | string | Feb 1999 is between 1998 - 1999');
+  equal(new Date(1999,1).isBetween('1998', '1997'), false, 'Date#isBetween | string | Feb 1998 is between 1998 - 1997');
   equal(new Date(1998,2).isBetween('February, 1998', 'April, 1998'), true, 'Date#isBetween | string | March, 1998 is between February, 1998 and April, 1998');
   equal(new Date(1998,2).isBetween('January, 1998', 'February, 1998'), false, 'Date#isBetween | string | March, 1998 is not between January, 1998 and February, 1998');
 
-  equal(new Date(1999,5).isBetween('1998','1999'), true, 'Date#isBetween | Any ambiguous period "reaches" as much as it can.');
+  equal(new Date(1999,5).isBetween('1998','1999'), false, 'Date#isBetween | Ambiguous periods are hard coded to the ms, there is no "implied specificity" as with Date#is');
   equal(new Date().isBetween('yesterday','tomorrow'), true, 'Date#isBetween | relative | now is between today and tomorrow');
   equal(getRelativeDate(1).isBetween('yesterday','tomorrow'), false, 'Date#isBetween | relative | last year is between today and tomorrow');
   equal(getRelativeDate(null, 1).isBetween('yesterday','tomorrow'), false, 'Date#isBetween | relative | last month is between today and tomorrow');
-  equal(getRelativeDate(null, null, 1).isBetween('today','tomorrow'), true, 'Date#isBetween | relative | tomorrow is between today and tomorrow');
+  equal(getRelativeDate(null, null, 0).isBetween('today','tomorrow'), true, 'Date#isBetween | relative | right now is between today and tomorrow');
+  equal(getRelativeDate(null, null, 1).isBetween('today','tomorrow'), false, 'Date#isBetween | relative | tomorrow is between today and tomorrow');
 
   equal(getDateWithWeekdayAndOffset(0).isBetween('monday', 'friday'), false, 'Date#isBetween | relative | sunday is between monday and friday');
   equal(getDateWithWeekdayAndOffset(2).isBetween('monday', 'friday'), true, 'Date#isBetween | relative | tuesday is between monday and friday');
@@ -1870,6 +1872,10 @@ test('Date', function () {
   equal(getDateWithWeekdayAndOffset(0).isBetween('the beginning of last week','the end of this week'), true, 'Date#isBetween | relative | sunday is between the beginning of last week and the end of this week');
 
 
+  equal(Date.create('yesterday').isBetween('yesterday', 'today'), false, 'Date#isBetween | today is between yesterday and today');
+  equal(Date.create('yesterday').isBetween('yesterday', 'today', 5), true, 'Date#isBetween | today is between yesterday and today with a 5ms margin');
+  equal(Date.create('tomorrow').isBetween('today', 'tomorrow'), false, 'Date#isBetween | tomrrow is between today and tomorrow');
+  equal(Date.create('tomorrow').isBetween('today', 'tomorrow', 5), true, 'Date#isBetween | tomrrow is between today and tomorrow with a 5ms margin');
 
   dateEqual(Date.create().rewind((1).day()), new Date(new Date().getTime() - 86400000), 'Date#rewind | can rewind milliseconds');
   dateEqual(Date.create().advance((1).day()), new Date(new Date().getTime() + 86400000), 'Date#advance | can advance milliseconds');
@@ -1900,9 +1906,6 @@ test('Date', function () {
 
 
   //equal(Date.create('5 de enero de 2012', 'es').isValid(), true, 'Date#create | handles a language code');
-
-
-console.info("HOSDFODSIFDSOIFJDOIF!!!!!!!!!!");
 
 
 });
