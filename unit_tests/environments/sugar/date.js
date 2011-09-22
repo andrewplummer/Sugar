@@ -12,13 +12,6 @@ test('Date', function () {
 
 
 
-
-
-
-
-
-
-
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -810,6 +803,8 @@ test('Date', function () {
   d = new Date(2010, 0, 31);
   dateEqual(d.set({ month: 1 }, true), new Date(2010,1), 'Date#set | reset dates will not accidentally traverse into a different month');
 
+  d = new Date(2010, 0, 31);
+  dateEqual(d.advance({ month: 1 }, true), new Date(2010,1,28), 'Date#set | reset dates will not accidentally traverse into a different month');
 
   d = new Date('August 25, 2010 11:45:20');
   d.setWeek(1);
