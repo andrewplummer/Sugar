@@ -1,9 +1,10 @@
-test('Dates - Japanese', function () {
+test('Dates | Japanese', function () {
 
   var now = new Date();
+  Date.setLanguage('ja');
 
-  dateEqual(Date.create('2011年5月15日', 'ja'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
 
+  dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | once a language has been initialized it will always be recognized');
 
   dateEqual(Date.create('2011年5月'), new Date(2011, 4), 'Date#create | Japanese | year and month');
@@ -20,6 +21,7 @@ test('Dates - Japanese', function () {
   dateEqual(Date.create('一分前'), getRelativeDate(null, null, null, null, -1), 'Date#create | Japanese | one minute ago');
   dateEqual(Date.create('一時間前'), getRelativeDate(null, null, null, -1), 'Date#create | Japanese | one hour ago');
   dateEqual(Date.create('一日前'), getRelativeDate(null, null, -1), 'Date#create | Japanese | one day ago');
+  dateEqual(Date.create('一週間前'), getRelativeDate(null, null, -7), 'Date#create | Japanese | one week ago');
   dateEqual(Date.create('一ヶ月前'), getRelativeDate(null, -1), 'Date#create | Japanese | one month ago ヵ');
   dateEqual(Date.create('一ヵ月前'), getRelativeDate(null, -1), 'Date#create | Japanese | one month ago ヶ');
   dateEqual(Date.create('一年前'), getRelativeDate(-1), 'Date#create | Japanese | one year ago');
@@ -30,6 +32,7 @@ test('Dates - Japanese', function () {
   dateEqual(Date.create('2分前'), getRelativeDate(null, null, null, null, -2), 'Date#create | Japanese | two minute ago');
   dateEqual(Date.create('2時間前'), getRelativeDate(null, null, null, -2), 'Date#create | Japanese | two hour ago');
   dateEqual(Date.create('2日前'), getRelativeDate(null, null, -2), 'Date#create | Japanese | two day ago');
+  dateEqual(Date.create('2週間前'), getRelativeDate(null, null, -14), 'Date#create | Japanese | two weeks ago');
   dateEqual(Date.create('2ヶ月前'), getRelativeDate(null, -2), 'Date#create | Japanese | two month ago ヵ');
   dateEqual(Date.create('2ヵ月前'), getRelativeDate(null, -2), 'Date#create | Japanese | two month ago ヶ');
   dateEqual(Date.create('2年前'), getRelativeDate(-2), 'Date#create | Japanese | two years ago');
@@ -39,6 +42,7 @@ test('Dates - Japanese', function () {
   dateEqual(Date.create('5分後'), getRelativeDate(null, null, null, null, 5), 'Date#create | Japanese | five minute from now');
   dateEqual(Date.create('5時間後'), getRelativeDate(null, null, null, 5), 'Date#create | Japanese | five hour from now');
   dateEqual(Date.create('5日後'), getRelativeDate(null, null, 5), 'Date#create | Japanese | five day from now');
+  dateEqual(Date.create('5週間後'), getRelativeDate(null, null, 35), 'Date#create | Japanese | five weeks from now');
   dateEqual(Date.create('5ヶ月後'), getRelativeDate(null, 5), 'Date#create | Japanese | five month from now ヵ');
   dateEqual(Date.create('5ヵ月後'), getRelativeDate(null, 5), 'Date#create | Japanese | five month from now ヶ');
   dateEqual(Date.create('5年後'), getRelativeDate(5), 'Date#create | Japanese | five years from now');
@@ -50,6 +54,7 @@ test('Dates - Japanese', function () {
   dateEqual(Date.create('５分後'), getRelativeDate(null, null, null, null, 5), 'Date#create | Japanese full-width | five minute from now');
   dateEqual(Date.create('５時間後'), getRelativeDate(null, null, null, 5), 'Date#create | Japanese full-width | five hour from now');
   dateEqual(Date.create('５日後'), getRelativeDate(null, null, 5), 'Date#create | Japanese full-width | five day from now');
+  dateEqual(Date.create('５週間後'), getRelativeDate(null, null, 35), 'Date#create | Japanese full-width | five weeks from now');
   dateEqual(Date.create('５ヶ月後'), getRelativeDate(null, 5), 'Date#create | Japanese full-width | five month from now ヵ');
   dateEqual(Date.create('５ヵ月後'), getRelativeDate(null, 5), 'Date#create | Japanese full-width | five month from now ヶ');
   dateEqual(Date.create('５年後'), getRelativeDate(5), 'Date#create | Japanese full-width | five years from now');
@@ -72,6 +77,8 @@ test('Dates - Japanese', function () {
 
 
 
+  equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Japanese | format');
+  equal(Date.create('5 hours ago').relative(), '5時間前', 'Date#create | Japanese | relative format');
 
 
 
