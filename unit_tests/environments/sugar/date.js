@@ -1902,5 +1902,32 @@ test('Date', function () {
   equal(date2.isValid(), false, 'Date#clone | cloned element is also invalid');
 
 
+  // Supported languages:
+  //
+  //  zh-Hans 1
+  //  zh-Hant 1
+  //  en 2
+  //  es 3
+  //  ru 5
+  //  pt 7
+  //  fr 9
+  //  de 11
+  //  ja 12
+  //  kr 20
+  //  it 24
+
+  // Other
+  //
+  //  hindi 4
+  //  arabic 6
+  //  bengali 8
+  //  malay 10
+  //  farsi 13
+  //  urdu 14
+  //  punjabi 15
+  //  wu (tibetan) 16
+  //  Vietnamese 17
+  //  Javanese 18
+
 
 });
