@@ -1,9 +1,10 @@
 test('Dates | Simplified Chinese', function () {
 
   var now = new Date();
+  Date.setLanguage('zh-Hans');
 
 
-  dateEqual(Date.create('2011年5月15日', 'zh-Hans'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
+  dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
   dateEqual(Date.create('2011年5月'), new Date(2011, 4), 'Date#create | Simplified Chinese | year and month');
   dateEqual(Date.create('5月15日'), new Date(now.getFullYear(), 4, 15), 'Date#create | Simplified Chinese | month and date');
   dateEqual(Date.create('2011年'), new Date(2011, 0), 'Date#create | Simplified Chinese | year');
