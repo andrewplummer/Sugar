@@ -78,13 +78,10 @@ test('Dates | Japanese', function () {
 
 
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Japanese | format');
-  equal(Date.create('5 hours ago').relative(), '5時間前', 'Date#create | Japanese | relative format');
+  equal(Date.create('5 hours ago').relative(), '5時間前', 'Date#create | Japanese | relative format past');
+  equal(Date.create('5 hours from now').relative(), '5時間後', 'Date#create | Japanese | relative format from now');
 
 
-
-
-
-  //equal(Date.create('5 de enero de 2012', 'es').isValid(), true, 'Date#create | handles a language code');
 
 
 });
