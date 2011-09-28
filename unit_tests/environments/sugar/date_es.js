@@ -5,6 +5,7 @@ test('Dates | Spanish', function () {
 
 
   dateEqual(Date.create('15 de mayo 2011'), new Date(2011, 4, 15), 'Date#create | basic Spanish date');
+  dateEqual(Date.create('5 de enero de 2012'), new Date(2012, 0, 5), 'Date#create | Spanish | 2012-01-05');
   dateEqual(Date.create('mayo de 2011'), new Date(2011, 4), 'Date#create | Spanish | year and month');
   dateEqual(Date.create('15 de mayo'), new Date(now.getFullYear(), 4, 15), 'Date#create | Spanish | month and date');
   dateEqual(Date.create('2011'), new Date(2011, 0), 'Date#create | Spanish | year');
@@ -47,7 +48,8 @@ test('Dates | Spanish', function () {
   dateEqual(Date.create('el próximo año'), getRelativeDate(1), 'Date#create | Spanish | Next year');
 
   equal(Date.create('2011-08-25').format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Spanish | format');
-  equal(Date.create('5 hours ago').relative(), 'hace 5 horas', 'Date#create | Spanish | relative format');
+  equal(Date.create('5 hours ago').relative(), 'hace 5 horas', 'Date#create | Spanish | relative format past');
+  equal(Date.create('5 hours from now').relative(), '5 horas de ahora', 'Date#create | Spanish | relative format future');
 
 
 
