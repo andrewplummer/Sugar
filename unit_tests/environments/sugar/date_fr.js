@@ -1,0 +1,63 @@
+test('Dates | French', function () {
+
+  var now = new Date();
+  Date.setLanguage('fr');
+
+
+  dateEqual(Date.create('Le 15 mai 2011'), new Date(2011, 4, 15), 'Date#create | basic French date');
+  dateEqual(Date.create('Le 5 janvier 2012'), new Date(2012, 0, 5), 'Date#create | French | 2012-01-05');
+  dateEqual(Date.create('mai 2011'), new Date(2011, 4), 'Date#create | French | year and month');
+  dateEqual(Date.create('Le 15 mai'), new Date(now.getFullYear(), 4, 15), 'Date#create | French | month and date');
+  dateEqual(Date.create('2011'), new Date(2011, 0), 'Date#create | French | year');
+  dateEqual(Date.create('mai'), new Date(now.getFullYear(), 4), 'Date#create | French | month');
+  dateEqual(Date.create('lundi'), getDateWithWeekdayAndOffset(1), 'Date#create | French | Monday');
+
+
+  dateEqual(Date.create('il y a une millisecond'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | French | one millisecond ago');
+  dateEqual(Date.create('il y a un seconde'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | French | one second ago');
+  dateEqual(Date.create('il y a une minute'), getRelativeDate(null, null, null, null, -1), 'Date#create | French | one minute ago');
+  dateEqual(Date.create('il y a une heure'), getRelativeDate(null, null, null, -1), 'Date#create | French | one hour ago');
+  dateEqual(Date.create('il y a un jour'), getRelativeDate(null, null, -1), 'Date#create | French | one day ago');
+  dateEqual(Date.create('il y a une semaine'), getRelativeDate(null, null, -7), 'Date#create | French | one week');
+  dateEqual(Date.create('il y a un mois'), getRelativeDate(null, -1), 'Date#create | French | one month ago');
+  dateEqual(Date.create('il y a un an'), getRelativeDate(-1), 'Date#create | French | one year ago');
+
+
+  dateEqual(Date.create('dans 5 millisecondes'), getRelativeDate(null, null, null, null, null, null,5), 'Date#create | French | dans | five milliseconds from now');
+  dateEqual(Date.create('dans 5 secondes'), getRelativeDate(null, null, null, null, null, 5), 'Date#create | French | dans | five second from now');
+  dateEqual(Date.create('dans 5 minutes'), getRelativeDate(null, null, null, null, 5), 'Date#create | French | dans | five minute from now');
+  dateEqual(Date.create('dans 5 heures'), getRelativeDate(null, null, null, 5), 'Date#create | French | dans | five hour from now');
+  dateEqual(Date.create('dans 5 jours'), getRelativeDate(null, null, 5), 'Date#create | French | dans | five day from now');
+  dateEqual(Date.create('dans 5 semaines'), getRelativeDate(null, null, 35), 'Date#create | French | dans | five weeks from now');
+  dateEqual(Date.create('dans 5 mois'), getRelativeDate(null, 5), 'Date#create | French | dans | five months from now');
+  dateEqual(Date.create('dans 5 ans'), getRelativeDate(5), 'Date#create | French | dans | five years from now');
+
+  dateEqual(Date.create("d'ici 5 millisecondes"), getRelativeDate(null, null, null, null, null, null,5), 'Date#create | French | dans | five milliseconds from now');
+  dateEqual(Date.create("d'ici 5 secondes"), getRelativeDate(null, null, null, null, null, 5), 'Date#create | French | dans | five second from now');
+  dateEqual(Date.create("d'ici 5 minutes"), getRelativeDate(null, null, null, null, 5), 'Date#create | French | dans | five minute from now');
+  dateEqual(Date.create("d'ici 5 heures"), getRelativeDate(null, null, null, 5), 'Date#create | French | dans | five hour from now');
+  dateEqual(Date.create("d'ici 5 jours"), getRelativeDate(null, null, 5), 'Date#create | French | dans | five day from now');
+  dateEqual(Date.create("d'ici 5 semaines"), getRelativeDate(null, null, 35), 'Date#create | French | dans | five weeks from now');
+  dateEqual(Date.create("d'ici 5 mois"), getRelativeDate(null, 5), 'Date#create | French | dans | five months from now');
+  dateEqual(Date.create("d'ici 5 ans"), getRelativeDate(5), 'Date#create | French | dans | five years from now');
+
+  dateEqual(Date.create('hier'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | French | yesterday');
+  dateEqual(Date.create("aujourd'hui"), getRelativeDate(null, null, 0).resetTime(), 'Date#create | French | today');
+  dateEqual(Date.create('demain'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | French | tomorrow');
+
+  dateEqual(Date.create('la semaine dernière'), getRelativeDate(null, null, -7), 'Date#create | French | Last week');
+  dateEqual(Date.create('la semaine prochaine'), getRelativeDate(null, null, 7), 'Date#create | French | Next week');
+
+  dateEqual(Date.create('le mois dernier'), getRelativeDate(null, -1), 'Date#create | French | last month');
+  dateEqual(Date.create('le mois prochain'), getRelativeDate(null, 1), 'Date#create | French | Next month');
+
+  dateEqual(Date.create("l'année dernière"), getRelativeDate(-1), 'Date#create | French | Last year');
+  dateEqual(Date.create("l'année prochaine"), getRelativeDate(1), 'Date#create | French | Next year');
+
+  equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 août 2011', 'Date#create | French | format');
+  equal(Date.create('5 hours ago').relative(), 'il y a 5 heures', 'Date#create | French | relative format past');
+  equal(Date.create('5 hours from now').relative(), 'dans 5 heures', 'Date#create | French | relative format future');
+
+
+
+});
