@@ -9,6 +9,15 @@ test('Date', function () {
   };
 
 
+
+
+
+
+
+
+
+
+
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -1001,37 +1010,22 @@ test('Date', function () {
 
   // globalize system with plurals
 
-  var strings = {
-    second: '秒',
-    seconds: '秒達',
-    minute: '分',
-    minutes: '分達',
-    hour: '時間',
-    hours: '時間達',
-    day: '日',
-    days: '日達',
-    week: '週間',
-    weeks: '週間達',
-    month: '月',
-    months: '月達',
-    year: '年',
-    years: '年達'
-  }
+  var strings = ['ミリ秒','秒','分','時間','日','週間','月','年'];
 
   dyn = function(value, unit, ms, dir) {
     equal(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
-    equal(unit, 'minutes', 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
+    equal(unit, 2, 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
     equalWithMargin(ms, 300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
     equal(dir, -1, 'Date#format | relative fn | 5 minutes ago | dir indicates the offset from "now", negative if in the past');
     return value + strings[unit] + (dir < 0 ? '前' : '後');
   }
 
-  equal(Date.create('5 minutes ago').format(dyn), '5分達前', 'Date#format | relative fn | 5 minutes ago');
+  equal(Date.create('5 minutes ago').format(dyn), '5分前', 'Date#format | relative fn | 5 minutes ago');
 
 
   dyn = function(value, unit, ms, dir) {
     equal(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
-    equal(unit, 'minute', 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
+    equal(unit, 2, 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
     equalWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
     equal(dir, 1, 'Date#format | relative fn | 1 minute from now | dir indicates the offset from "now", negative if in the past');
     return value + strings[unit] + (dir < 0 ? '前' : '後');
@@ -1043,17 +1037,17 @@ test('Date', function () {
 
   dyn = function(value, unit, ms, dir) {
     equal(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
-    equal(unit, 'hours', 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
+    equal(unit, 3, 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
     equalWithMargin(ms, 14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
     equal(dir, -1, 'Date#format | relative fn | 4 hours ago | dir indicates the offset from "now", negative if in the past');
     return value + strings[unit] + (dir < 0 ? '前' : '後');
   }
 
-  equal(Date.create('240 minutes ago').format(dyn), '4時間達前', 'Date#format | relative fn | 4 hours ago');
+  equal(Date.create('240 minutes ago').format(dyn), '4時間前', 'Date#format | relative fn | 4 hours ago');
 
   Date.create('223 milliseconds ago').format(function(value, unit) {
     equalWithMargin(value, 223, 10, 'Date format | relative fn | still passes < 1 second');
-    equal(unit, 'milliseconds', 'Date format | relative fn | still passes "millisecond"');
+    equal(unit, 0, 'Date format | relative fn | still passes millisecond is zero');
   });
 
   equal(Date.create('300 minutes ago').format(function() {}), '5 hours ago', 'Date#format | function that returns undefined defaults to "relative"');
@@ -1082,10 +1076,6 @@ test('Date', function () {
   equal(Date.create('360 years from now').relative(), '360 years from now', 'Date#relative | relative future | years');
   equal(Date.create('13 months from now').relative(), '1 year from now', 'Date#relative | relative future | 12 months ago');
 
-
-  equal(Date.create('13 months from now').relative(function(value, unit) {
-    return value + ' ' + unit;
-  }), '1 year', 'Date#relative | relative future | 12 months ago');
 
 
   d = new Date(2010,7,5,13,45,2,542);
