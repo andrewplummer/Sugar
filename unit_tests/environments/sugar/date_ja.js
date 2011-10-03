@@ -3,6 +3,9 @@ test('Dates | Japanese', function () {
   var now = new Date();
   Date.setLanguage('ja');
 
+  var now = new Date();
+  dateEqual(Date.create('月末'), new Date(now.getFullYear(), now.getMonth(), 31, 23, 59, 59, 999), 'Date#create | Japanese | end of the month');
+  return;
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | once a language has been initialized it will always be recognized');
@@ -13,6 +16,9 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('5月'), new Date(now.getFullYear(), 4), 'Date#create | Japanese | month');
   dateEqual(Date.create('15日'), new Date(now.getFullYear(), now.getMonth(), 15), 'Date#create | Japanese | date');
   dateEqual(Date.create('月曜日'), getDateWithWeekdayAndOffset(1), 'Date#create | Japanese | Monday');
+  dateEqual(Date.create('8月末'), new Date(now.getFullYear(), 7, 31, 23, 59, 59, 999), 'Date#create | Japanese | end of August');
+  dateEqual(Date.create('月末'), new Date(now.getFullYear(), now.getMonth(), 31, 23, 59, 59, 999), 'Date#create | Japanese | end of the month');
+  dateEqual(Date.create('年末'), new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999), 'Date#create | Japanese | end of the year');
 
 
 
