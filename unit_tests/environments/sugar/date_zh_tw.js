@@ -1,7 +1,7 @@
 test('Dates | Traditional Chinese', function () {
 
   var now = new Date();
-  Date.setLanguage('zh-Hant');
+  Date.setLanguage('zh-TW');
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Traditional Chinese date');
   dateEqual(Date.create('2011年5月'), new Date(2011, 4), 'Date#create | Traditional Chinese | year and month');

@@ -1,7 +1,7 @@
 test('Dates | Simplified Chinese', function () {
 
   var now = new Date();
-  Date.setLanguage('zh-Hans');
+  Date.setLanguage('zh-CN');
 
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
