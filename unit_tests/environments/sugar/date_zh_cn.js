@@ -60,9 +60,6 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('下周五'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Simplified Chinese | Next friday');
 
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
-  equal(Date.create('5 hours ago').relative(), '5小时前', 'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('5 hours from now').relative(), '5小时后', 'Date#create | Simplified Chinese | relative format future');
-
 
 
   equal(Date.create('1 second ago').relative(), '1秒钟前', 'Date#create | Simplified Chinese | relative format past');
