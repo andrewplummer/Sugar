@@ -11,6 +11,8 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('5月'), new Date(now.getFullYear(), 4), 'Date#create | Simplified Chinese | month');
   dateEqual(Date.create('15日'), new Date(now.getFullYear(), now.getMonth(), 15), 'Date#create | Simplified Chinese | date');
   dateEqual(Date.create('星期一'), getDateWithWeekdayAndOffset(1), 'Date#create | Simplified Chinese | Monday');
+  dateEqual(Date.create('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Simplified Chinese | the 9th');
+  dateEqual(Date.create('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Simplified Chinese | the 25th');
 
 
   dateEqual(Date.create('一毫秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Simplified Chinese | one millisecond ago');
@@ -43,18 +45,23 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('后天'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Simplified Chinese | 明後日');
 
   dateEqual(Date.create('上周'), getRelativeDate(null, null, -7), 'Date#create | Simplified Chinese | Last week');
+  dateEqual(Date.create('这周'), getRelativeDate(null, null, 0), 'Date#create | Simplified Chinese | This week');
   dateEqual(Date.create('下周'), getRelativeDate(null, null, 7), 'Date#create | Simplified Chinese | Next week');
 
   dateEqual(Date.create('上个月'), getRelativeDate(null, -1), 'Date#create | Simplified Chinese | last month');
+  dateEqual(Date.create('这个月'), getRelativeDate(null, 0), 'Date#create | Simplified Chinese | this month');
   dateEqual(Date.create('下个月'), getRelativeDate(null, 1), 'Date#create | Simplified Chinese | Next month');
 
   dateEqual(Date.create('去年'), getRelativeDate(-1), 'Date#create | Simplified Chinese | Last year');
   dateEqual(Date.create('明年'), getRelativeDate(1), 'Date#create | Simplified Chinese | Next year');
 
+  dateEqual(Date.create('上周三'), getDateWithWeekdayAndOffset(3, -7), 'Date#create | Simplified Chinese | Last wednesday');
+  dateEqual(Date.create('这周六'), getDateWithWeekdayAndOffset(6), 'Date#create | Simplified Chinese | this Saturday');
+  dateEqual(Date.create('下周五'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Simplified Chinese | Next friday');
+
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
   equal(Date.create('5 hours ago').relative(), '5小时前', 'Date#create | Simplified Chinese | relative format past');
   equal(Date.create('5 hours from now').relative(), '5小时后', 'Date#create | Simplified Chinese | relative format future');
-
 
 
 });
