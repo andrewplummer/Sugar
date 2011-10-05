@@ -10,6 +10,8 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('5월'), new Date(now.getFullYear(), 4), 'Date#create | Korean | month');
   dateEqual(Date.create('15일'), new Date(now.getFullYear(), now.getMonth(), 15), 'Date#create | Korean | date');
   dateEqual(Date.create('월요일'), getDateWithWeekdayAndOffset(1), 'Date#create | Korean | Monday');
+  dateEqual(Date.create('구일'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Korean | the 9th');
+  dateEqual(Date.create('이십오일'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Korean | the 25th');
 
 
 
@@ -40,13 +42,20 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('모레'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Korean | 모레');
 
   dateEqual(Date.create('지난 주'), getRelativeDate(null, null, -7), 'Date#create | Korean | Last week');
+  dateEqual(Date.create('이번 주'), getRelativeDate(null, null, 0), 'Date#create | Korean | this week');
   dateEqual(Date.create('다음 주'), getRelativeDate(null, null, 7), 'Date#create | Korean | Next week');
 
   dateEqual(Date.create('지난 달'), getRelativeDate(null, -1), 'Date#create | Korean | last month');
+  dateEqual(Date.create('이번 달'), getRelativeDate(null, 0), 'Date#create | Korean | this month');
   dateEqual(Date.create('다음달'), getRelativeDate(null, 1), 'Date#create | Korean | Next month');
 
   dateEqual(Date.create('작년'), getRelativeDate(-1), 'Date#create | Korean | Last year');
   dateEqual(Date.create('내년'), getRelativeDate(1), 'Date#create | Korean | Next year');
+
+
+  dateEqual(Date.create('지난 주 수요일'), getDateWithWeekdayAndOffset(3, -7), 'Date#create | Korean | Last wednesday');
+  dateEqual(Date.create('이번 일요일'), getDateWithWeekdayAndOffset(0), 'Date#create | Korean | this sunday');
+  dateEqual(Date.create('다음 주 금요일'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Korean | Next friday');
 
 
   equal(Date.create('2011-08-25').format('{yyyy}년{MM}월{dd}일'), '2011년08월25일', 'Date#create | Korean | format');

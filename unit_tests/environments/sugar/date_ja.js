@@ -3,10 +3,6 @@ test('Dates | Japanese', function () {
   var now = new Date();
   Date.setLanguage('ja');
 
-  var now = new Date();
-  dateEqual(Date.create('月末'), new Date(now.getFullYear(), now.getMonth(), 31, 23, 59, 59, 999), 'Date#create | Japanese | end of the month');
-  return;
-
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | once a language has been initialized it will always be recognized');
 
@@ -16,10 +12,8 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('5月'), new Date(now.getFullYear(), 4), 'Date#create | Japanese | month');
   dateEqual(Date.create('15日'), new Date(now.getFullYear(), now.getMonth(), 15), 'Date#create | Japanese | date');
   dateEqual(Date.create('月曜日'), getDateWithWeekdayAndOffset(1), 'Date#create | Japanese | Monday');
-  dateEqual(Date.create('8月末'), new Date(now.getFullYear(), 7, 31, 23, 59, 59, 999), 'Date#create | Japanese | end of August');
-  dateEqual(Date.create('月末'), new Date(now.getFullYear(), now.getMonth(), 31, 23, 59, 59, 999), 'Date#create | Japanese | end of the month');
-  dateEqual(Date.create('年末'), new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999), 'Date#create | Japanese | end of the year');
-
+  dateEqual(Date.create('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Japanese | the 9th');
+  dateEqual(Date.create('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Japanese | the 25th');
 
 
   dateEqual(Date.create('一ミリ秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Japanese | one millisecond ago');
@@ -53,7 +47,7 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('5ヵ月後'), getRelativeDate(null, 5), 'Date#create | Japanese | five month from now ヶ');
   dateEqual(Date.create('5年後'), getRelativeDate(5), 'Date#create | Japanese | five years from now');
 
-  dateEqual(Date.create('２０１１年'), new Date(2011, 0), 'Date#create | Japanese | full-width year');
+  dateEqual(Date.create('２０１１年５月２５日'), new Date(2011, 4, 25), 'Date#create | Japanese | full-width chars');
 
   dateEqual(Date.create('５ミリ秒後'), getRelativeDate(null, null, null, null, null, null, 5), 'Date#create | Japanese full-width | five millisecond from now');
   dateEqual(Date.create('５秒後'), getRelativeDate(null, null, null, null, null, 5), 'Date#create | Japanese full-width | five second from now');
@@ -82,12 +76,11 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('来年'), getRelativeDate(1), 'Date#create | Japanese | Next year');
 
 
+  dateEqual(Date.create('先週水曜日'), getDateWithWeekdayAndOffset(3, -7), 'Date#create | Japanese | Last wednesday');
+  dateEqual(Date.create('来週金曜日'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Japanese | Next friday');
 
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Japanese | format');
   equal(Date.create('5 hours ago').relative(), '5時間前', 'Date#create | Japanese | relative format past');
   equal(Date.create('5 hours from now').relative(), '5時間後', 'Date#create | Japanese | relative format from now');
-
-
-
 
 });

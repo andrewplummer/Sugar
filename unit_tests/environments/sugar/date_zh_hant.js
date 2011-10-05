@@ -10,6 +10,8 @@ test('Dates | Traditional Chinese', function () {
   dateEqual(Date.create('5月'), new Date(now.getFullYear(), 4), 'Date#create | Traditional Chinese | month');
   dateEqual(Date.create('15日'), new Date(now.getFullYear(), now.getMonth(), 15), 'Date#create | Traditional Chinese | date');
   dateEqual(Date.create('星期一'), getDateWithWeekdayAndOffset(1), 'Date#create | Traditional Chinese | Monday');
+  dateEqual(Date.create('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Traditional Chinese | the 9th');
+  dateEqual(Date.create('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Traditional Chinese | the 25th');
 
   dateEqual(Date.create('一毫秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Traditional Chinese | one millisecond ago');
   dateEqual(Date.create('一秒鐘前'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Traditional Chinese | one second ago');
@@ -40,13 +42,19 @@ test('Dates | Traditional Chinese', function () {
   dateEqual(Date.create('後天'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Traditional Chinese | 明後日');
 
   dateEqual(Date.create('上週'), getRelativeDate(null, null, -7), 'Date#create | Traditional Chinese | Last week');
+  dateEqual(Date.create('這週'), getRelativeDate(null, null, 0), 'Date#create | Traditional Chinese | This week');
   dateEqual(Date.create('下週'), getRelativeDate(null, null, 7), 'Date#create | Traditional Chinese | Next week');
 
   dateEqual(Date.create('上個月'), getRelativeDate(null, -1), 'Date#create | Traditional Chinese | last month');
+  dateEqual(Date.create('這個月'), getRelativeDate(null, 0), 'Date#create | Traditional Chinese | this month');
   dateEqual(Date.create('下個月'), getRelativeDate(null, 1), 'Date#create | Traditional Chinese | Next month');
 
   dateEqual(Date.create('去年'), getRelativeDate(-1), 'Date#create | Traditional Chinese | Last year');
   dateEqual(Date.create('明年'), getRelativeDate(1), 'Date#create | Traditional Chinese | Next year');
+
+  dateEqual(Date.create('上週三'), getDateWithWeekdayAndOffset(3, -7), 'Date#create | Traditional Chinese | Last wednesday');
+  dateEqual(Date.create('這個月'), getRelativeDate(null, 0), 'Date#create | Traditional Chinese | this month');
+  dateEqual(Date.create('下週五'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Traditional Chinese | Next friday');
 
 
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Traditional Chinese | format');
