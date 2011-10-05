@@ -65,55 +65,55 @@ test('Dates | Russian', function () {
 
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 августа 2011', 'Date#create | Russian | format');
 
-  equal(Date.create('1 second ago').relative(), '1 секунду назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('1 minute ago').relative(), '1 минуту назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('1 hour ago').relative(),   '1 час назад',     'Date#create | Russian | relative format past');
-  equal(Date.create('1 day ago').relative(),    '1 день назад',    'Date#create | Russian | relative format past');
-  equal(Date.create('1 week ago').relative(),   '1 неделю назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('1 month ago').relative(),  '1 месяц назад',   'Date#create | Russian | relative format past');
-  equal(Date.create('1 year ago').relative(),   '1 год назад',     'Date#create | Russian | relative format past');
+  equal(Date.create('1 second ago').relative(), '1 секунду назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('1 minute ago').relative(), '1 минуту назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('1 hour ago').relative(),   '1 час назад',     'Date#relative | Russian | relative format past');
+  equal(Date.create('1 day ago').relative(),    '1 день назад',    'Date#relative | Russian | relative format past');
+  equal(Date.create('1 week ago').relative(),   '1 неделю назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('1 month ago').relative(),  '1 месяц назад',   'Date#relative | Russian | relative format past');
+  equal(Date.create('1 year ago').relative(),   '1 год назад',     'Date#relative | Russian | relative format past');
 
-  equal(Date.create('2 seconds ago').relative(), '2 секунды назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('2 minutes ago').relative(), '2 минуты назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('2 hours ago').relative(),   '2 часа назад',     'Date#create | Russian | relative format past');
-  equal(Date.create('2 days ago').relative(),    '2 дня назад',    'Date#create | Russian | relative format past');
-  equal(Date.create('2 weeks ago').relative(),   '2 недели назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('2 months ago').relative(),  '2 месяца назад',   'Date#create | Russian | relative format past');
-  equal(Date.create('2 years ago').relative(),   '2 года назад',     'Date#create | Russian | relative format past');
+  equal(Date.create('2 seconds ago').relative(), '2 секунды назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('2 minutes ago').relative(), '2 минуты назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('2 hours ago').relative(),   '2 часа назад',     'Date#relative | Russian | relative format past');
+  equal(Date.create('2 days ago').relative(),    '2 дня назад',    'Date#relative | Russian | relative format past');
+  equal(Date.create('2 weeks ago').relative(),   '2 недели назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('2 months ago').relative(),  '2 месяца назад',   'Date#relative | Russian | relative format past');
+  equal(Date.create('2 years ago').relative(),   '2 года назад',     'Date#relative | Russian | relative format past');
 
-  equal(Date.create('3 seconds ago').relative(), '3 секунды назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('3 minutes ago').relative(), '3 минуты назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('3 hours ago').relative(),   '3 часа назад',     'Date#create | Russian | relative format past');
-  equal(Date.create('3 days ago').relative(),    '3 дня назад',    'Date#create | Russian | relative format past');
-  equal(Date.create('3 weeks ago').relative(),   '3 недели назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('3 months ago').relative(),  '3 месяца назад',   'Date#create | Russian | relative format past');
-  equal(Date.create('3 years ago').relative(),   '3 года назад',     'Date#create | Russian | relative format past');
+  equal(Date.create('3 seconds ago').relative(), '3 секунды назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('3 minutes ago').relative(), '3 минуты назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('3 hours ago').relative(),   '3 часа назад',     'Date#relative | Russian | relative format past');
+  equal(Date.create('3 days ago').relative(),    '3 дня назад',    'Date#relative | Russian | relative format past');
+  equal(Date.create('3 weeks ago').relative(),   '3 недели назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('3 months ago').relative(),  '3 месяца назад',   'Date#relative | Russian | relative format past');
+  equal(Date.create('3 years ago').relative(),   '3 года назад',     'Date#relative | Russian | relative format past');
 
-  equal(Date.create('4 seconds ago').relative(), '4 секунды назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('4 minutes ago').relative(), '4 минуты назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('4 hours ago').relative(),   '4 часа назад',     'Date#create | Russian | relative format past');
-  equal(Date.create('4 days ago').relative(),    '4 дня назад',    'Date#create | Russian | relative format past');
-  equal(Date.create('4 weeks ago').relative(),   '4 недели назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('4 months ago').relative(),  '4 месяца назад',   'Date#create | Russian | relative format past');
-  equal(Date.create('4 years ago').relative(),   '4 года назад',     'Date#create | Russian | relative format past');
+  equal(Date.create('4 seconds ago').relative(), '4 секунды назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('4 minutes ago').relative(), '4 минуты назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('4 hours ago').relative(),   '4 часа назад',     'Date#relative | Russian | relative format past');
+  equal(Date.create('4 days ago').relative(),    '4 дня назад',    'Date#relative | Russian | relative format past');
+  equal(Date.create('4 weeks ago').relative(),   '4 недели назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('4 months ago').relative(),  '4 месяца назад',   'Date#relative | Russian | relative format past');
+  equal(Date.create('4 years ago').relative(),   '4 года назад',     'Date#relative | Russian | relative format past');
 
-  equal(Date.create('5 seconds ago').relative(), '5 секунд назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('5 minutes ago').relative(), '5 минут назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('5 hours ago').relative(),   '5 часов назад',     'Date#create | Russian | relative format past');
-  equal(Date.create('5 days ago').relative(),    '5 дней назад',    'Date#create | Russian | relative format past');
-  equal(Date.create('5 weeks ago').relative(),   '5 недель назад',  'Date#create | Russian | relative format past');
-  equal(Date.create('5 months ago').relative(),  '5 месяцев назад',   'Date#create | Russian | relative format past');
-  equal(Date.create('5 years ago').relative(),   '5 лет назад',     'Date#create | Russian | relative format past');
+  equal(Date.create('5 seconds ago').relative(), '5 секунд назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('5 minutes ago').relative(), '5 минут назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('5 hours ago').relative(),   '5 часов назад',     'Date#relative | Russian | relative format past');
+  equal(Date.create('5 days ago').relative(),    '5 дней назад',    'Date#relative | Russian | relative format past');
+  equal(Date.create('5 weeks ago').relative(),   '1 месяц назад',  'Date#relative | Russian | relative format past');
+  equal(Date.create('5 months ago').relative(),  '5 месяцев назад',   'Date#relative | Russian | relative format past');
+  equal(Date.create('5 years ago').relative(),   '5 лет назад',     'Date#relative | Russian | relative format past');
 
-  equal(Date.create('7 seconds ago').relative(), '7 секунд назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('7 minutes ago').relative(), '7 минут назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('7 hours ago').relative(),   '7 часов назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('7 days ago').relative(),    '7 дней назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('7 weeks ago').relative(),   '7 недель назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('7 months ago').relative(),  '7 месяцев назад', 'Date#create | Russian | relative format past');
-  equal(Date.create('7 years ago').relative(),   '7 лет назад', 'Date#create | Russian | relative format past');
+  equal(Date.create('7 seconds ago').relative(), '7 секунд назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('7 minutes ago').relative(), '7 минут назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('7 hours ago').relative(),   '7 часов назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('7 days ago').relative(),    '1 неделю назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('7 weeks ago').relative(),   '1 месяц назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('7 months ago').relative(),  '7 месяцев назад', 'Date#relative | Russian | relative format past');
+  equal(Date.create('7 years ago').relative(),   '7 лет назад', 'Date#relative | Russian | relative format past');
 
-  equal(Date.create('5 hours from now').relative(), 'через 5 часов', 'Date#create | Russian | relative format future');
+  equal(Date.create('5 hours from now').relative(), 'через 5 часов', 'Date#relative | Russian | relative format future');
 
 //* 2 days after monday = 2 Tage nach Montag
 //* 2 weeks from monday = 2 Wochen von Montag
