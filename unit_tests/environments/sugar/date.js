@@ -1896,8 +1896,8 @@ test('Date', function () {
 
   // Supported languages:
   //
-  //  zh-Hans 1
-  //  zh-Hant 1
+  //  zh-cn 1
+  //  zh-tw 1
   //  en 2
   //  es 3
   //  ru 5
