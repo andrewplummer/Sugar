@@ -5,7 +5,18 @@ test('Dates | German', function () {
 
 
 
-
+* 2 days after monday   = 2 Tage nach Montag
+* 2 weeks from monday  = 2 Wochen von Montag
+* last wednesday   = letzten Mittwoch (could be "letzter" with 'r' depending on context)
+* next friday    = kommender / naechster Freitag (could be kommenden/naechsten with n depending on context)
+* this week tuesday   = diese Woche Dienstag (ok when spoken, usually it is "Dienstag dieser Woche")
+* monday of this week  = diesen Montag / Montag dieser Woche 
+* May 25th of this year  = 25. Mai diesen Jahres
+* the first day of the month  = der erste Tag des Monats
+* the last day of March  = der letzte Tag des Maerz ("im" Maerz is Ok too)
+* the 23rd of last month  = der 23te im letzten Monat
+* the beginning of this week  = der Anfang dieser Woche
+* the end of next month  = das Ende naechsten Monats
 
 
 
