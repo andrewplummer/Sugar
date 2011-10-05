@@ -42,7 +42,7 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('昨天'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | Simplified Chinese | yesterday');
   dateEqual(Date.create('今天'), getRelativeDate(null, null, 0).resetTime(), 'Date#create | Simplified Chinese | today');
   dateEqual(Date.create('明天'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Simplified Chinese | tomorrow');
-  dateEqual(Date.create('后天'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Simplified Chinese | 明後日');
+  dateEqual(Date.create('后天'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Simplified Chinese | tomorrow');
 
   dateEqual(Date.create('上周'), getRelativeDate(null, null, -7), 'Date#create | Simplified Chinese | Last week');
   dateEqual(Date.create('这周'), getRelativeDate(null, null, 0), 'Date#create | Simplified Chinese | This week');
@@ -63,5 +63,38 @@ test('Dates | Simplified Chinese', function () {
   equal(Date.create('5 hours ago').relative(), '5小时前', 'Date#create | Simplified Chinese | relative format past');
   equal(Date.create('5 hours from now').relative(), '5小时后', 'Date#create | Simplified Chinese | relative format future');
 
+
+
+  equal(Date.create('1 second ago').relative(), '1秒钟前', 'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 minute ago').relative(), '1分钟前',  'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 hour ago').relative(),   '1小时前',     'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 day ago').relative(),    '1天前',    'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 week ago').relative(),   '1个星期前',  'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 month ago').relative(),  '1个月前',   'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 year ago').relative(),   '1年前',     'Date#create | Simplified Chinese | relative format past');
+
+  equal(Date.create('2 seconds ago').relative(), '2秒钟前', 'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 minutes ago').relative(), '2分钟前',  'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 hours ago').relative(),   '2小时前',     'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 days ago').relative(),    '2天前',    'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 weeks ago').relative(),   '2个星期前',  'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 months ago').relative(),  '2个月前',   'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 years ago').relative(),   '2年前',     'Date#create | Simplified Chinese | relative format past');
+
+  equal(Date.create('1 second from now').relative(), '1秒钟后', 'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 minute from now').relative(), '1分钟后',  'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 hour from now').relative(),   '1小时后',     'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 day from now').relative(),    '1天后',    'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 week from now').relative(),   '1个星期后',  'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 month from now').relative(),  '1个月后',   'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 year from now').relative(),   '1年后',     'Date#create | Simplified Chinese | relative format future');
+
+  equal(Date.create('5 second from now').relative(), '5秒钟后', 'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 minute from now').relative(), '5分钟后',  'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 hour from now').relative(),   '5小时后',     'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 day from now').relative(),    '5天后',    'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 week from now').relative(),   '1个月后',  'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 month from now').relative(),  '5个月后',   'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 year from now').relative(),   '5年后',     'Date#create | Simplified Chinese | relative format future');
 
 });
