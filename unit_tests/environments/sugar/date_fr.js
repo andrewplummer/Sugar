@@ -13,7 +13,7 @@ test('Dates | French', function () {
   dateEqual(Date.create('lundi'), getDateWithWeekdayAndOffset(1), 'Date#create | French | Monday');
 
 
-  dateEqual(Date.create('il y a une millisecond'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | French | one millisecond ago');
+  dateEqual(Date.create('il y a une milliseconde'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | French | one millisecond ago');
   dateEqual(Date.create('il y a un seconde'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | French | one second ago');
   dateEqual(Date.create('il y a une minute'), getRelativeDate(null, null, null, null, -1), 'Date#create | French | one minute ago');
   dateEqual(Date.create('il y a une heure'), getRelativeDate(null, null, null, -1), 'Date#create | French | one hour ago');
@@ -54,10 +54,43 @@ test('Dates | French', function () {
   dateEqual(Date.create("l'année dernière"), getRelativeDate(-1), 'Date#create | French | Last year');
   dateEqual(Date.create("l'année prochaine"), getRelativeDate(1), 'Date#create | French | Next year');
 
-  equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 août 2011', 'Date#create | French | format');
-  equal(Date.create('5 hours ago').relative(), 'il y a 5 heures', 'Date#create | French | relative format past');
-  equal(Date.create('5 hours from now').relative(), 'dans 5 heures', 'Date#create | French | relative format future');
+  // no accents
+  dateEqual(Date.create('la semaine derniere'), getRelativeDate(null, null, -7), 'Date#create | French | Last week');
+  dateEqual(Date.create("l'annee prochaine"), getRelativeDate(1), 'Date#create | French | Next year');
 
+  equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 août 2011', 'Date#create | French | format');
+
+  equal(Date.create('1 second ago').relative(), 'il y a 1 seconde', 'Date#create | French | relative format past');
+  equal(Date.create('1 minute ago').relative(), 'il y a 1 minute',  'Date#create | French | relative format past');
+  equal(Date.create('1 hour ago').relative(),   'il y a 1 heure',     'Date#create | French | relative format past');
+  equal(Date.create('1 day ago').relative(),    'il y a 1 jour',    'Date#create | French | relative format past');
+  equal(Date.create('1 week ago').relative(),   'il y a 1 semaine',  'Date#create | French | relative format past');
+  equal(Date.create('1 month ago').relative(),  'il y a 1 mois',   'Date#create | French | relative format past');
+  equal(Date.create('1 year ago').relative(),   'il y a 1 an',     'Date#create | French | relative format past');
+
+  equal(Date.create('2 seconds ago').relative(), 'il y a 2 secondes', 'Date#create | French | relative format past');
+  equal(Date.create('2 minutes ago').relative(), 'il y a 2 minutes',  'Date#create | French | relative format past');
+  equal(Date.create('2 hours ago').relative(),   'il y a 2 heures',     'Date#create | French | relative format past');
+  equal(Date.create('2 days ago').relative(),    'il y a 2 jours',    'Date#create | French | relative format past');
+  equal(Date.create('2 weeks ago').relative(),   'il y a 2 semaines',  'Date#create | French | relative format past');
+  equal(Date.create('2 months ago').relative(),  'il y a 2 mois',   'Date#create | French | relative format past');
+  equal(Date.create('2 years ago').relative(),   'il y a 2 ans',     'Date#create | French | relative format past');
+
+  equal(Date.create('1 second from now').relative(), 'dans 1 seconde', 'Date#create | French | relative format future');
+  equal(Date.create('1 minute from now').relative(), 'dans 1 minute',  'Date#create | French | relative format future');
+  equal(Date.create('1 hour from now').relative(),   'dans 1 heure',     'Date#create | French | relative format future');
+  equal(Date.create('1 day from now').relative(),    'dans 1 jour',    'Date#create | French | relative format future');
+  equal(Date.create('1 week from now').relative(),   'dans 1 semaine',  'Date#create | French | relative format future');
+  equal(Date.create('1 month from now').relative(),  'dans 1 mois',   'Date#create | French | relative format future');
+  equal(Date.create('1 year from now').relative(),   'dans 1 an',     'Date#create | French | relative format future');
+
+  equal(Date.create('5 second from now').relative(), 'dans 5 secondes', 'Date#create | French | relative format future');
+  equal(Date.create('5 minute from now').relative(), 'dans 5 minutes',  'Date#create | French | relative format future');
+  equal(Date.create('5 hour from now').relative(),   'dans 5 heures',     'Date#create | French | relative format future');
+  equal(Date.create('5 day from now').relative(),    'dans 5 jours',    'Date#create | French | relative format future');
+  equal(Date.create('5 week from now').relative(),   'dans 1 mois',  'Date#create | French | relative format future');
+  equal(Date.create('5 month from now').relative(),  'dans 5 mois',   'Date#create | French | relative format future');
+  equal(Date.create('5 year from now').relative(),   'dans 5 ans',     'Date#create | French | relative format future');
 
 
 });
