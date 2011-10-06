@@ -47,10 +47,48 @@ test('Dates | Spanish', function () {
   dateEqual(Date.create('el año pasado'), getRelativeDate(-1), 'Date#create | Spanish | Last year');
   dateEqual(Date.create('el próximo año'), getRelativeDate(1), 'Date#create | Spanish | Next year');
 
-  equal(Date.create('2011-08-25').format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Spanish | format');
-  equal(Date.create('5 hours ago').relative(), 'hace 5 horas', 'Date#create | Spanish | relative format past');
-  equal(Date.create('5 hours from now').relative(), '5 horas de ahora', 'Date#create | Spanish | relative format future');
+  // no accents
+  dateEqual(Date.create('hace 1 dia'), getRelativeDate(null, null, -1), 'Date#create | Spanish | one day ago');
+  dateEqual(Date.create('mes proximo'), getRelativeDate(null, 1), 'Date#create | Spanish | Next month');
+  dateEqual(Date.create('semana proxima'), getRelativeDate(null, null, 7), 'Date#create | Spanish | Next week');
+  dateEqual(Date.create('manana'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Spanish | tomorrow');
+  dateEqual(Date.create('hace 1 ano'), getRelativeDate(-1), 'Date#create | Spanish | one year ago');
 
+  equal(Date.create('2011-08-25').format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Spanish | format');
+
+
+
+  equal(Date.create('1 second ago').relative(), 'hace 1 segundo', 'Date#create | Spanish | relative format past');
+  equal(Date.create('1 minute ago').relative(), 'hace 1 minuto',  'Date#create | Spanish | relative format past');
+  equal(Date.create('1 hour ago').relative(),   'hace 1 hora',     'Date#create | Spanish | relative format past');
+  equal(Date.create('1 day ago').relative(),    'hace 1 día',    'Date#create | Spanish | relative format past');
+  equal(Date.create('1 week ago').relative(),   'hace 1 semana',  'Date#create | Spanish | relative format past');
+  equal(Date.create('1 month ago').relative(),  'hace 1 mes',   'Date#create | Spanish | relative format past');
+  equal(Date.create('1 year ago').relative(),   'hace 1 año',     'Date#create | Spanish | relative format past');
+
+  equal(Date.create('2 seconds ago').relative(), 'hace 2 segundos', 'Date#create | Spanish | relative format past');
+  equal(Date.create('2 minutes ago').relative(), 'hace 2 minutos',  'Date#create | Spanish | relative format past');
+  equal(Date.create('2 hours ago').relative(),   'hace 2 horas',     'Date#create | Spanish | relative format past');
+  equal(Date.create('2 days ago').relative(),    'hace 2 días',    'Date#create | Spanish | relative format past');
+  equal(Date.create('2 weeks ago').relative(),   'hace 2 semanas',  'Date#create | Spanish | relative format past');
+  equal(Date.create('2 months ago').relative(),  'hace 2 meses',   'Date#create | Spanish | relative format past');
+  equal(Date.create('2 years ago').relative(),   'hace 2 años',     'Date#create | Spanish | relative format past');
+
+  equal(Date.create('1 second from now').relative(), '1 segundo de ahora', 'Date#create | Spanish | relative format future');
+  equal(Date.create('1 minute from now').relative(), '1 minuto de ahora',  'Date#create | Spanish | relative format future');
+  equal(Date.create('1 hour from now').relative(),   '1 hora de ahora',     'Date#create | Spanish | relative format future');
+  equal(Date.create('1 day from now').relative(),    '1 día de ahora',    'Date#create | Spanish | relative format future');
+  equal(Date.create('1 week from now').relative(),   '1 semana de ahora',  'Date#create | Spanish | relative format future');
+  equal(Date.create('1 month from now').relative(),  '1 mes de ahora',   'Date#create | Spanish | relative format future');
+  equal(Date.create('1 year from now').relative(),   '1 año de ahora',     'Date#create | Spanish | relative format future');
+
+  equal(Date.create('5 second from now').relative(), '5 segundos de ahora', 'Date#create | Spanish | relative format future');
+  equal(Date.create('5 minute from now').relative(), '5 minutos de ahora',  'Date#create | Spanish | relative format future');
+  equal(Date.create('5 hour from now').relative(),   '5 horas de ahora',     'Date#create | Spanish | relative format future');
+  equal(Date.create('5 day from now').relative(),    '5 días de ahora',    'Date#create | Spanish | relative format future');
+  equal(Date.create('5 week from now').relative(),   '1 mes de ahora',  'Date#create | Spanish | relative format future');
+  equal(Date.create('5 month from now').relative(),  '5 meses de ahora',   'Date#create | Spanish | relative format future');
+  equal(Date.create('5 year from now').relative(),   '5 años de ahora',     'Date#create | Spanish | relative format future');
 
 
 });

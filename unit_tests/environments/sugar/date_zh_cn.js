@@ -61,7 +61,6 @@ test('Dates | Simplified Chinese', function () {
 
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
 
-
   equal(Date.create('1 second ago').relative(), '1秒钟前', 'Date#create | Simplified Chinese | relative format past');
   equal(Date.create('1 minute ago').relative(), '1分钟前',  'Date#create | Simplified Chinese | relative format past');
   equal(Date.create('1 hour ago').relative(),   '1小时前',     'Date#create | Simplified Chinese | relative format past');
