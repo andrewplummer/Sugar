@@ -12,6 +12,7 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('월요일'), getDateWithWeekdayAndOffset(1), 'Date#create | Korean | Monday');
   dateEqual(Date.create('구일'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Korean | the 9th');
   dateEqual(Date.create('이십오일'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Korean | the 25th');
+  dateEqual(Date.create('한달 전'), getRelativeDate(null, -1), 'Date#create | Korean | one month ago 달');
 
 
 
@@ -21,9 +22,9 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('1시간 전'), getRelativeDate(null, null, null, -1), 'Date#create | Korean | one hour ago');
   dateEqual(Date.create('1일 전'), getRelativeDate(null, null, -1), 'Date#create | Korean | one day ago');
   dateEqual(Date.create('1주 전'), getRelativeDate(null, null, -7), 'Date#create | Korean | one week');
-  dateEqual(Date.create('1달 전'), getRelativeDate(null, -1), 'Date#create | Korean | one month ago 달');
   dateEqual(Date.create('1개월 전'), getRelativeDate(null, -1), 'Date#create | Korean | one month ago 개월');
   dateEqual(Date.create('1년 전'), getRelativeDate(-1), 'Date#create | Korean | one year ago');
+
 
   dateEqual(Date.create('5밀리초 후'), getRelativeDate(null, null, null, null, null, null,5), 'Date#create | Korean | five millisecond from now');
   dateEqual(Date.create('5초 후'), getRelativeDate(null, null, null, null, null, 5), 'Date#create | Korean | five second from now');
@@ -31,7 +32,6 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('5시간 후'), getRelativeDate(null, null, null, 5), 'Date#create | Korean | five hour from now');
   dateEqual(Date.create('5일 후'), getRelativeDate(null, null, 5), 'Date#create | Korean | five day from now');
   dateEqual(Date.create('5주 후'), getRelativeDate(null, null, 35), 'Date#create | Korean | five weeks from now');
-  dateEqual(Date.create('5달 후'), getRelativeDate(null, 5), 'Date#create | Korean | five months 달');
   dateEqual(Date.create('5개월 후'), getRelativeDate(null, 5), 'Date#create | Korean | five months 개월');
   dateEqual(Date.create('5년 후'), getRelativeDate(5), 'Date#create | Korean | five years from now');
 
@@ -47,7 +47,7 @@ test('Dates | Korean', function () {
 
   dateEqual(Date.create('지난 달'), getRelativeDate(null, -1), 'Date#create | Korean | last month');
   dateEqual(Date.create('이번 달'), getRelativeDate(null, 0), 'Date#create | Korean | this month');
-  dateEqual(Date.create('다음달'), getRelativeDate(null, 1), 'Date#create | Korean | Next month');
+  dateEqual(Date.create('다음 달'), getRelativeDate(null, 1), 'Date#create | Korean | Next month');
 
   dateEqual(Date.create('작년'), getRelativeDate(-1), 'Date#create | Korean | Last year');
   dateEqual(Date.create('내년'), getRelativeDate(1), 'Date#create | Korean | Next year');
