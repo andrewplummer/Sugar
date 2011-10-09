@@ -14,10 +14,6 @@ test('Date', function () {
 
 
 
-
-
-
-
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -411,8 +407,7 @@ test('Date', function () {
   dateEqual(Date.create('beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | beginning of next month');
   dateEqual(Date.create('the beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'Date#create | Fuzzy Dates | the beginning of next month');
   dateEqual(Date.create('the end of next month'), new Date(now.getFullYear(), now.getMonth() + 1, getDaysInMonth(now.getFullYear(), now.getMonth() + 1), 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of next month');
-  dateEqual(Date.create('the end of the month'), new Date(now.getFullYear(), now.getMonth(), getDaysInMonth(now.getFullYear(), now.getMonth() + 1), 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of the month');
-  console.info(getDaysInMonth(2011, 8));
+  dateEqual(Date.create('the end of the month'), new Date(now.getFullYear(), now.getMonth(), getDaysInMonth(now.getFullYear(), now.getMonth()), 23, 59, 59, 999), 'Date#create | Fuzzy Dates | the end of the month');
 
   dateEqual(Date.create('the beginning of the year'), new Date(now.getFullYear(), 0), 'Date#create | Fuzzy Dates | the beginning of the year');
   dateEqual(Date.create('the beginning of this year'), new Date(now.getFullYear(), 0), 'Date#create | Fuzzy Dates | the beginning of this year');
@@ -980,7 +975,8 @@ test('Date', function () {
   equal(Date.create('360 seconds ago').format('relative'), '6 minutes ago', 'Date#format | relative | 360 seconds');
   equal(Date.create('360 minutes ago').format('relative'), '6 hours ago', 'Date#format | relative | minutes');
   equal(Date.create('360 hours ago').format('relative'), '2 weeks ago', 'Date#format | relative | hours');
-  equal(Date.create('360 days ago').format('relative'), '11 months ago', 'Date#format | relative | days');
+  equal(Date.create('340 days ago').format('relative'), '11 months ago', 'Date#format | relative | 340 days');
+  equal(Date.create('360 days ago').format('relative'), '1 year ago', 'Date#format | relative | 360 days');
   equal(Date.create('360 weeks ago').format('relative'), '6 years ago', 'Date#format | relative | weeks');
   equal(Date.create('360 months ago').format('relative'), '30 years ago', 'Date#format | relative | months');
   equal(Date.create('360 years ago').format('relative'), '360 years ago', 'Date#format | relative | years');
@@ -990,7 +986,8 @@ test('Date', function () {
   equal(Date.create('361 seconds from now').format('relative'), '6 minutes from now', 'Date#format | relative future | 360 seconds');
   equal(Date.create('361 minutes from now').format('relative'), '6 hours from now', 'Date#format | relative future | minutes');
   equal(Date.create('360 hours from now').format('relative'), '2 weeks from now', 'Date#format | relative future | hours');
-  equal(Date.create('360 days from now').format('relative'), '11 months from now', 'Date#format | relative future | days');
+  equal(Date.create('340 days from now').format('relative'), '11 months from now', 'Date#format | relative future | 340 days');
+  equal(Date.create('360 days from now').format('relative'), '1 year from now', 'Date#format | relative future | 360 days');
   equal(Date.create('360 weeks from now').format('relative'), '6 years from now', 'Date#format | relative future | weeks');
   equal(Date.create('360 months from now').format('relative'), '30 years from now', 'Date#format | relative future | months');
   equal(Date.create('360 years from now').format('relative'), '360 years from now', 'Date#format | relative future | years');
@@ -1062,7 +1059,8 @@ test('Date', function () {
   equal(Date.create('360 seconds ago').relative(), '6 minutes ago', 'Date#relative | relative | 360 seconds');
   equal(Date.create('360 minutes ago').relative(), '6 hours ago', 'Date#relative | relative | minutes');
   equal(Date.create('360 hours ago').relative(), '2 weeks ago', 'Date#relative | relative | hours');
-  equal(Date.create('360 days ago').relative(), '11 months ago', 'Date#relative | relative | days');
+  equal(Date.create('340 days ago').relative(), '11 months ago', 'Date#relative | relative | 340 days');
+  equal(Date.create('360 days ago').relative(), '1 year ago', 'Date#relative | relative | 360 days');
   equal(Date.create('360 weeks ago').relative(), '6 years ago', 'Date#relative | relative | weeks');
   equal(Date.create('360 months ago').relative(), '30 years ago', 'Date#relative | relative | months');
   equal(Date.create('360 years ago').relative(), '360 years ago', 'Date#relative | relative | years');
@@ -1072,7 +1070,8 @@ test('Date', function () {
   equal(Date.create('361 seconds from now').relative(), '6 minutes from now', 'Date#relative | relative future | 360 seconds');
   equal(Date.create('361 minutes from now').relative(), '6 hours from now', 'Date#relative | relative future | minutes');
   equal(Date.create('360 hours from now').relative(), '2 weeks from now', 'Date#relative | relative future | hours');
-  equal(Date.create('360 days from now').relative(), '11 months from now', 'Date#relative | relative future | days');
+  equal(Date.create('340 days from now').relative(), '11 months from now', 'Date#relative | relative future | 340 days');
+  equal(Date.create('360 days from now').relative(), '1 year from now', 'Date#relative | relative future | 360 days');
   equal(Date.create('360 weeks from now').relative(), '6 years from now', 'Date#relative | relative future | weeks');
   equal(Date.create('360 months from now').relative(), '30 years from now', 'Date#relative | relative future | months');
   equal(Date.create('360 years from now').relative(), '360 years from now', 'Date#relative | relative future | years');
@@ -1179,28 +1178,6 @@ test('Date', function () {
 
 
 
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,432), 'day'), true, 'Date#is | string accuracy | accurate to a day');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,23,3,1,432), 'day'), true, 'Date#is | string accuracy | accurate to a day');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,21,3,1,432), 'day'), true, 'Date#is | string accuracy | accurate to a day');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,14,22,3,1,432), 'day'), true, 'Date#is | string accuracy | accurate to a day');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,16,22,3,1,432), 'day'), true, 'Date#is | string accuracy | accurate to a day');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,14,22,3,1,431), 'day'), false, 'Date#is | string accuracy | accurate to a day is still contstrained');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,16,22,3,1,433), 'day'), false, 'Date#is | string accuracy | accurate to a day is still contstrained');
-
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,432), 'year'), true, 'Date#is | string accuracy | accurate to a year');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1969,4,15,22,3,1,432), 'year'), true, 'Date#is | string accuracy | accurate to a year');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,432), 'year'), true, 'Date#is | string accuracy | accurate to a year');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1969,4,15,22,3,1,432), 'year'), true, 'Date#is | string accuracy | accurate to a year');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1971,4,15,22,3,1,432), 'year'), true, 'Date#is | string accuracy | accurate to a year');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1969,4,14,22,3,2,432), 'year'), false, 'Date#is | string accuracy | accurate to a year is still contstrained');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1971,4,16,22,3,1,432), 'year'), false, 'Date#is | string accuracy | accurate to a year is still contstrained');
-
-
-
-
-
-
-
 
 
   // Note that relative #is formats can only be considered to be accurate to within a few milliseconds
@@ -1219,6 +1196,7 @@ test('Date', function () {
 
   equal(getRelativeDate(null,null,null,-5).is('4 hours ago'), false, 'Date#is | 4 hours ago is accurate to hours');
   equal(getRelativeDate(null,null,null,-5).is('5 hours ago'), true, 'Date#is | 5 hours ago is accurate to hours');
+  equal(getRelativeDate(null,null,null,-5, 15).is('5 hours ago'), true, 'Date#is | 5:15 hours ago is still 5 hours ago');
   equal(getRelativeDate(null,null,null,-5).is('6 hours ago'), false, 'Date#is | 6 hours ago is accurate to hours');
 
   equal(getRelativeDate(null,null,-5).is('4 days ago'), false, 'Date#is | 4 days ago is accurate to days');
@@ -1265,8 +1243,7 @@ test('Date', function () {
   equal(new Date(2001,5,4,12,22,34,445).is(new Date(2001,5,4,12,22,34,444)), false, 'Date#is | straight dates passed in are accurate to the millisecond');
   equal(new Date(2001,5,4,12,22,34,445).is(new Date(2001,5,4,12,22,34,446)), false, 'Date#is | straight dates passed in are accurate to the millisecond');
 
-  equal(Date.create('3 hours ago').is('now', 'day'), true, 'Date#is | accepts string precision');
-  equal(Date.create('3 hours ago').is('now', 'bloopie'), false, 'Date#is | does not die on bad string-based precision');
+  equal(Date.create('3 hours ago').is('now', 'bloopie'), false, 'Date#is | does not die on string-based precision');
 
 
   equal(Date.create('2008').isLeapYear(), true, 'Date#leapYear | 2008');
