@@ -1,5 +1,6 @@
 test('Date', function () {
 
+  Date.setLanguage('en');
 
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
@@ -860,17 +861,12 @@ test('Date', function () {
   equal(d.format('{days}'), '5', 'Date#format | custom formats | days');
   equal(d.format('{dow}'), 'thu', 'Date#format | custom formats | dow');
   equal(d.format('{Dow}'), 'Thu', 'Date#format | custom formats | Dow');
-  equal(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
-  equal(d.format('{weekday short}'), 'thu', 'Date#format | custom formats | weekday short');
   equal(d.format('{weekday}'), 'thursday', 'Date#format | custom formats | weekday');
-  equal(d.format('{Weekday short}'), 'Thu', 'Date#format | custom formats | Weekday short');
   equal(d.format('{Weekday}'), 'Thursday', 'Date#format | custom formats | Weekday');
   equal(d.format('{M}'), '8', 'Date#format | custom formats | M');
   equal(d.format('{MM}'), '08', 'Date#format | custom formats | MM');
-  equal(d.format('{Month short}'), 'Aug', 'Date#format | custom formats | Month short');
-  equal(d.format('{month short}'), 'aug', 'Date#format | custom formats | month short');
+  console.info("WHOOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
   equal(d.format('{month}'), 'august', 'Date#format | custom formats | month');
-  equal(d.format('{Month short}'), 'Aug', 'Date#format | custom formats | Month short');
   equal(d.format('{Mon}'), 'Aug', 'Date#format | custom formats | Mon');
   equal(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');
   equal(d.format('{yy}'), '10', 'Date#format | custom formats | yy');
