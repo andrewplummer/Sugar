@@ -1,7 +1,7 @@
 test('Dates | Russian', function () {
 
   var now = new Date();
-  Date.setLanguage('ru');
+  Date.setLocale('ru');
 
   dateEqual(Date.create('15 мая 2011'), new Date(2011, 4, 15), 'Date#create | basic Russian date');
   dateEqual(Date.create('5 января 2012'), new Date(2012, 0, 5), 'Date#create | Russian | 2012-01-05');

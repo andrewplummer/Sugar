@@ -1,7 +1,7 @@
 test('Dates | Korean', function () {
 
   var now = new Date();
-  Date.setLanguage('ko');
+  Date.setLocale('ko');
 
   dateEqual(Date.create('2011년5월15일'), new Date(2011, 4, 15), 'Date#create | basic Korean date');
   dateEqual(Date.create('2011년5월'), new Date(2011, 4), 'Date#create | Korean | year and month');
