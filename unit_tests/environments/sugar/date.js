@@ -1,6 +1,6 @@
 test('Date', function () {
 
-  Date.setLanguage('en');
+  Date.setLocale('en');
 
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
@@ -8,9 +8,6 @@ test('Date', function () {
   if(Object.isFunction(Date.create())) {
     Date.sugar('create');
   };
-
-
-
 
 
 
@@ -865,7 +862,6 @@ test('Date', function () {
   equal(d.format('{Weekday}'), 'Thursday', 'Date#format | custom formats | Weekday');
   equal(d.format('{M}'), '8', 'Date#format | custom formats | M');
   equal(d.format('{MM}'), '08', 'Date#format | custom formats | MM');
-  console.info("WHOOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
   equal(d.format('{month}'), 'august', 'Date#format | custom formats | month');
   equal(d.format('{Mon}'), 'Aug', 'Date#format | custom formats | Mon');
   equal(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');
@@ -1865,34 +1861,6 @@ test('Date', function () {
 
   equal(date1.isValid(), false, 'Date#clone | source element is invalid');
   equal(date2.isValid(), false, 'Date#clone | cloned element is also invalid');
-
-
-  // Supported languages:
-  //
-  //  zh-cn 1
-  //  zh-tw 1
-  //  en 2
-  //  es 3
-  //  ru 5
-  //  pt 7
-  //  fr 9
-  //  de 11
-  //  ja 12
-  //  kr 20
-  //  it 24
-
-  // Other
-  //
-  //  hindi 4
-  //  arabic 6
-  //  bengali 8
-  //  malay 10
-  //  farsi 13
-  //  urdu 14
-  //  punjabi 15
-  //  wu (tibetan) 16
-  //  Vietnamese 17
-  //  Javanese 18
 
 
 });

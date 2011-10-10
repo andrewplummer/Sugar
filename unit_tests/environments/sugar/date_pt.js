@@ -1,7 +1,7 @@
 test('Dates | Portuguese', function () {
 
   var now = new Date();
-  Date.setLanguage('pt');
+  Date.setLocale('pt');
 
 
   dateEqual(Date.create('15 de maio 2011'), new Date(2011, 4, 15), 'Date#create | basic Portuguese date');

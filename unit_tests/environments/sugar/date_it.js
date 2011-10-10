@@ -1,7 +1,7 @@
 test('Dates | Italian', function () {
 
   var now = new Date();
-  Date.setLanguage('it');
+  Date.setLocale('it');
 
 
   dateEqual(Date.create('15 Maggio 2011'), new Date(2011, 4, 15), 'Date#create | basic Italian date');
