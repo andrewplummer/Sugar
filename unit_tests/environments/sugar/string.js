@@ -275,6 +275,7 @@ test('String', function () {
 
 
 
+  /* Normalize is on haiatus indefinitely
   equal('ō'.normalize(), 'o', 'String#normalize | ō is o');
   equal('o'.normalize(), 'o', 'String#normalize | o is o');
   equal('kyōto'.normalize(), 'kyoto', 'String#normalize | kyōto is kyoto ');
@@ -290,6 +291,7 @@ test('String', function () {
   equal('ĆćĈĉĊċČč'.normalize(), 'CcCcCcCc', 'String#normalize | test basic o');
   equal('ǖ'.normalize(), 'u', 'String#normalize | test basic o');
   equal('ＦＵＬＬＷＩＤＴＨ'.normalize(), 'FULLWIDTH', 'String#normalize | fullwidth characters');
+  */
 
 
   equal('hello'.startsWith('hell'), true, 'String#startsWith | hello starts with hell');
@@ -942,8 +944,8 @@ test('String', function () {
   strictlyEqual('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
   strictlyEqual('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
   strictlyEqual('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
-  strictlyEqual(''.normalize(), '', 'String#normalize | blank');
-  strictlyEqual('wasabi'.normalize(), 'wasabi', 'String#normalize | wasabi');
+  //strictlyEqual(''.normalize(), '', 'String#normalize | blank');
+  //strictlyEqual('wasabi'.normalize(), 'wasabi', 'String#normalize | wasabi');
   strictlyEqual(''.insert('-', 0), '-', 'String#insert | - inserted at 0');
   strictlyEqual('b'.insert('-', 0), '-b', 'String#insert | b inserted at 0');
   strictlyEqual('b'.insert('-', 1), 'b-', 'String#insert | b inserted at 1');
