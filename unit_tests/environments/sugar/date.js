@@ -11,7 +11,6 @@ test('Date', function () {
 
 
 
-
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -57,6 +56,7 @@ test('Date', function () {
   dateEqual(Date.create(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,454), 'Date#create | enumerated | January 23, 1998 11:54:32.454');
 
   dateEqual(Date.create('1998', true), new Date(1998, 0), 'Date#create | will not choke on a boolean as second param');
+  dateEqual(Date.create('1998', ''), new Date(1998, 0), 'Date#create | will not choke on an empty string as second param');
 
 
   // Date constructor accepts an object
