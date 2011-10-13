@@ -94,8 +94,9 @@ test('Function', function () {
   // temperamental test happier to run after other execution (GC?) has finished.
 
   setTimeout(function(){
-    var fn, ret, counter = 0; expected = [['leia', 5],['han solo', 7]];
+    var fn, ret, counter = 0, expected = [['leia', 5],['han solo', 7]];
     var fn = (function(one){
+      console.info('yoyuoyo', this.toString(), one);
       equal([this.toString(), one], expected[counter], 'Function#debounce | scope and arguments are correct');
       counter++;
     }).debounce(50);
@@ -119,6 +120,33 @@ test('Function', function () {
 
     setTimeout(function() {
       equal(counter, 2, 'Function#debounce | counter is correct');
+    }, 200);
+  }, 1);
+
+  setTimeout(function(){
+    var fn, ret, counter = 0, expected = [['3p0', 1],['luke', 6]];
+    var fn = (function(one){
+      equal([this.toString(), one], expected[counter], 'Function#debounce | immediate execution | scope and arguments are correct');
+      counter++;
+    }).debounce(50, true);
+
+    fn.call('3p0', 1);
+    fn.call('r2d2', 2);
+    fn.call('chewie', 3);
+
+    setTimeout(function() {
+      fn.call('leia', 5);
+    }, 10);
+
+    setTimeout(function() {
+      fn.call('luke', 6);
+      fn.call('han solo', 7);
+    }, 100);
+
+    ret = fn.call('vader', 4);
+
+    setTimeout(function() {
+      equal(counter, 2, 'Function#debounce | immediate execution | counter is correct');
     }, 200);
   }, 1);
 
