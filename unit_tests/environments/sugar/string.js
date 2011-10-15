@@ -635,6 +635,17 @@ test('String', function () {
   equal('waTch me su-cCeed'.underscore(), 'wa_tch_me_su_c_ceed', 'String#underscore | complex whitespace', { prototype: 'wa_tch me su_c_ceed' });
 
 
+  equal('hopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case');
+  equal('HopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case capital first');
+  equal('HOPONPOP'.spacify(), 'hoponpop', 'String#spacify | all caps');
+  equal('HOP-ON-POP'.spacify(), 'hop on pop', 'String#spacify | caps and dashes');
+  equal('hop-on-pop'.spacify(), 'hop on pop', 'String#spacify | lower-case and dashes');
+
+  equal('watch_me_fail'.spacify(), 'watch me fail', 'String#spacify | whitespace');
+  equal('watch-meFail-sad-face'.spacify(), 'watch me fail sad face', 'String#spacify | whitespace sad face');
+  equal('waTch me su-cCeed'.spacify(), 'wa tch me su c ceed', 'String#spacify | complex whitespace');
+
+
 
   equal('ア'.isKatakana(), true, 'String#isKatakana | ア');
   equal('ｱ'.isKatakana(), true, 'String#isKatakana | ｱ');
