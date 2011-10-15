@@ -1,5 +1,8 @@
 test('Function', function () {
 
+
+
+
   var bound,obj,result;
 
   obj = { foo: 'bar' };
@@ -96,7 +99,6 @@ test('Function', function () {
   setTimeout(function(){
     var fn, ret, counter = 0, expected = [['leia', 5],['han solo', 7]];
     var fn = (function(one){
-      console.info('yoyuoyo', this.toString(), one);
       equal([this.toString(), one], expected[counter], 'Function#debounce | scope and arguments are correct');
       counter++;
     }).debounce(50);
