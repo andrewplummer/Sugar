@@ -1136,6 +1136,10 @@ test('String', function () {
 
   equal('Welcome, {name}.'.assign({ name: 'program' }), 'Welcome, program.', 'String#assign | basic functionality');
   equal('Welcome, {1}.'.assign('program'), 'Welcome, program.', 'String#assign | numeric params');
+  equal('Welcome, {1}.'.assign({ name: 'program' }), 'Welcome, {1}.', 'String#assign | numeric params will be untouched if object passed');
+  equal('Welcome, {name}. You are {age} years old and have {points} points left.'.assign({ name: 'program', age: 21, points: 345 }), 'Welcome, program. You are 21 years old and have 345 points left.', 'String#assign | 1 hash');
+  equal('Welcome, {1}. You are {2} years old and have {3} points left.'.assign('program', 21, 345), 'Welcome, program. You are 21 years old and have 345 points left.', 'String#assign | 3 arguments');
+  equal('Welcome, {name}. You are {age} years old and have {3} points left.'.assign({ name: 'program' }, { age: 21 }, 345), 'Welcome, program. You are 21 years old and have 345 points left.', 'String#assign | complex');
 
 
 
