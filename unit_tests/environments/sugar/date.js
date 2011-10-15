@@ -1863,4 +1863,16 @@ test('Date', function () {
   equal(date2.isValid(), false, 'Date#clone | cloned element is also invalid');
 
 
+
+  // Date.addFormat
+  Date.addFormat('(\\d+)\\^\\^(\\d+)%%(\\d+), but at the (beginning|end)', ['date','year','month','edge']);
+  dateEqual(Date.create('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
+
+  Date.addFormat('on ze (\\d+)th of (janvier|février|mars|avril|mai) lavigne', ['date','month'], 'fr');
+  dateEqual(Date.create('on ze 18th of avril lavigne'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other languages');
+
+  equal(Date.currentLocale, 'en', 'Date Locale | current locale code is exposed');
+  equal(typeof Date.getLocalization(), 'object', 'Date Locale | current localization object is exposed in case needed');
+
+
 });
