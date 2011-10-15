@@ -2,7 +2,6 @@ test('Function', function () {
 
 
 
-
   var bound,obj,result;
 
   obj = { foo: 'bar' };
@@ -88,6 +87,19 @@ test('Function', function () {
   })();
 
 
+  (function() {
+    var counter = 0;
+    var fn = (function() { counter++; }).lazy(0.1, 10);
+    for(var i = 0; i < 50; i++) {
+      fn();
+    }
+    setTimeout(function() {
+      equal(counter, 10, 'Function#lazy | lazy functions have an upper threshold');
+      equal(fn.timers.length, 0, 'Function#lazy | timers should be cleared');
+    }, 50);
+  })();
+
+
 
 
 
@@ -130,7 +142,7 @@ test('Function', function () {
     var fn = (function(one){
       equal([this.toString(), one], expected[counter], 'Function#debounce | immediate execution | scope and arguments are correct');
       counter++;
-    }).debounce(50, true);
+    }).debounce(50, false);
 
     fn.call('3p0', 1);
     fn.call('r2d2', 2);
