@@ -887,6 +887,7 @@ test('Array', function () {
   raisesError(function() { [1,2,3].groupBy(undefined); }, 'Array#groupBy | raises an error on undefined');
   raisesError(function() { [1,2,3].groupBy(null); }, 'Array#groupBy | raises an error on null');
   raisesError(function() { [1,2,3].groupBy(4); }, 'Array#groupBy | raises an error on number');
+  equal(['one','two','three'].groupBy('length').keys(), ['3','5'], 'Array#groupBy | result should be an extended object');
 
 
 
