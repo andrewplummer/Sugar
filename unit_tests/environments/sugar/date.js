@@ -523,9 +523,9 @@ test('Date', function () {
   d = new Date('August 25, 2010 11:45:20');
   d.setUTC({ years: 2008, hours: 4 }, true);
 
-  equal(d.getFullYear(), d.getTimezoneOffset() > 240 ? 2007 : 2008, 'Date#set | reset utc | year');
+  equal(d.getFullYear(), 2008, 'Date#set | reset utc | year');
   equal(d.getMonth(), 7, 'Date#set | reset utc | month');
-  equal(d.getDate(), 25, 'Date#set | reset utc | date');
+  equal(d.getDate(), d.getTimezoneOffset() > 240 ? 24 : 25, 'Date#set | reset utc | date');
   equal(d.getHours(), getHours(4 - (d.getTimezoneOffset() / 60)), 'Date#set | reset utc | hours');
   equal(d.getMinutes(), d.getTimezoneOffset() % 60, 'Date#set | reset utc | minutes');
   equal(d.getSeconds(), 0, 'Date#set | reset utc | seconds');
@@ -878,15 +878,10 @@ test('Date', function () {
 
   d = new Date('August 5, 2010 04:03:02');
 
-  equal(d.format('{min pad}'), '03', 'Date#format | custom formats | min pad');
-  equal(d.format('{m pad}'), '03', 'Date#format | custom formats | m pad');
-  equal(d.format('{d pad}'), '05', 'Date#format | custom formats | d pad');
-  equal(d.format('{date pad}'), '05', 'Date#format | custom formats | days pad');
-  equal(d.format('{h pad}'), '04', 'Date#format | custom formats | h pad');
-  equal(d.format('{hours pad}'), '04', 'Date#format | custom formats | hours pad');
-  equal(d.format('{s pad}'), '02', 'Date#format | custom formats | s pad');
-  equal(d.format('{sec pad}'), '02', 'Date#format | custom formats | sec pad');
-  equal(d.format('{seconds pad}'), '02', 'Date#format | custom formats | seconds pad');
+  equal(d.format('{mm}'), '03', 'Date#format | custom formats | mm pads the digit');
+  equal(d.format('{dd}'), '05', 'Date#format | custom formats | dd pads the digit');
+  equal(d.format('{hh}'), '04', 'Date#format | custom formats | hh pads the digit');
+  equal(d.format('{ss}'), '02', 'Date#format | custom formats | ss pads the digit');
 
 
   equal(d.format('{M}/{d}/{yyyy}'), '8/5/2010', 'Date#format | full formats | slashes');
@@ -1863,7 +1858,6 @@ test('Date', function () {
   equal(date2.isValid(), false, 'Date#clone | cloned element is also invalid');
 
 
-
   // Date.addFormat
   Date.addFormat('(\\d+)\\^\\^(\\d+)%%(\\d+), but at the (beginning|end)', ['date','year','month','edge']);
   dateEqual(Date.create('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
@@ -1873,6 +1867,17 @@ test('Date', function () {
 
   equal(Date.currentLocale, 'en', 'Date Locale | current locale code is exposed');
   equal(typeof Date.getLocalization(), 'object', 'Date Locale | current localization object is exposed in case needed');
+
+
+
+
+  // Date locale setup
+  equal(new Date(2011, 5, 18).format('{Month} {date}, {yyyy}'), 'June 18, 2011', 'Date Locales | Non-initialized defaults to English formatting');
+  equal(getRelativeDate(null, null, null, -1).relative(), '1 hour ago', 'Date Locales | Non-initialized relative formatting is also English');
+  equal(Date.create('June 18, 2011').isValid(), true, 'Date Locales | English dates will also be properly parsed without being initialized or passing a locale code');
+  equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not be parsed before the locale is set');
+  equal(Date.create('２０１１年０６月１８日', 'ja').isValid(), true, 'Date Locales | Japanese dates will parse if their locale is passed');
+  equal(Date.create('２０１１年０６月１８日').isValid(), true, 'Date Locales | Japanese dates will then parse thereafter');
 
 
 });
