@@ -1,7 +1,10 @@
 test('Dates | Japanese', function () {
 
   var now = new Date();
+  try {
+
   Date.setLocale('ja');
+} catch(e){ console.info(e); }
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | once a language has been initialized it will always be recognized');
@@ -79,6 +82,7 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('先週水曜日'), getDateWithWeekdayAndOffset(3, -7), 'Date#create | Japanese | Last wednesday');
   dateEqual(Date.create('来週金曜日'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Japanese | Next friday');
 
+  equal(Date.create('2011-08-25').format(), '2011年8月25日', 'Date#create | Japanese | standard format');
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Japanese | format');
 
   equal(Date.create('1 second ago').relative(), '1秒前', 'Date#create | Japanese | relative format past');
