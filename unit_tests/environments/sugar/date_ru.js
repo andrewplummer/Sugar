@@ -64,6 +64,7 @@ test('Dates | Russian', function () {
   dateEqual(Date.create('в следующем году'), getRelativeDate(1), 'Date#create | Russian | Next year');
 
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 августа 2011', 'Date#create | Russian | format');
+  equal(Date.create('2011-08-25').format('{dd} {month2} {yyyy}'), '25 август 2011', 'Date#create | Russian | format allows alternates');
 
   equal(Date.create('1 second ago').relative(), '1 секунду назад', 'Date#relative | Russian | relative format past');
   equal(Date.create('1 minute ago').relative(), '1 минуту назад',  'Date#relative | Russian | relative format past');

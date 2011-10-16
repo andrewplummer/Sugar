@@ -14,7 +14,7 @@ test('Dates | French', function () {
 
 
   dateEqual(Date.create('il y a une milliseconde'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | French | one millisecond ago');
-  dateEqual(Date.create('il y a un seconde'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | French | one second ago');
+  dateEqual(Date.create('il y a une seconde'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | French | one second ago');
   dateEqual(Date.create('il y a une minute'), getRelativeDate(null, null, null, null, -1), 'Date#create | French | one minute ago');
   dateEqual(Date.create('il y a une heure'), getRelativeDate(null, null, null, -1), 'Date#create | French | one hour ago');
   dateEqual(Date.create('il y a un jour'), getRelativeDate(null, null, -1), 'Date#create | French | one day ago');
