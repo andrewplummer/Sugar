@@ -33,13 +33,17 @@ end
 def get_method(s)
   raw = get_property(:method, s)
   match = raw.match(/(.+\.)?(.+)\((.+)?\)/)
+  method = { :name => match[2] }
+  if !!match[1]
+    method[:class_method] = true
+  end
   params = []
   accepts_unlimited_params = false
   if match[3]
     p = match[3].split(/,(?!')/)
     if p.last =~ /\.\.\./
       p.delete_at(-1)
-      accepts_unlimited_params = true
+      method[:accepts_unlimited_params] = true
     end
     params = p.to_enum(:each_with_index).map do |f,i|
       required = !!f.match(/<.+>/)
@@ -76,12 +80,8 @@ def get_method(s)
   else
     params = []
   end
-  {
-    :name => match[2],
-    :class_method => !!match[1],
-    :params => params,
-    :accepts_unlimited_params => accepts_unlimited_params
-  }
+  method[:params] = params
+  method
 end
 
 def get_url_name(method, klass)
@@ -120,7 +120,18 @@ def get_examples(s, name)
       }
     end
   end
+  examples.each do |ex|
+    clean(ex)
+  end
   examples
+end
+
+def clean(m)
+  m.each do |key, value|
+    if value.nil? || value == false
+      m.delete(key)
+    end
+  end
 end
 
 
@@ -137,6 +148,7 @@ File.open('lib/sugar.js', 'r') do |f|
       method[:url_name] = get_url_name(method[:name], method[:class_method])
       method[:returns] = get_property(:returns, b)
       method[:short] = get_property(:short, b)
+      method[:set] = get_property(:set, b)
       method[:extra] = get_property(:extra, b)
       method[:examples] = get_examples(b, method[:name])
       method[:alias] = get_property(:alias, b)
@@ -151,6 +163,11 @@ File.open('lib/sugar.js', 'r') do |f|
         method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
         method[:short] = "Alias for <span class=\"code\">#{method[:alias]}</span>."
       end
+      if method[:name] =~ /\[/
+        method[:set_base] = method[:name].gsub(/\w+\[(\w+)\]/, '\1')
+        method[:name].gsub!(/[\[\]]/, '')
+      end
+      clean(method)
       #if current_module[:name] == 'Object' && method[:name] != 'create'
       #  instance_version = method.dup
       #  instance_version[:class_method] = false
@@ -183,8 +200,6 @@ modules.each do |mod|
   end
 end
 
-if File.exists?(fileout)
-  File.open(fileout, 'w') do |f|
-    f.puts "SugarModules = #{modules.to_json};"
-  end
+File.open(fileout, 'w') do |f|
+  f.puts "SugarModules = #{modules.to_json};"
 end
