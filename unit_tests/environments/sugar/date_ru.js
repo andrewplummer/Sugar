@@ -63,6 +63,8 @@ test('Dates | Russian', function () {
   dateEqual(Date.create('в прошлом году'), getRelativeDate(-1), 'Date#create | Russian | Last year');
   dateEqual(Date.create('в следующем году'), getRelativeDate(1), 'Date#create | Russian | Next year');
 
+  equal(Date.create('1989-05-02').format(), '2 мая 1989 года', 'Date#create | Russian | standard format 1');
+  equal(Date.create('2008-10-03').format(), '3 октября 2008 года', 'Date#create | Russian | standard format 1');
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 августа 2011', 'Date#create | Russian | format');
   equal(Date.create('2011-08-25').format('{dd} {month2} {yyyy}'), '25 август 2011', 'Date#create | Russian | format allows alternates');
 

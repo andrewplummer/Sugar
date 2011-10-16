@@ -47,6 +47,8 @@ test('Dates | Italian', function () {
   dateEqual(Date.create("l'anno scorso"), getRelativeDate(-1), 'Date#create | Italian | Last year');
   dateEqual(Date.create("l'anno prossimo"), getRelativeDate(1), 'Date#create | Italian | Next year');
 
+
+  equal(Date.create('1999-11-04').format(), '4 novembre 1999', 'Date#create | Italian | format');
   equal(Date.create('2011-08-25').format('{dd} {Month} {yyyy}'), '25 Agosto 2011', 'Date#create | Italian | format');
 
   equal(Date.create('1 second ago').relative(), '1 secondo fa', 'Date#create | Italian | relative format past');

@@ -831,6 +831,8 @@ test('Date', function () {
   d = new Date('August 5, 2010 13:45:02');
 
 
+  equal(d.format(), 'August 5, 2010', 'Date#format | no arguments is standard format with no time');
+
   equal(d.format('{ms}'), '000', 'Date#format | custom formats | ms');
   equal(d.format('{millisec}'), '0', 'Date#format | custom formats | millisec');
   equal(d.format('{millisecond}'), '0', 'Date#format | custom formats | millisecond');
@@ -940,7 +942,6 @@ test('Date', function () {
   equal(d.toUTC().format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036 UTC');
 
 
-  raisesError(function(){ Date.create('totally invalid').format(); }, 'Date#format | null format raises a type error');
   equal(Date.create('totally invalid').format(Date.ISO8601_DATETIME), 'Invalid Date', 'Date#format | invalid');
 
 
