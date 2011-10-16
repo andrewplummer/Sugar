@@ -1,6 +1,4 @@
-aest('Object', function () {
-
-
+test('Object', function () {
 
 
   var count,result;
