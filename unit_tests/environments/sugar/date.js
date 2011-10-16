@@ -1882,4 +1882,11 @@ test('Date', function () {
   equal(Date.create('２０１１年０６月１８日').isValid(), true, 'Date Locales | Japanese dates will then parse thereafter');
 
 
+  Date.setLocale('ja');
+  equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | changes the locale');
+  Date.setLocale();
+  equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if no argument passed');
+  Date.setLocale('');
+  equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
+
 });
