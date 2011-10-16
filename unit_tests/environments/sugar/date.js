@@ -1875,7 +1875,9 @@ test('Date', function () {
   equal(new Date(2011, 5, 18).format('{Month} {date}, {yyyy}'), 'June 18, 2011', 'Date Locales | Non-initialized defaults to English formatting');
   equal(getRelativeDate(null, null, null, -1).relative(), '1 hour ago', 'Date Locales | Non-initialized relative formatting is also English');
   equal(Date.create('June 18, 2011').isValid(), true, 'Date Locales | English dates will also be properly parsed without being initialized or passing a locale code');
-  equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not be parsed before the locale is set');
+
+  // Can't guarantee this one for now as the loading order of the unit tests can be random.
+  // equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not be parsed before the locale is set');
   equal(Date.create('２０１１年０６月１８日', 'ja').isValid(), true, 'Date Locales | Japanese dates will parse if their locale is passed');
   equal(Date.create('２０１１年０６月１８日').isValid(), true, 'Date Locales | Japanese dates will then parse thereafter');
 
