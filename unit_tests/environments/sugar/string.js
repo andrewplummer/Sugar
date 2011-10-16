@@ -780,6 +780,17 @@ test('String', function () {
   equal('सभी मनुष्यों'.hasDevanagari(), true, 'String#hasDevanagari');
   equal('सभी मनुष्यों'.isDevanagari(), true, 'String#isDevanagari');
 
+  equal("l'année dernière".hasLatin(), true, 'String#hasLatin | French');
+  equal("l'année dernière".isLatin(), true, 'String#isLatin | French');
+  equal('これは one big mix ですよね。'.isLatin(), false, 'String#isLatin | Hiragana romaji mix');
+  equal('これは one big mix ですよね。'.hasLatin(), true, 'String#isLatin | Hiragana romaji mix');
+  equal('ā'.isLatin(), true, 'String#isLatin | Extended set A');
+  equal('ā'.hasLatin(), true, 'String#isLatin | Extended set A');
+  equal('Ɖ'.isLatin(), true, 'String#isLatin | Extended set B');
+  equal('Ɖ'.hasLatin(), true, 'String#isLatin | Extended set B');
+  equal('これはミックスですよね。'.isLatin(), false, 'String#isLatin | Katakana hiragana mix');
+  equal('これはミックスですよね。'.hasLatin(), false, 'String#hasLatin | Katakana hiragana mix');
+
   var stripped;
   var html =
   '<div class="outer">' +
@@ -1145,6 +1156,9 @@ test('String', function () {
 
   // String#assign
 
+  var obj1 = { first: 'Harry' };
+  var obj2 = { last: 'Potter' };
+
   equal('Welcome, {name}.'.assign({ name: 'program' }), 'Welcome, program.', 'String#assign | basic functionality');
   equal('Welcome, {1}.'.assign('program'), 'Welcome, program.', 'String#assign | numeric params');
   equal('Welcome, {1}.'.assign({ name: 'program' }), 'Welcome, {1}.', 'String#assign | numeric params will be untouched if object passed');
@@ -1152,6 +1166,11 @@ test('String', function () {
   equal('Welcome, {1}. You are {2} years old and have {3} points left.'.assign('program', 21, 345), 'Welcome, program. You are 21 years old and have 345 points left.', 'String#assign | 3 arguments');
   equal('Welcome, {name}. You are {age} years old and have {3} points left.'.assign({ name: 'program' }, { age: 21 }, 345), 'Welcome, program. You are 21 years old and have 345 points left.', 'String#assign | complex');
 
+  equal('Hello, {first} {last}'.assign(obj1, obj2), 'Hello, Harry Potter', 'String#assign | passing 2 objects');
+  equal(obj1.first, 'Harry', 'String#assign | obj1 retains its properties');
+  equal(obj1.last, undefined, 'String#assign | obj1 is untampered');
+  equal(obj2.last, 'Potter', 'String#assign | obj2 retains its properties');
+  equal(obj2.first, undefined, 'String#assign | obj2 is untampered');
 
 
 
