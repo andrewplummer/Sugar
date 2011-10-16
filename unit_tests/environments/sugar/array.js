@@ -1411,5 +1411,24 @@ test('Array', function () {
   // when pushing new elements and other browsers will not work on sparse arrays...
   // equal(count, 6, 'Array | objects that inherit from arrays can still iterate');
 
+
+  // Array.create
+
+  equal(Array.create('one'), ['one'], 'Array.create | string');
+  equal(Array.create(2), [2], 'Array.create | number');
+  equal(Array.create(true), [true], 'Array.create | boolean');
+  equal(Array.create(), [], 'Array.create | no args');
+  equal(Array.create(null), [null], 'Array.create | null');
+  equal(Array.create(undefined), [undefined], 'Array.create | mixed');
+  equal(Array.create('one', 2, true, null, undefined), ['one', 2, true, null, undefined], 'Array.create | mixed');
+
+  equal(Array.create([1,2,3]), [1,2,3], 'Array.create | passing an array');
+  equal(Array.create([1,2,3], [1,2,3]), [1,2,3,1,2,3], 'Array.create | passing two arrays will concat them');
+  equal(Array.create([1,2,3], 'four'), [1,2,3,'four'], 'Array.create | passing an array and another object will concat them');
+
+  console.log((function(){ return Array.create(arguments); })('one','two'));
+  equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
+  equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
+
 });
 
