@@ -14,17 +14,17 @@ test('Dates | German', function () {
   dateEqual(Date.create('Montag'), getDateWithWeekdayAndOffset(1), 'Date#create | German | Monday');
 
 
-  dateEqual(Date.create('einer Millisekunde vor'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | German | one millisecond ago');
-  dateEqual(Date.create('eine Sekunde vor'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | German | one second ago');
-  dateEqual(Date.create('einer Minute vor'), getRelativeDate(null, null, null, null, -1), 'Date#create | German | one minute ago');
-  dateEqual(Date.create('einer Stunde vor'), getRelativeDate(null, null, null, -1), 'Date#create | German | one hour ago');
-  dateEqual(Date.create('einem Tag vor'), getRelativeDate(null, null, -1), 'Date#create | German | one day ago');
-  dateEqual(Date.create('einer Woche vor'), getRelativeDate(null, null, -7), 'Date#create | German | one week ago');
-  dateEqual(Date.create('einem Monat vor'), getRelativeDate(null, -1), 'Date#create | German | one month ago');
-  dateEqual(Date.create('einem Jahr vor'), getRelativeDate(-1), 'Date#create | German | one year ago');
+  dateEqual(Date.create('einer Millisekunde vorher'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | German | one millisecond ago');
+  dateEqual(Date.create('eine Sekunde vorher'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | German | one second ago');
+  dateEqual(Date.create('einer Minute vorher'), getRelativeDate(null, null, null, null, -1), 'Date#create | German | one minute ago');
+  dateEqual(Date.create('einer Stunde vorher'), getRelativeDate(null, null, null, -1), 'Date#create | German | one hour ago');
+  dateEqual(Date.create('einen Tag vorher'), getRelativeDate(null, null, -1), 'Date#create | German | one day ago');
+  dateEqual(Date.create('eine Woche vorher'), getRelativeDate(null, null, -7), 'Date#create | German | one week ago');
+  dateEqual(Date.create('einen Monat vorher'), getRelativeDate(null, -1), 'Date#create | German | one month ago');
+  dateEqual(Date.create('ein Jahr vorher'), getRelativeDate(-1), 'Date#create | German | one year ago');
 
   dateEqual(Date.create('vor einer Millisekunde'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | German reversed | one millisecond ago');
-  dateEqual(Date.create('vor eine Sekunde'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | German reversed | one second ago');
+  dateEqual(Date.create('vor einer Sekunde'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | German reversed | one second ago');
   dateEqual(Date.create('vor einer Minute'), getRelativeDate(null, null, null, null, -1), 'Date#create | German reversed | one minute ago');
   dateEqual(Date.create('vor einer Stunde'), getRelativeDate(null, null, null, -1), 'Date#create | German reversed | one hour ago');
   dateEqual(Date.create('vor einem Tag'), getRelativeDate(null, null, -1), 'Date#create | German reversed | one day ago');
@@ -58,31 +58,38 @@ test('Dates | German', function () {
   dateEqual(Date.create('nächsten Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachsten');
 
   dateEqual(Date.create('letztes Jahr'), getRelativeDate(-1), 'Date#create | German | Last year');
-  dateEqual(Date.create('nächsten Jahr'), getRelativeDate(1), 'Date#create | German | Next year');
+  dateEqual(Date.create('nächstes Jahr'), getRelativeDate(1), 'Date#create | German | Next year');
+
 
   // no accents
-  dateEqual(Date.create('ubermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German | day after tomorrow');
-  dateEqual(Date.create('nachsten Jahr'), getRelativeDate(1), 'Date#create | German | Next year');
-  dateEqual(Date.create('nachster Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachster');
-  dateEqual(Date.create('nachsten Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachsten');
+  dateEqual(Date.create('ubermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German (no accents) | day after tomorrow');
+  dateEqual(Date.create('nachstes Jahr'), getRelativeDate(1), 'Date#create | German (no accents) | Next year');
+  dateEqual(Date.create('nachster Monat'), getRelativeDate(null, 1), 'Date#create | German (no accents) | Next month nachster');
+  dateEqual(Date.create('nachsten Monat'), getRelativeDate(null, 1), 'Date#create | German (no accents) | Next month nachsten');
+
+  // umlaut alternatives
+  dateEqual(Date.create('uebermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German | day after tomorrow');
+  dateEqual(Date.create('naechster Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachster');
+  dateEqual(Date.create('naechsten Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachsten');
+  dateEqual(Date.create('naechstes Jahr'), getRelativeDate(1), 'Date#create | German | Next year');
 
   equal(Date.create('2011-08-25').format('{dd} {Month} {yyyy}'), '25 August 2011', 'Date#create | German | format');
 
-  equal(Date.create('1 second ago').relative(), '1 Sekunde vor', 'Date#create | German | relative format past');
-  equal(Date.create('1 minute ago').relative(), '1 Minute vor',  'Date#create | German | relative format past');
-  equal(Date.create('1 hour ago').relative(),   '1 Stunde vor',     'Date#create | German | relative format past');
-  equal(Date.create('1 day ago').relative(),    '1 Tag vor',    'Date#create | German | relative format past');
-  equal(Date.create('1 week ago').relative(),   '1 Woche vor',  'Date#create | German | relative format past');
-  equal(Date.create('1 month ago').relative(),  '1 Monat vor',   'Date#create | German | relative format past');
-  equal(Date.create('1 year ago').relative(),   '1 Jahr vor',     'Date#create | German | relative format past');
+  equal(Date.create('1 second ago').relative(), 'vor 1 Sekunde', 'Date#create | German | relative format past');
+  equal(Date.create('1 minute ago').relative(), 'vor 1 Minute',  'Date#create | German | relative format past');
+  equal(Date.create('1 hour ago').relative(),   'vor 1 Stunde',     'Date#create | German | relative format past');
+  equal(Date.create('1 day ago').relative(),    'vor 1 Tag',    'Date#create | German | relative format past');
+  equal(Date.create('1 week ago').relative(),   'vor 1 Woche',  'Date#create | German | relative format past');
+  equal(Date.create('1 month ago').relative(),  'vor 1 Monat',   'Date#create | German | relative format past');
+  equal(Date.create('1 year ago').relative(),   'vor 1 Jahr',     'Date#create | German | relative format past');
 
-  equal(Date.create('5 seconds ago').relative(), '5 Sekunden vor', 'Date#create | German | relative format past');
-  equal(Date.create('5 minutes ago').relative(), '5 Minuten vor',  'Date#create | German | relative format past');
-  equal(Date.create('5 hours ago').relative(),   '5 Stunden vor',     'Date#create | German | relative format past');
-  equal(Date.create('5 days ago').relative(),    '5 Tagen vor',    'Date#create | German | relative format past');
-  equal(Date.create('5 weeks ago').relative(),   '1 Monat vor',  'Date#create | German | relative format past');
-  equal(Date.create('5 months ago').relative(),  '5 Monaten vor',   'Date#create | German | relative format past');
-  equal(Date.create('5 years ago').relative(),   '5 Jahren vor',     'Date#create | German | relative format past');
+  equal(Date.create('5 seconds ago').relative(), 'vor 5 Sekunden', 'Date#create | German | relative format past');
+  equal(Date.create('5 minutes ago').relative(), 'vor 5 Minuten',  'Date#create | German | relative format past');
+  equal(Date.create('5 hours ago').relative(),   'vor 5 Stunden',     'Date#create | German | relative format past');
+  equal(Date.create('5 days ago').relative(),    'vor 5 Tagen',    'Date#create | German | relative format past');
+  equal(Date.create('5 weeks ago').relative(),   'vor 1 Monat',  'Date#create | German | relative format past');
+  equal(Date.create('5 months ago').relative(),  'vor 5 Monaten',   'Date#create | German | relative format past');
+  equal(Date.create('5 years ago').relative(),   'vor 5 Jahren',     'Date#create | German | relative format past');
 
   equal(Date.create('1 second from now').relative(), 'in 1 Sekunde', 'Date#create | German | relative format future');
   equal(Date.create('1 minute from now').relative(), 'in 1 Minute',  'Date#create | German | relative format future');
