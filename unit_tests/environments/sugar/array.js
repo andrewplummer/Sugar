@@ -3,7 +3,6 @@ test('Array', function () {
 
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
 
-
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
   // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
   // arr = [undefined, undefined, undefined];
@@ -1328,6 +1327,7 @@ test('Array', function () {
   equal([[{a:1},{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2],[a:1]');
   equal([[{a:1},{a:2},{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2,a:1]');
   equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten | [[a,b],c,[d,e],f],g');
+  equal([undefined].flatten().length, 1, 'Array#flatten | should not compact arrays');
 
 
 
@@ -1406,7 +1406,6 @@ test('Array', function () {
 
   equal(count, 2, 'Array | sparse array elements in the prototype chain are also properly iterated');
 
-  //Array.prototype.each.
   // This test cannot be framed in a meaninful way... IE will not set the length property
   // when pushing new elements and other browsers will not work on sparse arrays...
   // equal(count, 6, 'Array | objects that inherit from arrays can still iterate');
@@ -1420,13 +1419,13 @@ test('Array', function () {
   equal(Array.create(), [], 'Array.create | no args');
   equal(Array.create(null), [null], 'Array.create | null');
   equal(Array.create(undefined), [undefined], 'Array.create | mixed');
-  equal(Array.create('one', 2, true, null, undefined), ['one', 2, true, null, undefined], 'Array.create | mixed');
+  equal(Array.create('one', 2, true, null), ['one', 2, true, null], 'Array.create | mixed 1');
+  equal(Array.create('one', 2, true, undefined), ['one', 2, true, undefined], 'Array.create | mixed 2');
 
   equal(Array.create([1,2,3]), [1,2,3], 'Array.create | passing an array');
   equal(Array.create([1,2,3], [1,2,3]), [1,2,3,1,2,3], 'Array.create | passing two arrays will concat them');
   equal(Array.create([1,2,3], 'four'), [1,2,3,'four'], 'Array.create | passing an array and another object will concat them');
 
-  console.log((function(){ return Array.create(arguments); })('one','two'));
   equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
 
