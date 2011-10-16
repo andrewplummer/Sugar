@@ -73,6 +73,8 @@ test('Dates | German', function () {
   dateEqual(Date.create('naechsten Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachsten');
   dateEqual(Date.create('naechstes Jahr'), getRelativeDate(1), 'Date#create | German | Next year');
 
+
+  equal(Date.create('2001-06-14').format(), '14. Juni 2001', 'Date#create | German | format');
   equal(Date.create('2011-08-25').format('{dd} {Month} {yyyy}'), '25 August 2011', 'Date#create | German | format');
 
   equal(Date.create('1 second ago').relative(), 'vor 1 Sekunde', 'Date#create | German | relative format past');

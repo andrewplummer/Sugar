@@ -58,6 +58,7 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('다음 주 금요일'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Korean | Next friday');
 
 
+  equal(Date.create('2011-08-25').format(), '2011년8월25일', 'Date#create | Korean | standard format');
   equal(Date.create('2011-08-25').format('{yyyy}년{MM}월{dd}일'), '2011년08월25일', 'Date#create | Korean | format');
 
 
