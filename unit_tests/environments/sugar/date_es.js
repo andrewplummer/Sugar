@@ -54,6 +54,7 @@ test('Dates | Spanish', function () {
   dateEqual(Date.create('manana'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Spanish | tomorrow');
   dateEqual(Date.create('hace 1 ano'), getRelativeDate(-1), 'Date#create | Spanish | one year ago');
 
+  equal(Date.create('2012-01-05').format(), '5 de enero de 2012', 'Date#create | Spanish | standard format');
   equal(Date.create('2011-08-25').format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Spanish | format');
 
 

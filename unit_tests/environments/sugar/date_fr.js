@@ -58,6 +58,9 @@ test('Dates | French', function () {
   dateEqual(Date.create('la semaine derniere'), getRelativeDate(null, null, -7), 'Date#create | French | Last week');
   dateEqual(Date.create("l'annee prochaine"), getRelativeDate(1), 'Date#create | French | Next year');
 
+
+
+  equal(Date.create('2000-04-08').format(), '8 avril 2000', 'Date#create | French | standard format');
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 août 2011', 'Date#create | French | format');
 
   equal(Date.create('1 second ago').relative(), 'il y a 1 seconde', 'Date#create | French | relative format past');
