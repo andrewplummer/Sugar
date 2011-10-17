@@ -38,14 +38,18 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('domani'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Italian | tomorrow');
   dateEqual(Date.create('dopodomani'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Italian | day after tomorrow');
 
-  dateEqual(Date.create('la scorsa settimana'), getRelativeDate(null, null, -7), 'Date#create | Italian | Last week');
-  dateEqual(Date.create('la prossima settimana'), getRelativeDate(null, null, 7), 'Date#create | Italian | Next week');
+  dateEqual(Date.create('la settimana scorsa'), getRelativeDate(null, null, -7), 'Date#create | Italian | Last week');
+  dateEqual(Date.create('la settimana prossima'), getRelativeDate(null, null, 7), 'Date#create | Italian | Next week');
 
   dateEqual(Date.create('il mese scorso'), getRelativeDate(null, -1), 'Date#create | Italian | last month');
-  dateEqual(Date.create('il prossimo mese'), getRelativeDate(null, 1), 'Date#create | Italian | Next month');
+  dateEqual(Date.create('il mese prossimo'), getRelativeDate(null, 1), 'Date#create | Italian | Next month');
 
   dateEqual(Date.create("l'anno scorso"), getRelativeDate(-1), 'Date#create | Italian | Last year');
   dateEqual(Date.create("l'anno prossimo"), getRelativeDate(1), 'Date#create | Italian | Next year');
+
+  // No accents
+  dateEqual(Date.create('Martedi, 5 Gennaio 2012'), new Date(2012, 0, 5), 'Date#create | Italian | no accents | 2012-01-05');
+  dateEqual(Date.create('Lunedi'), getDateWithWeekdayAndOffset(1), 'Date#create | Italian | no accents | Monday');
 
 
   equal(Date.create('1999-11-04').format(), '4 novembre 1999', 'Date#create | Italian | format');
@@ -82,6 +86,7 @@ test('Dates | Italian', function () {
   equal(Date.create('5 week from now').relative(),   '1 mese da adesso',  'Date#create | Italian | relative format future');
   equal(Date.create('5 month from now').relative(),  '5 mesi da adesso',   'Date#create | Italian | relative format future');
   equal(Date.create('5 year from now').relative(),   '5 anni da adesso',     'Date#create | Italian | relative format future');
+
 
 
 });
