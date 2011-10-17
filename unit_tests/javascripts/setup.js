@@ -165,7 +165,11 @@ test = function(name, fn) {
     assertions: 0,
     failures: []
   };
-  fn.call();
+  try {
+    fn.call();
+  } catch(e) {
+    console.info(e);
+  }
   results.push(currentTest);
 }
 
