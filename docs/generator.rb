@@ -137,6 +137,7 @@ end
 
 File.open('lib/sugar.js', 'r') do |f|
   i = 0
+  pos = 0
   f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
     if mod = b.match(/(\w+) module/)
       if @current_module
@@ -163,8 +164,14 @@ File.open('lib/sugar.js', 'r') do |f|
         method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
         method[:short] = "Alias for <span class=\"code\">#{method[:alias]}</span>."
       end
+      if method[:set]
+        method[:pos] = pos
+        pos += 1
+      else
+        pos = 0
+      end
       if method[:name] =~ /\[/
-        method[:set_base] = method[:name].gsub(/\w+\[(\w+)\]/, '\1')
+        method[:set_base] = method[:name].gsub(/\w*\[(\w+?)\]\w*/, '\1')
         method[:name].gsub!(/[\[\]]/, '')
       end
       clean(method)
