@@ -956,92 +956,65 @@ test('Date', function () {
 
   // relative time formatting
 
-  equal(Date.create().format('relative'), '1 second ago', 'Date#format | relative | now');
-  equal(Date.create('234 milliseconds ago').format('relative'), '1 second ago', 'Date#format | relative | 234 milliseconds');
-  equal(Date.create('6234 milliseconds ago').format('relative'), '6 seconds ago', 'Date#format | relative | 6 milliseconds');
-  equal(Date.create('6 seconds ago').format('relative'), '6 seconds ago', 'Date#format | relative | 6 seconds');
-  equal(Date.create('360 seconds ago').format('relative'), '6 minutes ago', 'Date#format | relative | 360 seconds');
-  equal(Date.create('360 minutes ago').format('relative'), '6 hours ago', 'Date#format | relative | minutes');
-  equal(Date.create('360 hours ago').format('relative'), '2 weeks ago', 'Date#format | relative | hours');
-  equal(Date.create('340 days ago').format('relative'), '11 months ago', 'Date#format | relative | 340 days');
-  equal(Date.create('360 days ago').format('relative'), '1 year ago', 'Date#format | relative | 360 days');
-  equal(Date.create('360 weeks ago').format('relative'), '6 years ago', 'Date#format | relative | weeks');
-  equal(Date.create('360 months ago').format('relative'), '30 years ago', 'Date#format | relative | months');
-  equal(Date.create('360 years ago').format('relative'), '360 years ago', 'Date#format | relative | years');
-  equal(Date.create('12 months ago').format('relative'), '1 year ago', 'Date#format | relative | 12 months ago');
-
-  equal(Date.create('6234 milliseconds from now').format('relative'), '6 seconds from now', 'Date#format | relative future | 6 milliseconds');
-  equal(Date.create('361 seconds from now').format('relative'), '6 minutes from now', 'Date#format | relative future | 360 seconds');
-  equal(Date.create('361 minutes from now').format('relative'), '6 hours from now', 'Date#format | relative future | minutes');
-  equal(Date.create('360 hours from now').format('relative'), '2 weeks from now', 'Date#format | relative future | hours');
-  equal(Date.create('340 days from now').format('relative'), '11 months from now', 'Date#format | relative future | 340 days');
-  equal(Date.create('360 days from now').format('relative'), '1 year from now', 'Date#format | relative future | 360 days');
-  equal(Date.create('360 weeks from now').format('relative'), '6 years from now', 'Date#format | relative future | weeks');
-  equal(Date.create('360 months from now').format('relative'), '30 years from now', 'Date#format | relative future | months');
-  equal(Date.create('360 years from now').format('relative'), '360 years from now', 'Date#format | relative future | years');
-  equal(Date.create('13 months from now').format('relative'), '1 year from now', 'Date#format | relative future | 12 months ago');
-
 
   skipEnvironments(['mootools'], function() {
 
     var dyn = function(value, unit, ms, loc) {
       if(ms < -(1).year()) {
-      return '{Month} {date}, {year}';
-    } else {
-      return 'relative';
+        return '{Month} {date}, {year}';
+      }
     }
-  }
 
-  equal(Date.create('5 minutes ago').format(dyn), '5 minutes ago', 'Date#format | relative fn | 5 minutes should stay relative');
-  equal(Date.create('13 months ago').format(dyn), Date.create('13 months ago').format('{Month} {date}, {year}'), 'Date#format | relative fn | higher reverts to absolute');
+    equal(Date.create('5 minutes ago').format(dyn), getRelativeDate(null, null, null, null, -5).format(), 'Date#format | relative fn | 5 minutes should stay relative');
+    equal(Date.create('13 months ago').format(dyn), Date.create('13 months ago').format('{Month} {date}, {year}'), 'Date#format | relative fn | higher reverts to absolute');
 
-  // globalize system with plurals
+    // globalize system with plurals
 
-  var strings = ['ミリ秒','秒','分','時間','日','週間','月','年'];
+    var strings = ['ミリ秒','秒','分','時間','日','週間','月','年'];
 
-  dyn = function(value, unit, ms, loc) {
-    equal(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
-    equal(unit, 2, 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
-    equalWithMargin(ms, -300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
-    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
-    return value + strings[unit] + (ms < 0 ? '前' : '後');
-  }
+    dyn = function(value, unit, ms, loc) {
+      equal(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
+      equal(unit, 2, 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
+      equalWithMargin(ms, -300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
+      equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+      return value + strings[unit] + (ms < 0 ? '前' : '後');
+    }
 
-  equal(Date.create('5 minutes ago').format(dyn), '5分前', 'Date#format | relative fn | 5 minutes ago');
-
-
-  dyn = function(value, unit, ms, loc) {
-    equal(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
-    equal(unit, 2, 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
-    equalWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
-    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
-    return value + strings[unit] + (ms < 0 ? '前' : '後');
-  }
-
-  equal(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
+    equal(Date.create('5 minutes ago').format(dyn), '5分前', 'Date#format | relative fn | 5 minutes ago');
 
 
+    dyn = function(value, unit, ms, loc) {
+      equal(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
+      equal(unit, 2, 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
+      equalWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
+      equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+      return value + strings[unit] + (ms < 0 ? '前' : '後');
+    }
 
-  dyn = function(value, unit, ms, loc) {
-    equal(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
-    equal(unit, 3, 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
-    equalWithMargin(ms, -14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
-    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
-    return value + strings[unit] + (ms < 0 ? '前' : '後');
-  }
+    equal(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
 
-  equal(Date.create('240 minutes ago').format(dyn), '4時間前', 'Date#format | relative fn | 4 hours ago');
 
-  Date.create('223 milliseconds ago').format(function(value, unit) {
-    equalWithMargin(value, 223, 10, 'Date format | relative fn | still passes < 1 second');
-    equal(unit, 0, 'Date format | relative fn | still passes millisecond is zero');
+
+    dyn = function(value, unit, ms, loc) {
+      equal(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
+      equal(unit, 3, 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
+      equalWithMargin(ms, -14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
+      equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+      return value + strings[unit] + (ms < 0 ? '前' : '後');
+    }
+
+    equal(Date.create('240 minutes ago').format(dyn), '4時間前', 'Date#format | relative fn | 4 hours ago');
+
+    Date.create('223 milliseconds ago').format(function(value, unit) {
+      equalWithMargin(value, 223, 10, 'Date format | relative fn | still passes < 1 second');
+      equal(unit, 0, 'Date format | relative fn | still passes millisecond is zero');
+    });
+
+    equal(Date.create('2002-02-17').format(function() {}), 'February 17, 2002', 'Date#format | function that returns undefined defaults to standard format');
+
   });
 
-  equal(Date.create('300 minutes ago').format(function() {}), '5 hours ago', 'Date#format | function that returns undefined defaults to "relative"');
-
-  });
-
-
+  equal(Date.create().relative(), '1 second ago', 'Date#relative | relative | 6 milliseconds');
   equal(Date.create('6234 milliseconds ago').relative(), '6 seconds ago', 'Date#relative | relative | 6 milliseconds');
   equal(Date.create('6 seconds ago').relative(), '6 seconds ago', 'Date#relative | relative | 6 seconds');
   equal(Date.create('360 seconds ago').relative(), '6 minutes ago', 'Date#relative | relative | 360 seconds');
@@ -1065,6 +1038,13 @@ test('Date', function () {
   equal(Date.create('360 years from now').relative(), '360 years from now', 'Date#relative | relative future | years');
   equal(Date.create('13 months from now').relative(), '1 year from now', 'Date#relative | relative future | 12 months ago');
 
+  var dyn = function(value, unit, ms, loc) {
+    if(ms < -(1).year()) {
+      return '{Month} {date}, {year}';
+    }
+  }
+  equal(Date.create('2002-02-17').relative(dyn), 'February 17, 2002', 'Date#relative | function that returns a format uses that format');
+  equal(Date.create('45 days ago').relative(dyn), '1 month ago', 'Date#relative | function that returns undefined uses relative format');
 
 
   d = new Date(2010,7,5,13,45,2,542);
@@ -1887,6 +1867,8 @@ test('Date', function () {
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | changes the locale');
   Date.setLocale();
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if no argument passed');
+  equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011', 'Date#format | local locale should override global');
+  equal(Date.create('5 months ago').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
   Date.setLocale('');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
 
