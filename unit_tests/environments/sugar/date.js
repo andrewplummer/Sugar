@@ -984,8 +984,8 @@ test('Date', function () {
 
   skipEnvironments(['mootools'], function() {
 
-    var dyn = function(value, unit, ms, dir) {
-      if(ms > (1).year()) {
+    var dyn = function(value, unit, ms, loc) {
+      if(ms < -(1).year()) {
       return '{Month} {date}, {year}';
     } else {
       return 'relative';
@@ -999,35 +999,35 @@ test('Date', function () {
 
   var strings = ['ミリ秒','秒','分','時間','日','週間','月','年'];
 
-  dyn = function(value, unit, ms, dir) {
+  dyn = function(value, unit, ms, loc) {
     equal(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
     equal(unit, 2, 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
-    equalWithMargin(ms, 300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
-    equal(dir, -1, 'Date#format | relative fn | 5 minutes ago | dir indicates the offset from "now", negative if in the past');
-    return value + strings[unit] + (dir < 0 ? '前' : '後');
+    equalWithMargin(ms, -300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
+    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+    return value + strings[unit] + (ms < 0 ? '前' : '後');
   }
 
   equal(Date.create('5 minutes ago').format(dyn), '5分前', 'Date#format | relative fn | 5 minutes ago');
 
 
-  dyn = function(value, unit, ms, dir) {
+  dyn = function(value, unit, ms, loc) {
     equal(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
     equal(unit, 2, 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
     equalWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
-    equal(dir, 1, 'Date#format | relative fn | 1 minute from now | dir indicates the offset from "now", negative if in the past');
-    return value + strings[unit] + (dir < 0 ? '前' : '後');
+    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+    return value + strings[unit] + (ms < 0 ? '前' : '後');
   }
 
   equal(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
 
 
 
-  dyn = function(value, unit, ms, dir) {
+  dyn = function(value, unit, ms, loc) {
     equal(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
     equal(unit, 3, 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
-    equalWithMargin(ms, 14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
-    equal(dir, -1, 'Date#format | relative fn | 4 hours ago | dir indicates the offset from "now", negative if in the past');
-    return value + strings[unit] + (dir < 0 ? '前' : '後');
+    equalWithMargin(ms, -14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
+    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+    return value + strings[unit] + (ms < 0 ? '前' : '後');
   }
 
   equal(Date.create('240 minutes ago').format(dyn), '4時間前', 'Date#format | relative fn | 4 hours ago');
