@@ -16,7 +16,7 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('un millisecondo fa'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Italian | one millisecond ago');
   dateEqual(Date.create('un secondo fa'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Italian | one second ago');
   dateEqual(Date.create('un minuto fa'), getRelativeDate(null, null, null, null, -1), 'Date#create | Italian | one minuto ago');
-  dateEqual(Date.create('uno ora fa'), getRelativeDate(null, null, null, -1), 'Date#create | Italian | one hour ago');
+  dateEqual(Date.create("un'ora fa"), getRelativeDate(null, null, null, -1), 'Date#create | Italian | one hour ago');
   dateEqual(Date.create('un giorno fa'), getRelativeDate(null, null, -1), 'Date#create | Italian | one day ago');
   dateEqual(Date.create('una settimana fa'), getRelativeDate(null, null, -7), 'Date#create | Italian | one week ago');
   dateEqual(Date.create('un mese fa'), getRelativeDate(null, -1), 'Date#create | Italian | one month ago');
