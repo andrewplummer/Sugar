@@ -10,7 +10,6 @@ test('Date', function () {
   };
 
 
-
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -1871,5 +1870,7 @@ test('Date', function () {
   equal(Date.create('5 months ago').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
   Date.setLocale('');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
+
+  raisesError(function(){ Date.setLocale('pink'); }, 'Array#map | raises an error if no locale set available');
 
 });
