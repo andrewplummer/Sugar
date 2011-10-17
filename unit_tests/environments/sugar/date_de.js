@@ -63,11 +63,7 @@ test('Dates | German', function () {
 
   // no accents
   dateEqual(Date.create('ubermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German (no accents) | day after tomorrow');
-  dateEqual(Date.create('nachstes Jahr'), getRelativeDate(1), 'Date#create | German (no accents) | Next year');
-  dateEqual(Date.create('nachster Monat'), getRelativeDate(null, 1), 'Date#create | German (no accents) | Next month nachster');
-  dateEqual(Date.create('nachsten Monat'), getRelativeDate(null, 1), 'Date#create | German (no accents) | Next month nachsten');
-
-  // umlaut alternatives
+  dateEqual(Date.create('naechster Monat'), getRelativeDate(null, 1), 'Date#create | German (no accents) | Next month nachster');
   dateEqual(Date.create('uebermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German | day after tomorrow');
   dateEqual(Date.create('naechster Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachster');
   dateEqual(Date.create('naechsten Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachsten');
