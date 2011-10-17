@@ -481,7 +481,7 @@ test('Object', function () {
 
   // Object.watch
 
-  var obj = { foo: 'bar' }, ran = false;
+  var obj = { foo: 'bar' }, ran = false, counter = 0, key;
 
   Object.watch(obj, 'foo', function(prop, oldVal, newVal) {
     equal(this, obj, 'Object.watch | scope is the object');
@@ -496,23 +496,27 @@ test('Object', function () {
   obj.foo = 'howdy';
   equal(obj.foo, 'howdy', 'Object.watch | property was set');
   equal(ran, true, 'Object.watch | setter ran');
+  for(key in obj) counter++;
+  equal(counter, 1, 'Object.watch | property should be enumerable');
 
 
-  var obj = Object.extended({ foo: 'bar' }), ran = false;
+  var obj = Object.extended({ foo: 'bar' }), ran = false, counter = 0, key;
 
   obj.watch('foo', function(prop, oldVal, newVal) {
-    equal(this, obj, 'Object.watch | scope is the object');
-    equal(prop, 'foo', 'Object.watch | first argument is the propety');
-    equal(oldVal, 'bar', 'Object.watch | second argument is the old value');
-    equal(newVal, 'howdy', 'Object.watch | third argument is the new value');
+    equal(this, obj, 'Object#watch | scope is the object');
+    equal(prop, 'foo', 'Object#watch | first argument is the propety');
+    equal(oldVal, 'bar', 'Object#watch | second argument is the old value');
+    equal(newVal, 'howdy', 'Object#watch | third argument is the new value');
     ran = true;
     return newVal;
   });
 
-  equal(obj.foo, 'bar', 'Object.watch | old property is retained');
+  equal(obj.foo, 'bar', 'Object#watch | old property is retained');
   obj.foo = 'howdy';
-  equal(obj.foo, 'howdy', 'Object.watch | property was set');
-  equal(ran, true, 'Object.watch | setter ran');
+  equal(obj.foo, 'howdy', 'Object#watch | property was set');
+  equal(ran, true, 'Object#watch | setter ran');
+  for(key in obj) counter++;
+  equal(counter, 1, 'Object#watch | property should be enumerable');
 
 });
 
