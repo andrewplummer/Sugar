@@ -1,10 +1,8 @@
 test('Dates | Japanese', function () {
 
   var now = new Date();
-  try {
-
   Date.setLocale('ja');
-} catch(e){ console.info(e); }
+
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | once a language has been initialized it will always be recognized');
