@@ -68,6 +68,7 @@
   };
 
   var getStringified = function(p) {
+    if(p && p.length > 5000) return 'One BIG ass array of length ' + p.length;
     if(typeof JSON !== 'undefined' && JSON.stringify) return JSON.stringify(p);
     if(typeof p !== 'object') return String(p);
     var isArray = p.join;

@@ -1849,8 +1849,6 @@ test('Date', function () {
   equal(typeof Date.getLocalization(), 'object', 'Date Locale | current localization object is exposed in case needed');
 
 
-
-
   // Date locale setup
   equal(new Date(2011, 5, 18).format('{Month} {date}, {yyyy}'), 'June 18, 2011', 'Date Locales | Non-initialized defaults to English formatting');
   equal(getRelativeDate(null, null, null, -1).relative(), '1 hour ago', 'Date Locales | Non-initialized relative formatting is also English');
