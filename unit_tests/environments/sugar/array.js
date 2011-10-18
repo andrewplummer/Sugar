@@ -1,6 +1,7 @@
 
 test('Array', function () {
 
+
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
@@ -92,7 +93,7 @@ test('Array', function () {
     equal(el, 'a', 'Array#every | First parameter is the element');
     equal(i, 0, 'Array#every | Second parameter is the index');
     equal(a, ['a'], 'Array#every | Third parameter is the array', { prototype: undefined });
-    equal(this, 'this', 'Array#every | Scope is passed properly');
+    equal(this.toString(), 'this', 'Array#every | Scope is passed properly');
   }, 'this');
 
 
@@ -128,7 +129,7 @@ test('Array', function () {
     equal(el, 'a', 'Array#some | first parameter is the element');
     equal(i, 0, 'Array#some | second parameter is the index');
     equal(a, ['a'], 'Array#some | third parameter is the array', { prototype: undefined });
-    equal(this, 'this', 'Array#some | scope is passed properly');
+    equal(this.toString(), 'this', 'Array#some | scope is passed properly');
   }, 'this');
 
   equal([{name:'john',age:25}].some({name:'john',age:25}), true, 'Array#every | handles complex objects');
@@ -153,7 +154,7 @@ test('Array', function () {
     equal(el, 'a', 'Array#filter | first parameter is the element');
     equal(i, 0, 'Array#filter | second parameter is the index');
     equal(a, ['a'], 'Array#filter | third parameter is the array', { prototype: undefined });
-    equal(this, 'this', 'Array#filter | scope is passed properly');
+    equal(this.toString(), 'this', 'Array#filter | scope is passed properly');
   }, 'this');
 
 
@@ -177,7 +178,7 @@ test('Array', function () {
   ['a'].forEach(function(el, i, a) {
     equal(el, 'a', 'Array#forEach | first parameter is the element');
     equal(i, 0, 'Array#forEach | second parameter is the index');
-    equal(this, 'this', 'Array#forEach | scope is passed properly');
+    equal(this.toString(), 'this', 'Array#forEach | scope is passed properly');
   }, 'this');
 
 
@@ -215,7 +216,7 @@ test('Array', function () {
     equal(el, 'a', 'Array#map | first parameter is the element');
     equal(i, 0, 'Array#map | second parameter is the index');
     equal(a, ['a'], 'Array#map | third parameter is the array', { prototype: undefined });
-    equal(this, 'this', 'Array#map | scope is passed properly');
+    equal(this.toString(), 'this', 'Array#map | scope is passed properly');
   }, 'this');
 
 
@@ -412,10 +413,10 @@ test('Array', function () {
     expectedIndexes = [0, Math.pow(2,32) - 2];
     count = 0;
     arr.each(function(el, i, a) {
-      strictlyEqual(this, arr, 'Array#each | sparse arrays | this object should be the array');
-      strictlyEqual(el, expected[count], 'Array#each | sparse arrays | first argument should be the current element');
-      strictlyEqual(i, expectedIndexes[count], 'Array#each | sparse arrays | second argument should be the current index');
-      strictlyEqual(a, arr, 'Array#each | sparse arrays | third argument should be the array');
+      equal(this, arr, 'Array#each | sparse arrays | this object should be the array');
+      equal(el, expected[count], 'Array#each | sparse arrays | first argument should be the current element');
+      equal(i, expectedIndexes[count], 'Array#each | sparse arrays | second argument should be the current index');
+      equal(a, arr, 'Array#each | sparse arrays | third argument should be the array');
       count++;
     });
     equal(count, 2, 'Array#each | sparse arrays | count should match');
@@ -427,8 +428,8 @@ test('Array', function () {
     arr[Math.pow(2,32)] = 'c';
     count = 0;
     arr.each(function(el, i) {
-      strictlyEqual(el, 'f', 'Array#each | sparse arrays | values outside range are not iterated over | el');
-      strictlyEqual(i, 2, 'Array#each | sparse arrays | values outside range are not iterated over | index');
+      equal(el, 'f', 'Array#each | sparse arrays | values outside range are not iterated over | el');
+      equal(i, 2, 'Array#each | sparse arrays | values outside range are not iterated over | index');
       count++;
     });
     equal(count, 1, 'Array#each | sparse arrays | values outside range are not iterated over | count');
@@ -683,25 +684,25 @@ test('Array', function () {
   equal(['a','b','c'].at(-3), 'a', 'Array#at | a,b,c | -3');
   equal(['a','b','c'].at(-4), 'c', 'Array#at | a,b,c | -3');
 
-  equal(['a','b','c'].at(0, false), 'a', 'Array#at | a,b,c | 0');
-  equal(['a','b','c'].at(1, false), 'b', 'Array#at | a,b,c | 1');
-  equal(['a','b','c'].at(2, false), 'c', 'Array#at | a,b,c | 2');
-  equal(['a','b','c'].at(3, false), null, 'Array#at | a,b,c | 3');
-  equal(['a','b','c'].at(-1, false), null, 'Array#at | a,b,c | -1');
-  equal(['a','b','c'].at(-2, false), null, 'Array#at | a,b,c | -2');
-  equal(['a','b','c'].at(-3, false), null, 'Array#at | a,b,c | -3');
-  equal(['a','b','c'].at(-4, false), null, 'Array#at | a,b,c | -4');
-  equal(['a','b','c'].at(), null, 'Array#at | a,b,c | no argument');
-  equal([false].at(0), false, 'Array#at | false | 0');
+  equal(['a','b','c'].at(0, false), 'a', 'Array#at | a,b,c | loop off | 0');
+  equal(['a','b','c'].at(1, false), 'b', 'Array#at | a,b,c | loop off | 1');
+  equal(['a','b','c'].at(2, false), 'c', 'Array#at | a,b,c | loop off | 2');
+  equal(['a','b','c'].at(3, false), undefined, 'Array#at | a,b,c | loop off | 3');
+  equal(['a','b','c'].at(-1, false), undefined, 'Array#at | a,b,c | loop off | -1');
+  equal(['a','b','c'].at(-2, false), undefined, 'Array#at | a,b,c | loop off | -2');
+  equal(['a','b','c'].at(-3, false), undefined, 'Array#at | a,b,c | loop off | -3');
+  equal(['a','b','c'].at(-4, false), undefined, 'Array#at | a,b,c | loop off | -4');
+  equal(['a','b','c'].at(), undefined, 'Array#at | a,b,c | no argument');
+  equal([false].at(0), false, 'Array#at | false | loop off | 0');
   equal(['a'].at(0), 'a', 'Array#at | a | 0');
   equal(['a'].at(1), 'a', 'Array#at | a | 1');
-  equal(['a'].at(1, false), null, 'Array#at | a | 1');
+  equal(['a'].at(1, false), undefined, 'Array#at | a | loop off | 1');
   equal(['a'].at(-1), 'a', 'Array#at | a | -1');
   equal(['a','b','c','d','e','f'].at(0,2,4), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4');
   equal(['a','b','c','d','e','f'].at(1,3,5), ['b','d','f'], 'Array#at | a,b,c,d,e,f | 1,3,5');
   equal(['a','b','c','d','e','f'].at(0,2,4,6), ['a','c','e','a'], 'Array#at | a,b,c,d,e,f | 0,2,4,6');
-  equal(['a','b','c','d','e','f'].at(0,2,4,6, false), ['a','c','e'], 'Array#at | a,b,c,d,e,f | 0,2,4,6 | false');
-
+  equal(['a','b','c','d','e','f'].at(0,2,4,6,18), ['a','c','e','a','a'], 'Array#at | a,b,c,d,e,f | 0,2,4,6,18');
+  equal(['a','b','c','d','e','f'].at(0,2,4,6, false), ['a','c','e', undefined], 'Array#at | a,b,c,d,e,f | 0,2,4,6,false | false');
 
 
   equal(['a','b','c'].from(), ['a','b','c'], 'Array#from | no argument');
@@ -1243,7 +1244,7 @@ test('Array', function () {
   equal([{a:1},{a:2},{a:1}].any(function(e) { return e['b'] == 1; }), false, 'Array#any | objects | key "b" is 1');
 
   [1].any(function() {
-    equal(this, 'wasabi', 'Array#any | scope should be passable');
+    equal(this.toString(), 'wasabi', 'Array#any | scope should be passable');
   }, 'wasabi');
 
 
@@ -1309,7 +1310,7 @@ test('Array', function () {
 
 
   [1].all(function() {
-    equal(this, 'wasabi', 'Array#all | scope should be passable');
+    equal(this.toString(), 'wasabi', 'Array#all | scope should be passable');
   }, 'wasabi');
 
 

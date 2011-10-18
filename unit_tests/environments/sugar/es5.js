@@ -42,7 +42,7 @@ test('ECMAScript', function () {
     equal(this, nullScope, 'Array#forEach | scope should be undefined when not passed');
   });
   result = arr.forEach(function(){
-    equal(this, 'wasabi', 'Array#forEach | scope can be passed');
+    equal(this.toString(), 'wasabi', 'Array#forEach | scope can be passed');
   }, 'wasabi');
   equal(result, undefined, 'Array#forEach | returns undefined');
 
@@ -231,10 +231,10 @@ test('ECMAScript', function () {
     equal(this, nullScope, 'Array#every | scope should be undefined when not passed');
   });
   [1].every(function(){
-    equal(this, 'wasabi', 'Array#every | scope can be passed');
+    equal(this.toString(), 'wasabi', 'Array#every | scope can be passed');
   }, 'wasabi');
   [1].every(function(){
-    equal(this, '', 'Array#every | scope can be falsy');
+    equal(this.toString(), '', 'Array#every | scope can be falsy');
   }, '');
   equal([].every(function(){ return true; }), true, 'Array#every | empty arrays will always be true');
   equal([].every(function(){ return false; }), true, 'Array#every | empty arrays will always be true even when false returned');
@@ -302,10 +302,10 @@ test('ECMAScript', function () {
     equal(this, nullScope, 'Array#some | scope should be undefined when not passed');
   });
   [1].some(function(){
-    equal(this, 'wasabi', 'Array#some | scope can be passed');
+    equal(this.toString(), 'wasabi', 'Array#some | scope can be passed');
   }, 'wasabi');
   [1].some(function(){
-    equal(this, '', 'Array#some | scope can be falsy');
+    equal(this.toString(), '', 'Array#some | scope can be falsy');
   }, '');
   equal([].some(function(){ return true; }), false, 'Array#some | empty arrays will always be false');
   equal([].some(function(){ return false; }), false, 'Array#some | empty arrays will always be false even when false returned');
@@ -373,10 +373,10 @@ test('ECMAScript', function () {
     equal(this, nullScope, 'Array#map | scope should be undefined when not passed');
   });
   [1].map(function(){
-    equal(this, 'wasabi', 'Array#map | scope can be passed');
+    equal(this.toString(), 'wasabi', 'Array#map | scope can be passed');
   }, 'wasabi');
   [1].map(function(){
-    equal(this, '', 'Array#map | scope can be falsy');
+    equal(this.toString(), '', 'Array#map | scope can be falsy');
   }, '');
 
   arr = ['c','c','c'];
@@ -435,10 +435,10 @@ test('ECMAScript', function () {
     equal(this, nullScope, 'Array#filter | scope should be undefined when not passed');
   });
   [1].filter(function(){
-    equal(this, 'wasabi', 'Array#filter | scope can be passed');
+    equal(this.toString(), 'wasabi', 'Array#filter | scope can be passed');
   }, 'wasabi');
   [1].filter(function(){
-    equal(this, '', 'Array#filter | scope can be falsy');
+    equal(this.toString(), '', 'Array#filter | scope can be falsy');
   }, '');
   equal([].filter(function(){ return true; }), [], 'Array#filter | empty arrays will always be []');
   equal([].filter(function(){ return false; }), [], 'Array#filter | empty arrays will always be [] even when false returned');
@@ -746,13 +746,13 @@ test('ECMAScript', function () {
   raisesError(function(){ Function.prototype.bind.call('mooo'); }, 'Function#bind | Raises an error when used on anything un-callable');
   raisesError(function(){ Function.prototype.bind.call(/mooo/); }, 'Function#bind | Regexes are functions in chrome');
 
-  equal((function(){ return this; }).bind('yellow')(), 'yellow', 'Function#bind | basic binding of this arg');
+  equal((function(){ return this; }).bind('yellow')().toString(), 'yellow', 'Function#bind | basic binding of this arg');
   equal((function(){ return arguments[0]; }).bind('yellow', 'mellow')(), 'mellow', 'Function#bind | currying argument 1');
   equal((function(){ return arguments[1]; }).bind('yellow', 'mellow', 'fellow')(), 'fellow', 'Function#bind | currying argument 2');
   equal((function(){ return this; }).bind(undefined)(), nullScope, 'Function#bind | passing undefined as the scope');
 
   (function(a, b){
-    equal(this, 'yellow', 'Function#bind | ensure only one call | this object');
+    equal(this.toString(), 'yellow', 'Function#bind | ensure only one call | this object');
     equal(a, 'mellow', 'Function#bind | ensure only one call | argument 1');
     equal(b, 'fellow', 'Function#bind | ensure only one call | argument 2');
   }).bind('yellow', 'mellow', 'fellow')();
