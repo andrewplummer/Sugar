@@ -6,7 +6,7 @@ test('Array', function () {
 
   notEqual([].max, Array.SugarMethods['max'].method, 'Array#max does not belong to Sugar');
   Array.sugar('max');
-  strictlyEqual([].max, Array.SugarMethods['max'].method, 'Array#max now belongs to Sugar');
+  equal([].max, Array.SugarMethods['max'].method, 'Array#max now belongs to Sugar');
 
   // No parameters will hijack the entire module
 
@@ -17,10 +17,10 @@ test('Array', function () {
 
   Number.sugar();
 
-  strictlyEqual((8).abs, Number.SugarMethods['abs'].method, 'Number#abs is now Sugar');
-  strictlyEqual((8).ceil, Number.SugarMethods['ceil'].method, 'Number#ceil is now Sugar');
-  strictlyEqual((8).floor, Number.SugarMethods['floor'].method, 'Number#floor is now Sugar');
-  strictlyEqual((8).round, Number.SugarMethods['round'].method, 'Number#round is now Sugar');
+  equal((8).abs, Number.SugarMethods['abs'].method, 'Number#abs is now Sugar');
+  equal((8).ceil, Number.SugarMethods['ceil'].method, 'Number#ceil is now Sugar');
+  equal((8).floor, Number.SugarMethods['floor'].method, 'Number#floor is now Sugar');
+  equal((8).round, Number.SugarMethods['round'].method, 'Number#round is now Sugar');
 
 
   // Ambiguous argument will default to class method only.
@@ -32,9 +32,9 @@ test('Array', function () {
 
   Object.sugar('keys', 'isDate', 'isNumber', 'somebooshit');
 
-  strictlyEqual(Object.keys, Object.SugarMethods['keys'].method, 'Object.keys is Sugar');
-  strictlyEqual(Object.isDate, Object.SugarMethods['isDate'].method, 'Object.isDate is Sugar');
-  strictlyEqual(Object.isNumber, Object.SugarMethods['isNumber'].method, 'Object.isNumber is Sugar');
+  equal(Object.keys, Object.SugarMethods['keys'].method, 'Object.keys is Sugar');
+  equal(Object.isDate, Object.SugarMethods['isDate'].method, 'Object.isDate is Sugar');
+  equal(Object.isNumber, Object.SugarMethods['isNumber'].method, 'Object.isNumber is Sugar');
   notEqual(Object.isFunction, Object.SugarMethods['isFunction'].method, 'Object.isFunction is still Prototype');
 
 });

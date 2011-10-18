@@ -132,7 +132,8 @@ test('Object', function () {
 
 
   equal(({}).keys, undefined, 'Object | native objects are not wrapped by default');
-  equal(Object.extended(), Object.extended({}), 'Object#create | null argument same as empty object');
+  equal(Object.extended(), Object.extended({}), 'Object.extended | null argument same as empty object');
+  equal(Object.extended().constructor, Object, 'Object.extended | constructor is Object');
 
   var keys,values;
   var d = new Date();
@@ -364,7 +365,7 @@ test('Object', function () {
 
   rememberObjectProtoypeMethods();
 
-  Object.enableSugar();
+  Object.sugar();
 
   var prototypeBaseValues = ({}).values().sort();
 

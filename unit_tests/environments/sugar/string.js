@@ -128,7 +128,7 @@ test('String', function () {
 
   // Each without a first parameter assumes "each character"
   var result = 'g'.each(function(str, i) {
-    strictlyEqual(str, 'g', 'String#each | char should be passed as the first argument');
+    equal(str, 'g', 'String#each | char should be passed as the first argument');
   });
 
   equal(result, ['g'], "String#each | ['g'] should be the resulting value");
@@ -543,6 +543,8 @@ test('String', function () {
   equal('foop'.at(-1224, false), '', 'String#at | negative | out of bounds');
 
   equal('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at | handles enumerated params');
+  equal('wowzers'.at(0,2,4,6,18), ['w','w','e','s','e'], 'String#at | handles enumerated params');
+  equal('wowzers'.at(0,2,4,6,18,false), ['w','w','e','s',''], 'String#at | handles enumerated params');
 
 
   equal('quack'.first(), 'q', 'String#first | first character');
@@ -951,58 +953,58 @@ test('String', function () {
 
 
 
-  strictlyEqual(''.escapeRegExp(), '', 'String#escapeRegExp | blank');
-  strictlyEqual('|'.escapeRegExp(), '\\|', 'String#escapeRegExp | pipe');
-  strictlyEqual(''.capitalize(), '', 'String#capitalize | blank');
-  strictlyEqual('wasabi'.capitalize(), 'Wasabi', 'String#capitalize | wasabi');
-  strictlyEqual(''.trim(), '', 'String#trim | blank');
-  strictlyEqual(' wasabi '.trim(), 'wasabi', 'String#trim | wasabi with whitespace');
-  strictlyEqual(''.trimLeft(), '', 'String#trimLeft | blank');
-  strictlyEqual(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft | wasabi with whitespace');
-  strictlyEqual(''.trimRight(), '', 'String#trimRight | blank');
-  strictlyEqual(' wasabi '.trimRight(), ' wasabi', 'String#trimRight | wasabi with whitespace');
-  strictlyEqual(''.pad(' ', 0), '', 'String#pad | blank');
-  strictlyEqual('wasabi'.pad(' ', 1), ' wasabi ', 'String#pad | wasabi padded to 1');
-  strictlyEqual('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
-  strictlyEqual('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
-  strictlyEqual('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
-  //strictlyEqual(''.normalize(), '', 'String#normalize | blank');
-  //strictlyEqual('wasabi'.normalize(), 'wasabi', 'String#normalize | wasabi');
-  strictlyEqual(''.insert('-', 0), '-', 'String#insert | - inserted at 0');
-  strictlyEqual('b'.insert('-', 0), '-b', 'String#insert | b inserted at 0');
-  strictlyEqual('b'.insert('-', 1), 'b-', 'String#insert | b inserted at 1');
-  strictlyEqual(''.hankaku(), '', 'String#hankaku | blank');
-  strictlyEqual('カ'.hankaku(), 'ｶ', 'String#hankaku | カ');
-  strictlyEqual(''.zenkaku(), '', 'String#zenkaku | blank');
-  strictlyEqual('ｶ'.zenkaku(), 'カ', 'String#zenkaku | ｶ');
-  strictlyEqual(''.hiragana(), '', 'String#hiragana | blank');
-  strictlyEqual('カ'.hiragana(), 'か', 'String#hiragana | カ');
-  strictlyEqual(''.katakana(), '', 'String#katakana | blank');
-  strictlyEqual('か'.katakana(), 'カ', 'String#katakana | か');
-  strictlyEqual(''.reverse(), '', 'String#reverse | blank');
-  strictlyEqual('wasabi'.reverse(), 'ibasaw', 'String#reverse | wasabi');
-  strictlyEqual(''.compact(), '', 'String#compact | blank');
-  strictlyEqual('run   tell    dat'.compact(), 'run tell dat', 'String#compact | with extra whitespace');
-  strictlyEqual(''.at(3), '', 'String#at | blank');
-  strictlyEqual('wasabi'.at(0), 'w', 'String#at | wasabi at pos 0');
-  strictlyEqual(''.first(), '', 'String#first | blank');
-  strictlyEqual('wasabi'.first(), 'w', 'String#first | no params');
-  strictlyEqual(''.last(), '', 'String#last | blank');
-  strictlyEqual('wasabi'.last(), 'i', 'String#last | no params');
-  strictlyEqual(''.from(0), '', 'String#from | blank');
-  strictlyEqual('wasabi'.from(3), 'abi', 'String#from | from pos 3');
-  strictlyEqual(''.to(0), '', 'String#to | blank');
-  strictlyEqual('wasabi'.to(3), 'was', 'String#to | to pos 3');
-  strictlyEqual(''.dasherize(), '', 'String#dasherize | blank');
-  strictlyEqual('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize | noFingWay', { prototype: false });
-  strictlyEqual(''.underscore(), '', 'String#underscore | blank');
-  strictlyEqual('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
-  strictlyEqual(''.camelize(), '', 'String#camelize | blank');
-  strictlyEqual('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize | no-fing-way', { prototype: false });
-  strictlyEqual(''.stripTags(), '', 'String#stripTags | blank');
-  strictlyEqual('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags | chilled <b>monkey</b> brains');
-  strictlyEqual(''.removeTags(), '', 'String#removeTags | blank');
-  strictlyEqual('chilled <b>monkey</b> brains'.removeTags(), 'chilled  brains', 'String#removeTags | chilled <b>monkey</b> brains');
+  equal(''.escapeRegExp(), '', 'String#escapeRegExp | blank');
+  equal('|'.escapeRegExp(), '\\|', 'String#escapeRegExp | pipe');
+  equal(''.capitalize(), '', 'String#capitalize | blank');
+  equal('wasabi'.capitalize(), 'Wasabi', 'String#capitalize | wasabi');
+  equal(''.trim(), '', 'String#trim | blank');
+  equal(' wasabi '.trim(), 'wasabi', 'String#trim | wasabi with whitespace');
+  equal(''.trimLeft(), '', 'String#trimLeft | blank');
+  equal(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft | wasabi with whitespace');
+  equal(''.trimRight(), '', 'String#trimRight | blank');
+  equal(' wasabi '.trimRight(), ' wasabi', 'String#trimRight | wasabi with whitespace');
+  equal(''.pad(' ', 0), '', 'String#pad | blank');
+  equal('wasabi'.pad(' ', 1), ' wasabi ', 'String#pad | wasabi padded to 1');
+  equal('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
+  equal('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
+  equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
+  //equal(''.normalize(), '', 'String#normalize | blank');
+  //equal('wasabi'.normalize(), 'wasabi', 'String#normalize | wasabi');
+  equal(''.insert('-', 0), '-', 'String#insert | - inserted at 0');
+  equal('b'.insert('-', 0), '-b', 'String#insert | b inserted at 0');
+  equal('b'.insert('-', 1), 'b-', 'String#insert | b inserted at 1');
+  equal(''.hankaku(), '', 'String#hankaku | blank');
+  equal('カ'.hankaku(), 'ｶ', 'String#hankaku | カ');
+  equal(''.zenkaku(), '', 'String#zenkaku | blank');
+  equal('ｶ'.zenkaku(), 'カ', 'String#zenkaku | ｶ');
+  equal(''.hiragana(), '', 'String#hiragana | blank');
+  equal('カ'.hiragana(), 'か', 'String#hiragana | カ');
+  equal(''.katakana(), '', 'String#katakana | blank');
+  equal('か'.katakana(), 'カ', 'String#katakana | か');
+  equal(''.reverse(), '', 'String#reverse | blank');
+  equal('wasabi'.reverse(), 'ibasaw', 'String#reverse | wasabi');
+  equal(''.compact(), '', 'String#compact | blank');
+  equal('run   tell    dat'.compact(), 'run tell dat', 'String#compact | with extra whitespace');
+  equal(''.at(3), '', 'String#at | blank');
+  equal('wasabi'.at(0), 'w', 'String#at | wasabi at pos 0');
+  equal(''.first(), '', 'String#first | blank');
+  equal('wasabi'.first(), 'w', 'String#first | no params');
+  equal(''.last(), '', 'String#last | blank');
+  equal('wasabi'.last(), 'i', 'String#last | no params');
+  equal(''.from(0), '', 'String#from | blank');
+  equal('wasabi'.from(3), 'abi', 'String#from | from pos 3');
+  equal(''.to(0), '', 'String#to | blank');
+  equal('wasabi'.to(3), 'was', 'String#to | to pos 3');
+  equal(''.dasherize(), '', 'String#dasherize | blank');
+  equal('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize | noFingWay', { prototype: false });
+  equal(''.underscore(), '', 'String#underscore | blank');
+  equal('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
+  equal(''.camelize(), '', 'String#camelize | blank');
+  equal('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize | no-fing-way', { prototype: false });
+  equal(''.stripTags(), '', 'String#stripTags | blank');
+  equal('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags | chilled <b>monkey</b> brains');
+  equal(''.removeTags(), '', 'String#removeTags | blank');
+  equal('chilled <b>monkey</b> brains'.removeTags(), 'chilled  brains', 'String#removeTags | chilled <b>monkey</b> brains');
 
 
   // Thanks to Steven Levitah (http://stevenlevithan.com/demo/split.cfm) for inspiration and information here.
@@ -1147,11 +1149,12 @@ test('String', function () {
   equal('booh pooh mooh'.truncate(9, 'hooha'), 'boohhooha', 'String#truncate | only not include when the ellipsis is all the same character');
   equal('booh pooh mooh'.truncate(7, 455), 'booh455', 'String#truncate | only accepts strings for append', { prototype: '455' });
 
-  strictlyEqual(''.truncate(0), '', 'String#truncate | returned strings are strictly equal');
-  strictlyEqual('foobar'.truncate(30), 'foobar', 'String#truncate | short strings are strictly equal');
+  equal(''.truncate(0), '', 'String#truncate | returned strings are equal');
+  equal('foobar'.truncate(30), 'foobar', 'String#truncate | short strings are equal');
 
   equal('こんな　ストリングは　あまり　ない　と　思う　けど。。。'.truncate(6), 'こんな...', 'String#truncate | correctly finds spaces in Japanese');
   equal('한국어 도 이렇게 할 수 있어요?'.truncate(9), '한국어 도...', 'String#truncate | correctly finds spaces in Korean', { prototype: '한국어 도 ...' });
+
 
 
   // String#assign

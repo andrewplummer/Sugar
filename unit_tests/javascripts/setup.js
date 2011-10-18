@@ -27,10 +27,6 @@ var testStartTime;
 var runtime;
 
 
-var isInstanceOf = function(obj, str) {
-  return Object.prototype.toString.call(obj).toLowerCase() === '[object '+str+']';
-};
-
 // Arrays and objects must be treated separately here because in IE arrays with undefined
 // elements will not pass the .hasOwnProperty check. For example [undefined].hasOwnProperty('0')
 // will report false.
@@ -43,13 +39,14 @@ var deepEqual = function(one, two) {
 }
 
 var arrayEqual = function(one, two) {
-  var i;
-  for(i = 0; i < one.length; i++) {
+  var i, result = true;
+  // This MUST be .each as we can have very large sparse arrays in the tests!
+  one.each(function(a, i) {
     if(!isEqual(one[i], two[i])) {
-      return false;
+      result = false;
     }
-  }
-  return one.length === two.length;
+  });
+  return result && one.length === two.length;
 }
 
 var objectEqual = function(one, two) {
@@ -65,7 +62,7 @@ var objectEqual = function(one, two) {
     if(!two.hasOwnProperty(key)) continue;
     twop++;
   }
-  return onep === twop;
+  return onep === twop && one.toString() === two.toString();
 }
 
 var isEqual = function(one, two) {
@@ -84,7 +81,7 @@ var isEqual = function(one, two) {
   } else if(two === undefined && one === undefined) {
     // undefined is undefined: equal
     return true;
-  } else if(isInstanceOf(one, typeof two) && two == one) {
+  } else if(one === two) {
     // Strictly equal
     return true;
   } else {
@@ -204,10 +201,6 @@ equal = function(actual, expected, message, exceptions, stack) {
   if(!isEqual(actual, expected)) {
     addFailure(actual, expected, message, stack);
   }
-}
-
-strictlyEqual = function(actual, expected, message, exceptions) {
-  equal(actual === expected, true, message + ' | strict equality', exceptions, 1);
 }
 
 notEqual = function(actual, expected, message, exceptions) {
