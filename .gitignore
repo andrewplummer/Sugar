@@ -20,4 +20,5 @@ tmp
 node_modules
 
 ## PROJECT::SPECIFIC
-**/sugar-test.min.js
+release/sugar-test.min.js
+release/utf8/sugar-test.min.js
