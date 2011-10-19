@@ -999,11 +999,11 @@ test('String', function () {
   equal(''.to(0), '', 'String#to | blank');
   equal('wasabi'.to(3), 'was', 'String#to | to pos 3');
   equal(''.dasherize(), '', 'String#dasherize | blank');
-  equal('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize | noFingWay', { prototype: false });
+  equal('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize | noFingWay', { prototype: 'noFingWay' });
   equal(''.underscore(), '', 'String#underscore | blank');
   equal('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
   equal(''.camelize(), '', 'String#camelize | blank');
-  equal('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize | no-fing-way', { prototype: false });
+  equal('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize | no-fing-way', { prototype: 'noFingWay' });
   equal(''.stripTags(), '', 'String#stripTags | blank');
   equal('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags | chilled <b>monkey</b> brains');
   equal(''.removeTags(), '', 'String#removeTags | blank');
