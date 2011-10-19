@@ -121,7 +121,7 @@ test('Function', function () {
 
     setTimeout(function() {
       fn.call('leia', 5);
-    }, 10);
+    }, 20);
 
     setTimeout(function() {
       fn.call('luke', 6);
