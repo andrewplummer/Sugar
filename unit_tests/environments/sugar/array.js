@@ -889,6 +889,13 @@ test('Array', function () {
   raisesError(function() { [1,2,3].groupBy(4); }, 'Array#groupBy | raises an error on number');
   equal(['one','two','three'].groupBy('length').keys(), ['3','5'], 'Array#groupBy | result should be an extended object');
 
+  var counter = 0;
+  ['one','two','three'].groupBy('length', function() {
+    counter++;
+  });
+
+  equal(counter, 2, 'Array#groupBy | should allow a callback fn');
+
 
 
 
