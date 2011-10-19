@@ -1,3 +1,47 @@
+v1.0
+=====
+
+### API Changes ###
+
+- Object.sugar() now will add all extended object (hash) methods to Object.prototype, letting you opt-in this functionality
+- Object.watch() will observe changes in an object property and fire a callback if it has changed
+- Array.create() quickly creates arrays, most notably from an arguments object
+- Array#groupBy now allows a callback to iterate over each group
+- String#normalize method deprecated, but still available in lib directory
+- String#is/hasArmenian, is/hasBopomofo, is/hasEthiopic, and is/hasGeorgian deprecated
+- String#is/hasLatin added
+- String#toDate now accepts a locale parameter
+- String#spacify added
+- String#assign added
+- Date module completely reworked to allow locales
+- Date#format " short" token suffix deprecated
+- Date#format " pad" token suffix deprecated
+- Date#format "dir" parameter passed to the callback deprecated in favor of using the sign directly on the time itself
+- Date#format locale now passed to the callback instead of the above
+- Date#format passing no arguments now outputs a default simple date format for the current locale
+- Date#relative same treatment as Date#format for callbacks as above
+- Date.allowVariant for ambiguous dates (8/10/03) refactored to use locales instead
+- Date.RFC1123 and Date.RFC1036 fix to not display GMT
+- Date.setLocale will set an available locale or allow extending the Date class with new locales
+- Date.getLocale gets a localization object (current localization by default)
+- Date.addFormat allows additional date formats to be added
+- Date#set passing true for the second param will now reset any units less specific, not just the time
+- Date#isBefore/isAfter/isBetween now uses a straight comparison rather than trying to extend the bounds of the date based on specificity
+- Date#format now accepts a second locale parameter that outputs the date in a specific locale. If no locale is set the current locale is used.
+- Date#format passing "relative" as the format is now deprecated. Use Date#relative instead
+- Function#lazy now accepts a "limit" parameter that will prevent a lazy function from queueing calls beyond a certain limit
+- Function#debounce now accepts a "wait" parameter (default is true) that will allow function execution AFTER the timeout to be turned off so the function is run immediately
+
+
+
+
+### Internal Changes ###
+
+- major docs updates
+- arrayEach will now default to not loop over sparse arrays unless explicitly told to
+- major internal refactoring of the Date module to be more compact, robust, and light
+
+
 v0.9.5
 =====
 
