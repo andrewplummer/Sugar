@@ -131,6 +131,7 @@ test('Date', function () {
   dateEqual(Date.create('8/10/49', 'en-GB'), new Date(2049, 9, 8), 'Date#create | European style slashes | d/mm/49');
   dateEqual(Date.create('8/10/50', 'en-GB'), new Date(1950, 9, 8), 'Date#create | European style slashes | d/mm/50');
 
+  dateEqual(Date.create('08/10', 'en-AU'), new Date(thisYear, 9, 8), 'Date#create | European style slashes | any English locale suffix should work and not use US format');
 
   // Dashes (European style)
   dateEqual(Date.create('08-10-1978', 'en-GB'), new Date(1978, 9, 8), 'Date#create | European style dashes | mm-dd-yyyy');
@@ -1842,7 +1843,7 @@ test('Date', function () {
   dateEqual(Date.create('on ze 18th of avril lavigne'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other languages');
 
   equal(Date.currentLocale, 'en', 'Date Locale | current locale code is exposed');
-  equal(typeof Date.getLocalization(), 'object', 'Date Locale | current localization object is exposed in case needed');
+  equal(typeof Date.getLocale(), 'object', 'Date Locale | current localization object is exposed in case needed');
 
 
   // Date locale setup
