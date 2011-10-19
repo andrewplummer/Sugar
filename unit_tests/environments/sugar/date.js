@@ -10,6 +10,8 @@ test('Date', function () {
   };
 
 
+
+
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -1106,13 +1108,13 @@ test('Date', function () {
 
 
 
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,431)), false, 'Date#is | accuracy | accurate to millisecond by default');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,432)), true, 'Date#is | accuracy |  accurate to millisecond by default');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,433)), false, 'Date#is | accuracy | accurate to millisecond by default');
+  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,431)), false, 'Date#is | accuracy | accurate to millisecond by default | 431');
+  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,432)), true, 'Date#is | accuracy |  accurate to millisecond by default | 432');
+  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,433)), false, 'Date#is | accuracy | accurate to millisecond by default | 433');
 
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,431), 2), true, 'Date#is | accuracy | accuracy can be overridden');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,432), 2), true, 'Date#is | accuracy | accuracy can be overridden');
-  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,433), 2), true, 'Date#is | accuracy | accuracy can be overridden');
+  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,431), 2), true, 'Date#is | accuracy | accuracy can be overridden | 431');
+  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,432), 2), true, 'Date#is | accuracy | accuracy can be overridden | 432');
+  equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,433), 2), true, 'Date#is | accuracy | accuracy can be overridden | 433');
   equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,429), 2), false, 'Date#is | accuracy | accuracy can be overridden but still is constrained');
   equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,435), 2), false, 'Date#is | accuracy | accuracy can be overridden but still is constrained');
 
@@ -1150,30 +1152,36 @@ test('Date', function () {
   equal(getRelativeDate(null,null,null,null,null,null, -5).is('5 milliseconds ago', 5), true, 'Date#is | 5 milliseconds ago is accurate to milliseconds');
   equal(getRelativeDate(null,null,null,null,null,null, -5).is('7 milliseconds ago'), false, 'Date#is | 7 milliseconds ago is accurate to milliseconds');
 
-  equal(getRelativeDate(null,null,null,null,null,-5).is('4 seconds ago'), false, 'Date#is | 4 seconds ago is accurate to seconds');
-  equal(getRelativeDate(null,null,null,null,null,-5).is('5 seconds ago'), true, 'Date#is | 5 seconds ago is accurate to seconds');
-  equal(getRelativeDate(null,null,null,null,null,-5).is('6 seconds ago'), false, 'Date#is | 6 seconds ago is accurate to seconds');
+  equal(getRelativeDate(null,null,null,null,null,-5).is('4 seconds ago'), false, 'Date#is | 4 seconds ago is not 5 seconds ago');
+  equal(getRelativeDate(null,null,null,null,null,-5).is('5 seconds ago'), true, 'Date#is | 5 seconds ago is 5 seconds ago');
+  equal(getRelativeDate(null,null,null,null,null,-5).is('6 seconds ago'), false, 'Date#is | 6 seconds ago is not 5 seconds ago');
+  equal(getRelativeDate(null,null,null,null,null,-5).is('7 seconds ago'), false, 'Date#is | 7 seconds ago is not 5 seconds ago');
 
-  equal(getRelativeDate(null,null,null,null,-5).is('4 minutes ago'), false, 'Date#is | 4 minutes ago is accurate to minutes');
-  equal(getRelativeDate(null,null,null,null,-5).is('5 minutes ago'), true, 'Date#is | 5 minutes ago is accurate to minutes');
-  equal(getRelativeDate(null,null,null,null,-5).is('6 minutes ago'), false, 'Date#is | 6 minutes ago is accurate to minutes');
+  equal(getRelativeDate(null,null,null,null,-5).is('4 minutes ago'), false, 'Date#is | 4 minutes ago is not 5 minutes ago');
+  equal(getRelativeDate(null,null,null,null,-5).is('5 minutes ago'), true, 'Date#is | 5 minutes ago is 5 minutes ago');
+  equal(getRelativeDate(null,null,null,null,-5).is('6 minutes ago'), false, 'Date#is | 6 minutes ago is not 5 minutes ago');
+  equal(getRelativeDate(null,null,null,null,-5).is('7 minutes ago'), false, 'Date#is | 7 minutes ago is not 5 minutes ago');
 
-  equal(getRelativeDate(null,null,null,-5).is('4 hours ago'), false, 'Date#is | 4 hours ago is accurate to hours');
-  equal(getRelativeDate(null,null,null,-5).is('5 hours ago'), true, 'Date#is | 5 hours ago is accurate to hours');
+  equal(getRelativeDate(null,null,null,-5).is('4 hours ago'), false, 'Date#is | 4 hours ago is not 5 hours ago');
+  equal(getRelativeDate(null,null,null,-5).is('5 hours ago'), true, 'Date#is | 5 hours ago is 5 hours ago');
   equal(getRelativeDate(null,null,null,-5, 15).is('5 hours ago'), true, 'Date#is | 5:15 hours ago is still 5 hours ago');
-  equal(getRelativeDate(null,null,null,-5).is('6 hours ago'), false, 'Date#is | 6 hours ago is accurate to hours');
+  equal(getRelativeDate(null,null,null,-5).is('6 hours ago'), false, 'Date#is | 6 hours ago is not 5 hours ago');
+  equal(getRelativeDate(null,null,null,-5).is('7 hours ago'), false, 'Date#is | 7 hours ago is not 5 hours ago');
 
-  equal(getRelativeDate(null,null,-5).is('4 days ago'), false, 'Date#is | 4 days ago is accurate to days');
-  equal(getRelativeDate(null,null,-5).is('5 days ago'), true, 'Date#is | 5 days ago is accurate to days');
-  equal(getRelativeDate(null,null,-5).is('6 days ago'), false, 'Date#is | 6 days ago is accurate to days');
+  equal(getRelativeDate(null,null,-5).is('4 days ago'), false, 'Date#is | 4 days ago is not 5 days ago');
+  equal(getRelativeDate(null,null,-5).is('5 days ago'), true, 'Date#is | 5 days ago is 5 hours ago');
+  equal(getRelativeDate(null,null,-5).is('6 days ago'), false, 'Date#is | 6 days ago is not 5 days ago');
+  equal(getRelativeDate(null,null,-5).is('7 days ago'), false, 'Date#is | 7 days ago is not 5 days ago');
 
-  equal(getRelativeDate(null,-5).is('4 months ago'), false, 'Date#is | 4 months ago is accurate to months');
-  equal(getRelativeDate(null,-5).is('5 months ago'), true, 'Date#is | 5 months ago is accurate to months');
-  equal(getRelativeDate(null,-5).is('6 months ago'), false, 'Date#is | 6 months ago is accurate to months');
+  equal(getRelativeDate(null,-5).is('4 months ago'), false, 'Date#is | 4 months ago is not 5 months ago');
+  equal(getRelativeDate(null,-5).is('5 months ago'), true, 'Date#is | 5 months ago is 5 months ago');
+  equal(getRelativeDate(null,-5).is('6 months ago'), false, 'Date#is | 6 months ago is not 5 months ago');
+  equal(getRelativeDate(null,-5).is('7 months ago'), false, 'Date#is | 7 months ago is accurate to months');
 
-  equal(getRelativeDate(-5).is('4 years ago'), false, 'Date#is | 4 years ago is accurate to years');
-  equal(getRelativeDate(-5).is('5 years ago'), true, 'Date#is | 5 years ago is accurate to years');
-  equal(getRelativeDate(-5).is('6 years ago'), false, 'Date#is | 6 years ago is accurate to years');
+  equal(getRelativeDate(-5).is('4 years ago'), false, 'Date#is | 4 years ago is not 5 years ago');
+  equal(getRelativeDate(-5).is('5 years ago'), true, 'Date#is | 5 years ago is 5 years ago');
+  equal(getRelativeDate(-5).is('6 years ago'), false, 'Date#is | 6 years ago is not 5 years ago');
+  equal(getRelativeDate(-5).is('7 years ago'), false, 'Date#is | 7 years ago is not 5 years ago');
 
 
 
@@ -1511,13 +1519,17 @@ test('Date', function () {
   equal(getRelativeDate(null, null, 7).isThisWeek(), false, 'Date#isThisWeek | next week');
   equal(getRelativeDate(null, null, 7).isNextWeek(), true, 'Date#isNextWeek | next week');
 
-  equal(getDateWithWeekdayAndOffset(0).isLastWeek(), false, 'Date#isLastWeek | this week sunday');
-  equal(getDateWithWeekdayAndOffset(0).isThisWeek(), true, 'Date#isThisWeek | this week sunday');
-  equal(getDateWithWeekdayAndOffset(0).isNextWeek(), false, 'Date#isNextWeek | this week sunday');
+  equal(getDateWithWeekdayAndOffset(0).isLastWeek(), false, 'Date#isLastWeek | this week sunday is last week');
+  equal(getDateWithWeekdayAndOffset(0).isThisWeek(), true, 'Date#isThisWeek | this week sunday is this week');
+  equal(getDateWithWeekdayAndOffset(0).isNextWeek(), false, 'Date#isNextWeek | this week sunday is next week');
 
-  equal(getDateWithWeekdayAndOffset(6).isLastWeek(), false, 'Date#isLastWeek | this week friday');
-  equal(getDateWithWeekdayAndOffset(6).isThisWeek(), true, 'Date#isThisWeek | this week friday');
-  equal(getDateWithWeekdayAndOffset(6).isNextWeek(), false, 'Date#isNextWeek | this week friday');
+  equal(getDateWithWeekdayAndOffset(5).isLastWeek(), false, 'Date#isLastWeek | friday is last week');
+  equal(getDateWithWeekdayAndOffset(5).isThisWeek(), true, 'Date#isThisWeek | friday is this week');
+  equal(getDateWithWeekdayAndOffset(5).isNextWeek(), false, 'Date#isNextWeek | friday is next week');
+
+  equal(getDateWithWeekdayAndOffset(6).isLastWeek(), false, 'Date#isLastWeek | satuday is last week');
+  equal(getDateWithWeekdayAndOffset(6).isThisWeek(), true, 'Date#isThisWeek | satuday is this week');
+  equal(getDateWithWeekdayAndOffset(6).isNextWeek(), false, 'Date#isNextWeek | satuday is next week');
 
   equal(Date.create('last sunday').isLastWeek(), true, 'Date#isLastWeek | last sunday');
   equal(Date.create('last sunday').isThisWeek(), false, 'Date#isThisWeek | last sunday');
@@ -1869,6 +1881,8 @@ test('Date', function () {
 
   dateEqual(Date.create('2010-Jan-25', 'ja'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
 
-  raisesError(function(){ Date.setLocale('pink'); }, 'Array#map | raises an error if no locale set available');
+  raisesError(function(){ Date.setLocale('pink'); }, 'Array#map | raises an error if locale set to pink');
+
+  equal(Date.create('2010-Jan-25').format(), '2010年1月25日', 'Date#create | will not set the current locale to an invalid locale');
 
 });
