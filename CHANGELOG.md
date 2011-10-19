@@ -40,6 +40,7 @@ v1.0
 - major docs updates
 - arrayEach will now default to not loop over sparse arrays unless explicitly told to
 - major internal refactoring of the Date module to be more compact, robust, and light
+- date module will be distilled and contained on its own in the repo
 
 
 v0.9.5
