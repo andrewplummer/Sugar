@@ -202,7 +202,10 @@ test('Array', function () {
     equal(el, 'a', 'Array#each | first parameter is the element');
     equal(i, 0, 'Array#each | second parameter is the index');
     equal(a, ['a'], 'Array#each | third parameter is the array', { prototype: undefined });
-    equal(this, a, 'Array#each | scope is also the array', { prototype: 'this', mootools: 'this' });
+    // Note: psychotic syntax here because equal() is now strictly equal, and the this object is actually an "object" string
+    // as opposed to a primitive string, but only in Prototype. Calling .toString() in a non-prototype environment would effectively
+    // try to convert the array to a string, which is also not what we want.
+    equal(this, a, 'Array#each | scope is also the array', { prototype: (function(){ return this; }).call('this'), mootools: 'this' });
   }, 'this');
 
 
