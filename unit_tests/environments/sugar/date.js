@@ -121,28 +121,26 @@ test('Date', function () {
   dateEqual(Date.create('01/02/03'), new Date(2003, 0, 2), 'Date#create | Ambiguous 2 digit format mm/dd/yy');
 
 
-  Date.allowVariant = true;
-
-  dateEqual(Date.create('08/10'), new Date(thisYear, 9, 8), 'Date#create | European style slashes | dd/mm');
-  // Slashes (European style)
-  dateEqual(Date.create('8/10'), new Date(thisYear, 9, 8), 'Date#create | European style slashes | d/mm');
-  dateEqual(Date.create('08/10/1978'), new Date(1978, 9, 8), 'Date#create | European style slashes | dd/mm/yyyy');
-  dateEqual(Date.create('8/10/1978'), new Date(1978, 9, 8), 'Date#create | European style slashes | d/mm/yyyy');
-  dateEqual(Date.create('8/10/78'), new Date(1978, 9, 8), 'Date#create | European style slashes | d/mm/yy');
-  dateEqual(Date.create('08/10/78'), new Date(1978, 9, 8), 'Date#create | European style slashes | dd/mm/yy');
-  dateEqual(Date.create('8/10/01'), new Date(2001, 9, 8), 'Date#create | European style slashes | d/mm/01');
-  dateEqual(Date.create('8/10/49'), new Date(2049, 9, 8), 'Date#create | European style slashes | d/mm/49');
-  dateEqual(Date.create('8/10/50'), new Date(1950, 9, 8), 'Date#create | European style slashes | d/mm/50');
+  dateEqual(Date.create('08/10', 'en-GB'), new Date(thisYear, 9, 8), 'Date#create | European style slashes | dd/mm');
+  dateEqual(Date.create('8/10', 'en-GB'), new Date(thisYear, 9, 8), 'Date#create | European style slashes | d/mm');
+  dateEqual(Date.create('08/10/1978', 'en-GB'), new Date(1978, 9, 8), 'Date#create | European style slashes | dd/mm/yyyy');
+  dateEqual(Date.create('8/10/1978', 'en-GB'), new Date(1978, 9, 8), 'Date#create | European style slashes | d/mm/yyyy');
+  dateEqual(Date.create('8/10/78', 'en-GB'), new Date(1978, 9, 8), 'Date#create | European style slashes | d/mm/yy');
+  dateEqual(Date.create('08/10/78', 'en-GB'), new Date(1978, 9, 8), 'Date#create | European style slashes | dd/mm/yy');
+  dateEqual(Date.create('8/10/01', 'en-GB'), new Date(2001, 9, 8), 'Date#create | European style slashes | d/mm/01');
+  dateEqual(Date.create('8/10/49', 'en-GB'), new Date(2049, 9, 8), 'Date#create | European style slashes | d/mm/49');
+  dateEqual(Date.create('8/10/50', 'en-GB'), new Date(1950, 9, 8), 'Date#create | European style slashes | d/mm/50');
 
 
   // Dashes (European style)
-  dateEqual(Date.create('08-10-1978'), new Date(1978, 9, 8), 'Date#create | European style dashes | mm-dd-yyyy');
+  dateEqual(Date.create('08-10-1978', 'en-GB'), new Date(1978, 9, 8), 'Date#create | European style dashes | mm-dd-yyyy');
 
   // Dots (European style)
-  dateEqual(Date.create('08.10.1978'), new Date(1978, 9, 8), 'Date#create | European style dots | dd.mm.yyyy');
-  dateEqual(Date.create('8.10.1978'), new Date(1978, 9, 8), 'Date#create | European style dots | d.mm.yyyy');
-  dateEqual(Date.create('08-05-05'), new Date(2005, 4, 8), 'Date#create | dd-dd-dd is NOT an ISO8601 format');
+  dateEqual(Date.create('08.10.1978', 'en-GB'), new Date(1978, 9, 8), 'Date#create | European style dots | dd.mm.yyyy');
+  dateEqual(Date.create('8.10.1978', 'en-GB'), new Date(1978, 9, 8), 'Date#create | European style dots | d.mm.yyyy');
+  dateEqual(Date.create('08-05-05', 'en-GB'), new Date(2005, 4, 8), 'Date#create | dd-dd-dd is NOT an ISO8601 format');
 
+  dateEqual(Date.create('8/10/85'), new Date(1985, 7, 10), 'Date#create | American format will now revert back');
 
 
   /*
@@ -168,10 +166,8 @@ test('Date', function () {
   dateEqual(Date.create('1978.08.25'), new Date(1978, 7, 25), 'Date#create | Reverse dots | yyyy.mm.dd');
   dateEqual(Date.create('1978.08'), new Date(1978, 7), 'Date#create | Reverse dots | yyyy.mm');
   dateEqual(Date.create('1978.8'), new Date(1978, 7), 'Date#create | Reverse dots | yyyy.m');
-  dateEqual(Date.create('01-02-03'), new Date(2003, 1, 1), 'Date#create | Ambiguous 2 digit variant yy-mm-dd is NOT ISO 8601');
-  dateEqual(Date.create('01/02/03'), new Date(2003, 1, 1), 'Date#create | Ambiguous 2 digit European variant dd/mm/yy');
-
-  Date.allowVariant = false;
+  dateEqual(Date.create('01-02-03', 'en-GB'), new Date(2003, 1, 1), 'Date#create | Ambiguous 2 digit variant yy-mm-dd is NOT ISO 8601');
+  dateEqual(Date.create('01/02/03', 'en-GB'), new Date(2003, 1, 1), 'Date#create | Ambiguous 2 digit European variant dd/mm/yy');
 
 
   // Text based formats
@@ -1868,6 +1864,9 @@ test('Date', function () {
   equal(Date.create('5 months ago').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
   Date.setLocale('');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
+
+
+  dateEqual(Date.create('2010-Jan-25', 'ja'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
 
   raisesError(function(){ Date.setLocale('pink'); }, 'Array#map | raises an error if no locale set available');
 
