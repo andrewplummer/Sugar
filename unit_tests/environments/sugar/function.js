@@ -113,7 +113,7 @@ test('Function', function () {
     var fn = (function(one){
       equal([this.toString(), one], expected[counter], 'Function#debounce | scope and arguments are correct');
       counter++;
-    }).debounce(50);
+    }).debounce(10);
 
     fn.call('3p0', 1);
     fn.call('r2d2', 2);
@@ -121,12 +121,12 @@ test('Function', function () {
 
     setTimeout(function() {
       fn.call('leia', 5);
-    }, 20);
+    }, 10);
 
     setTimeout(function() {
       fn.call('luke', 6);
       fn.call('han solo', 7);
-    }, 100);
+    }, 200);
 
     ret = fn.call('vader', 4);
 
@@ -134,7 +134,7 @@ test('Function', function () {
 
     setTimeout(function() {
       equal(counter, 2, 'Function#debounce | counter is correct');
-    }, 200);
+    }, 500);
   }, 1);
 
   setTimeout(function(){
