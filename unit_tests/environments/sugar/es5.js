@@ -3,9 +3,6 @@ test('ECMAScript', function () {
 
   var arr, count, expected, result, previous, current, fn, reg, obj, Person;
 
-
-
-
   arr = [];
   //arr[4294967295] = 'd';
   // This will reset the array in < IE8. Modern browsers will ignore the element.
@@ -690,6 +687,7 @@ test('ECMAScript', function () {
   equal(Object.keys({ moo:'bar', broken:'wear' }), ['moo','broken'], 'Object#keys | returns keys of an object');
   equal(Object.keys(['a','b','c']), ['0','1','2'], 'Object#keys | returns indexes of an array');
   equal(Object.keys(/foobar/), [], 'Object#keys | regexes return a blank array');
+  equal(Object.keys(function(){}), [], 'Object#keys | functions return a blank array');
   equal(Object.keys(new Date), [], 'Object#keys | dates return a blank array');
 
   Person = function() {
