@@ -1338,7 +1338,11 @@ test('Array', function () {
   equal([[{a:1},{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2],[a:1]');
   equal([[{a:1},{a:2},{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2,a:1]');
   equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten | [[a,b],c,[d,e],f],g');
-  equal([undefined].flatten().length, 1, 'Array#flatten | should not compact arrays');
+
+  // Prototype will compact but only if IE, so we can't assert this in that environment.
+  skipEnvironments(['prototype'], function() {
+    equal([undefined].flatten().length, 1, 'Array#flatten | should not compact arrays');
+  });
 
 
 
