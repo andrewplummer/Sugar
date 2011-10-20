@@ -4,6 +4,7 @@ test('Dates | Russian', function () {
   Date.setLocale('ru');
 
   dateEqual(Date.create('15 мая 2011'), new Date(2011, 4, 15), 'Date#create | basic Russian date');
+  dateEqual(Date.create('2 мая 1989 года'), new Date(1989, 4, 2), 'Date#create | Russian | format with year');
   dateEqual(Date.create('5 января 2012'), new Date(2012, 0, 5), 'Date#create | Russian | 2012-01-05');
   dateEqual(Date.create('Май 2011'), new Date(2011, 4), 'Date#create | Russian | year and month');
   dateEqual(Date.create('15 мая'), new Date(now.getFullYear(), 4, 15), 'Date#create | Russian | month and date');
