@@ -1,8 +1,8 @@
 {
   "name": "sugar",
-  "version": "0.9.5",
+  "version": "1.0.0",
   "description": "A Javascript library for working with native objects.",
-  "keywords": ["functional", "utility"],
+  "keywords": ["functional", "utility", "ender"],
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
   "main": "./lib/sugar",
