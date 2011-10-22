@@ -34,13 +34,18 @@ test('RegExp', function () {
   r = /foobar/gim;
   n = r.removeFlag('g');
 
-  equal(n.global, false, 'RegExp#removeFlag');
-  equal(n.ignoreCase, true, 'RegExp#removeFlag');
-  equal(n.multiline, true, 'RegExp#removeFlag');
+  equal(n.global, false, 'RegExp#removeFlag | global');
+  equal(n.ignoreCase, true, 'RegExp#removeFlag | ignoreCase');
+  equal(n.multiline, true, 'RegExp#removeFlag | multiline');
 
-  equal(r.global, true, 'RegExp#removeFlag | initial regex is untouched');
-  equal(r.ignoreCase, true, 'RegExp#removeFlag | initial regex is untouched');
-  equal(r.multiline, true, 'RegExp#removeFlag | initial regex is untouched');
+  equal(r.global, true, 'RegExp#removeFlag | initial regex is untouched | global');
+  equal(r.ignoreCase, true, 'RegExp#removeFlag | initial regex is untouched | ignoreCase');
+  equal(r.multiline, true, 'RegExp#removeFlag | initial regex is untouched | multiline');
+
+
+  // RegExp#getFlags
+
+  equal(/foobar/gim.getFlags(), 'gim', 'RegExp#getFlags');
 
 });
 
