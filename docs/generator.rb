@@ -84,10 +84,6 @@ def get_method(s)
   method
 end
 
-def get_url_name(method, klass)
-  return @current_module[:name] + (klass ? '.' : '#') + method
-end
-
 def get_examples(s, name)
   lines = get_property(:example, s, true)
   return nil if !lines
@@ -146,7 +142,6 @@ File.open('lib/sugar.js', 'r') do |f|
       @current_module = { :name => mod[1], :methods => [] }
     else
       method = get_method(b)
-      method[:url_name] = get_url_name(method[:name], method[:class_method])
       method[:returns] = get_property(:returns, b)
       method[:short] = get_property(:short, b)
       method[:set] = get_property(:set, b)

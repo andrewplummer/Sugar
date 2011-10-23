@@ -13,6 +13,7 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('星期一'), getDateWithWeekdayAndOffset(1), 'Date#create | Simplified Chinese | Monday');
   dateEqual(Date.create('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Simplified Chinese | the 9th');
   dateEqual(Date.create('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Simplified Chinese | the 25th');
+  dateEqual(Date.create('二十五号'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Simplified Chinese | 号 should be understood as well');
 
 
   dateEqual(Date.create('一毫秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Simplified Chinese | one millisecond ago');
