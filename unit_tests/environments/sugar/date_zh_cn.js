@@ -14,6 +14,7 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Simplified Chinese | the 9th');
   dateEqual(Date.create('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Simplified Chinese | the 25th');
   dateEqual(Date.create('二十五号'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Simplified Chinese | 号 should be understood as well');
+  dateEqual(Date.create('九月二十五号'), new Date(now.getFullYear(), 8, 25), 'Date#create | Simplified Chinese | 9.25');
 
 
   dateEqual(Date.create('一毫秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Simplified Chinese | one millisecond ago');
