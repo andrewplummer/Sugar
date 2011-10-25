@@ -245,6 +245,8 @@ test('Object', function () {
   equal(Object.extended({ foo: 'bar' }).merge('wear', 8, null), { foo: 'bar' }, 'Object#merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
 
 
+  equal(Object.clone('hardy'), 'hardy', 'Object.clone | clone on a string');
+  equal(Object.clone(undefined), undefined, 'Object.clone | clone on undefined');
   equal(Object.clone({ foo: 'bar' }), { foo: 'bar' }, 'Object.clone | basic clone');
   equal(Object.clone({ foo: 'bar', broken: 1, wear: null }), { foo: 'bar', broken: 1, wear: null }, 'Object.clone | complex clone');
   equal(Object.clone({ foo: { broken: 'wear' }}), { foo: { broken: 'wear' }}, 'Object.clone | deep clone');
@@ -359,6 +361,12 @@ test('Object', function () {
   equal(Object.extended({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 
 
+  var obj1 = { foo: 'bar' };
+  equal(Object.equals({ a: obj1, b: obj1 }, { a: obj1, b: obj1 }), true, 'Object.equals | multiple references will not choke');
+
+  var obj1 = { foo: 'bar' };
+  obj1.moo = obj1;
+  equal(Object.equals(obj1, { foo: 'bar', moo: obj1 }), true, 'Object.equals | cyclical references handled');
 
   // Enabling native object methods
 
