@@ -25,7 +25,7 @@ $(document).ready(function() {
     func = _.bind(func, this, 'hello', 'moe', 'curly');
     equals(func(), 'hello: moe curly', 'the function was partially applied in advance and can accept multiple arguments');
 
-    func = function(context, message) { equals(this, context, message); };
+    func = function(context, message) { equals(this == context, true, message); };
     _.bind(func, 0, 0, 'can bind a function to `0`')();
     _.bind(func, '', '', 'can bind a function to an empty string')();
     _.bind(func, false, false, 'can bind a function to `false`')();
