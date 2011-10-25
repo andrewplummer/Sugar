@@ -10,8 +10,6 @@ test('Date', function () {
   };
 
 
-
-
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -144,6 +142,10 @@ test('Date', function () {
   dateEqual(Date.create('08-05-05', 'en-GB'), new Date(2005, 4, 8), 'Date#create | dd-dd-dd is NOT an ISO8601 format');
 
   dateEqual(Date.create('8/10/85'), new Date(1985, 7, 10), 'Date#create | American format will now revert back');
+
+
+  // Stolen with love from XDate, ability to parse IETF format
+  dateEqual(Date.create('Mon Sep 05 2011 12:30:00 GMT-0700 (PDT)'), getUTCDate(2011,9,5,19,30), 'Date#create | IETF format');
 
 
   /*
@@ -831,49 +833,56 @@ test('Date', function () {
 
   equal(d.format(), 'August 5, 2010', 'Date#format | no arguments is standard format with no time');
 
-  equal(d.format('{ms}'), '000', 'Date#format | custom formats | ms');
-  equal(d.format('{millisec}'), '0', 'Date#format | custom formats | millisec');
-  equal(d.format('{millisecond}'), '0', 'Date#format | custom formats | millisecond');
+  equal(d.format('{ms}'), '0', 'Date#format | custom formats | ms');
   equal(d.format('{milliseconds}'), '0', 'Date#format | custom formats | milliseconds');
+  equal(d.format('{f}'), '0', 'Date#format | custom formats | f');
+  equal(d.format('{ff}'), '00', 'Date#format | custom formats | ff');
+  equal(d.format('{fff}'), '000', 'Date#format | custom formats | fff');
+  equal(d.format('{ffff}'), '0000', 'Date#format | custom formats | ffff');
   equal(d.format('{s}'), '2', 'Date#format | custom formats | s');
   equal(d.format('{ss}'), '02', 'Date#format | custom formats | ss');
-  equal(d.format('{sec}'), '2', 'Date#format | custom formats | sec');
-  equal(d.format('{second}'), '2', 'Date#format | custom formats | second');
   equal(d.format('{seconds}'), '2', 'Date#format | custom formats | seconds');
   equal(d.format('{m}'), '45', 'Date#format | custom formats | m');
   equal(d.format('{mm}'), '45', 'Date#format | custom formats | mm');
-  equal(d.format('{min}'), '45', 'Date#format | custom formats | min');
-  equal(d.format('{minute}'), '45', 'Date#format | custom formats | minute');
   equal(d.format('{minutes}'), '45', 'Date#format | custom formats | minutes');
-  equal(d.format('{h}'), '13', 'Date#format | custom formats | h');
-  equal(d.format('{hh}'), '13', 'Date#format | custom formats | hh');
-  equal(d.format('{hour}'), '13', 'Date#format | custom formats | hour');
-  equal(d.format('{hours}'), '13', 'Date#format | custom formats | hours');
+  equal(d.format('{h}'), '1', 'Date#format | custom formats | h');
+  equal(d.format('{hh}'), '01', 'Date#format | custom formats | hh');
+  equal(d.format('{H}'), '13', 'Date#format | custom formats | H');
+  equal(d.format('{HH}'), '13', 'Date#format | custom formats | HH');
+  equal(d.format('{hours}'), '1', 'Date#format | custom formats | hours');
   equal(d.format('{24hr}'), '13', 'Date#format | custom formats | 24hr');
   equal(d.format('{12hr}'), '1', 'Date#format | custom formats | 12hr');
   equal(d.format('{d}'), '5', 'Date#format | custom formats | d');
   equal(d.format('{dd}'), '05', 'Date#format | custom formats | dd');
+  equal(d.format('{ddd}'), 'Thu', 'Date#format | custom formats | ddd');
+  equal(d.format('{dddd}'), 'Thursday', 'Date#format | custom formats | dddd');
   equal(d.format('{date}'), '5', 'Date#format | custom formats | date');
-  equal(d.format('{day}'), '5', 'Date#format | custom formats | day');
-  equal(d.format('{days}'), '5', 'Date#format | custom formats | days');
+  equal(d.format('{day}'), '5', 'Date#format | custom formats | days');
   equal(d.format('{dow}'), 'thu', 'Date#format | custom formats | dow');
   equal(d.format('{Dow}'), 'Thu', 'Date#format | custom formats | Dow');
   equal(d.format('{weekday}'), 'thursday', 'Date#format | custom formats | weekday');
   equal(d.format('{Weekday}'), 'Thursday', 'Date#format | custom formats | Weekday');
   equal(d.format('{M}'), '8', 'Date#format | custom formats | M');
   equal(d.format('{MM}'), '08', 'Date#format | custom formats | MM');
+  equal(d.format('{MMM}'), 'Aug', 'Date#format | custom formats | MMM');
+  equal(d.format('{MMMM}'), 'August', 'Date#format | custom formats | MMMM');
   equal(d.format('{month}'), 'august', 'Date#format | custom formats | month');
   equal(d.format('{Mon}'), 'Aug', 'Date#format | custom formats | Mon');
   equal(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');
   equal(d.format('{yy}'), '10', 'Date#format | custom formats | yy');
   equal(d.format('{yyyy}'), '2010', 'Date#format | custom formats | yyyy');
   equal(d.format('{year}'), '2010', 'Date#format | custom formats | year');
-  equal(d.format('{Year}'), '2010', 'Date#format | custom formats | Year');
   equal(d.format('{t}'), 'p', 'Date#format | custom formats | t');
   equal(d.format('{T}'), 'P', 'Date#format | custom formats | T');
   equal(d.format('{tt}'), 'pm', 'Date#format | custom formats | tt');
   equal(d.format('{TT}'), 'PM', 'Date#format | custom formats | TT');
   equal(d.format('{ord}'), '5th', 'Date#format | custom formats | ord');
+
+  var offsetHours = d.getUTCOffset().replace(/(\d{2})\d{2}/, '$1');
+  equal(d.format('{z}'), offsetHours.replace(/0/, '').toString(), 'Date#format | custom formats | z');
+  equal(d.format('{zz}'), offsetHours, 'Date#format | custom formats | zz');
+  equal(d.format('{zzz}'), d.getUTCOffset(), 'Date#format | custom formats | zzz');
+  equal(d.format('{tz}'), d.getUTCOffset(), 'Date#format | custom formats | tz');
 
 
   d = new Date('August 5, 2010 04:03:02');
