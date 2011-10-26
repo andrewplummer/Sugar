@@ -31,7 +31,7 @@ test('Function', function () {
   // take at least 20 seconds to finish!
   var delayTime = environment === 'prototype' ? 0.02 : 20;
 
-  (function(){
+  async(function(){
     var fn, ref;
     fn = function(one, two) {
       equal(one, 'one', 'Function#delay | first parameter', { mootools: 'two' });
@@ -39,9 +39,9 @@ test('Function', function () {
     };
     ref = fn.delay(delayTime, 'one', 'two');
     equal(typeof ref, 'function', 'Function#delay | returns the function', { prototype: 'number', mootools: 'number' });
-  })();
+  });
 
-  (function(){
+  async(function(){
     var fn, ref, shouldBeFalse = false;
     fn = function() {
       shouldBeFalse = true;
@@ -54,13 +54,30 @@ test('Function', function () {
     setTimeout(function() {
       equal(shouldBeFalse, false, 'Function#delay | cancel is working', { prototype: true, mootools: true });
     }, 60);
-  })();
+  });
 
-  // Properly unit testing Function#lazy will probably be a bitch...
-  // Will have to rethink strategy here.
-  (function() {
+  async(function(){
+
     var counter = 0;
-    var expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3]];
+    var fn = function(){ counter++; }
+
+    fn.delay(50);
+    fn.delay(10);
+
+    setTimeout(function() {
+      fn.cancel();
+    }, 30);
+
+    setTimeout(function() {
+      equal(counter, 1, 'Function#cancel | should be able to find the correct timers');
+      fn.cancel();
+    }, 60);
+
+  });
+
+  async(function() {
+    var counter = 0;
+    var expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3],['biotch','d',4]];
     var fn = (function(one, two) {
       equal([this.toString(), one, two], expected[counter], 'Function#lazy | scope and arguments are correct');
       counter++;
@@ -68,26 +85,43 @@ test('Function', function () {
     fn.call('maybe', 'a', 1);
     fn.call('baby', 'b', 2);
     fn.call('you lazy', 'c', 3);
-    equal(counter, 0, "Function#lazy | hasn't executed yet");
+    equal(counter, 1, "Function#lazy | should have executed once");
     setTimeout(function() {
       equal(counter, 3, 'Function#lazy | was executed by 10ms');
-    }, 10);
-  })();
+      fn.call('biotch', 'd', 4);
+      equal(counter, 4, 'Function#lazy | next execution should be immediate');
+    }, 50);
+  });
 
 
-  (function() {
+  async(function() {
     var counter = 0;
     var fn = (function() { counter++; }).lazy();
     fn();
     fn();
+    fn();
     fn.cancel();
     setTimeout(function() {
-      equal(counter, 0, 'Function#lazy | lazy functions can also be canceled');
+      equal(counter, 1, 'Function#lazy | lazy functions can also be canceled');
     }, 10);
-  })();
+  });
 
 
-  (function() {
+
+  async(function() {
+    var counter = 0;
+    var fn = (function() { counter++; }).lazy(0.1);
+    for(var i = 0; i < 20; i++) {
+      fn();
+    }
+    setTimeout(function() {
+      equal(counter, 20, 'Function#lazy | lazy (throttled) functions can have a [wait] value of < 1ms');
+    }, 30);
+  });
+
+
+
+  async(function() {
     var counter = 0;
     var fn = (function() { counter++; }).lazy(0.1, 10);
     for(var i = 0; i < 50; i++) {
@@ -95,27 +129,31 @@ test('Function', function () {
     }
     setTimeout(function() {
       equal(counter, 10, 'Function#lazy | lazy functions have an upper threshold');
-      equal(fn.timers.length, 0, 'Function#lazy | timers should be cleared');
     }, 50);
-  })();
+  });
 
 
+  async(function() {
+    var counter = 0;
+    var fn = (function() { counter++; }).lazy(0.1, 1);
+    for(var i = 0; i < 50; i++) {
+      fn();
+    }
+    setTimeout(function() {
+      equal(counter, 1, 'Function#lazy | lazy functions with a limit of 1 WILL still execute');
+    }, 50);
+  });
 
 
 
   // Function#debounce
 
-  // Giving this it's own scope + a timeout here as it seems to make this
-  // temperamental test happier to run after other execution (GC?) has finished.
-
-  /*
-   * I can't for the life of me get these tests not to fail randomly, so come back here when we have more bandwidth to work on it.
-  setTimeout(function(){
+  async(function(){
     var fn, ret, counter = 0, expected = [['leia', 5],['han solo', 7]];
     var fn = (function(one){
       equal([this.toString(), one], expected[counter], 'Function#debounce | scope and arguments are correct');
       counter++;
-    }).debounce(10);
+    }).debounce(30);
 
     fn.call('3p0', 1);
     fn.call('r2d2', 2);
@@ -137,10 +175,9 @@ test('Function', function () {
     setTimeout(function() {
       equal(counter, 2, 'Function#debounce | counter is correct');
     }, 500);
-  }, 1);
-  */
+  });
 
-  setTimeout(function(){
+  async(function(){
     var fn, ret, counter = 0, expected = [['3p0', 1],['luke', 6]];
     var fn = (function(one){
       equal([this.toString(), one], expected[counter], 'Function#debounce | immediate execution | scope and arguments are correct');
@@ -165,13 +202,13 @@ test('Function', function () {
     setTimeout(function() {
       equal(counter, 2, 'Function#debounce | immediate execution | counter is correct');
     }, 200);
-  }, 1);
+  });
 
 
 
   // Function#after
 
-  (function() {
+  async(function() {
     var fn, ret, counter = 0, i = 1;
     fn = (function() {
       counter++;
@@ -183,12 +220,12 @@ test('Function', function () {
       i++;
     }
     equal(counter, 2, 'Function#after | calls a function only after a certain number of calls');
-  })();
+  });
 
 
   // Function#once
 
-  (function() {
+  async(function() {
     var fn, obj = { foo:'bar' }, counter = 0;
     fn = (function(one, two) {
       counter++;
@@ -205,10 +242,10 @@ test('Function', function () {
     equal(fn.call(obj, 'one', 'two'), 30, 'Function#once | fifth call memoizes the result');
 
     equal(counter, 1, 'Function#once | counter is only incremented once');
-  })();
+  });
 
 
-  (function() {
+  async(function() {
     var fn, counter = 0;
     fn = (function(one, two) {
       counter++;
@@ -219,10 +256,7 @@ test('Function', function () {
     fn.call();
 
     equal(counter, 1, 'Function#once | returning undefined will not affect the number of calls');
-  })();
-
-
-
+  });
 
 
 });
