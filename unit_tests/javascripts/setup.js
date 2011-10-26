@@ -238,3 +238,9 @@ syncTestsFinished = function() {
   checkCanFinish();
 }
 
+// This method has 2 benefits:
+// 1. It gives asynchronous functions their own scope so vars can't be overwritten later by other asynchronous functions
+// 2. It runs the tests after the CPU is free decreasing the chance of timing based errors.
+async = function(fn) {
+  setTimeout(fn, 1);
+}
