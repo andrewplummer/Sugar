@@ -90,7 +90,7 @@ test('Function', function () {
       equal(counter, 3, 'Function#lazy | was executed by 10ms');
       fn.call('biotch', 'd', 4);
       equal(counter, 4, 'Function#lazy | next execution should be immediate');
-    }, 50);
+    }, 100);
   });
 
 
@@ -116,7 +116,7 @@ test('Function', function () {
     }
     setTimeout(function() {
       equal(counter, 20, 'Function#lazy | lazy (throttled) functions can have a [wait] value of < 1ms');
-    }, 30);
+    }, 100);
   });
 
 
