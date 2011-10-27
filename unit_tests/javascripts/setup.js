@@ -103,8 +103,9 @@ var getMeta = function(stack) {
   if(!e.stack) {
     return {};
   }
-  var s = e.stack.split('\n');
-  var match = s[level].match(/\/(.+?):(\d+)(?:(\d+))?/);
+  var s = e.stack.split(/@|at/m);
+  var match = s[level].match(/(http.+):(\d+)(?::(\d+))?/);
+  if(!match) match = [];
   return { file: match[1], line: match[2] };
 }
 
