@@ -1,7 +1,8 @@
 
 test('Array', function () {
 
-
+  equal([1,1,3].unique(), [1,3], 'Array#unique | 1,1,3');
+  return;
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
@@ -592,8 +593,9 @@ test('Array', function () {
   equal(['a','a','c'].unique(), ['a','c'], 'Array#unique | a,a,c');
 
 
-  equal([{foo:'bar'}, {foo:'bar'}].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well');
-
+  equal([{ foo:'bar' }, { foo:'bar' }].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well');
+  equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique(function(n){ return n.last; }), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping function');
+  equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique('last'), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping function');
 
 
 
