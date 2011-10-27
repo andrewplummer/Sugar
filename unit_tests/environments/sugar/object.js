@@ -345,13 +345,13 @@ test('Object', function () {
   equal(Object.extended({}).isEmpty({}), true, 'Object#isEmpty | object is empty');
   equal(Object.extended({ broken: 'wear' }).isEmpty(), false, 'Object#empty | object is not empty');
 
-  equal(Object.equals({ broken: 'wear' }, { broken: 'wear' }), true, 'Object.equals | objects are equal');
-  equal(Object.equals({ broken: 'wear' }, { broken: 'jumpy' }), false, 'Object.equals | objects are not equal');
-  equal(Object.equals({}, {}), true, 'Object.equals | empty objects are equal');
-  equal(Object.equals({}, { broken: 'wear' }), false, 'Object.equals | 1st empty');
-  equal(Object.equals({ broken: 'wear' }, {}), false, 'Object.equals | 2nd empty');
+  equal(Object.equal({ broken: 'wear' }, { broken: 'wear' }), true, 'Object.equal | objects are equal');
+  equal(Object.equal({ broken: 'wear' }, { broken: 'jumpy' }), false, 'Object.equal | objects are not equal');
+  equal(Object.equal({}, {}), true, 'Object.equal | empty objects are equal');
+  equal(Object.equal({}, { broken: 'wear' }), false, 'Object.equal | 1st empty');
+  equal(Object.equal({ broken: 'wear' }, {}), false, 'Object.equal | 2nd empty');
 
-  equal(Object.equals({x: 1, y: undefined}, {x: 1, z: 2}), false, 'Object.equals | undefined keys');
+  equal(Object.equal({x: 1, y: undefined}, {x: 1, z: 2}), false, 'Object.equal | undefined keys');
 
 
   equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
@@ -362,11 +362,11 @@ test('Object', function () {
 
 
   var obj1 = { foo: 'bar' };
-  equal(Object.equals({ a: obj1, b: obj1 }, { a: obj1, b: obj1 }), true, 'Object.equals | multiple references will not choke');
+  equal(Object.equal({ a: obj1, b: obj1 }, { a: obj1, b: obj1 }), true, 'Object.equal | multiple references will not choke');
 
   var obj1 = { foo: 'bar' };
   obj1.moo = obj1;
-  equal(Object.equals(obj1, { foo: 'bar', moo: obj1 }), true, 'Object.equals | cyclical references handled');
+  equal(Object.equal(obj1, { foo: 'bar', moo: obj1 }), true, 'Object.equal | cyclical references handled');
 
   // Enabling native object methods
 
