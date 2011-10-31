@@ -1,8 +1,6 @@
 
 test('Array', function () {
 
-  equal([1,1,3].unique(), [1,3], 'Array#unique | 1,1,3');
-  return;
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
@@ -233,9 +231,10 @@ test('Array', function () {
   equal([1,2,3].map('toString'), ['1','2','3'], 'Array#map | calls a function on a shortcut string');
 
   raisesError(function(){ [1,2,3].map() }, 'Array#map | raises an error if no argument', { prototype: false });
-  raisesError(function(){ [1,2,3].map(undefined) }, 'Array#map | raises an error on undefined');
-  raisesError(function(){ [1,2,3].map(null) }, 'Array#map | raises an error on null');
-  raisesError(function(){ [1,2,3].map(3) }, 'Array#map | raises an error on a number');
+
+  equal([1,2,3].map(undefined), [1,2,3], 'Array#map | undefined');
+  equal([1,2,3].map(null), [undefined, undefined, undefined], 'Array#map | null');
+  equal([1,2,3].map(4), [undefined, undefined, undefined], 'Array#map | number');
 
 
 
@@ -595,7 +594,7 @@ test('Array', function () {
 
   equal([{ foo:'bar' }, { foo:'bar' }].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well');
   equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique(function(n){ return n.last; }), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping function');
-  equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique('last'), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping function');
+  equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique('last'), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping shortcut');
 
 
 
@@ -758,11 +757,10 @@ test('Array', function () {
 
 
 
-  raisesError(function() { [1,2,3].min(undefined); }, 'Array#min | raises an error on undefined', { prototype: false });
-  raisesError(function() { [1,2,3].min(null); }, 'Array#min | raises an error on null', { prototype: false });
-  raisesError(function() { [1,2,3].min(4); }, 'Array#min | raises an error on number', { prototype: false });
-
-  equal([12,87,55].min(), [12], 'Array#min | 12', { prototype: 12 });
+  equal([12,87,55].min(), [12], 'Array#min | no argument', { prototype: 12 });
+  equal([12,87,55].min(undefined), [12], 'Array#min | undefined', { prototype: 12 });
+  equal([12,87,55].min(null), [], 'Array#min | null', { prototype: 12 });
+  equal([12,87,55].min(4), [], 'Array#min | number', { prototype: 12 });
   equal([-12,-87,-55].min(), [-87], 'Array#min | -87', { prototype: -87 });
   equal([5,5,5].min(), [5], 'Array#min | 5 is uniqued', { prototype: 5 });
   equal(['a','b','c'].min(), [], 'Array#min | strings are not counted', { prototype: 'a' });
@@ -780,12 +778,10 @@ test('Array', function () {
 
 
 
-
-  raisesError(function() { [1,2,3].max(undefined); }, 'Array#max | raises an error on undefined', { prototype: false });
-  raisesError(function() { [1,2,3].max(null); }, 'Array#max | raises an error on null', { prototype: false });
-  raisesError(function() { [1,2,3].max(4); }, 'Array#max | raises an error on number', { prototype: false });
-
-  equal([12,87,55].max(), [87], 'Array#max | 87', { prototype: 87 });
+  equal([12,87,55].max(), [87], 'Array#max | no argument', { prototype: 87 });
+  equal([12,87,55].max(undefined), [87], 'Array#max | undefined', { prototype: 87 });
+  equal([12,87,55].max(null), [], 'Array#max | null', { prototype: 87 });
+  equal([12,87,55].max(4), [], 'Array#max | number', { prototype: 87 });
   equal([-12,-87,-55].max(), [-12], 'Array#max | -12', { prototype: -12 });
   equal([5,5,128].max(), [128], 'Array#max | 128', { prototype: 128 });
   equal([128,128,128].max(), [128], 'Array#max | 128 is uniqued', { prototype: 128 });
@@ -812,9 +808,9 @@ test('Array', function () {
     { name: 'edmund', age: 27, hair: 'blonde' }
   ];
 
-  raisesError(function() { [1,2,3].most(undefined); }, 'Array#most | raises an error on undefined');
-  raisesError(function() { [1,2,3].most(null); }, 'Array#most | raises an error on null');
-  raisesError(function() { [1,2,3].most(4); }, 'Array#most | raises an error on number');
+  equal([1,2,3].most(undefined), [], 'Array#most | undefined');
+  equal([1,2,3].most(null), [], 'Array#most | null');
+  equal([1,2,3].most(4), [], 'Array#most | number');
 
   equal(people.most(function(person) { return person.age; }), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | age');
   equal(people.most(function(person) { return person.hair; }), [], 'Array#most | hair');
@@ -831,9 +827,9 @@ test('Array', function () {
   equal(people.most(function(person) { return person.age; }).length, 2, 'Array#most | collect actual number of occurrences');
 
 
-  raisesError(function() { [1,2,3].least(undefined); }, 'Array#least | raises an error on undefined');
-  raisesError(function() { [1,2,3].least(null); }, 'Array#least | raises an error on null');
-  raisesError(function() { [1,2,3].least(4); }, 'Array#least | raises an error on number');
+  equal([1,2,3].least(undefined), [], 'Array#least | undefined');
+  equal([1,2,3].least(null), [], 'Array#least | null');
+  equal([1,2,3].least(4), [], 'Array#least | number');
 
   equal(people.least(function(person) { return person.age; }).sortBy('name'), [people[1], people[2]], 'Array#least | contains mary and ronnie');
   equal(people.least(function(person) { return person.age; }).sortBy('age'), [{name:'ronnie',age:13,hair:'brown'}, {name:'mary',age:52,hair:'blonde'}], 'Array#least | age and sorted by age');
@@ -889,9 +885,9 @@ test('Array', function () {
   people = people.sortBy('hair');
   equal(people.groupBy(function(p) { return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
 
-  raisesError(function() { [1,2,3].groupBy(undefined); }, 'Array#groupBy | raises an error on undefined');
-  raisesError(function() { [1,2,3].groupBy(null); }, 'Array#groupBy | raises an error on null');
-  raisesError(function() { [1,2,3].groupBy(4); }, 'Array#groupBy | raises an error on number');
+  equal([1,2,3].groupBy(undefined), { 1: [1], 2: [2], 3: [3] }, 'Array#groupBy | undefined');
+  equal([1,2,3].groupBy(null), { 'undefined': [1,2,3] }, 'Array#groupBy | null');
+  equal([1,2,3].groupBy(4), { 'undefined': [1,2,3] }, 'Array#groupBy | number');
   equal(['one','two','three'].groupBy('length').keys(), ['3','5'], 'Array#groupBy | result should be an extended object');
 
   var counter = 0;
@@ -1361,9 +1357,13 @@ test('Array', function () {
   equal(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
   equal(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy | desc | sort by key "a"', { prototype: [{a:'bar'},{a:'foo'},{a:'skittles'}] });
 
-  raisesError(function() { [1,2,3].sortBy(undefined); }, 'Array#sortBy | raises an error on undefined', { prototype: false });
-  raisesError(function() { [1,2,3].sortBy(null); }, 'Array#sortBy | raises an error on null', { prototype: false });
-  raisesError(function() { [1,2,3].sortBy(4); }, 'Array#sortBy | raises an error on number', { prototype: false });
+  arr = [1,2,3];
+  arr.sortBy(function(n){ return 3 - n; });
+  equal(arr, [1,2,3], 'Array#sortBy | should not be destructive');
+
+  equal([1,2,3].sortBy(undefined), [1,2,3], 'Array#sortBy | undefined', { prototype: false });
+  equal([1,2,3].sortBy(null), [1,2,3], 'Array#sortBy | null', { prototype: false });
+  equal([1,2,3].sortBy(4), [1,2,3], 'Array#sortBy | number', { prototype: false });
 
 
 
