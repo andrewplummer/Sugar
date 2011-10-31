@@ -217,11 +217,11 @@ test('Number', function () {
   equal((100046546510000.022435451).format().replace(/\.\d+$/, ''), '100,046,546,510,000', 'Number#format | 100,046,546,510,000')
   equal((-100046546510000.022435451).format().replace(/\.\d+$/, ''), '-100,046,546,510,000', 'Number#format | -100,046,546,510,000')
 
-  equal((1000).format(' '), '1 000', 'Number#format | 1000')
-  equal((1532587).format(' '), '1 532 587', 'Number#format | larger number')
-  equal((1532587.5752).format(' ', ','), '1 532 587,5752', 'Number#format | larger number with decimal')
+  equal((1000).format(null, ' '), '1 000', 'Number#format | 1000')
+  equal((1532587).format(null, ' '), '1 532 587', 'Number#format | larger number')
+  equal((1532587.5752).format(null, ' ', ','), '1 532 587,5752', 'Number#format | larger number with decimal')
   equal((9999999.99).format(), '9,999,999.99', 'Number#format | Standard');
-  equal((9999999.99).format('.',','), '9.999.999,99', 'Number#format | Euro style!');
+  equal((9999999.99).format(null, '.',','), '9.999.999,99', 'Number#format | Euro style!');
   equal((1).format(2), '1.00', 'Number#format | to 2 places')
   equal((10).format(2), '10.00', 'Number#format | to 2 places')
   equal((100).format(2), '100.00', 'Number#format | to 2 places')
@@ -251,6 +251,15 @@ test('Number', function () {
   equal((-100000).format(4), '-100,000.0000', 'Number#format | to 4 places')
   equal((-1000000).format(4), '-1,000,000.0000', 'Number#format | to 4 places')
 
+  equal((2.435).format(2), '2.44', 'Number#format | 2.44')
+  equal((553599.435).format(2), '553,599.44', 'Number#format | 553,599.44')
+  equal((553599.435).format(1), '553,599.4', 'Number#format | 553,599.4')
+  equal((553599.435).format(0), '553,599', 'Number#format | 553,599')
+  equal((553599.435).format(-1), '553,600', 'Number#format | 553,600')
+  equal((553599.435).format(-2), '553,600', 'Number#format | 553,600')
+  equal((553599.435).format(-3), '554,000', 'Number#format | 553,600')
+  equal((553599.435).format(-4), '550,000', 'Number#format | 550,000')
+  equal((553599.435).format(-5), '600,000', 'Number#format | 600,000')
 
 
   equal((1).pad(0), '1', 'Number#pad | 1 no padding')
