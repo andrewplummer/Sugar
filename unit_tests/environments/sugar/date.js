@@ -930,9 +930,7 @@ test('Date', function () {
   var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+'.'+d.getUTCMilliseconds().pad(3)+'Z';
 
   equal(d.toUTC().format(Date.ISO8601_DATETIME), iso, 'Date#format | constants | ISO8601_DATETIME UTC HOLY');
-  equal(d.toUTC().format(Date.ISO8601), iso, 'Date#format | constants | ISO8601 UTC');
   equal(d.toUTC().format('ISO8601_DATETIME'), iso, 'Date#format | string constants | ISO8601_DATETIME UTC');
-  equal(d.toUTC().format('ISO8601'), iso, 'Date#format | string constants | ISO8601 UTC');
 
 
   var rfc1123 = getWeekdayFromDate(d).to(3).capitalize()+', '+d.getDate().pad(2)+' '+getMonthFromDate(d).to(3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
