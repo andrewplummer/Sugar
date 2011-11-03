@@ -292,7 +292,7 @@ test('ECMAScript', function () {
 
 
 
- // Array#some
+  // Array#some
 
   raisesError(function(){ [].some(); }, 'Array#some | should raise an error when no first param');
   result = arr.some(function(){
