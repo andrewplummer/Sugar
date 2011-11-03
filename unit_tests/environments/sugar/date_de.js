@@ -3,8 +3,6 @@ test('Dates | German', function () {
   var now = new Date();
   Date.setLocale('de');
 
-
-
   dateEqual(Date.create('15. Mai 2011'), new Date(2011, 4, 15), 'Date#create | basic German date');
   dateEqual(Date.create('Dienstag, 5. Januar 2012'), new Date(2012, 0, 5), 'Date#create | German | 2012-01-05');
   dateEqual(Date.create('Mai 2011'), new Date(2011, 4), 'Date#create | German | year and month');
