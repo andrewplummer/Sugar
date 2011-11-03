@@ -28,6 +28,7 @@ String.prototype.ordinalize = function() {};
 String.prototype.assign = function() {};
 String.prototype.from = function() {};
 Object.isFunction = function() {};
+Object.isBoolean = function() {};
 Object.isNumber = function() {};
 Object.isRegExp = function() {};
 Object.isArray = function() {};
