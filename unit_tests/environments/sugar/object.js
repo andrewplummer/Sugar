@@ -369,6 +369,7 @@ test('Object', function () {
   obj1.moo = obj1;
   equal(Object.equal(obj1, { foo: 'bar', moo: obj1 }), true, 'Object.equal | cyclical references handled');
 
+  equal(Object.equal(undefined, 'one'), false, 'Object.equal | string to undefined');
   // Enabling native object methods
 
 
