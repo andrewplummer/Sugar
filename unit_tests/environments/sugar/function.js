@@ -68,7 +68,7 @@ test('Function', function () {
     }, 30);
 
     setTimeout(function() {
-      equal(counter, 1, 'Function#cancel | should be able to find the correct timers');
+      equal(counter, 1, 'Function#cancel | should be able to find the correct timers', { prototype: 0 });
       fn.cancel();
     }, 60);
 
