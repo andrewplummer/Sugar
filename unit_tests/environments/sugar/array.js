@@ -1116,7 +1116,7 @@ test('Array', function () {
   equal(['a','b','c'].add('d', -1), ['a','b','d','c'], 'Array#add | index -1 | d');
   equal(['a','b','c'].add('d', -2), ['a','d','b','c'], 'Array#add | index -2 | d');
   equal(['a','b','c'].add('d', -3), ['d','a','b','c'], 'Array#add | index -3 | d');
-  equal(['a','b','c'].add('d', null), ['a','b','c','d'], 'Array#add | null index | d');
+  equal(['a','b','c'].add('d', null), ['d','a','b','c'], 'Array#add | null index | d');
   equal(['a','b','c'].add('d', undefined), ['a','b','c','d'], 'Array#add | undefined index | d');
   equal(['a','b','c'].add('d', 'a'), ['a','b','c','d'], 'Array#add | index a | d');
   equal(['a','b','c'].add('d', NaN), ['a','b','c','d'], 'Array#add | index NaN | d');
@@ -1159,10 +1159,12 @@ test('Array', function () {
   equal(['a','b','c'].insert('d', -1), ['a','b','d','c'], 'Array#insert | index -1 | d');
   equal(['a','b','c'].insert('d', -2), ['a','d','b','c'], 'Array#insert | index -2 | d');
   equal(['a','b','c'].insert('d', -3), ['d','a','b','c'], 'Array#insert | index -3 | d');
-  equal(['a','b','c'].insert('d', null), ['a','b','c','d'], 'Array#insert | null index | d');
+  equal(['a','b','c'].insert('d', null), ['d','a','b','c'], 'Array#insert | null index | d');
   equal(['a','b','c'].insert('d', undefined), ['a','b','c','d'], 'Array#insert | undefined index | d');
   equal(['a','b','c'].insert('d', 'a'), ['a','b','c','d'], 'Array#insert | index a | d');
   equal(['a','b','c'].insert('d', NaN), ['a','b','c','d'], 'Array#insert | index NaN | d');
+
+  equal(['a','b','c'].insert('d', '0'), ['d','a','b','c'], 'Array#insert | string numerals should also be recognized');
 
   arr = [1,2,3];
   arr.insert(4);
@@ -1202,7 +1204,7 @@ test('Array', function () {
   equal(['a','b','c'].include('d', -1), ['a','b','d','c'], 'Array#include | index -1 | d', { prototype: false, mootools: ['a','b','c','d'] });
   equal(['a','b','c'].include('d', -2), ['a','d','b','c'], 'Array#include | index -2 | d', { prototype: false, mootools: ['a','b','c','d'] });
   equal(['a','b','c'].include('d', -3), ['d','a','b','c'], 'Array#include | index -3 | d', { prototype: false, mootools: ['a','b','c','d'] });
-  equal(['a','b','c'].include('d', null), ['a','b','c','d'], 'Array#include | null index | d', { prototype: false });
+  equal(['a','b','c'].include('d', null), ['d','a','b','c'], 'Array#include | null index | d', { prototype: false });
   equal(['a','b','c'].include('d', undefined), ['a','b','c','d'], 'Array#include | undefined index | d', { prototype: false });
   equal(['a','b','c'].include('d', 'a'), ['a','b','c','d'], 'Array#include | index a | d', { prototype: false });
   equal(['a','b','c'].include('d', NaN), ['a','b','c','d'], 'Array#include | index NaN | d', { prototype: false });
