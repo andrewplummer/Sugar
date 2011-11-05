@@ -6,15 +6,15 @@ v1.1
 - Array#unique can now unique on a function, giving a shortcut to uniquify deep objects
 - Object.equals renamed to Object.equal in its class method only
 - Object.equal now much more robust, can handle cyclic references, etc
-- Fixed broken support for SpiderMonkey under CouchDB
-- Fixed sortBy is unintentionally destructive
 - String#format now accepts a parameter <place> for the decimal. "thousands", and "decimal" are pushed to 2nd and 3rd params
 - Changed tokens passed to Date#format. A few counterintuitive ones removed, and added others to match moment.js including fff, ddd, mmm, etc
-- Added RegExp#getFlags
 - Function#lazy now executes immediately and locks instead of setting a delay
-- Array#map/min/max/most/least/groupBy/sortBy no longer errors on undefined, null, etc
-- Full Asian date number formats now accepted
+- Added RegExp#getFlags
 - Added Function#fill, which allows arguments to be intelligently curried
+- Fixed broken support for SpiderMonkey under CouchDB
+- Fixed sortBy is unintentionally destructive
+- Full Asian date number formats now accepted
+- Array#map/min/max/most/least/groupBy/sortBy no longer errors on undefined, null, etc
 - Fixed a bug with locking on Number#format when passing digits
 
 ### Internal Changes ###
