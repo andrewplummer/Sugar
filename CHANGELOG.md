@@ -6,7 +6,7 @@ v1.1
 - Array#unique can now unique on a function, giving a shortcut to uniquify deep objects
 - Object.equals renamed to Object.equal in its class method only
 - Object.equal now much more robust, can handle cyclic references, etc
-- String#format now accepts a parameter <place> for the decimal. "thousands", and "decimal" are pushed to 2nd and 3rd params
+- Number#format now accepts a parameter <place> for the decimal. "thousands", and "decimal" are pushed to 2nd and 3rd params
 - Date#format now accepts different format tokens. A few counterintuitive ones removed, and others were added to match moment.js including fff, ddd, mmm, etc
 - Function#lazy now executes immediately and locks instead of setting a delay
 - Added RegExp#getFlags
