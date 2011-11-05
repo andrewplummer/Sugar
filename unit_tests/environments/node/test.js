@@ -17,6 +17,7 @@ require('../sugar/date.js');
 require('../sugar/regexp.js');
 require('../sugar/function.js');
 require('../sugar/es5.js');
+require('../sugar/equals.js');
 require('../sugar/date_zh_cn.js')
 require('../sugar/date_zh_tw.js')
 require('../sugar/date_ko.js')
