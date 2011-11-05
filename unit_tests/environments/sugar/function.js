@@ -1,7 +1,6 @@
 test('Function', function () {
 
 
-
   var bound,obj,result;
 
   obj = { foo: 'bar' };
@@ -258,6 +257,32 @@ test('Function', function () {
     equal(counter, 1, 'Function#once | returning undefined will not affect the number of calls');
   });
 
+
+  // Function#fill
+
+
+  Number.prototype.two = Number.prototype.format.fill(2);
+
+  equal((18).two(), '18.00', 'Function#fill | 18');
+  equal((9999).two(), '9,999.00', 'Function#fill | 9,999.00');
+  equal((9999).two(' '), '9 999.00', 'Function#fill | 9 999.00');
+  equal((9999).two('+', '-'), '9+999-00', 'Function#fill | 9+999-00');
+
+
+  Number.prototype.euro = Number.prototype.format.fill(undefined, '.', ',');
+
+  equal((9999.77).euro(), '9.999,77', 'Function#fill | no params | 9.999,77');
+  equal((9999.77).euro(0), '10.000', 'Function#fill | 0 | 9.999');
+  equal((9999.77).euro(1), '9.999,8', 'Function#fill | 1 | 9.999,8');
+  equal((9999.77).euro(2), '9.999,77', 'Function#fill | 2 | 9.999,77');
+  equal((9999.77).euro(3), '9.999,770', 'Function#fill | 3 | 9.999,777');
+
+
+  Number.prototype.noop = Number.prototype.format.fill();
+
+  equal((1000).noop(3, ' ', ','), '1 000,000', 'Function#fill | noop | 1 000,000');
+  equal((1000).noop(4, ' ', ','), '1 000,0000', 'Function#fill | noop | 1 000,0000');
+  equal((1000).noop(5, ' ', ','), '1 000,00000', 'Function#fill | noop | 1 000,00000');
 
 });
 
