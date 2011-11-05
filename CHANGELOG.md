@@ -6,7 +6,7 @@ v1.1
 - Array#unique can now unique on a function, giving a shortcut to uniquify deep objects
 - Object.equals renamed to Object.equal in its class method only
 - Object.equal now much more robust, can handle cyclic references, etc
-- Fixed broken support for SharePoint
+- Fixed broken support for SpiderMonkey under CouchDB
 - Fixed sortBy is unintentionally destructive
 - String#format now accepts a parameter <place> for the decimal. "thousands", and "decimal" are pushed to 2nd and 3rd params
 - Changed tokens passed to Date#format. A few counterintuitive ones removed, and added others to match moment.js including fff, ddd, mmm, etc
