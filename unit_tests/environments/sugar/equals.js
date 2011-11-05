@@ -18,10 +18,8 @@ test('Equality', function() {
   equal(Object.equal(null, null), true, "`null` is equal to `null`");
   equal(Object.equal(), true, "`undefined` is equal to `undefined`");
 
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal(0, -0), true, "`0` is not equal to `-0`");
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal(-0, 0), true, "Commutative equality is implemented for `0` and `-0`");
+  equal(Object.equal(0, -0), false, "`0` is not equal to `-0`");
+  equal(Object.equal(-0, 0), false, "Commutative equality is implemented for `0` and `-0`");
 
   equal(Object.equal(null, undefined), false, "`null` is not equal to `undefined`");
   equal(Object.equal(undefined, null), false, "Commutative equality is implemented for `null` and `undefined`");
@@ -47,8 +45,7 @@ test('Equality', function() {
   // CHANGED: Object.equal is not egal
   equal(Object.equal(new Number(75), 75), true, "Commutative equality is implemented for number objects and primitives");
   equal(Object.equal(new Number(75), new Number(63)), false, "Number objects with different primitive values are not equal");
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal(new Number(63), {valueOf: function(){ return 63; }}), true, "Number objects and objects with a `valueOf` method are not equal");
+  equal(Object.equal(new Number(63), {valueOf: function(){ return 63; }}), false, "Number objects and objects with a `valueOf` method are not equal");
 
 
   // Comparisons involving `NaN`.
@@ -76,7 +73,7 @@ test('Equality', function() {
   equal(Object.equal(1, true), false, "Number and boolean primitives with like values are not equal");
   equal(Object.equal(new Boolean(false), new Number(0)), false, "Boolean and number objects with like values are not equal");
   equal(Object.equal(false, new String("")), false, "Boolean primitives and string objects with like values are not equal");
-  equal(Object.equal(12564504e5, new Date(2009, 9, 25)), false, "Dates and their corresponding numeric primitive values are not equal");
+  equal(Object.equal(1256428800000, new Date(Date.UTC(2009, 9, 25))), false, "Dates and their corresponding numeric primitive values are not equal");
 
   // Dates.
   equal(Object.equal(new Date(2009, 9, 25), new Date(2009, 9, 25)), true, "Date objects referencing identical times are equal");
