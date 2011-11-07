@@ -592,7 +592,7 @@ test('Array', function () {
   equal(['a','a','c'].unique(), ['a','c'], 'Array#unique | a,a,c');
 
 
-  equal([{ foo:'bar' }, { foo:'bar' }].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well');
+  equal([{ foo:'bar' }, { foo:'bar' }].unique(), [{foo:'bar'}], 'Array#unique | objects uniqued as well', { prototype: [{foo:'bar'},{foo:'bar'}] });
   equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique(function(n){ return n.last; }), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping function');
   equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique('last'), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping shortcut');
 
@@ -610,7 +610,7 @@ test('Array', function () {
   equal([].union([]), [], 'Array#union | 2 empty arrays');
   equal([-1,-2,-3].union([-2,-4,-5]), [-1,-2,-3,-4,-5], 'Array#union | -1,-2,-3 + -2,-4,-5');
   equal([-1,-2,-3].union([3,4,5]), [-1,-2,-3,3,4,5], 'Array#union | -1,-2,-3 + 3,4,5');
-  equal([{a:1},{b:2}].union([{b:2},{c:3}]), [{a:1},{b:2},{c:3}], 'Array#intersect | a:1,b:2 + b:2,c:3');
+  equal([{a:1},{b:2}].union([{b:2},{c:3}]), [{a:1},{b:2},{c:3}], 'Array#union | a:1,b:2 + b:2,c:3', { prototype: [{a:1},{b:2},{b:2},{c:3}] });
   equal([1,2,3].union(4), [1,2,3,4], 'Array#union | 1,2,3 + 4');
 
   equal([1,2,3].union(4,8,10), [1,2,3,4,8,10], 'Array#union | 1,2,3 + 4 8 10');
@@ -770,7 +770,7 @@ test('Array', function () {
   equal([5,5,5].min(), [5], 'Array#min | 5 is uniqued', { prototype: 5 });
   equal(['a','b','c'].min(), [], 'Array#min | strings are not counted', { prototype: 'a' });
   equal([].min(), [], 'Array#min | empty array', { prototype: undefined });
-  equal([null].min(), [], 'Array#min | [null]', { prototype: null });
+  equal([null].min(), [null], 'Array#min | [null]', { prototype: null });
   equal([undefined].min(), [], 'Array#min | [undefined]', { prototype: undefined });
   equal([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el) { return el['a']; }), [{a:1,b:5}], 'Array#min | key "a"', { prototype: 1 });
   equal([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el) { return el['b']; }), [{a:3,b:3}], 'Array#min | key "b", 1 found', { prototype: 3 });
@@ -798,7 +798,7 @@ test('Array', function () {
   equal([128,128,128].max(), [128], 'Array#max | 128 is uniqued', { prototype: 128 });
   equal(['a','b','c'].max(), [], 'Array#max | strings are not counted', { prototype: 'c' });
   equal([].max(), [], 'Array#max | empty array', { prototype: undefined });
-  equal([null].max(), [], 'Array#max | [null]', { prototype: null });
+  equal([null].max(), [null], 'Array#max | [null]', { prototype: null });
   equal([undefined].max(), [], 'Array#max | [undefined]', { prototype: undefined });
   equal([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el) { return el['a']; }), [{a:3,b:5}], 'Array#max | key "a"', { prototype: 3 });
   equal([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el) { return el['b']; }), [{a:1,b:5}], 'Array#max | key "b" returns b:5', { prototype: 5 });
@@ -1159,7 +1159,7 @@ test('Array', function () {
   equal(['a','b','c'].add('d', -1), ['a','b','d','c'], 'Array#add | index -1 | d');
   equal(['a','b','c'].add('d', -2), ['a','d','b','c'], 'Array#add | index -2 | d');
   equal(['a','b','c'].add('d', -3), ['d','a','b','c'], 'Array#add | index -3 | d');
-  equal(['a','b','c'].add('d', null), ['a','b','c','d'], 'Array#add | null index | d');
+  equal(['a','b','c'].add('d', null), ['d','a','b','c'], 'Array#add | null index | d');
   equal(['a','b','c'].add('d', undefined), ['a','b','c','d'], 'Array#add | undefined index | d');
   equal(['a','b','c'].add('d', 'a'), ['a','b','c','d'], 'Array#add | index a | d');
   equal(['a','b','c'].add('d', NaN), ['a','b','c','d'], 'Array#add | index NaN | d');
@@ -1202,10 +1202,12 @@ test('Array', function () {
   equal(['a','b','c'].insert('d', -1), ['a','b','d','c'], 'Array#insert | index -1 | d');
   equal(['a','b','c'].insert('d', -2), ['a','d','b','c'], 'Array#insert | index -2 | d');
   equal(['a','b','c'].insert('d', -3), ['d','a','b','c'], 'Array#insert | index -3 | d');
-  equal(['a','b','c'].insert('d', null), ['a','b','c','d'], 'Array#insert | null index | d');
+  equal(['a','b','c'].insert('d', null), ['d','a','b','c'], 'Array#insert | null index | d');
   equal(['a','b','c'].insert('d', undefined), ['a','b','c','d'], 'Array#insert | undefined index | d');
   equal(['a','b','c'].insert('d', 'a'), ['a','b','c','d'], 'Array#insert | index a | d');
   equal(['a','b','c'].insert('d', NaN), ['a','b','c','d'], 'Array#insert | index NaN | d');
+
+  equal(['a','b','c'].insert('d', '0'), ['d','a','b','c'], 'Array#insert | string numerals should also be recognized');
 
   arr = [1,2,3];
   arr.insert(4);
@@ -1245,7 +1247,7 @@ test('Array', function () {
   equal(['a','b','c'].include('d', -1), ['a','b','d','c'], 'Array#include | index -1 | d', { prototype: false, mootools: ['a','b','c','d'] });
   equal(['a','b','c'].include('d', -2), ['a','d','b','c'], 'Array#include | index -2 | d', { prototype: false, mootools: ['a','b','c','d'] });
   equal(['a','b','c'].include('d', -3), ['d','a','b','c'], 'Array#include | index -3 | d', { prototype: false, mootools: ['a','b','c','d'] });
-  equal(['a','b','c'].include('d', null), ['a','b','c','d'], 'Array#include | null index | d', { prototype: false });
+  equal(['a','b','c'].include('d', null), ['d','a','b','c'], 'Array#include | null index | d', { prototype: false });
   equal(['a','b','c'].include('d', undefined), ['a','b','c','d'], 'Array#include | undefined index | d', { prototype: false });
   equal(['a','b','c'].include('d', 'a'), ['a','b','c','d'], 'Array#include | index a | d', { prototype: false });
   equal(['a','b','c'].include('d', NaN), ['a','b','c','d'], 'Array#include | index NaN | d', { prototype: false });
@@ -1404,9 +1406,9 @@ test('Array', function () {
   arr.sortBy(function(n){ return 3 - n; });
   equal(arr, [1,2,3], 'Array#sortBy | should not be destructive');
 
-  equal([1,2,3].sortBy(undefined), [1,2,3], 'Array#sortBy | undefined', { prototype: false });
-  equal([1,2,3].sortBy(null), [1,2,3], 'Array#sortBy | null', { prototype: false });
-  equal([1,2,3].sortBy(4), [1,2,3], 'Array#sortBy | number', { prototype: false });
+  equal([1,2,3].sortBy(undefined), [1,2,3], 'Array#sortBy | undefined');
+  equal([1,2,3].sortBy(null), [1,2,3], 'Array#sortBy | null');
+  equal([1,2,3].sortBy(4), [1,2,3], 'Array#sortBy | number');
 
 
 

@@ -233,6 +233,7 @@ test('Object', function () {
 
 
   equal(Object.merge({ foo: 'bar' }, 'wear', 8, null), { foo: 'bar' }, 'Object.merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
+  equal(Object.merge([1,2,3,4], [4,5,6]), [4,5,6,4], 'Object.merge | arrays should also be mergeable');
 
 
 
@@ -245,8 +246,11 @@ test('Object', function () {
   equal(Object.extended({ foo: 'bar' }).merge('wear', 8, null), { foo: 'bar' }, 'Object#merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
 
 
-  equal(Object.clone('hardy'), 'hardy', 'Object.clone | clone on a string');
-  equal(Object.clone(undefined), undefined, 'Object.clone | clone on undefined');
+  skipEnvironments(['prototype','mootools'], function() {
+    equal(Object.clone('hardy'), 'hardy', 'Object.clone | clone on a string');
+  });
+  equal(Object.clone(undefined), undefined, 'Object.clone | clone on undefined', { prototype: {} });
+  equal(Object.clone(null), null, 'Object.clone | clone on null', { prototype: {} });
   equal(Object.clone({ foo: 'bar' }), { foo: 'bar' }, 'Object.clone | basic clone');
   equal(Object.clone({ foo: 'bar', broken: 1, wear: null }), { foo: 'bar', broken: 1, wear: null }, 'Object.clone | complex clone');
   equal(Object.clone({ foo: { broken: 'wear' }}), { foo: { broken: 'wear' }}, 'Object.clone | deep clone');
@@ -315,9 +319,11 @@ test('Object', function () {
   obj1.foo.jumpy = 'hump';
   equal(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
   equal(obj2.foo.jumpy, 'hump', 'Object#clone | clone is shallow');
-  equal(obj3.foo.jumpy, 'jump', 'Object#clone | clone is deep');
+  equal(obj3.foo.jumpy, 'jump', 'Object#clone | clone is deep', { prototype: 'hump' });
 
-  equal(obj2.keys().sort(), ['broken','foo'], 'Object#clone | cloned objects are themselves extended');
+  skipEnvironments(['prototype','mootools'], function() {
+    equal(obj2.keys().sort(), ['broken','foo'], 'Object#clone | cloned objects are themselves extended');
+  });
 
   obj1 = Object.extended({
     foo: {
@@ -329,7 +335,7 @@ test('Object', function () {
 
   obj1.foo.bar[1] = 'b';
   equal(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
-  equal(obj3.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+  equal(obj3.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified', { prototype: [1,'b',3] });
 
 
 
@@ -368,6 +374,7 @@ test('Object', function () {
   obj1.moo = obj1;
   equal(Object.equal(obj1, { foo: 'bar', moo: obj1 }), true, 'Object.equal | cyclical references handled');
 
+  equal(Object.equal(undefined, 'one'), false, 'Object.equal | string to undefined');
   // Enabling native object methods
 
 
