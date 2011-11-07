@@ -596,6 +596,11 @@ test('Array', function () {
   equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique(function(n){ return n.last; }), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping function');
   equal([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }].unique('last'), [{ first: 'John', last: 'Woo' }], 'Array#unique | can be uniqued via a mapping shortcut');
 
+  [1].unique(function(el,i,a) {
+    equal(this, [1], 'Array#unique | scope should be the array');
+    equal(i, 0, 'Array#unique | second param should be the index');
+    equal(a, [1], 'Array#unique | third param should also be the array');
+  });
 
 
   equal([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union | 1,2,3 + 3,4,5');
@@ -776,6 +781,12 @@ test('Array', function () {
   equal(['short','and','mort','fat'].min(function(el) { return el.length; }), ['and','fat'], 'Array#min | and,fat', { prototype: 3 });
   equal(['short','and','mort'].min('length'), ['and'], 'Array#min | length with shortcut', { prototype: 3 });
 
+  [1].min(function(el,i,a) {
+    equal(this, [1], 'Array#min | scope should be the array');
+    equal(i, 0, 'Array#min | second param should be the index');
+    equal(a, [1], 'Array#min | third param should also be the array');
+  });
+
 
 
   equal([12,87,55].max(), [87], 'Array#max | no argument', { prototype: 87 });
@@ -797,6 +808,12 @@ test('Array', function () {
   equal([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}].max(function(el) { return el['b']; }), [{a:-3,b:-3}], 'Array#max | key "b" returns b:-3', { prototype: -3 });
   equal(['short','and', 'mort'].max(function(el) { return el.length; }), ['short'], 'Array#max | length', { prototype: 5 });
   equal(['short','and', 'morts', 'fat'].max(function(el) { return el.length; }), ['short','morts'], 'Array#max | short,morts', { prototype: 5 });
+
+  [1].max(function(el,i,a) {
+    equal(this, [1], 'Array#max | scope should be the array');
+    equal(i, 0, 'Array#max | second param should be the index');
+    equal(a, [1], 'Array#max | third param should also be the array');
+  });
 
 
 
@@ -826,6 +843,12 @@ test('Array', function () {
   // Leaving this here as a reference for how to collect the actual number of occurences.
   equal(people.most(function(person) { return person.age; }).length, 2, 'Array#most | collect actual number of occurrences');
 
+  [1].most(function(el,i,a) {
+    equal(this, [1], 'Array#most | scope should be the array');
+    equal(i, 0, 'Array#most | second param should be the index');
+    equal(a, [1], 'Array#most | third param should also be the array');
+  });
+
 
   equal([1,2,3].least(undefined), [], 'Array#least | undefined');
   equal([1,2,3].least(null), [], 'Array#least | null');
@@ -848,6 +871,11 @@ test('Array', function () {
   // Leaving this here as a reference for how to collect the actual number of occurences.
   equal(people.least(function(person) { return person.age; }).length, 2, 'Array#least | collect actual number of occurences');
 
+  [1].most(function(el,i,a) {
+    equal(this, [1], 'Array#least | scope should be the array');
+    equal(i, 0, 'Array#least | second param should be the index');
+    equal(a, [1], 'Array#least | third param should also be the array');
+  });
 
 
 
@@ -896,6 +924,21 @@ test('Array', function () {
   });
 
   equal(counter, 2, 'Array#groupBy | should allow a callback fn');
+
+  var arr1 = ['a','b','c'];
+  var arr2 = ['d','e','f'];
+  var obj = arr1.groupBy(function(el, i) {
+    return arr2[i];
+  });
+
+  [1].groupBy(function(el,i,a) {
+    equal(this, [1], 'Array#groupBy | scope should be the array');
+    equal(i, 0, 'Array#groupBy | second param should be the index');
+    equal(a, [1], 'Array#groupBy | third param should also be the array');
+  });
+
+  equal(obj, { 'd':['a'],'e':['b'],'f':['c'] }, 'Array#groupBy | should use an index');
+
 
 
 
