@@ -854,8 +854,6 @@ test('Date', function () {
   equal(d.format('{12hr}'), '1', 'Date#format | custom formats | 12hr');
   equal(d.format('{d}'), '5', 'Date#format | custom formats | d');
   equal(d.format('{dd}'), '05', 'Date#format | custom formats | dd');
-  equal(d.format('{ddd}'), 'Thu', 'Date#format | custom formats | ddd');
-  equal(d.format('{dddd}'), 'Thursday', 'Date#format | custom formats | dddd');
   equal(d.format('{date}'), '5', 'Date#format | custom formats | date');
   equal(d.format('{day}'), '5', 'Date#format | custom formats | days');
   equal(d.format('{dow}'), 'thu', 'Date#format | custom formats | dow');
@@ -864,8 +862,6 @@ test('Date', function () {
   equal(d.format('{Weekday}'), 'Thursday', 'Date#format | custom formats | Weekday');
   equal(d.format('{M}'), '8', 'Date#format | custom formats | M');
   equal(d.format('{MM}'), '08', 'Date#format | custom formats | MM');
-  equal(d.format('{MMM}'), 'Aug', 'Date#format | custom formats | MMM');
-  equal(d.format('{MMMM}'), 'August', 'Date#format | custom formats | MMMM');
   equal(d.format('{month}'), 'august', 'Date#format | custom formats | month');
   equal(d.format('{Mon}'), 'Aug', 'Date#format | custom formats | Mon');
   equal(d.format('{Month}'), 'August', 'Date#format | custom formats | Month');

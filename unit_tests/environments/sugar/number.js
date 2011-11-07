@@ -261,6 +261,8 @@ test('Number', function () {
   equal((553599.435).format(-4), '550,000', 'Number#format | 550,000')
   equal((553599.435).format(-5), '600,000', 'Number#format | 600,000')
 
+  raisesError(function(){ (1000).format(2, 5) }, 'Number#format | should raise an error if a digit is given for the thousands separator');
+
 
   equal((1).pad(0), '1', 'Number#pad | 1 no padding')
   equal((1).pad(1), '1', 'Number#pad | 1 padded to 1 place')
