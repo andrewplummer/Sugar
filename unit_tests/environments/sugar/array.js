@@ -1448,5 +1448,10 @@ test('Array', function () {
   equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
 
+  equal(Array.zip([1, 2, 3]), [[1], [2], [3]], 'Array.zip | one array');
+  equal(Array.zip([1, 2, 3], [4, 5, 6]), [[1, 4], [2, 5], [3, 6]], 'Array.zip | two arrays');
+  equal(Array.zip([1, 2, 3], [4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8], [3, 6, 9]], 'Array.zip | three arrays');
+  equal(Array.zip({'attr1' : [1, 2, 3]}), [{'attr1' : 1}, {'attr1' : 2}, {'attr1' : 3}], 'Array.zip | Object with one attribute');
+  equal(Array.zip({'attr1' : [1, 2, 3], 'attr2' : [4, 5, 6]}), [{'attr1' : 1, 'attr2' : 4}, {'attr1' : 2, 'attr2' : 5}, {'attr1' : 3, 'attr2' : 6}], 'Array.zip | Object with two attributes');
 });
 
