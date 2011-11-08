@@ -1,6 +1,7 @@
 
 test('Array', function () {
 
+
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
@@ -1066,7 +1067,10 @@ test('Array', function () {
   equal(arr, [1], 'Array#remove | can remove multiple elements');
 
   equal([f1].remove(f1), [], 'Array#remove | can find via strict equality');
-  equal([1,2,3].remove([1,3]), [2], 'Array#remove | reverse concat like add');
+
+  equal([1,2,3].remove([1,3]), [1,2,3], 'Array#remove | each argument is a separate element');
+  equal([1,2,3].remove(1,3), [2], 'Array#remove | however multiple arguments still work');
+  equal([[1,3],2].remove([1,3]), [2], 'Array#remove | and those elements are still properly found');
 
 
 
@@ -1092,7 +1096,10 @@ test('Array', function () {
   equal([1,2,2,3].exclude(2,3), [1], 'Array#exclude | can handle multiple arguments');
   equal([f1].exclude(f1), [], 'Array#exclude | can find via strict equality');
 
-  equal([1,2,3].exclude([1,3]), [2], 'Array#exclude | reverse concat like include');
+  equal([1,2,3].exclude([1,3]), [1,2,3], 'Array#exclude | each argument is a separate element');
+  equal([1,2,3].exclude(1,3), [2], 'Array#exclude | however multiple arguments still work');
+  equal([[1,3],2].exclude([1,3]), [2], 'Array#exclude | and those elements are still properly found');
+
 
 
 
@@ -1381,6 +1388,10 @@ test('Array', function () {
   equal([[{a:1},{a:2}],[{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2],[a:1]');
   equal([[{a:1},{a:2},{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2,a:1]');
   equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten | [[a,b],c,[d,e],f],g');
+
+  equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(1), [[['a','b'],'c',['d','e']],'f','g'], 'Array#flatten | can flatten only first level');
+  equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(false), ['a','b','c','d','e','f','g'], 'Array#flatten | wont explode on false');
+  equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(true), [[['a','b'],'c',['d','e']],'f','g'], 'Array#flatten | wont explode on true');
 
   // Prototype will compact but only if IE, so we can't assert this in that environment.
   skipEnvironments(['prototype'], function() {
