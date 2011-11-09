@@ -1,5 +1,8 @@
 test('Object', function () {
 
+
+
+
   var count,result;
   var Person = function() {};
   var p = new Person();
@@ -222,10 +225,9 @@ test('Object', function () {
 
 
   equal(Object.merge({ foo: 'bar' }, { broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object.merge | basic');
-  equal(Object.merge({ foo: 'bar' }, { broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object.merge | merge 3');
   equal(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a' }, 'Object.merge | will merge string', { mootools: { foo: 'bar', aha: undefined } });
   equal(Object.merge({ foo: 'bar' }, null), { foo: 'bar' }, 'Object.merge | merge null');
-  equal(Object.merge({}, {}, {}), {}, 'Object.merge | merge multi empty');
+  equal(Object.merge({}, {}), {}, 'Object.merge | merge multi empty');
 
 
   equal(Object.merge({ foo: 'bar' }, 8), { foo: 'bar' }, 'Object.merge | merge number', { mootools: (function() { var s = Object.clone(8); s.foo = 'bar'; return s; })() });
@@ -235,17 +237,92 @@ test('Object', function () {
   equal(Object.merge([1,2,3,4], [4,5,6]), [4,5,6,4], 'Object.merge | arrays should also be mergeable');
   equal(Object.merge({ foo: { one: 'two' }}, { foo: { two: 'three' }}), { foo: { one: 'two', two: 'three' }}, 'Object.merge | accepts deep merges');
 
-  equal(Object.merge({ foo: 'bar' }, { foo: 'car' }), { foo: 'car' }, 'Object.merge | existing property');
   equal(Object.merge('foo', 'bar'), 'foo', 'Object.merge | two strings');
+
+  equal(Object.merge({ a:1 }, { a:2 }), { a:2 }, 'Object.merge | incoming wins');
+  equal(Object.merge({ a:1 }, { a:2 }, true), { a:2 }, 'Object.merge | incoming wins | params true');
+  equal(Object.merge({ a:1 }, { a:2 }, false), { a:1 }, 'Object.merge | target wins');
+
+  var fn = function(key, a, b) {
+    equal(key, 'a', 'Object.merge | resolve function | first argument is the key');
+    equal(a, 1, 'Object.merge | resolve function | second argument is the target val');
+    equal(b, 2, 'Object.merge | resolve function | third argument is the source val');
+    equal(this, { a:2 }, 'Object.merge | resolve function | context is the source object');
+    return a + b;
+  };
+
+  equal(Object.merge({ a:1 }, { a:2 }, fn), { a:3 }, 'Object.merge | function resolves');
+
+  var fn1 = function() { return 'joe' };
+  var fn2 = function() { return 'moe' };
+  var date1 = new Date(2001, 1, 6);
+  var date2 = new Date(2005, 1, 6);
+  var inner1 = { foo: 'bar', hee: 'haw' }
+  var inner2 = { foo: 'car', mee: 'maw' }
+
+  var obj1 = {
+    str: 'oolala',
+    num: 18,
+    fn: fn1,
+    date: date1,
+    prop1: 'next',
+    inner: inner1,
+    arr: [1,2,3,4]
+  }
+
+  var obj2 = {
+    str: 'foofy',
+    num: 67,
+    fn: fn2,
+    date: date2,
+    prop2: 'beebop',
+    inner: inner2,
+    arr: [4,5,6]
+  }
+
+  var fn = function(key, a, b) {
+    if(key == 'str') {
+      return 'conflict!';
+    } else if(key == 'num') {
+      return a + b;
+    } else {
+      return b;
+    }
+  }
+
+  var expected = {
+    str: 'conflict!',
+    num: 85,
+    fn: fn2,
+    date: date2,
+    prop1: 'next',
+    prop2: 'beebop',
+    inner: {
+      foo: 'car',
+      hee: 'haw',
+      mee: 'maw'
+    },
+    arr: [4,5,6,4]
+  }
+
+  equal(Object.merge(obj1, obj2, fn), expected, 'Object.merge | complex objects with resolve function');
+  equal(obj1.fn(), 'moe', 'Object.merge | fn conflict resolved');
+  equal(obj1.date.getTime(), new Date(2005, 1, 6).getTime(), 'Object.merge | date conflict resolved');
+
 
 
   equal(Object.extended({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
-  equal(Object.extended({ foo: 'bar' }).merge({ broken: 'wear' }, { jumpy: 'jump' }, { fire: 'breath'}), { foo: 'bar', broken: 'wear', jumpy: 'jump', fire: 'breath' }, 'Object#merge | merge 3');
   equal(Object.extended({ foo: 'bar' }).merge('aha'), { foo: 'bar',0:'a',1:'h',2:'a' }, 'Object#merge | merge string', { mootools: { foo: 'bar', aha: undefined } });
   equal(Object.extended({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
   equal(Object.extended({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
 
   equal(Object.extended({ foo: 'bar' }).merge('wear', 8, null), { foo:'bar',0:'w',1:'e',2:'a',3:'r' }, 'Object#merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
+
+  equal(Object.extended({ a:1 }).merge({ a:2 }), { a:2 }, 'Object.merge | incoming wins');
+  equal(Object.extended({ a:1 }).merge({ a:2 }, true), { a:2 }, 'Object.merge | incoming wins | params true');
+  equal(Object.extended({ a:1 }).merge({ a:2 }, false), { a:1 }, 'Object.merge | target wins');
+  equal(Object.extended({ a:1 }).merge({ a:2 }, function(key, a, b){ return a + b; }), { a:3 }, 'Object.merge | function resolves');
+
 
 
   skipEnvironments(['prototype','mootools'], function() {
