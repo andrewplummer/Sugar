@@ -6,6 +6,15 @@ http://sugarjs.com/
 
 
 
+Edge Build
+===============
+
+Public stable releases will be made available on the site and also exist in `release/`.
+Any push made to `master` branch will have its unit tests passing, although maybe not
+in all browsing environments (IE, etc) to ensure that it is stable, at least to a certain degree.
+I will also include a minified version that will also have its unit tests run against it here:
+`release/sugar-edge.min.js`
+
 
 
 Unit Tests Node
