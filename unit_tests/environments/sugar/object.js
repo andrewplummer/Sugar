@@ -1,5 +1,8 @@
 test('Object', function () {
 
+  console.info('aaaaaaaaaaaaaaahhhhhhhhhhhhhhhhmmm');
+  equal(Object.merge({ foo: { one: 'two' }}, { foo: { two: 'three' }}), { foo: { one: 'two', two: 'three' }}, 'Object.merge | accepts deep merges');
+  return;
 
   var count,result;
   var Person = function() {};
@@ -234,6 +237,7 @@ test('Object', function () {
 
   equal(Object.merge({ foo: 'bar' }, 'wear', 8, null), { foo: 'bar' }, 'Object.merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
   equal(Object.merge([1,2,3,4], [4,5,6]), [4,5,6,4], 'Object.merge | arrays should also be mergeable');
+  equal(Object.merge({ foo: { one: 'two' }}, { foo: { two: 'three' }}), { foo: { one: 'two', two: 'three' }}, 'Object.merge | accepts deep merges');
 
 
 
