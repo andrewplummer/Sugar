@@ -223,7 +223,7 @@ test('Object', function () {
 
 
   equal(Object.merge({ foo: 'bar' }, { broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object.merge | basic');
-  equal(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a' }, 'Object.merge | will merge string', { mootools: { foo: 'bar', aha: undefined } });
+  equal(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar' }, 'Object.merge | will not merge a string', { mootools: { foo: 'bar', aha: undefined } });
   equal(Object.merge({ foo: 'bar' }, null), { foo: 'bar' }, 'Object.merge | merge null');
   equal(Object.merge({}, {}), {}, 'Object.merge | merge multi empty');
 
@@ -231,7 +231,7 @@ test('Object', function () {
   equal(Object.merge({ foo: 'bar' }, 8), { foo: 'bar' }, 'Object.merge | merge number', { mootools: (function() { var s = Object.clone(8); s.foo = 'bar'; return s; })() });
 
 
-  equal(Object.merge({ foo:'bar' }, 'wear', 8, null), { foo:'bar',0:'w',1:'e',2:'a',3:'r' }, 'Object.merge | merge multi invalid', { mootools: { foo: 'bar', wear: 7 } });
+  equal(Object.merge({ foo:'bar' }, 'wear', 8, null), { foo:'bar' }, 'Object.merge | merge multi invalid', { mootools: { foo: 'bar', wear: 7 } });
   equal(Object.merge([1,2,3,4], [4,5,6]), [4,5,6,4], 'Object.merge | arrays should also be mergeable');
   equal(Object.merge({ foo: { one: 'two' }}, { foo: { two: 'three' }}), { foo: { one: 'two', two: 'three' }}, 'Object.merge | accepts deep merges');
 
@@ -310,11 +310,11 @@ test('Object', function () {
 
 
   equal(Object.extended({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
-  equal(Object.extended({ foo: 'bar' }).merge('aha'), { foo: 'bar',0:'a',1:'h',2:'a' }, 'Object#merge | merge string', { mootools: { foo: 'bar', aha: undefined } });
+  equal(Object.extended({ foo: 'bar' }).merge('aha'), { foo: 'bar' }, 'Object#merge | will not merge a string', { mootools: { foo: 'bar', aha: undefined } });
   equal(Object.extended({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
   equal(Object.extended({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
 
-  equal(Object.extended({ foo: 'bar' }).merge('wear', 8, null), { foo:'bar',0:'w',1:'e',2:'a',3:'r' }, 'Object#merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
+  equal(Object.extended({ foo: 'bar' }).merge('wear', 8, null), { foo:'bar' }, 'Object#merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
 
   equal(Object.extended({ a:1 }).merge({ a:2 }), { a:2 }, 'Object.merge | incoming wins');
   equal(Object.extended({ a:1 }).merge({ a:2 }, true), { a:2 }, 'Object.merge | incoming wins | params true');
@@ -548,7 +548,7 @@ test('Object', function () {
   equal([1,2,3,4,5].tap(fn).map(map), expected, 'Object#tap | pop the array');
   equal([1,2,3,4,5].tap('pop').map(map), expected, 'Object#tap | string shortcut | pop the array');
   equal([1,2].tap(function() { this.push(3, 4); }).map(map), expected, 'Object#tap | push to the array');
-  equal([1,2].tap('push', 3, 4).map(map), expected, 'Object#tap | string shortcut | passes arguments');
+  equal([1,2].tap('push', 3, 4).map(map), [2,4], 'Object#tap | string shortcut | passing arguments is not supported');
   equal([1,2,3].tap(function(){ if(this.none(4)) this.add(4); }).map(map), expected, 'Object#tap | Sugar adding elements');
   equal([1,2,3,4].tap(function(){ if(this.last() === 5) this.pop(); }).map(map), expected, 'Object#tap | checking last');
 
@@ -660,7 +660,7 @@ test('Object', function () {
   equal(Object.tap([1,2,3,4,5], fn).map(map), expected, 'Object.tap | pop the array');
   equal(Object.tap([1,2,3,4,5], 'pop').map(map), expected, 'Object.tap | string shortcut | pop the array');
   equal(Object.tap([1,2], function() { this.push(3, 4); }).map(map), expected, 'Object.tap | push to the array');
-  equal(Object.tap([1,2], 'push', 3, 4).map(map), expected, 'Object.tap | string shortcut | not supported');
+  equal(Object.tap([1,2], 'push', 3, 4).map(map), [2,4], 'Object.tap | string shortcut | not supported');
   equal(Object.tap([1,2,3], function(){ if(this.none(4)) this.add(4); }).map(map), expected, 'Object.tap | Sugar adding elements');
   equal(Object.tap([1,2,3,4], function(){ if(this.last() === 5) this.pop(); }).map(map), expected, 'Object.tap | checking last');
 
