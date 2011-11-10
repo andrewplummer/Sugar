@@ -375,6 +375,9 @@ test('ECMAScript', function () {
   [1].map(function(){
     equal(this.toString(), '', 'Array#map | scope can be falsy');
   }, '');
+  [1].map(function(){
+    equal(Number(this), 0, 'Array#map | scope can be a number');
+  }, 0);
 
   arr = ['c','c','c'];
   count = 0;
