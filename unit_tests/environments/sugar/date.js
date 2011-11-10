@@ -38,9 +38,9 @@ test('Date', function () {
 
   d = Date.create('1998');
 
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC().toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(-Date.DSTOffset), 'Date#toUTC | cannot be chained');
+  dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
+  dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
+  dateEqual(d.toUTC().toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | cannot be chained');
   equal(Date.create().toUTC().isUTC(), true, 'Date#isUTC | can be set by toUTC');
 
 
