@@ -1502,5 +1502,12 @@ test('Array', function () {
   equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
 
+
+  equal([1, 2, 3].zip(), [[1], [2], [3]], 'Array.zip | one array');
+  equal([1, 2, 3].zip([4, 5, 6]), [[1, 4], [2, 5], [3, 6]], 'Array.zip | two arrays');
+  equal([1, 2, 3].zip([4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8], [3, 6, 9]], 'Array.zip | three arrays');
+  equal([1, 2].zip([4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8]], 'Array.zip | constrained by length of first');
+  equal([4, 5, 6].zip([1, 2], [8]), [[4, 1, 8], [5, 2, null], [6, null, null]], 'Array.zip | constrained by length of first');
+
 });
 
