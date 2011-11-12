@@ -9,6 +9,7 @@ v1.1.1
 - Consolidated the arguments that are passed to mapping functions on methods such as Array#min/max/groupBy/sortBy. All such functions will now be passed the array element, array index, and array object, in that order, to conform to ES5 Array#map behavior.
 - Array#flatten can now accept a level of nesting to flatten to. Default is all levels.
 - Array#remove no longer works like a reverse concat (ie. no longer flattens arguments passed to it as if they were passed as separate arguments, so removing arrays within arrays should now work properly. This affects functionality of Array#exclude as well.
+- Added Array#zip
 
 
 v1.1
