@@ -357,6 +357,7 @@ test('Date', function () {
   dateEqual(Date.create('The day before Monday'), getDateWithWeekdayAndOffset(0), 'Date#create | Fuzzy Dates | The day before Monday');
   dateEqual(Date.create('2 days after monday'), getDateWithWeekdayAndOffset(3), 'Date#create | Fuzzy Dates | 2 days after monday');
   dateEqual(Date.create('2 days before monday'), getDateWithWeekdayAndOffset(6, -7), 'Date#create | Fuzzy Dates | 2 days before monday');
+  dateEqual(Date.create('2 weeks after monday'), getDateWithWeekdayAndOffset(1, 14), 'Date#create | Fuzzy Dates | 2 weeks after monday');
 
   dateEqual(Date.create('Next Monday'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | Fuzzy Dates | Next Monday');
   dateEqual(Date.create('next week monday'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | Fuzzy Dates | next week monday');
