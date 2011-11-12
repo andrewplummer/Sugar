@@ -260,6 +260,7 @@ test('Object', function () {
   equal(Object.merge({ a:null }, { a:2 }), { a:2 }, 'Object.merge | null properties are not overwritten');
   equal(Object.merge({ a:undefined }, { a:2 }, false), { a:2 }, 'Object.merge | false |existing but undefined properties are overwritten');
   equal(Object.merge({ a:null }, { a:2 }, false), { a:null }, 'Object.merge | false | null properties are not overwritten');
+  equal(Object.merge([{ foo:'bar' }], [{ moo:'car' }]), [{ foo:'bar',moo:'car' }], 'Object.merge | can merge arrays as well');
 
   var fn = function(key, a, b) {
     equal(key, 'a', 'Object.merge | resolve function | first argument is the key');
