@@ -55,23 +55,25 @@ test('Function', function () {
     }, 60);
   });
 
-  async(function(){
+  skipEnvironments(['prototype'], function() {
+    async(function(){
 
-    var counter = 0;
-    var fn = function(){ counter++; }
+      var counter = 0;
+      var fn = function(){ counter++; }
 
-    fn.delay(50);
-    fn.delay(10);
+      fn.delay(50);
+      fn.delay(10);
 
-    setTimeout(function() {
-      fn.cancel();
-    }, 30);
+      setTimeout(function() {
+        fn.cancel();
+      }, 30);
 
-    setTimeout(function() {
-      equal(counter, 1, 'Function#cancel | should be able to find the correct timers', { prototype: 0 });
-      fn.cancel();
-    }, 60);
+      setTimeout(function() {
+        equal(counter, 1, 'Function#cancel | should be able to find the correct timers', { prototype: 0 });
+        fn.cancel();
+      }, 60);
 
+    });
   });
 
   async(function() {

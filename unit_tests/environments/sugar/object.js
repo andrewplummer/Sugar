@@ -487,7 +487,7 @@ test('Object', function () {
   equal(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], 'Object#values | Object.prototype', { prototype: ['bar'].concat(prototypeBaseValues) });
   ({ foo: 'bar' }).each(function() { count++; });
 
-  equal(count, 3, 'Object | Object.prototype should have correctly called all functions', { mootools: 2 });
+  equal(count, 3, 'Object | Object.prototype should have correctly called all functions', { prototype: 2, mootools: 2 });
 
   equal(({}).isEmpty(), true, 'Object#empty | Object.prototype');
   equal(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
