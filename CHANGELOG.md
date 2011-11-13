@@ -3,14 +3,18 @@ v1.1.1
 
 ### API Changes ###
 
-- Object.merge now accepts a third parameter that determines what to do in the case of property conflicts. This parameter  can be true, false, or a function. This change means that it now no longer accepts an arbitrary number of arguments.
+- Object.merge now accepts a third parameter that determines what to do in the case of property conflicts. This parameter can be true, false, or a function. This change means that it now no longer accepts an arbitrary number of arguments.
 - Added Object.isNaN
 - Added Object.tap
 - Consolidated the arguments that are passed to mapping functions on methods such as Array#min/max/groupBy/sortBy. All such functions will now be passed the array element, array index, and array object, in that order, to conform to ES5 Array#map behavior.
 - Array#flatten can now accept a level of nesting to flatten to. Default is all levels.
-- Array#remove no longer works like a reverse concat (ie. no longer flattens arguments passed to it as if they were passed as separate arguments, so removing arrays within arrays should now work properly. This affects functionality of Array#exclude as well.
+- Array#remove no longer works like a reverse concat (ie. no longer flattens arguments passed to it as if they were passed as separate arguments, so removing arrays within arrays should now work properly. This applies to Array#exclude as well.
 - Added Array#zip
 
+### Internal Changes ###
+
+- Refactored way in which type/hash methods are mapped
+- Fixed Date bug "2 weeks from Monday"
 
 v1.1
 =====
