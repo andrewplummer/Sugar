@@ -211,12 +211,15 @@ test('Function', function () {
 
   async(function() {
     var fn, ret, counter = 0, i = 1;
-    fn = (function() {
+    var expectedArguments = [[[1,'bop'],[2,'bop'],[3,'bop'],[4,'bop'],[5,'bop']],[[6,'bop'],[7,'bop'],[8,'bop'],[9,'bop'],[10,'bop']]];
+    fn = (function(args) {
+      equal(args, expectedArguments[counter], 'Function#after | collects arguments called');
+      equal(!!args[0].slice, true, 'Function#after | arguments are converted to actual arrays');
       counter++;
       return 'hooha';
     }).after(5);
     while(i <= 10) {
-      ret = fn();
+      ret = fn(i, 'bop');
       equal(ret, (i % 5 == 0 ? 'hooha' : undefined), 'Function#after | collects return value as well');
       i++;
     }
