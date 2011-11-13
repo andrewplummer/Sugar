@@ -782,10 +782,12 @@ test('Array', function () {
   equal(['short','and','mort','fat'].min(function(el) { return el.length; }), ['and','fat'], 'Array#min | and,fat', { prototype: 3 });
   equal(['short','and','mort'].min('length'), ['and'], 'Array#min | length with shortcut', { prototype: 3 });
 
-  [1].min(function(el,i,a) {
-    equal(this, [1], 'Array#min | scope should be the array');
-    equal(i, 0, 'Array#min | second param should be the index');
-    equal(a, [1], 'Array#min | third param should also be the array');
+  skipEnvironments(['prototype'], function() {
+    [1].min(function(el,i,a) {
+      equal(this, [1], 'Array#min | scope should be the array');
+      equal(i, 0, 'Array#min | second param should be the index');
+      equal(a, [1], 'Array#min | third param should also be the array');
+    });
   });
 
 
@@ -810,10 +812,12 @@ test('Array', function () {
   equal(['short','and', 'mort'].max(function(el) { return el.length; }), ['short'], 'Array#max | length', { prototype: 5 });
   equal(['short','and', 'morts', 'fat'].max(function(el) { return el.length; }), ['short','morts'], 'Array#max | short,morts', { prototype: 5 });
 
-  [1].max(function(el,i,a) {
-    equal(this, [1], 'Array#max | scope should be the array');
-    equal(i, 0, 'Array#max | second param should be the index');
-    equal(a, [1], 'Array#max | third param should also be the array');
+  skipEnvironments(['prototype'], function() {
+    [1].max(function(el,i,a) {
+      equal(this, [1], 'Array#max | scope should be the array');
+      equal(i, 0, 'Array#max | second param should be the index');
+      equal(a, [1], 'Array#max | third param should also be the array');
+    });
   });
 
 
@@ -1389,9 +1393,9 @@ test('Array', function () {
   equal([[{a:1},{a:2},{a:1}]].flatten(), [{a:1},{a:2},{a:1}], 'Array#flatten | [a:1,a:2,a:1]');
   equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(), ['a','b','c','d','e','f','g'], 'Array#flatten | [[a,b],c,[d,e],f],g');
 
-  equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(1), [[['a','b'],'c',['d','e']],'f','g'], 'Array#flatten | can flatten only first level');
+  equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(1), [[['a','b'],'c',['d','e']],'f','g'], 'Array#flatten | can flatten only first level', { prototype: ['a','b','c','d','e','f','g'] });
   equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(false), ['a','b','c','d','e','f','g'], 'Array#flatten | wont explode on false');
-  equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(true), [[['a','b'],'c',['d','e']],'f','g'], 'Array#flatten | wont explode on true');
+  equal([[[['a','b'],'c',['d','e']],'f'],['g']].flatten(true), [[['a','b'],'c',['d','e']],'f','g'], 'Array#flatten | wont explode on true', { prototype: ['a','b','c','d','e','f','g'] });
 
   // Prototype will compact but only if IE, so we can't assert this in that environment.
   skipEnvironments(['prototype'], function() {
@@ -1509,7 +1513,7 @@ test('Array', function () {
   equal([1, 2, 3].zip([4, 5, 6]), [[1, 4], [2, 5], [3, 6]], 'Array.zip | two arrays');
   equal([1, 2, 3].zip([4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8], [3, 6, 9]], 'Array.zip | three arrays');
   equal([1, 2].zip([4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8]], 'Array.zip | constrained by length of first');
-  equal([4, 5, 6].zip([1, 2], [8]), [[4, 1, 8], [5, 2, null], [6, null, null]], 'Array.zip | constrained by length of first');
+  equal([4, 5, 6].zip([1, 2], [8]), [[4, 1, 8], [5, 2, null], [6, null, null]], 'Array.zip | filled with null', { prototype: [[4,1,8],[5,2,undefined],[6,undefined,undefined]]});
 
 });
 
