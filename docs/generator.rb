@@ -26,8 +26,10 @@ def get_html_parameters(str)
   return nil if !str
   str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
   str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
-  str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
   str.gsub!(/@date_format/, '<a target="_blank" href="/dates">dates</a>')
+  str.gsub!(/extended objects/, '<a target="_blank" href="/objects#extended_objects">extended objects</a>')
+  str.gsub!(/Object\.sugar\(\)/, '<a target="_blank" href="/objects#object_sugar" class="monospace">Object.sugar()</a>')
+  str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
 end
 
 def get_method(s)
