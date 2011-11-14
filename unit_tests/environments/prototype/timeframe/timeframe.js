@@ -4,9 +4,6 @@
  * Freely distributable under the terms of an MIT-style license.
  * ------------------------------------------------------------- */
 
-if (typeof Prototype == 'undefined' || parseFloat(Prototype.Version.substring(0, 3)) < 1.6)
-  //throw 'Timeframe requires Prototype version 1.6 or greater.';
-
 // Checks for localized Datejs before defaulting to 'en-US'
 var Locale = $H({
   format:     (typeof Date.CultureInfo == 'undefined' ? '%b %d, %Y' : Date.CultureInfo.formatPatterns.shortDate),
