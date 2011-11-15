@@ -1178,6 +1178,8 @@ test('String', function () {
   equal(obj2.last, 'Potter', 'String#assign | obj2 retains its properties');
   equal(obj2.first, undefined, 'String#assign | obj2 is untampered');
 
+  equal('Hello, {1}'.assign(''), 'Hello, ', 'String#assign | empty string as argument');
+  equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
 
 
 });
