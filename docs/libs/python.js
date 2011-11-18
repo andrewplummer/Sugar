@@ -1,11 +1,11 @@
 
-// Compatiblity index:
+//  Compatiblity index:
 //
-// 0 - Does not exist.
-// 1 - Exists but does not support all functionality.
-// 2 - Exists and supports all functionality.
-// 3 - Exists and supports all functionality plus more.
-//
+//  0 - Does not exist.
+//  1 - Exists but does not support all functionality.
+//  2 - Exists and supports all functionality.
+//  3 - Exists and supports all functionality plus more.
+
 var SugarPythonMethods = [
   {
     // Global namepace
@@ -317,17 +317,331 @@ var SugarPythonMethods = [
   },
   {
     type: 'class',
-    namespace: 'Number',
+    namespace: 'Built-in Functions',
     methods: [
       {
         name: 'abs',
         description: 'Returns the absolute value of the number.',
-        js_compatibility: false,
-        sugar_compatibility: false,
+        js_compatibility: 2,
+        sugar_compatibility: 2,
         original_code:  "abs(num)",
         js_code: "Math.abs(num)",
-        sugar_code: "num.abs()"
-      }
+        sugar_code: "num.abs()",
+        ref: 'Number/abs'
+      },
+      {
+        name: 'all',
+        description: 'Returns true if all elements in the iterable are true',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "all(el == 8 for el in arr)",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] != 8) { return false; } } return true;",
+        es5_code: "arr.every(function(el) { return el == 8; });",
+        sugar_code: "arr.all(function(el) { return el == 8; });",
+        sugar_enhancements: 'Sugar additionally allows strings that will resolve to a function returning a property of that name.',
+        ref: 'Array/all'
+      },
+      {
+        name: 'any',
+        description: 'Returns true if all elements in the iterable are true',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "any(el == 8 for el in arr)",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 8) { return true; } } return false;",
+        es5_code: "arr.some(function(el) { return el == 8; });",
+        sugar_code: "arr.any(function(el) { return el == 8; });",
+        sugar_enhancements: 'Sugar additionally allows strings that will resolve to a function returning a property of that name.',
+        ref: 'Array/all'
+      },
+      {
+        name: 'bin',
+        description: 'Converts an integer into a binary string.',
+        js_compatibility: 2,
+        sugar_compatibility: 0,
+        original_code:  "bin(8)",
+        js_code: "(8).toString(2)",
+        js_notes: "%toString% can accept a number which is the radix for conversion. Note that the resulting string will not be prepended with \"0b\" as in Python"
+      },
+      {
+        name: 'bool',
+        description: 'Converts a value to a Boolean.',
+        js_compatibility: 2,
+        sugar_compatibility: 0,
+        original_code:  "bool('some value')",
+        js_code: "Boolean('some value')"
+      },
+      {
+        name: 'bytearray',
+        description: 'Returns an array of bytes.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "bytearray('string')",
+        sugar_code: "'string'.codes()",
+        sugar_notes: "Sugar's version will only work on strings. However it will accept any character, including those outside ascii range.",
+        ref: 'String/codes'
+      },
+      {
+        name: 'unichr',
+        description: 'Returns a string at the code point of the number.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "chr(97)",
+        sugar_code: "(97).chr()",
+        ref: 'Number/chr'
+      },
+      {
+        name: 'cmp',
+        description: 'Compares two objects and returns the outcome as an integer.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "cmp(x,y)",
+        js_code: "if(x < y) return -1; if(x == y) return 0; if(x > y) return 1;",
+      },
+      {
+        name: 'filter',
+        description: 'Creates a list of elements in an iterable for which a function returns true.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "filter(lambda x: x % 3 == 0, [1, 2, 3, 4, 5, 6, 7, 8, 9])",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
+        es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
+        sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
+        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'float',
+        description: 'Convert a string or number into a floating point decimal.',
+        js_compatibility: 2,
+        sugar_compatibility: 0,
+        original_code:  "float('3.14')",
+        js_code: "parseFloat('3.14')",
+        js_notes: "Integers and floats are both of class \"Number\" to Javascript and so can be used interchangeably. Only strings need to be parsed."
+      },
+      {
+        name: 'format',
+        description: 'Converts a value to a formatted representation.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "format(18.4)",
+        js_code: "(18.4).toString()",
+        js_notes: "Javascript's %toString% will only convert decimals if they exist. Use %toFixed% to have a fixed decimal representation.",
+        sugar_code: "(18.4).format()",
+        sugar_notes: "Sugar's %format% method wraps Javascript %toString% when no decimal is specified, and %toFixed% when one is. Additionally the characters for both the thousands and decimal separator can be indicated.",
+        ref: 'Number/format'
+      },
+      {
+        name: 'hex',
+        description: 'Converts an integer into a hexidecimal string.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "hex(8)",
+        js_code: "(8).toString(16)",
+        js_notes: "%toString% can accept a number which is the radix for conversion. Note that the resulting string will not be prepended with \"0x\" as in Python"
+        sugar_code: "(8).hex()",
+        sugar_notes: "Sugar can also accept a parameter to pad the resulting string to %n% places.",
+        ref: 'Number/hex'
+      },
+      {
+        name: 'int',
+        description: 'Convert a string or number into an integer.',
+        js_compatibility: 2,
+        sugar_compatibility: 0,
+        original_code:  "int('8', 10)",
+        js_code: "parseInt('8', 10)",
+        js_notes: "Integers and floats are both of class \"Number\" to Javascript and so can be used interchangeably. Only strings need to be parsed. Second parameter is the radix."
+      },
+      {
+        name: 'isinstance',
+        description: 'Returns true if the first argument is an instance of the second argument',
+        js_compatibility: 1,
+        sugar_compatibility: 1,
+        original_code:  "isinstance('string', str)",
+        js_code: "'string' instanceof String",
+        js_notes: "Note that %instanceof% will not work when working across iframes.",
+        sugar_code: "Object.isString('string')",
+        sugar_notes: 'Sugar adds methods that do robust checking of instances of built-in classes and are useful when checking objects of these types.'
+        ref: 'Object/isString'
+      },
+      {
+        name: 'len',
+        description: 'Returns the length of an object.',
+        js_compatibility: 1,
+        sugar_compatibility: 1,
+        original_code:  "len(list)",
+        js_code: "list.length",
+        js_notes: "The length property exists only on arrays, not objects. %Object.keys%, which is browser native, (Sugar adds this methods when not available) can work to get the number of properties in an object.",
+        sugar_code: "Object.keys(obj).length"
+        ref: 'Object/keys'
+      },
+      {
+        name: 'list',
+        description: 'Returns a list with the same items as the passed argument. When run on lists, simply clones the list.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "list(list)",
+        js_code: "list.concat()",
+        sugar_code: "list.clone()",
+        ref: 'Array/clone'
+      },
+      {
+        name: 'map',
+        description: 'Creates a list of elements in an iterable for which a function returns true.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "map(lambda x: x * 3, [1, 2, 3, 4, 5, 6, 7, 8, 9])",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
+        es5_code: "arr.map(function(el) { return el * 3; });",
+        sugar_code: "arr.map(function(el) { return el * 3; });",
+        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut."
+        ref: 'Array/map'
+      },
+      {
+        name: 'max',
+        description: 'Returns the largest item in the iterable argument.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "max(len(l) for l in ['one','two','three'])",
+        js_code: "var largest; for(var i = 0; i < arr.length; i++) { if(arr[i].length > largest) largest = arr[i].length; } return largest;",
+        es5_code: "arr.reduce(function(a, b){ return a.length > b.length ? a.length : b.length; })",
+        sugar_code: "arr.max('length').first().length;",
+        sugar_enhancements: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally it returns the original array element, not the mapped property. Finally it returns an array as there may be more than one max value."
+        ref: 'Array/map'
+      },
+      {
+        name: 'min',
+        description: 'Returns the smallest item in the iterable argument.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "min(len(l) for l in ['one','two','three'])",
+        js_code: "var largest; for(var i = 0; i < arr.length; i++) { if(arr[i].length > largest) largest = arr[i].length; } return largest;",
+        es5_code: "arr.reduce(function(a, b){ return a.length > b.length ? a.length : b.length; })",
+        sugar_code: "arr.min('length').first().length;",
+        sugar_enhancements: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally it returns the original array element, not the mapped property. Finally it returns an array as there may be more than one min value."
+        ref: 'Array/map'
+      },
+      {
+        name: 'oct',
+        description: 'Converts an integer into a octal string.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "oct(44)",
+        js_code: "(44).toString(8)",
+        js_notes: "%toString% can accept a number which is the radix for conversion. Note that the resulting string will not be prepended with \"0x\" as in Python"
+      },
+      {
+        name: 'ord',
+        description: 'Returns the Unicode code point of a string of length == 1.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "ord('a')",
+        js_code: "'a'.charCodeAt(0)",
+        sugar_code: "'a'.codes().first()",
+        ref: 'String/codes'
+      },
+      {
+        name: 'pow',
+        description: 'Returns x to the power of y, where x and y are the first 2 arguments.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "pow(2,8)",
+        js_code: "Math.pow(2,8);",
+        sugar_code: "(2).pow(8);",
+        ref: 'Number/pow'
+      },
+      {
+        name: 'range',
+        description: 'Creates a list with a numeric progression.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "range(2,10,2)",
+        js_code: "var result = [], i = 2, step = 2; while(i < 5) { result.push(i); i += 2; } return result;",
+        sugar_code: "(2).upto(5, null, 2);",
+        sugar_enhancements: "Sugar also has a method %downto% that works in reverse. The second parameter is a callback that will be called on each method in the array if defined.",
+        ref: 'Number/upto'
+      },
+      {
+        name: 'reduce',
+        description: 'Apply a function to the items of the iterable to reduce it to a single value.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "reduce(lambda x,y: x + y, [1, 2, 3, 4, 5, 6, 7, 8, 9], 0)",
+        js_code: "var result = 0; for(var i = 0; i < arr.length; i++) { return result + arr[i]; } return result;",
+        es5_code: "arr.reduce(function(x, y) { return x + y; });",
+        sugar_code: "arr.reduce(function(x, y) { return x + y; });",
+        ref: 'Array/reduce'
+      },
+      {
+        name: 'reversed',
+        description: 'Returns a reversed iterator of a sequence.',
+        js_compatibility: 1,
+        sugar_compatibility: 0,
+        original_code: "reversed(arr)",
+        js_code: "arr.reverse();",
+        js_notes: "There is no concept of \"iterators\" in Javascript, so you simply reverse the array with this standard method."
+      },
+      {
+        name: 'round',
+        description: 'Rounds a floating point value.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "round(n, 2)",
+        js_code: "Math.round(n * 100) / 100;",
+        sugar_code: "n.round(2);",
+        ref: 'Number/round'
+      },
+      {
+        name: 'sorted',
+        description: 'Returns a new sorted list from an iterable.',
+        js_compatibility: 1,
+        sugar_compatibility: 3,
+        original_code: "sorted(arr, lambda a,b:  a - b); sorted(arr, key=str.lower)",
+        js_code: "arr.sort(); arr.sort(function() { a = a.toLowerCase(); b = b.toLowerCase(); if(a == b) { return 0; } else { return a < b ? -1 : 1 });",
+        sugar_code: "arr.sort(); arr.sortBy('toLowerCase');",
+        sugar_enhancements: "In addition to allow sorting on a property or method of any type (numeric, string, etc). Sugar's %Array#Sortby% method has a flag to allow descending order.",
+        ref: 'Array/sortBy'
+      },
+      {
+        name: 'str',
+        description: 'Returns a string representation of the object.',
+        js_compatibility: 2,
+        sugar_compatibility: 0,
+        original_code: "str(obj)",
+        js_code: "String(obj)"
+      },
+      {
+        name: 'sum',
+        description: 'Returns the sum of all elements in the iterable.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "sum(arr)",
+        js_code: "var result = 0; for(var i = 0; i < arr.length; i++) { result += arr[i]; } return result;",
+        es5_code: "arr.reduce(function(a, b){ return a + b; }, 0)",
+        sugar_code: "arr.sum()",
+        ref: 'Array/sum'
+      },
+      {
+        name: 'type',
+        description: 'Returns the type of the argument passed.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "type(obj)",
+        js_code: "typeof(obj)",
+        js_nodes: "To determine data types, Javascript provides the %typeof% operator. However this can prove to be unreliable and has a number of gotchas.",
+        sugar_code: "Object.isString(obj)",
+        sugar_notes: "For built-in Javascript types, Sugar provides more robust testing methods that will not break in the areas that %typeof% will."
+        ref: 'Array/isType'
+      },
+      {
+        name: 'zip',
+        description: '"Zips" up iterables into a larger iterable containing tuples of every nth element.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "zip(arr1, arr2)",
+        js_code: "var result = []; for(var i = 0; i < arr1.length; i++) { result.push([arr1[i], arr2[i] || null]); } return result;",
+        sugar_code: "arr1.zip(arr2);",
+        ref: 'Array/zip'
+      },
     ]
   }
 ];
