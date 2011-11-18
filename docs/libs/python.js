@@ -642,6 +642,25 @@ var SugarPythonMethods = [
         sugar_code: "arr1.zip(arr2);",
         ref: 'Array/zip'
       },
+      {
+        name: 'chain',
+        description: 'Chains iterables together.',
+        js_compatibility: 2,
+        sugar_compatibility: 0,
+        original_code:  "chain(arr1, arr2)",
+        js_code: "arr1.concat(arr2)"
+      },
+      {
+        name: 'dropwhile',
+        description: 'Drops elements from the iterable while the function resolves to true.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "dropwhile(lambda x: x < 5, arr)",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] < 5) result.push(arr[i]); } return result;",
+        sugar_code: "arr.exclude(function(el){ return el < 5; });",
+        sugar_info: "%exclude% is non-destructive. For a destructive alias use %remove%",
+        ref: 'Array/exclude'
+      },
     ]
   }
 ];
