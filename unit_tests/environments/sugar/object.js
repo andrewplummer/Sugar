@@ -443,8 +443,10 @@ test('Object', function () {
   equal(Object.isEmpty(null), true, 'Object.isEmpty | null is empty');
   equal(Object.isEmpty(undefined), true, 'Object.isEmpty | undefined is empty');
   equal(Object.isEmpty(''), true, 'Object.isEmpty | empty string is empty');
+  equal(Object.isEmpty([]), true, 'Object.isEmpty | empty array is empty');
   equal(Object.isEmpty(NaN), true, 'Object.isEmpty | NaN is empty');
   equal(Object.isEmpty(0), true, 'Object.isEmpty | 0 is empty');
+  equal(Object.isEmpty(8), true, 'Object.isEmpty | 8 is empty');
 
   equal(Object.extended({}).isEmpty({}), true, 'Object#isEmpty | object is empty');
   equal(Object.extended({ broken: 'wear' }).isEmpty(), false, 'Object#empty | object is not empty');
@@ -641,6 +643,7 @@ test('Object', function () {
     equal(Object.isArray(Object.fromQueryString(window.location).keys()), true, 'String#fromQueryString | can handle just window.location');
   }
 
+  equal(Object.fromQueryString('foo=3.14156'), { foo: 3.14156 }, 'String#fromQueryString | can handle float values');
 
   // Object.watch
 
