@@ -1,3 +1,11 @@
+/*
+ *  Sugar Library v1.1.1 (Development)
+ *
+ *  Freely distributable and licensed under the MIT-style license.
+ *  Copyright (c) 2011 Andrew Plummer
+ *  http://sugarjs.com/
+ *
+ * ---------------------------- */
 (function() {
 
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
@@ -214,8 +222,8 @@
       });
       if(!key && isArray) key = obj.length.toString();
       setParamsObject(obj, key, value);
-    } else if(value.match(/^[\d.]+$/)) {
-      obj[param] = parseFloat(value);
+    } else if(value.match(/^\d+$/)) {
+      obj[param] = parseInt(value);
     } else if(value === 'true') {
       obj[param] = true;
     } else if(value === 'false') {
@@ -430,8 +438,8 @@
      *
      ***/
     'isEmpty': function(obj) {
-      if(!isObjectPrimitive(obj) || isNull(obj)) return true;
-      return object.keys(obj).length == 0;
+      if(!obj) return true;
+      return object.equal(obj, {});
     },
 
     /***
@@ -1016,7 +1024,7 @@
     /***
      * @method each(<fn>, [index] = 0, [loop] = false)
      * @returns Array
-     * @short Runs <fn> against elements in the array. Enhanced version of %Array#forEach%.
+     * @short Runs <fn> against elements in the array.
      * @extra Parameters passed to <fn> are identical to %forEach%, ie. the first parameter is the current element, second parameter is the current index, and third parameter is the array itself. If <fn> returns %false% at any time it will break out of the loop. Once %each% finishes, it will return the array. If [index] is passed, <fn> will begin at that index and work its way to the end. If [loop] is true, it will then start over from the beginning of the array and continue until it reaches [index] - 1.
      * @example
      *
@@ -3552,7 +3560,7 @@
         }
       });
       return this.replace(/\{(.+?)\}/g, function(m, key) {
-        return assign.hasOwnProperty(key) ? assign[key] : m;
+        return assign[key] || m;
       });
     }
 
@@ -5759,17 +5767,13 @@
      *
      ***/
     'after': function(num) {
-      var fn = this, counter = 0, storedArguments = [];
+      var fn = this, counter = 0;
       if(!object.isNumber(num)) num = 1;
       return function() {
-        var ret;
-        storedArguments.push(Array.create(arguments));
         counter++;
         if(counter == num) {
-          ret = fn.call(this, storedArguments);
           counter = 0;
-          storedArguments = [];
-          return ret;
+          return fn.apply(this, arguments);
         }
       }
     },
