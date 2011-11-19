@@ -8,9 +8,29 @@ test('Dates | German', function () {
   dateEqual(Date.create('Mai 2011'), new Date(2011, 4), 'Date#create | German | year and month');
   dateEqual(Date.create('15. Mai'), new Date(now.getFullYear(), 4, 15), 'Date#create | German | month and date');
   dateEqual(Date.create('2011'), new Date(2011, 0), 'Date#create | German | year');
-  dateEqual(Date.create('Mai'), new Date(now.getFullYear(), 4), 'Date#create | German | month');
-  dateEqual(Date.create('Montag'), getDateWithWeekdayAndOffset(1), 'Date#create | German | Monday');
 
+  dateEqual(Date.create('Januar'), new Date(now.getFullYear(), 0), 'Date#create | German | January');
+  dateEqual(Date.create('Februar'), new Date(now.getFullYear(), 1), 'Date#create | German | February');
+  dateEqual(Date.create('Marz'), new Date(now.getFullYear(), 2), 'Date#create | German | March');
+  dateEqual(Date.create('März'), new Date(now.getFullYear(), 2), 'Date#create | German | March');
+  dateEqual(Date.create('April'), new Date(now.getFullYear(), 3), 'Date#create | German | April');
+  dateEqual(Date.create('Mai'), new Date(now.getFullYear(), 4), 'Date#create | German | May');
+  dateEqual(Date.create('Juni'), new Date(now.getFullYear(), 5), 'Date#create | German | June');
+  dateEqual(Date.create('Juli'), new Date(now.getFullYear(), 6), 'Date#create | German | July');
+  dateEqual(Date.create('August'), new Date(now.getFullYear(), 7), 'Date#create | German | August');
+  dateEqual(Date.create('Setpember'), new Date(now.getFullYear(), 8), 'Date#create | German | September');
+  dateEqual(Date.create('Oktober'), new Date(now.getFullYear(), 9), 'Date#create | German | October');
+  dateEqual(Date.create('November'), new Date(now.getFullYear(), 10), 'Date#create | German | November');
+  dateEqual(Date.create('Dezember'), new Date(now.getFullYear(), 11), 'Date#create | German | December');
+
+
+  dateEqual(Date.create('Sonntag'), getDateWithWeekdayAndOffset(0), 'Date#create | German | Sunday');
+  dateEqual(Date.create('Montag'), getDateWithWeekdayAndOffset(1), 'Date#create | German | Monday');
+  dateEqual(Date.create('Dienstag'), getDateWithWeekdayAndOffset(2), 'Date#create | German | Tuesday');
+  dateEqual(Date.create('Mittwoch'), getDateWithWeekdayAndOffset(3), 'Date#create | German | Wednesday');
+  dateEqual(Date.create('Donnerstag'), getDateWithWeekdayAndOffset(4), 'Date#create | German | Thursday');
+  dateEqual(Date.create('Freitag'), getDateWithWeekdayAndOffset(5), 'Date#create | German | Friday');
+  dateEqual(Date.create('Samstag'), getDateWithWeekdayAndOffset(6), 'Date#create | German | Saturday');
 
   dateEqual(Date.create('einer Millisekunde vorher'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | German | one millisecond ago');
   dateEqual(Date.create('eine Sekunde vorher'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | German | one second ago');
