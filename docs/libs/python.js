@@ -9,7 +9,7 @@
 var SugarPythonMethods = [
   {
     // Global namepace
-    type: 'class',
+    type: 'instance',
     namespace: 'String',
     methods: [
       {
@@ -316,14 +316,13 @@ var SugarPythonMethods = [
     ]
   },
   {
-    type: 'class',
-    namespace: 'Number',
+    type: 'built-in',
     methods: [
       {
         name: 'abs',
         description: 'Returns the absolute value of the number.',
-        js_compatibility: false,
-        sugar_compatibility: false,
+        js_compatibility: 2,
+        sugar_compatibility: 2,
         original_code:  "abs(num)",
         js_code: "Math.abs(num)",
         sugar_code: "num.abs()"
