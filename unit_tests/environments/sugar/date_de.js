@@ -18,7 +18,7 @@ test('Dates | German', function () {
   dateEqual(Date.create('Juni'), new Date(now.getFullYear(), 5), 'Date#create | German | June');
   dateEqual(Date.create('Juli'), new Date(now.getFullYear(), 6), 'Date#create | German | July');
   dateEqual(Date.create('August'), new Date(now.getFullYear(), 7), 'Date#create | German | August');
-  dateEqual(Date.create('Setpember'), new Date(now.getFullYear(), 8), 'Date#create | German | September');
+  dateEqual(Date.create('September'), new Date(now.getFullYear(), 8), 'Date#create | German | September');
   dateEqual(Date.create('Oktober'), new Date(now.getFullYear(), 9), 'Date#create | German | October');
   dateEqual(Date.create('November'), new Date(now.getFullYear(), 10), 'Date#create | German | November');
   dateEqual(Date.create('Dezember'), new Date(now.getFullYear(), 11), 'Date#create | German | December');
