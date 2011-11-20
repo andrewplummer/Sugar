@@ -486,10 +486,10 @@ var SugarPythonMethods = [
       },
       {
         name: 'map',
-        description: 'Creates a list of elements in an iterable for which a function returns true.',
+        description: 'Creates a list from another via a mapping function.',
         js_compatibility: 0,
         sugar_compatibility: 3,
-        original_code:  "map(lambda x: x * 3, [1, 2, 3, 4, 5, 6, 7, 8, 9])",
+        original_code:  "map(lambda x: x * 3, arr)",
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
         es5_code: "arr.map(function(el) { return el * 3; });",
         sugar_code: "arr.map(function(el) { return el * 3; });",
@@ -641,7 +641,13 @@ var SugarPythonMethods = [
         js_code: "var result = []; for(var i = 0; i < arr1.length; i++) { result.push([arr1[i], arr2[i] || null]); } return result;",
         sugar_code: "arr1.zip(arr2);",
         ref: 'Array/zip'
-      },
+      }
+    ]
+  },
+  {
+    type: 'class',
+    namespace: 'Itertools',
+    methods: [
       {
         name: 'chain',
         description: 'Chains iterables together.',
@@ -661,6 +667,145 @@ var SugarPythonMethods = [
         sugar_info: "%exclude% is non-destructive. For a destructive alias use %remove%",
         ref: 'Array/exclude'
       },
+      {
+        name: 'groupby',
+        description: 'Returns an iterator that contains groups of iterables grouped by a key.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "groupby(arr, lambda x: x['id'])",
+        js_code: "var result = {}; for(var i = 0; i < arr.length; i++) { var key = arr[i]['id']; if(!result[key]) { result[key] = []; } result[key].push(arr[i]); } return result;",
+        sugar_code: "arr.groupBy('id')",
+        sugar_info: "The result of %groupBy% is a standard object that can be iterated over using %Object.each%. %groupBy% can also accept a 2nd parameter which is an iterating function that is called on each group.",
+        ref: 'Array/groupBy'
+      },
+      {
+        name: 'ifilter',
+        description: 'Creates a list of elements in an iterable for which a function returns true.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "ifilter(lambda x: x % 3 == 0, [1, 2, 3, 4, 5, 6, 7, 8, 9])",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
+        es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
+        sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
+        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'ifilterfalse',
+        description: 'Creates a list of elements in an iterable for which a function returns false. The reverse of %ifilter%.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "ifilterfalse(lambda x: x % 3 == 0, [1, 2, 3, 4, 5, 6, 7, 8, 9])",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 != 0) { result.push(arr[i]); } } return result;",
+        es5_code: "arr.filter(function(el) { return el % 3 != 0; });",
+        sugar_code: "arr.findAll(function(el) { return el % 3 != 0; });",
+        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'islice',
+        description: 'Returns in iterator that contains selected elements.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "islice(arr, 2, 5)",
+        js_code: "arr.slice(2,5)"
+      },
+      {
+        name: 'imap',
+        description: 'Creates an iterable from another via a mapping function.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "imap(lambda x: x * 3, arr)",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
+        es5_code: "arr.map(function(el) { return el * 3; });",
+        sugar_code: "arr.map(function(el) { return el * 3; });",
+        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut."
+        ref: 'Array/map'
+      },
+      {
+        name: 'takewhile',
+        description: 'Returns an iterable with elements taken from the source as long as the function returns true.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "takewhile(lambda x: x % 3 == 0, [1, 2, 3, 4, 5, 6, 7, 8, 9])",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } else { break; } } return result;",
+        sugar_code: "var result = []; arr.each(function(el) { result.push(el); return el % 3 == 0; });",
+        ref: 'Array/each'
+      },
+      {
+        name: 'izip',
+        description: '"Zips" up iterables into a larger iterable containing tuples of every nth element.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "izip(arr1, arr2)",
+        js_code: "var result = []; for(var i = 0; i < arr1.length; i++) { if(i in arr[2]) result.push([arr1[i], arr2[i]]); } return result;",
+        sugar_code: "arr1.zip(arr2);",
+        sugar_notes: "%zip% will always use the length of the first array and fill other values with %null%. In this way the behavior more closely matches %izip_longest%.",
+        ref: 'Array/zip'
+      },
+      {
+        name: 'izip_longest',
+        description: '"Zips" up iterables into a larger iterable containing tuples of every nth element. Fills arrays of uneven length with %None%.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "izip(arr1, arr2)",
+        js_code: "var result = []; for(var i = 0; i < arr1.length; i++) { result.push([arr1[i], arr2[i] || null]); } return result;",
+        sugar_code: "arr1.zip(arr2);",
+        ref: 'Array/zip'
+      },
+      {
+        name: 'count',
+        description: 'Creates an iterator that counts up from a starting number.',
+        original_code:  "count(10, 2)",
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        js_code: "for(var i = 0; i < n; i += 2) {}",
+        js_notes: "In general terms, functionality of a %count% iterator is captured by simply using a standard for loop. Other uses may depend on the context in which they're used.",
+        sugar_code: "(4).upto(n)",
+        sugar_notes: "%upto% and %downto% can caputure one of the uses of %count% and can additionally run a callback on each number in the sequence.",
+        ref: 'Number/upto'
+      },
+      {
+        name: 'cycle',
+        description: 'Returns an iterable that will cycle over another iterable.',
+        original_code:  "c = cycle(arr); [c.next() for i in range(10)]",
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        js_code: "var result = []; for(var i = 0; i < 10; i++) { result.push(arr[n % (n < 0 ? -arr.length : arr.length)]) }",
+        js_notes: "Using the modulo operator can reproduce the functionality of Python's %cycle% by finding an element at any index, even those that have gone off the end of the array.",
+        sugar_code: "var result = []; (0).upto(9, function(n) { result.push(arr.at(n)); });",
+        sugar_notes: "Sugar encapsulates the standard syntax with %at%, which by default will return elements at any index, effectively cycling through the array.",
+        ref: 'Number/times'
+      },
+      {
+        name: 'repeat',
+        description: 'Creates an iterable that repeats %n% times.',
+        original_code:  "for x in repeat('a', 3); fn();",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        js_code: "for(var i = 0; i < 3; i++) { fn(); }",
+        js_notes: "%repeat% iterators are genearally expressed simply as a for loop.",
+        sugar_code: "(3).times(fn);",
+        sugar_notes: "Sugar encapsulates repeating an action %n% times with the %repeat% method on the Number class.",
+        ref: 'Array/at'
+      }
+    ]
+  },
+  {
+    type: 'class',
+    namespace: 'Functools',
+    methods: [
+      {
+        name: 'partial',
+        description: 'Creates a "partial" object which will behave like a function with some of its arguments pre-filled.',
+        original_code:  "fromBinary = partial(int, base=2); fromBinary('0010');",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        js_code: "var fromBinary = function(n) { return parseInt(n, 2); }; fromBinary('0010');",
+        sugar_code: "var fromBinary = parseInt.fill(undefined, 2); fromBinary('0010');",
+        sugar_notes: "%fill% acts similarly to %partial% in that it pre-fills arguments that will be passed later when the new function is called. If %undefined% is passed then that argument will be allowed through in the new function allowing arguments in awkward end positions to be pre-filled as well.",
+        ref: 'Array/at'
+      }
     ]
   }
 ];
