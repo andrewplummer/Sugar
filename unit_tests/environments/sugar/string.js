@@ -360,6 +360,12 @@ test('String', function () {
   equal('five'.insert('schfifty', 4), 'fiveschfifty', 'String#insert | inserts at position 4');
   equal('five'.insert('schfifty', 5), 'fiveschfifty', 'String#insert | inserts at position 5');
 
+  equal('abcd'.insert('X', 2), 'abXcd', 'String#insert | X | 2');
+  equal('abcd'.insert('X', 1), 'aXbcd', 'String#insert | X | 1');
+  equal('abcd'.insert('X', 0), 'Xabcd', 'String#insert | X | 0');
+  equal('abcd'.insert('X', -1), 'abcdX', 'String#insert | X | -1');
+  equal('abcd'.insert('X', -2), 'abcXd', 'String#insert | X | -2');
+
   equal('カタカナ'.hankaku(), 'ｶﾀｶﾅ', 'String#hankaku | katakana');
   equal('こんにちは。ヤマダタロウです。'.hankaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku |  hankaku katakana inside a string');
   equal('こんにちは。ＴＡＲＯ　ＹＡＭＡＤＡです。'.hankaku(), 'こんにちは｡TARO YAMADAです｡', 'String#hankaku | hankaku romaji inside a string');
