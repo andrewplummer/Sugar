@@ -1,3 +1,11 @@
+/*
+ *  Sugar Library vedge (Development)
+ *
+ *  Freely distributable and licensed under the MIT-style license.
+ *  Copyright (c) 2011 Andrew Plummer
+ *  http://sugarjs.com/
+ *
+ * ---------------------------- */
 (function() {
 
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
