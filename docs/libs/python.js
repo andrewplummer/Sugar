@@ -27,7 +27,7 @@ var SugarPythonMethods = [
         name: 'center',
         description: 'Centers the string to a given length by padding it.',
         js_compatibility: 0,
-        sugar_compatibility: 0,
+        sugar_compatibility: 1,
         js_code: "while(str.length < 8) { str = str.length % 2 == 0 ? '-' + str : str + '-'; }",
         sugar_code: "str.pad('-', (8 - str.length) / 2);",
         original_code: "str.center(8, '-');",
