@@ -9,7 +9,7 @@
 var SugarPythonMethods = [
   {
     // Global namepace
-    type: 'class',
+    type: 'instance',
     namespace: 'String',
     methods: [
       {
@@ -316,7 +316,7 @@ var SugarPythonMethods = [
     ]
   },
   {
-    type: 'class',
+    type: 'built-in',
     namespace: 'Built-in Functions',
     methods: [
       {
