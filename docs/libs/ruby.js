@@ -649,5 +649,348 @@ var SugarRubyMethods = [
         sugar_code: "str.underscore();"
       },
     ]
+  },
+  {
+    type: 'instance',
+    namespace: 'Numeric',
+    methods: [
+      {
+        name: '<=>',
+        description: 'Compares two numbers.',
+        js_compatibility: 0,
+        original_code: "num1 <=> num2",
+        js_code: "num1 - num2",
+        js_notes: 'There are no comparison functions built in to Javascript, so straight comparison code needs to be used instead. For numbers, this can be a straight subtraction operation.'
+      },
+      {
+        name: '**',
+        description: 'Raises the number to the specified power.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num ** 5",
+        js_code: 'Math.pow(num, 5);",
+        sugar_code: "(num).pow(5);"
+      },
+      {
+        name: 'abs',
+        description: 'Returns the absolute value of the number.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.abs",
+        js_code: 'Math.abs(num);",
+        sugar_code: "num.abs();"
+      },
+      {
+        name: 'ago',
+        description: 'Shortcut for creating a time from a number that represents seconds ago.',
+        sugar_compatibility: 2,
+        original_code: "num.days.ago",
+        sugar_code: "num.daysAgo();",
+        sugar_notes: "Javascript, which requires parentheses doesn't read as neatly as Ruby, so each %ago% method is mapped with its individual unit for better readability. Additionally Javascript's date objects are based in milliseconds, making %millisecondsAgo% the Sugar equivalent to ActiveSupport to %ago%."
+      },
+      {
+        name: 'chr',
+        description: 'Returns a character at the code point of the number.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.chr",
+        js_code: "String.fromCharCode();",
+        sugar_code: "num.chr();"
+      },
+      {
+        name: 'ceil',
+        description: 'Rounds the number up.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.ceil",
+        js_code: 'Math.ceil(num);",
+        sugar_code: "(num).ceil();"
+      },
+      {
+        name: 'days',
+        description: 'Allows time calculations by taking the number as days and returing seconds.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.days",
+        sugar_code: "num.days();",
+        sugar_notes: "Sugar uses milliseconds as the base, as all Javascript times are derived from milliseconds. %day% is also available."
+      },
+      {
+        name: 'downto',
+        description: 'Runs a block decreasing the passed value from the number down to the passed number.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "5.downto(2)",
+        js_code: "for(var i = 5; i >= 2; i--) { fn(i); }"
+        sugar_code: "(5).downto(2, fn);"
+      },
+      {
+        name: 'even?',
+        description: 'Returns true if the number is even.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.even?",
+        js_code: 'num % 2 == 0;",
+        sugar_code: "num.isEven();"
+      },
+      {
+        name: 'floor',
+        description: 'Rounds the number up.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.floor",
+        js_code: 'Math.floor(num);",
+        sugar_code: "(num).floor();"
+      },
+      {
+        name: 'fromNow',
+        description: 'Shortcut for creating a time from a number that represents seconds from now.',
+        sugar_compatibility: 2,
+        original_code: "num.days.from_now",
+        sugar_code: "num.daysFromNow();",
+        sugar_notes: "Javascript, which requires parentheses doesn't read as neatly as Ruby, so each %from_now% method is mapped with its individual unit for better readability. Additionally Javascript's date objects are based in milliseconds, making %millisecondsFromNow% the Sugar equivalent to ActiveSupport to %from_now%."
+      },
+      {
+        name: 'hours',
+        description: 'Allows time calculations by taking the number as hours and returing seconds.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.hours",
+        sugar_code: "num.hours();",
+        sugar_notes: "Sugar uses milliseconds as the base, as all Javascript times are derived from milliseconds. %hour% is also available."
+      },
+      {
+        name: 'minutes',
+        description: 'Allows time calculations by taking the number as minutes and returing seconds.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.minutes",
+        sugar_code: "num.minutes();",
+        sugar_notes: "Sugar uses milliseconds as the base, as all Javascript times are derived from milliseconds. %minute% is also available."
+      },
+      {
+        name: 'months',
+        description: 'Allows time calculations by taking the number as months and returing seconds.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.months",
+        sugar_code: "num.months();",
+        sugar_notes: "Sugar uses milliseconds as the base, as all Javascript times are derived from milliseconds. %month% is also available."
+      },
+      {
+        name: 'multiple_of?',
+        description: 'Checks if the number is evenly divisible by the argument.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num1.multiple_of?(num2)",
+        js_code: 'num1 % num2 == 0;",
+        sugar_code: "num1.multipleOf(num2);"
+      },
+      {
+        name: 'nan?',
+        description: 'Returns true if the number is invalid.',
+        js_compatibility: 2,
+        original_code: "num.nan?",
+        js_code: "isNaN(num);"
+      },
+      {
+        name: 'odd?',
+        description: 'Returns true if the number is odd.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.odd?",
+        js_code: 'num % 2 == 1;",
+        sugar_code: "num.isOdd();"
+      },
+      {
+        name: 'ordinalize',
+        description: 'Converts the number into an ordinalized English string denoting position.',
+        sugar_compatibility: 2,
+        original_code: "num.ordinalize",
+        sugar_code: "num.ordinalize();"
+      },
+      {
+        name: 'round',
+        description: 'Rounds the number.',
+        js_compatibility: 0,
+        original_code: "num.round; num.round(2)",
+        js_code: "Math.round(num); Math.round(num * 100) / 100;",
+        js_notes: "Native Javascript does not allow for precision in rounding.",
+        sugar_code: "num.round(); num.round(2);"
+      },
+      {
+        name: 'seconds',
+        description: 'Allows time calculations by taking the number as seconds and returing seconds.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.seconds",
+        sugar_code: "num.seconds();",
+        sugar_notes: "Sugar uses milliseconds as the base, as all Javascript times are derived from milliseconds. %second% is also available."
+      },
+      {
+        name: 'since',
+        description: 'Shortcut for creating a time from a number that represents seconds since a certain other time.',
+        sugar_compatibility: 2,
+        original_code: "num.minutes.since(time)",
+        sugar_code: "num.minutesSince(time);",
+        sugar_notes: "Javascript, which requires parentheses doesn't read as neatly as Ruby, so each %since% method is mapped with its individual unit for better readability. Additionally Javascript's date objects are based in milliseconds, making %millisecondsSince% the Sugar equivalent to ActiveSupport to %since%."
+      },
+      {
+        name: 'step',
+        description: 'Runs a block stepping from the number to the passed value in multiples of the step value passed.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code: "1.step(10, 2)",
+        js_code: "for(var i = 1; i <= 10; i += 2) { fn(i); }"
+        sugar_code: "(1).upto(10, fn, 2);"
+      },
+      {
+        name: 'times',
+        description: 'Runs a block n number of times, where n is equal to the number.',
+        sugar_compatibility: 0,
+        js_compatibility: 2,
+        original_code: "num.times { |n| }",
+        js_code: "for(var i = 0; i < num; i++) { fn(i); }"
+        sugar_code: "num.times(fn)",
+      },
+      {
+        name: 'to_s',
+        description: 'Converts the number to a string.',
+        js_compatibility: 2,
+        original_code: "num.to_s",
+        js_code: "num.toString()",
+        js_notes: "The second parameter to %toString% is the radix to use when converting the number to a string.",
+      },
+      {
+        name: 'until',
+        description: 'Shortcut for creating a time from a number that represents seconds until a certain other time.',
+        sugar_compatibility: 2,
+        original_code: "num.minutes.until(time)",
+        sugar_code: "num.minutesUntil(time);",
+        sugar_notes: "Javascript, which requires parentheses doesn't read as neatly as Ruby, so each %until% method is mapped with its individual unit for better readability. Additionally Javascript's date objects are based in milliseconds, making %millisecondsUntil% the Sugar equivalent to ActiveSupport to %until%."
+      },
+      {
+        name: 'upto',
+        description: 'Runs a block increasing the passed value from the number up to the passed number.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "2.upto(5)",
+        js_code: "for(var i = 2; i <= 5; i++) { fn(i); }"
+        sugar_code: "(2).upto(5, fn);"
+      },
+      {
+        name: 'weeks',
+        description: 'Allows time calculations by taking the number as weeks and returing seconds.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.weeks",
+        sugar_code: "num.weeks();",
+        sugar_notes: "Sugar uses milliseconds as the base, as all Javascript times are derived from milliseconds. %week% is also available."
+      },
+      {
+        name: 'years',
+        description: 'Allows time calculations by taking the number as years and returing seconds.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "num.years",
+        sugar_code: "num.years();",
+        sugar_notes: "Sugar uses milliseconds as the base, as all Javascript times are derived from milliseconds. %year% is also available."
+      },
+    ]
+  },
+  {
+    type: 'instance',
+    namespace: 'Enumerable',
+    methods: [
+      {
+        name: 'all?',
+        description: 'Returns true if all elements in the iterable are true',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.all? { |el| el == 8 }",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] != 8) { return false; } } return true;",
+        es5_code: "arr.every(function(el) { return el == 8; });",
+        sugar_code: "arr.all(function(el) { return el == 8; });",
+        sugar_enhancements: 'Sugar additionally allows strings that will resolve to a function returning a property of that name.',
+        ref: 'Array/all'
+      },
+      {
+        name: 'any?',
+        description: 'Returns true if all elements in the iterable are true',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.any? { |el| el == 8 }",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 8) { return true; } } return false;",
+        es5_code: "arr.some(function(el) { return el == 8; });",
+        sugar_code: "arr.any(function(el) { return el == 8; });",
+        sugar_enhancements: 'Sugar additionally allows strings that will resolve to a function returning a property of that name.',
+        ref: 'Array/all'
+      },
+      {
+        name: 'map',
+        description: 'Creates an array from another via a mapping function.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.map { |x| x * 3 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
+        es5_code: "arr.map(function(el) { return el * 3; });",
+        sugar_code: "arr.map(function(el) { return el * 3; });",
+        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut."
+        ref: 'Array/map'
+      },
+      {
+        name: 'count',
+        description: 'Returns the number of occurrences in the array where either the passed argument exists or the block returns true.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.count { |n| n == 3 }",
+        js_code: "var result = 0; for(var i = 0; i < arr.length; i++) { if(n == 3) result ++; } return result;",
+        sugar_code: "arr.count(function(n){ return n == 3; })",
+        ref: 'Array/count'
+      },
+      {
+        name: 'cycle',
+        description: 'Calls a block on each element of the enumberable n times, where n is the number passed.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "arr.cycle(100) { |x| puts x }",
+        js_code: "for(var i = 0; i < 100; i++) { console.log(arr[i % arr.length]); };",
+        sugar_code: "(100).times(function(n){ console.log(arr.at(n)); });",
+        ref: 'Array/at'
+      },
+      {
+        name: 'detect',
+        description: 'Returns the first element for which the block is not false.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.detect { |n| n % 3 == 0 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { return arr[i]; } };",
+        sugar_code: "arr.find(function(el) { return el % 3 == 0; });",
+        sugar_enhancements: "Sugar's %find% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        ref: 'Array/find'
+      },
+      {
+        name: 'drop',
+        description: 'Drops the first n elements of the array and returns the rest.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.drop(3)",
+        js_code: "arr.slice(3);",
+        sugar_code: "arr.from(3);",
+        ref: 'Array/from'
+      },
+      {
+        name: 'select',
+        description: 'Returns an array containing all elements for which the block is not false.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.select { |n| n % 3 == 0 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
+        es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
+        sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
+        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        ref: 'Array/findAll'
+      },
+    ]
   }
 ];
