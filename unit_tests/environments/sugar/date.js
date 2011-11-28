@@ -1889,4 +1889,16 @@ test('Date', function () {
 
   equal(Date.create('2010-Jan-25').format(), '2010年1月25日', 'Date#create | will not set the current locale to an invalid locale');
 
+
+  // If traversing into a new month don't reset the date if the date was also advanced
+
+  d = new Date(2011, 0, 31);
+  dateEqual(d.advance({ month: 1 }), new Date(2011, 1, 28), 'Date#create | basic month traversal will reset the date to the last day');
+
+  d = new Date(2011, 0, 31);
+  dateEqual(d.advance({ month: 1, day: 3 }), new Date(2011, 2, 3), 'Date#create | when the day is specified date reset will not happen');
+
+  d = new Date(2011, 0, 31);
+  dateEqual(d.set({ month: 1, day: 3 }), new Date(2011, 1, 3), 'Date#create | set will also not cause date traversal');
+
 });
