@@ -51,3 +51,8 @@ Contributing Locales
 ====================
 
 If you do add a custom format for your locale, please consider forking and adding it to the repo! This especially includes the addition of new locales, but also new formats or tweaks to existing locales. Not everything can be added to the main package, but I would like to have as many languages/formats as possible available. When adding a locale contribution, the most important thing is to add unit tests that assert the correct format. These unit tests are found at `unit_tests/environments/sugar/date_LOCALE.js`. Simply add or adjust the formats for the locale (the more tests, the better!) and issue me a pull request -- I will update the code to add these locales/formats. Have a look at other unit tests files for an example of the unit testing format.
+
+Other Contributions
+===================
+
+For other contributions, please add well formed unit tests in the sugar environment at `unit_tests/environments/sugar/MODULE.js`. Unit tests can be run directly in the browser from `unit_tests/sugar.html`, and should all be passing. Node.js unit tests should also be passing and can be run in the console with `unit_tests/node.sh`. Also of note is `unit_tests/prototype.html`, however depending on various circumstances not all tests may be passing, so it's good to do a before/after. Mootools can be ignored for the time being.
