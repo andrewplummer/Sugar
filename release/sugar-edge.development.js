@@ -1180,7 +1180,8 @@
      *
      ***/
     'add': function(el, index) {
-      if(!object.isNumber(number(index)) || isNaN(index)) index = this.length;
+      if(!object.isNumber(number(index)) || isNaN(index) || index == -1) index = this.length;
+      else if(index < -1) index += 1;
       array.prototype.splice.apply(this, [index, 0].concat(el));
       return this;
     },
@@ -3436,7 +3437,9 @@
      *
      ***/
     'underscore': function() {
-      return this.replace(/([a-z])([A-Z])/g, '$1_$2').replace(/[-\s]/g, '_').toLowerCase();
+      return this.replace(/[-\s]+/g, '_').replace(/(.)(?=[A-Z])/g, function(letter, i) {
+        return letter != '_' ? letter + '_' : letter;
+      }).toLowerCase();
     },
 
     /***
@@ -3451,12 +3454,9 @@
      *
      ***/
     'camelize': function(first) {
-      var split = this.dasherize().split('-'), text = '';
-      for(var i = 0; i < split.length; i++) {
-        if(first === false && i === 0) text += split[i].toLowerCase();
-        else text += split[i].substr(0, 1).toUpperCase() + split[i].substr(1).toLowerCase();
-      }
-      return text;
+      return this.underscore().replace(/(^|_)(.)/g, function(match, pre, letter, index) {
+        return (first !== false || index > 0) ? letter.toUpperCase() : letter;
+      });
     },
 
     /***
@@ -4395,6 +4395,7 @@
       date.setTime(params);
       return date;
     }
+
     // "date" can also be passed for the day
     if(params['date']) params['day'] = params['date'];
     // If a weekday is included in the params, set it ahead of time and set the params
@@ -4409,12 +4410,6 @@
     // because the order needs to be reversed in order to get the lowest specificity.
     // The order of the date setting is also fixed because higher order units can be
     // overwritten by lower order units, such as setting hour: 3, minute: 345, etc.
-    // Also we need to actually SET the date here (rather than just adding to the params)
-    // for the sake of the edge case of setting a month on a date whose date does not
-    // exist in the target month. For example, setting month: 1 (February) on a date
-    // that is already January 31st will effectively make the month March, as this day
-    // does not exist in February. Any date that is resetting (especially date creation)
-    // wants to avoid this situation, so set all the defaults ahead.
     arrayEach(DateUnitsReversed, function(u) {
       if(isDefined(params[u.unit]) || isDefined(params[u.unit + 's'])) {
         params.specificity = u.unit;
@@ -4423,15 +4418,6 @@
         callDateMethod(date, 'set', utc, u.method, (u.unit === 'day') ? 1 : 0);
       }
     });
-    // If the we're advancing the date by months then we don't want to accidentally
-    // traverse into a new month just because the target month doesn't have enough
-    // days. In other words, "5 months ago" from July 30th is still February, even
-    // though there is no February 30th, so it will of necessity be February 28th
-    // (or 29th in the case of a leap year). This is just what you'll have to expect
-    // when dealing with a unit as ambiguous as months.
-    if(advance && isDefined(params['month'])) {
-      checkMonthTraversal(date, params, advance);
-    }
     // Now actually set or advance the date in order, higher units first.
     arrayEach(DateUnits, function(u,i) {
       var unit   = u.unit;
@@ -4446,12 +4432,15 @@
         value = (value * advance) + callDateMethod(date, 'get', '', method);
       }
       callDateMethod(date, 'set', utc, method, value);
+      if(unit === 'month') {
+        checkMonthTraversal(date, value);
+      }
     });
     return date;
   }
 
-  function callDateMethod(d, g, utc, method, value) {
-    return d[g + (utc ? 'UTC' : '') + method](value);
+  function callDateMethod(d, prefix, utc, method, value) {
+    return d[prefix + (utc ? 'UTC' : '') + method](value);
   }
 
   // If the year is two digits, add the most appropriate century prefix.
@@ -4481,13 +4470,16 @@
     return [value, unit, ms];
   }
 
-  function checkMonthTraversal(d, set, advance) {
-    var targetDate = d.getDate(), daysInTargetMonth;
-    // Don't compensate if there is more specificity than just "months", as this could have unintended consequences.
-    if(targetDate < 29 || (set.specificity != 'month' && set.specificity != 'year')) return;
-    daysInTargetMonth = new date(d.getFullYear() + ((set['year'] * advance) || 0), d.getMonth() + (set['month'] * advance)).daysInMonth();
-    if(daysInTargetMonth < targetDate) {
-      d.setDate(daysInTargetMonth);
+
+  // If the month is being set, then we don't want to accidentally
+  // traverse into a new month just because the target month doesn't have enough
+  // days. In other words, "5 months ago" from July 30th is still February, even
+  // though there is no February 30th, so it will of necessity be February 28th
+  // (or 29th in the case of a leap year).
+
+  function checkMonthTraversal(date, targetMonth) {
+    if(targetMonth % 12 != date.getMonth()) {
+      date.setDate(0);
     }
   }
 
