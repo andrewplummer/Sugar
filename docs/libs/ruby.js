@@ -1046,6 +1046,15 @@ var SugarRubyMethods = [
         ref: 'Array/findAll'
       },
       {
+        name: 'first',
+        description: 'Returns the first n elements of the array (1 by default).',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.first;",
+        js_code: "arr.slice(0,1);",
+        sugar_code: "arr.first();"
+      },
+      {
         name: 'map',
         description: 'Creates an array from another via a mapping function.',
         js_compatibility: 0,
