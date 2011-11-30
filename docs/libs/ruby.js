@@ -927,11 +927,11 @@ var SugarRubyMethods = [
         ref: 'Array/all'
       },
       {
-        name: 'map',
+        name: 'collect',
         description: 'Creates an array from another via a mapping function.',
         js_compatibility: 0,
         sugar_compatibility: 3,
-        original_code:  "arr.map { |x| x * 3 }",
+        original_code:  "arr.collect { |x| x * 3 }",
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
         es5_code: "arr.map(function(el) { return el * 3; });",
         sugar_code: "arr.map(function(el) { return el * 3; });",
@@ -972,12 +972,90 @@ var SugarRubyMethods = [
       {
         name: 'drop',
         description: 'Drops the first n elements of the array and returns the rest.',
-        js_compatibility: 0,
+        js_compatibility: 1,
         sugar_compatibility: 3,
         original_code:  "arr.drop(3)",
         js_code: "arr.slice(3);",
         sugar_code: "arr.from(3);",
         ref: 'Array/from'
+      },
+      {
+        name: 'drop_while',
+        description: 'Drops elements up to, but not including, the first element for which the block returns nil or false.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "arr.drop_while { |n| n < 5 }",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i] >= 5) { result = arr.slice(i); break; } }; return result;",
+        sugar_code: "var drop = true; arr.remove(function(n) { if(n < 5) { return drop; } else { return drop = false; }});",
+        ref: 'Array/remove'
+      },
+      {
+        name: 'each_cons',
+        description: 'Iterates the block for each consecutive array of n elements.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.each_cons(3, &fn)",
+        js_code: "for(var i = 0; i < arr.length; i++) { var slice = arr.slice(i, i + 3); if(slice.length == 3) { fn(slice); }};",
+        sugar_code: "arr.each(function() { var slice = arr.slice(i, i + 3); if(slice.length == 3) { fn(slice); }});",
+        ref: 'Array/each'
+      },
+      {
+        name: 'each_slice',
+        description: 'Iterates the block for each slice of n elements.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.each_slice(3, &fn)",
+        js_code: "for(var i = 0; i < arr.length; i += n) { fn(arr.slice(i, i + n)); };",
+        sugar_code: "arr.inGroupsOf(3).each(fn);",
+        sugar_notes: "Sugar will pad each group (%null% by default) to always be n elements.",
+        ref: 'Array/inGroupsOf'
+      },
+      {
+        name: 'each_with_index',
+        description: 'Calls a block with two arguments, the element and its index for each element.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.each_with_index(&fn)",
+        js_code: "for(var i = 0; i < arr.length; i ++) { fn(arr[i], i); };",
+        es5_code: "arr.forEach(fn);",
+        sugar_code: "arr.each(fn);"
+        sugar_enhancements: "Sugar's %each% method has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
+        ref: 'Array/each'
+      },
+      {
+        name: 'find',
+        description: 'Returns the first element for which the block is not false.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.find { |n| n % 3 == 0 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { return arr[i]; } };",
+        sugar_code: "arr.find(function(el) { return el % 3 == 0; });",
+        sugar_enhancements: "Sugar's %find% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        ref: 'Array/find'
+      },
+      {
+        name: 'find_all',
+        description: 'Returns an array containing all elements for which the block is not false.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.find_all { |n| n % 3 == 0 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
+        es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
+        sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
+        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'map',
+        description: 'Creates an array from another via a mapping function.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.map { |x| x * 3 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
+        es5_code: "arr.map(function(el) { return el * 3; });",
+        sugar_code: "arr.map(function(el) { return el * 3; });",
+        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut."
+        ref: 'Array/map'
       },
       {
         name: 'select',
