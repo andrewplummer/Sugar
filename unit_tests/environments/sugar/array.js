@@ -43,8 +43,8 @@ test('Array', function () {
   equal([5,2,4,4].indexOf(4, -10), 2, 'Array#indexOf | 4 in 5,2,4,4 from index -10');
   equal([5,2,4,4].indexOf(4, -1), 3, 'Array#indexOf | 4 in 5,2,4,4 from index -1');
 
-  equal([{ foo: 'bar' }].indexOf({ foo: 'bar' }), -1, 'Array#indexOf | will not find deep objects (use find)');
-  equal([{ foo: 'bar' }].indexOf(function(a) { return a.foo === 'bar'; }), -1, 'Array#indexOf | will not run against a function (use find)');
+  equal([{ foo: 'bar' }].indexOf({ foo: 'bar' }), -1, 'Array#indexOf | will not find deep objects (use findIndex)');
+  equal([{ foo: 'bar' }].indexOf(function(a) { return a.foo === 'bar'; }), -1, 'Array#indexOf | will not run against a function (use findIndex)');
 
   equal(['a','b','c','d','a','b'].lastIndexOf('b'), 5, 'Array#lastIndexOf | b');
   equal(['a','b','c','d','a','b'].lastIndexOf('b', 4), 1, 'Array#lastIndexOf | b from index 4');
@@ -68,8 +68,8 @@ test('Array', function () {
   // Prototype's "lastIndexOf" apparently doesn't pass this particular test.
   //equal([2,5,9,2].lastIndexOf(2, 10), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 10', { prototype: (jQuery.browser.msie ? 10 : 3) });
 
-  equal([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), -1, 'Array#lastIndexOf | will not find deep objects (use find)');
-  equal([{ foo: 'bar' }].lastIndexOf(function(a) { return a.foo === 'bar'; }), -1, 'Array#lastIndexOf | will not run against a function (use find)');
+  equal([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), -1, 'Array#lastIndexOf | will not find deep objects (use findIndex)');
+  equal([{ foo: 'bar' }].lastIndexOf(function(a) { return a.foo === 'bar'; }), -1, 'Array#lastIndexOf | will not run against a function (use findIndex)');
 
 
 
@@ -1517,6 +1517,41 @@ test('Array', function () {
   equal([1, 2, 3].zip([4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8], [3, 6, 9]], 'Array.zip | three arrays');
   equal([1, 2].zip([4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8]], 'Array.zip | constrained by length of first');
   equal([4, 5, 6].zip([1, 2], [8]), [[4, 1, 8], [5, 2, null], [6, null, null]], 'Array.zip | filled with null', { prototype: [[4,1,8],[5,2,undefined],[6,undefined,undefined]]});
+
+
+
+  // Array#findIndex
+
+  equal(['a','b','c'].findIndex('b'), 1, 'Array#findIndex | b in a,b,c');
+  equal(['a','b','c'].findIndex('b', 0), 1, 'Array#findIndex | b in a,b,c from 0');
+  equal(['a','b','c'].findIndex('a'), 0, 'Array#findIndex | a in a,b,c');
+  equal(['a','b','c'].findIndex('f'), -1, 'Array#findIndex | f in a,b,c');
+
+  equal(['a','b','c','b'].findIndex('b'), 1, 'Array#findIndex | finds first instance');
+  equal(['a','b','c','b'].findIndex('b', 2), 3, 'Array#findIndex | finds first instance from index');
+
+  equal([5,2,4].findIndex(5), 0, 'Array#findIndex | 5 in 5,2,4');
+  equal([5,2,4].findIndex(2), 1, 'Array#findIndex | 2 in 5,2,4');
+  equal([5,2,4].findIndex(4), 2, 'Array#findIndex | 4 in 5,2,4');
+  equal([5,2,4,4].findIndex(4, 3), 3, 'Array#findIndex | 4 in 5,2,4,4 from index 3');
+
+  equal([5,2,4,4].findIndex(4, 10), -1, 'Array#findIndex | 4 in 5,2,4,4 from index 10');
+  equal([5,2,4,4].findIndex(4, -10), 2, 'Array#findIndex | 4 in 5,2,4,4 from index -10');
+  equal([5,2,4,4].findIndex(4, -1), 3, 'Array#findIndex | 4 in 5,2,4,4 from index -1');
+
+  equal([{ foo: 'bar' }].findIndex({ foo: 'bar' }), 0, 'Array#findIndex | will find deep objects');
+  equal([{ foo: 'bar' }].findIndex(function(a) { return a.foo === 'bar'; }), 0, 'Array#findIndex | will run against a function');
+
+  equal(['a','b','c'].findIndex(/[bz]/), 1, 'Array#findIndex | matches regexp');
+
+  var people = [
+    { name: 'jim',    age: 27, hair: 'brown'  },
+    { name: 'mary',   age: 52, hair: 'blonde' },
+    { name: 'ronnie', age: 13, hair: 'brown'  },
+    { name: 'edmund', age: 27, hair: 'blonde' }
+  ];
+
+  equal(people.findIndex(function(person) { return person.age == 13; }), 2, 'Array#findIndex | JSON objects');
 
 });
 
