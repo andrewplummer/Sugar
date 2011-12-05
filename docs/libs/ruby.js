@@ -15,6 +15,7 @@ var SugarRubyMethods = [
         name: '<<',
         description: 'Appends to the end of the string.',
         js_compatibility: 2,
+        sugar_compatibility: 2,
         original_code: "str << 'hello'",
         js_code: "str += 'hello';",
         js_notes: 'There is no %<<% operator in Javascript. Simply use the %+% string concatenation operator instead.'
@@ -40,7 +41,7 @@ var SugarRubyMethods = [
         js_compatibility: 1,
         sugar_compatibility: 1,
         original_code: "str[2]; str[1..2]; str[/[aeiou]+/]; str['lo'];",
-        js_code: "str.charAt(2); str.slice(1,2); str.match(/[aeiou]/); str.match('lo');"
+        js_code: "str.charAt(2); str.slice(1,2); str.match(/[aeiou]/); str.match('lo');",
         js_notes: "Note that although Javascript does allow array-style access to strings (%[]%), this will break in IE8 and below, so it's best to use %charAt% instead. Sugar patches this method this and more with %at%. For a range of indexes, use %slice%. Javascript native %match% will return an array of matches instead of a substring, but will be %null% if there is no match, which can cause problems. Sugar's %each% method is essentially the same but will guarantee an empty array when no match occurs.",
         ref: 'String/at'
       },
@@ -50,8 +51,8 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str[3] = 'h'",
-        js_code: "str.slice(0,2) + 'h' + str.slice(4);"
-        js_notes: "As Javascript string primitives are not passed by reference, changing an index of a string will not do anything. A new string instead needs to be concatenated together."
+        js_code: "str.slice(0,2) + 'h' + str.slice(4);",
+        js_notes: "As Javascript string primitives are not passed by reference, changing an index of a string will not do anything. A new string instead needs to be concatenated together.",
         sugar_code: "str.insert('h',3);",
         sugar_notes: "%insert% allows a simple, readable syntax to concatenate a string inside another. This method is an alias of %add%, which does the same thing, but reads better when doing a simple concatenation on a string."
       },
@@ -61,8 +62,8 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str * 3",
-        js_code: "str + str + str"
-        js_notes: "No such method exists in native Javascript, so straight concatenation or a for loop must be used."
+        js_code: "str + str + str",
+        js_notes: "No such method exists in native Javascript, so straight concatenation or a for loop must be used.",
         sugar_code: "str.repeat(3)"
       },
       {
@@ -89,7 +90,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str.bytes; str.bytes { |byte| }",
-        js_code: "for(var i = 0; i < str.length; i++) { str.charCodeAt(i); }"
+        js_code: "for(var i = 0; i < str.length; i++) { str.charCodeAt(i); }",
         sugar_code: "str.codes(); str.codes(function(code){ });",
         ref: 'String/codes'
       },
@@ -99,7 +100,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code: "str.capitalize",
-        js_code: "str = str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase();"
+        js_code: "str = str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase();",
         sugar_code: "str.capitalize();",
         sugar_enhancements: "Sugar can also optionally capitalize all words in the string."
       },
@@ -147,7 +148,7 @@ var SugarRubyMethods = [
         original_code: "str.count('lo')",
         js_code: "var match; match = str.match(/[lo]/g); return match ? match.length : 0;",
         js_notes: 'String#match will return %null% if no match is made, which will throw an error when getting the length, so an extra step is needed here.',
-        sugar_code: "str.each(/[lo]/g).length;
+        sugar_code: "str.each(/[lo]/g).length;",
         sugar_notes: 'In addition to running a callback on each match, String#each in Sugar will always return an array of matches which can be leveraged here.',
         ref: 'String/each'
       },
@@ -158,7 +159,7 @@ var SugarRubyMethods = [
         sugar_compatibility: 1,
         original_code: "str.delete('lo')",
         js_code: "str.replace(/[lo]/g, '')",
-        sugar_code: "str.remove(/[lo]/g);
+        sugar_code: "str.remove(/[lo]/g);",
         ref: 'String/remove'
       },
       {
@@ -174,7 +175,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str.each_byte { |byte| }",
-        js_code: "for(var i = 0; i < str.length; i++) { str.charCodeAt(i); }"
+        js_code: "for(var i = 0; i < str.length; i++) { str.charCodeAt(i); }",
         sugar_code: "str.codes(function(code){ });",
         ref: 'String/codes'
       },
@@ -211,7 +212,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code: "str.end_with?('h')",
-        js_code: "/h$/.test(str)"
+        js_code: "/h$/.test(str)",
         sugar_code: "str.endsWith('h')",
         sugar_enhancements: "Sugar can also optionally turn off case sensitivity."
       },
@@ -256,7 +257,7 @@ var SugarRubyMethods = [
         original_code: "str.insert(2, 'c')",
         js_code: "str.slice(0,2) + 'c' + str.slice(2);",
         sugar_code: "str.insert('c', 2);",
-        ref: 'String/insert"
+        ref: 'String/insert'
       },
       {
         name: 'lines',
@@ -283,9 +284,9 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 1,
         original_code:  "str.lstrip();",
-        js_code: "str.replace(/^\s+/, '');"
+        js_code: "str.replace(/^\s+/, '');",
         sugar_code: "str.trimLeft();",
-        sugar_enhancements: "Javascript's interpretation of \"whitespace\" may vary. Sugar consolidates this behavior in String#trimLeft so that behavior will be consistent in different environments.',
+        sugar_enhancements: "Javascript's interpretation of \"whitespace\" may vary. Sugar consolidates this behavior in String#trimLeft so that behavior will be consistent in different environments.",
         ref: 'String/trimLeft'
 
       },
@@ -368,7 +369,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 1,
         original_code:  "str.rstrip();",
-        js_code: "str.replace(/^\s+/, '');"
+        js_code: "str.replace(/^\s+/, '');",
         sugar_code: "str.trimRight();",
         sugar_enhancements: "Javascript's interpretation of \"whitespace\" may vary. Sugar consolidates this behavior in String#trimRight so that behavior will be consistent in different environments.",
         ref: 'String/trimRight'
@@ -421,7 +422,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code: "str.start_with?('h')",
-        js_code: "/h$/.test(str)"
+        js_code: "/h$/.test(str)",
         sugar_code: "str.startsWith('h')",
         sugar_enhancements: "Sugar can also optionally turn off case sensitivity."
       },
@@ -431,10 +432,10 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 1,
         original_code:  "str.strip();",
-        js_code: "str.replace(/^\s+/, '');"
+        js_code: "str.replace(/^\s+/, '');",
         es5_code: "str.trim();",
         sugar_code: "str.trim();",
-        sugar_enhancements: "Javascript's interpretation of \"whitespace\" may vary. Sugar consolidates this behavior in String#trim so that behavior will be consistent in different environments.',
+        sugar_enhancements: "Javascript's interpretation of \"whitespace\" may vary. Sugar consolidates this behavior in String#trim so that behavior will be consistent in different environments.",
         ref: 'String/trim'
 
       },
@@ -509,12 +510,7 @@ var SugarRubyMethods = [
         original_code: "str.upcase",
         js_code: "str.toUpperCase()"
       },
-    ]
-  },
-  {
-    type: 'instance',
-    namespace: 'String',
-    methods: [
+      // Begin rails methods
       {
         name: 'at',
         description: 'Returns the character at the passed index.',
@@ -668,8 +664,9 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "num ** 5",
-        js_code: 'Math.pow(num, 5);",
-        sugar_code: "(num).pow(5);"
+        js_code: "Math.pow(num, 5);",
+        sugar_code: "(num).pow(5);",
+        ref: 'Number/pow'
       },
       {
         name: 'abs',
@@ -677,7 +674,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "num.abs",
-        js_code: 'Math.abs(num);",
+        js_code: "Math.abs(num);",
         sugar_code: "num.abs();"
       },
       {
@@ -703,7 +700,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "num.ceil",
-        js_code: 'Math.ceil(num);",
+        js_code: "Math.ceil(num);",
         sugar_code: "(num).ceil();"
       },
       {
@@ -721,7 +718,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "5.downto(2)",
-        js_code: "for(var i = 5; i >= 2; i--) { fn(i); }"
+        js_code: "for(var i = 5; i >= 2; i--) { fn(i); }",
         sugar_code: "(5).downto(2, fn);"
       },
       {
@@ -730,7 +727,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "num.even?",
-        js_code: 'num % 2 == 0;",
+        js_code: "num % 2 == 0;",
         sugar_code: "num.isEven();"
       },
       {
@@ -739,7 +736,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "num.floor",
-        js_code: 'Math.floor(num);",
+        js_code: "Math.floor(num);",
         sugar_code: "(num).floor();"
       },
       {
@@ -783,7 +780,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "num1.multiple_of?(num2)",
-        js_code: 'num1 % num2 == 0;",
+        js_code: "num1 % num2 == 0;",
         sugar_code: "num1.multipleOf(num2);"
       },
       {
@@ -799,7 +796,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "num.odd?",
-        js_code: 'num % 2 == 1;",
+        js_code: "num % 2 == 1;",
         sugar_code: "num.isOdd();"
       },
       {
@@ -841,7 +838,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 1,
         original_code: "1.step(10, 2)",
-        js_code: "for(var i = 1; i <= 10; i += 2) { fn(i); }"
+        js_code: "for(var i = 1; i <= 10; i += 2) { fn(i); }",
         sugar_code: "(1).upto(10, fn, 2);"
       },
       {
@@ -850,7 +847,7 @@ var SugarRubyMethods = [
         sugar_compatibility: 0,
         js_compatibility: 2,
         original_code: "num.times { |n| }",
-        js_code: "for(var i = 0; i < num; i++) { fn(i); }"
+        js_code: "for(var i = 0; i < num; i++) { fn(i); }",
         sugar_code: "num.times(fn)",
       },
       {
@@ -875,7 +872,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "2.upto(5)",
-        js_code: "for(var i = 2; i <= 5; i++) { fn(i); }"
+        js_code: "for(var i = 2; i <= 5; i++) { fn(i); }",
         sugar_code: "(2).upto(5, fn);"
       },
       {
@@ -935,7 +932,7 @@ var SugarRubyMethods = [
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
         es5_code: "arr.map(function(el) { return el * 3; });",
         sugar_code: "arr.map(function(el) { return el * 3; });",
-        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut."
+        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut.",
         ref: 'Array/map'
       },
       {
@@ -966,7 +963,7 @@ var SugarRubyMethods = [
         original_code:  "arr.detect { |n| n % 3 == 0 }",
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { return arr[i]; } };",
         sugar_code: "arr.find(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "Sugar's %find% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        sugar_enhancements: "Sugar's %find% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/find'
       },
       {
@@ -1018,7 +1015,7 @@ var SugarRubyMethods = [
         original_code:  "arr.each_with_index(&fn)",
         js_code: "for(var i = 0; i < arr.length; i ++) { fn(arr[i], i); };",
         es5_code: "arr.forEach(fn);",
-        sugar_code: "arr.each(fn);"
+        sugar_code: "arr.each(fn);",
         sugar_enhancements: "Sugar's %each% method has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
         ref: 'Array/each'
       },
@@ -1030,7 +1027,7 @@ var SugarRubyMethods = [
         original_code:  "arr.find { |n| n % 3 == 0 }",
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { return arr[i]; } };",
         sugar_code: "arr.find(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "Sugar's %find% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        sugar_enhancements: "Sugar's %find% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/find'
       },
       {
@@ -1042,7 +1039,7 @@ var SugarRubyMethods = [
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
         es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
         sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/findAll'
       },
       {
@@ -1063,7 +1060,7 @@ var SugarRubyMethods = [
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
         es5_code: "arr.map(function(el) { return el * 3; });",
         sugar_code: "arr.map(function(el) { return el * 3; });",
-        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut."
+        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut.",
         ref: 'Array/map'
       },
       {
@@ -1075,7 +1072,7 @@ var SugarRubyMethods = [
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
         es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
         sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays."
+        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/findAll'
       },
     ]
