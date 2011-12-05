@@ -1191,4 +1191,31 @@ test('String', function () {
   equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
 
 
+  // String#compare
+
+  equal(('a').compare('a'), 0, 'Number#compare | a and a results in 0');
+  equal(('a').compare('b'), -1, 'Number#compare | a and b results in 0');
+  equal(('b').compare('a'), 1, 'Number#compare | b and a results in 1');
+  equal(('z').compare('a'), 1, 'Number#compare | z and a results in 1');
+  equal(('a').compare('z'), -1, 'Number#compare | a and z results in 0');
+
+  equal(('A').compare('a'), -1, 'Number#compare | caps come before lower case');
+  equal(('_').compare('-'), 1, 'Number#compare | special chars are also compared by code point');
+
+  equal(('advertising').compare('@advertising', true), 0, 'Number#compare | all special characters can be ignored');
+  equal(('advertising').compare('@advertising', '@'), 0, 'Number#compare | specific characters can be ignored');
+  equal(('advertising').compare('@advertising', '#'), 1, 'Number#compare | only specific characters are ignored');
+
+  equal(('@advertising').compare('advertising', true), 0, 'Number#compare | inverse ignore is also true');
+  equal(('@advertising').compare('advertising', '@'), 0, 'Number#compare | inverse ignore is also true');
+
+  equal(('2advertising').compare('advertising', true), -1, 'Number#compare | numeric characters still count');
+
+  equal(('1').compare(0), 1, 'Number#compare | numbers are coerced | 0');
+  equal(('1').compare(1), 0, 'Number#compare | numbers are coerced | 1');
+  equal(('1').compare(2), -1, 'Number#compare | numbers are coerced | 2');
+  equal(('1').compare(87), -1, 'Number#compare | numbers are coerced | 87');
+
+  equal(('80').compare(9), -1, 'Number#compare | in lexical comparison, 80 comes before 9');
+
 });
