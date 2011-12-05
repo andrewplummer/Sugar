@@ -298,7 +298,7 @@ var SugarRubyMethods = [
         original_code:  "str.match(/foo/); str.match(/foo/) { |m| }",
         js_code: "str.match(/foo/);",
         sugar_code: "str.each(/foo/, function(m) {});",
-        sugar_notes: "Sugar's String#each function will additionally run a callback if a match is made, and more closely matches Ruby's %match% method"
+        sugar_notes: "String#each will additionally run a callback if a match is made, and more closely matches Ruby's %match% method"
       },
       {
         name: 'oct',
@@ -383,7 +383,7 @@ var SugarRubyMethods = [
         js_code: "str.scan(/foo/);",
         js_notes: "%scan% in Javascript is simply a matter of adding a global flag to the regex passed for %match%.",
         sugar_code: "str.each(/foo/, function(m) {});",
-        sugar_notes: "Sugar's String#each function will additionally run a callback if a match is made, and more closely matches Ruby's %scan% method"
+        sugar_notes: "String#each will additionally run a callback if a match is made, and more closely matches Ruby's %scan% method"
       },
       {
         name: 'size',
@@ -519,7 +519,7 @@ var SugarRubyMethods = [
         original_code: "str.at(1)",
         js_code: "str.slice(0,1);",
         sugar_code: "str.at(1);",
-        sugar_notes: "Sugar's %at% method has some enhanced functionality including passing multiple indexes as well as looping past the end of the index range to allow cycling through the string."
+        sugar_notes: "%at% has some enhanced functionality including passing multiple indexes as well as looping past the end of the index range to allow cycling through the string."
       },
       {
         name: 'blank?',
@@ -963,7 +963,7 @@ var SugarRubyMethods = [
         original_code:  "arr.detect { |n| n % 3 == 0 }",
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { return arr[i]; } };",
         sugar_code: "arr.find(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "Sugar's %find% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
+        sugar_enhancements: "%find% has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/find'
       },
       {
@@ -1016,7 +1016,7 @@ var SugarRubyMethods = [
         js_code: "for(var i = 0; i < arr.length; i ++) { fn(arr[i], i); };",
         es5_code: "arr.forEach(fn);",
         sugar_code: "arr.each(fn);",
-        sugar_enhancements: "Sugar's %each% method has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
+        sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
         ref: 'Array/each'
       },
       {
@@ -1027,7 +1027,7 @@ var SugarRubyMethods = [
         original_code:  "arr.find { |n| n % 3 == 0 }",
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { return arr[i]; } };",
         sugar_code: "arr.find(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "Sugar's %find% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
+        sugar_enhancements: "%find% has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/find'
       },
       {
@@ -1039,7 +1039,7 @@ var SugarRubyMethods = [
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
         es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
         sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
+        sugar_enhancements: "%findAll% has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/findAll'
       },
       {
@@ -1050,6 +1050,50 @@ var SugarRubyMethods = [
         original_code: "arr.first;",
         js_code: "arr.slice(0,1);",
         sugar_code: "arr.first();"
+      },
+      {
+        name: 'grep',
+        description: 'Returns an array containing all elements for which the pattern matches.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.grep(/id/)",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i].match(/id/)) { result.push(arr[i]); } } return result;",
+        es5_code: "arr.filter(function(el) { return el.match(/id/); });",
+        sugar_code: "arr.findAll(/id/);",
+        sugar_enhancements: "%findAll% has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'group_by',
+        description: 'Returns a hash whose keys are the evalated result of a block passed, and values are arrays of elements returning that key.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.group_by { |el| el[:age] }",
+        js_code: "var result = {}, age; for(var i = 0; i < arr.length; i++) { age = arr[i]['age']; if(!result[age]) { result[age] = []; } result[age].push(arr[i]); } return result;",
+        sugar_code: "arr.groupBy('age');",
+        sugar_enhancements: "%groupBy% additionally accepts a callback that can be called on each group.",
+        ref: 'Array/groupBy'
+      },
+      {
+        name: 'include?',
+        description: 'Returns true if any element of the enumerable matches the object passed.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.include?('foo')",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'foo') { return true; } } return false;",
+        es5_code: "arr.some(function(el){ return el == 'foo'; });",
+        sugar_code: "arr.has('foo');",
+        ref: 'Array/has'
+      },
+      {
+        name: 'inject',
+        description: 'Combines all elements of the enumerable by applying a binary operation, specified by a block or symbol.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.inject {|sum, n| sum + n }",
+        js_code: "var result = 0; for(var i = 0; i <= 5; i++) { result += arr[i]; }; return result;",
+        es5_code: "arr.reduce(function(a, b) { return a + b; });",
+        ref: 'Array/reduce'
       },
       {
         name: 'map',
@@ -1064,6 +1108,153 @@ var SugarRubyMethods = [
         ref: 'Array/map'
       },
       {
+        name: 'max',
+        description: 'Returns the largest item in the enumerable.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.max { |a,b| a.length <=> b.length }",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) result = arr[i].length; } return result;",
+        es5_code: "arr.reduce(function(a, b){ return a.length > b.length ? a.length : b.length; })",
+        sugar_code: "arr.max('length').first().length;",
+        sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one max value.",
+        ref: 'Array/max'
+      },
+      {
+        name: 'max_by',
+        description: 'Returns the object in the enum that returns the greatest value for the given block.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.max_by { |el| el.length }",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) result = arr[i]; } return result;",
+        sugar_code: "arr.max('length').first();",
+        sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one max value.",
+        ref: 'Array/max'
+      },
+      {
+        name: 'member?',
+        description: 'Returns true if any element of the enumerable matches the object passed.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.member?('foo')",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'foo') { return true; } } return false;",
+        es5_code: "arr.some(function(el){ return el == 'foo'; });",
+        sugar_code: "arr.has('foo');",
+        ref: 'Array/has'
+      },
+      {
+        name: 'min',
+        description: 'Returns the smallest item in the enumerable.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.min { |a,b| a.length <=> b.length }",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length < result || result === undefined) result = arr[i].length; } return result;",
+        es5_code: "arr.reduce(function(a, b){ return a.length < b.length ? a.length : b.length; })",
+        sugar_code: "arr.min('length').first().length;",
+        sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        ref: 'Array/min'
+      },
+      {
+        name: 'min_by',
+        description: 'Returns the object in the enum that returns the greatest value for the given block.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.min_by { |el| el.length }",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) result = arr[i]; } return result;",
+        sugar_code: "arr.min('length').first();",
+        sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        ref: 'Array/min'
+      },
+      {
+        name: 'minmax',
+        description: 'Returns an array with two elements that are the maximum value and the minimum value.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.minmax { |a,b| a.length <=> b.length }",
+        js_code: "var min, max; for(var i = 0; i < arr.length; i++) { if(arr[i].length > max || max === undefined) max = arr[i]; if(arr[i].length < min || min === undefined) min = arr[i]; } return [min, max];",
+        sugar_code: "[arr.min('length').first().length, arr.max('length').first().length];",
+        sugar_notes: "Sugar's %min% and %max% methods allow a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        ref: 'Array/min'
+      },
+      {
+        name: 'minmax_by',
+        description: 'Returns an array with two elements that are the element with the maximum value and the element with the minimum value.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.minmax { |a,b| a.length <=> b.length }",
+        js_code: "var min, max; for(var i = 0; i < arr.length; i++) { if(arr[i].length > max || max === undefined) max = arr[i]; if(arr[i].length < min || min === undefined) min = arr[i]; } return [min, max];",
+        sugar_code: "[arr.min('length').first().length, arr.max('length').first().length];",
+        sugar_notes: "Sugar's %min% and %max% methods allow a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        ref: 'Array/min'
+      },
+      {
+        name: 'none?',
+        description: 'Returns true if the block never returns true for all elements.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.none? { |n| n < 4 }",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] < 4) { return false; } } return true;",
+        es5_code: "arr.none(function(n) { return n < 4; });",
+        sugar_code: "arr.none(function(n) { return n < 4; });",
+        sugar_notes: "Sugar can also accept a string as a shortcut for the property to be tested against.",
+        ref: 'Array/none'
+      },
+      {
+        name: 'one?',
+        description: 'Returns true if the block returns true exactly once.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.one? { |n| n == 3 }",
+        js_code: "var occurrences = 0; for(var i = 0; i < arr.length; i++) { if(arr[i] == 3) { occurrences += 1; } } return occurrences == 1;",
+        es5_code: "arr.filter(function(n) { return n == 3; }).length == 1;",
+        sugar_code: "arr.findAll(function(n) { return n == 3; }).length == 1;",
+        sugar_enhancements: "%findAll% has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'partition',
+        description: 'Returns two arrays, the first with the elements for which the block returned true, and the rest.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.partition { |n| n % 2 == 0 }",
+        js_code: "var t = [], f = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 2 == 0) { t.push(arr[i]); } else { f.push(arr[i]) } } return [t, f];",
+        sugar_code: "arr.groupBy(function(n) { return n % 2 == 0; });",
+        sugar_notes: "%groupBy% will return an object whose keys are the result of the passed function. If a truthy/falsy function is passed, the keys will be %true% and %false%, and the groups can be accessed that way. This method allows more than a single 2 element split.",
+        ref: 'Array/groupBy'
+      },
+      {
+        name: 'reduce',
+        description: 'Combines all elements of the enumerable by applying a binary operation, specified by a block or symbol.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.reduce {|sum, n| sum + n }",
+        js_code: "var result = 0; for(var i = 0; i <= 5; i++) { result += arr[i]; }; return result;",
+        es5_code: "arr.reduce(function(a, b) { return a + b; });",
+        ref: 'Array/reduce'
+      },
+      {
+        name: 'reject',
+        description: 'Returns an array with all elements for which the block returned false.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.reject {|n| n % 3 == 0 }",
+        js_code: "var result = []; for(var i = 0; i <= arr.length; i++) { if(n % 3 != 0) result.push(arr[i]); } return result;",
+        es5_code: "arr.filter(function(n) { return n % 3 != 0; });",
+        sugar_code: "arr.exclude(function() { return n % 3 == 0; })",
+        ref: 'Array/exclude'
+      },
+      {
+        name: 'reverse_each',
+        description: 'Traverses the array in reverse order.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.reverse_each(&fn)",
+        js_code: "var result = []; for(var i = arr.length; i > 0; i-- { fn(arr[i]); }",
+        es5_code: "arr.reverse.forEach(fn);",
+        sugar_code: "arr.reverse.each(fn);",
+        sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
+        ref: 'Array/each'
+      },
+      {
         name: 'select',
         description: 'Returns an array containing all elements for which the block is not false.',
         js_compatibility: 0,
@@ -1072,8 +1263,72 @@ var SugarRubyMethods = [
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
         es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
         sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "Sugar's %findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
+        sugar_enhancements: "%findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/findAll'
+      },
+      {
+        name: 'sort',
+        description: 'Returns an array with all of the elements sorted.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "arr.sort { |a, b| a <=> b }",
+        js_code: "arr.sort(function(a, b) { return a - b; })",
+        js_notes: "Note that %sort% is destructive here. If this is not intended, create a copy of the array first using %concat%.",
+        sugar_code: "arr.sort(function(a, b) { return a.compare(b); }); arr.sortBy('id')",
+        sugar_enhancements: "Sugar provides a %compare% method on strings, numbers, and dates, to allow complex sorting when the type isn't known. Addtionally, %sortBy% allows the array to be sorted by a given property.",
+        ref: 'Array/sortBy'
+      },
+      {
+        name: 'sort_by',
+        description: 'Sorts the enumerable using a set of keys generated by mapping the values with the given block.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.sort { |word| word.length }",
+        js_code: "arr.sort(function(aWord, bWord) { if(aWord == bWord) { return 0; } else if(aWord < bWord) { return -1; } else { return 1; });",
+        js_notes: "Note that %sort% is destructive here. If this is not intended, create a copy of the array first using %concat%.",
+        sugar_code: "arr.sortBy('length');",
+        ref: 'Array/sortBy'
+      },
+      {
+        name: 'sum',
+        description: 'Returns the sum of all elements in the iterable.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.sum(&:price)",
+        js_code: "var result = 0; for(var i = 0; i < arr.length; i++) { result += arr[i]['price']; } return result;",
+        es5_code: "arr.reduce(function(a, b){ return a + b.price; }, 0)",
+        sugar_code: "arr.sum('price')",
+        ref: 'Array/sum'
+      },
+      {
+        name: 'take',
+        description: 'Returns the first n elements of the array.',
+        js_compatibility: 1,
+        sugar_compatibility: 3,
+        original_code:  "arr.take(3)",
+        js_code: "arr.slice(0,3);",
+        sugar_code: "arr.to(3);",
+        ref: 'Array/to'
+      },
+      {
+        name: 'take_while',
+        description: 'Returns elements up to and including the first element for which the block returns nil or false.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "arr.take_while { |n| n < 5 }",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i] >= 5) { result = arr.slice(i); break; } }; return result;",
+        sugar_code: "var take = true; arr.findAll(function(n) { if(n < 5) { return take; } else { return take = false; }});",
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'zip',
+        description: 'Takes one element from the enumerable and merges corresponding elements from the passed enumerables.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr1.zip(arr2)",
+        js_code: "var result = []; for(var i = 0; i < arr1.length; i++) { result.push([arr1[i], arr2[i] || null]); } return result;",
+        sugar_code: "arr1.zip(arr2);",
+        ref: 'Array/zip'
       },
     ]
   }
