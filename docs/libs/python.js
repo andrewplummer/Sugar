@@ -508,7 +508,7 @@ var SugarPythonMethods = [
         es5_code: "arr.reduce(function(a, b){ return a.length > b.length ? a.length : b.length; })",
         sugar_code: "arr.max('length').first().length;",
         sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one max value.",
-        ref: 'Array/map'
+        ref: 'Array/max'
       },
       {
         name: 'min',
@@ -520,7 +520,7 @@ var SugarPythonMethods = [
         es5_code: "arr.reduce(function(a, b){ return a.length < b.length ? a.length : b.length; })",
         sugar_code: "arr.min('length').first().length;",
         sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
-        ref: 'Array/map'
+        ref: 'Array/min'
       },
       {
         name: 'oct',
