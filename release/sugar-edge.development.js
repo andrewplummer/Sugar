@@ -587,10 +587,11 @@
 
   // Basic array internal methods
 
-  function arrayEach(arr, fn, index, loop, sparse) {
+  function arrayEach(arr, fn, startIndex, loop, sparse) {
     var length, index, i;
     checkCallback(fn);
-    i = toIntegerWithDefault(index, 0);
+    if(startIndex < 0) startIndex = arr.length + startIndex;
+    i = toIntegerWithDefault(startIndex, 0);
     length = loop === true ? arr.length + i : arr.length;
     while(i < length) {
       index = i % arr.length;
@@ -603,7 +604,7 @@
     }
   }
 
-  function arrayFind(arr, f, fromIndex, loop, returnIndex) {
+  function arrayFind(arr, f, startIndex, loop, returnIndex) {
     var result, index;
     arrayEach(arr, function(el, i, arr) {
       if(multiMatch(el, f, arr, [i, arr])) {
@@ -611,7 +612,7 @@
         index = i;
         return false;
       }
-    }, fromIndex, loop);
+    }, startIndex, loop);
     return returnIndex ? index : result;
   }
 
@@ -1080,6 +1081,25 @@
         }
       }, index, loop);
       return result;
+    },
+
+    /***
+     * @method findIndex(<f>, [startIndex] = 0, [loop] = false)
+     * @returns Number
+     * @short Returns the index of the first element that matches <f> or -1 if not found.
+     * @extra This method has a few notable differences to native %indexOf%. Although <f> will similarly match a primitive such as a string or number, it will also match deep objects and arrays that are not equal by reference (%===%). Additionally, if a function is passed it will be run as a matching function (similar to the behavior of %Array#filter%) rather than attempting to find that function itself by reference in the array. Finally, a regexp will be matched against elements in the array, presumed to be strings. Starts at [index], and will continue from index = 0 if [loop] is true.
+     * @example
+     *
+     *   [1,2,3,4].findIndex(3);  -> 2
+     *   [1,2,3,4].findIndex(function(n) {
+     *     return n % 2 == 0;
+     *   }); -> 1
+     *   ['one','two','three'].findIndex(/th/); -> 2
+     *
+     ***/
+    'findIndex': function(f, startIndex, loop) {
+      var index = arrayFind(this, f, startIndex, loop, true);
+      return isDefined(index) ? index : -1;
     },
 
     /***
@@ -2118,6 +2138,22 @@
      ***/
     'hex': function(pad) {
       return this.pad(pad || 1, false, 16);
+    },
+
+    /***
+     * @method hex([pad] = 1)
+     * @returns String
+     * @short Converts the number to hexidecimal.
+     * @extra [pad] will pad the resulting string to that many places.
+     * @example
+     *
+     *   (255).hex()   -> 'ff';
+     *   (255).hex(4)  -> '00ff';
+     *   (23654).hex() -> '5c66';
+     *
+     ***/
+    'compare': function(cmp) {
+      return this - Number(cmp);
     }
 
   });
@@ -2819,7 +2855,7 @@
       *   'one & two'.escapeHTML()        -> 'one &amp; two'
       *
       ***/
-    'escapeHTML': function(param) {
+    'escapeHTML': function() {
       return this.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     },
 
@@ -2833,7 +2869,7 @@
       *   'one &amp; two'.unescapeHTML()                -> 'one & two'
       *
       ***/
-    'unescapeHTML': function(param) {
+    'unescapeHTML': function() {
       return this.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
     },
 
@@ -3562,6 +3598,29 @@
       return this.replace(/\{(.+?)\}/g, function(m, key) {
         return assign.hasOwnProperty(key) ? assign[key] : m;
       });
+    },
+
+    /***
+     * @method hex([pad] = 1)
+     * @returns String
+     * @short Converts the number to hexidecimal.
+     * @extra [pad] will pad the resulting string to that many places.
+     * @example
+     *
+     *   (255).hex()   -> 'ff';
+     *   (255).hex(4)  -> '00ff';
+     *   (23654).hex() -> '5c66';
+     *
+     ***/
+    'compare': function(cmp, ignore) {
+      var str = this, cmp = String(cmp);
+      if(ignore === true) ignore = /\W/g;
+      if(ignore) {
+        cmp = cmp.remove(ignore);
+        str = str.remove(ignore);
+      }
+      if(str == cmp) return 0;
+      else return str < cmp ? -1 : 1;
     }
 
   });
@@ -5747,7 +5806,7 @@
     },
 
      /***
-     * @method after([num])
+     * @method after([num] = 1)
      * @returns Function
      * @short Creates a function that will execute after [num] calls.
      * @extra %after% is useful for running a final callback after a series of asynchronous operations, when the order in which the operations will complete is unknown.
@@ -5760,7 +5819,12 @@
      ***/
     'after': function(num) {
       var fn = this, counter = 0, storedArguments = [];
-      if(!object.isNumber(num)) num = 1;
+      if(!object.isNumber(num)) {
+        num = 1;
+      } else if(num === 0) {
+        fn.call();
+        return fn;
+      }
       return function() {
         var ret;
         storedArguments.push(Array.create(arguments));
