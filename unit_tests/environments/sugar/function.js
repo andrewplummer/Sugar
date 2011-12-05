@@ -226,6 +226,13 @@ test('Function', function () {
     equal(counter, 2, 'Function#after | calls a function only after a certain number of calls');
   });
 
+  async(function() {
+    var fn, counter = 0;
+    var fn = (function(args) { counter++; }).after(0);
+    equal(counter, 1, 'Function#after | 0 should fire the function immediately');
+    equal(typeof fn, 'function', 'Function#after | 0 should still return a function');
+  });
+
 
   // Function#once
 

@@ -1901,4 +1901,11 @@ test('Date', function () {
   d = new Date(2011, 0, 31);
   dateEqual(d.set({ month: 1, day: 3 }), new Date(2011, 1, 3), 'Date#create | set will also not cause date traversal');
 
+
+  // Date#compare
+
+  equal(new Date(1999, 1, 3).compare(new Date(1999, 1, 2)), (1).day(), 'Date#compare | 1 day ago returns 1 day in ms');
+  equal(new Date(1999, 1, 3).compare(new Date(1999, 1, 3)), 0, 'Date#compare | 1 day ago returns 1 day in ms');
+  equal(new Date(1999, 1, 3).compare(new Date(1999, 1, 4)), (-1).day(), 'Date#compare | 1 day from now returns -1 day in ms');
+
 });
