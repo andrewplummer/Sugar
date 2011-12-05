@@ -461,7 +461,30 @@ test('Number', function () {
 
 
 
+  // Number#compare
 
-//  dateEqual(Date.create('Monday'), getDateWithWeekdayAndOffset(1), 'Date#create | Fuzzy Dates | Monday');
+  equal((0).compare(0), 0, 'Number#compare | 0 is equal to 0');
+  equal((0).compare(-1), 1, 'Number#compare | 0 is greater than -1');
+  equal((0).compare(1), -1, 'Number#compare | 0 is less than 1');
+  equal((1).compare(1), 0, 'Number#compare | 1 is equal to 1');
+  equal((1).compare(2), -1, 'Number#compare | 1 is less than 2');
+  equal((1).compare(0), 1, 'Number#compare | 1 is greater than than 0');
+  equal((5).compare(15), -10, 'Number#compare | 5 is less than than 15');
+  equal((15).compare(5), 10, 'Number#compare | 15 is greater than than 5');
+
+  equal((0).compare('0'), 0, 'Number#compare | strings are coerced | 0 is equal to 0');
+  equal((0).compare('-1'), 1, 'Number#compare | strings are coerced | 0 is greater than -1');
+  equal((0).compare('1'), -1, 'Number#compare | strings are coerced | 0 is less than 1');
+  equal((1).compare('1'), 0, 'Number#compare | strings are coerced | 1 is equal to 1');
+  equal((1).compare('2'), -1, 'Number#compare | strings are coerced | 1 is less than 2');
+  equal((1).compare('0'), 1, 'Number#compare | strings are coerced | 1 is greater than than 0');
+  equal((5).compare('15'), -10, 'Number#compare | strings are coerced | 5 is less than than 15');
+  equal((15).compare('5'), 10, 'Number#compare | strings are coerced | 15 is greater than than 5');
+
+  equal((15).compare('wasabi'), NaN, 'Number#compare | cannot compare numbers to strings');
+  equal((15).compare({ foo: 'bar' }), NaN, 'Number#compare | cannot compare numbers to objects');
+  equal((15).compare(/wasabi/), NaN, 'Number#compare | cannot compare numbers to regexps');
+  equal((15).compare(new Date) < 0, true, 'Number#compare | Dates are implicitly converted to numbers');
+
 });
 
