@@ -86,7 +86,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'bytes',
-        description: 'Passes each byte into a block and returns an enumerable.',
+        description: 'Passes each byte into a block and returns an array.',
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str.bytes; str.bytes { |byte| }",
@@ -116,7 +116,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'chars',
-        description: 'Returns an enumerable with all characters in the string passing them to an optional block.',
+        description: 'Returns an array with all characters in the string passing them to an optional block.',
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str.chars; str.chars { |char| }",
@@ -171,7 +171,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'each_byte',
-        description: 'Passes each byte into a block and returns an enumerable.',
+        description: 'Passes each byte into a block and returns an array.',
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str.each_byte { |byte| }",
@@ -181,7 +181,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'each_char',
-        description: 'Returns an enumerable with all characters in the string passing them to an optional block.',
+        description: 'Returns an array with all characters in the string passing them to an optional block.',
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str.each_char { |char| }",
@@ -201,10 +201,11 @@ var SugarRubyMethods = [
       },
       {
         name: 'empty?',
-        description: 'Returns true if string has a length of 0.',
+        description: 'Returns true if the string has a length of 0.',
         js_compatibility: 0,
+        sugar_compatibility: 0,
         original_code: "str.empty?",
-        js_code: "str === ''"
+        js_code: "str === ''",
       },
       {
         name: 'end_with?',
@@ -897,8 +898,77 @@ var SugarRubyMethods = [
   },
   {
     type: 'instance',
-    namespace: 'Enumerable',
+    namespace: 'Array',
     methods: [
+      {
+        name: '<<',
+        description: 'Pushes the object on to the end of the array.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr << 1",
+        js_code: "arr.push(1);"
+      },
+      {
+        name: '<=>',
+        description: "Returns -1, 0, or 1 if the array is less than, equal to, or greater than the passed array. Returns %nil% if any element's %<=>% operator returns nil.",
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code: "arr1 <=> arr2",
+        js_code: "--",
+        js_notes: "Javascript does not define any means of comparing arrays to each other. If this is required it should be defined separately as application logic."
+      },
+      {
+        name: '==',
+        description: "Equality comparison. Two arrays are equal if they have the same number of elements and each element is equal.",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr1 == arr2",
+        js_code: "var equal = true; for(var i = 0; i < arr1.length; i++) { if(arr1[i] !== arr2[i]) { equal = false; }} return equal && arr1.length == arr2.length;",
+        sugar_code: "Object.equal(arr1, arr2);"
+      },
+      {
+        name: '|',
+        description: "Returns an array with all elements found in either array, with no duplicates.",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr1 | arr2",
+        js_code: "var result = [], both = arr1.concat(arr2), exists; for(var i = 0; i < both.length; i++) { exists = false; for(var j = 0; j < result.length; j++) { if(result[j] == both[i]) { exists = true; } if(!exists) { result.push(both[i]); } } } return result;",
+        sugar_code: "arr1.union(arr2);"
+      },
+      {
+        name: '-',
+        description: "Returns an array with all elements found in the passed array removed.",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr1 - arr2",
+        js_code: "var result = [], exists; for(var i = 0; i < arr1.length; i++) { exists = false; for(var j = 0; j < arr2.length; j++) { if(arr2[j] == arr1[i]) { exists = true; } if(!exists) { result.push(arr1[i]); } } } return result;",
+        sugar_code: "arr1.subtract(arr2);"
+      },
+      {
+        name: '*',
+        description: "Performs a join when provided a string argument or returns a number of concatenated copies of itself for a numeric argument.",
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code: "arr * 3",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { for(var j = 0; j < 3; j++) { result.concat(arr[i]); } } return result;",
+        sugar_code: "arr = arr.include(arr).include(arr);"
+      },
+      {
+        name: '&',
+        description: "Returns an array with all elements common to both arrays with no duplicates.",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr1 & arr2",
+        sugar_code: "arr1.intersect(arr2);"
+      },
+      {
+        name: '+',
+        description: "Concatenates two arrays together and returns the resulting array.",
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr1 + arr2",
+        js_code: "arr1.concat(arr2);"
+      },
       {
         name: 'all?',
         description: 'Returns true if all elements in the iterable are true',
@@ -924,6 +994,24 @@ var SugarRubyMethods = [
         ref: 'Array/all'
       },
       {
+        name: 'at',
+        description: "Returns the element at the given index.",
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code: "arr.at(0); arr.at(-1)",
+        js_code: "arr[0]; arr[arr.length - 1]",
+        sugar_code: "arr.at(0); arr.at(-1);"
+      },
+      {
+        name: 'clear',
+        description: "Removes all elements from the array.",
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code: "arr.clear()",
+        js_code: "arr = [];",
+        js_notes: "Javascript has no method specifically to empty arrays. Simply reset the variable."
+      },
+      {
         name: 'collect',
         description: 'Creates an array from another via a mapping function.',
         js_compatibility: 0,
@@ -934,6 +1022,25 @@ var SugarRubyMethods = [
         sugar_code: "arr.map(function(el) { return el * 3; });",
         sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut.",
         ref: 'Array/map'
+      },
+      {
+        name: 'compact',
+        description: 'Returns a copy of the array with %nil% elements removed.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.compact",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != null) { result.push(arr[i]); } return result;",
+        sugar_code: "arr.compact();",
+        sugar_enhancements: "%compact% will remove all elements that are %undefined%, %null%, or %NaN%. Additionally you can pass a parameter to remove all falsy values.",
+        ref: 'Array/compact'
+      },
+      {
+        name: 'concat',
+        description: "Concatenates two arrays together and returns the resulting array.",
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr1 + arr2",
+        js_code: "arr1.concat(arr2);"
       },
       {
         name: 'count',
@@ -954,6 +1061,39 @@ var SugarRubyMethods = [
         js_code: "for(var i = 0; i < 100; i++) { console.log(arr[i % arr.length]); };",
         sugar_code: "(100).times(function(n){ console.log(arr.at(n)); });",
         ref: 'Array/at'
+      },
+      {
+        name: 'delete',
+        description: "Deletes items from the array that are equal to the object passed. If items to delete are not found, returns %nil%, otherwise returns the passed object.",
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.delete('a')",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != 'a') { result.push(arr[i]); } } arr = result;",
+        sugar_code: "arr.remove('a');",
+        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias."
+        ref: 'Array/remove'
+      },
+      {
+        name: 'delete_at',
+        description: "Deletes the item at the given index, and returns it or %nil% if it is out of range.",
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.delete_at(3)",
+        js_code: "arr.splice(3, 1);",
+        sugar_code: "arr.removeAt(3);",
+        sugar_notes: "%removeAt% can also remove a range of elements. This method will return the array."
+        ref: 'Array/remove'
+      },
+      {
+        name: 'delete_if',
+        description: "Deletes items from the array for which the block evaluates to true.",
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.delete_if { |str| str == 'a' }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != 'a') { result.push(arr[i]); } } arr = result;",
+        sugar_code: "arr.remove(function(str) { return str == 'a'; });",
+        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias."
+        ref: 'Array/remove'
       },
       {
         name: 'detect',
@@ -987,16 +1127,6 @@ var SugarRubyMethods = [
         ref: 'Array/remove'
       },
       {
-        name: 'each_cons',
-        description: 'Iterates the block for each consecutive array of n elements.',
-        js_compatibility: 0,
-        sugar_compatibility: 0,
-        original_code:  "arr.each_cons(3, &fn)",
-        js_code: "for(var i = 0; i < arr.length; i++) { var slice = arr.slice(i, i + 3); if(slice.length == 3) { fn(slice); }};",
-        sugar_code: "arr.each(function() { var slice = arr.slice(i, i + 3); if(slice.length == 3) { fn(slice); }});",
-        ref: 'Array/each'
-      },
-      {
         name: 'each_slice',
         description: 'Iterates the block for each slice of n elements.',
         js_compatibility: 0,
@@ -1006,6 +1136,18 @@ var SugarRubyMethods = [
         sugar_code: "arr.inGroupsOf(3).each(fn);",
         sugar_notes: "Sugar will pad each group (%null% by default) to always be n elements.",
         ref: 'Array/inGroupsOf'
+      },
+      {
+        name: 'each',
+        description: 'Calls a block once for each element in the array.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.each(&fn)",
+        js_code: "for(var i = 0; i < arr.length; i ++) { fn(arr[i]); };",
+        es5_code: "arr.forEach(fn);",
+        sugar_code: "arr.each(fn);",
+        sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
+        ref: 'Array/each'
       },
       {
         name: 'each_with_index',
@@ -1018,6 +1160,27 @@ var SugarRubyMethods = [
         sugar_code: "arr.each(fn);",
         sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
         ref: 'Array/each'
+      },
+      {
+        name: 'each_index',
+        description: 'Same as Array#each but passes the index instead of the element.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.each_index(&fn)",
+        js_code: "for(var i = 0; i < arr.length; i ++) { fn(i); };",
+        es5_code: "arr.forEach(function(el, i) { fn(i); });",
+        sugar_code: "arr.each(function(el, i) { fn(i); });",
+        sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
+        ref: 'Array/each'
+      },
+      {
+        name: 'empty?',
+        description: 'Returns true if the array contains no elements.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.empty?",
+        js_code: "arr.length == 0;",
+        sugar_code: "arr.isEmpty();"
       },
       {
         name: 'find',
@@ -1076,7 +1239,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'include?',
-        description: 'Returns true if any element of the enumerable matches the object passed.',
+        description: 'Returns true if any element of the array matches the object passed.',
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code:  "arr.include?('foo')",
@@ -1087,7 +1250,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'inject',
-        description: 'Combines all elements of the enumerable by applying a binary operation, specified by a block or symbol.',
+        description: 'Combines all elements of the array by applying a binary operation, specified by a block or symbol.',
         js_compatibility: 1,
         sugar_compatibility: 2,
         original_code:  "arr.inject {|sum, n| sum + n }",
@@ -1109,7 +1272,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'max',
-        description: 'Returns the largest item in the enumerable.',
+        description: 'Returns the largest item in the array.',
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code:  "arr.max { |a,b| a.length <=> b.length }",
@@ -1132,7 +1295,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'member?',
-        description: 'Returns true if any element of the enumerable matches the object passed.',
+        description: 'Returns true if any element of the array matches the object passed.',
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code:  "arr.member?('foo')",
@@ -1143,7 +1306,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'min',
-        description: 'Returns the smallest item in the enumerable.',
+        description: 'Returns the smallest item in the array.',
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code:  "arr.min { |a,b| a.length <=> b.length }",
@@ -1223,7 +1386,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'reduce',
-        description: 'Combines all elements of the enumerable by applying a binary operation, specified by a block or symbol.',
+        description: 'Combines all elements of the array by applying a binary operation, specified by a block or symbol.',
         js_compatibility: 1,
         sugar_compatibility: 2,
         original_code:  "arr.reduce {|sum, n| sum + n }",
@@ -1280,7 +1443,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'sort_by',
-        description: 'Sorts the enumerable using a set of keys generated by mapping the values with the given block.',
+        description: 'Sorts the array using a set of keys generated by mapping the values with the given block.',
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code:  "arr.sort { |word| word.length }",
@@ -1322,7 +1485,7 @@ var SugarRubyMethods = [
       },
       {
         name: 'zip',
-        description: 'Takes one element from the enumerable and merges corresponding elements from the passed enumerables.',
+        description: 'Takes one element from the array and merges corresponding elements from the passed arrays.',
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code:  "arr1.zip(arr2)",
