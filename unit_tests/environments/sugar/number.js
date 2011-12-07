@@ -17,6 +17,13 @@ test('Number', function () {
   rand = Number.random(6, -5);
   equal(rand >= -5 && rand <= 6, true, 'Number.random | min and max can be reversed');
 
+  equal(Number.random(0, 0), 0, 'Number.random | 0 should always remain 0');
+  equal(Number.random(0, 0), 0, 'Number.random | 0 should always remain 0');
+  equal(Number.random(0, 0), 0, 'Number.random | 0 should always remain 0');
+  equal(Number.random(0, 0), 0, 'Number.random | 0 should always remain 0');
+  equal(Number.random(0, 0), 0, 'Number.random | 0 should always remain 0');
+  equal(Number.random(0, 0), 0, 'Number.random | 0 should always remain 0');
+
 
 
   equal((4).toNumber(), 4, 'Number#toNumber | 4 is 4');
