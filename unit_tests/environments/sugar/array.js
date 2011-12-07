@@ -1553,5 +1553,35 @@ test('Array', function () {
 
   equal(people.findIndex(function(person) { return person.age == 13; }), 2, 'Array#findIndex | JSON objects');
 
+  // Array#sample
+
+  arr = [1,2,3,4,5,6,7,8,9,10];
+  var samples = [];
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+  samples.push(arr.sample());
+
+  /* Note that there is a built-in 0.00000001% chance that this test will fail */
+  equal(samples.all(function(a) { return a == 1; }), false, 'Array#sample');
+
+  equal(Object.isNumber(arr.sample()), true, 'Array#sample | no params');
+  equal(arr.sample(1).length, 1, 'Array#sample | 1');
+  equal(arr.sample(2).length, 2, 'Array#sample | 2');
+  equal(arr.sample(3).length, 3, 'Array#sample | 3');
+  equal(arr.sample(4).length, 4, 'Array#sample | 4');
+  equal(arr.sample(11).length, 10, "Array#sample | can't sample more than the length of the array");
+  equal(arr.sample(10).unique().length, arr.length, "Array#sample | should not sample the same element twice");
+
+
+
+
+
 });
 

@@ -1183,6 +1183,16 @@ var SugarRubyMethods = [
         sugar_code: "arr.isEmpty();"
       },
       {
+        name: 'fill',
+        description: 'Fills the array with the passed argument or the result of a block.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.fill('x')",
+        js_code: "for(var i = 0; i < arr.length; i++) { arr[i] = 'x'; }",
+        es5_code: "arr.map(function(){ return 'x'; });",
+        ref: 'Array/map'
+      },
+      {
         name: 'find',
         description: 'Returns the first element for which the block is not false.',
         js_compatibility: 0,
@@ -1206,6 +1216,18 @@ var SugarRubyMethods = [
         ref: 'Array/findAll'
       },
       {
+        name: 'find_index',
+        description: 'Returns the index for the first element that matches the object passed or for which the block returns true.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.find_index('a')",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'a') { return i; } } return result;",
+        es5_code: "arr.indexOf('a');",
+        sugar_code: "arr.findIndex(function(el) { return el == 'a'; });",
+        sugar_enhancements: "%findIndex% allows a function to be passed to find the element, similar to %filter%.",
+        ref: 'Array/findIndex'
+      },
+      {
         name: 'first',
         description: 'Returns the first n elements of the array (1 by default).',
         js_compatibility: 0,
@@ -1213,6 +1235,15 @@ var SugarRubyMethods = [
         original_code: "arr.first;",
         js_code: "arr.slice(0,1);",
         sugar_code: "arr.first();"
+      },
+      {
+        name: 'flatten',
+        description: 'Returns an array that is a one dimensional flattening of the array.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.flatten;",
+        js_code: "function flatten(a) { var result = []; for(var i = 0; i < a.length; i++) { if(a[i] instanceof Array) { result.concat(flatten(a[i])); } else { result.push(a[i]); } } return result; } return flatten(arr);",
+        sugar_code: "arr.flatten();"
       },
       {
         name: 'grep',
@@ -1249,6 +1280,18 @@ var SugarRubyMethods = [
         ref: 'Array/has'
       },
       {
+        name: 'index',
+        description: 'Returns the index for the first element that matches the object passed or for which the block returns true.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.index('a')",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'a') { return i; } } return result;",
+        es5_code: "arr.indexOf('a');",
+        sugar_code: "arr.findIndex(function(el) { return el == 'a'; });",
+        sugar_enhancements: "%findIndex% allows a function to be passed to find the element, similar to %filter%.",
+        ref: 'Array/findIndex'
+      },
+      {
         name: 'inject',
         description: 'Combines all elements of the array by applying a binary operation, specified by a block or symbol.',
         js_compatibility: 1,
@@ -1257,6 +1300,57 @@ var SugarRubyMethods = [
         js_code: "var result = 0; for(var i = 0; i <= 5; i++) { result += arr[i]; }; return result;",
         es5_code: "arr.reduce(function(a, b) { return a + b; });",
         ref: 'Array/reduce'
+      },
+      {
+        name: 'insert',
+        description: 'Inserts the given values before the element with the given index.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.insert(1, 'a')",
+        js_code: "arr.splice(1, 0, 'a');",
+        js_notes: "The second parameter is the number of elements to remove at that index, so if you are just adding elements, pass 0.",
+        sugar_code: "arr.insert('a', 1);",
+        sugar_notes: "In addition to the parameters being reversed, %insert% performs a concat operation on the array, so nested arrays won't work here (use %splice% instead in this case).",
+        ref: 'Array/insert'
+      },
+      {
+        name: 'join',
+        description: 'Returns a string with all elements in the array converted to a string and joined together with the passed separator.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "arr.join(',')",
+        js_code: "arr.join(',');"
+      },
+      {
+        name: 'keep_if',
+        description: 'Returns an array containing all elements for which the block is not false.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.keep_if { |n| n % 3 == 0 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
+        es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
+        sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
+        sugar_enhancements: "%findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'last',
+        description: 'Returns the last n elements of the array (1 by default).',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.last",
+        js_code: "arr.slice(-1);",
+        sugar_code: "arr.last();",
+        ref: 'Array/last'
+      },
+      {
+        name: 'length',
+        description: 'Returns the length of the array.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr.length",
+        js_code: "arr.length;",
+        sugar_code: "arr.length;"
       },
       {
         name: 'map',
@@ -1385,6 +1479,22 @@ var SugarRubyMethods = [
         ref: 'Array/groupBy'
       },
       {
+        name: 'pop',
+        description: 'Removes the last element from the end of the array and returns it.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "arr.pop",
+        js_code: "arr.pop();"
+      },
+      {
+        name: 'push',
+        description: 'Pushes the given object(s) onto the end of the array.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "arr.push",
+        js_code: "arr.push();"
+      },
+      {
         name: 'reduce',
         description: 'Combines all elements of the array by applying a binary operation, specified by a block or symbol.',
         js_compatibility: 1,
@@ -1406,6 +1516,23 @@ var SugarRubyMethods = [
         ref: 'Array/exclude'
       },
       {
+        name: 'replace',
+        description: 'Replaces the contents of an array with contents of another one.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr1.replace(arr2)",
+        js_code: "arr1 = arr2;",
+        js_notes: "Javascript has no native method to replace the contents of an array, so simply set the variable to the other array."
+      },
+      {
+        name: 'reverse',
+        description: 'Traverses the array in reverse order.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.reverse",
+        js_code: "arr.reverse();"
+      },
+      {
         name: 'reverse_each',
         description: 'Traverses the array in reverse order.',
         js_compatibility: 0,
@@ -1418,6 +1545,26 @@ var SugarRubyMethods = [
         ref: 'Array/each'
       },
       {
+        name: 'rotate',
+        description: 'Returns a new array by rotating the number of elements by the number passed.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.rotate(2)",
+        js_code: "var result = [], cnt = 2, index; while(result.length < arr.length) { index = result.length + cnt; if(index > arr.length) { index -= arr.length; } result.push(arr[index]); } return result;",
+        sugar_code: "arr = arr.map(function(el, i, arr) { return arr.at(i + 2); })",
+        ref: 'Array/at'
+      },
+      {
+        name: 'sample',
+        description: 'Returns a random element or elements from the array.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.sample",
+        js_code: "arr[Math.floor(Math.random() * arr.length)];",
+        sugar_code: "arr.sample();",
+        ref: 'Array/sample'
+      },
+      {
         name: 'select',
         description: 'Returns an array containing all elements for which the block is not false.',
         js_compatibility: 0,
@@ -1428,6 +1575,41 @@ var SugarRubyMethods = [
         sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
         sugar_enhancements: "%findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/findAll'
+      },
+      {
+        name: 'shift',
+        description: 'Removes the first element in an array and returns it. Also can remove an array of n elements.',
+        js_compatibility: 1,
+        sugar_compatibility: 1,
+        original_code:  "arr.shift",
+        js_code: "arr.shift();",
+        js_notes: "Javascript can only shift one element at a time from the array."
+      },
+      {
+        name: 'shuffle',
+        description: 'Returns a new array with the elements shuffled.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.shuffle",
+        sugar_code: "arr.randomize();"
+      },
+      {
+        name: 'size',
+        description: 'Returns the length of the array.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr.size",
+        js_code: "arr.length;",
+        sugar_code: "arr.length;"
+      },
+      {
+        name: 'slice',
+        description: 'Returns the element at the index, or an array of elements starting at the index and continuing for n elements, or a subarray specified by a range.',
+        js_compatibility: 1,
+        sugar_compatibility: 1,
+        original_code: "arr.slice(2, 2)",
+        js_code: "arr.slice(2, 4);",
+        js_notes: "The second parameter to %slice% is the index to end the slice at."
       },
       {
         name: 'sort',
@@ -1482,6 +1664,35 @@ var SugarRubyMethods = [
         js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i] >= 5) { result = arr.slice(i); break; } }; return result;",
         sugar_code: "var take = true; arr.findAll(function(n) { if(n < 5) { return take; } else { return take = false; }});",
         ref: 'Array/findAll'
+      },
+      {
+        name: 'uniq',
+        description: 'Returns a new array removing all duplicate values.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.uniq",
+        js_code: "var result = [], exists; for(var i = 0; i < arr.length; i++) { exists = false; for(var j = 0; j < result.length; j++) { if(result[j] == arr[i]) { exists = true; } } if(!exists) { result.push(arr[i]); } } return result;",
+        sugar_code: "arr.unique();",
+        sugar_enhancements: "%unique% in Sugar can also take a mapping function that identifies the property to unique on. This is useful when a unique property is known ahead of time to avoid checking equality on all properties of objects."
+        ref: 'Array/unique'
+      },
+      {
+        name: 'unshift',
+        description: 'Prepends objects to the front of the array, moving them down.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "arr.unshift(5)",
+        js_code: "arr.unshift(5);"
+      },
+      {
+        name: 'values_at',
+        description: 'Returns an array containing the elements at the given indexes.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.values_at(1,3,5)",
+        js_code: "var result = [], at = [1,3,5]; for(var i = 0; i < arr.length; i++) { for(var j = 0; j < at.length; j++) { if(at[j] == i) { result.push(arr[i]); } } } return result;",
+        sugar_code: "arr.at(1,3,5);",
+        sugar_notes: "%at% will alternately return a single element if only one argument is given."
       },
       {
         name: 'zip',
