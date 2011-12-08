@@ -100,7 +100,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code: "str.capitalize",
-        js_code: "str = str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase();",
+        js_code: "var first = str.slice(0,1).toUpperCase(); var rest = str.slice(1).toLowerCase(); str = first + rest;",
         sugar_code: "str.capitalize();",
         sugar_enhancements: "Sugar can also optionally capitalize all words in the string."
       },
@@ -130,7 +130,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 0,
         original_code: "str.chomp",
-        js_code: "str.replace(/\r?\n$/m, '')",
+        js_code: "str.replace(/\\r?\\n$/m, '')",
       },
       {
         name: 'chop',
@@ -138,7 +138,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 0,
         original_code: "str.chop",
-        js_code: "str.replace(/\r?[\s\S]$/m, '')",
+        js_code: "str.replace(/\\r?[\\s\\S]$/m, '')",
       },
       {
         name: 'count',
@@ -454,7 +454,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 0,
         original_code:  "str.swapcase();",
-        js_code: "str.replace(/[a-z]/gi, function(m) { return m.match(/[a-z]/) ? m.toUpperCase() : m.toLowerCase(); });"
+        js_code: "str.replace(/[a-z]/gi, function(m) { var match = m.match(/[a-z]/); match ? m.toUpperCase() : m.toLowerCase(); });"
       },
       {
         name: 'to_f',
@@ -1070,7 +1070,7 @@ var SugarRubyMethods = [
         original_code:  "arr.delete('a')",
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != 'a') { result.push(arr[i]); } } arr = result;",
         sugar_code: "arr.remove('a');",
-        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias."
+        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias.",
         ref: 'Array/remove'
       },
       {
@@ -1081,7 +1081,7 @@ var SugarRubyMethods = [
         original_code:  "arr.delete_at(3)",
         js_code: "arr.splice(3, 1);",
         sugar_code: "arr.removeAt(3);",
-        sugar_notes: "%removeAt% can also remove a range of elements. This method will return the array."
+        sugar_notes: "%removeAt% can also remove a range of elements. This method will return the array.",
         ref: 'Array/remove'
       },
       {
@@ -1092,7 +1092,7 @@ var SugarRubyMethods = [
         original_code:  "arr.delete_if { |str| str == 'a' }",
         js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != 'a') { result.push(arr[i]); } } arr = result;",
         sugar_code: "arr.remove(function(str) { return str == 'a'; });",
-        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias."
+        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias.",
         ref: 'Array/remove'
       },
       {
@@ -1370,7 +1370,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code:  "arr.max { |a,b| a.length <=> b.length }",
-        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) result = arr[i].length; } return result;",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) { result = arr[i].length; } } return result;",
         es5_code: "arr.reduce(function(a, b){ return a.length > b.length ? a.length : b.length; })",
         sugar_code: "arr.max('length').first().length;",
         sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one max value.",
@@ -1382,7 +1382,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code:  "arr.max_by { |el| el.length }",
-        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) result = arr[i]; } return result;",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) { result = arr[i]; } } return result;",
         sugar_code: "arr.max('length').first();",
         sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one max value.",
         ref: 'Array/max'
@@ -1404,7 +1404,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code:  "arr.min { |a,b| a.length <=> b.length }",
-        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length < result || result === undefined) result = arr[i].length; } return result;",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length < result || result === undefined) { result = arr[i].length; } } return result;",
         es5_code: "arr.reduce(function(a, b){ return a.length < b.length ? a.length : b.length; })",
         sugar_code: "arr.min('length').first().length;",
         sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
@@ -1416,7 +1416,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 3,
         original_code:  "arr.min_by { |el| el.length }",
-        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) result = arr[i]; } return result;",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) { result = arr[i]; } } return result;",
         sugar_code: "arr.min('length').first();",
         sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
         ref: 'Array/min'
@@ -1427,8 +1427,8 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 0,
         original_code:  "arr.minmax { |a,b| a.length <=> b.length }",
-        js_code: "var min, max; for(var i = 0; i < arr.length; i++) { if(arr[i].length > max || max === undefined) max = arr[i]; if(arr[i].length < min || min === undefined) min = arr[i]; } return [min, max];",
-        sugar_code: "[arr.min('length').first().length, arr.max('length').first().length];",
+        js_code: "var min, max; for(var i = 0; i < arr.length; i++) { if(arr[i].length > max || max === undefined) { max = arr[i]; } if(arr[i].length < min || min === undefined) { min = arr[i]; } } return [min, max];",
+        sugar_code: "var min = arr.min('length').first().length; var max = arr.max('length').first().length; return [min, max];",
         sugar_notes: "Sugar's %min% and %max% methods allow a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
         ref: 'Array/min'
       },
@@ -1438,8 +1438,8 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 0,
         original_code:  "arr.minmax { |a,b| a.length <=> b.length }",
-        js_code: "var min, max; for(var i = 0; i < arr.length; i++) { if(arr[i].length > max || max === undefined) max = arr[i]; if(arr[i].length < min || min === undefined) min = arr[i]; } return [min, max];",
-        sugar_code: "[arr.min('length').first().length, arr.max('length').first().length];",
+        js_code: "var min, max; for(var i = 0; i < arr.length; i++) { if(arr[i].length > max || max === undefined) { max = arr[i]; } if(arr[i].length < min || min === undefined) { min = arr[i]; } } return [min, max];",
+        sugar_code: "var min = arr.min('length').first(); var max = arr.max('length').first(); return [min, max];",
         sugar_notes: "Sugar's %min% and %max% methods allow a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
         ref: 'Array/min'
       },
@@ -1673,7 +1673,7 @@ var SugarRubyMethods = [
         original_code:  "arr.uniq",
         js_code: "var result = [], exists; for(var i = 0; i < arr.length; i++) { exists = false; for(var j = 0; j < result.length; j++) { if(result[j] == arr[i]) { exists = true; } } if(!exists) { result.push(arr[i]); } } return result;",
         sugar_code: "arr.unique();",
-        sugar_enhancements: "%unique% in Sugar can also take a mapping function that identifies the property to unique on. This is useful when a unique property is known ahead of time to avoid checking equality on all properties of objects."
+        sugar_enhancements: "%unique% in Sugar can also take a mapping function that identifies the property to unique on. This is useful when a unique property is known ahead of time to avoid checking equality on all properties of objects.",
         ref: 'Array/unique'
       },
       {
