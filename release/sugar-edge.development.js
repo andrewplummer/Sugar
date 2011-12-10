@@ -642,6 +642,28 @@
 
   // ECMA5 methods
 
+
+  function arrayReduce(arr, fn, initialValue, fromRight) {
+    var length = arr.length, count = 0, defined = isDefined(initialValue), result, index;
+    checkCallback(fn);
+    if(length == 0 && !defined) {
+      throw new TypeError('Reduce called on empty array with no initial value');
+    } else if(defined) {
+      result = initialValue;
+    } else {
+      result = arr[fromRight ? length - 1 : count];
+      count++;
+    }
+    while(count < length) {
+      index = fromRight ? length - count - 1 : count;
+      if(index in arr) {
+        result = fn.call(Undefined, result, arr[index], index, arr);
+      }
+      count++;
+    }
+    return result;
+  }
+
   function toIntegerWithDefault(i, d) {
     if(isNaN(i)) {
       return d;
@@ -971,23 +993,7 @@
      *
      ***/
     'reduce': function(fn, init) {
-      var length = this.length, index = 0, initialValue = arguments.length > 1 && init, result;
-      checkCallback(fn);
-      if(length == 0 && !initialValue) {
-        throw new TypeError('Reduce called on empty array with no initial value');
-      } else if(initialValue) {
-        result = initialValue;
-      } else {
-        result = this[index];
-        index++;
-      }
-      while(index < length) {
-        if(index in this) {
-          result = fn.call(Undefined, result, this[index], index, this);
-        }
-        index++;
-      }
-      return result;
+      return arrayReduce(this, fn, init);
     },
 
     /***
@@ -1003,23 +1009,7 @@
      *
      ***/
     'reduceRight': function(fn, init) {
-      var length = this.length, index = length - 1, initialValue = arguments.length > 1 && init, result;
-      checkCallback(fn);
-      if(length == 0 && !initialValue) {
-        throw new TypeError('Reduce called on empty array with no initial value');
-      } else if(initialValue) {
-        result = initialValue;
-      } else {
-        result = this[index];
-        index--;
-      }
-      while(index >= 0) {
-        if(index in this) {
-          result = fn.call(Undefined, result, this[index], index, this);
-        }
-        index--;
-      }
-      return result;
+      return arrayReduce(this, fn, init, true);
     },
 
     /***
@@ -1739,6 +1729,29 @@
           return (i in k) ? k[i] : null;
         }));
       });
+    },
+
+    /***
+     * @method sample([num] = null)
+     * @returns Mixed
+     * @short Returns a random element from the array.
+     * @extra If [num] is a number greater than 0, will return an array containing [num] samples.
+     * @example
+     *
+     *   [1,2,3,4,5].sample()  -> // Random element
+     *   [1,2,3,4,5].sample(3) -> // Array of 3 random elements
+     *
+     ***/
+    'sample': function(num) {
+      var result = [], arr = this.clone(), index;
+      if(!(num > 0)) num = 1;
+      while(result.length < num) {
+        index = Number.random(0, arr.length - 1);
+        result.push(arr[index]);
+        arr.removeAt(index);
+        if(arr.length == 0) break;
+      }
+      return arguments.length > 0 ? result : result[0];
     }
 
 
@@ -1827,8 +1840,8 @@
     'random': function(n1, n2) {
       var min, max;
       if(arguments.length == 1) n2 = n1, n1 = 0;
-      min = Math.min(n1 || 0, n2 || 1);
-      max = Math.max(n1 || 0, n2 || 1);
+      min = Math.min(n1 || 0, isDefined(n2) ? n2 : 1);
+      max = Math.max(n1 || 0, isDefined(n2) ? n2 : 1);
       return round((Math.random() * (max - min)) + min);
     }
 
@@ -2141,19 +2154,19 @@
     },
 
     /***
-     * @method hex([pad] = 1)
-     * @returns String
-     * @short Converts the number to hexidecimal.
-     * @extra [pad] will pad the resulting string to that many places.
+     * @method compare(<num>)
+     * @returns Number
+     * @short Performs a numeric comparison against the number.
+     * @extra This method is also defined on %String% and %Date%, and is useful when performing complex sort operations where the type isn't known.
      * @example
      *
-     *   (255).hex()   -> 'ff';
-     *   (255).hex(4)  -> '00ff';
-     *   (23654).hex() -> '5c66';
+     *   (255).compare(254) ->  1;
+     *   (245).compare(254) -> -9;
+     *   (0).compare(0)     ->  0;
      *
      ***/
-    'compare': function(cmp) {
-      return this - Number(cmp);
+    'compare': function(num) {
+      return this - Number(num);
     }
 
   });
@@ -3601,15 +3614,16 @@
     },
 
     /***
-     * @method hex([pad] = 1)
-     * @returns String
-     * @short Converts the number to hexidecimal.
-     * @extra [pad] will pad the resulting string to that many places.
+     * @method compare(<str>, [ignore] = false)
+     * @returns Number
+     * @short Performs a lexical (alphabetic) comparison against the number.
+     * @extra This method is also defined on %Number% and %Date%, and is useful when performing complex sort operations where the type isn't known. If [ignore] is %true%, will ignore any non-alphanumeric character when performing comparison. [ignore] can also be a regexp.
      * @example
      *
-     *   (255).hex()   -> 'ff';
-     *   (255).hex(4)  -> '00ff';
-     *   (23654).hex() -> '5c66';
+     *   ('a').compare('b') -> -1;
+     *   ('b').compare('a') ->  1;
+     *   ('a').compare('a') ->  0;
+     *   ('a').compare('@a', true) ->  0;
      *
      ***/
     'compare': function(cmp, ignore) {
@@ -5349,24 +5363,24 @@
     },
 
      /***
-     * @method isBetween(<d1>, <d2>, [margin])
+     * @method isBetween(<d1>, <d2>, [buffer] = 0)
      * @returns Boolean
      * @short Returns true if the date falls between <d1> and <d2>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d1> and <d2> will accept a date object, timestamp, or text format. If not specified, they are assumed to be now. See @date_format for more information.
+     * @extra [buffer] is to allow extra buffer of error (in ms). <d1> and <d2> will accept a date object, timestamp, or text format. If not specified, they are assumed to be now. See @date_format for more information.
      * @example
      *
      *   new Date().isBetween('yesterday', 'tomorrow')    -> true
      *   new Date().isBetween('last year', '2 years ago') -> false
      *
      ***/
-    'isBetween': function(d1, d2, margin) {
+    'isBetween': function(d1, d2, buffer) {
       var t  = this.getTime();
       var t1 = date.create(d1).getTime();
       var t2 = date.create(d2).getTime();
       var lo = Math.min(t1, t2);
       var hi = Math.max(t1, t2);
-      margin = margin || 0;
-      return (lo - margin < t) && (hi + margin > t);
+      buffer = buffer || 0;
+      return (lo - buffer < t) && (hi + buffer > t);
     },
 
      /***
@@ -5405,7 +5419,7 @@
      * @example
      *
      *   Date.create().format()                                   -> ex. July 4, 2003
-     *   Date.create().format('{Weekday} {d} {Month}, {YYYY}')    -> ex. Monday July 4, 2003
+     *   Date.create().format('{Weekday} {d} {Month}, {yyyy}')    -> ex. Monday July 4, 2003
      *   Date.create().format('{hh}:{mm}')                        -> ex. 15:57
      *   Date.create().format('{12hr}:{mm}{tt}')                  -> ex. 3:57pm
      *   Date.create().format(Date.ISO8601)                       -> ex. 2011-07-05 12:24:55.528Z
@@ -5498,6 +5512,20 @@
      ***/
     'clone': function() {
       return new date(this.getTime());
+    },
+
+    /***
+     * @method compare(<obj>)
+     * @returns Number
+     * @short Performs a numeric comparison against the date.
+     * @extra This method is also defined on %String% and %Number%, and is useful when performing complex sort operations where the type isn't known.
+     * @example
+     *
+     *   Date.create('1 day ago').compare('today') ->  -864000;
+     *
+     ***/
+    'compare': function(obj) {
+      return this - createDate(arguments);
     }
 
   });
