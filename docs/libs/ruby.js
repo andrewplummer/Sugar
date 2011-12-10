@@ -567,7 +567,8 @@ var SugarRubyMethods = [
         sugar_compatibility: 2,
         original_code: "str.from(3);",
         js_code: "str.slice(3);",
-        sugar_code: "str.from(3);"
+        sugar_code: "str.from(3);",
+        ref: 'String/from'
       },
       {
         name: 'humanize',
@@ -898,77 +899,8 @@ var SugarRubyMethods = [
   },
   {
     type: 'instance',
-    namespace: 'Array',
+    namespace: 'Enumerable',
     methods: [
-      {
-        name: '<<',
-        description: 'Pushes the object on to the end of the array.',
-        js_compatibility: 2,
-        sugar_compatibility: 2,
-        original_code: "arr << 1",
-        js_code: "arr.push(1);"
-      },
-      {
-        name: '<=>',
-        description: "Returns -1, 0, or 1 if the array is less than, equal to, or greater than the passed array. Returns %nil% if any element's %<=>% operator returns nil.",
-        js_compatibility: 0,
-        sugar_compatibility: 0,
-        original_code: "arr1 <=> arr2",
-        js_code: "--",
-        js_notes: "Javascript does not define any means of comparing arrays to each other. If this is required it should be defined separately as application logic."
-      },
-      {
-        name: '==',
-        description: "Equality comparison. Two arrays are equal if they have the same number of elements and each element is equal.",
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code: "arr1 == arr2",
-        js_code: "var equal = true; for(var i = 0; i < arr1.length; i++) { if(arr1[i] !== arr2[i]) { equal = false; }} return equal && arr1.length == arr2.length;",
-        sugar_code: "Object.equal(arr1, arr2);"
-      },
-      {
-        name: '|',
-        description: "Returns an array with all elements found in either array, with no duplicates.",
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code: "arr1 | arr2",
-        js_code: "var result = [], both = arr1.concat(arr2), exists; for(var i = 0; i < both.length; i++) { exists = false; for(var j = 0; j < result.length; j++) { if(result[j] == both[i]) { exists = true; } if(!exists) { result.push(both[i]); } } } return result;",
-        sugar_code: "arr1.union(arr2);"
-      },
-      {
-        name: '-',
-        description: "Returns an array with all elements found in the passed array removed.",
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code: "arr1 - arr2",
-        js_code: "var result = [], exists; for(var i = 0; i < arr1.length; i++) { exists = false; for(var j = 0; j < arr2.length; j++) { if(arr2[j] == arr1[i]) { exists = true; } if(!exists) { result.push(arr1[i]); } } } return result;",
-        sugar_code: "arr1.subtract(arr2);"
-      },
-      {
-        name: '*',
-        description: "Performs a join when provided a string argument or returns a number of concatenated copies of itself for a numeric argument.",
-        js_compatibility: 0,
-        sugar_compatibility: 0,
-        original_code: "arr * 3",
-        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { for(var j = 0; j < 3; j++) { result.concat(arr[i]); } } return result;",
-        sugar_code: "arr = arr.include(arr).include(arr);"
-      },
-      {
-        name: '&',
-        description: "Returns an array with all elements common to both arrays with no duplicates.",
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code: "arr1 & arr2",
-        sugar_code: "arr1.intersect(arr2);"
-      },
-      {
-        name: '+',
-        description: "Concatenates two arrays together and returns the resulting array.",
-        js_compatibility: 2,
-        sugar_compatibility: 2,
-        original_code: "arr1 + arr2",
-        js_code: "arr1.concat(arr2);"
-      },
       {
         name: 'all?',
         description: 'Returns true if all elements in the iterable are true',
@@ -994,108 +926,6 @@ var SugarRubyMethods = [
         ref: 'Array/all'
       },
       {
-        name: 'at',
-        description: "Returns the element at the given index.",
-        js_compatibility: 1,
-        sugar_compatibility: 2,
-        original_code: "arr.at(0); arr.at(-1)",
-        js_code: "arr[0]; arr[arr.length - 1]",
-        sugar_code: "arr.at(0); arr.at(-1);"
-      },
-      {
-        name: 'clear',
-        description: "Removes all elements from the array.",
-        js_compatibility: 0,
-        sugar_compatibility: 0,
-        original_code: "arr.clear()",
-        js_code: "arr = [];",
-        js_notes: "Javascript has no method specifically to empty arrays. Simply reset the variable."
-      },
-      {
-        name: 'collect',
-        description: 'Creates an array from another via a mapping function.',
-        js_compatibility: 0,
-        sugar_compatibility: 3,
-        original_code:  "arr.collect { |x| x * 3 }",
-        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
-        es5_code: "arr.map(function(el) { return el * 3; });",
-        sugar_code: "arr.map(function(el) { return el * 3; });",
-        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut.",
-        ref: 'Array/map'
-      },
-      {
-        name: 'compact',
-        description: 'Returns a copy of the array with %nil% elements removed.',
-        js_compatibility: 0,
-        sugar_compatibility: 3,
-        original_code:  "arr.compact",
-        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != null) { result.push(arr[i]); } return result;",
-        sugar_code: "arr.compact();",
-        sugar_enhancements: "%compact% will remove all elements that are %undefined%, %null%, or %NaN%. Additionally you can pass a parameter to remove all falsy values.",
-        ref: 'Array/compact'
-      },
-      {
-        name: 'concat',
-        description: "Concatenates two arrays together and returns the resulting array.",
-        js_compatibility: 2,
-        sugar_compatibility: 2,
-        original_code: "arr1 + arr2",
-        js_code: "arr1.concat(arr2);"
-      },
-      {
-        name: 'count',
-        description: 'Returns the number of occurrences in the array where either the passed argument exists or the block returns true.',
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code:  "arr.count { |n| n == 3 }",
-        js_code: "var result = 0; for(var i = 0; i < arr.length; i++) { if(n == 3) result ++; } return result;",
-        sugar_code: "arr.count(function(n){ return n == 3; })",
-        ref: 'Array/count'
-      },
-      {
-        name: 'cycle',
-        description: 'Calls a block on each element of the enumberable n times, where n is the number passed.',
-        js_compatibility: 0,
-        sugar_compatibility: 1,
-        original_code:  "arr.cycle(100) { |x| puts x }",
-        js_code: "for(var i = 0; i < 100; i++) { console.log(arr[i % arr.length]); };",
-        sugar_code: "(100).times(function(n){ console.log(arr.at(n)); });",
-        ref: 'Array/at'
-      },
-      {
-        name: 'delete',
-        description: "Deletes items from the array that are equal to the object passed. If items to delete are not found, returns %nil%, otherwise returns the passed object.",
-        js_compatibility: 0,
-        sugar_compatibility: 3,
-        original_code:  "arr.delete('a')",
-        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != 'a') { result.push(arr[i]); } } arr = result;",
-        sugar_code: "arr.remove('a');",
-        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias.",
-        ref: 'Array/remove'
-      },
-      {
-        name: 'delete_at',
-        description: "Deletes the item at the given index, and returns it or %nil% if it is out of range.",
-        js_compatibility: 0,
-        sugar_compatibility: 3,
-        original_code:  "arr.delete_at(3)",
-        js_code: "arr.splice(3, 1);",
-        sugar_code: "arr.removeAt(3);",
-        sugar_notes: "%removeAt% can also remove a range of elements. This method will return the array.",
-        ref: 'Array/remove'
-      },
-      {
-        name: 'delete_if',
-        description: "Deletes items from the array for which the block evaluates to true.",
-        js_compatibility: 0,
-        sugar_compatibility: 3,
-        original_code:  "arr.delete_if { |str| str == 'a' }",
-        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != 'a') { result.push(arr[i]); } } arr = result;",
-        sugar_code: "arr.remove(function(str) { return str == 'a'; });",
-        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias.",
-        ref: 'Array/remove'
-      },
-      {
         name: 'detect',
         description: 'Returns the first element for which the block is not false.',
         js_compatibility: 0,
@@ -1105,26 +935,6 @@ var SugarRubyMethods = [
         sugar_code: "arr.find(function(el) { return el % 3 == 0; });",
         sugar_enhancements: "%find% has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
         ref: 'Array/find'
-      },
-      {
-        name: 'drop',
-        description: 'Drops the first n elements of the array and returns the rest.',
-        js_compatibility: 1,
-        sugar_compatibility: 3,
-        original_code:  "arr.drop(3)",
-        js_code: "arr.slice(3);",
-        sugar_code: "arr.from(3);",
-        ref: 'Array/from'
-      },
-      {
-        name: 'drop_while',
-        description: 'Drops elements up to, but not including, the first element for which the block returns nil or false.',
-        js_compatibility: 0,
-        sugar_compatibility: 1,
-        original_code:  "arr.drop_while { |n| n < 5 }",
-        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i] >= 5) { result = arr.slice(i); break; } }; return result;",
-        sugar_code: "var drop = true; arr.remove(function(n) { if(n < 5) { return drop; } else { return drop = false; }});",
-        ref: 'Array/remove'
       },
       {
         name: 'each_slice',
@@ -1138,18 +948,6 @@ var SugarRubyMethods = [
         ref: 'Array/inGroupsOf'
       },
       {
-        name: 'each',
-        description: 'Calls a block once for each element in the array.',
-        js_compatibility: 1,
-        sugar_compatibility: 2,
-        original_code:  "arr.each(&fn)",
-        js_code: "for(var i = 0; i < arr.length; i ++) { fn(arr[i]); };",
-        es5_code: "arr.forEach(fn);",
-        sugar_code: "arr.each(fn);",
-        sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
-        ref: 'Array/each'
-      },
-      {
         name: 'each_with_index',
         description: 'Calls a block with two arguments, the element and its index for each element.',
         js_compatibility: 1,
@@ -1160,37 +958,6 @@ var SugarRubyMethods = [
         sugar_code: "arr.each(fn);",
         sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
         ref: 'Array/each'
-      },
-      {
-        name: 'each_index',
-        description: 'Same as Array#each but passes the index instead of the element.',
-        js_compatibility: 1,
-        sugar_compatibility: 2,
-        original_code:  "arr.each_index(&fn)",
-        js_code: "for(var i = 0; i < arr.length; i ++) { fn(i); };",
-        es5_code: "arr.forEach(function(el, i) { fn(i); });",
-        sugar_code: "arr.each(function(el, i) { fn(i); });",
-        sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
-        ref: 'Array/each'
-      },
-      {
-        name: 'empty?',
-        description: 'Returns true if the array contains no elements.',
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code: "arr.empty?",
-        js_code: "arr.length == 0;",
-        sugar_code: "arr.isEmpty();"
-      },
-      {
-        name: 'fill',
-        description: 'Fills the array with the passed argument or the result of a block.',
-        js_compatibility: 0,
-        sugar_compatibility: 0,
-        original_code:  "arr.fill('x')",
-        js_code: "for(var i = 0; i < arr.length; i++) { arr[i] = 'x'; }",
-        es5_code: "arr.map(function(){ return 'x'; });",
-        ref: 'Array/map'
       },
       {
         name: 'find',
@@ -1216,36 +983,6 @@ var SugarRubyMethods = [
         ref: 'Array/findAll'
       },
       {
-        name: 'find_index',
-        description: 'Returns the index for the first element that matches the object passed or for which the block returns true.',
-        js_compatibility: 1,
-        sugar_compatibility: 2,
-        original_code:  "arr.find_index('a')",
-        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'a') { return i; } } return result;",
-        es5_code: "arr.indexOf('a');",
-        sugar_code: "arr.findIndex(function(el) { return el == 'a'; });",
-        sugar_enhancements: "%findIndex% allows a function to be passed to find the element, similar to %filter%.",
-        ref: 'Array/findIndex'
-      },
-      {
-        name: 'first',
-        description: 'Returns the first n elements of the array (1 by default).',
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code: "arr.first;",
-        js_code: "arr.slice(0,1);",
-        sugar_code: "arr.first();"
-      },
-      {
-        name: 'flatten',
-        description: 'Returns an array that is a one dimensional flattening of the array.',
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code: "arr.flatten;",
-        js_code: "function flatten(a) { var result = []; for(var i = 0; i < a.length; i++) { if(a[i] instanceof Array) { result.concat(flatten(a[i])); } else { result.push(a[i]); } } return result; } return flatten(arr);",
-        sugar_code: "arr.flatten();"
-      },
-      {
         name: 'grep',
         description: 'Returns an array containing all elements for which the pattern matches.',
         js_compatibility: 0,
@@ -1269,29 +1006,6 @@ var SugarRubyMethods = [
         ref: 'Array/groupBy'
       },
       {
-        name: 'include?',
-        description: 'Returns true if any element of the array matches the object passed.',
-        js_compatibility: 0,
-        sugar_compatibility: 3,
-        original_code:  "arr.include?('foo')",
-        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'foo') { return true; } } return false;",
-        es5_code: "arr.some(function(el){ return el == 'foo'; });",
-        sugar_code: "arr.has('foo');",
-        ref: 'Array/has'
-      },
-      {
-        name: 'index',
-        description: 'Returns the index for the first element that matches the object passed or for which the block returns true.',
-        js_compatibility: 1,
-        sugar_compatibility: 2,
-        original_code:  "arr.index('a')",
-        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'a') { return i; } } return result;",
-        es5_code: "arr.indexOf('a');",
-        sugar_code: "arr.findIndex(function(el) { return el == 'a'; });",
-        sugar_enhancements: "%findIndex% allows a function to be passed to find the element, similar to %filter%.",
-        ref: 'Array/findIndex'
-      },
-      {
         name: 'inject',
         description: 'Combines all elements of the array by applying a binary operation, specified by a block or symbol.',
         js_compatibility: 1,
@@ -1300,69 +1014,6 @@ var SugarRubyMethods = [
         js_code: "var result = 0; for(var i = 0; i <= 5; i++) { result += arr[i]; }; return result;",
         es5_code: "arr.reduce(function(a, b) { return a + b; });",
         ref: 'Array/reduce'
-      },
-      {
-        name: 'insert',
-        description: 'Inserts the given values before the element with the given index.',
-        js_compatibility: 1,
-        sugar_compatibility: 2,
-        original_code:  "arr.insert(1, 'a')",
-        js_code: "arr.splice(1, 0, 'a');",
-        js_notes: "The second parameter is the number of elements to remove at that index, so if you are just adding elements, pass 0.",
-        sugar_code: "arr.insert('a', 1);",
-        sugar_notes: "In addition to the parameters being reversed, %insert% performs a concat operation on the array, so nested arrays won't work here (use %splice% instead in this case).",
-        ref: 'Array/insert'
-      },
-      {
-        name: 'join',
-        description: 'Returns a string with all elements in the array converted to a string and joined together with the passed separator.',
-        js_compatibility: 2,
-        sugar_compatibility: 2,
-        original_code:  "arr.join(',')",
-        js_code: "arr.join(',');"
-      },
-      {
-        name: 'keep_if',
-        description: 'Returns an array containing all elements for which the block is not false.',
-        js_compatibility: 0,
-        sugar_compatibility: 3,
-        original_code:  "arr.keep_if { |n| n % 3 == 0 }",
-        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
-        es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
-        sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
-        sugar_enhancements: "%findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
-        ref: 'Array/findAll'
-      },
-      {
-        name: 'last',
-        description: 'Returns the last n elements of the array (1 by default).',
-        js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code: "arr.last",
-        js_code: "arr.slice(-1);",
-        sugar_code: "arr.last();",
-        ref: 'Array/last'
-      },
-      {
-        name: 'length',
-        description: 'Returns the length of the array.',
-        js_compatibility: 2,
-        sugar_compatibility: 2,
-        original_code: "arr.length",
-        js_code: "arr.length;",
-        sugar_code: "arr.length;"
-      },
-      {
-        name: 'map',
-        description: 'Creates an array from another via a mapping function.',
-        js_compatibility: 0,
-        sugar_compatibility: 3,
-        original_code:  "arr.map { |x| x * 3 }",
-        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
-        es5_code: "arr.map(function(el) { return el * 3; });",
-        sugar_code: "arr.map(function(el) { return el * 3; });",
-        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut.",
-        ref: 'Array/map'
       },
       {
         name: 'max',
@@ -1479,6 +1130,411 @@ var SugarRubyMethods = [
         ref: 'Array/groupBy'
       },
       {
+        name: 'reduce',
+        description: 'Combines all elements of the array by applying a binary operation, specified by a block or symbol.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.reduce {|sum, n| sum + n }",
+        js_code: "var result = 0; for(var i = 0; i <= 5; i++) { result += arr[i]; }; return result;",
+        es5_code: "arr.reduce(function(a, b) { return a + b; });",
+        ref: 'Array/reduce'
+      },
+      {
+        name: 'sum',
+        description: 'Returns the sum of all elements in the iterable.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.sum(&:price)",
+        js_code: "var result = 0; for(var i = 0; i < arr.length; i++) { result += arr[i]['price']; } return result;",
+        es5_code: "arr.reduce(function(a, b){ return a + b.price; }, 0)",
+        sugar_code: "arr.sum('price')",
+        ref: 'Array/sum'
+      }
+    ]
+  }
+  {
+    type: 'instance',
+    namespace: 'Array',
+    methods: [
+      {
+        name: '<<',
+        description: 'Pushes the object on to the end of the array.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr << 1",
+        js_code: "arr.push(1);"
+      },
+      {
+        name: '<=>',
+        description: "Returns -1, 0, or 1 if the array is less than, equal to, or greater than the passed array. Returns %nil% if any element's %<=>% operator returns nil.",
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code: "arr1 <=> arr2",
+        js_code: "--",
+        js_notes: "Javascript does not define any means of comparing arrays to each other. If this is required it should be defined separately as application logic."
+      },
+      {
+        name: '==',
+        description: "Equality comparison. Two arrays are equal if they have the same number of elements and each element is equal.",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr1 == arr2",
+        js_code: "var equal = true; for(var i = 0; i < arr1.length; i++) { if(arr1[i] !== arr2[i]) { equal = false; }} return equal && arr1.length == arr2.length;",
+        sugar_code: "Object.equal(arr1, arr2);"
+      },
+      {
+        name: '|',
+        description: "Returns an array with all elements found in either array, with no duplicates.",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr1 | arr2",
+        js_code: "var result = [], both = arr1.concat(arr2), exists; for(var i = 0; i < both.length; i++) { exists = false; for(var j = 0; j < result.length; j++) { if(result[j] == both[i]) { exists = true; } if(!exists) { result.push(both[i]); } } } return result;",
+        sugar_code: "arr1.union(arr2);"
+      },
+      {
+        name: '-',
+        description: "Returns an array with all elements found in the passed array removed.",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr1 - arr2",
+        js_code: "var result = [], exists; for(var i = 0; i < arr1.length; i++) { exists = false; for(var j = 0; j < arr2.length; j++) { if(arr2[j] == arr1[i]) { exists = true; } if(!exists) { result.push(arr1[i]); } } } return result;",
+        sugar_code: "arr1.subtract(arr2);"
+      },
+      {
+        name: '*',
+        description: "Performs a join when provided a string argument or returns a number of concatenated copies of itself for a numeric argument.",
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code: "arr * 3",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { for(var j = 0; j < 3; j++) { result.concat(arr[i]); } } return result;",
+        sugar_code: "arr = arr.include(arr).include(arr);"
+      },
+      {
+        name: '&',
+        description: "Returns an array with all elements common to both arrays with no duplicates.",
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr1 & arr2",
+        sugar_code: "arr1.intersect(arr2);"
+      },
+      {
+        name: '+',
+        description: "Concatenates two arrays together and returns the resulting array.",
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr1 + arr2",
+        js_code: "arr1.concat(arr2);"
+      },
+      {
+        name: 'at',
+        description: "Returns the element at the given index.",
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code: "arr.at(0); arr.at(-1)",
+        js_code: "arr[0]; arr[arr.length - 1]",
+        sugar_code: "arr.at(0); arr.at(-1);"
+      },
+      {
+        name: 'clear',
+        description: "Removes all elements from the array.",
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code: "arr.clear()",
+        js_code: "arr = [];",
+        js_notes: "Javascript has no method specifically to empty arrays. Simply reset the variable."
+      },
+      {
+        name: 'collect',
+        description: 'Creates an array from another via a mapping function.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.collect { |x| x * 3 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
+        es5_code: "arr.map(function(el) { return el * 3; });",
+        sugar_code: "arr.map(function(el) { return el * 3; });",
+        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut.",
+        ref: 'Array/map'
+      },
+      {
+        name: 'compact',
+        description: 'Returns a copy of the array with %nil% elements removed.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.compact",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != null) { result.push(arr[i]); } return result;",
+        sugar_code: "arr.compact();",
+        sugar_enhancements: "%compact% will remove all elements that are %undefined%, %null%, or %NaN%. Additionally you can pass a parameter to remove all falsy values.",
+        ref: 'Array/compact'
+      },
+      {
+        name: 'concat',
+        description: "Concatenates two arrays together and returns the resulting array.",
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr1 + arr2",
+        js_code: "arr1.concat(arr2);"
+      },
+      {
+        name: 'count',
+        description: 'Returns the number of occurrences in the array where either the passed argument exists or the block returns true.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.count { |n| n == 3 }",
+        js_code: "var result = 0; for(var i = 0; i < arr.length; i++) { if(n == 3) result ++; } return result;",
+        sugar_code: "arr.count(function(n){ return n == 3; })",
+        ref: 'Array/count'
+      },
+      {
+        name: 'cycle',
+        description: 'Calls a block on each element of the enumberable n times, where n is the number passed.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "arr.cycle(100) { |x| puts x }",
+        js_code: "for(var i = 0; i < 100; i++) { console.log(arr[i % arr.length]); };",
+        sugar_code: "(100).times(function(n){ console.log(arr.at(n)); });",
+        ref: 'Array/at'
+      },
+      {
+        name: 'delete',
+        description: "Deletes items from the array that are equal to the object passed. If items to delete are not found, returns %nil%, otherwise returns the passed object.",
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.delete('a')",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != 'a') { result.push(arr[i]); } } arr = result;",
+        sugar_code: "arr.remove('a');",
+        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias.",
+        ref: 'Array/remove'
+      },
+      {
+        name: 'delete_at',
+        description: "Deletes the item at the given index, and returns it or %nil% if it is out of range.",
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.delete_at(3)",
+        js_code: "arr.splice(3, 1);",
+        sugar_code: "arr.removeAt(3);",
+        sugar_notes: "%removeAt% can also remove a range of elements. This method will return the array.",
+        ref: 'Array/remove'
+      },
+      {
+        name: 'delete_if',
+        description: "Deletes items from the array for which the block evaluates to true.",
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.delete_if { |str| str == 'a' }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] != 'a') { result.push(arr[i]); } } arr = result;",
+        sugar_code: "arr.remove(function(str) { return str == 'a'; });",
+        sugar_notes: "%remove% is a destructive method that affects the actual array. %exclude% is a non-destructive alias.",
+        ref: 'Array/remove'
+      },
+      {
+        name: 'drop',
+        description: 'Drops the first n elements of the array and returns the rest.',
+        js_compatibility: 1,
+        sugar_compatibility: 3,
+        original_code:  "arr.drop(3)",
+        js_code: "arr.slice(3);",
+        sugar_code: "arr.from(3);",
+        ref: 'Array/from'
+      },
+      {
+        name: 'drop_while',
+        description: 'Drops elements up to, but not including, the first element for which the block returns nil or false.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "arr.drop_while { |n| n < 5 }",
+        js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i] >= 5) { result = arr.slice(i); break; } }; return result;",
+        sugar_code: "var drop = true; arr.remove(function(n) { if(n < 5) { return drop; } else { return drop = false; }});",
+        ref: 'Array/remove'
+      },
+      {
+        name: 'each',
+        description: 'Calls a block once for each element in the array.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.each(&fn)",
+        js_code: "for(var i = 0; i < arr.length; i ++) { fn(arr[i]); };",
+        es5_code: "arr.forEach(fn);",
+        sugar_code: "arr.each(fn);",
+        sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
+        ref: 'Array/each'
+      },
+      {
+        name: 'each_index',
+        description: 'Same as Array#each but passes the index instead of the element.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.each_index(&fn)",
+        js_code: "for(var i = 0; i < arr.length; i ++) { fn(i); };",
+        es5_code: "arr.forEach(function(el, i) { fn(i); });",
+        sugar_code: "arr.each(function(el, i) { fn(i); });",
+        sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
+        ref: 'Array/each'
+      },
+      {
+        name: 'empty?',
+        description: 'Returns true if the array contains no elements.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.empty?",
+        js_code: "arr.length == 0;",
+        sugar_code: "arr.isEmpty();"
+      },
+      {
+        name: 'fill',
+        description: 'Fills the array with the passed argument or the result of a block.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code:  "arr.fill('x')",
+        js_code: "for(var i = 0; i < arr.length; i++) { arr[i] = 'x'; }",
+        es5_code: "arr.map(function(){ return 'x'; });",
+        ref: 'Array/map'
+      },
+      {
+        name: 'find_index',
+        description: 'Returns the index for the first element that matches the object passed or for which the block returns true.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.find_index('a')",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'a') { return i; } } return result;",
+        es5_code: "arr.indexOf('a');",
+        sugar_code: "arr.findIndex(function(el) { return el == 'a'; });",
+        sugar_enhancements: "%findIndex% allows a function to be passed to find the element, similar to %filter%.",
+        ref: 'Array/findIndex'
+      },
+      {
+        name: 'first',
+        description: 'Returns the first n elements of the array (1 by default).',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.first;",
+        js_code: "arr.slice(0,1);",
+        sugar_code: "arr.first();"
+      },
+      {
+        name: 'flatten',
+        description: 'Returns an array that is a one dimensional flattening of the array.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.flatten;",
+        js_code: "function flatten(a) { var result = []; for(var i = 0; i < a.length; i++) { if(a[i] instanceof Array) { result.concat(flatten(a[i])); } else { result.push(a[i]); } } return result; } return flatten(arr);",
+        sugar_code: "arr.flatten();"
+      },
+      {
+        name: 'from',
+        description: 'Returns the remainder of the array from the passed index.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.from(3);",
+        js_code: "arr.slice(3);",
+        sugar_code: "arr.from(3);",
+        ref: 'Array.from'
+      },
+      {
+        name: 'include?',
+        description: 'Returns true if any element of the array matches the object passed.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.include?('foo')",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'foo') { return true; } } return false;",
+        es5_code: "arr.some(function(el){ return el == 'foo'; });",
+        sugar_code: "arr.has('foo');",
+        ref: 'Array/has'
+      },
+      {
+        name: 'index',
+        description: 'Returns the index for the first element that matches the object passed or for which the block returns true.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.index('a')",
+        js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'a') { return i; } } return result;",
+        es5_code: "arr.indexOf('a');",
+        sugar_code: "arr.findIndex(function(el) { return el == 'a'; });",
+        sugar_enhancements: "%findIndex% allows a function to be passed to find the element, similar to %filter%.",
+        ref: 'Array/findIndex'
+      },
+      {
+        name: 'in_groups',
+        description: 'Splits or iterates over the array in a number of groups specified by the passed number.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "arr.in_groups(3); arr.in_groups(3, 'none')",
+        sugar_code: "arr.inGroups(3); arr.inGroups(3, 'none');",
+        ref: 'Array/inGroups'
+      },
+      {
+        name: 'in_groups_of',
+        description: 'Splits or iterates over the array in groups which are of a size equal to the number passed.',
+        js_compatibility: 0,
+        sugar_compatibility: 1,
+        original_code:  "arr.in_groups_of(3); arr.in_groups_of(3, 'none')",
+        sugar_code: "arr.inGroupsOf(3); arr.inGroupsOf(3, 'none');",
+        ref: 'Array/inGroupsOf'
+      },
+      {
+        name: 'insert',
+        description: 'Inserts the given values before the element with the given index.',
+        js_compatibility: 1,
+        sugar_compatibility: 2,
+        original_code:  "arr.insert(1, 'a')",
+        js_code: "arr.splice(1, 0, 'a');",
+        js_notes: "The second parameter is the number of elements to remove at that index, so if you are just adding elements, pass 0.",
+        sugar_code: "arr.insert('a', 1);",
+        sugar_notes: "In addition to the parameters being reversed, %insert% performs a concat operation on the array, so nested arrays won't work here (use %splice% instead in this case).",
+        ref: 'Array/insert'
+      },
+      {
+        name: 'join',
+        description: 'Returns a string with all elements in the array converted to a string and joined together with the passed separator.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code:  "arr.join(',')",
+        js_code: "arr.join(',');"
+      },
+      {
+        name: 'keep_if',
+        description: 'Returns an array containing all elements for which the block is not false.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.keep_if { |n| n % 3 == 0 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } } return result;",
+        es5_code: "arr.filter(function(el) { return el % 3 == 0; });",
+        sugar_code: "arr.findAll(function(el) { return el % 3 == 0; });",
+        sugar_enhancements: "%findAll% method has a few enhancements including starting from an index, shortcuts for the passed function, and ability to handle sparse arrays.",
+        ref: 'Array/findAll'
+      },
+      {
+        name: 'last',
+        description: 'Returns the last n elements of the array (1 by default).',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.last",
+        js_code: "arr.slice(-1);",
+        sugar_code: "arr.last();",
+        ref: 'Array/last'
+      },
+      {
+        name: 'length',
+        description: 'Returns the length of the array.',
+        js_compatibility: 2,
+        sugar_compatibility: 2,
+        original_code: "arr.length",
+        js_code: "arr.length;",
+        sugar_code: "arr.length;"
+      },
+      {
+        name: 'map',
+        description: 'Creates an array from another via a mapping function.',
+        js_compatibility: 0,
+        sugar_compatibility: 3,
+        original_code:  "arr.map { |x| x * 3 }",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push(arr[i] * 3); } return result;",
+        es5_code: "arr.map(function(el) { return el * 3; });",
+        sugar_code: "arr.map(function(el) { return el * 3; });",
+        sugar_enhancements: "Sugar enhances the %map% method to allow a string shortcut.",
+        ref: 'Array/map'
+      },
+      {
         name: 'pop',
         description: 'Removes the last element from the end of the array and returns it.',
         js_compatibility: 2,
@@ -1493,16 +1549,6 @@ var SugarRubyMethods = [
         sugar_compatibility: 2,
         original_code:  "arr.push",
         js_code: "arr.push();"
-      },
-      {
-        name: 'reduce',
-        description: 'Combines all elements of the array by applying a binary operation, specified by a block or symbol.',
-        js_compatibility: 1,
-        sugar_compatibility: 2,
-        original_code:  "arr.reduce {|sum, n| sum + n }",
-        js_code: "var result = 0; for(var i = 0; i <= 5; i++) { result += arr[i]; }; return result;",
-        es5_code: "arr.reduce(function(a, b) { return a + b; });",
-        ref: 'Array/reduce'
       },
       {
         name: 'reject',
@@ -1635,15 +1681,12 @@ var SugarRubyMethods = [
         ref: 'Array/sortBy'
       },
       {
-        name: 'sum',
-        description: 'Returns the sum of all elements in the iterable.',
+        name: 'split',
+        description: 'Divides the array into subarrays based on a delimiter or result of a block.',
         js_compatibility: 0,
-        sugar_compatibility: 2,
-        original_code:  "arr.sum(&:price)",
-        js_code: "var result = 0; for(var i = 0; i < arr.length; i++) { result += arr[i]['price']; } return result;",
-        es5_code: "arr.reduce(function(a, b){ return a + b.price; }, 0)",
-        sugar_code: "arr.sum('price')",
-        ref: 'Array/sum'
+        sugar_compatibility: 0,
+        original_code:  "arr.split(&:fn)",
+        js_code: "var result = [], tmp = []; for(var i == 0; i < arr.length; i++) { if(fn(arr[i])) { result.push(tmp); tmp = []; } else { tmp.push(arr[i]); } }"
       },
       {
         name: 'take',
@@ -1666,6 +1709,25 @@ var SugarRubyMethods = [
         ref: 'Array/findAll'
       },
       {
+        name: 'to',
+        description: 'Returns the beginning of the array up to the passed index.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code: "arr.to(3);",
+        js_code: "arr.slice(0, 3);",
+        sugar_code: "arr.to(3);",
+        ref: 'Array.to'
+      },
+      {
+        name: 'to_query',
+        description: 'Converts the array to a string suitable to use as a URL query string.',
+        js_compatibility: 0,
+        sugar_compatibility: 0,
+        original_code: "arr.to_query('key')",
+        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { result.push('key=' + encodeURICompinent(arr[i])); } return result.join('&');",
+        sugar_code: "arr.map(function(el){ return 'key' + el.escapeURL(true); }).join('&');"
+      },
+      {
         name: 'uniq',
         description: 'Returns a new array removing all duplicate values.',
         js_compatibility: 0,
@@ -1674,6 +1736,16 @@ var SugarRubyMethods = [
         js_code: "var result = [], exists; for(var i = 0; i < arr.length; i++) { exists = false; for(var j = 0; j < result.length; j++) { if(result[j] == arr[i]) { exists = true; } } if(!exists) { result.push(arr[i]); } } return result;",
         sugar_code: "arr.unique();",
         sugar_enhancements: "%unique% in Sugar can also take a mapping function that identifies the property to unique on. This is useful when a unique property is known ahead of time to avoid checking equality on all properties of objects.",
+        ref: 'Array/unique'
+      },
+      {
+        name: 'uniq_by',
+        description: 'Returns a unique array based on a given criteria.',
+        js_compatibility: 0,
+        sugar_compatibility: 2,
+        original_code:  "arr.uniq_by { |i| i.odd? }",
+        js_code: "var result = [], exists; for(var i = 0; i < arr.length; i++) { exists = false; for(var j = 0; j < result.length; j++) { if(result[j] % 2 == 0) { exists = true; } } if(!exists) { result.push(arr[i]); } } return result;",
+        sugar_code: "arr.unique(function(i) { return i.isOdd(); });",
         ref: 'Array/unique'
       },
       {
@@ -1703,7 +1775,7 @@ var SugarRubyMethods = [
         js_code: "var result = []; for(var i = 0; i < arr1.length; i++) { result.push([arr1[i], arr2[i] || null]); } return result;",
         sugar_code: "arr1.zip(arr2);",
         ref: 'Array/zip'
-      },
+      }
     ]
   }
 ];
