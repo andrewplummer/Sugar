@@ -512,10 +512,10 @@ test('ECMAScript', function () {
   count = 0;
 
   result = arr.reduce(function(prev, el, i, o){
-    equal(prev, previous[count], 'Array#filter | first argument is the prev value');
-    equal(el, current[count], 'Array#filter | second argument is element');
-    equal(i, count + 1, 'Array#filter | third argument is index');
-    equal(o, arr, 'Array#filter | fourth argument is the array');
+    equal(prev, previous[count], 'Array#reduce | first argument is the prev value');
+    equal(el, current[count], 'Array#reduce | second argument is element');
+    equal(i, count + 1, 'Array#reduce | third argument is index');
+    equal(o, arr, 'Array#reduce | fourth argument is the array');
     count++;
     return prev + el;
   });
@@ -551,7 +551,7 @@ test('ECMAScript', function () {
   });
   equal(count, 2, 'Array#reduce | elements deleted after the loop begins should not be visited');
 
-  equal([1,2,3].reduce(function(a, n){ a + n; }, 0), 6, 'Array#reduce | can handle initial value of 0');
+  equal([1,2,3].reduce(function(a, n){ return a + n; }, 0), 6, 'Array#reduce | can handle initial value of 0');
 
 
 
@@ -572,10 +572,10 @@ test('ECMAScript', function () {
   count = 0;
 
   result = arr.reduceRight(function(prev, el, i, o){
-    equal(prev, previous[count], 'Array#filter | first argument is the prev value');
-    equal(el, current[count], 'Array#filter | second argument is element');
-    equal(i, 1 - count, 'Array#filter | third argument is index');
-    equal(o, arr, 'Array#filter | fourth argument is the array');
+    equal(prev, previous[count], 'Array#reduceRight | first argument is the prev value');
+    equal(el, current[count], 'Array#reduceRight | second argument is element');
+    equal(i, 1 - count, 'Array#reduceRight | third argument is index');
+    equal(o, arr, 'Array#reduceRight | fourth argument is the array');
     count++;
     return prev + el;
   });
@@ -611,7 +611,7 @@ test('ECMAScript', function () {
   });
   equal(count, 2, 'Array#reduceRight | elements deleted after the loop begins should not be visited');
 
-  equal([1,2,3].reduceRight(function(a, n){ a + n; }, 0), 6, 'Array#reduceRight | can handle initial value of 0');
+  equal([1,2,3].reduceRight(function(a, n){ return a + n; }, 0), 6, 'Array#reduceRight | can handle initial value of 0');
 
 
 
