@@ -551,6 +551,7 @@ test('ECMAScript', function () {
   });
   equal(count, 2, 'Array#reduce | elements deleted after the loop begins should not be visited');
 
+  equal([1,2,3].reduce(function(a, n){ a + n; }, 0), 6, 'Array#reduce | can handle initial value of 0');
 
 
 
@@ -609,6 +610,9 @@ test('ECMAScript', function () {
     return prev + el;
   });
   equal(count, 2, 'Array#reduceRight | elements deleted after the loop begins should not be visited');
+
+  equal([1,2,3].reduceRight(function(a, n){ a + n; }, 0), 6, 'Array#reduceRight | can handle initial value of 0');
+
 
 
   // Polyfills can be run on objects that inherit from Arrays
