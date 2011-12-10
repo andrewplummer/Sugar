@@ -1151,7 +1151,7 @@ var SugarRubyMethods = [
         ref: 'Array/sum'
       }
     ]
-  }
+  },
   {
     type: 'instance',
     namespace: 'Array',
