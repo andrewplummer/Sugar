@@ -639,8 +639,8 @@ test('String', function () {
 
   equal('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
   equal('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
-  equal('HOPONPOP'.underscore(), 'h_o_p_o_n_p_o_p', 'String#underscore | all caps');
-  equal('HOP-ON-POP'.underscore(), 'h_o_p_o_n_p_o_p', 'String#underscore | caps and dashes');
+  equal('HOPONPOP'.underscore(), 'h_o_p_o_n_p_o_p', 'String#underscore | all caps', { prototype: 'hoponpop' });
+  equal('HOP-ON-POP'.underscore(), 'h_o_p_o_n_p_o_p', 'String#underscore | caps and dashes', { prototype: 'hop_on_pop' });
   equal('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore | lower-case and dashes');
 
   equal('watch me fail'.underscore(), 'watch_me_fail', 'String#underscore | whitespace', { prototype: 'watch me fail' });
@@ -651,8 +651,8 @@ test('String', function () {
 
   equal('hopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case');
   equal('HopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case capital first');
-  equal('HOPONPOP'.spacify(), 'h o p o n p o p', 'String#spacify | all caps');
-  equal('HOP-ON-POP'.spacify(), 'h o p o n p o p', 'String#spacify | caps and dashes');
+  equal('HOPONPOP'.spacify(), 'h o p o n p o p', 'String#spacify | all caps', { prototype: 'hoponpop' });
+  equal('HOP-ON-POP'.spacify(), 'h o p o n p o p', 'String#spacify | caps and dashes', { prototype: 'hop on pop' });
   equal('hop-on-pop'.spacify(), 'hop on pop', 'String#spacify | lower-case and dashes');
 
   equal('watch_me_fail'.spacify(), 'watch me fail', 'String#spacify | whitespace');
@@ -1193,29 +1193,29 @@ test('String', function () {
 
   // String#compare
 
-  equal(('a').compare('a'), 0, 'Number#compare | a and a results in 0');
-  equal(('a').compare('b'), -1, 'Number#compare | a and b results in 0');
-  equal(('b').compare('a'), 1, 'Number#compare | b and a results in 1');
-  equal(('z').compare('a'), 1, 'Number#compare | z and a results in 1');
-  equal(('a').compare('z'), -1, 'Number#compare | a and z results in 0');
+  equal(('a').compare('a'), 0, 'String#compare | a and a results in 0');
+  equal(('a').compare('b'), -1, 'String#compare | a and b results in 0');
+  equal(('b').compare('a'), 1, 'String#compare | b and a results in 1');
+  equal(('z').compare('a'), 1, 'String#compare | z and a results in 1');
+  equal(('a').compare('z'), -1, 'String#compare | a and z results in 0');
 
-  equal(('A').compare('a'), -1, 'Number#compare | caps come before lower case');
-  equal(('_').compare('-'), 1, 'Number#compare | special chars are also compared by code point');
+  equal(('A').compare('a'), -1, 'String#compare | caps come before lower case');
+  equal(('_').compare('-'), 1, 'String#compare | special chars are also compared by code point');
 
-  equal(('advertising').compare('@advertising', true), 0, 'Number#compare | all special characters can be ignored');
-  equal(('advertising').compare('@advertising', '@'), 0, 'Number#compare | specific characters can be ignored');
-  equal(('advertising').compare('@advertising', '#'), 1, 'Number#compare | only specific characters are ignored');
+  equal(('advertising').compare('@advertising', true), 0, 'String#compare | all special characters can be ignored');
+  equal(('advertising').compare('@advertising', '@'), 0, 'String#compare | specific characters can be ignored');
+  equal(('advertising').compare('@advertising', '#'), 1, 'String#compare | only specific characters are ignored');
 
-  equal(('@advertising').compare('advertising', true), 0, 'Number#compare | inverse ignore is also true');
-  equal(('@advertising').compare('advertising', '@'), 0, 'Number#compare | inverse ignore is also true');
+  equal(('@advertising').compare('advertising', true), 0, 'String#compare | inverse ignore is also true');
+  equal(('@advertising').compare('advertising', '@'), 0, 'String#compare | inverse ignore is also true');
 
-  equal(('2advertising').compare('advertising', true), -1, 'Number#compare | numeric characters still count');
+  equal(('2advertising').compare('advertising', true), -1, 'String#compare | numeric characters still count');
 
-  equal(('1').compare(0), 1, 'Number#compare | numbers are coerced | 0');
-  equal(('1').compare(1), 0, 'Number#compare | numbers are coerced | 1');
-  equal(('1').compare(2), -1, 'Number#compare | numbers are coerced | 2');
-  equal(('1').compare(87), -1, 'Number#compare | numbers are coerced | 87');
+  equal(('1').compare(0), 1, 'String#compare | numbers are coerced | 0');
+  equal(('1').compare(1), 0, 'String#compare | numbers are coerced | 1');
+  equal(('1').compare(2), -1, 'String#compare | numbers are coerced | 2');
+  equal(('1').compare(87), -1, 'String#compare | numbers are coerced | 87');
 
-  equal(('80').compare(9), -1, 'Number#compare | in lexical comparison, 80 comes before 9');
+  equal(('80').compare(9), -1, 'String#compare | in lexical comparison, 80 comes before 9');
 
 });
