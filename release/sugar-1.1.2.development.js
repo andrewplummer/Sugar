@@ -3216,7 +3216,7 @@
      * @extra %insert% is provided as an alias, and is generally more readable when using an index.
      * @example
      *
-     *   'five'.add('schfifty ')      -> schfifty five
+     *   'schfifty'.add(' five')      -> schfifty five
      *   'dopamine'.insert('e', 3)       -> dopeamine
      *   'spelling eror'.insert('r', -3) -> spelling error
      *
