@@ -1,3 +1,11 @@
+/*
+ *  Sugar Library v1.1.2 (Development)
+ *
+ *  Freely distributable and licensed under the MIT-style license.
+ *  Copyright (c) 2011 Andrew Plummer
+ *  http://sugarjs.com/
+ *
+ * ---------------------------- */
 // Google Closure Compiler will output a wrapping function here.
 
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
@@ -3208,7 +3216,7 @@
      * @extra %insert% is provided as an alias, and is generally more readable when using an index.
      * @example
      *
-     *   'schfifty'.add(' five')      -> schfifty five
+     *   'five'.add('schfifty ')      -> schfifty five
      *   'dopamine'.insert('e', 3)       -> dopeamine
      *   'spelling eror'.insert('r', -3) -> spelling error
      *
