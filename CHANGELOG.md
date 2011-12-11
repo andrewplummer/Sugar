@@ -1,3 +1,31 @@
+v1.1.2
+=====
+
+### API Changes ###
+
+- Added Array#findIndex.
+- Added Array#sample.
+- Added String#compare.
+- Added Number#compare.
+- Added Date#compare.
+- Fixed issue with floats not properly being recognized in the query string.
+- Fixed issue with Object.isEmpty on non-object types and null.
+- Fixed issue with arrayEach not allowing negative start indexes.
+- Fixed issue with Array#reduce not recognizing 0 as a starting value.
+- Fixed issue with Array#add not allowing negative indexes.
+- Fixed issue with Number.random not recognizing upper limit of 0.
+- Fixed issue with String#dasherize not working on single camel cased letters.
+- Fixed issue with String#assign not working on an empty string or other falsy value.
+- Fixed issues with French and German date months not being correct.
+- Fixed Function#after not calling the method immediately when num is 0.
+
+
+### Internal Changes ###
+
+- Refactored Array#reduce and Array#reduceRight to use the same internal method.
+- Refactored String#camelize to be smaller.
+- Refactored checkMonthTraversal to be more robust in a variety of situations.
+
 v1.1.1
 =====
 
