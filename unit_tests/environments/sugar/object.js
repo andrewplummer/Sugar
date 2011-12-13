@@ -443,6 +443,8 @@ test('Object', function () {
   equal(Object.isEmpty(null), true, 'Object.isEmpty | null is empty');
   equal(Object.isEmpty(undefined), true, 'Object.isEmpty | undefined is empty');
   equal(Object.isEmpty(''), true, 'Object.isEmpty | empty string is empty');
+  equal(Object.isEmpty('wasabi'), false, 'Object.isEmpty | non-empty string is not empty');
+  equal(Object.isEmpty({ length: 0 }), false, 'Object.isEmpty | simple object with length property is not empty');
   equal(Object.isEmpty([]), true, 'Object.isEmpty | empty array is empty');
   equal(Object.isEmpty(NaN), true, 'Object.isEmpty | NaN is empty');
   equal(Object.isEmpty(0), true, 'Object.isEmpty | 0 is empty');
