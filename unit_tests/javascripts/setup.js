@@ -112,6 +112,7 @@ var getMeta = function(stack) {
 var checkCanFinish = function() {
   if(!syncTestsRunning && capturedTimers.length == 0) {
     testsFinished();
+    restoreNativeTimeout();
   }
 }
 
@@ -184,6 +185,10 @@ setTimeout = function(fn, delay) {
 clearTimeout = function(timer) {
   removeCapturedTimer(timer);
   return nativeClearTimeout(timer);
+}
+
+restoreNativeTimeout = function() {
+  setTimeout = nativeSetTimeout;
 }
 
 var removeCapturedTimer = function(timer) {
