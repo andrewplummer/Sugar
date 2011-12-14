@@ -9,35 +9,37 @@ registerEnvironment = function(name, mod) {
 }
 
 startTests = function() {
+  jQuery(document).trigger('suite.started', [environment, modules]);
   nextModule();
 }
 
 testsFinishedCallback = function(r, time) {
-  allResults.push({ module: current.name, results: r, time: time });
+  if(!current) console.info(r, time);
+  var data = { module: current.name, results: r, time: time };
+  jQuery(document).trigger('suite.module_finished', data);
+  allResults.push(data);
   nextModule();
 }
 
 var nextModule = function() {
   current = modules.shift();
   if(current) {
-    loadScripts(current.tests);
+    loadScripts(current);
   } else {
     modulesFinished();
   }
 }
 
 var modulesFinished = function() {
-  if(window.parent && window != window.parent && window.parent.modulesFinishedCallback) {
-    window.parent.modulesFinishedCallback(environment, allResults);
-  }
+  jQuery(document).trigger('suite.finished', [environment, allResults]);
 }
 
-var loadScripts = function(scripts) {
+var loadScripts = function(module) {
   var loaded = 0, i;
-  for(i = 0; i < scripts.length; i++){
-    jQuery.getScript(scripts[i], function(){
+  for(i = 0; i < module.tests.length; i++){
+    jQuery.getScript((module.path || '') + module.tests[i], function(){
       loaded++;
-      if(loaded == scripts.length){
+      if(loaded == module.tests.length){
         syncTestsFinished();
       }
     });
