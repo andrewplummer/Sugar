@@ -1,3 +1,15 @@
+v1.1.3
+=====
+
+### API Changes ###
+
+- Fixed issue with Object.isEmpty where strings with length > 0 will return true.
+
+### Internal Changes ###
+
+- Updated Array#sortBy to use .compare method when available.
+
+
 v1.1.2
 =====
 
