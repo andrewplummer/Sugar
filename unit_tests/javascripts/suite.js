@@ -1,6 +1,6 @@
 (function($) {
 
-  modulesFinishedCallback = function(environment, results) {
+  $(document).bind('suite.finished', function(event, environment, results) {
     var totalTests = 0;
     var totalAssertions = 0;
     var totalFailed = 0;
@@ -54,7 +54,21 @@
     }
     $('[title]', env).tooltip({ color: 'black' });
     $(document).trigger('tests_finished', [environment]);
-  }
+  });
+
+
+  $(document).bind('suite.started', function(event, environment, modules) {
+    var tests = $('<div id="tests"/>').appendTo(document.body);
+    $('<h3>' + $('title').text() + '</h3>').appendTo(tests);
+    var test = $('<div id="'+ environment +'"/ class="environment">').appendTo(tests);
+    $('<div class="loading">Running tests.</div>').appendTo(test);
+    $('<div class="tests"/>').appendTo(test);
+    $('<p><span class="stats"></p>').appendTo(test);
+  });
+
+  $(document).ready(function() {
+    startTests();
+  });
 
   var getFailureHTML = function(f) {
     var expected, actual;
