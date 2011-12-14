@@ -1,5 +1,5 @@
 /*
- *  Sugar Library vedge (Development)
+ *  Sugar Library v1.1.3 (Development)
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) 2011 Andrew Plummer
