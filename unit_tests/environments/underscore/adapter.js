@@ -22,6 +22,10 @@ start = function() {
   // Just pass through...
 }
 
+notStrictEqual = function(a, b, message) {
+  equal(a === b, false, message);
+}
+
 var ensureArray = function(obj) {
   if(obj === null) {
     return [];
@@ -49,7 +53,10 @@ var CompatibleMethods = [
       },
       {
         name: 'last',
-        method: function(arr, n){
+        method: function(arr, n, third){
+          // This is the same check that Underscore makes to hack
+          // _.last to work with _.map
+          if(third) n = 1;
           return ensureArray(arr).last(n);
         }
       },
@@ -69,20 +76,22 @@ var CompatibleMethods = [
           return ensureArray(arr).compact(true);
         }
       },
+      /* Object.extend is no longer compatible as it has conflict resolution now.
+      {
+        name: 'extend',
+        method: function(){
+          return Object.SugarMethods['merge'].method.apply(this, arguments);
+        }
+      },
+      */
+      /* Array#flatten is no longer compatible as it has levels of flattening (not just deep/shallow)
       {
         name: 'flatten',
         method: function(arr){
           return ensureArray(arr).flatten();
         }
       },
-      {
-        name: 'without',
-        method: function(arr){
-          arr = ensureArray(arr);
-          var args = Array.prototype.slice.call(arguments, 1);
-          return Array.prototype.exclude.apply(arr, args);
-        }
-      },
+      */
       {
         name: 'uniq',
         method: function(arr){
@@ -105,6 +114,7 @@ var CompatibleMethods = [
           return Array.prototype.union.apply(arr, args);
         }
       },
+      /*
       {
         name: 'difference',
         method: function(arr, a){
@@ -113,6 +123,7 @@ var CompatibleMethods = [
           return Array.prototype.subtract.apply(arr, args);
         }
       },
+      */
       {
         name: 'indexOf',
         method: function(arr, a){
@@ -176,12 +187,14 @@ var CompatibleMethods = [
           return Array.SugarMethods['some'].method.call(arr, fn.bind(context));
         }
       },
+      /*
       {
         name: 'include',
         method: function(arr, val){
           return Array.SugarMethods['has'].method.call(arr, val);
         }
       },
+      */
       {
         name: 'pluck',
         method: function(arr, prop){
@@ -236,12 +249,6 @@ var CompatibleMethods = [
         }
       },
       {
-        name: 'extend',
-        method: function(){
-          return Object.SugarMethods['merge'].method.apply(this, arguments);
-        }
-      },
-      {
         name: 'clone',
         method: function(){
           return Object.SugarMethods['clone'].method.apply(this, arguments);
@@ -254,7 +261,7 @@ var CompatibleMethods = [
           if (b && b._chain) b = b._wrapped;
           if (a && a.isEqual) return a.isEqual(b);
           if (b && b.isEqual) return b.isEqual(a);
-          return Object.SugarMethods['equals'].method.apply(this, arguments);
+          return Object.SugarMethods['equal'].method.apply(this, arguments);
         }
       },
       {
@@ -315,7 +322,6 @@ var CompatibleMethods = [
       // _.memoize ... no direct equivalent
       // _.debounce ... no direct equivalent
       // _.once ... no direct equivalent.. is this not similar to memoize?
-      // _.after ... no direct equivalent.. calls a function only after X number of calls
       // _.wrap ... no direct equivalent..
       // _.compose ... no direct equivalent.. math stuff
       {
@@ -323,6 +329,12 @@ var CompatibleMethods = [
         method: function(fn){
           var args = Array.prototype.slice.call(arguments, 1);
           return Function.prototype.bind.apply(fn, args);
+        }
+      },
+      {
+        name: 'after',
+        method: function(num, fn){
+          return Function.prototype.after.apply(fn, [num]);
         }
       },
       {
