@@ -296,5 +296,8 @@ test('Function', function () {
   equal((1000).noop(4, ' ', ','), '1 000,0000', 'Function#fill | noop | 1 000,0000');
   equal((1000).noop(5, ' ', ','), '1 000,00000', 'Function#fill | noop | 1 000,00000');
 
+  equal((function(first){ return first; }).fill(['a','b'])(), ['a','b'], 'Function#fill | can be passed arrays');
+
+
 });
 
