@@ -5905,7 +5905,7 @@
       return function() {
         var args = getArgs(arguments);
         arrayEach(curried, function(arg, index) {
-          if(isDefined(arg) || index >= args.length) args.insert(arg, index);
+          if(isDefined(arg) || index >= args.length) args.splice(index, 0, arg);
         });
         return fn.apply(this, args);
       }
