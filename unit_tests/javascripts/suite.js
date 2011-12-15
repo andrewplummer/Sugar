@@ -1,27 +1,43 @@
 (function($) {
 
+
+  function arrayEach(arr, fn) {
+    for(var i = 0; i < arr.length; i++) {
+      fn(arr[i], i, arr);
+    }
+  }
+
+  function arrayEvery(arr, fn) {
+    for(var i = 0; i < arr.length; i++) {
+      if(!fn(arr[i], i, arr)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   $(document).bind('suite.finished', function(event, environment, results) {
     var totalTests = 0;
     var totalAssertions = 0;
     var totalFailed = 0;
     var env = $('#' + environment);
-    results.forEach(function(module) {
+    arrayEach(results, function(module) {
       var mod = $('<ul class="module" />');
-      module.results.forEach(function(r) {
+      arrayEach(module.results, function(r) {
         totalTests++;
         totalAssertions += r.assertions;
         totalFailed += r.failures.length;
         var li = $('<li class="test" />');
         var title = '<h5>' + r.name + '</h5>';
         if(r.failures.length > 0) {
-          r.failures.forEach(function(f) {
+          arrayEach(r.failures, function(f) {
             title += getFailureHTML(f);
             if(f.warning) {
               totalFailed--;
             }
 
           });
-          var warning = r.failures.every(function(f){ return f.warning; });
+          var warning = arrayEvery(r.failures, function(f){ return f.warning; });
           if(warning) {
             li.addClass('warning');
             li.text('.');
@@ -63,7 +79,7 @@
     var test = $('<div id="'+ environment +'"/ class="environment">').appendTo(tests);
     $('<div class="loading">Running tests.</div>').appendTo(test);
     $('<div class="tests"/>').appendTo(test);
-    $('<p><span class="stats"></p>').appendTo(test);
+    $('<p><span class="stats"/></p>').appendTo(test);
   });
 
   $(document).ready(function() {
