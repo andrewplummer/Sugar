@@ -1,12 +1,13 @@
 $(document).ready(function() {
 
-  module("Array-only functions (last, compact, uniq, and so on...)");
+  module("Arrays");
 
   test("arrays: first", function() {
     equals(_.first([1,2,3]), 1, 'can pull out the first element of an array');
     equals(_([1, 2, 3]).first(), 1, 'can perform OO-style "first()"');
     equals(_.first([1,2,3], 0).join(', '), "", 'can pass an index to first');
     equals(_.first([1,2,3], 2).join(', '), '1, 2', 'can pass an index to first');
+    equals(_.first([1,2,3], 5).join(', '), '1, 2, 3', 'can pass an index to first');
     var result = (function(){ return _.first(arguments); })(4, 3, 2, 1);
     equals(result, 4, 'works on an arguments object.');
     result = _.map([[1,2,3],[1,2,3]], _.first);
@@ -24,10 +25,24 @@ $(document).ready(function() {
     equals(_.flatten(result).join(','), '2,3,2,3', 'works well with _.map');
   });
 
+  test("arrays: initial", function() {
+    equals(_.initial([1,2,3,4,5]).join(", "), "1, 2, 3, 4", 'working initial()');
+    equals(_.initial([1,2,3,4],2).join(", "), "1, 2", 'initial can take an index');
+    var result = (function(){ return _(arguments).initial(); })(1, 2, 3, 4);
+    equals(result.join(", "), "1, 2, 3", 'initial works on arguments object');
+    result = _.map([[1,2,3],[1,2,3]], _.initial);
+    equals(_.flatten(result).join(','), '1,2,1,2', 'initial works with _.map');
+  });
+
   test("arrays: last", function() {
     equals(_.last([1,2,3]), 3, 'can pull out the last element of an array');
+    equals(_.last([1,2,3], 0).join(', '), "", 'can pass an index to last');
+    equals(_.last([1,2,3], 2).join(', '), '2, 3', 'can pass an index to last');
+    equals(_.last([1,2,3], 5).join(', '), '1, 2, 3', 'can pass an index to last');
     var result = (function(){ return _(arguments).last(); })(1, 2, 3, 4);
     equals(result, 4, 'works on an arguments object');
+    result = _.map([[1,2,3],[1,2,3]], _.last);
+    equals(result.join(','), '3,3', 'works well with _.map');
   });
 
   test("arrays: compact", function() {
@@ -37,10 +52,13 @@ $(document).ready(function() {
   });
 
   test("arrays: flatten", function() {
-    var list = [1, [2], [3, [[[4]]]]];
-    equals(_.flatten(list).join(', '), '1, 2, 3, 4', 'can flatten nested arrays');
-    var result = (function(){ return _.flatten(arguments); })(1, [2], [3, [[[4]]]]);
-    equals(result.join(', '), '1, 2, 3, 4', 'works on an arguments object');
+    if (window.JSON) {
+      var list = [1, [2], [3, [[[4]]]]];
+      equals(JSON.stringify(_.flatten(list)), '[1,2,3,4]', 'can flatten nested arrays');
+      equals(JSON.stringify(_.flatten(list, true)), '[1,2,3,[[[4]]]]', 'can shallowly flatten nested arrays');
+      var result = (function(){ return _.flatten(arguments); })(1, [2], [3, [[[4]]]]);
+      equals(JSON.stringify(result), '[1,2,3,4]', 'works on an arguments object');
+    }
   });
 
   test("arrays: without", function() {
@@ -50,8 +68,7 @@ $(document).ready(function() {
     equals(result.join(', '), '2, 3, 4', 'works on an arguments object');
 
     var list = [{one : 1}, {two : 2}];
-    // AP: Array#exclude will use real object identities AND object equivalencies, so this test can never pass...
-    // ok(_.without(list, {one : 1}).length == 2, 'uses real object identity for comparisons.');
+    ok(_.without(list, {one : 1}).length == 2, 'uses real object identity for comparisons.');
     ok(_.without(list, list[0]).length == 1, 'ditto.');
   });
 
@@ -85,11 +102,17 @@ $(document).ready(function() {
   test("arrays: union", function() {
     var result = _.union([1, 2, 3], [2, 30, 1], [1, 40]);
     equals(result.join(' '), '1 2 3 30 40', 'takes the union of a list of arrays');
+
+    var result = _.union([1, 2, 3], [2, 30, 1], [1, 40, [1]]);
+    equals(result.join(' '), '1 2 3 30 40 1', 'takes the union of a list of nested arrays');
   });
 
   test("arrays: difference", function() {
     var result = _.difference([1, 2, 3], [2, 30, 40]);
     equals(result.join(' '), '1 3', 'takes the difference of two arrays');
+
+    var result = _.difference([1, 2, 3, 4], [2, 30, 40], [1, 11, 111]);
+    equals(result.join(' '), '3 4', 'takes the difference of three arrays');
   });
 
   test('arrays: zip', function() {
