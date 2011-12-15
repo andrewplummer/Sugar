@@ -49,6 +49,15 @@ var arrayEqual = function(one, two) {
   return result && one.length === two.length;
 }
 
+var arrayIndexOf = function(arr, obj) {
+  for(var i = 0; i < arr.length; i++) {
+    if(arr[i] === obj) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 var objectEqual = function(one, two) {
   var onep = 0, twop = 0, key;
   for(key in one) {
@@ -164,11 +173,11 @@ test = function(name, fn) {
     assertions: 0,
     failures: []
   };
-  try {
+  //try {
     fn.call();
-  } catch(e) {
-    console.info(e);
-  }
+  //} catch(e) {
+    //console.info(e);
+  //}
   results.push(currentTest);
 }
 
@@ -192,7 +201,7 @@ restoreNativeTimeout = function() {
 }
 
 var removeCapturedTimer = function(timer) {
-  var index = capturedTimers.indexOf(timer);
+  var index = arrayIndexOf(capturedTimers, timer);
   if(index !== -1) {
     capturedTimers.splice(index, 1);
   }
@@ -234,7 +243,7 @@ raisesError = function(fn, message, exceptions) {
 }
 
 skipEnvironments = function(environments, test) {
-  if(environments.indexOf(environment) === -1) {
+  if(arrayIndexOf(environments, environment) === -1) {
     test.call();
   }
 }
