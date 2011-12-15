@@ -414,7 +414,7 @@ var SugarRubyMethods = [
         description: 'Returns a new string that has certain repeating characters "squeezed" into one, whitespace by default.',
         js_compatibility: 0,
         original_code:  "str.squeeze()",
-        js_code: "str.replace(/(\S)(\s)*/, '$1$2')",
+        js_code: "str.replace(/(\s)+/g, '$1')",
         sugar_code: "str.compact();"
       },
       {
@@ -1585,8 +1585,8 @@ var SugarRubyMethods = [
         sugar_compatibility: 0,
         original_code:  "arr.reverse_each(&fn)",
         js_code: "var result = []; for(var i = arr.length; i > 0; i-- { fn(arr[i]); }",
-        es5_code: "arr.reverse.forEach(fn);",
-        sugar_code: "arr.reverse.each(fn);",
+        es5_code: "arr.reverse().forEach(fn);",
+        sugar_code: "arr.reverse().each(fn);",
         sugar_enhancements: "%each% has a few enhancements including starting from an index, looping past the end of the array, and the ability to handle sparse arrays.",
         ref: 'Array/each'
       },
