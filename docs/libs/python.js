@@ -343,7 +343,7 @@ var SugarPythonMethods = [
       },
       {
         name: 'any',
-        description: 'Returns true if all elements in the iterable are true',
+        description: 'Returns true if any elements in the iterable are true',
         js_compatibility: 1,
         sugar_compatibility: 2,
         original_code:  "any(el == 8 for el in arr)",
