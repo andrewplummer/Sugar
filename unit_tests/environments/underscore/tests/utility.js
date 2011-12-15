@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  module("Utility functions (uniqueId, template)");
+  module("Utility");
 
   test("utility: noConflict", function() {
     var underscore = _.noConflict();
@@ -41,10 +41,18 @@ $(document).ready(function() {
     equals(_('champ').myReverse(), 'pmahc', 'mixed in a function to the OOP wrapper');
   });
 
+  test("utility: _.escape", function() {
+    equals(_.escape("Curly & Moe"), "Curly &amp; Moe");
+    equals(_.escape("Curly &amp; Moe"), "Curly &amp;amp; Moe");
+  });
+
   test("utility: template", function() {
     var basicTemplate = _.template("<%= thing %> is gettin' on my noives!");
     var result = basicTemplate({thing : 'This'});
     equals(result, "This is gettin' on my noives!", 'can do basic attribute interpolation');
+
+    var sansSemicolonTemplate = _.template("A <% this %> B");
+    equals(sansSemicolonTemplate(), "A  B");
 
     var backslashTemplate = _.template("<%= thing %> is \\ridanculous");
     equals(backslashTemplate({thing: 'This'}), "This is \\ridanculous");
@@ -80,6 +88,16 @@ $(document).ready(function() {
 
     var withNewlinesAndTabs = _.template('This\n\t\tis: <%= x %>.\n\tok.\nend.');
     equals(withNewlinesAndTabs({x: 'that'}), 'This\n\t\tis: that.\n\tok.\nend.');
+
+    var template = _.template("<i><%- value %></i>");
+    var result = template({value: "<script>"});
+    equals(result, '<i>&lt;script&gt;</i>');
+
+    var stooge = {
+      name: "Moe",
+      template: _.template("I'm <%= this.name %>")
+    };
+    equals(stooge.template(), "I'm Moe");
 
     if (!$.browser.msie) {
       var fromHTML = _.template($('#template').html());
