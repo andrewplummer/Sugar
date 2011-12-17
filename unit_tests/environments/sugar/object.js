@@ -164,8 +164,10 @@ test('Object', function () {
   values = [3,'jim',d];
   equal(obj.keys(), keys, "Object#keys | returns object's keys");
   count = 0;
-  obj.keys(function(key) {
+  obj.keys(function(key, value) {
     equal(key, keys[count], 'Object#keys | accepts a block');
+    equal(value, values[count], 'Object#keys | value is also passed');
+    equal(this, obj, 'Object#keys | "this" is the object');
     count++;
   });
 
