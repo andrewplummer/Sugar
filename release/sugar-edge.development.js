@@ -563,9 +563,9 @@
         throw new TypeError('Object required');
       }
       var keys = [];
-      iterateOverObject(obj, function(k,v) {
-        keys.push(k);
-        if(fn) fn.call(obj, k);
+      iterateOverObject(obj, function(key, value) {
+        keys.push(key);
+        if(fn) fn.call(obj, key, value);
       });
       return keys;
     }
@@ -2985,12 +2985,12 @@
      *
      ***/
     'repeat': function(num) {
-      if(!object.isNumber(num) || num < 1) {
-        return '';
-      }
-      var str = '';
-      for(var i=0; i<num; i++) {
-        str += this;
+      var str = '', i = 0;
+      if(object.isNumber(num) && num > 0) {
+        while(i < num) {
+          str += this;
+          i++;
+        }
       }
       return str;
     },
