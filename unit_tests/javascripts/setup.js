@@ -173,11 +173,11 @@ test = function(name, fn) {
     assertions: 0,
     failures: []
   };
-  //try {
+  try {
     fn.call();
-  //} catch(e) {
-    //console.info(e);
-  //}
+  } catch(e) {
+    console.info(e);
+  }
   results.push(currentTest);
 }
 
