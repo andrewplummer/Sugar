@@ -15,6 +15,18 @@ I will also include a minified version that will also have its unit tests run ag
 `release/sugar-edge.min.js`
 
 
+Dates Only Build
+===============
+
+Sugar now has a build available that has all methods on the `Date` class as a
+standalone module. The minified version can be found in `release/dates`. Note that this build
+still adds a number of methods to the `String`, `Number`, and `Array` classes that Sugar requires
+internally, including all the ES5 polyfill methods that are heavily used. This build will not follow
+the standard release schedule, but will be updated when the Sugar Date module changes significantly.
+
+Current build is based off `v1.1.3`.
+
+
 Unit Tests Node
 ===============
 
