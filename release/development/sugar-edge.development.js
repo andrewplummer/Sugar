@@ -22,7 +22,7 @@
     iterateOverObject(methods, function(name, method) {
       if(typeof override === 'function') {
         defineProperty(extendee, name, wrapNative(extendee[name], method, override));
-      } else if(override === true || !extendee[name]) {
+      } else if(true || override === true || !extendee[name]) {
         defineProperty(extendee, name, method);
       }
       klass.SugarMethods[name] = { instance: instance, method: method };
@@ -631,7 +631,7 @@
     current = current || 0;
     var result = [];
     arrayEach(arr, function(el) {
-      if(array.isArray(el) && current < level) {
+      if(object.isArray(el) && current < level) {
         result = result.concat(arrayFlatten(el, level, current + 1));
       } else {
         result.push(el);
@@ -640,9 +640,27 @@
     return result;
   }
 
-
   // ECMA5 methods
 
+  function arrayIndexOf(arr, search, fromIndex, increment) {
+    var length = arr.length,
+        fromRight = increment == -1,
+        start = fromRight ? length - 1 : 0,
+        index = toIntegerWithDefault(fromIndex, start);
+    if(index < 0) {
+      index = length + index;
+    }
+    if((!fromRight && index < 0) || (fromRight && index >= length)) {
+      index = start;
+    }
+    while((fromRight && index >= 0) || (!fromRight && index < length)) {
+      if(arr[index] === search) {
+        return index;
+      }
+      index += increment;
+    }
+    return -1;
+  }
 
   function arrayReduce(arr, fn, initialValue, fromRight) {
     var length = arr.length, count = 0, defined = isDefined(initialValue), result, index;
@@ -905,23 +923,8 @@
      *
      ***/
     'indexOf': function(search, fromIndex) {
-      var length = this.length, index = toIntegerWithDefault(fromIndex, 0);
-      if(object.isString(this)) {
-        return this.indexOf(search, fromIndex);
-      }
-      if(index < 0) {
-        index = Math.max(length + index, 0);
-      }
-      if(length == 0 || index > length) {
-        return -1;
-      }
-      while(index < length) {
-        if(index in this && this[index] === search) {
-          return index;
-        }
-        index++;
-      }
-      return -1;
+      if(object.isString(this)) return this.indexOf(search, fromIndex);
+      return arrayIndexOf(this, search, fromIndex, 1);
     },
 
     /***
@@ -936,23 +939,8 @@
      *
      ***/
     'lastIndexOf': function(search, fromIndex) {
-      var length = this.length, index = toIntegerWithDefault(fromIndex, length);
-      if(object.isString(this)) {
-        return this.lastIndexOf(search, fromIndex);
-      }
-      if(index < 0) {
-        index = length + index;
-      }
-      if(length == 0 || index < 0) {
-        return -1;
-      }
-      while(index >= 0) {
-        if(index in this && this[index] === search) {
-          return index;
-        }
-        index--;
-      }
-      return -1;
+      if(object.isString(this)) return this.lastIndexOf(search, fromIndex);
+      return arrayIndexOf(this, search, fromIndex, -1);
     },
 
     /***
@@ -1295,7 +1283,7 @@
       var result = [], args = arguments;
       this.each(function(el, i) {
         multiArgs(args, function(merge) {
-          if(!array.isArray(merge)) merge = [merge];
+          if(!object.isArray(merge)) merge = [merge];
           if(isUndefined(arrayFind(result, el)) && isDefined(arrayFind(merge, el))) {
             result.push(el);
           }
@@ -1318,7 +1306,7 @@
     'subtract': function(a) {
       var arr = this.clone(), index;
       multiArgs(arguments, function(subtract) {
-        if(!array.isArray(subtract)) subtract = [subtract];
+        if(!object.isArray(subtract)) subtract = [subtract];
         subtract.each(function(el) {
           arr.remove(el);
         });
@@ -4157,7 +4145,7 @@
       var i;
       if(object.isNumber(n)) {
         return n;
-      } else if(n && (i = this['numbers'].indexOf(n)) !== -1) {
+      } else if(n && (i = arrayIndexOf(this['numbers'], n, 0, 1)) !== -1) {
         return (i + 1) % 10;
       } else {
         return 1;
@@ -4172,7 +4160,7 @@
     },
 
     getEnglishUnit: function(n) {
-      return English['units'][this['units'].indexOf(n) % 8];
+      return English['units'][arrayIndexOf(this['units'], n, 0, 1) % 8];
     },
 
     relative: function(num, u, ms) {
@@ -5483,8 +5471,8 @@
           case d === 'past':    return this.getTime() < new date().getTime();
           case d === 'weekday': return this.getDay() > 0 && this.getDay() < 6;
           case d === 'weekend': return this.getDay() === 0 || this.getDay() === 6;
-          case (tmp = English['weekdays'].indexOf(d) % 7) > -1: return this.getDay() === tmp;
-          case (tmp = English['months'].indexOf(d) % 12) > -1:  return this.getMonth() === tmp;
+          case (tmp = arrayIndexOf(English['weekdays'], d, 0, 1) % 7) > -1: return this.getDay() === tmp;
+          case (tmp = arrayIndexOf(English['months'], d, 0, 1) % 12) > -1:  return this.getMonth() === tmp;
         }
       }
       return compareDate(this, d, margin);
