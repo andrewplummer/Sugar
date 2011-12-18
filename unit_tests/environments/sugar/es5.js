@@ -176,7 +176,10 @@ test('ECMAScript', function () {
    equal(arr.indexOf('c'), 0, 'Array#indexOf | walks array in order');
    equal(Array.prototype.indexOf.call('moo', 'o'), 1, 'Array#indexOf | should work on strings as well');
 
+   arr = [];
+   arr[3] = 'a';
 
+   equal(arr.indexOf('a'), 3, 'Array#indexOf | must work on sparse arrays as well');
 
    // Although Infinity appears to be allowable in the ECMA spec, both of these cases
    // would appear to kill all modern browsers.
@@ -219,6 +222,10 @@ test('ECMAScript', function () {
    equal(arr.lastIndexOf('c'), 2, 'Array#lastIndexOf | walks array in order');
    equal(Array.prototype.lastIndexOf.call('moo', 'o'), 2, 'Array#lastIndexOf | should work on strings as well');
 
+   arr = ['c'];
+   arr[3] = 'a';
+
+   equal(arr.lastIndexOf('c'), 0, 'Array#lastIndexOf | must work on sparse arrays as well');
 
 
    // Array#every
