@@ -3751,7 +3751,8 @@
     // @date_format 05-25-2010
     // @date_format 05/25/2010
     // @date_format 05.25.2010
-    { src: '(\\d{1,2})[-.\\/]({month})[-.\\/]?(\\d{2,4})?', to: ['month','date','year'], variant: true }
+    { src: '(\\d{1,2})[-.\\/]({month})[-.\\/]?(\\d{2,4})?', to: ['month','date','year'], variant: true },
+    { src: '\\/Date\\((\\d+(?:\\+\\d{4})?)\\)\\/', to: ['timestamp'], time: false }
   ];
 
   var DateOutputFormats = [
@@ -4242,6 +4243,11 @@
           set = getFormatMatch(match, format.to);
           loc = getLocalization(format.locale, true);
 
+          if(set.timestamp) {
+            d.setTime(0);
+            set = { 'milliseconds': set.timestamp };
+            return false;
+          }
 
           // If there's a European variant, swap the month and day.
           if(format.variant && !object.isString(set['month']) && (object.isString(set['date']) || variant)) {
@@ -4893,7 +4899,7 @@
     DateUnitsReversed = DateUnits.clone().reverse();
     var monthReg = '\\d{1,2}|' + English['months'].join('|');
     arrayEach(StaticInputFormats, function(f) {
-      date.addFormat(f.src.replace(/\{month\}/, monthReg) + OptionalTime, f.to.concat(TimeFormat), 'en', f.variant);
+      date.addFormat(f.src.replace(/\{month\}/, monthReg) + (f.time === false ? '' : OptionalTime), f.to.concat(TimeFormat), 'en', f.variant);
     });
     date.addFormat(RequiredTime, TimeFormat);
   }
