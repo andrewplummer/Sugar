@@ -300,6 +300,9 @@ test('Date', function () {
   dateEqual(Date.create('2001-04-03T15:00-03:30'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 4');
 
 
+  dateEqual(Date.create('\/Date(628318530718)\/'), new Date(628318530718), 'Date#create | handles JSON date format');
+  dateEqual(Date.create('\/Date(1318287600+0100)\/'), new Date(1318287600), 'Date#create | handles JSON date format with timezone');
+
 
 
   // Fuzzy dates
