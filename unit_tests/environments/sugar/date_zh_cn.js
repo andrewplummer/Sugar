@@ -127,9 +127,9 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('二〇一二年五月'), new Date(2012, 4), 'Date#create | Simplified Chinese | 二〇一二年五月');
   dateEqual(Date.create('二〇一二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 二〇一二年');
   dateEqual(Date.create('五月'), new Date(now.getFullYear(), 4), 'Date#create | Simplified Chinese | 五月');
-  dateEqual(Date.create('十二月'), new Date(2012, 11), 'Date#create | Simplified Chinese | 十二年');
-  dateEqual(Date.create('十一月'), new Date(2012, 10), 'Date#create | Simplified Chinese | 十一年');
-  dateEqual(Date.create('十月'), new Date(2012, 9), 'Date#create | Simplified Chinese | 十年');
+  dateEqual(Date.create('十二月'), new Date(now.getFullYear(), 11), 'Date#create | Simplified Chinese | 十二月');
+  dateEqual(Date.create('十一月'), new Date(now.getFullYear(), 10), 'Date#create | Simplified Chinese | 十一月');
+  dateEqual(Date.create('十月'), new Date(now.getFullYear(), 9), 'Date#create | Simplified Chinese | 十月');
   dateEqual(Date.create('二〇一二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 二〇一二年');
 
   dateEqual(Date.create('二千二百二十二年'), new Date(2222, 0), 'Date#create | Simplified Chinese | 二千二百二十二年');
