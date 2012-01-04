@@ -1500,8 +1500,6 @@ test('Date', function () {
   equal(d.isYesterday(), false, 'Date#isYesterday | 2 years from now');
   equal(d.isToday(), false, 'Date#isToday | 2 years from now');
   equal(d.isTomorrow(), false, 'Date#isTomorrow | 2 years from now');
-  equal(d.isWeekday(), true, 'Date#isWeekday | 2 years from now');
-  equal(d.isWeekend(), false, 'Date#isWeekend | 2 years from now');
   equal(d.isFuture(), true, 'Date#isFuture | 2 years from now');
   equal(d.isPast(), false, 'Date#isPast | 2 years from now');
 
