@@ -6,7 +6,7 @@ test('Date', function () {
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
   if(Object.isFunction(Date.create())) {
-    Date.sugar('create');
+    Date.restore('create');
   };
 
 

@@ -484,7 +484,7 @@ test('Object', function () {
 
   rememberObjectProtoypeMethods();
 
-  Object.sugar();
+  Object.extend();
 
   var prototypeBaseValues = ({}).values().sort();
 
@@ -721,6 +721,39 @@ test('Object', function () {
   equal(Object.tap(obj), obj, 'Object.tap | return value is strictly equal');
 
 
+  // Class.extend functionality
+
+
+  String.extend({
+    foo: function() {
+      return 'bar';
+    }
+  });
+
+
+  equal('s'.foo(), 'bar', 'Class.extend | basic functionality');
+
+  Number.extend({
+    plus: function(a, b) {
+      return this + a + b;
+    }
+  });
+
+
+  equal((1).plus(2, 3), 6, 'Class.extend | arguments and scope are correct');
+
+  Number.extend({
+    chr: function() {
+      return 'F';
+    }
+  });
+
+  equal((69).chr(), 'F', 'Class.extend | should overwrite existing methods');
+
+  Number.restore('chr');
+
+  equal((69).chr(), 'E', 'Class.extend | simple array of strings should restore Sugar methods');
+  equal((1).plus(2, 3), 6, 'Class.extend | restoring Sugar methods should not override other custom extended methods');
 
 });
 
