@@ -3591,12 +3591,14 @@
      *
      ***/
     'shorten': function(length, position, countSplitter, splitter) {
-      if (this.length < 1 && length < 1) return this;
+      if (this.length < 1 && length < 1) return String(this);
       
-      if (!Object.isString(splitter)) splitter = String(splitter);
+      if (!Object.isString(splitter)) splitter = '...';
+      if (!Object.isBoolean(countSplitter)) countSplitter = true;
+
       var balance = (countSplitter) ? splitter.length : 0;
       
-      if (length <= balance && this.length <= length) return this;
+      if (length <= balance || this.length <= length) return String(this);
       
       // Perform shortening
       var shortened, beforeSplitter, afterSplitter;
