@@ -302,6 +302,7 @@ test('String', function () {
   equal('hello'.startsWith(/[a-h]/), true, 'String#startsWith | accepts regex alternates', { prototype: false });
   equal('HELLO'.startsWith('hell', false), true, 'String#startsWith | case insensitive | HELLO starts with hell', { prototype: false });
   equal('HELLO'.startsWith(), false, 'String#startsWith | undefined produces false');
+  equal('10'.startsWith(10), true, 'String#startsWith | Numbers will be converted');
   equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith | valley girls rock starts with valley girls');
   equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith | valley girls rock starts with valley girls r');
 
@@ -316,6 +317,7 @@ test('String', function () {
   equal('VADER'.endsWith('DER', true), true, 'String#endsWith | case sensitive | VADER ends with DER');
   equal('VADER'.endsWith('der', true), false, 'String#endsWith | case sensitive |  VADER ends with der');
   equal('HELLO'.endsWith(), false, 'String#endsWith | undefined produces false');
+  equal('10'.endsWith(10), true, 'String#endsWith | Numbers will be converted');
   equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith | vader ends with der');
   equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith | vader ends with der');
 
