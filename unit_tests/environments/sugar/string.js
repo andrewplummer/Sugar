@@ -609,7 +609,7 @@ test('String', function () {
   dateEqual('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
 
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
-  equal('HOP_ON_POP'.dasherize(), 'h-o-p-o-n-p-o-p', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
+  equal('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
   equal('hopOnPop'.dasherize(), 'hop-on-pop', 'String#dasherize | camel-case', { prototype: 'hopOnPop' });
   equal('watch me fail'.dasherize(), 'watch-me-fail', 'String#dasherize | whitespace', { prototype: 'watch me fail' });
   equal('watch me fail_sad_face'.dasherize(), 'watch-me-fail-sad-face', 'String#dasherize | whitespace sad face', { prototype: 'watch me fail-sad-face' });
@@ -620,13 +620,13 @@ test('String', function () {
 
 
   equal('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize | dashes', { prototype: 'hopOnPop' });
-  equal('HOP-ON-POP'.camelize(), 'HOPONPOP', 'String#camelize | capital dashes', { prototype: 'HOPONPOP' });
+  equal('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize | capital dashes', { prototype: 'HOPONPOP' });
   equal('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize | underscores', { prototype: 'hop_on_pop' });
   equal('hop-on-pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | dashes');
-  equal('HOP-ON-POP'.camelize(false), 'hOPONPOP', 'String#camelize | first false | capital dashes', { prototype: 'HOPONPOP' });
+  equal('HOP-ON-POP'.camelize(false), 'hopOnPop', 'String#camelize | first false | capital dashes', { prototype: 'HOPONPOP' });
   equal('hop_on_pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | underscores', { prototype: 'hop_on_pop' });
   equal('hop-on-pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | dashes', { prototype: 'hopOnPop' });
-  equal('HOP-ON-POP'.camelize(true), 'HOPONPOP', 'String#camelize | first true | capital dashes', { prototype: 'HOPONPOP' });
+  equal('HOP-ON-POP'.camelize(true), 'HopOnPop', 'String#camelize | first true | capital dashes', { prototype: 'HOPONPOP' });
   equal('hop_on_pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | underscores', { prototype: 'hop_on_pop' });
 
   equal('watch me fail'.camelize(), 'WatchMeFail', 'String#camelize | whitespace', { prototype: 'watch me fail' });
@@ -643,8 +643,8 @@ test('String', function () {
 
   equal('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
   equal('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
-  equal('HOPONPOP'.underscore(), 'h_o_p_o_n_p_o_p', 'String#underscore | all caps', { prototype: 'hoponpop' });
-  equal('HOP-ON-POP'.underscore(), 'h_o_p_o_n_p_o_p', 'String#underscore | caps and dashes', { prototype: 'hop_on_pop' });
+  equal('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps', { prototype: 'hoponpop' });
+  equal('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore | caps and dashes', { prototype: 'hop_on_pop' });
   equal('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore | lower-case and dashes');
 
   equal('watch me fail'.underscore(), 'watch_me_fail', 'String#underscore | whitespace', { prototype: 'watch me fail' });
@@ -655,8 +655,8 @@ test('String', function () {
 
   equal('hopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case');
   equal('HopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case capital first');
-  equal('HOPONPOP'.spacify(), 'h o p o n p o p', 'String#spacify | all caps', { prototype: 'hoponpop' });
-  equal('HOP-ON-POP'.spacify(), 'h o p o n p o p', 'String#spacify | caps and dashes', { prototype: 'hop on pop' });
+  equal('HOPONPOP'.spacify(), 'hoponpop', 'String#spacify | all caps', { prototype: 'hoponpop' });
+  equal('HOP-ON-POP'.spacify(), 'hop on pop', 'String#spacify | caps and dashes', { prototype: 'hop on pop' });
   equal('hop-on-pop'.spacify(), 'hop on pop', 'String#spacify | lower-case and dashes');
 
   equal('watch_me_fail'.spacify(), 'watch me fail', 'String#spacify | whitespace');
