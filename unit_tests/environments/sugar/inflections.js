@@ -1,4 +1,14 @@
-test('Inflectors', function () {
+test('Inflections', function () {
+
+  /* Note that the following methods are not implemented now and may not be:
+   *
+   *   String#demodulize
+   *   String#deconstantize
+   *   String#foreign_key
+   *   String#tableize
+   *   String#classify
+   */
+
 
   var SingularToPlural = {
     "search"      : "searches",
@@ -149,8 +159,18 @@ test('Inflectors', function () {
     "the day of the jackal"        : "The Day of the Jackal",
     "what color is your parachute?": "What Color Is Your Parachute?",
     "a tale of two cities"         : "A Tale of Two Cities",
-    "where am i going to"          : "Where Am I Going To"
+    "where am i going to"          : "Where Am I Going To",
 
+    // From the titleize docs
+    "man from the boondocks"       :  "Man from the Boondocks",
+    "x-men: the last stand"        :  "X Men: The Last Stand",
+    "i am a sentence. and so am i.":  "I Am a Sentence. And so Am I.",
+    "hello! and goodbye!"          :  "Hello! And Goodbye!",
+    "hello, and goodbye"           :  "Hello, and Goodbye",
+    "hello; and goodbye"           :  "Hello; And Goodbye",
+    'about "you" and "me"'         :  'About "You" and "Me"',
+    "TheManWithoutAPast"           :  "The Man Without a Past",
+    "raiders_of_the_lost_ark"      :  "Raiders of the Lost Ark"
   }
 
   var CamelToUnderscore = {
@@ -160,11 +180,137 @@ test('Inflectors', function () {
     "Area51Controller"      : "area51_controller"
   }
 
+  var UnderscoreToLowerCamel = {
+    "product"                : "product",
+    "special_guest"          : "specialGuest",
+    "application_controller" : "applicationController",
+    "area51_controller"      : "area51Controller"
+  }
+
   var CamelToUnderscoreWithoutReverse = {
     "HTMLTidy"              : "html_tidy",
     "HTMLTidyGenerator"     : "html_tidy_generator",
     "FreeBSD"               : "free_bsd",
     "HTML"                  : "html",
+  }
+
+  var StringToParameterized = {
+    "Donald E. Knuth"                     : "donald-e-knuth",
+    "Random text with *(bad)* characters" : "random-text-with-bad-characters",
+    "Allow_Under_Scores"                  : "allow_under_scores",
+    "Trailing bad characters!@#"          : "trailing-bad-characters",
+    "!@#Leading bad characters"           : "leading-bad-characters",
+    "Squeeze   separators"                : "squeeze-separators",
+    "Test with + sign"                    : "test-with-sign",
+    "Test with malformed utf8 \251"       : "test-with-malformed-utf8"
+  }
+
+  var StringToParameterizeWithNoSeparator = {
+    "Donald E. Knuth"                     : "donaldeknuth",
+    "With-some-dashes"                    : "with-some-dashes",
+    "Random text with *(bad)* characters" : "randomtextwithbadcharacters",
+    "Trailing bad characters!@#"          : "trailingbadcharacters",
+    "!@#Leading bad characters"           : "leadingbadcharacters",
+    "Squeeze   separators"                : "squeezeseparators",
+    "Test with + sign"                    : "testwithsign",
+    "Test with malformed utf8 \251"       : "testwithmalformedutf8"
+  }
+
+  var StringToParameterizeWithUnderscore = {
+    "Donald E. Knuth"                     : "donald_e_knuth",
+    "Random text with *(bad)* characters" : "random_text_with_bad_characters",
+    "With-some-dashes"                    : "with-some-dashes",
+    "Retain_underscore"                   : "retain_underscore",
+    "Trailing bad characters!@#"          : "trailing_bad_characters",
+    "!@#Leading bad characters"           : "leading_bad_characters",
+    "Squeeze   separators"                : "squeeze_separators",
+    "Test with + sign"                    : "test_with_sign",
+    "Test with malformed utf8 \251"       : "test_with_malformed_utf8"
+  }
+
+  var StringToParameterizedAndNormalized = {
+    "Malmö"                               : "malmo",
+    "Garçons"                             : "garcons",
+    "Ops\331"                             : "opsu",
+    "Ærøskøbing"                          : "aeroskobing",
+    "Aßlar"                               : "asslar",
+    "Japanese: 日本語"                    : "japanese"
+  }
+
+  var UnderscoreToHuman = {
+    "employee_salary" : "Employee salary",
+    "employee_id"     : "Employee",
+    "underground"     : "Underground"
+  }
+
+  var OrdinalNumbers = {
+    "-1"    : "-1st",
+    "-2"    : "-2nd",
+    "-3"    : "-3rd",
+    "-4"    : "-4th",
+    "-5"    : "-5th",
+    "-6"    : "-6th",
+    "-7"    : "-7th",
+    "-8"    : "-8th",
+    "-9"    : "-9th",
+    "-10"   : "-10th",
+    "-11"   : "-11th",
+    "-12"   : "-12th",
+    "-13"   : "-13th",
+    "-14"   : "-14th",
+    "-20"   : "-20th",
+    "-21"   : "-21st",
+    "-22"   : "-22nd",
+    "-23"   : "-23rd",
+    "-24"   : "-24th",
+    "-100"  : "-100th",
+    "-101"  : "-101st",
+    "-102"  : "-102nd",
+    "-103"  : "-103rd",
+    "-104"  : "-104th",
+    "-110"  : "-110th",
+    "-111"  : "-111th",
+    "-112"  : "-112th",
+    "-113"  : "-113th",
+    "-1000" : "-1000th",
+    "-1001" : "-1001st",
+    "0"     : "0th",
+    "1"     : "1st",
+    "2"     : "2nd",
+    "3"     : "3rd",
+    "4"     : "4th",
+    "5"     : "5th",
+    "6"     : "6th",
+    "7"     : "7th",
+    "8"     : "8th",
+    "9"     : "9th",
+    "10"    : "10th",
+    "11"    : "11th",
+    "12"    : "12th",
+    "13"    : "13th",
+    "14"    : "14th",
+    "20"    : "20th",
+    "21"    : "21st",
+    "22"    : "22nd",
+    "23"    : "23rd",
+    "24"    : "24th",
+    "100"   : "100th",
+    "101"   : "101st",
+    "102"   : "102nd",
+    "103"   : "103rd",
+    "104"   : "104th",
+    "110"   : "110th",
+    "111"   : "111th",
+    "112"   : "112th",
+    "113"   : "113th",
+    "1000"  : "1000th",
+    "1001"  : "1001st"
+  }
+
+  var UnderscoresToDashes = {
+    "street"                : "street",
+    "street_address"        : "street-address",
+    "person_street_address" : "person-street-address"
   }
 
 
@@ -189,7 +335,7 @@ test('Inflectors', function () {
   var uncountable_word = "ors";
   var countable_word = "sponsor";
 
-  String.inflector.uncountable(uncountable_word);
+  String.Inflector.uncountable(uncountable_word);
 
   equal(uncountable_word.singularize(), uncountable_word, 'String#singularize | uncountable | ors');
   equal(uncountable_word.pluralize(), uncountable_word, 'String#pluralize | uncountable | ors');
@@ -220,20 +366,37 @@ test('Inflectors', function () {
 
   // Test overwrite previous inflectors
   equal('series'.singularize(), 'series', 'String#singularize | series');
-  String.inflector.singular('series', 'serie');
+  String.Inflector.singular('series', 'serie');
   equal('series'.singularize(), 'serie', 'String#singularize | serie');
-  String.inflector.singular('series'); // Return to normal
+  String.Inflector.singular('series'); // Return to normal
+
+
+  // Test irregulars
+
+  Object.each(Irregulars, function(singular, plural) {
+    equal(plural.singularize(), singular, 'String#singularize | irregulars');
+    equal(singular.pluralize(), plural, 'String#pluralize | irregulars | pluralized singular is plural');
+  });
+
+  Object.each(Irregulars, function(singular, plural) {
+    equal(plural.pluralize(), plural, 'String#singularize | irregulars | pluralized plural id pluralized');
+  });
 
 
   // Test titleize
   Object.each(MixtureToTitleCase, function(before, titleized) {
-      equal(before.titleize(), titleized, 'String#titleize | mixed cases')
+    equal(before.titleize(), titleized, 'String#titleize | mixed cases')
   });
 
 
   // Test camelize
   Object.each(CamelToUnderscore, function(camel, underscore) {
-      equal(underscore.camelize(), camel, 'String#camelize | mixed cases')
+    equal(underscore.camelize(), camel, 'String#camelize | mixed cases')
+  });
+
+  Object.each(UnderscoreToLowerCamel, function(under, lowerCamel) {
+    // Sugar differs from ActiveSupport here in that the first character is upcased by default
+    equal(under.camelize(false), lowerCamel, 'String#camelize | lower camel')
   });
 
   // Test with lower downcases the first letter
@@ -245,14 +408,14 @@ test('Inflectors', function () {
 
   // Test acronyms
 
-  String.inflector.acronym("API");
-  String.inflector.acronym("HTML");
-  String.inflector.acronym("HTTP");
-  String.inflector.acronym("RESTful");
-  String.inflector.acronym("W3C");
-  String.inflector.acronym("PhD");
-  String.inflector.acronym("RoR");
-  String.inflector.acronym("SSL");
+  String.Inflector.acronym("API");
+  String.Inflector.acronym("HTML");
+  String.Inflector.acronym("HTTP");
+  String.Inflector.acronym("RESTful");
+  String.Inflector.acronym("W3C");
+  String.Inflector.acronym("PhD");
+  String.Inflector.acronym("RoR");
+  String.Inflector.acronym("SSL");
 
   // camelize             underscore            humanize              titleize
   [
@@ -277,7 +440,7 @@ test('Inflectors', function () {
     ["CapiController",    "capi_controller",    "Capi controller",  "Capi Controller"],
     ["HttpsApis",         "https_apis",         "Https apis",       "Https Apis"],
     ["Html5",             "html5",              "Html5",            "Html5"],
-    ["Restfully",         "restfully",          "Restfully",        "Restfully"],
+    ["Restfully",         "restfully",          "Restfully",        "Restfully"]
     // This one confounds the JS implementation, but I argue that it isn't correct anyway.
     // ["RoRails",           "ro_rails",           "Ro rails",         "Ro Rails"]
   ].each(function(set) {
@@ -294,7 +457,7 @@ test('Inflectors', function () {
 
 
   // Test acronym override
-  String.inflector.acronym("LegacyApi")
+  String.Inflector.acronym("LegacyApi")
 
   equal('legacyapi'.camelize(), "LegacyApi", 'String#camelize | LegacyApi')
   equal('legacy_api'.camelize(), "LegacyAPI", 'String#camelize | LegacyAPI')
@@ -311,7 +474,7 @@ test('Inflectors', function () {
 
   // Test underscore acronym sequence
 
-  String.inflector.acronym("HTML5");
+  String.Inflector.acronym("HTML5");
 
   equal('HTML5HTMLAPI'.underscore(), 'html5_html_api', 'String#underscore | HTML5HTMLAPI')
 
@@ -328,78 +491,104 @@ test('Inflectors', function () {
   });
 
 
-  // demodulize
-  // deconstantize
-  // foreign_key
-  // tableize
+  // Test parameterize
 
-
-  // PARAMETERIZE PICK UP HERE
-
-
-
-
-
-
-  Object.each(Irregulars, function(singular, plural) {
-    equal(plural.singularize(), singular, 'String#singularize | irregulars');
-    equal(singular.pluralize(), plural, 'String#pluralize | irregulars | pluralized singular is plural');
-/*
-    singular, plural = *irregularity
-    ActiveSupport::Inflector.inflections do |inflect|
-      define_method("test_irregularity_between_#{singular}_and_#{plural}") do
-        inflect.irregular(singular, plural)
-        equal singular, ActiveSupport::Inflector.singularize(plural)
-        equal plural, ActiveSupport::Inflector.pluralize(singular)
-      end
-    end
-*/
+  Object.each(StringToParameterized, function(str, parameterized) {
+      equal(str.parameterize(), parameterized, 'String#parameterized')
   });
 
-  Object.each(Irregulars, function(singular, plural) {
-    equal(plural.pluralize(), plural, 'String#singularize | irregulars | pluralized plural id pluralized');
-    /*
-    singular, plural = *irregularity
-    ActiveSupport::Inflector.inflections do |inflect|
-    define_method("test_pluralize_of_irregularity_#{plural}_should_be_the_same") do
-    inflect.irregular(singular, plural)
-    equal plural, ActiveSupport::Inflector.pluralize(plural)
-    end
-    end
-    */
+  Object.each(StringToParameterizedAndNormalized, function(str, parameterized) {
+      equal(str.parameterize(), parameterized, 'String#parameterized | and normalized')
+  });
+
+  Object.each(StringToParameterizeWithUnderscore, function(str, parameterized) {
+      equal(str.parameterize('_'), parameterized, 'String#parameterized | with underscore')
+  });
+
+  Object.each(StringToParameterized, function(str, parameterized) {
+      equal(str.parameterize('__sep__'), parameterized.replace(/-/g, '__sep__'), 'String#parameterized | with underscore')
   });
 
 
 
 
 
+  // Test humanize
+
+  Object.each(UnderscoreToHuman, function(under, human) {
+      equal(under.humanize(), human, 'String#humanize | underscore')
+  });
+
+  String.Inflector.human(/_cnt$/i, '_count');
+  String.Inflector.human(/^prefx_/i, '')
+
+  equal('jargon_cnt'.humanize(), 'Jargon count', 'String#humanize | Jargon count')
+  equal('prefx_request'.humanize(), 'Request', 'String#humanize | Request')
+
+  String.Inflector.human("col_rpted_bugs", "Reported bugs")
+
+  equal('col_rpted_bugs'.humanize(), 'Reported bugs', 'String#humanize | Reported bugs')
+  equal('COL_rpted_bugs'.humanize(), 'Col rpted bugs', 'String#humanize | Col rpted bugs')
 
 
 
+  // Test namespace (JS equivalent of ActiveSupport::Inflector.safe_constantize)
+
+  equal('foobar'.namespace(), undefined, 'String#namespace | undefined namespace')
+
+  // Global
+  Foo = 'bar';
+
+  equal('Foo'.namespace(), 'bar', 'String#namespace | simple namespace')
+
+  // Global
+  Foo = {
+    Bar: {
+      Moo: {
+        Car: 'wasabi',
+        Fn: function(){},
+        NULL: null
+      }
+    }
+  };
+
+  equal('Foo.Bar.Moo.Car'.namespace(), 'wasabi', 'String#namespace | deep namespace')
+  equal('Foo.Bar.Moo.Fn'.namespace(), Foo.Bar.Moo.Fn, 'String#namespace | function')
+  equal('Foo.Bar.Moo.NULL'.namespace(), null, 'String#namespace | null')
+  equal('Dumb.Bar.Moo'.namespace(), undefined, 'String#namespace | non-existant top')
+  equal('Foo.Dumb.Moo'.namespace(), undefined, 'String#namespace | non-existant middle')
+  equal('Foo.Bar.Dumb'.namespace(), undefined, 'String#namespace | non-existant bottom')
 
 
 
+  // Test ordinalize
+  Object.each(OrdinalNumbers, function(str, ordinalized) {
+      equal(str.toNumber().ordinalize(), ordinalized, 'String#ordinalize')
+  });
+
+  // Test dasherize
+  Object.each(UnderscoresToDashes, function(under, dasherized) {
+      equal(under.dasherize(), dasherized, 'String#dasherize')
+  });
+
+  Object.each(UnderscoresToDashes, function(under, dasherized) {
+      equal(under.dasherize().underscore(), under, 'String#dasherize | reverse')
+  });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // Test clearing inflectors
+  equal('foo'.pluralize(), 'foos', 'String.Inflector.clear | foo is foos');
+  String.Inflector.clear('plurals');
+  equal('foo'.pluralize(), 'foo', 'String.Inflector.clear | clear purals');
+  equal('foos'.singularize(), 'foo', 'String.Inflector.clear | singulars are not cleared');
+  String.Inflector.plural(/$/, 's');
+  equal('foo'.pluralize(), 'foos', 'String.Inflector.plural | re-add');
+  String.Inflector.clear('all');
+  equal('foo'.pluralize(), 'foo', 'String.Inflector.plural | clear all with "all"');
+  String.Inflector.plural(/$/, 's');
+  equal('foo'.pluralize(), 'foos', 'String.Inflector.plural | re-add again');
+  String.Inflector.clear();
+  equal('foo'.pluralize(), 'foo', 'String.Inflector.plural | clear all with undefined');
 
 
 });
