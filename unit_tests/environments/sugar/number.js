@@ -202,6 +202,11 @@ test('Number', function () {
   equal((103).ordinalize(), '103rd', 'Number#ordinalize | 103');
   equal((104).ordinalize(), '104th', 'Number#ordinalize | 104');
   equal((105).ordinalize(), '105th', 'Number#ordinalize | 105');
+  equal((111).ordinalize(), '111th', 'Number#ordinalize | 111');
+  equal((112).ordinalize(), '112th', 'Number#ordinalize | 112');
+  equal((113).ordinalize(), '113th', 'Number#ordinalize | 113');
+  equal((114).ordinalize(), '114th', 'Number#ordinalize | 114');
+  equal((-1).ordinalize(), '-1st', 'Number#ordinalize | -1');
 
 
   equal((100).format(), '100', 'Number#format | 100')
