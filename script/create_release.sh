@@ -1,29 +1,34 @@
-# Delete the first and last lines to prevent an extra closure being added by GCC
 
-release=$1
-
-strip_first_and_last_lines()
-{
-  last=`awk 'END {print NR-0}' $1`
-  sed -e '1,2 d' -e "$last,$ d" $1 > release/tmp.js
-}
+ver=$1
 
 gcc_compile()
 {
-  if $1; then
+  if $2; then
     utf8="--charset UTF-8"
   else
     utf8=""
   fi
-  `java -jar script/jsmin/compiler.jar --warning_level QUIET --js release/tmp.js --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js $utf8 --output_wrapper "(function(){%output%})();" --js_output_file release/tmp.js`
-  if $1; then
-    sed "s/VERSION/$release/" release/tmp.js > release/tmp.js
-  fi
-  #| cat release/copyright.txt - | sed "s/VERSION/$release/" > release/sugar-$release.min.js`
+  # Delete the first and last lines to prevent an extra closure being added by GCC
+  last=`awk 'END {print NR-0}' $1`
+  sed -e '1,2 d' -e "$last,$ d" $1 | java -jar script/jsmin/compiler.jar --warning_level QUIET --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js $utf8 --output_wrapper "(function(){%output%})();" | cat release/copyright.txt - | sed "s/VERSION/$ver/" > tmp/compiled.js
 }
 
-#java -jar script/jsmin/compiler.jar --warning_level QUIET --js release/tmp.js --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js --charset UTF-8 --output_wrapper "(function(){%output%})();" | cat release/copyright.txt - | sed "s/VERSION/$1/" | sed "s/  /\\\u2028\\\u2029/" > release/utf8/sugar-$1.min.js
+create_minified_script()
+{
+  file="lib/$1.js"
+  gcc_compile $file false
+  mv tmp/compiled.js release/$ver/minified/sugar-$ver-$1.min.js
+  cp $file release/$ver/development/sugar-$ver-$1.development.js
+}
 
-#cat release/copyright.txt lib/sugar.js | sed "s/VERSION/$1 (Development)/" > release/development/sugar-$1.development.js
+mkdir release/$ver
+mkdir release/$ver/minified
+mkdir release/$ver/development
 
-#rm release/tmp.js
+create_minified_script 'core'
+create_minified_script 'dates'
+create_minified_script 'inflections'
+
+cat release/$ver/minified/sugar-$ver-core.min.js release/$ver/minified/sugar-$ver-dates.min.js > release/$ver/minified/sugar-$ver.min.js
+cat release/$ver/development/sugar-$ver-core.development.js release/$ver/development/sugar-$ver-dates.development.js > release/$ver/development/sugar-$ver.development.js
+
