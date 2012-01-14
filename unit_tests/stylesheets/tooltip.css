@@ -7,11 +7,13 @@
 }
 
 #tooltip.black {
+  background: #080808;
   background: rgba(0,0,0,0.9);
   color: #fff;
 }
 
 #tooltip.white {
+  background: #f8f8f8;
   background: rgba(255,255,255,0.9);
   color: #222;
 }
