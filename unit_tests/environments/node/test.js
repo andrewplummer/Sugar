@@ -1,7 +1,8 @@
 
 environment = 'node';
 
-require(process.env.SUGAR || '../../../lib/sugar.js');
+require(process.env.SUGAR_CORE || '../../../lib/core.js');
+require(process.env.SUGAR_DATES || '../../../lib/dates.js');
 
 // Test suite
 require('../../javascripts/setup.js');
