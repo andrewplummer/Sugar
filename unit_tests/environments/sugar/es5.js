@@ -712,10 +712,11 @@ test('ECMAScript', function () {
   equal(Object.keys(new Person), ['broken'], 'Object#keys | will get instance properties but not inherited properties');
 
 
+  // Date.now (support may be missing if only core is included)
 
-  // Date.now
-
-  equalWithMargin(Date.now(), new Date().getTime(), 5, 'Date#now | basic functionality');
+  if(Date.now) {
+    equalWithMargin(Date.now(), new Date().getTime(), 5, 'Date#now | basic functionality');
+  }
 
 
   // Date.parse
@@ -728,7 +729,7 @@ test('ECMAScript', function () {
   // Returns 807937200000 in timezone GMT-0300, and other values in other
   // timezones, since there is no time zone specifier in the argument.
   equal(Date.parse("Wed, 09 Aug 1995 00:00:00"), new Date(1995, 7, 9).getTime(), 'Date#parse | No timezone with time');
-  equal(Date.parse("Thu, 09 Aug 1995 00:00:00 GMT-0400"), new Date(807926400000).addHours(4).getTime(), 'Date#parse | 1995/7/9 GMT-04:00');
+  equal(Date.parse("Thu, 09 Aug 1995 00:00:00 GMT-0400"), 807940800000, 'Date#parse | 1995/7/9 GMT-04:00');
   // Returns 0 no matter the local time zone.
   equal(Date.parse("Thu, 01 Jan 1970 00:00:00 GMT"), 0, 'Date#parse | 1970/1/1 GMT');
 
@@ -739,17 +740,24 @@ test('ECMAScript', function () {
   // Returns 14400000 no matter the local time zone.
   // equal(Date.parse("Thu, 01 Jan 1970 00:00:00 GMT-0400"), new Date(1995, 7, 9).getTime(), 'Date#parse | 1970/1/1 GMT-04:00');
 
-  // Date#toJSON
-
-  // Essentially just an ISO string. Add more tests as needed.
-  equal(new Date(2002, 7, 25).toJSON(), new Date(2002, 7, 25).toISOString(), 'Date#toJSON | output');
 
 
-  // Date#toISOString
 
-  equal(new Date(Date.UTC(2000, 0, 1)).toISOString(), '2000-01-01T00:00:00.000Z', 'Date#toISOString | new millenium!');
-  equal(new Date(Date.UTC(1978, 7, 25)).toISOString(), '1978-08-25T00:00:00.000Z', 'Date#toISOString | happy birthday!');
-  equal(new Date(Date.UTC(1978, 7, 25, 11, 45, 33, 456)).toISOString(), '1978-08-25T11:45:33.456Z', 'Date#toISOString | with time');
+  if(Date.prototype.toISOString) {
+
+    // Date#toISOString (support may be missing if only core is included)
+
+    equal(new Date(Date.UTC(2000, 0, 1)).toISOString(), '2000-01-01T00:00:00.000Z', 'Date#toISOString | new millenium!');
+    equal(new Date(Date.UTC(1978, 7, 25)).toISOString(), '1978-08-25T00:00:00.000Z', 'Date#toISOString | happy birthday!');
+    equal(new Date(Date.UTC(1978, 7, 25, 11, 45, 33, 456)).toISOString(), '1978-08-25T11:45:33.456Z', 'Date#toISOString | with time');
+
+
+    // Date#toJSON
+    // Essentially just an ISO string. Add more tests as needed.
+
+    equal(new Date(2002, 7, 25).toJSON(), new Date(2002, 7, 25).toISOString(), 'Date#toJSON | output');
+
+  }
 
   // Function#bind
 
