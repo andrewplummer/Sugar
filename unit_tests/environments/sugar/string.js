@@ -599,14 +599,9 @@ test('String', function () {
   equal('quack'.to(-4), 'q', 'String#to | to -4');
 
 
-  // Got to pass a language code here because the other unit tests may have set
-  // the locale to a non-US format thereby enabling date variants. This test
-  // also acts to ensure that the locale can be passed here.
-  dateEqual('11/5/56'.toDate('en-US'), new Date(1956, 10, 5), 'String#toDate | slash format');
-  dateEqual('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
-  equal(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
-  equal('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
-  dateEqual('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
+  // Basic date comprehensions without full date module include
+  equal('January 14, 2012'.toDate().getTime(), new Date(2012, 0, 14).getTime(), 'String#toDate');
+
 
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
   equal('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
