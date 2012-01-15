@@ -351,5 +351,15 @@ test('Number', function () {
   equal((15).compare(/wasabi/), NaN, 'Number#compare | cannot compare numbers to regexps');
   equal((15).compare(new Date) < 0, true, 'Number#compare | Dates are implicitly converted to numbers');
 
+  // Number#isInteger
+
+  equal((15).isInteger(), true, 'Number#isInteger | 15');
+  equal((15.2).isInteger(), false, 'Number#isInteger | 15.2');
+  equal((15.2668).isInteger(), false, 'Number#isInteger | 15.2668');
+  equal((15.0).isInteger(), true, 'Number#isInteger | 15.0');
+  equal(Number.prototype.isInteger.call('15'), true, 'Number#isInteger | "15"');
+  equal(Number.prototype.isInteger.call('15.8'), false, 'Number#isInteger | "15.8"');
+
+
 });
 
