@@ -127,7 +127,7 @@ test('Inflections', function () {
     'man'    : 'men',
     'child'  : 'children',
     'sex'    : 'sexes',
-    'move'   : 'moves',
+    'move'   : 'moves'
   };
 
   var Uncountables = [
@@ -191,7 +191,7 @@ test('Inflections', function () {
     "HTMLTidy"              : "html_tidy",
     "HTMLTidyGenerator"     : "html_tidy_generator",
     "FreeBSD"               : "free_bsd",
-    "HTML"                  : "html",
+    "HTML"                  : "html"
   }
 
   var StringToParameterized = {
