@@ -1579,7 +1579,71 @@ test('Array', function () {
   equal(arr.sample(11).length, 10, "Array#sample | can't sample more than the length of the array");
   equal(arr.sample(10).unique().length, arr.length, "Array#sample | should not sample the same element twice");
 
+  // Array#findAll - Complex matching
 
+  var people = [
+    { name: 'jim',    age: 27, hair: 'brown'  },
+    { name: 'mary',   age: 52, hair: 'blonde' },
+    { name: 'ronnie', age: 13, hair: 'brown'  },
+    { name: 'edmund', age: 27, hair: 'blonde' },
+    { name: 'buddy', age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
+  ];
+
+
+  equal(people.findAll({}), [], 'Array#findAll | complex | empty object');
+  equal(people.findAll(), [], 'Array#findAll | complex | no arguments');
+  equal(people.findAll('age'), [], 'Array#findAll | complex | string argument');
+  equal(people.findAll(4), [], 'Array#findAll | complex | number argument');
+  equal(people.findAll({ age: 27 }), [people[0], people[3]], 'Array#findAll | complex | one property');
+  equal(people.findAll({ age: 27, hair: 'brown' }), [people[0]], 'Array#findAll | complex | two properties');
+  equal(people.findAll({ hair: { color: 'red' }}), [people[4]], 'Array#findAll | complex | nested property');
+  equal(people.findAll({ hair: { color: 'green' }}), [], 'Array#findAll | complex | non-matching nested property');
+  equal(people.findAll({ hair: { color: 'red', type: 'long' }}), [people[4]], 'Array#findAll | complex | two nested properties');
+  equal(people.findAll({ hair: { color: 'green', type: 'mean' }}), [], 'Array#findAll | complex | two non-matching nested properties');
+  equal(people.findAll({ hair: { color: 'red', type: 'mean' }}), [], 'Array#findAll | complex | two nested properties, one non-matching');
+  equal(people.findAll({ hair: { color: 'red', life: 'long' }}), [], 'Array#findAll | complex | two nested properties, one non-existing');
+  equal(people.findAll({ hair: { color: /r/ }}), [people[4]], 'Array#findAll | complex | nested regex');
+  equal(people.findAll({ hair: { cost: 15 }}), [people[4]], 'Array#findAll | complex | nested number');
+  equal(people.findAll({ hair: { cost: 23 }}), [], 'Array#findAll | complex | nested non-matching number');
+  equal(people.findAll({ hair: { cost: undefined }}), [], 'Array#findAll | complex | nested undefined property');
+  equal(people.findAll({ hair: { cost: NaN }}), [], 'Array#findAll | complex | nested property is NaN');
+  equal(people.findAll({ hair: { color: function(c){ return c == 'red'; } }}), [people[4]], 'Array#findAll | complex | nested function');
+  equal(people.findAll({ some: { random: { shit: {}}}}), [], 'Array#findAll | complex | totally unrelated properties');
+  equal(people.findAll({ hair: { last_cut: new Date(2010, 4, 18) }}), [people[4]], 'Array#findAll | complex | simple date');
+
+  equal(people.some({ age: 27 }), true, 'Array#some | complex | one property');
+  equal(people.some({ age: 27, hair: 'brown' }), true, 'Array#some | complex | two properties');
+  equal(people.some({ hair: { color: 'red' }}), true, 'Array#some | complex | nested property');
+  equal(people.some({ hair: { color: 'green' }}), false, 'Array#some | complex | non-matching nested property');
+  equal(people.some({ hair: { color: 'red', type: 'long' }}), true, 'Array#some | complex | two nested properties');
+  equal(people.some({ hair: { color: 'green', type: 'mean' }}), false, 'Array#some | complex | two non-matching nested properties');
+  equal(people.some({ hair: { color: 'red', type: 'mean' }}), false, 'Array#some | complex | two nested properties, one non-matching');
+  equal(people.some({ hair: { color: 'red', life: 'long' }}), false, 'Array#some | complex | two nested properties, one non-existing');
+  equal(people.some({ hair: { color: /r/ }}), true, 'Array#some | complex | nested regex');
+  equal(people.some({ hair: { cost: 15 }}), true, 'Array#some | complex | nested number');
+  equal(people.some({ hair: { cost: 23 }}), false, 'Array#some | complex | nested non-matching number');
+  equal(people.some({ hair: { cost: undefined }}), false, 'Array#some | complex | nested undefined property');
+  equal(people.some({ hair: { cost: NaN }}), false, 'Array#some | complex | nested property is NaN');
+  equal(people.some({ hair: { color: function(c){ return c == 'red'; } }}), true, 'Array#some | complex | nested function');
+  equal(people.some({ some: { random: { shit: {}}}}), false, 'Array#some | complex | totally unrelated properties');
+  equal(people.some({ hair: { last_cut: new Date(2010, 4, 18) }}), true, 'Array#some | complex | simple date');
+
+  equal(people.none({ age: 27 }), false, 'Array#none | complex | one property');
+  equal(people.none({ age: 27, hair: 'brown' }), false, 'Array#none | complex | two properties');
+  equal(people.none({ hair: { color: 'red' }}), false, 'Array#none | complex | nested property');
+  equal(people.none({ hair: { color: 'green' }}), true, 'Array#none | complex | non-matching nested property');
+  equal(people.none({ hair: { color: 'red', type: 'long' }}), false, 'Array#none | complex | two nested properties');
+  equal(people.none({ hair: { color: 'green', type: 'mean' }}), true, 'Array#none | complex | two non-matching nested properties');
+  equal(people.none({ hair: { color: 'red', type: 'mean' }}), true, 'Array#none | complex | two nested properties, one non-matching');
+  equal(people.none({ hair: { color: 'red', life: 'long' }}), true, 'Array#none | complex | two nested properties, one non-existing');
+  equal(people.none({ hair: { color: /r/ }}), false, 'Array#none | complex | nested regex');
+  equal(people.none({ hair: { cost: 15 }}), false, 'Array#none | complex | nested number');
+  equal(people.none({ hair: { cost: 23 }}), true, 'Array#none | complex | nested non-matching number');
+  equal(people.none({ hair: { cost: undefined }}), true, 'Array#none | complex | nested undefined property');
+  equal(people.none({ hair: { cost: NaN }}), true, 'Array#none | complex | nested property is NaN');
+  equal(people.none({ hair: { color: function(c){ return c == 'red'; } }}), false, 'Array#none | complex | nested function');
+  equal(people.none({ none: { random: { shit: {}}}}), true, 'Array#none | complex | totally unrelated properties');
+  equal(people.none({ hair: { last_cut: new Date(2010, 4, 18) }}), false, 'Array#none | complex | simple date');
 
 
 
