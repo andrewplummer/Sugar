@@ -40,6 +40,7 @@ mkdir release/$VERSION/development
 create_minified_script 'core'
 create_minified_script 'dates'
 create_minified_script 'inflections'
+create_minified_script 'dates-only'
 
 
 strip_license "minified" "dates" | cat $(fullname "minified" "core") - > $(fullname "minified")
