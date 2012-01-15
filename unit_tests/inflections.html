@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sugar Inflection Tests</title>
+    <title>Sugar Core and Inflections</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="stylesheets/custom.css" type="text/css" />
     <link rel="stylesheet" href="stylesheets/tooltip.css" type="text/css" />
@@ -10,11 +10,13 @@
     <!-- jquery -->
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <!-- test suite -->
+    <script type="text/javascript" src="javascripts/date_helper.js"></script>
+    <script type="text/javascript" src="javascripts/object_helper.js"></script>
     <script type="text/javascript" src="javascripts/environment.js"></script>
     <script type="text/javascript" src="javascripts/suite.js"></script>
     <script type="text/javascript" src="javascripts/tooltip.js"></script>
     <!-- sugar -->
-    <script type="text/javascript" src="../lib/sugar.js"></script>
+    <script type="text/javascript" src="../lib/core.js"></script>
     <script type="text/javascript" src="../lib/inflections.js"></script>
     <!--<script type="text/javascript" src="../release/sugar-edge.min.js"></script>-->
     <script type="text/javascript">
@@ -23,7 +25,15 @@
           name: 'core',
           path: 'environments/sugar/',
           tests: [
-            'inflections.js'
+            'object.js',
+            'equals.js',
+            'array.js',
+            'number.js',
+            'string.js',
+            'regexp.js',
+            'es5.js',
+            'inflections.js',
+            'function.js'
           ]
         }
       ]);
