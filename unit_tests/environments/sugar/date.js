@@ -2099,4 +2099,14 @@ test('Date', function () {
   equal(new Date(2014,  0,  5).getWeek(),  1, 'String#getWeek | January 05, 2014');
   equal(new Date(2014,  0,  6).getWeek(),  2, 'String#getWeek | January 06, 2014');
 
+
+  // Date.restore may not exist in dates-only build.
+
+  if(Date.restore) {
+    Date.prototype.advance = undefined;
+    equal(typeof Date.prototype.advance,  'undefined', 'Date#advance was removed');
+    Date.restore('advance');
+    equal(typeof Date.prototype.advance,  'function', 'Date#advance was restored');
+  }
+
 });
