@@ -1242,20 +1242,20 @@ test('Date', function () {
 
   d = new Date(2010,7,5,13,45,2,542);
 
-  equal(d.getWeek(), 31, 'Date#getWeek | basic');
+  equal(d.getWeek(), 31, 'Date#getWeek | basic August 5th, 2010');
   equal(getDST(d).getUTCWeek(), staticSummerTimezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
-  equal(new Date(2010, 0, 1).getWeek(), 1, 'Date#getWeek | January 1st');
+  equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
   equal(new Date(2010, 0, 1).getUTCWeek(), staticWinterTimezoneOffset >= 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
-  equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th');
+  equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th, 2010');
   equal(new Date(2010, 0, 6).getUTCWeek(), 1, 'Date#getUTCWeek | January 6th');
-  equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th');
+  equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th, 2010');
   equal(new Date(2010, 0, 7).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th');
-  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th 23:59:59.999');
+  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th, 2010 h23:59:59.999');
   equal(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), staticWinterTimezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
-  equal(new Date(2010, 0, 8).getWeek(), 2, 'Date#getWeek | January 8th');
+  equal(new Date(2010, 0, 8).getWeek(), 1, 'Date#getWeek | January 8th, 2010');
   equal(new Date(2010, 0, 8).getUTCWeek(), staticWinterTimezoneOffset >= 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
-  equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th');
+  equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th, 2010');
   equal(new Date(2010, 3, 15).getUTCWeek(), 15, 'Date#getUTCWeek | April 15th');
 
 
@@ -2077,10 +2077,26 @@ test('Date', function () {
   dateEqual('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
 
 
+  equal(new Date(2011, 0, 1).getWeek(), 52, 'String#getWeek | January 1, 2011');
+  equal(new Date(2011, 0, 2).getWeek(), 52, 'String#getWeek | January 2, 2011');
+  equal(new Date(2011, 0, 3).getWeek(),  1, 'String#getWeek | January 3, 2011');
+  equal(new Date(2011, 0, 4).getWeek(),  1, 'String#getWeek | January 4, 2011');
 
+  equal(new Date(2011, 11, 25).getWeek(), 51, 'String#getWeek | December 25, 2011');
+  equal(new Date(2011, 11, 26).getWeek(), 52, 'String#getWeek | December 26, 2011');
+  equal(new Date(2011, 11, 27).getWeek(), 52, 'String#getWeek | December 27, 2011');
 
+  equal(new Date(2011, 11, 31).getWeek(), 52, 'String#getWeek | December 31, 2011');
+  equal(new Date(2012, 0, 1).getWeek(),   52, 'String#getWeek | January 1, 2012');
+  equal(new Date(2012, 0, 2).getWeek(),    1, 'String#getWeek | January 2, 2012');
 
-
-
+  equal(new Date(2013, 11, 28).getWeek(), 52, 'String#getWeek | December 28, 2013');
+  equal(new Date(2013, 11, 29).getWeek(), 52, 'String#getWeek | December 29, 2013');
+  equal(new Date(2013, 11, 30).getWeek(),  1, 'String#getWeek | December 30, 2013');
+  equal(new Date(2013, 11, 31).getWeek(),  1, 'String#getWeek | December 31, 2013');
+  equal(new Date(2014,  0,  1).getWeek(),  1, 'String#getWeek | January 01, 2014');
+  equal(new Date(2014,  0,  2).getWeek(),  1, 'String#getWeek | January 02, 2014');
+  equal(new Date(2014,  0,  5).getWeek(),  1, 'String#getWeek | January 05, 2014');
+  equal(new Date(2014,  0,  6).getWeek(),  2, 'String#getWeek | January 06, 2014');
 
 });
