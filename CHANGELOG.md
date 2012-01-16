@@ -32,6 +32,9 @@ v1.2
 - String#camelize will now check for acronyms if Inflectors module is present.
 - RegExp.escape will now perform a [toString] operation on non-strings (ie. numbers, etc).
 - Function#fill now uses internal Array#splice to fill in arguments.
+- Added support for JSON date format Date(xxxxxxxxxx).
+- Fixed issues with Date#getWeek.
+- FIxed issues with traversing months before January.
 
 
 ### Internal Changes ###
@@ -41,6 +44,8 @@ v1.2
 - Created method arrayIntersect to handle both Array#intersect and Array#subtract
 - Array#intersect and Array#subtract will not allow fuzzy object matching
 - Array#indexOf and Array#lastIndexOf polyfills now work off arrayIndexOf
+- Added internal support for other dates that use timestamps.
+- Reworked adding of Date#toISOString and Date#toJSON support.
 
 
 
