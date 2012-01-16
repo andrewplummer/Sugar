@@ -1,3 +1,50 @@
+v1.2
+=====
+
+
+### API Changes ###
+
+- Allowed external libraries to extend natives through a common interface "extend".
+- Renamed "sugar" to "restore" to restore Sugar methods on a given class.
+- Extending Object.prototype functionality is now on "extend" instead.
+- Split the date library into its own module that hooks into this new interface.
+- Added a new module: String inflections
+- Object.keys now passes values as part of the callback.
+- Array#every now uses fuzzy object matching
+- Array#some now uses fuzzy object matching
+- Array#filter now uses fuzzy object matching
+- Array#find now uses fuzzy object matching
+- Array#findAll now uses fuzzy object matching
+- Array#findIndex now uses fuzzy object matching
+- Array#remove now uses fuzzy object matching
+- Array#none now uses fuzzy object matching
+- Array#count now uses fuzzy object matching
+- Array#exclude now uses fuzzy object matching
+- Array#clone is now no longer based off Array#concat, which will fail on sparse arrays in IE7.
+- Added Number#abbr
+- Added Number#metric
+- Added Number#bytes
+- Added Number#isInteger
+- Fixed issue with Number#ordinalize where 113 would be "113rd".
+- String#each will now pass the match into the callback
+- String#toDate will now check for Date.create before hooking into it.
+- String#underscore will now check for acronyms if Inflectors module is present.
+- String#camelize will now check for acronyms if Inflectors module is present.
+- RegExp.escape will now perform a [toString] operation on non-strings (ie. numbers, etc).
+- Function#fill now uses internal Array#splice to fill in arguments.
+
+
+### Internal Changes ###
+
+- Reworked "multiMatch" to recursively traverse object structures.
+- mergeObject now merges undefined properties as well
+- Created method arrayIntersect to handle both Array#intersect and Array#subtract
+- Array#intersect and Array#subtract will not allow fuzzy object matching
+- Array#indexOf and Array#lastIndexOf polyfills now work off arrayIndexOf
+
+
+
+
 v1.1.3
 =====
 
