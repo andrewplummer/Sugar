@@ -108,6 +108,7 @@
   }
 
   function multiMatch(el, match, scope, params) {
+    var result = true;
     if(el === match) {
       // Match strictly equal values up front.
       return true;
@@ -117,9 +118,16 @@
     } else if(object.isFunction(match)) {
       // Match against a filtering function
       return match.apply(scope, [el].concat(params));
-    } else {
+    } else if(object.isObject(match) && object.isObject(el)) {
       // Match against a hash or array.
-      return object.equal(match, el);
+      iterateOverObject(match, function(key, value) {
+        if(!multiMatch(el[key], match[key], scope, params)) {
+          result = false;
+        }
+      });
+      return !object.isEmpty(match) && result;
+    } else {
+      return object.equal(el, match);
     }
   }
 
@@ -202,7 +210,7 @@
         } else if(!conflict || (conflict && resolve !== false)) {
           prop = source[key];
         }
-        if(isDefined(prop)) target[key] = prop;
+        target[key] = prop;
       });
     }
     return target;
@@ -1226,7 +1234,7 @@
      *
      ***/
     'clone': function() {
-      return this.concat();
+      return mergeObject([], this);
     },
 
     /***
@@ -1809,6 +1817,26 @@
     return arr;
   }
 
+  function abbreviateNumber(num, roundTo, str, mid, limit, bytes) {
+    var fixed        = num.toFixed(20),
+        decimalPlace = fixed.search(/\./),
+        numeralPlace = fixed.search(/[1-9]/),
+        significant  = decimalPlace - numeralPlace,
+        unit, i, divisor;
+    if(significant > 0) {
+      significant -= 1;
+    }
+    i = Math.max(Math.min((significant / 3).floor(), limit === false ? str.length : limit), -mid);
+    unit = str.charAt(i + mid - 1);
+    if(significant < -9) {
+      i = -3;
+      roundTo = significant.abs() - 9;
+      unit = str.first();
+    }
+    divisor = bytes ? (2).pow(10 * i) : (10).pow(i * 3);
+    return (num / divisor).round(roundTo || 0).format() + unit.trim();
+  }
+
 
   extend(number, false, false, {
 
@@ -1847,6 +1875,71 @@
      ***/
     'toNumber': function() {
       return parseFloat(this, 10);
+    },
+
+    /***
+     * @method abbr([precision] = 0)
+     * @returns String
+     * @short Returns an abbreviated form of the number.
+     * @extra [precision] will round to the given precision.
+     * @example
+     *
+     *   (1000).abbr()    -> "1k"
+     *   (1000000).abbr() -> "1m"
+     *   (1280).abbr(1)   -> "1.3k"
+     *
+     ***/
+    'abbr': function(precision) {
+      return abbreviateNumber(this, precision, 'kmbt', 0, 4);
+    },
+
+    /***
+     * @method metric([precision] = 0, [limit] = 1)
+     * @returns String
+     * @short Returns the number as a string in metric notation.
+     * @extra [precision] will round to the given precision. Both very large numbers and very small numbers are supported. [limit] is the upper limit for the units. The default is %1%, which is "kilo". If [limit] is %false%, the upper limit will be "exa". The lower limit is "nano", and cannot be changed.
+     * @example
+     *
+     *   (1000).metric()            -> "1k"
+     *   (1000000).metric()         -> "1,000k"
+     *   (1000000).metric(0, false) -> "1M"
+     *   (1249).metric(2) + 'g'     -> "1.25kg"
+     *   (0.025).metric() + 'm'     -> "25mm"
+     *
+     ***/
+    'metric': function(precision, limit) {
+      return abbreviateNumber(this, precision, 'nμm kMGTPE', 4, isDefined(limit) ? limit : 1);
+    },
+
+    /***
+     * @method bytes([precision] = 0, [limit] = 4)
+     * @returns String
+     * @short Returns an abbreviated form of the number, considered to be "Bytes".
+     * @extra [precision] will round to the given precision. [limit] is the upper limit for the units. The default is %4%, which is "terabytes" (TB). If [limit] is %false%, the upper limit will be "exa".
+     * @example
+     *
+     *   (1000).bytes()                 -> "1kB"
+     *   (1000).bytes(2)                -> "0.98kB"
+     *   ((10).pow(20)).bytes()         -> "90,949,470TB"
+     *   ((10).pow(20)).bytes(0, false) -> "87EB"
+     *
+     ***/
+    'bytes': function(precision, limit) {
+      return abbreviateNumber(this, precision, 'kMGTPE', 0, isDefined(limit) ? limit : 4, true) + 'B';
+    },
+
+    /***
+     * @method isInteger()
+     * @returns Boolean
+     * @short Returns true if the number has no trailing decimal.
+     * @example
+     *
+     *   (420).isInteger() -> true
+     *   (4.5).isInteger() -> false
+     *
+     ***/
+    'isInteger': function() {
+      return this % 1 == 0;
     },
 
     /***
