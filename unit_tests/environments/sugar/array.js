@@ -656,6 +656,9 @@ test('Array', function () {
 
 
 
+
+
+
   equal([1,2,3].subtract([3,4,5]), [1,2], 'Array#subtract | 1,2,3 + 3,4,5');
   equal([1,1,2,2,3,3,4,4,5,5].subtract([2,3,4]), [1,1,5,5], 'Array#subtract | 1,1,2,2,3,3,4,4,5,5 + 2,3,4');
   equal(['a','b','c'].subtract(['c','d','e']), ['a','b'], 'Array#subtract | a,b,c + c,d,e');
@@ -1645,6 +1648,34 @@ test('Array', function () {
   equal(people.none({ none: { random: { shit: {}}}}), true, 'Array#none | complex | totally unrelated properties');
   equal(people.none({ hair: { last_cut: new Date(2010, 4, 18) }}), false, 'Array#none | complex | simple date');
 
+
+  // Testing change to fuzzy finding on objects
+
+
+  arr = [{name: 'joe', age: 25}];
+  var match = { name: /j/ };
+
+  equal(arr.every(match), true, 'Array#every is now fuzzy');
+  equal(arr.some(match), true, 'Array#some is now fuzzy');
+  equal(arr.none(match), false, 'Array#none is now fuzzy');
+  equal(arr.count(match), 1, 'Array#count is now fuzzy');
+  equal(arr.find(match), arr[0], 'Array#find is now fuzzy');
+  equal(arr.findAll(match), [arr[0]], 'Array#findAll is now fuzzy');
+  equal(arr.findIndex(match), 0, 'Array#findIndex is now fuzzy');
+  equal(arr.exclude(match).length, 0, 'Array#exclude is now fuzzy');
+
+
+  equal(arr.clone().remove(match).length, 0, 'Array#remove is now fuzzy');
+  equal(arr.clone().remove(match).length, 0, 'Array#remove is now fuzzy');
+
+  equal([arr].intersect([match]), [], 'Array#intersect is NOT fuzzy');
+  equal([match].intersect([arr]), [], 'Array#intersect reverse is NOT fuzzy');
+
+  equal(arr.subtract([match]), arr, 'Array#subtract is NOT fuzzy');
+  equal([match].subtract([arr]), [match], 'Array#subtract reverse is NOT fuzzy');
+
+  equal(arr.unique(match), arr, 'Array#unique is NOT fuzzy');
+  equal([match].unique(arr), [match], 'Array#unique reverse is NOT fuzzy');
 
 
 });

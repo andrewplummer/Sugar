@@ -742,11 +742,7 @@ test('Object', function () {
 
   equal((1).plus(2, 3), 6, 'Class.extend | arguments and scope are correct');
 
-  Number.extend({
-    chr: function() {
-      return 'F';
-    }
-  });
+  Number.prototype.chr = function() { return 'F'; };
 
   equal((69).chr(), 'F', 'Class.extend | should overwrite existing methods');
 
