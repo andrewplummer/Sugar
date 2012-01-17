@@ -814,7 +814,7 @@
 
   function getShortHour(d, utc) {
     var hours = callDateMethod(d, 'get', utc, 'Hours');
-    return hours === 0 ? 12 : hours - ((hours / 13).floor() * 12);
+    return hours === 0 ? 12 : hours - ((hours / 13 | 0) * 12);
   }
 
   function getMeridian(d, utc) {
@@ -822,10 +822,17 @@
     return hours < 12 ? 'am' : 'pm';
   }
 
+  // weeksSince won't work here as the result needs to be floored, not rounded.
+  function getWeekNumber(date) {
+    var dow = date.getDay() || 7;
+    date.addDays(4 - dow).resetTime();
+    return 1 + (date.daysSince(date.clone().beginningOfYear()) / 7 | 0);
+  }
+
   function getAdjustedDateUnit(d) {
     var next, ms = d.millisecondsFromNow(), ams = ms.abs(), value = ams, unit = 0;
     DateUnitsReversed.from(1).each(function(u, i) {
-      next = (ams / u.multiplier()).round(1).floor();
+      next = (ams / u.multiplier()).round(1) | 0;
       if(next >= 1) {
         value = next;
         unit = i + 1;
@@ -1613,6 +1620,7 @@
     setDateProperties();
   }
 
+
   date.extend({
 
      /***
@@ -1797,8 +1805,7 @@
      *
      ***/
     'getWeek': function() {
-      var d = new date(this.getFullYear(), 0, 1);
-      return ((this.getTime() - d.getTime() + 1) / (7 * 24 * 60 * 60 * 1000)).ceil();
+      return getWeekNumber(this);
     },
 
      /***
@@ -1806,8 +1813,7 @@
      * @set getWeek
      ***/
     'getUTCWeek': function() {
-      var d = new date().setUTC(this.getUTCFullYear(), 0, 1, 0, 0, 0, 0);
-      return ((this.getTime() - d.getTime() + 1) / (7 * 24 * 60 * 60 * 1000)).ceil();
+      return getWeekNumber(this.toUTC());
     },
 
      /***

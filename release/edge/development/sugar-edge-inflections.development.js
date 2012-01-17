@@ -6,7 +6,8 @@
    ***/
 
 
-  var plurals      = [],
+  var globalContext,
+      plurals      = [],
       singulars    = [],
       uncountables = [],
       humans       = [],
@@ -15,6 +16,7 @@
       Normalize,
       Inflector;
 
+  globalContext = typeof global !== 'undefined' ? global : context;
 
   function removeFromUncountablesAndAddTo(arr, rule, replacement) {
     if(Object.isString(rule)) {
@@ -455,7 +457,7 @@
      *
      ***/
     'namespace': function() {
-      var spaces = this.split('.'), scope = context;
+      var spaces = this.split('.'), scope = globalContext;
       spaces.each(function(s) {
         return !!(scope = scope[s]);
       });
