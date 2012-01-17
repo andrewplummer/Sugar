@@ -100,7 +100,7 @@ var isEqual = function(one, two) {
 
 var addFailure = function(actual, expected, message, stack, warning) {
   var meta = getMeta(stack);
-  currentTest.failures.push({ actual: actual, expected: expected, message: message, file: meta.file, line: meta.line, warning: !!warning });
+  currentTest.failures.push({ actual: actual, expected: expected, message: message, file: meta.file, line: meta.line, col: meta.col, warning: !!warning });
 }
 
 var getMeta = function(stack) {
@@ -113,9 +113,9 @@ var getMeta = function(stack) {
     return {};
   }
   var s = e.stack.split(/@|at/m);
-  var match = s[level].match(/(http.+):(\d+)(?::(\d+))?/);
+  var match = s[level].match(/(.+\.js):(\d+)(?::(\d+))?/);
   if(!match) match = [];
-  return { file: match[1], line: match[2] };
+  return { file: match[1], line: match[2], col: match[3] };
 }
 
 var checkCanFinish = function() {
@@ -156,7 +156,7 @@ var displayResults = function() {
       console.info('\n'+ (j + 1) + ') Failure:');
       console.info(failure.message);
       console.info('Expected: ' + JSON.stringify(failure.expected) + ' but was: ' + JSON.stringify(failure.actual));
-      console.info('File: ' + failure.file + ', Line: ' + failure.line + '\n');
+      console.info('File: ' + failure.file + ', Line: ' + failure.line, ' Col: ' + failure.col + '\n');
     }
   };
   var time = (runtime / 1000);
