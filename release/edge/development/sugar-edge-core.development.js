@@ -8,7 +8,7 @@
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
   var definePropertySupport = object.defineProperty && object.defineProperties;
 
-  function extend(klass, instance, override, methods, external) {
+  function extend(klass, instance, override, methods) {
     var extendee = instance ? klass.prototype : klass;
     initializeClass(klass, instance, methods);
     iterateOverObject(methods, function(name, method) {
@@ -18,9 +18,7 @@
         defineProperty(extendee, name, method);
       }
       // If the method is internal to Sugar, then store a reference so it can be restored later.
-      if(!external) {
-        klass['SugarMethods'][name] = { instance: instance, method: method };
-      }
+      klass['SugarMethods'][name] = { instance: instance, method: method };
     });
   }
 
@@ -30,7 +28,7 @@
     defineProperty(klass, 'restore', function() {
       var all = arguments.length === 0, methods = multiArgs(arguments);
       iterateOverObject(klass['SugarMethods'], function(name, m) {
-        if(all || arrayFind(methods, name)) {
+        if(all || existsInArray(methods, name)) {
           defineProperty(m.instance ? klass.prototype : klass, name, m.method);
         }
       });
@@ -40,7 +38,7 @@
         mapObjectPrototypeMethods();
       } else {
         if(isUndefined(override)) override = true;
-        extend(klass, instance !== false, override, methods, true);
+        extend(klass, instance !== false, override, methods);
       }
     });
   }
@@ -622,6 +620,12 @@
     return returnIndex ? index : result;
   }
 
+  function existsInArray(arr, obj) {
+    return arr.any(function(el) {
+      return object.equal(obj, el);
+    });
+  }
+
   function arrayUnique(arr, map) {
     var prop, test = function(el) { return transformArgument(el, map, arr, [el]) === prop; };
     return arr.reduce(function(result, next, index) {
@@ -639,6 +643,19 @@
       if(object.isArray(el) && current < level) {
         result = result.concat(arrayFlatten(el, level, current + 1));
       } else {
+        result.push(el);
+      }
+    });
+    return result;
+  }
+
+  function arrayIntersect(arr1, arr2, subtract) {
+    var result = [];
+    arr1.each(function(el) {
+      // Add the result to the array if:
+      // 1. We're subtracting intersections or it doesn't already exist in the result and
+      // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
+      if((subtract || !existsInArray(result, el)) && subtract != existsInArray(arr2, el)) {
         result.push(el);
       }
     });
@@ -1238,7 +1255,7 @@
     },
 
     /***
-     * @method unique([map])
+     * @method unique([map] = null)
      * @returns Array
      * @short Removes all duplicate elements in the array.
      * @extra [map] may be a function mapping the value to be uniqued on or a string acting as a shortcut. This is most commonly used when you have a key that ensures the object's uniqueness, and don't need to check all fields.
@@ -1285,16 +1302,7 @@
      *
      ***/
     'intersect': function() {
-      var result = [], args = arguments;
-      this.each(function(el, i) {
-        multiArgs(args, function(merge) {
-          if(!object.isArray(merge)) merge = [merge];
-          if(isUndefined(arrayFind(result, el)) && isDefined(arrayFind(merge, el))) {
-            result.push(el);
-          }
-        });
-      });
-      return result;
+      return arrayIntersect(this, multiArgs(arguments), false);
     },
 
     /***
@@ -1309,14 +1317,7 @@
      *
      ***/
     'subtract': function(a) {
-      var arr = this.clone(), index;
-      multiArgs(arguments, function(subtract) {
-        if(!object.isArray(subtract)) subtract = [subtract];
-        subtract.each(function(el) {
-          arr.remove(el);
-        });
-      });
-      return arr;
+      return arrayIntersect(this, multiArgs(arguments), true);
     },
 
     /***
@@ -3449,10 +3450,10 @@
       if(!regexp.NPCGSupport) {
         separator2 = RegExp("^" + separator.source + "$(?!\\s)", separator.getFlags()); // doesn't need /g or /y, but they don't hurt
       }
-      if(isUndefined(limit) || +limit < 0) {
+      if(isUndefined(limit) || limit < 0) {
         limit = Infinity;
       } else {
-        limit = (+limit).floor();
+        limit = limit | 0;
         if(!limit) return [];
       }
 
