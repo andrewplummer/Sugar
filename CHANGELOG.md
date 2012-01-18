@@ -9,7 +9,8 @@ v1.2
 - Extending Object.prototype functionality is now on "extend" instead.
 - Split the date library into its own module that hooks into this new interface.
 - Added a new module: String inflections
-- Object.keys now passes values as part of the callback.
+- Object.keys now passes values as part of the callback like array methods.
+- Object.merge now merges undefined properties as well.
 - Array#every now uses fuzzy object matching
 - Array#some now uses fuzzy object matching
 - Array#filter now uses fuzzy object matching
@@ -34,7 +35,7 @@ v1.2
 - Function#fill now uses internal Array#splice to fill in arguments.
 - Added support for JSON date format Date(xxxxxxxxxx).
 - Fixed issues with Date#getWeek.
-- FIxed issues with traversing months before January.
+- Fixed issues with traversing months before January.
 
 
 ### Internal Changes ###
