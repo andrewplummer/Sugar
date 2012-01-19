@@ -27,7 +27,7 @@ def get_html_parameters(str)
   str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
   str.gsub!(/@date_format/, '<a target="_blank" href="/dates">dates</a>')
   str.gsub!(/extended objects/, '<a target="_blank" href="/objects#extended_objects">extended objects</a>')
-  str.gsub!(/Object\.extend\(\)/, '<a target="_blank" href="/objects#object_sugar" class="monospace">Object.extend()</a>')
+  str.gsub!(/Object\.extend\(\)/, '<a target="_blank" href="/objects#object_extend" class="monospace">Object.extend()</a>')
   str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
 end
 
