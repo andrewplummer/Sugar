@@ -57,7 +57,7 @@ In addition to these major locales, custom locales can be added using:
 Date.setFormat(LOCALE_CODE, LOCALIZATION_OBJECT)
 ```
 
-More documentation to come soon, but for now refer to `lib/locales.js` for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main package will be kept in this file.
+More documentation to come soon, but for now refer to `lib/locales` for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main package will be kept here.
 
 Contributing Locales
 ====================
