@@ -37,7 +37,6 @@
       if(klass === object && arguments.length === 0) {
         mapObjectPrototypeMethods();
       } else {
-        if(isUndefined(override)) override = true;
         extend(klass, instance !== false, override, methods);
       }
     });
@@ -45,7 +44,7 @@
 
   function wrapNative(nativeFn, extendedFn, condition) {
     return function() {
-      if(nativeFn && (condition === true || condition.apply(this, arguments))) {
+      if(nativeFn && (condition === true || !condition.apply(this, arguments))) {
         return nativeFn.apply(this, arguments);
       } else {
         return extendedFn.apply(this, arguments);
@@ -545,7 +544,7 @@
   });
 
 
-  extend(object, false, function() { return arguments.length < 2; }, {
+  extend(object, false, function() { return arguments.length > 1; }, {
 
     /***
      * @method keys(<obj>, [fn])
@@ -817,7 +816,7 @@
 
 
 
-  extend(array, true, function() { var a = arguments; return a.length === 0 || object.isFunction(a[0]); }, {
+  extend(array, true, function() { var a = arguments; return a.length > 0 && !object.isFunction(a[0]); }, {
 
     /***
      * @method every(<f>, [scope])
@@ -3424,7 +3423,7 @@
   });
 
 
-  extend(string, true, function(s) { return !object.isRegExp(s); }, {
+  extend(string, true, function(s) { return object.isRegExp(s); }, {
 
     /*
      * Many thanks to Steve Levithan here for a ton of inspiration and work dealing with
@@ -3878,5 +3877,8 @@
   buildString();
   buildFunction();
   initializeClass(date);
+
+  Object.initializeClass = initializeClass;
+
 
 })();

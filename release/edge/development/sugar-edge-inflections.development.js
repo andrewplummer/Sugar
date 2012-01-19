@@ -470,7 +470,7 @@
      * @short Replaces special characters in a string so that it may be used as part of a pretty URL.
      * @example
      *
-     *   'hell, no!'.namespace() -> 'hell-no'
+     *   'hell, no!'.parameterize() -> 'hell-no'
      *
      ***/
     'parameterize': function(separator) {
