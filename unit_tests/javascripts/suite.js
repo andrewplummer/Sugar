@@ -74,7 +74,7 @@
 
 
   $(document).bind('suite.started', function(event, environment, modules) {
-    var tests = $('<div id="tests"/>').appendTo(document.body);
+    var tests = findOrCreateTestDiv();
     $('<h3>' + $('title').text() + '</h3>').appendTo(tests);
     var test = $('<div id="'+ environment +'"/ class="environment">').appendTo(tests);
     $('<div class="loading">Running tests.</div>').appendTo(test);
@@ -86,7 +86,16 @@
     startTests();
   });
 
-  var getFailureHTML = function(f) {
+
+  function findOrCreateTestDiv() {
+    var div = $('#tests');
+    if(div.length == 0) {
+      div = $('<div id="tests"/>').appendTo(document.body);
+    }
+    return div;
+  }
+
+  function getFailureHTML(f) {
     var expected, actual;
     if(f.warning) {
       return '<p class="warning">Warning: ' + f.message + '</p>';
@@ -97,7 +106,7 @@
     }
   };
 
-  var getStringified = function(p) {
+  function getStringified(p) {
     if(p && p.length > 5000) return 'One BIG ass array of length ' + p.length;
     if(typeof p === 'function') return 'function';
     if(typeof JSON !== 'undefined' && JSON.stringify) return JSON.stringify(p);
