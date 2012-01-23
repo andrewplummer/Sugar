@@ -287,7 +287,7 @@
     function setArray(name, abbreviate, multiple) {
       var arr = [];
       if(!set[name]) return;
-      set[name].each(function(el, i) {
+      set[name].forEach(function(el, i) {
         eachAlternate(el, function(str, j) {
           arr[j * multiple + i] = str.toLowerCase();
         });
@@ -463,7 +463,7 @@
             // Can't use filter here as Prototype hijacks the method and doesn't
             // pass an index, so use a simple loop instead!
             arr = [];
-            value.each(function(m,i) {
+            value.forEach(function(m, i) {
               var mod = i % (loc['units'] ? 8 : value.length);
               if(mod >= slice[1] && mod <= (slice[2] || slice[1])) {
                 arr.push(m);
@@ -837,7 +837,7 @@
   function getAdjustedDateUnit(d) {
     var next, ms = d.millisecondsFromNow(), ams = ms.abs(), value = ams, unit = 0;
     DateUnitsReversed.from(1).each(function(u, i) {
-      next = (ams / u.multiplier()).round(1) | 0;
+      next = (ams / u.multiplier() * 10).round() / 10 | 0;
       if(next >= 1) {
         value = next;
         unit = i + 1;
