@@ -25,19 +25,21 @@
   function initializeClass(klass) {
     if(klass.SugarMethods) return;
     defineProperty(klass, 'SugarMethods', {});
-    defineProperty(klass, 'restore', function() {
-      var all = arguments.length === 0, methods = multiArgs(arguments);
-      iterateOverObject(klass['SugarMethods'], function(name, m) {
-        if(all || existsInArray(methods, name)) {
-          defineProperty(m.instance ? klass.prototype : klass, name, m.method);
+    extend(klass, false, false, {
+      'restore': function() {
+        var all = arguments.length === 0, methods = multiArgs(arguments);
+        iterateOverObject(klass['SugarMethods'], function(name, m) {
+          if(all || existsInArray(methods, name)) {
+            defineProperty(m.instance ? klass.prototype : klass, name, m.method);
+          }
+        });
+      },
+      'extend': function(methods, override, instance) {
+        if(klass === object && arguments.length === 0) {
+          mapObjectPrototypeMethods();
+        } else {
+          extend(klass, instance !== false, override, methods);
         }
-      });
-    });
-    defineProperty(klass, 'extend', function(methods, override, instance) {
-      if(klass === object && arguments.length === 0) {
-        mapObjectPrototypeMethods();
-      } else {
-        extend(klass, instance !== false, override, methods);
       }
     });
   }
@@ -2980,7 +2982,7 @@
      *
      ***/
     'has': function(find) {
-      return this.search(find) !== -1;
+      return this.search(object.isRegExp(find) ? find : RegExp.escape(find)) !== -1;
     },
 
 
@@ -3548,7 +3550,7 @@
     ***/
     'escape': function(str) {
       if(!object.isString(str)) str = String(str);
-      return str.replace(/([/'*+?|()\[\]{}.^$])/g,'\\$1');
+      return str.replace(/([\\/'*+?|()\[\]{}.^$])/g,'\\$1');
     }
 
   });
