@@ -336,8 +336,14 @@ test('String', function () {
   equal('foo'.has(/f/), true, 'String#has | foo has /f/');
   equal('foo'.has(/[a-g]/), true, 'String#has | foo has /[a-g]/');
   equal('foo'.has(/[p-z]/), false, 'String#has | foo has /[p-z]/');
-  equal('foo'.has(/f$/), false, 'String#has | foo has /f$/');
-
+  equal('flu?ffy'.has('?'), true, 'String#has | flu?ffy has ?');
+  equal('flu?ffy'.has('\?'), true, 'String#has | flu?ffy has one slash and ?');
+  equal('flu?ffy'.has('\\?'), false, 'String#has | flu?ffy has two slashes and ?');
+  equal('flu?ffy'.has('\\\?'), false, 'String#has | flu?ffy has three slashes and ?');
+  equal('flu?ffy'.has(/\?/), true, 'String#has | flu?ffy has one slash and ? in a regex');
+  equal('flu?ffy'.has(/\\?/), true, 'String#has | flu?ffy has two slashes and ? in a regex');
+  equal('flu?ffy'.has(/\\\?/), false, 'String#has | flu?ffy has three slashes and ? in a regex');
+  equal('flu\\?ffy'.has(/\\\?/), true, 'String#has | flu\\?ffy has three slashes and ? in a regex');
 
   equal('schfifty'.add(' five'), 'schfifty five', 'String#add | schfifty five');
   equal('dopamine'.add('e', 3), 'dopeamine', 'String#add | dopeamine');
