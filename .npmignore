@@ -1,6 +1,5 @@
 **/*.html
 docs/
-release/
 script/
 unit_tests/images/
 unit_tests/stylesheets/
