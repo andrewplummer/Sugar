@@ -8,6 +8,8 @@ v1.2.1
 - Fixed issue with String#has not escaping regex tokens.
 - Date.setLocale can now overwrite a default locale object.
 - Date locales can now add their own formats.
+- Fix for Ender, which was broken when modularized in 1.2.
+- Workaround for Ender requiring externs.
 
 ### Internal Changes ###
 
