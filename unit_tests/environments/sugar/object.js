@@ -720,6 +720,11 @@ test('Object', function () {
   var obj = { foo: 'bar' };
   equal(Object.tap(obj), obj, 'Object.tap | return value is strictly equal');
 
+  // Object.has
+
+  equal(Object.has({ foo: 'bar' }, 'foo'), true, 'Object.has | finds a property');
+  equal(Object.has({ foo: 'bar' }, 'baz'), false, 'Object.has | does not find a nonexistant property');
+  equal(Object.has({ hasOwnProperty: true, foo: 'bar' }, 'foo'), true, 'Object.has | local hasOwnProperty is ignored');
 
   // Class.extend functionality
 
