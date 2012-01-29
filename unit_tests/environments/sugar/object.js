@@ -751,5 +751,12 @@ test('Object', function () {
   equal((69).chr(), 'E', 'Class.extend | simple array of strings should restore Sugar methods');
   equal((1).plus(2, 3), 6, 'Class.extend | restoring Sugar methods should not override other custom extended methods');
 
+
+  // Object.extended hasOwnProperty
+  // see: http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
+
+  var a = Object.extended({ hasOwnProperty: true });
+
+
 });
 
