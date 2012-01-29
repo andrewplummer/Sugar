@@ -1246,15 +1246,15 @@ test('Date', function () {
   equal(getDST(d).getUTCWeek(), staticSummerTimezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
   equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
-  equal(new Date(2010, 0, 1).getUTCWeek(), staticWinterTimezoneOffset >= 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
+  equal(new Date(2010, 0, 1).getUTCWeek(), 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
   equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th, 2010');
   equal(new Date(2010, 0, 6).getUTCWeek(), 1, 'Date#getUTCWeek | January 6th');
   equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th, 2010');
   equal(new Date(2010, 0, 7).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th');
   equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th, 2010 h23:59:59.999');
-  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), staticWinterTimezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
+  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
   equal(new Date(2010, 0, 8).getWeek(), 1, 'Date#getWeek | January 8th, 2010');
-  equal(new Date(2010, 0, 8).getUTCWeek(), staticWinterTimezoneOffset >= 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
+  equal(new Date(2010, 0, 8).getUTCWeek(), 1, 'Date#getUTCWeek | January 8th');
   equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th, 2010');
   equal(new Date(2010, 3, 15).getUTCWeek(), 15, 'Date#getUTCWeek | April 15th');
 
