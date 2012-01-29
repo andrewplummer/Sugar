@@ -1,3 +1,20 @@
+v1.2.1
+=====
+
+
+### API Changes ###
+
+- Added Object.has to fix issue #97. Stand-in for Object#hasOwnProperty.
+- Fixed issue with String#has not escaping regex tokens.
+- Date.setLocale can now overwrite a default locale object.
+- Date locales can now add their own formats.
+
+### Internal Changes ###
+
+- Date optional tokens now start from {0}
+- References to Object.extend and Object.restore now held and allowed to be restored later.
+
+
 v1.2
 =====
 
