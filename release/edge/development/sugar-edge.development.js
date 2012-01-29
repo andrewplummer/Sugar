@@ -62,10 +62,14 @@
     }
   }
 
+  function hasOwnProperty(obj, key) {
+    return object.prototype.hasOwnProperty.call(obj, key);
+  }
+
   function iterateOverObject(obj, fn) {
     var count = 0;
     for(var key in obj) {
-      if(!obj.hasOwnProperty(key)) continue;
+      if(!hasOwnProperty(obj, key)) continue;
       fn.call(obj, key, obj[key], count);
       count++;
     }
@@ -92,8 +96,8 @@
       }
       stack.push(a);
       for(var key in a) {
-        if(!a.hasOwnProperty(key)) continue;
-        if(!b.hasOwnProperty(key) || !equal(a[key], b[key], stack)) {
+        if(!hasOwnProperty(a, key)) continue;
+        if(!hasOwnProperty(b, key) || !equal(a[key], b[key], stack)) {
           return false;
         }
       }
@@ -541,6 +545,21 @@
     'tap': function(obj, fn) {
       transformArgument(obj, fn, obj, [obj]);
       return obj;
+    },
+
+    /***
+     * @method has(<obj>, <key>)
+     * @returns Boolean
+     * @short Checks if <obj> has <key> using hasOwnProperty from Object.prototype
+     * @extra See http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
+     * @example
+     *
+     *   Object.has({ foo: 'bar' }, 'foo') -> true
+     *   Object.has({ foo: 'bar' }, 'baz') -> false
+     *   Object.has({ hasOwnProperty: true }, 'foo') -> false
+     ***/
+    'has': function (obj, key) {
+      return hasOwnProperty(obj, key);
     }
 
   });
@@ -3394,7 +3413,7 @@
         }
       });
       return this.replace(/\{(.+?)\}/g, function(m, key) {
-        return assign.hasOwnProperty(key) ? assign[key] : m;
+        return hasOwnProperty(assign, key) ? assign[key] : m;
       });
     },
 
@@ -3842,7 +3861,7 @@
     'once': function() {
       var fn = this;
       return function() {
-        return fn.hasOwnProperty('memo') ? fn['memo'] : fn['memo'] = fn.apply(this, arguments);
+        return hasOwnProperty(fn, 'memo') ? fn['memo'] : fn['memo'] = fn.apply(this, arguments);
       }
     },
 
