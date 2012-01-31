@@ -37,7 +37,7 @@ test('Inflections', function () {
     "index"       : "indices",
 
     "wife"        : "wives",
-    "safe"        : "saves",
+    "save"        : "saves",
     "half"        : "halves",
 
     "move"        : "moves",
@@ -118,7 +118,89 @@ test('Inflections', function () {
 
     // regression tests against improper inflection regexes
     "|ice"        : "|ices",
-    "|ouse"       : "|ouses"
+    "|ouse"       : "|ouses",
+
+
+    // Taken from Wikipedia
+
+    "kiss"    : "kisses",
+    "ass"     : "asses",
+    "mess"    : "messes",
+    "fuss"    : "fusses",
+    "phase"   : "phases",
+    "dish"    : "dishes",
+    "massage" : "massages",
+    "witch"   : "witches",
+    "judge"   : "judges",
+
+    "lap"     : "laps",
+    "cat"     : "cats",
+    "clock"   : "clocks",
+    "cuff"    : "cuffs",
+    "death"   : "deaths",
+
+    "boy"     : "boys",
+    "girl"    : "girls",
+    "chair"   : "chairs",
+
+    "hero"    : "heroes",
+    "potato"  : "potatoes",
+    "volcano" : "volcanoes",
+
+    "cherry"  : "cherries",
+    "lady"    : "ladies",
+
+
+    "day"     : "days",
+    "monkey"  : "monkeys",
+    "canto"   : "cantos",
+    "homo"    : "homos",
+    "photo"   : "photos",
+    "zero"    : "zeros",
+    "piano"   : "pianos",
+    "portico" : "porticos",
+    "pro"     : "pros",
+    "quarto"  : "quartos",
+    "kimono"  : "kimonos",
+
+
+    "bath"   : "baths",
+    "mouth"  : "mouths",
+    "calf"   : "calves",
+    "leaf"   : "leaves",
+    "knife"  : "knives",
+    "life"   : "lives",
+    "house"  : "houses",
+    "moth"   : "moths",
+    "proof"  : "proofs",
+    "dwarf"  : "dwarves",
+    "hoof"   : "hooves",
+    "elf"    : "elves",
+    "roof"   : "roofs",
+
+    "aircraft"   : "aircraft",
+    "watercraft" : "watercraft",
+    "spacecraft" : "spacecraft",
+    "hovercraft" : "hovercraft",
+
+    "information" : "information",
+    "ox"          : "oxen",
+    "child"       : "children",
+    "foot"        : "feet",
+    "goose"       : "geese",
+    "louse"       : "lice",
+    "man"         : "men",
+    "mouse"       : "mice",
+    "tooth"       : "teeth",
+    "woman"       : "women",
+    "alumnus"     : "alumni",
+    "census"      : "censuses",
+    "focus"       : "foci",
+    "radius"      : "radii",
+    "fungus"      : "fungi",
+    "status"      : "statuses",
+    "syllabus"    : "syllabuses"
+
   };
 
 
@@ -347,20 +429,26 @@ test('Inflections', function () {
 
   // Test pluralize singular
   Object.each(SingularToPlural, function(singular, plural) {
-    equal(singular.pluralize(), plural, 'String#pluralize | singular is equal to plural');
-    equal(singular.capitalize().pluralize(), plural.capitalize(), 'String#pluralize | pluralize is equal to capitalized plural');
+    equal(singular.pluralize(), plural, 'String#pluralize | singular > plural');
+    equal(singular.capitalize().pluralize(), plural.capitalize(), 'String#pluralize | singular > capitalize > plural == plural > capitalize');
   });
 
   // Test singularize plural
   Object.each(SingularToPlural, function(singular, plural) {
-    equal(plural.singularize(), singular, 'String#singularize | singular is equal to singular');
-    equal(plural.capitalize().singularize(), singular.capitalize(), 'String#singularize | plural > capitalize > singular');
+    equal(plural.singularize(), singular, 'String#singularize | plural > singular');
+    equal(plural.capitalize().singularize(), singular.capitalize(), 'String#singularize | plural > capitalize > singular == singular > capitalize');
+  });
+
+  // Test singularize singular
+  Object.each(SingularToPlural, function(singular, plural) {
+    equal(singular.singularize(), singular, 'String#singularize | singular > singular');
+    equal(singular.capitalize().singularize(), singular.capitalize(), 'String#singularize | singular > capitalize > singular == singular > capitalize');
   });
 
   // Test pluralize plural
   Object.each(SingularToPlural, function(singular, plural) {
-    equal(plural.pluralize(), plural, 'String#singularize | singular is equal to singular');
-    equal(plural.capitalize().pluralize(), plural.capitalize(), 'String#singularize | plural > capitalize > pluralize');
+    equal(plural.pluralize(), plural, 'String#pluralize | plural > plural');
+    equal(plural.capitalize().pluralize(), plural.capitalize(), 'String#singularize | plural > capitalize > plural == plural > capitalize');
   });
 
 
@@ -576,7 +664,7 @@ test('Inflections', function () {
   });
 
 
-  // Test clearing inflectors
+  // Test clearing inflectors KEEP ME AT THE BOTTOM
   equal('foo'.pluralize(), 'foos', 'String.Inflector.clear | foo is foos');
   String.Inflector.clear('plurals');
   equal('foo'.pluralize(), 'foo', 'String.Inflector.clear | clear purals');
