@@ -9,7 +9,6 @@ test('Date', function () {
     Date.restore('create');
   };
 
-
   var day, d, o;
   var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
@@ -2112,5 +2111,13 @@ test('Date', function () {
     Date.restore('advance');
     equal(typeof Date.prototype.advance,  'function', 'Date#advance was restored');
   }
+
+
+  // Issue #98: System time set to January 31st
+
+  dateEqual(Date.create('2011-09-01T05:00:00Z'), getUTCDate(2011, 9, 1, 5), 'String#toDate | text format');
+
+
+
 
 });
