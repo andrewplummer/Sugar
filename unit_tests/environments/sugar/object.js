@@ -783,7 +783,7 @@ test('Object', function () {
   equal(obj2.r.source, 'dasfsa', 'Object.clone | deep cloning also clones regexes');
 
 
-  // Object merge should not merge prototype properties
+  // Object.merge should not merge prototype properties
 
   var Foo = function(){};
   Foo.prototype.bar = 3;
@@ -792,6 +792,15 @@ test('Object', function () {
 
   equal(Object.merge({}, f).bar, undefined, 'Object.merge should not merge inherited properties');
 
+  // Object.merge should not choke when target and source contain strictly equal objects
+
+  var obj = { foo: 'bar' };
+
+  equal(Object.merge({ one: obj }, { one: obj }), { one: obj }, 'Object.merge should be able to handle identical source/target objects');
+
+  obj.moo = obj;
+
+  equal(typeof Object.merge(obj, { foo: obj }), 'object', 'Object.merge should not choke on cyclic references');
 
 });
 
