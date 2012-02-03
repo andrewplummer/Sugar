@@ -5,6 +5,8 @@ test('Object', function () {
   var Person = function() {};
   var p = new Person();
 
+
+
   equal(Object.isObject({}), true, 'Object.isObject | {}');
   equal(Object.isObject(new Object({})), true, 'Object.isObject | new Object()');
   equal(Object.isObject([]), false, 'Object.isObject | []');
@@ -149,7 +151,6 @@ test('Object', function () {
 
   equal(({}).keys, undefined, 'Object | native objects are not wrapped by default');
   equal(Object.extended(), Object.extended({}), 'Object.extended | null argument same as empty object');
-  equal(Object.extended().constructor, Object, 'Object.extended | constructor is Object');
 
   var keys,values;
   var d = new Date();
@@ -355,6 +356,7 @@ test('Object', function () {
   equal(Object.clone({ foo: 'bar', broken: 1, wear: null }), { foo: 'bar', broken: 1, wear: null }, 'Object.clone | complex clone');
   equal(Object.clone({ foo: { broken: 'wear' }}), { foo: { broken: 'wear' }}, 'Object.clone | deep clone');
   equal(Object.clone({ foo: 'bar', broken: 1, wear: /foo/ }) == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object.clone | fully cloned');
+  equal(Object.clone([1,2,3]), [1,2,3], 'Object.clone | clone on arrays');
 
 
   var obj1, obj2, obj3;
@@ -464,9 +466,9 @@ test('Object', function () {
   equal(Object.equal({x: 1, y: undefined}, {x: 1, z: 2}), false, 'Object.equal | undefined keys');
 
 
-  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
+  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), false, 'Object#equals | extended objects are not equal to plain objects');
   equal(Object.extended({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
-  equal(Object.extended({}).equals({}), true, 'Object#equals | empty objects are equal');
+  equal(Object.extended({}).equals({}), false, 'Object#equals | empty extended objects are not equal to empty plain objects');
   equal(Object.extended({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
   equal(Object.extended({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 
@@ -762,6 +764,33 @@ test('Object', function () {
   equal(Object.has({ foo: 'bar' }, 'foo'), true, 'Object.has | finds a property');
   equal(Object.has({ foo: 'bar' }, 'baz'), false, 'Object.has | does not find a nonexistant property');
   equal(Object.has({ hasOwnProperty: true, foo: 'bar' }, 'foo'), true, 'Object.has | local hasOwnProperty is ignored');
+
+
+
+  // Object.clone on dates and regexes
+
+  var obj1 = {
+    d: new Date(2000, 5, 25),
+    r: /dasfsa/gi
+  }
+
+  var obj2 = Object.clone(obj1, true);
+
+  obj1.d.setDate(3);
+  obj1.r.source = 'mwahaha';
+
+  equal(obj2.d.getDate(), 25, 'Object.clone | deep cloning also clones dates');
+  equal(obj2.r.source, 'dasfsa', 'Object.clone | deep cloning also clones regexes');
+
+
+  // Object merge should not merge prototype properties
+
+  var Foo = function(){};
+  Foo.prototype.bar = 3;
+
+  var f = new Foo();
+
+  equal(Object.merge({}, f).bar, undefined, 'Object.merge should not merge inherited properties');
 
 
 });
