@@ -67,11 +67,10 @@
   }
 
   function iterateOverObject(obj, fn) {
-    var count = 0;
-    for(var key in obj) {
+    var key;
+    for(key in obj) {
       if(!hasOwnProperty(obj, key)) continue;
-      fn.call(obj, key, obj[key], count);
-      count++;
+      fn.call(obj, key, obj[key]);
     }
   }
 
@@ -79,7 +78,7 @@
     var primitive = object.prototype.toString.call(a).match(/\[object (\w+)\]/)[1];
     if(a === b) {
       return a !== 0 || 1 / a === 1 / b;
-    } else if(isNull(a) || isUndefined(a) || isNull(b) || isUndefined(b)) {
+    } else if(a == null || b == null) {
       return false;
     } else if(primitive == 'RegExp') {
       return a.ignoreCase == b.ignoreCase &&
@@ -185,38 +184,8 @@
     return object.prototype.toString.call(obj) === '[object '+str+']';
   }
 
-  function isObjectPrimitive(o) {
-    return typeof o == 'object';
-  }
-
-  function isNull(o) {
-    return o === null;
-  }
-
   function isUndefined(o) {
     return o === Undefined;
-  }
-
-  function isDefined(o) {
-    return o !== Undefined;
-  }
-
-  function mergeObject(target, source, deep, resolve) {
-    if(isObjectPrimitive(source)) {
-      iterateOverObject(source, function(key, val) {
-        var prop = target[key], conflict = isDefined(prop), isArray = object.isArray(val);
-        if(deep === true && (isArray || object.isObject(val))) {
-          if(!prop) prop = isArray ? [] : {};
-          mergeObject(prop, val, deep);
-        } else if(conflict && object.isFunction(resolve)) {
-          prop = resolve.call(source, key, target[key], source[key])
-        } else if(!conflict || (conflict && resolve !== false)) {
-          prop = source[key];
-        }
-        target[key] = prop;
-      });
-    }
-    return target;
   }
 
   function setParamsObject(obj, param, value, deep) {
@@ -252,8 +221,6 @@
       self[key] = value;
     });
   }
-
-  Hash.prototype.constructor = object;
 
   /***
    * @method is[Type](<obj>)
@@ -291,10 +258,15 @@
    ***/
 
 
+  var ObjectTypeMethods = ['isObject','isNaN'];
+  var ObjectHashMethods = ['keys','values','each','merge','isEmpty','clone','equal','watch','tap','has']
+
   function buildTypeMethods() {
-    var methods = {};
+    var methods = {}, name;
     arrayEach(['Array','Boolean','Date','Function','Number','String','RegExp'], function(type) {
-      methods['is' + type] = function(obj) {
+      name = 'is' + type;
+      ObjectTypeMethods.push(name);
+      methods[name] = function(obj) {
         return isClass(obj, type);
       }
     });
@@ -313,11 +285,11 @@
 
   function buildObject() {
     buildTypeMethods();
-    buildInstanceMethods(['keys','values','each','merge','isEmpty','clone','equal','watch','tap'], Hash);
+    buildInstanceMethods(ObjectHashMethods, Hash);
   }
 
   function mapObjectPrototypeMethods() {
-    buildInstanceMethods(Object.keys(Object['SugarMethods']).remove('extended', 'fromQueryString'), Object);
+    buildInstanceMethods(ObjectTypeMethods.concat(ObjectHashMethods), Object);
   }
 
   extend(object, false, true, {
@@ -375,7 +347,7 @@
      * @set isType
      ***/
     'isObject': function(obj) {
-      if(isNull(obj) || isUndefined(obj)) {
+      if(obj == null) {
         return false;
       } else {
         return isClass(obj, 'Object') && obj.constructor === object;
@@ -430,8 +402,39 @@
      *   Object.extended({a:1}).merge({b:2}) -> { a:1, b:2 }
      *
      ***/
-    'merge': function(target, merge, resolve) {
-      return mergeObject(target, merge, true, resolve);
+    'merge': function(target, source, resolve, deep) {
+      var key, val;
+      if(typeof source == 'object') {
+        for(key in source) {
+          if(!hasOwnProperty(source, key)) continue;
+          val = source[key];
+          // Conflict!
+          if(target[key] !== Undefined) {
+            // Do not merge.
+            if(resolve === false) {
+              continue;
+            }
+            // Use the result of the callback as the result.
+            if(object.isFunction(resolve)) {
+              val = resolve.call(source, key, target[key], source[key])
+            }
+          }
+          // Deep merging.
+          if(deep !== false && val && typeof val === 'object') {
+            if(object.isDate(val)) {
+              val = new Date(val.getTime());
+            } else if(object.isRegExp(val)) {
+              val = new RegExp(val.source, val.getFlags());
+            } else {
+              if(!target[key]) target[key] = array.isArray(val) ? [] : {};
+              Object.merge(target[key], source[key], resolve, deep);
+              continue;
+            }
+          }
+          target[key] = val;
+        }
+      }
+      return target;
     },
 
     /***
@@ -447,7 +450,7 @@
      *
      ***/
     'isEmpty': function(obj) {
-      if(!isObjectPrimitive(obj) || isNull(obj)) return !(obj && obj.length > 0);
+      if(obj == null || typeof obj != 'object') return !(obj && obj.length > 0);
       return object.keys(obj).length == 0;
     },
 
@@ -503,9 +506,10 @@
      *
      ***/
     'clone': function(obj, deep) {
-      if(!isObjectPrimitive(obj) || isNull(obj)) return obj;
-      var target = Object.isFunction(obj.keys) ? Object.extended() : {};
-      return mergeObject(target, obj, deep);
+      if(obj == null || typeof obj !== 'object') return obj;
+      if(array.isArray(obj)) return obj.clone();
+      var target = obj.constructor === Hash ? new Hash() : {};
+      return object.merge(target, obj, false, deep || false);
     },
 
     /***
@@ -550,8 +554,8 @@
     /***
      * @method has(<obj>, <key>)
      * @returns Boolean
-     * @short Checks if <obj> has <key> using hasOwnProperty from Object.prototype
-     * @extra See http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
+     * @short Checks if <obj> has <key> using hasOwnProperty from Object.prototype.
+     * @extra This method is considered safer than %Object#hasOwnProperty% when using objects as hashes. See %http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/% for more.
      * @example
      *
      *   Object.has({ foo: 'bar' }, 'foo') -> true
@@ -582,7 +586,7 @@
      *
      ***/
     'keys': function(obj, fn) {
-      if(isNull(obj) || (!isObjectPrimitive(obj) && !object.isRegExp(obj) && !object.isFunction(obj))) {
+      if(obj == null || typeof obj != 'object' && !object.isRegExp(obj) && !object.isFunction(obj)) {
         throw new TypeError('Object required');
       }
       var keys = [];
@@ -705,7 +709,7 @@
   }
 
   function arrayReduce(arr, fn, initialValue, fromRight) {
-    var length = arr.length, count = 0, defined = isDefined(initialValue), result, index;
+    var length = arr.length, count = 0, defined = initialValue !== Undefined, result, index;
     checkCallback(fn);
     if(length == 0 && !defined) {
       throw new TypeError('Reduce called on empty array with no initial value');
@@ -775,9 +779,7 @@
     iterateOverObject(obj, function(key) {
       var entry = obj[key];
       var test = transformArgument(entry, map, obj, isArray? [entry, key.toNumber(), obj] : []);
-      if(isUndefined(test)) {
-        return;
-      } else if(test === edge) {
+      if(test === edge) {
         result.push(entry);
       } else if((max && test > edge) || (min && test < edge)) {
         result = [entry];
@@ -1120,7 +1122,7 @@
      ***/
     'findIndex': function(f, startIndex, loop) {
       var index = arrayFind(this, f, startIndex, loop, true);
-      return isDefined(index) ? index : -1;
+      return isUndefined(index) ? -1 : index;
     },
 
     /***
@@ -1271,7 +1273,7 @@
      *
      ***/
     'clone': function() {
-      return mergeObject([], this);
+      return object.merge([], this);
     },
 
     /***
@@ -1644,7 +1646,7 @@
           result.push(el.compact());
         } else if(all && el) {
           result.push(el);
-        } else if(!all && isDefined(el) && !isNull(el) && (!object.isNumber(el) || !isNaN(el))) {
+        } else if(!all && el != null && !object.isNaN(el)) {
           result.push(el);
         }
       });
@@ -1876,8 +1878,8 @@
     'random': function(n1, n2) {
       var min, max;
       if(arguments.length == 1) n2 = n1, n1 = 0;
-      min = Math.min(n1 || 0, isDefined(n2) ? n2 : 1);
-      max = Math.max(n1 || 0, isDefined(n2) ? n2 : 1);
+      min = Math.min(n1 || 0, isUndefined(n2) ? 1 : n2);
+      max = Math.max(n1 || 0, isUndefined(n2) ? 1 : n2);
       return round((Math.random() * (max - min)) + min);
     }
 
@@ -1929,7 +1931,7 @@
      *
      ***/
     'metric': function(precision, limit) {
-      return abbreviateNumber(this, precision, 'nμm kMGTPE', 4, isDefined(limit) ? limit : 1);
+      return abbreviateNumber(this, precision, 'nμm kMGTPE', 4, isUndefined(limit) ? 1 : limit);
     },
 
     /***
@@ -1946,7 +1948,7 @@
      *
      ***/
     'bytes': function(precision, limit) {
-      return abbreviateNumber(this, precision, 'kMGTPE', 0, isDefined(limit) ? limit : 4, true) + 'B';
+      return abbreviateNumber(this, precision, 'kMGTPE', 0, isUndefined(limit) ? 4 : limit, true) + 'B';
     },
 
     /***
@@ -2495,7 +2497,7 @@
   }
 
   function buildBase64(key) {
-    if(isDefined(this.btoa)) return;
+    if(this.btoa) return;
     var base64reg = /[^A-Za-z0-9\+\/\=]/g;
     btoa = function(str) {
       var output = '';
@@ -3192,7 +3194,7 @@
      *
      ***/
     'first': function(num) {
-      num = isUndefined(num) ? 1 : num;
+      if(isUndefined(num)) num = 1;
       return this.substr(0, num);
     },
 
@@ -3207,7 +3209,7 @@
      *
      ***/
     'last': function(num) {
-      num = isUndefined(num) ? 1 : num;
+      if(isUndefined(num)) num = 1;
       var start = this.length - num < 0 ? 0 : this.length - num;
       return this.substr(start);
     },
@@ -3883,7 +3885,7 @@
       return function() {
         var args = getArgs(arguments);
         arrayEach(curried, function(arg, index) {
-          if(isDefined(arg) || index >= args.length) args.splice(index, 0, arg);
+          if(arg != null || index >= args.length) args.splice(index, 0, arg);
         });
         return fn.apply(this, args);
       }
@@ -4448,6 +4450,7 @@
           set = getFormatMatch(match, format.to);
           loc = getLocalization(format.locale, true);
 
+
           if(set.timestamp) {
             d.setTime(0);
             set = { 'milliseconds': set.timestamp };
@@ -4563,6 +4566,9 @@
       } else if(relative) {
         d.advance(set);
       } else if(set['utc']) {
+        // UTC times can traverse into other days or even months,
+        // so preemtively reset the time here to prevent this.
+        d.resetTime();
         d.setUTC(set, true);
       } else {
         d.set(set, true);
@@ -5522,11 +5528,41 @@
   }
 
 
+   /***
+   * @method toISOString()
+   * @returns String
+   * @short Formats the string to ISO8601 format.
+   * @extra This will always format as UTC time. Provided for browsers that do not support this method.
+   * @example
+   *
+   *   Date.create().toISOString() -> ex. 2011-07-05 12:24:55.528Z
+   *
+   ***
+   * @method toJSON()
+   * @returns String
+   * @short Returns a JSON representation of the date.
+   * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Implemented for browsers that do not support it.
+   * @example
+   *
+   *   Date.create().toJSON() -> ex. 2011-07-05 12:24:55.528Z
+   *
+   ***/
+
+  function buildISOString(name) {
+    var d = new date(date.UTC(1999, 11, 31)), target = '1999-12-31T00:00:00.000Z', methods = {};
+    if(!d[name] || d[name]() !== target) {
+      methods[name] = function() { return formatDate(this.toUTC(), date['ISO8601_DATETIME']); }
+      date.extend(methods, true);
+    }
+  }
+
   function buildDate() {
     English = date.setLocale('en');
     buildDateMethods();
     buildDateInputFormats();
     buildRelativeAliases();
+    buildISOString('toISOString');
+    buildISOString('toJSON');
     setDateProperties();
   }
 
@@ -5614,20 +5650,6 @@
   }, false, false);
 
   date.extend({
-
-     /***
-     * @method toISOString()
-     * @returns String
-     * @short Formats the string to ISO8601 format.
-     * @extra This will always format as UTC time. Provided for browsers that do not support this method.
-     * @example
-     *
-     *   Date.create().toISOString() -> ex. 2011-07-05 12:24:55.528Z
-     *
-     ***/
-    'toISOString': function() {
-      return formatDate(this.toUTC(), date['ISO8601_DATETIME']);
-    },
 
      /***
      * @method set(<set>, [reset] = false)
@@ -6029,23 +6051,13 @@
   date.extend({
 
      /***
-     * @method toJSON()
-     * @returns String
-     * @short Returns a JSON representation of the date.
-     * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Implemented for browsers that do not support it.
-     * @example
-     *
-     *   Date.create().toJSON() -> ex. 2011-07-05 12:24:55.528Z
-     *
-     ***/
-    'toJSON': date.prototype.toISOString,
-
-     /***
      * @method iso()
      * @alias toISOString
      *
      ***/
-    'iso': date.prototype.toISOString,
+    'iso': function() {
+      return this.toISOString();
+    },
 
      /***
      * @method getWeekday()
