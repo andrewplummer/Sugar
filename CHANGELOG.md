@@ -1,3 +1,22 @@
+v1.2.2
+=====
+
+
+### API Changes ###
+
+- Performance optimization for Object.merge and by extension Object.clone
+- Object.extended now maintains its "Hash" constructor and checks against it when cloning.
+- Object.merge now will also clone dates and regexes as well.
+- Reset dates that will be set with UTC methods (fixes issue #98).
+
+### Internal Changes ###
+
+
+- Removed references to isDefined, isNull, and isObjectPrimitive
+
+
+
+
 v1.2.1
 =====
 
