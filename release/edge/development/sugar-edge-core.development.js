@@ -406,7 +406,7 @@
       var key, val;
       if(typeof source == 'object') {
         for(key in source) {
-          if(!hasOwnProperty(source, key)) continue;
+          if(!hasOwnProperty(source, key) || !target) continue;
           val = source[key];
           // Conflict!
           if(target[key] !== Undefined) {

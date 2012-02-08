@@ -1887,6 +1887,9 @@
       } else if(relative) {
         d.advance(set);
       } else if(set['utc']) {
+        // UTC times can traverse into other days or even months,
+        // so preemtively reset the time here to prevent this.
+        d.resetTime();
         d.setUTC(set, true);
       } else {
         d.set(set, true);
@@ -2519,54 +2522,6 @@
     });
   }
 
-  function checkISOOutput() {
-    var d = new date(date.UTC(1999, 11, 31)), target = '1999-12-31T00:00:00.000Z';
-    if(!d.toISOString || d.toISOString() !== target) {
-      extend(date, true, true, {
-
-         /***
-         * @method toISOString()
-         * @returns String
-         * @short Formats the string to ISO8601 format.
-         * @extra This will always format as UTC time. Provided for browsers that do not support this method.
-         * @example
-         *
-         *   Date.create().toISOString() -> ex. 2011-07-05 12:24:55.528Z
-         *
-         ***/
-        'toISOString': function(utc) {
-          return formatDate(this.toUTC(), date['ISO8601_DATETIME']);
-        }
-
-      });
-    }
-    if(!d.toJSON || d.toJSON() !== target) {
-      extend(date, true, true, {
-
-         /***
-         * @method toJSON()
-         * @returns String
-         * @short Returns a JSON representation of the date.
-         * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Implemented for browsers that do not support it.
-         * @example
-         *
-         *   Date.create().toJSON() -> ex. 2011-07-05 12:24:55.528Z
-         *
-         ***/
-        'toJSON': date.prototype.toISOString
-
-      });
-    }
-    extend(date, true, false, {
-       /***
-       * @method iso()
-       * @alias toISOString
-       *
-       ***/
-      'iso': date.prototype.toISOString
-    });
-  }
-
   function setDateProperties() {
     extend(date, false, true, {
       'DSTOffset': (new date(2000, 6, 1).getTimezoneOffset() - new date(2000, 0, 1).getTimezoneOffset()) * 60 * 1000,
@@ -2579,13 +2534,43 @@
   }
 
 
+   /***
+   * @method toISOString()
+   * @returns String
+   * @short Formats the string to ISO8601 format.
+   * @extra This will always format as UTC time. Provided for browsers that do not support this method.
+   * @example
+   *
+   *   Date.create().toISOString() -> ex. 2011-07-05 12:24:55.528Z
+   *
+   ***
+   * @method toJSON()
+   * @returns String
+   * @short Returns a JSON representation of the date.
+   * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Implemented for browsers that do not support it.
+   * @example
+   *
+   *   Date.create().toJSON() -> ex. 2011-07-05 12:24:55.528Z
+   *
+   ***/
+
+  function buildISOString(name) {
+    var d = new date(date.UTC(1999, 11, 31)), target = '1999-12-31T00:00:00.000Z', methods = {};
+    if(!d[name] || d[name]() !== target) {
+      methods[name] = function() { return formatDate(this.toUTC(), date['ISO8601_DATETIME']); }
+      extend(date, true, true, methods);
+    }
+  }
+
+
   function buildDate() {
     English = date.setLocale('en');
     buildDateMethods();
     buildDateInputFormats();
     buildRelativeAliases();
+    buildISOString('toISOString');
+    buildISOString('toJSON');
     setDateProperties();
-    checkISOOutput();
   }
 
   extend(date, false, false, {
@@ -3065,6 +3050,15 @@
 
   // Instance aliases
   extend(date, true, false, {
+
+     /***
+     * @method iso()
+     * @alias toISOString
+     *
+     ***/
+    'iso': function() {
+      return this.toISOString();
+    },
 
      /***
      * @method getWeekday()

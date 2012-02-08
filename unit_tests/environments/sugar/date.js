@@ -2118,6 +2118,53 @@ test('Date', function () {
   dateEqual(Date.create('2011-09-01T05:00:00Z'), getUTCDate(2011, 9, 1, 5), 'String#toDate | text format');
 
 
+  // Number#duration
 
+  Date.setLocale('en');
+
+  equal((1).duration(), '1 millisecond', 'Number#duration | 1 millisecond');
+  equal((2).duration(), '2 milliseconds', 'Number#duration | 2 milliseconds');
+  equal((100).duration(), '100 milliseconds', 'Number#duration | 100 milliseconds');
+  equal((500).duration(), '500 milliseconds', 'Number#duration | 500 milliseconds');
+  equal((949).duration(), '949 milliseconds', 'Number#duration | 949 milliseconds');
+  equal((950).duration(), '1 second', 'Number#duration | 950 milliseconds');
+  equal((999).duration(), '1 second', 'Number#duration | 999 milliseconds');
+  equal((1000).duration(), '1 second', 'Number#duration | 1 second');
+  equal((1999).duration(), '2 seconds', 'Number#duration | 2 seconds');
+  equal((5000).duration(), '5 seconds', 'Number#duration | 5 seconds');
+  equal((55000).duration(), '55 seconds', 'Number#duration | 55 seconds');
+  equal((56000).duration(), '56 seconds', 'Number#duration | 56 seconds');
+  equal((57000).duration(), '1 minute', 'Number#duration | 57 seconds');
+  equal((60000).duration(), '1 minute', 'Number#duration | 60 seconds');
+  equal((3600000).duration(), '1 hour', 'Number#duration | 360000 seconds');
+  equal((5).hours().duration(), '5 hours', 'Number#duration | 5 hours');
+  equal((22).hours().duration(), '22 hours', 'Number#duration | 22 hours');
+  equal((23).hours().duration(), '1 day', 'Number#duration | 23 hours');
+  equal((6).days().duration(), '6 days', 'Number#duration | 6 days');
+  equal((7).days().duration(), '1 week', 'Number#duration | 1 week');
+  equal((28).days().duration(), '4 weeks', 'Number#duration | 30 days');
+  equal((29).days().duration(), '1 month', 'Number#duration | 1 months');
+  equal((11).months().duration(), '11 months', 'Number#duration | 11 months');
+  equal((12).months().duration(), '1 year', 'Number#duration | 1 year');
+  equal((2).years().duration(), '2 years', 'Number#duration | 2 years');
+  equal((15).years().duration(), '15 years', 'Number#duration | 15 years');
+  equal((1500).years().duration(), '1500 years', 'Number#duration | 1500 years');
+
+  Date.setLocale('ja');
+
+  equal((5).days().duration(), '5日', 'Number#duration | Japanese | 5 days');
+  equal((150).days().duration(), '4ヶ月', 'Number#duration | Japanese | 150 days');
+  equal((38000).seconds().duration(), '10時間', 'Number#duration | Japanese | 38000 seconds');
+  equal((38000).minutes().duration(), '3週間', 'Number#duration | Japanese | 38000 minutes');
+  equal((38000).hours().duration(), '4年', 'Number#duration | Japanese | 38000 hours');
+
+
+  // Duration without setting the locale code
+
+  equal((5).days().duration('ko'), '5일', 'Number#duration | Korean | 5 days');
+  equal((150).days().duration('ko'), '4개월', 'Number#duration | Korean | 150 days');
+  equal((38000).seconds().duration('ko'), '10시간', 'Number#duration | Korean | 38000 seconds');
+  equal((38000).minutes().duration('ko'), '3주', 'Number#duration | Korean | 38000 minutes');
+  equal((38000).hours().duration('ko'), '4년', 'Number#duration | Korean | 38000 hours');
 
 });
