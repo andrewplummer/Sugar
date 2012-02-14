@@ -1,5 +1,6 @@
 (function($) {
 
+  var containerExists;
 
   function arrayEach(arr, fn) {
     for(var i = 0; i < arr.length; i++) {
@@ -21,6 +22,9 @@
     var totalAssertions = 0;
     var totalFailed = 0;
     var env = $('#' + environment);
+    $('.loading', env).hide();
+    $('.tests,.stats', env).show();
+    $('.tests', env).empty();
     arrayEach(results, function(module) {
       var mod = $('<ul class="module" />');
       arrayEach(module.results, function(r) {
@@ -59,7 +63,7 @@
       $('.tests', env).append(mod);
     });
 
-    var stats = $('.stats', env);
+    var stats = $('.stats', env).empty();
     stats.append($('<span class="failures">' + totalFailed + ' ' + (totalFailed == 1 ? 'failure' : 'failures') + '</span>'));
     stats.append($('<span class="tests">' + totalTests + ' ' + (totalTests == 1 ? 'test' : 'tests') + '</span>'));
     stats.append($('<span class="assertions">' + totalAssertions + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>'));
@@ -74,16 +78,27 @@
 
 
   $(document).bind('suite.started', function(event, environment, modules) {
-    var tests = findOrCreateTestDiv();
-    $('<h3>' + $('title').text() + '</h3>').appendTo(tests);
-    var test = $('<div id="'+ environment +'"/ class="environment">').appendTo(tests);
-    $('<div class="loading">Running tests.</div>').appendTo(test);
-    $('<div class="tests"/>').appendTo(test);
-    $('<p><span class="stats"/></p>').appendTo(test);
+    var test = findOrCreateTestDiv();
+    findOrCreateEnvironmentDiv(environment, test);
   });
 
   $(document).ready(function() {
-    startTests();
+    if(typeof startTests == 'function') {
+      startTests();
+    } else {
+      $('.run').click(function(e) {
+        var el = $(this);
+        var env = el.parents('.environment');
+        e.preventDefault();
+        el.add($('.tests,.stats', env)).hide();
+        $('.loading', env).show();
+        try {
+          $('iframe#' + el.data('frame'))[0].contentWindow.startTests();
+        } catch(e) {
+          console.info(e);
+        }
+      });
+    }
   });
 
 
@@ -93,6 +108,17 @@
       div = $('<div id="tests"/>').appendTo(document.body);
     }
     return div;
+  }
+
+  function findOrCreateEnvironmentDiv(name, container) {
+    var div = $('#' + name);
+    if(div.length == 0) {
+      div = $('<div id="'+ name +'"/ class="environment">').appendTo(container);
+      $('<h3>' + $('title').text() + '</h3>').appendTo(div);
+      $('<div class="loading">Running test.</div>').appendTo(div);
+      $('<div class="tests"/>').appendTo(div);
+      $('<p><span class="stats"/></p>').appendTo(div);
+    }
   }
 
   function getFailureHTML(f) {
