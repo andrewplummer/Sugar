@@ -9,14 +9,14 @@ registerEnvironment = function(name, mod) {
 }
 
 startTests = function() {
-  jQuery(document).trigger('suite.started', [environment, modules]);
+  trigger('suite.started', [environment, modules]);
   nextModule();
 }
 
 testsFinishedCallback = function(r, time) {
   if(!current) console.info(r, time);
   var data = { module: current.name, results: r, time: time };
-  jQuery(document).trigger('suite.module_finished', data);
+  trigger('suite.module_finished', data);
   allResults.push(data);
   nextModule();
 }
@@ -31,7 +31,7 @@ var nextModule = function() {
 }
 
 var modulesFinished = function() {
-  jQuery(document).trigger('suite.finished', [environment, allResults]);
+  trigger('suite.finished', [environment, allResults]);
 }
 
 var loadScripts = function(module) {
@@ -44,4 +44,8 @@ var loadScripts = function(module) {
       }
     });
   }
+}
+
+var trigger = function(name, data) {
+  window.parent.jQuery(window.parent.document).trigger(name, data);
 }
