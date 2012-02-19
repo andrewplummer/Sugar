@@ -5,6 +5,12 @@ v1.2.3
 ### API Changes ###
 
 - Object.merge defaults are now more sensible. shallow/deep is 3rd with shallow default and resolve is 4th
+- Added Number#duration to dates package.
+
+### Internal Changes ###
+
+- Cleanup for toISOString internal code.
+
 
 
 
