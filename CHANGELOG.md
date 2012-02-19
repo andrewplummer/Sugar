@@ -1,3 +1,13 @@
+v1.2.3
+=====
+
+
+### API Changes ###
+
+- Object.merge defaults are now more sensible. shallow/deep is 3rd with shallow default and resolve is 4th
+
+
+
 v1.2.2
 =====
 
