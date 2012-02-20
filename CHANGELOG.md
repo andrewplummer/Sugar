@@ -1,5 +1,5 @@
 v1.2.3
-=====
+======
 
 
 ### API Changes ###
@@ -15,7 +15,7 @@ v1.2.3
 
 
 v1.2.2
-=====
+======
 
 
 ### API Changes ###
@@ -34,7 +34,7 @@ v1.2.2
 
 
 v1.2.1
-=====
+======
 
 
 ### API Changes ###
@@ -53,7 +53,7 @@ v1.2.1
 
 
 v1.2
-=====
+====
 
 
 ### API Changes ###
@@ -106,7 +106,7 @@ v1.2
 
 
 v1.1.3
-=====
+======
 
 ### API Changes ###
 
@@ -118,7 +118,7 @@ v1.1.3
 
 
 v1.1.2
-=====
+======
 
 ### API Changes ###
 
@@ -146,7 +146,7 @@ v1.1.2
 - Refactored checkMonthTraversal to be more robust in a variety of situations.
 
 v1.1.1
-=====
+======
 
 ### API Changes ###
 
@@ -164,7 +164,7 @@ v1.1.1
 - Fixed Date bug "2 weeks from Monday"
 
 v1.1
-=====
+====
 
 ### API Changes ###
 
@@ -195,7 +195,7 @@ v1.1
 
 
 v1.0
-=====
+====
 
 ### API Changes ###
 
@@ -240,7 +240,7 @@ v1.0
 
 
 v0.9.5
-=====
+======
 
 ### API Changes ###
 
@@ -289,12 +289,12 @@ v0.9.5
 
 
 v0.9.4
-=====
+======
 
 - Emergency fix for Array#compact incorrectly detecting NaN.
 
 v0.9.3
-=====
+======
 
 ### API Changes ###
 
@@ -327,7 +327,7 @@ v0.9.3
 - Array#least/most refactored to use an internal method instead of Array#unique to avoid collisions
 - Array#groupBy will now throw a TypeError if the first argument exists, but is not a string or function
 - Array#sortBy will now throw a TypeError if the first argument exists, but is not a string or function
-- Array#compact/flatten now internally use Array.isArray instead of Object.isArray
+- Array#compact/flatten now internally uses Array.isArray instead of Object.isArray
 - Array#collect alias removed
 - Array#shuffle alias removed
 - String#hankaku/zenkaku/hiragana/katakana refactored to shift char codes instead of using a hash table
@@ -374,14 +374,14 @@ v0.9.3
 
 
 v0.9.2
-=====
+======
 
 - Emergency fix to alleviate issues with indexOf/lastIndexOf breaking on functions/deep objects
 
 
 
 v0.9.1
-=====
+======
 
 - Change Object.create to Object.extended to avoid collision with ES5
 - Use of defineProperty in modern browsers to prevent enumeration in for..in loops.
