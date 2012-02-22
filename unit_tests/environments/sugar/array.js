@@ -1678,5 +1678,26 @@ test('Array', function () {
   equal([match].unique(arr), [match], 'Array#unique reverse is NOT fuzzy');
 
 
+
+  // Testing sortBy behavior
+
+
+  equal([0,1,2,3,4].sortBy(), [0,1,2,3,4], 'Array#sortBy | 0 is properly sorted');
+  equal(['c','B','a'].sortBy(), ['a','B','c'], 'Array#sortBy | should not be case-sensitive by default');
+  equal(['c','B','a','ä','ò','p'].sortBy(), ['a','ä','B','c','ò','p'], 'Array#sortBy | should allow normalization if exists');
+  equal(['apple','apples'].sortBy(), ['apple','apples'], 'Array#sortBy | basic string length');
+  equal(['has','hàs','had','hàd'].sortBy(), ['had','has','hàd','hàs'], 'Array#sortBy | special chars basic');
+
+  arr = ['San','San Cristobal','San Juan','San Teodoro','San Tomas','Santa Barbara','Santa Clara','Santa Cruz','Santo Domingo'];
+  equal(arr.sortBy(), arr, 'Array#sortBy | spaces are counted');
+
+
+  Array.AlphanumericSortIgnore = '#(';
+
+  arr = ['fooa','#foob','(fooc'];
+  equal(arr.sortBy(), arr, 'Array#sortBy | special chars can be ignored');
+
+  Array.AlphanumericSortIgnore = null;
+
 });
 
