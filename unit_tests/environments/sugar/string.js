@@ -360,6 +360,8 @@ test('String', function () {
   equal('schfifty five'.remove(/f/), 'schifty five', 'String#remove | /f/');
   equal('schfifty five'.remove(/f/g), 'schity ive', 'String#remove | /f/g');
   equal('schfifty five'.remove(/[a-f]/g), 'shity iv', 'String#remove | /[a-f]/');
+  equal('?'.remove('?'), '', 'String#remove | strings have tokens escaped');
+  equal('?('.remove('?('), '', 'String#remove | strings have all tokens escaped');
 
   equal('schfifty'.insert(' five'), 'schfifty five', 'String#insert | schfifty five');
   equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert | dopeamine');
@@ -1195,32 +1197,5 @@ test('String', function () {
   equal('Hello, {1}'.assign(''), 'Hello, ', 'String#assign | empty string as argument');
   equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
 
-
-  // String#compare
-
-  equal(('a').compare('a'), 0, 'String#compare | a and a results in 0');
-  equal(('a').compare('b'), -1, 'String#compare | a and b results in 0');
-  equal(('b').compare('a'), 1, 'String#compare | b and a results in 1');
-  equal(('z').compare('a'), 1, 'String#compare | z and a results in 1');
-  equal(('a').compare('z'), -1, 'String#compare | a and z results in 0');
-
-  equal(('A').compare('a'), -1, 'String#compare | caps come before lower case');
-  equal(('_').compare('-'), 1, 'String#compare | special chars are also compared by code point');
-
-  equal(('advertising').compare('@advertising', true), 0, 'String#compare | all special characters can be ignored');
-  equal(('advertising').compare('@advertising', '@'), 0, 'String#compare | specific characters can be ignored');
-  equal(('advertising').compare('@advertising', '#'), 1, 'String#compare | only specific characters are ignored');
-
-  equal(('@advertising').compare('advertising', true), 0, 'String#compare | inverse ignore is also true');
-  equal(('@advertising').compare('advertising', '@'), 0, 'String#compare | inverse ignore is also true');
-
-  equal(('2advertising').compare('advertising', true), -1, 'String#compare | numeric characters still count');
-
-  equal(('1').compare(0), 1, 'String#compare | numbers are coerced | 0');
-  equal(('1').compare(1), 0, 'String#compare | numbers are coerced | 1');
-  equal(('1').compare(2), -1, 'String#compare | numbers are coerced | 2');
-  equal(('1').compare(87), -1, 'String#compare | numbers are coerced | 87');
-
-  equal(('80').compare(9), -1, 'String#compare | in lexical comparison, 80 comes before 9');
 
 });
