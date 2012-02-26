@@ -1692,12 +1692,11 @@ test('Array', function () {
   equal(arr.sortBy(), arr, 'Array#sortBy | spaces are counted');
 
 
-  Array.AlphanumericSortIgnore = '#(';
+  Array.AlphanumericSortIgnore = /[#(]/g;
 
   arr = ['fooa','#foob','(fooc'];
-  equal(arr.sortBy(), arr, 'Array#sortBy | special chars can be ignored');
+  equal(arr.sortBy(), arr, 'Array#sortBy | special chars are ignored by default');
 
-  Array.AlphanumericSortIgnore = null;
 
 });
 
