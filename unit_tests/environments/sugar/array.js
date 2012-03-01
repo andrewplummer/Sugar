@@ -1683,20 +1683,129 @@ test('Array', function () {
 
 
   equal([0,1,2,3,4].sortBy(), [0,1,2,3,4], 'Array#sortBy | 0 is properly sorted');
-  equal(['c','B','a'].sortBy(), ['a','B','c'], 'Array#sortBy | should not be case-sensitive by default');
+  equal(['0','1','2','3','4'].sortBy(), ['0','1','2','3','4'], 'Array#sortBy | string numerals are properly sorted');
+  equal(['c','B','a'].sortBy(), ['a','B','c'], 'Array#sortBy | upper-case is properly sorted');
+  equal(['back','Bad','banker'].sortBy(), ['Bad','back','banker'], 'Array#sortBy | bla');
   equal(['c','B','a','ä','ò','p'].sortBy(), ['a','ä','B','c','ò','p'], 'Array#sortBy | should allow normalization if exists');
   equal(['apple','apples'].sortBy(), ['apple','apples'], 'Array#sortBy | basic string length');
-  equal(['has','hàs','had','hàd'].sortBy(), ['had','has','hàd','hàs'], 'Array#sortBy | special chars basic');
+  equal(['has','hàs','had','hàd'].sortBy(), ['had','hàd','has','hàs'], 'Array#sortBy | special chars basic');
 
   arr = ['San','San Cristobal','San Juan','San Teodoro','San Tomas','Santa Barbara','Santa Clara','Santa Cruz','Santo Domingo'];
   equal(arr.sortBy(), arr, 'Array#sortBy | spaces are counted');
 
 
-  Array.AlphanumericSortIgnore = /[#(]/g;
-
   arr = ['fooa','#foob','(fooc'];
   equal(arr.sortBy(), arr, 'Array#sortBy | special chars are ignored by default');
 
+  swedish_words = [
+    'att borsta',
+    'att bränna',
+    'att brinna',
+    'att brinna',
+    'att brista',
+    'att bruka',
+    'att bryta',
+    'att bryta i bitar',
+    'att buller',
+    'att bygga',
+    'att byta',
+    'att chocka',
+    'att dela',
+    'att detaljera',
+    'att dimpa',
+    'att dö',
+    'att dö',
+    'att döda',
+    'att dofta',
+    'att dölja',
+    'att döma',
+    'att dra',
+    'att dra',
+    'att drabba',
+    'att dricka',
+    'att driva',
+    'att driva',
+    'att drömma',
+    'att duga',
+    'att erbjuda',
+    'att erkänna',
+    'att ersätta',
+    'att explodera',
+    'att få',
+    'att falla',
+    'att falla',
+    'att fånga',
+    'att fängsla',
+    'att fara',
+    'att fästa',
+    'att fastna',
+    'att fastställa',
+    'att fatta',
+    'att finna',
+    'att finna',
+    'att finnas',
+    'att fira',
+    'att fläta'
+  ];
+
+  equal(swedish_words.sortBy(), swedish_words, 'Array#sortBy | swedish strings sorted on utf8_general_ci');
+
+  var swedish_collated = [
+    'att borsta',
+    'att brinna',
+    'att brinna',
+    'att brista',
+    'att bruka',
+    'att bryta',
+    'att bryta i bitar',
+    'att bränna',
+    'att buller',
+    'att bygga',
+    'att byta',
+    'att chocka',
+    'att dela',
+    'att detaljera',
+    'att dimpa',
+    'att dofta',
+    'att dra',
+    'att dra',
+    'att drabba',
+    'att dricka',
+    'att driva',
+    'att driva',
+    'att drömma',
+    'att duga',
+    'att dö',
+    'att dö',
+    'att döda',
+    'att dölja',
+    'att döma',
+    'att erbjuda',
+    'att erkänna',
+    'att ersätta',
+    'att explodera',
+    'att falla',
+    'att falla',
+    'att fara',
+    'att fastna',
+    'att fastställa',
+    'att fatta',
+    'att finna',
+    'att finna',
+    'att finnas',
+    'att fira',
+    'att fläta',
+    'att få',
+    'att fånga',
+    'att fängsla',
+    'att fästa'
+  ];
+
+  Array.AlphanumericSortEquivalents['ö'] = null;
+  Array.AlphanumericSortEquivalents['ä'] = null;
+  Array.AlphanumericSortEquivalents['å'] = null;
+
+  equal(swedish_words.sortBy(), swedish_collated, 'Array#sortBy | removing equivalents can restore sort order');
 
 });
 
