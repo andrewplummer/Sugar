@@ -1704,6 +1704,20 @@ test('Array', function () {
   arr = ['fooa','#foob','(fooc'];
   equal(arr.sortBy(), arr, 'Array#sortBy | special chars are ignored by default');
 
+  arr = [
+    'pine',
+    'piñata',
+    'pino'
+  ];
+
+  expected = [
+    'pine',
+    'pino',
+    'piñata'
+  ];
+
+  equal(arr.sortBy(), arr, 'Array#sortBy | Spanish ñ is respected');
+
   var swedish_words = [
     'att borsta',
     'att bränna',
