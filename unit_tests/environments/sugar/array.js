@@ -1681,6 +1681,11 @@ test('Array', function () {
 
   // Testing sortBy behavior
 
+  var CapturedSortOrder       = Array.AlphanumericSortOrder;
+  var CapturedSortIgnore      = Array.AlphanumericSortIgnore;
+  var CapturedSortIgnoreCase  = Array.AlphanumericSortIgnoreCase;
+  var CapturedSortEquivalents = Array.AlphanumericSortEquivalents;
+
 
   equal([0,1,2,3,4].sortBy(), [0,1,2,3,4], 'Array#sortBy | 0 is properly sorted');
   equal(['0','1','2','3','4'].sortBy(), ['0','1','2','3','4'], 'Array#sortBy | string numerals are properly sorted');
@@ -1862,7 +1867,49 @@ test('Array', function () {
   equal(french_names.map('toUpperCase').randomize().sortBy(), french_names.map('toUpperCase'), 'Array#sortBy | sorting french names in upper case');
 
 
+  arr = [
+    'abner',
+    'aBBey',
+    'Adrian',
+    'aDella'
+  ];
 
+  expected = [
+    'aBBey',
+    'abner',
+    'aDella',
+    'Adrian'
+  ];
+
+  Array.AlphanumericSortIgnoreCase = true;
+  equal(arr.sortBy(), expected, 'Array#sortBy | allows case ignore');
+
+
+  expected = [
+    'aDella',
+    'Adrian',
+    'aBBey',
+    'abner'
+  ];
+
+  Array.AlphanumericSortOrder = 'dba';
+  equal(arr.sortBy(), expected, 'Array#sortBy | allows other order');
+
+  expected = [
+    'aDella',
+    'abner',
+    'Adrian',
+    'aBBey'
+  ];
+
+
+  Array.AlphanumericSortIgnore = /[abcde]/g;
+  equal(arr.sortBy(), expected, 'Array#sortBy | allows custom ignore');
+
+  Array.AlphanumericSortOrder = CapturedSortOrder;
+  Array.AlphanumericSortIgnore = CapturedSortIgnore;
+  Array.AlphanumericSortIgnoreCase = CapturedSortIgnoreCase;
+  Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
 
 
 });
