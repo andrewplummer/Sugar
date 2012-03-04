@@ -1693,11 +1693,13 @@ test('Array', function () {
   arr = ['San','San Cristobal','San Juan','San Teodoro','San Tomas','Santa Barbara','Santa Clara','Santa Cruz','Santo Domingo'];
   equal(arr.sortBy(), arr, 'Array#sortBy | spaces are counted');
 
+  equal(['AM','AB'].sortBy(), ['AB','AM'], '0 index is properly sorted');
+
 
   arr = ['fooa','#foob','(fooc'];
   equal(arr.sortBy(), arr, 'Array#sortBy | special chars are ignored by default');
 
-  swedish_words = [
+  var swedish_words = [
     'att borsta',
     'att bränna',
     'att brinna',
@@ -1806,6 +1808,62 @@ test('Array', function () {
   Array.AlphanumericSortEquivalents['å'] = null;
 
   equal(swedish_words.sortBy(), swedish_collated, 'Array#sortBy | removing equivalents can restore sort order');
+
+
+  var french_names = [
+    'abelle',
+    'aceline',
+    'adélaïde',
+    'adelais',
+    'adèle',
+    'adélie',
+    'adeline',
+    'adelle',
+    'adelphe',
+    'adrienne',
+    'agace',
+    'agate',
+    'aglaë',
+    'agnès',
+    'agrippine',
+    'aimée',
+    'alaina',
+    'alais',
+    'alayna',
+    'albertine',
+    'alexandrie',
+    'alexandrine',
+    'aliénor',
+    'aline',
+    'alison',
+    'alphonsine',
+    'alvery',
+    'amaline',
+    'amandine',
+    'amarante',
+    'ambre',
+    'ambrosine',
+    'amélie',
+    'amorette',
+    'anaïs',
+    'anastaise',
+    'anastasie',
+    'andrée',
+    'andromaque',
+    'anette',
+    'angèle',
+    'angeline',
+    'angelique',
+    'ann',
+    'anne'
+  ];
+
+  equal(french_names.randomize().sortBy(), french_names, 'Array#sortBy | sorting french names');
+  equal(french_names.map('toUpperCase').randomize().sortBy(), french_names.map('toUpperCase'), 'Array#sortBy | sorting french names in upper case');
+
+
+
+
 
 });
 
