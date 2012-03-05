@@ -1431,7 +1431,19 @@ test('Array', function () {
   equal([1,2,3].sortBy(null), [1,2,3], 'Array#sortBy | null');
   equal([1,2,3].sortBy(4), [1,2,3], 'Array#sortBy | number');
 
+  var Simple = function(num) {
+    this.valueOf = function() {
+      return num;
+    }
+  }
 
+  var a = new Simple(5);
+  var b = new Simple(2);
+  var c = new Simple(3);
+  var d = new Simple(1);
+  var e = new Simple(2);
+
+  equal([a,b,c,d,e].sortBy(), [d,b,e,c,a], 'Array#sortBy | objects with "valueOf" defined will also be sorted properly');
 
   arr = [1,2,3,4,5,6,7,8,9,10];
   var firsts = [];
@@ -1701,16 +1713,18 @@ test('Array', function () {
   equal(['AM','AB'].sortBy(), ['AB','AM'], '0 index is properly sorted');
 
 
-  arr = ['fooa','#foob','(fooc'];
-  equal(arr.sortBy(), arr, 'Array#sortBy | special chars are ignored by default');
+  arr = ['#foob','(fooc','fooa'];
+  equal(arr.sortBy(), arr, 'Array#sortBy | special chars are not ignored by default');
 
   arr = [
-    'pine',
-    'pino',
-    'piñata'
+    '8braham',
+    'a4raham',
+    'abraham'
   ];
 
-  expected = [
+  equal(arr.sortBy(), arr, 'Array#sortBy | Numbers are filtered to the top');
+
+  arr = [
     'pine',
     'pino',
     'piñata'
