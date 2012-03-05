@@ -1690,7 +1690,7 @@ test('Array', function () {
   equal([0,1,2,3,4].sortBy(), [0,1,2,3,4], 'Array#sortBy | 0 is properly sorted');
   equal(['0','1','2','3','4'].sortBy(), ['0','1','2','3','4'], 'Array#sortBy | string numerals are properly sorted');
   equal(['c','B','a'].sortBy(), ['a','B','c'], 'Array#sortBy | upper-case is properly sorted');
-  equal(['back','Bad','banker'].sortBy(), ['Bad','back','banker'], 'Array#sortBy | bla');
+  equal(['back','Bad','banker'].sortBy(), ['back','Bad','banker'], 'Array#sortBy | case is ignored by default');
   equal(['c','B','a','ä','ò','p'].sortBy(), ['a','ä','B','c','ò','p'], 'Array#sortBy | should allow normalization if exists');
   equal(['apple','apples'].sortBy(), ['apple','apples'], 'Array#sortBy | basic string length');
   equal(['has','hàs','had','hàd'].sortBy(), ['had','hàd','has','hàs'], 'Array#sortBy | special chars basic');
@@ -1706,8 +1706,8 @@ test('Array', function () {
 
   arr = [
     'pine',
-    'piñata',
-    'pino'
+    'pino',
+    'piñata'
   ];
 
   expected = [
@@ -1718,6 +1718,263 @@ test('Array', function () {
 
   equal(arr.sortBy(), arr, 'Array#sortBy | Spanish ñ is respected');
 
+  var french_names = [
+    'abelle',
+    'aceline',
+    'adélaïde',
+    'adelais',
+    'adèle',
+    'adélie',
+    'adeline',
+    'adelle',
+    'adelphe',
+    'adrienne',
+    'agace',
+    'agate',
+    'aglaë',
+    'agnès',
+    'agrippine',
+    'aimée',
+    'alaina',
+    'alais',
+    'alayna',
+    'albertine',
+    'alexandrie',
+    'alexandrine',
+    'aliénor',
+    'aline',
+    'alison',
+    'alphonsine',
+    'alvery',
+    'amaline',
+    'amandine',
+    'amarante',
+    'ambre',
+    'ambrosine',
+    'amélie',
+    'amorette',
+    'anaïs',
+    'anastaise',
+    'anastasie',
+    'andrée',
+    'andromaque',
+    'anette',
+    'angèle',
+    'angeline',
+    'angelique',
+    'ann',
+    'anne'
+  ];
+
+  equal(french_names.randomize().sortBy(), french_names, 'Array#sortBy | sorting french names');
+  equal(french_names.map('toUpperCase').randomize().sortBy(), french_names.map('toUpperCase'), 'Array#sortBy | sorting french names in upper case');
+
+
+  // MSDN http://msdn.microsoft.com/en-us/library/cc194880.aspx
+  arr = [
+    'andere',
+    'ändere',
+    'chaque',
+    'chemin',
+    'cote',
+    'cotÉ',
+    'cÔte',
+    'cÔtÉ',
+    'Czech',
+    'ČuČet',
+    'hiŠa',
+    'irdisch',
+    'lävi',
+    'lie',
+    'lire',
+    'llama',
+    'LÖwen',
+    'lÒza',
+    'LÜbeck',
+    'luck',
+    'luČ',
+    'lye',
+    'Männer',
+    'mÀŠta',
+    'mÎr',
+    'mÖchten',
+    'myndig',
+    'pint',
+    'piÑa',
+    'pylon',
+    'sämtlich',
+    'savoir',
+    'Sietla',
+    'subtle',
+    'symbol',
+    'Ślub',
+    'ŠÀran',
+    'väga',
+    'verkehrt',
+    'vox',
+    'waffle',
+    'wood',
+    'yen',
+    'yuan',
+    'yucca',
+    'zoo',
+    'ZÜrich',
+    'Zviedrija',
+    'zysk',
+    'Žal',
+    'Žena'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Default collation');
+
+  arr = [
+    'cweat',
+    'cwect',
+    'čweat',
+    'čweet',
+    'sweat',
+    'swect',
+    'šweat',
+    'šweet',
+    'zweat',
+    'zwect',
+    'žweat',
+    'žweet'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Czech/Lithuanian order is respected');
+
+
+  arr = [
+    'cat',
+    'drone',
+    'ðroll',
+    'ebert'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Icelandic ð order is respected');
+
+  arr = [
+    'goth',
+    'ğoad',
+    'hover',
+    'sing',
+    'şeparate',
+    'tumble'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Turkish order is respected');
+
+  arr = [
+    'ape',
+    'ące',
+    'eulo',
+    'ęula',
+    'latch',
+    'lever',
+    'łevel',
+    'martyr',
+    'noob',
+    'ńookie',
+    'oppai',
+    'sweat',
+    'swect',
+    'śweat',
+    'śweet',
+    'yeouch',
+    'ýellow',
+    'zipper',
+    'zoophilia',
+    'źebra',
+    'żoo'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Polish order is respected');
+
+  arr = [
+    'cab',
+    'opec',
+    'still',
+    'zounds',
+    'æee',
+    'ølaf',
+    'ålegra'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Danish/Norwegian order is respected');
+
+  arr = [
+    'llama',
+    'luck',
+    'lye'
+  ];
+
+
+
+  // Compressions simply can't be handled without a complex collation system
+  // as there is simply no way fundamentally to know what was intended as a
+  // compression. For example "catch a llama" vs "catch Al Lama"
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Compressions are not handled');
+
+
+  arr = [
+    'àbel',
+    'abet',
+    'äpe',
+    'apu',
+    'âvec',
+    'avel',
+    'áxe',
+    'axiom',
+    'çoupon',
+    'coupos',
+    'écma',
+    'ecmo',
+    'êlam',
+    'elan',
+    'ëpic',
+    'epil',
+    'ëthen',
+    'ether',
+    'évac',
+    'eval',
+    'èxile',
+    'exilo',
+    'ïce',
+    'icy',
+    'îll',
+    'ilp',
+    'ïmpetum',
+    'impetus',
+    'íp',
+    'is',
+    'ìtalian',
+    'italians',
+    'luck',
+    'lye',
+    'òblast',
+    'oblong',
+    'ómam',
+    'omar',
+    'öpal',
+    'opam',
+    'ôva',
+    'ovum',
+    'ùla',
+    'ule',
+    'ûmar',
+    'umas',
+    'úni',
+    'uny',
+    'ùral',
+    'uranus',
+    'üte',
+    'utu'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Standard Western-Latin equivalents are enforced');
+
+  // Swedish collation
   var swedish_words = [
     'att borsta',
     'att bränna',
@@ -1752,10 +2009,8 @@ test('Array', function () {
     'att erkänna',
     'att ersätta',
     'att explodera',
-    'att få',
     'att falla',
     'att falla',
-    'att fånga',
     'att fängsla',
     'att fara',
     'att fästa',
@@ -1766,7 +2021,9 @@ test('Array', function () {
     'att finna',
     'att finnas',
     'att fira',
-    'att fläta'
+    'att fläta',
+    'att få',
+    'att fånga'
   ];
 
   equal(swedish_words.sortBy(), swedish_words, 'Array#sortBy | swedish strings sorted on utf8_general_ci');
@@ -1824,62 +2081,10 @@ test('Array', function () {
 
   Array.AlphanumericSortEquivalents['ö'] = null;
   Array.AlphanumericSortEquivalents['ä'] = null;
-  Array.AlphanumericSortEquivalents['å'] = null;
 
   equal(swedish_words.sortBy(), swedish_collated, 'Array#sortBy | removing equivalents can restore sort order');
 
-
-  var french_names = [
-    'abelle',
-    'aceline',
-    'adélaïde',
-    'adelais',
-    'adèle',
-    'adélie',
-    'adeline',
-    'adelle',
-    'adelphe',
-    'adrienne',
-    'agace',
-    'agate',
-    'aglaë',
-    'agnès',
-    'agrippine',
-    'aimée',
-    'alaina',
-    'alais',
-    'alayna',
-    'albertine',
-    'alexandrie',
-    'alexandrine',
-    'aliénor',
-    'aline',
-    'alison',
-    'alphonsine',
-    'alvery',
-    'amaline',
-    'amandine',
-    'amarante',
-    'ambre',
-    'ambrosine',
-    'amélie',
-    'amorette',
-    'anaïs',
-    'anastaise',
-    'anastasie',
-    'andrée',
-    'andromaque',
-    'anette',
-    'angèle',
-    'angeline',
-    'angelique',
-    'ann',
-    'anne'
-  ];
-
-  equal(french_names.randomize().sortBy(), french_names, 'Array#sortBy | sorting french names');
-  equal(french_names.map('toUpperCase').randomize().sortBy(), french_names.map('toUpperCase'), 'Array#sortBy | sorting french names in upper case');
-
+  // Capitals
 
   arr = [
     'abner',
