@@ -1868,6 +1868,8 @@ test('Array', function () {
   arr = [
     'ape',
     'ące',
+    'central',
+    'ćenter',
     'eulo',
     'ęula',
     'latch',
