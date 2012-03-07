@@ -47,5 +47,10 @@ var loadScripts = function(module) {
 }
 
 var trigger = function(name, data) {
-  window.parent.jQuery(window.parent.document).trigger(name, data);
+  var win = getWindow();
+  win.jQuery(win.document).trigger(name, data);
+}
+
+var getWindow = function() {
+  return window.parent !== window && window.parent.jQuery ? window.parent : window;
 }
