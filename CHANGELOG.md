@@ -13,6 +13,7 @@ v1.2.3
 - Object.merge defaults are now more sensible. shallow/deep is 3rd with shallow default and resolve is 4th
 - Added Number#duration to dates package.
 - Bugfix for leaking globals.
+- Bugfix for String#compact (Issue 115)
 
 ### Internal Changes ###
 
