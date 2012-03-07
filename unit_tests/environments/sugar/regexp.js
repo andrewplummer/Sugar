@@ -11,6 +11,7 @@ test('RegExp', function () {
   equal(RegExp.escape('?'), '\\?', 'RegExp#escape | ?');
   equal(RegExp.escape('\?'), '\\?', 'RegExp#escape | one slash and ?');
   equal(RegExp.escape('\\?'), '\\\\\\?', 'RegExp#escape | two slashes and ?');
+  equal(RegExp.escape('\\?'), '\\\\\\?', 'RegExp#escape | two slashes and ?');
 
   r = /foobar/;
   n = r.setFlags('gim');
