@@ -1,7 +1,6 @@
 
 test('Array', function () {
 
-
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
@@ -2140,6 +2139,11 @@ test('Array', function () {
 
   Array.AlphanumericSortIgnore = /[abcde]/g;
   equal(arr.sortBy(), expected, 'Array#sortBy | allows custom ignore');
+
+  Array.AlphanumericSortOrder = 'cba';
+  Array.AlphanumericSortIgnore = CapturedSortIgnore;
+  arr = ['cotÉ', 'cÔte', 'cÔtÉ', 'andere', 'ändere'];
+  equal(arr.sortBy(), arr, 'Array#sortBy | cba');
 
   Array.AlphanumericSortOrder = CapturedSortOrder;
   Array.AlphanumericSortIgnore = CapturedSortIgnore;
