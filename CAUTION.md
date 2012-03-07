@@ -14,14 +14,14 @@ v1.2.3+
 =======
 
 - Level: Major
-- String#compare, Number#compare, and Date#compare are deprecated
+  - String#compare, Number#compare, and Date#compare are deprecated
 
 - Level: Major
-- Object.merge params are swapped. `resolve` is now the 4th parameter and `deep` is now 3rd.
+  - Object.merge params are swapped. `resolve` is now the 4th parameter and `deep` is now 3rd.
   When using extended objects, this are now 2nd and 3rd parameters. `deep` is now false by default.
 
 - Level: Minor
-- Array#sortBy now exhibits more sensible behavior when sorting on strings.
+  - Array#sortBy now exhibits more sensible behavior when sorting on strings.
 
 
 
