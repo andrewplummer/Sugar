@@ -530,7 +530,9 @@ test('String', function () {
   var compactedWithoutJapaneseSpaces = '日本語　の　スペース　も';
   var compactedWithTrailingJapaneseSpaces = '　日本語　の　スペース　も　';
 
-
+  equal('moo\tmoo'.compact(), 'moo moo', 'String#compact | moo moo tab');
+  equal('moo \tmoo'.compact(), 'moo moo', 'String#compact | moo moo space tab');
+  equal('moo \t moo'.compact(), 'moo moo', 'String#compact | moo moo space tab space');
 
 
   equal('foop'.at(0), 'f', 'String#at | pos 0');
