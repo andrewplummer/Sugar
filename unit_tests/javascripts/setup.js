@@ -4,6 +4,9 @@ nullScope = (function(){ return this; }).call();
 
 var results;
 var currentTest;
+var moduleName;
+var moduleSetupMethod;
+var moduleTeardownMethod;
 
 var syncTestsRunning = true;
 
@@ -164,6 +167,9 @@ var displayResults = function() {
 }
 
 test = function(name, fn) {
+  if(moduleSetupMethod) {
+    moduleSetupMethod();
+  }
   if(!results) {
     results = [];
     testsStarted();
@@ -176,9 +182,12 @@ test = function(name, fn) {
   try {
     fn.call();
   } catch(e) {
-    console.info(e);
+    console.info(e.stack);
   }
   results.push(currentTest);
+  if(moduleTeardownMethod) {
+    moduleTeardownMethod();
+  }
 }
 
 setTimeout = function(fn, delay) {
@@ -206,6 +215,12 @@ var removeCapturedTimer = function(timer) {
     capturedTimers.splice(index, 1);
   }
 };
+
+testModule = function(name, options) {
+  moduleName = name;
+  moduleSetupMethod = options.setup;
+  moduleTeardownMethod = options.teardown;
+}
 
 equal = function(actual, expected, message, exceptions, stack) {
   exceptions = exceptions || {};
