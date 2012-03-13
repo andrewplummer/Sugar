@@ -24,8 +24,6 @@ still adds a number of methods to the `String`, `Number`, and `Array` classes th
 internally, including all the ES5 polyfill methods that are heavily used. This build will not follow
 the standard release schedule, but will be updated when the Sugar Date module changes significantly.
 
-Current build is based off `v1.1.3`.
-
 
 Unit Tests Node
 ===============
