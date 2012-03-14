@@ -1,4 +1,7 @@
 
+
+environment = 'default'; // Override me!
+
 // The scope when none is set.
 nullScope = (function(){ return this; }).call();
 
