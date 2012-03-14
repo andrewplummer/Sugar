@@ -8,43 +8,6 @@ test('Array', function () {
 
 
 
-  /*
-  function getRandomizedArray(size) {
-    var a = [];
-    for (var i=0; i<size; i++) {
-      var r1 = Number.random(0,8);
-      var rand = Number.random(0,size/2)
-      if (r1==7) {
-        a[i] = hex_md5(String(rand));
-      } else if (r1==2) {
-        a[i] = new RegExp(rand,"g");
-      } else if (r1==3) {
-        a[i] = {};
-        a[i][hex_md5(String(rand))] = rand;
-      } else if (r1==4) {
-        a[i] = eval("(function(a){var x='"+rand+"';})");
-      } else if (r1==5) {
-        a[i] = [rand,hex_md5(String(rand))];
-      } else {
-        a[i] = rand;
-      }
-    }
-    return a;
-  }
-
-  var a = getRandomizedArray(16);
-  var b = getRandomizedArray(16);
-
-
-  console.info(a);
-  console.info(b);
-  console.info(a.union(b));
-
-  return;
-
-
-
-  */
 
   /*
   a = [
@@ -2379,6 +2342,18 @@ test('Array', function () {
 
   equal(arr1.union(arr2), unionExpected, 'Array#union | complex array unions');
   equal(arr1.intersect(arr2), intersectExpected, 'Array#union | complex array intersects');
+
+
+  equal([function(){ return 'a' }].intersect([function() { return 'a'; }, function() { return 'b'; }]), [], 'Array#intersect | functions are always unique');
+  equal([xFunc].intersect([xFunc, yFunc]), [xFunc], 'Array#intersect | function references are ===');
+
+  equal([function(){ return 'a' }, function() { return 'b'; }].subtract([function() { return 'a'; }]).length, 2, 'Array#subtract | functions are always unique');
+  equal([xFunc, yFunc].subtract([xFunc]), [yFunc], 'Array#subtract | function references are ===');
+
+
+  equal([['a',1]].intersect([['a',1],['b',2]]), [['a',1]], 'Array#intersect | nested arrays are not flattened');
+  equal([['a',1],['b',2]].subtract([['a',1]]), [['b',2]], 'Array#subtract | nested arrays are not flattened');
+
 
 
 });
