@@ -101,8 +101,9 @@ test('String', function () {
 
 
   equal('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
+  equal(' wasabi \n'.chars(), [' ','w','a','s','a','b','i',' ','\n'], 'String#chars | should not trim whitespace');
 
-  equal('   wasabi   '.trim(), 'wasabi', 'String#chars | should trim both left and right whitespace');
+  equal('   wasabi   '.trim(), 'wasabi', 'String#trim | should trim both left and right whitespace');
   equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim | should trim left whitespace only');
   equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim | should trim right whitespace only');
 
