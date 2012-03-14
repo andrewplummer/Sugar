@@ -1,6 +1,184 @@
 
 test('Array', function () {
 
+
+
+
+
+
+
+
+  /*
+  function getRandomizedArray(size) {
+    var a = [];
+    for (var i=0; i<size; i++) {
+      var r1 = Number.random(0,8);
+      var rand = Number.random(0,size/2)
+      if (r1==7) {
+        a[i] = hex_md5(String(rand));
+      } else if (r1==2) {
+        a[i] = new RegExp(rand,"g");
+      } else if (r1==3) {
+        a[i] = {};
+        a[i][hex_md5(String(rand))] = rand;
+      } else if (r1==4) {
+        a[i] = eval("(function(a){var x='"+rand+"';})");
+      } else if (r1==5) {
+        a[i] = [rand,hex_md5(String(rand))];
+      } else {
+        a[i] = rand;
+      }
+    }
+    return a;
+  }
+
+  var a = getRandomizedArray(16);
+  var b = getRandomizedArray(16);
+
+
+  console.info(a);
+  console.info(b);
+  console.info(a.union(b));
+
+  return;
+
+
+
+  */
+
+  /*
+  a = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    6,
+    3,
+    true,
+    3,
+    "a87ff679a2f3e71d9181a67b7542122c",
+    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
+    /6/g,
+    /0/g,
+    function(){},
+    "8f14e45fceea167a5a36dedd4bea2543",
+    4,
+    8,
+    "1679091c5a880faf6fb5e6087eb1b2dc",
+    true,
+    [5, "e4da3b7fbbce2345d7772b0674a318d5"]
+  ];
+
+
+
+  b = [
+    false,
+    3,
+    7,
+    8,
+    function() {},
+    /1/g,
+    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
+    2,
+    7,
+    function() {},
+    [8, "c9f0f895fb98ab9159f51fd0297e236d"],
+    function() {},
+    5,
+    1,
+    "cfcd208495d565ef66e7dff9f98764da",
+    /6/g
+  ]
+
+  // "fast" answer for union
+  fast = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    6,
+    3,
+    true,
+    "a87ff679a2f3e71d9181a67b7542122c",
+    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
+    /6/g,
+    /0/g,
+    function() {},
+    "8f14e45fceea167a5a36dedd4bea2543",
+    4,
+    8,
+    "1679091c5a880faf6fb5e6087eb1b2dc",
+    [5, "e4da3b7fbbce2345d7772b0674a318d5"],
+    false,
+    7,
+    function() {},
+    /1/g,
+    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
+    2,
+    [8, "c9f0f895fb98ab9159f51fd0297e236d"],
+    5,
+    1,
+    "cfcd208495d565ef66e7dff9f98764da",
+  ]
+
+  // sugar answer for union
+  sugar = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    6,
+    3,
+    true,
+    "a87ff679a2f3e71d9181a67b7542122c",
+    { e4da3b7fbbce2345d7772b0674a318d5: 5},
+    /0/g,
+    function() {},
+    "8f14e45fceea167a5a36dedd4bea2543",
+    4,
+    8,
+    "1679091c5a880faf6fb5e6087eb1b2dc",
+    [5, "e4da3b7fbbce2345d7772b0674a318d5"],
+    false,
+    7,
+    function() {},
+    2,
+    function() {},
+    "c9f0f895fb98ab9159f51fd0297e236d",
+    function() {},
+    5,
+    1,
+    "cfcd208495d565ef66e7dff9f98764da",
+  ]
+  
+  expected = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    6,
+    3,
+    true,
+    3,
+    "a87ff679a2f3e71d9181a67b7542122c",
+    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
+    /6/g,
+    /0/g,
+    function(){},
+    "8f14e45fceea167a5a36dedd4bea2543",
+    4,
+    8,
+    "1679091c5a880faf6fb5e6087eb1b2dc",
+    true,
+    [5, "e4da3b7fbbce2345d7772b0674a318d5"]
+    false,
+    3,
+    7,
+    8,
+    function() {},
+    /1/g,
+    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
+    2,
+    7,
+    function() {},
+    [8, "c9f0f895fb98ab9159f51fd0297e236d"],
+    function() {},
+    5,
+    1,
+    "cfcd208495d565ef66e7dff9f98764da",
+    /6/g
+  ]
+
+  */
+
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
@@ -602,6 +780,7 @@ test('Array', function () {
     equal(a, [1], 'Array#unique | third param should also be the array');
   });
 
+  equal([function(){ return 'a' }, function() { return 'a'; }, function() { return 'b'; }].unique().length, 3, 'Array#unique | Functions are always unique');
 
   equal([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union | 1,2,3 + 3,4,5');
   equal([1,1,1].union([1,2,3]), [1,2,3], 'Array#union | 1,1,1 + 1,2,3');
@@ -2149,6 +2328,57 @@ test('Array', function () {
   Array.AlphanumericSortIgnore = CapturedSortIgnore;
   Array.AlphanumericSortIgnoreCase = CapturedSortIgnoreCase;
   Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
+
+
+
+  // Testing Array#union and Array#intersect on complex elements as found http://ermouth.com/fastArray/
+  // Thanks to @ermouth!
+
+
+  var yFunc = function () { return 'y'; }
+  var xFunc = function () { return 'x'; }
+
+  var arr1 = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    /rowdy/,
+    /randy/,
+    yFunc,
+    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
+    xFunc,
+    2
+  ];
+
+  var arr2 = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    /rowdy/,
+    /pandy/,
+    xFunc,
+    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
+    [8, "c9f0f895fb98ab9159f51fd0297e236d"]
+  ];
+
+  var unionExpected = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    /rowdy/,
+    /randy/,
+    yFunc,
+    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
+    xFunc,
+    2,
+    /pandy/,
+    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
+    [8, "c9f0f895fb98ab9159f51fd0297e236d"]
+  ];
+
+  var intersectExpected = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    /rowdy/,
+    xFunc
+  ];
+
+
+  equal(arr1.union(arr2), unionExpected, 'Array#union | complex array unions');
+  equal(arr1.intersect(arr2), intersectExpected, 'Array#union | complex array intersects');
 
 
 });
