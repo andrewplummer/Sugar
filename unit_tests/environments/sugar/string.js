@@ -885,7 +885,7 @@ test('String', function () {
   /* Stipping self-closing tags */
   equal('<input type="text" class="blech" />'.stripTags(), '', 'String#stripTags | full input stripped');
 
-  equal('<b>bold<b> and <i>italic</i> and <a>link</a>'.stripTags(['b','i']), 'bold and italic and <a>link</a>', 'String#stripTags | handles multi args', { prototype: 'bold and italic and link' });
+  equal('<b>bold<b> and <i>italic</i> and <a>link</a>'.stripTags('b','i'), 'bold and italic and <a>link</a>', 'String#stripTags | handles multi args', { prototype: 'bold and italic and link' });
 
   html =
   '<form action="poo.php" method="post">' +
@@ -979,7 +979,7 @@ test('String', function () {
   /* No errors on RegExp */
   raisesError(function(){ '<xsl(template>foobar</xsl(template>'.removeTags('xsl(template') }, 'String#removeTags | form | you now have the power to cause your own regex pain');
 
-  equal('<b>bold</b> and <i>italic</i> and <a>link</a>'.removeTags(['b','i']), ' and  and <a>link</a>', 'String#removeTags | handles multi args');
+  equal('<b>bold</b> and <i>italic</i> and <a>link</a>'.removeTags('b','i'), ' and  and <a>link</a>', 'String#removeTags | handles multi args');
 
 
 
