@@ -2160,4 +2160,15 @@ test('Date', function () {
   equal((38000).minutes().duration('ko'), '3주', 'Number#duration | Korean | 38000 minutes');
   equal((38000).hours().duration('ko'), '4년', 'Number#duration | Korean | 38000 hours');
 
+
+
+  // Custom date formats
+  // https://github.com/andrewplummer/Sugar/issues/119#issuecomment-4520966
+
+  Date.addFormat('(\\d{2})(\\d{2})',['hour','minute']);
+  dateEqual(Date.create('0615'), new Date().set({ hours: 6, minutes: 15 }, true), 'Date.addFormat | Overrides defined formats');
+
+  // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
+  Date.addFormat('(\\d{4})', ['year']);
+
 });
