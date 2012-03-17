@@ -1,7 +1,7 @@
 (function() {
 
 
-  var regexp = RegExp, object = Object, date = Date, number = Number, Undefined;
+  var regexp = RegExp, object = Object, date = Date, number = Number, Undefined, English;
 
   function isDefined(o) {
     return o !== Undefined;
@@ -252,9 +252,9 @@
   function checkLocaleFormatsAdded(loc) {
     var code = loc['code'];
     if(loc.formatsAdded) return;
-    date.addFormat('(' + loc['months'].compact().join('|') + ')', ['month'], code);
-    date.addFormat('(' + loc['weekdays'].compact().join('|') + ')', ['weekday'], code);
-    date.addFormat('(' + loc['modifiers'].filter(function(m){ return m.name === 'day'; }).map('src').join('|') + ')', ['day'], code);
+    addDateInputFormat('(' + loc['months'].compact().join('|') + ')', ['month'], code);
+    addDateInputFormat('(' + loc['weekdays'].compact().join('|') + ')', ['weekday'], code);
+    addDateInputFormat('(' + loc['modifiers'].filter(function(m){ return m.name === 'day'; }).map('src').join('|') + ')', ['day'], code);
     loc['formats'].each(function(src) {
       loc.addFormat(src, code, false);
     });
@@ -488,7 +488,7 @@
           return '(' + value + ')' + (opt ? '?' : '');
         }
       });
-      date.addFormat(src, to, code);
+      addDateInputFormat(src, to, code);
     }
 
   });
@@ -1223,9 +1223,9 @@
     DateUnitsReversed = DateUnits.clone().reverse();
     var monthReg = '\\d{1,2}|' + English['months'].join('|');
     StaticInputFormats.each(function(f) {
-      date.addFormat(f.src.replace(/\{month\}/, monthReg) + (f.time === false ? '' : OptionalTime), f.to.concat(TimeFormat), 'en', f.variant);
+      addDateInputFormat(f.src.replace(/\{month\}/, monthReg) + (f.time === false ? '' : OptionalTime), f.to.concat(TimeFormat), 'en', f.variant);
     });
-    date.addFormat(RequiredTime, TimeFormat);
+    addDateInputFormat(RequiredTime, TimeFormat);
   }
 
    /***
@@ -1740,15 +1740,20 @@
      *
      ***/
     'addFormat': function(format, match, locale, variant) {
-      DateInputFormats.push({
-        variant: variant,
-        locale: locale,
-        reg: regexp('^' + format + '$', 'i'),
-        to: match
-      });
+      addDateInputFormat(format, match, locale, variant, 'unshift');
     }
 
   }, false, false);
+
+  function addDateInputFormat(format, match, locale, variant, method) {
+    method = method || 'push';
+    DateInputFormats[method]({
+      variant: variant,
+      locale: locale,
+      reg: regexp('^' + format + '$', 'i'),
+      to: match
+    });
+  }
 
   date.extend({
 
@@ -2039,7 +2044,7 @@
      *   Date.create().format('{Weekday} {d} {Month}, {yyyy}')    -> ex. Monday July 4, 2003
      *   Date.create().format('{hh}:{mm}')                        -> ex. 15:57
      *   Date.create().format('{12hr}:{mm}{tt}')                  -> ex. 3:57pm
-     *   Date.create().format(Date.ISO8601)                       -> ex. 2011-07-05 12:24:55.528Z
+     *   Date.create().format(Date.ISO8601_DATETIME)              -> ex. 2011-07-05 12:24:55.528Z
      *   Date.create('last week').format('', 'ja')                -> ex. 先週
      *   Date.create('yesterday').format(function(value,unit,ms,loc) {
      *     // value = 1, unit = 3, ms = -86400000, loc = [current locale object]
@@ -2129,20 +2134,6 @@
      ***/
     'clone': function() {
       return new date(this.getTime());
-    },
-
-    /***
-     * @method compare(<obj>)
-     * @returns Number
-     * @short Performs a numeric comparison against the date.
-     * @extra This method is also defined on %String% and %Number%, and is useful when performing complex sort operations where the type isn't known.
-     * @example
-     *
-     *   Date.create('1 day ago').compare('today') ->  -864000;
-     *
-     ***/
-    'compare': function(obj) {
-      return this - createDate(arguments);
     }
 
   });
@@ -2177,13 +2168,19 @@
   });
 
 
+
+  /***
+   * Number module
+   *
+   ***/
+
   number.extend({
 
      /***
      * @method duration([locale] = currentLocale)
      * @returns String
      * @short Takes the number as milliseconds and returns a unit-adjusted localized string.
-     * @extra This method is the same as %Date#relative% without the localized equivalent of "from now" or "ago". [locale] can be passed as the first (and only) parameter.
+     * @extra This method is the same as %Date#relative% without the localized equivalent of "from now" or "ago". [locale] can be passed as the first (and only) parameter. Note that this method is only available when the dates package is included.
      * @example
      *
      *   (500).duration() -> '500 milliseconds'
