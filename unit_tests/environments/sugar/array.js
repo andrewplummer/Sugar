@@ -2,146 +2,6 @@
 test('Array', function () {
 
 
-
-
-
-
-
-
-
-  /*
-  a = [
-    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
-    6,
-    3,
-    true,
-    3,
-    "a87ff679a2f3e71d9181a67b7542122c",
-    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
-    /6/g,
-    /0/g,
-    function(){},
-    "8f14e45fceea167a5a36dedd4bea2543",
-    4,
-    8,
-    "1679091c5a880faf6fb5e6087eb1b2dc",
-    true,
-    [5, "e4da3b7fbbce2345d7772b0674a318d5"]
-  ];
-
-
-
-  b = [
-    false,
-    3,
-    7,
-    8,
-    function() {},
-    /1/g,
-    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
-    2,
-    7,
-    function() {},
-    [8, "c9f0f895fb98ab9159f51fd0297e236d"],
-    function() {},
-    5,
-    1,
-    "cfcd208495d565ef66e7dff9f98764da",
-    /6/g
-  ]
-
-  // "fast" answer for union
-  fast = [
-    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
-    6,
-    3,
-    true,
-    "a87ff679a2f3e71d9181a67b7542122c",
-    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
-    /6/g,
-    /0/g,
-    function() {},
-    "8f14e45fceea167a5a36dedd4bea2543",
-    4,
-    8,
-    "1679091c5a880faf6fb5e6087eb1b2dc",
-    [5, "e4da3b7fbbce2345d7772b0674a318d5"],
-    false,
-    7,
-    function() {},
-    /1/g,
-    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
-    2,
-    [8, "c9f0f895fb98ab9159f51fd0297e236d"],
-    5,
-    1,
-    "cfcd208495d565ef66e7dff9f98764da",
-  ]
-
-  // sugar answer for union
-  sugar = [
-    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
-    6,
-    3,
-    true,
-    "a87ff679a2f3e71d9181a67b7542122c",
-    { e4da3b7fbbce2345d7772b0674a318d5: 5},
-    /0/g,
-    function() {},
-    "8f14e45fceea167a5a36dedd4bea2543",
-    4,
-    8,
-    "1679091c5a880faf6fb5e6087eb1b2dc",
-    [5, "e4da3b7fbbce2345d7772b0674a318d5"],
-    false,
-    7,
-    function() {},
-    2,
-    function() {},
-    "c9f0f895fb98ab9159f51fd0297e236d",
-    function() {},
-    5,
-    1,
-    "cfcd208495d565ef66e7dff9f98764da",
-  ]
-  
-  expected = [
-    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
-    6,
-    3,
-    true,
-    3,
-    "a87ff679a2f3e71d9181a67b7542122c",
-    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
-    /6/g,
-    /0/g,
-    function(){},
-    "8f14e45fceea167a5a36dedd4bea2543",
-    4,
-    8,
-    "1679091c5a880faf6fb5e6087eb1b2dc",
-    true,
-    [5, "e4da3b7fbbce2345d7772b0674a318d5"]
-    false,
-    3,
-    7,
-    8,
-    function() {},
-    /1/g,
-    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
-    2,
-    7,
-    function() {},
-    [8, "c9f0f895fb98ab9159f51fd0297e236d"],
-    function() {},
-    5,
-    1,
-    "cfcd208495d565ef66e7dff9f98764da",
-    /6/g
-  ]
-
-  */
-
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
@@ -2355,6 +2215,164 @@ test('Array', function () {
   equal([['a',1],['b',2]].subtract([['a',1]]), [['b',2]], 'Array#subtract | nested arrays are not flattened');
 
 
+
+  // Comprehensive unit tests for new uniquing method.
+
+
+  var aFunc = function(){
+    return 'a';
+  }
+  var bFunc = function(){
+    return 'b';
+  }
+  var cFunc = function(){
+    return 'c';
+  }
+  var dFunc = function(){
+    return 'd';
+  }
+
+
+  arrayEquivalent([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union | Basic');
+  arrayEquivalent([1,2,3].union(['1','2','3']), [1,2,3,'1','2','3'], 'Array#union | Numbers vs. Strings');
+  arrayEquivalent([[1,2,3]].union([['1','2','3']]), [[1,2,3],['1','2','3']], 'Array#union | Numbers vs. Strings nested');
+
+  arrayEquivalent([1,2,3].union([1,2,3]), [1,2,3], 'Array#union | Number array');
+  arrayEquivalent([[1,2,3]].union([[1,2,3]]), [[1,2,3]], 'Array#union | Nested number array');
+  arrayEquivalent([[1,2,3]].union([[3,2,1]]), [[1,2,3],[3,2,1]], 'Array#union | Nested and reversed');
+
+  arrayEquivalent([aFunc].union([bFunc]), [aFunc, bFunc], 'Array#union | Function references');
+  arrayEquivalent([aFunc].union([bFunc, cFunc]), [aFunc, bFunc, cFunc], 'Array#union | Function references');
+  arrayEquivalent([aFunc, bFunc].union([bFunc, cFunc]), [aFunc, bFunc, cFunc], 'Array#union | Function references');
+  arrayEquivalent([aFunc, bFunc, cFunc].union([aFunc, bFunc, cFunc]), [aFunc, bFunc, cFunc], 'Array#union | Function references');
+  arrayEquivalent([cFunc, cFunc].union([cFunc, cFunc]), [cFunc], 'Array#union | Function references');
+  arrayEquivalent([].union([aFunc]), [aFunc], 'Array#union | Function references');
+
+  equal([function() { return 'a'; }].union([function() { return 'a'; }]).length, 2, 'Array#union | Functions are never equivalent');
+
+
+  arrayEquivalent([/bar/].union([/bas/]), [/bar/,/bas/], 'Array#union | Regexes');
+  arrayEquivalent([[/bar/]].union([[/bas/,/bap/]]), [[/bar/],[/bas/,/bap/]], 'Array#union | Nested Regexes');
+  arrayEquivalent([{ reg: /bar/ }].union([{ reg: /bar/ }, { reg: /map/ }]), [{ reg: /bar/ }, { reg: /map/ }], 'Array#union | Object Regexes');
+
+  arrayEquivalent([true].union([false]), [true,false], 'Array#union | Booleans');
+  arrayEquivalent([true].union([true]), [true], 'Array#union | Same Booleans');
+  arrayEquivalent([[true]].union([[true, false]]), [[true],[true, false]], 'Array#union | Nested Booleans');
+  arrayEquivalent([{ b: false }].union([{ b: false }, { b: true }]), [{ b: false }, { b: true }], 'Array#union | Object Booleans');
+
+
+  arrayEquivalent([{},{}].union([{},{}]), [{}], 'Array#union | empty object array');
+  arrayEquivalent([[{}]].union([[{},{}]]), [[{}],[{},{}]], 'Array#union | nested empty object array');
+  arrayEquivalent([[{},{}]].union([[{},{}]]), [[{},{}]], 'Array#union | nested double object array');
+
+  arrayEquivalent([{0:1}].union([[1]]), [{0:1},[1]], 'Array#union | object posing as array');
+  arrayEquivalent([{}].union([[]]), [{},[]], 'Array#union | empty object vs. empty array');
+
+  arrayEquivalent([[[],1]].union([[[1]]]), [[[],1], [[1]]], 'Array#union | empty array, 1 vs. empty array WITH one');
+
+  var aObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    arr: [{foo:'bar'},{moo:'car'}],
+    date: new Date(2001, 5, 15)
+  }
+
+  var bObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    arr: [{foo:'bar'},{moo:'car'}],
+    date: new Date(2001, 5, 15)
+  }
+
+  var cObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofo/,
+    arr: [{foo:'bar'},{moo:'car'}],
+    date: new Date(2001, 5, 15)
+  }
+
+  var dObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    arr: [{foo:'bar'},{moo:'car'}],
+    date: new Date(2001, 8, 15)
+  }
+
+  var eObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    arr: [{foo:'bar'},{moo:'par'}],
+    date: new Date(2001, 8, 15)
+  }
+
+
+  arrayEquivalent([aObj].union([aObj]), [aObj], 'Array#union | Nested objects a + a');
+  arrayEquivalent([aObj].union([bObj]), [aObj], 'Array#union | Nested objects a + b');
+  arrayEquivalent([aObj,bObj,cObj].union([]), [aObj, cObj], 'Array#union | Nested objects a,b,c + []');
+  arrayEquivalent([].union([aObj,bObj,cObj]), [aObj, cObj], 'Array#union | Nested objects [] + a,b,c');
+  arrayEquivalent([aObj,bObj].union([cObj]), [aObj, cObj], 'Array#union | Nested objects a,b + c');
+  arrayEquivalent([cObj, cObj].union([cObj, cObj]), [cObj], 'Array#union | Nested objects c,c + c,c');
+  arrayEquivalent([aObj, bObj, cObj, dObj].union([]), [aObj, cObj, dObj], 'Array#union | Nested objects a,b,c,d + []');
+  arrayEquivalent([].union([aObj, bObj, cObj, dObj]), [aObj, cObj, dObj], 'Array#union | Nested objects a,b,c,d + a,c,d');
+  arrayEquivalent([aObj, bObj].union([cObj, dObj]), [aObj, cObj, dObj], 'Array#union | Nested objects a,b + c,d');
+
+  arrayEquivalent([aObj, bObj, cObj, dObj, eObj].union([aObj, bObj, cObj, dObj, eObj]), [aObj, cObj, dObj, eObj], 'Array#union | Nested objects a,b,c,d,e + a,b,c,d,e');
+
+  var aFuncObj = {
+    text: 'foo',
+    func: function() { return 'a'; },
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    date: new Date(2001, 5, 15)
+  }
+
+  var bFuncObj = {
+    text: 'foo',
+    func: function() { return 'a'; },
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    date: new Date(2001, 5, 15)
+  }
+
+  var cFuncObj = {
+    text: 'foo',
+    func: function() { return 'c'; },
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    date: new Date(2001, 5, 15)
+  }
+
+
+  arrayEquivalent([aFuncObj].union([aFuncObj]), [aFuncObj], 'Array#union | Nested objects with functions');
+  arrayEquivalent([aFuncObj].union([bFuncObj]), [aFuncObj], 'Array#union | Nested objects with functions');
+  arrayEquivalent([aFuncObj,bFuncObj,cFuncObj].union([]), [aFuncObj, cFuncObj], 'Array#union | Nested objects with functions');
+  arrayEquivalent([aFuncObj,bFuncObj].union([cFuncObj]), [aFuncObj, cFuncObj], 'Array#union | Nested objects with functions');
+  arrayEquivalent([cFuncObj, cFuncObj].union([cFuncObj, cFuncObj]), [cFuncObj], 'Array#union | Nested objects with functions meh');
+
+
+  arrayEquivalent([NaN,NaN].union([NaN,NaN]), [NaN], 'Array#union | NaN');
+  arrayEquivalent([null,null].union([null,null]), [null], 'Array#union | Null');
+  arrayEquivalent([undefined,undefined].union([undefined,undefined]), [undefined], 'Array#union | undefined');
+
+
+  var aObj = {
+    one:    1,
+    two:    2,
+    three:  3
+  }
+
+  var bObj = {
+    three:  3,
+    two:    2,
+    one:    1
+  }
+
+  equal([aObj].union([bObj]).length, 1, 'Array#union | Properties may not be in the same order.');
 
 });
 
