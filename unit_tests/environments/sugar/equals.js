@@ -50,7 +50,7 @@ test('Equality', function() {
 
   // Comparisons involving `NaN`.
   // CHANGED: Object.equal is not egal
-  equal(Object.equal(NaN, NaN), false, "`NaN` is equal to `NaN`");
+  equal(Object.equal(NaN, NaN), true, "`NaN` is equal to `NaN`");
   equal(Object.equal(61, NaN), false, "A number primitive is not equal to `NaN`");
   equal(Object.equal(new Number(79), NaN), false, "A number object is not equal to `NaN`");
   equal(Object.equal(Infinity, NaN), false, "`Infinity` is not equal to `NaN`");
@@ -83,7 +83,7 @@ test('Equality', function() {
       return 12606876e5;
     }
   }), false, "Date objects and objects with a `getTime` method are not equal");
-  equal(Object.equal(new Date("Curly"), new Date("Curly")), false, "Invalid dates are not equal");
+  equal(Object.equal(new Date("Curly"), new Date("Curly")), true, "Invalid dates are equal");
 
   // Functions.
   equal(Object.equal(First, Second), false, "Different functions with identical bodies and source code representations are not equal");
@@ -119,7 +119,7 @@ test('Equality', function() {
   b.join = b.pop = b.reverse = b.shift = b.slice = b.splice = b.concat = b.sort = b.unshift = null;
 
   // Array elements and properties.
-  equal(Object.equal(a, b), false, "Arrays containing equivalent elements and different non-numeric properties are not equal");
+  equal(Object.equal(a, b), true, "Arrays containing equivalent elements and different non-numeric properties are equal");
   a.push("White Rocks");
   equal(Object.equal(a, b), false, "Arrays of different lengths are not equal");
   a.push("East Boulder");
@@ -134,8 +134,8 @@ test('Equality', function() {
   // elements in arrays as elisions. Thus, sparse arrays and dense arrays containing `undefined`
   // values are equivalent.
   if (0 in [undefined]) {
-    equal(!Object.equal(Array(3), [undefined, undefined, undefined]), true, "Sparse and dense arrays are not equal");
-    equal(!Object.equal([undefined, undefined, undefined], Array(3)), true, "Commutative equality is implemented for sparse and dense arrays");
+    equal(Object.equal(Array(3), [undefined, undefined, undefined]), true, "Sparse and dense arrays are equal");
+    equal(Object.equal([undefined, undefined, undefined], Array(3)), true, "Commutative equality is implemented for sparse and dense arrays");
   }
 
   // Simple objects.
