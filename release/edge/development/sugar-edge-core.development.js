@@ -8,6 +8,8 @@
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
   var definePropertySupport = object.defineProperty && object.defineProperties;
 
+  // Class extending methods
+
   function extend(klass, instance, override, methods) {
     var extendee = instance ? klass.prototype : klass;
     initializeClass(klass, instance, methods);
@@ -29,7 +31,7 @@
       'restore': function() {
         var all = arguments.length === 0, methods = multiArgs(arguments);
         iterateOverObject(klass['SugarMethods'], function(name, m) {
-          if(all || existsInArray(methods, name)) {
+          if(all || methods.has(name)) {
             defineProperty(m.instance ? klass.prototype : klass, name, m.method);
           }
         });
@@ -62,6 +64,8 @@
     }
   }
 
+  // Object helpers
+
   function hasOwnProperty(obj, key) {
     return object.prototype.hasOwnProperty.call(obj, key);
   }
@@ -72,41 +76,6 @@
       if(!hasOwnProperty(obj, key)) continue;
       fn.call(obj, key, obj[key]);
     }
-  }
-
-  function equal(a, b, stack) {
-    var primitive = object.prototype.toString.call(a).match(/\[object (\w+)\]/)[1];
-    if(a === b) {
-      return a !== 0 || 1 / a === 1 / b;
-    } else if(a == null || b == null) {
-      return false;
-    } else if(primitive == 'RegExp') {
-      return a.ignoreCase == b.ignoreCase &&
-             a.multiline == b.multiline &&
-             a.source == b.source &&
-             a.global == b.global;
-    } else if(primitive == 'Array' || primitive == 'Object') {
-      // This method for checking for cyclic structures was egregiously stolen from
-      // the ingenious method by @kitcambridge from the Underscore script... ref:
-      // https://github.com/documentcloud/underscore/issues/240
-      var length = stack.length;
-      while (length--) {
-        if (stack[length] == a) return true;
-      }
-      stack.push(a);
-      for(var key in a) {
-        if(!hasOwnProperty(a, key)) continue;
-        if(!hasOwnProperty(b, key) || !equal(a[key], b[key], stack)) {
-          return false;
-        }
-      }
-      stack.pop();
-      return object.keys(a).length === object.keys(b).length &&
-             a.constructor === b.constructor &&
-             a.length === b.length;
-     } else {
-       return isClass(b, primitive) && a.valueOf() === b.valueOf();
-     }
   }
 
   function multiMatch(el, match, scope, params) {
@@ -133,6 +102,53 @@
     }
   }
 
+  function equal(a, b) {
+    return stringify(a) === stringify(b);
+  }
+
+  function stringify(thing, stack) {
+    var value, arr, i, key,
+        klass = object.prototype.toString.call(thing),
+        exists = thing != null,
+        isObject = klass === '[object Object]',
+        isArray = klass === '[object Array]';
+
+    if(exists && isObject || isArray) {
+      // This method for checking for cyclic structures was egregiously stolen from
+      // the ingenious method by @kitcambridge from the Underscore script... ref:
+      // https://github.com/documentcloud/underscore/issues/240
+      if(!stack) stack = [];
+      // Allowing a few steps into the structure before triggering this
+      // script to save cycles on standard JSON structures and also to
+      // try as hard as possible to catch basic properties that may have
+      // been modified.
+      if(stack.length > 10) {
+        i = stack.length;
+        while (i--) {
+          if (stack[i] === thing) {
+            return 'CYC';
+          }
+        }
+      }
+      stack.push(thing);
+      value = string(thing.constructor);
+      arr = isArray ? thing : object.keys(thing).sort();
+      for(i = 0; i < arr.length; i++) {
+        key = isArray ? i : arr[i];
+        value += key + stringify(thing[key], stack);
+      }
+      stack.pop();
+    } else if(1 / thing === -Infinity) {
+      value = '-0';
+    } else {
+      value = string(thing);
+    }
+    return klass + value;
+  }
+
+
+  // Argument helpers
+
   function transformArgument(el, map, context, mapArgs) {
     if(isUndefined(map)) {
       return el;
@@ -151,10 +167,11 @@
 
   function multiArgs(args, fn, flatten, index) {
     args = getArgs(args);
-    if(flatten !== false) args = arrayFlatten(args);
+    if(flatten === true) args = arrayFlatten(args, 1);
     arrayEach(args, fn || function(){}, index);
     return args;
   }
+
 
   // Used for both arrays and strings
 
@@ -226,7 +243,7 @@
    * @method is[Type](<obj>)
    * @returns Boolean
    * @short Returns true if <obj> is an object of that type.
-   * @extra %isObject% will return false on anything that is not an object literal, including instances of inherited classes. Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number". Type methods are available as instance methods on extended objects and when using Object.extend().
+   * @extra %isObject% will return false on anything that is not an object literal, including instances of inherited classes. Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number". Type methods are available as instance methods on extended objects.
    * @example
    *
    *   Object.isArray([1,2,3])            -> true
@@ -297,7 +314,7 @@
        * @method watch(<obj>, <prop>, <fn>)
        * @returns Nothing
        * @short Watches a property of <obj> and runs <fn> when it changes.
-       * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty%. This notably includes IE 8 and below, and Opera. This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on extended objects and when using Object.extend().
+       * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty%. This notably includes IE 8 and below, and Opera. This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on extended objects.
        * @example
        *
        *   Object.watch({ foo: 'bar' }, 'foo', function(prop, oldVal, newVal) {
@@ -367,7 +384,7 @@
      * @method each(<obj>, [fn])
      * @returns Object
      * @short Iterates over each property in <obj> calling [fn] on each iteration.
-     * @extra %each% is available as an instance method on extended objects and when using Object.extend().
+     * @extra %each% is available as an instance method on extended objects.
      * @example
      *
      *   Object.each({ broken:'wear' }, function(key, value) {
@@ -388,21 +405,21 @@
     },
 
     /***
-     * @method merge(<target>, <source>, [resolve] = true)
+     * @method merge(<target>, <source>, [deep] = false, [resolve] = true)
      * @returns Merged object
      * @short Merges all the properties of <source> into <target>.
-     * @extra Properties of <source> will win in the case of conflicts, unless [resolve] is %false%. [resolve] can also be a function that resolves the conflict. In this case it will be passed 3 arguments, %key%, %targetVal%, and %sourceVal%, with the context set to <source>. This will allow you to solve conflict any way you want, ie. adding two numbers together, etc. %merge% is available as an instance method on extended objects and when using Object.extend().
+     * @extra Merges are shallow unless [deep] is %true%. Properties of <source> will win in the case of conflicts, unless [resolve] is %false%. [resolve] can also be a function that resolves the conflict. In this case it will be passed 3 arguments, %key%, %targetVal%, and %sourceVal%, with the context set to <source>. This will allow you to solve conflict any way you want, ie. adding two numbers together, etc. %merge% is available as an instance method on extended objects.
      * @example
      *
      *   Object.merge({a:1},{b:2}) -> { a:1, b:2 }
-     *   Object.merge({a:1},{a:2}, false) -> { a:1 }
-     +   Object.merge({a:1},{a:2}, function(key, a, b) {
+     *   Object.merge({a:1},{a:2}, false, false) -> { a:1 }
+     +   Object.merge({a:1},{a:2}, false, function(key, a, b) {
      *     return a + b;
      *   }); -> { a:3 }
      *   Object.extended({a:1}).merge({b:2}) -> { a:1, b:2 }
      *
      ***/
-    'merge': function(target, source, resolve, deep) {
+    'merge': function(target, source, deep, resolve) {
       var key, val;
       if(typeof source == 'object') {
         for(key in source) {
@@ -420,14 +437,14 @@
             }
           }
           // Deep merging.
-          if(deep !== false && val && typeof val === 'object') {
+          if(deep === true && val && typeof val === 'object') {
             if(object.isDate(val)) {
               val = new Date(val.getTime());
             } else if(object.isRegExp(val)) {
               val = new RegExp(val.source, val.getFlags());
             } else {
               if(!target[key]) target[key] = array.isArray(val) ? [] : {};
-              Object.merge(target[key], source[key], resolve, deep);
+              Object.merge(target[key], source[key], deep, resolve);
               continue;
             }
           }
@@ -441,7 +458,7 @@
      * @method isEmpty(<obj>)
      * @returns Boolean
      * @short Returns true if <obj> is empty.
-     * @extra %isEmpty% is available as an instance method on extended objects and when using Object.extend().
+     * @extra %isEmpty% is available as an instance method on extended objects.
      * @example
      *
      *   Object.isEmpty({})          -> true
@@ -458,7 +475,7 @@
      * @method equal(<a>, <b>)
      * @returns Boolean
      * @short Returns true if <a> and <b> are equal.
-     * @extra %empty% is available as an instance method as "equals" (note the "s") on extended objects and when using Object.extend().
+     * @extra %empty% is available as an instance method as "equals" (note the "s") on extended objects.
      * @example
      *
      *   Object.equal({a:2}, {a:2}) -> true
@@ -467,14 +484,14 @@
      *
      ***/
     'equal': function(a, b) {
-      return equal(a, b, []);
+      return equal(a, b);
     },
 
     /***
      * @method values(<obj>, [fn])
      * @returns Array
      * @short Returns an array containing the values in <obj>. Optionally calls [fn] for each value.
-     * @extra Returned values are in no particular order. %values% is available as an instance method on extended objects and when using Object.extend().
+     * @extra Returned values are in no particular order. %values% is available as an instance method on extended objects.
      * @example
      *
      *   Object.values({ broken: 'wear' }) -> ['wear']
@@ -497,7 +514,7 @@
      * @method clone(<obj> = {}, [deep] = false)
      * @returns Cloned object
      * @short Creates a clone (copy) of <obj>.
-     * @extra Default is a shallow clone, unless [deep] is true. %clone% is available as an instance method on extended objects and when using Object.extend().
+     * @extra Default is a shallow clone, unless [deep] is true. %clone% is available as an instance method on extended objects.
      * @example
      *
      *   Object.clone({foo:'bar'})            -> { foo: 'bar' }
@@ -509,7 +526,7 @@
       if(obj == null || typeof obj !== 'object') return obj;
       if(array.isArray(obj)) return obj.clone();
       var target = obj.constructor === Hash ? new Hash() : {};
-      return object.merge(target, obj, false, deep || false);
+      return object.merge(target, obj, deep);
     },
 
     /***
@@ -575,7 +592,7 @@
      * @method keys(<obj>, [fn])
      * @returns Array
      * @short Returns an array containing the keys in <obj>. Optionally calls [fn] for each key.
-     * @extra This method is provided for browsers that don't support it natively, and additionally is enhanced to accept the callback [fn]. Returned keys are in no particular order. %keys% is available as an instance method on extended objects and when using Object.extend().
+     * @extra This method is provided for browsers that don't support it natively, and additionally is enhanced to accept the callback [fn]. Returned keys are in no particular order. %keys% is available as an instance method on extended objects.
      * @example
      *
      *   Object.keys({ broken: 'wear' }) -> ['broken']
@@ -612,7 +629,6 @@
    ***/
 
 
-
   // Basic array internal methods
 
   function arrayEach(arr, fn, startIndex, loop, sparse) {
@@ -644,19 +660,17 @@
     return returnIndex ? index : result;
   }
 
-  function existsInArray(arr, obj) {
-    return arr.any(function(el) {
-      return object.equal(obj, el);
-    });
-  }
-
   function arrayUnique(arr, map) {
-    var prop, test = function(el) { return transformArgument(el, map, arr, [el]) === prop; };
-    return arr.reduce(function(result, next, index) {
-      prop = transformArgument(next, map, arr, [next, index, arr]);
-      if(result.none(map ? test : next)) result.push(next);
-      return result;
-    }, []);
+    var result = [], o = {}, stringified, transformed;
+    arrayEach(arr, function(el, i) {
+      transformed = map ? transformArgument(el, map, arr, [el, i, arr]) : el;
+      stringified = stringify(transformed);
+      if(!(stringified in o) || (typeof transformed === 'function' && transformed !== o[stringified])) {
+        o[stringified] = transformed;
+        result.push(el);
+      }
+    })
+    return result;
   }
 
   function arrayFlatten(arr, level, current) {
@@ -674,12 +688,17 @@
   }
 
   function arrayIntersect(arr1, arr2, subtract) {
-    var result = [];
+    var result = [], o = {};
+    arr2.each(function(el) {
+      o[stringify(el)] = el;
+    });
     arr1.each(function(el) {
+      var stringified = stringify(el), match = ((stringified in o) && (typeof el !== 'function' || el === o[stringified]));
       // Add the result to the array if:
       // 1. We're subtracting intersections or it doesn't already exist in the result and
       // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
-      if((subtract || !existsInArray(result, el)) && subtract != existsInArray(arr2, el)) {
+      if(match != subtract) {
+        delete o[stringified];
         result.push(el);
       }
     });
@@ -790,6 +809,74 @@
   }
 
 
+  // Alphanumeric collation helpers
+
+  function collateStrings(a, b) {
+    var aValue, bValue, aChar, bChar, aEquiv, bEquiv, index = 0, tiebreaker = 0;
+    a = getCollationReadyString(a);
+    b = getCollationReadyString(b);
+    do {
+      aChar  = getCollationCharacter(a, index);
+      bChar  = getCollationCharacter(b, index);
+      aValue = getCollationValue(aChar);
+      bValue = getCollationValue(bChar);
+      if(aValue === -1 || bValue === -1) {
+        aValue = a.charCodeAt(index) || null;
+        bValue = b.charCodeAt(index) || null;
+      }
+      aEquiv = aChar !== a.charAt(index);
+      bEquiv = bChar !== b.charAt(index);
+      if(aEquiv !== bEquiv && tiebreaker === 0) {
+        tiebreaker = aEquiv - bEquiv;
+      }
+      index += 1;
+    } while(aValue != null && bValue != null && aValue === bValue);
+    if(aValue === bValue) return tiebreaker;
+    return aValue < bValue ? -1 : 1;
+  }
+
+  function getCollationReadyString(str) {
+    if(array[AlphanumericSortIgnoreCase]) {
+      str = str.toLowerCase();
+    }
+    return str.remove(array[AlphanumericSortIgnore]);
+  }
+
+  function getCollationCharacter(str, index) {
+    var chr = str.charAt(index), eq = array[AlphanumericSortEquivalents] || {};
+    return eq[chr] || chr;
+  }
+
+  function getCollationValue(chr) {
+    if(!chr) {
+      return null;
+    } else {
+      return array[AlphanumericSortOrder].indexOf(chr);
+    }
+  }
+
+  var AlphanumericSortOrder       = 'AlphanumericSortOrder';
+  var AlphanumericSortIgnore      = 'AlphanumericSortIgnore';
+  var AlphanumericSortIgnoreCase  = 'AlphanumericSortIgnoreCase';
+  var AlphanumericSortEquivalents = 'AlphanumericSortEquivalents';
+
+  function buildArray() {
+    var order = 'AÁÀÂÃĄBCĆČÇDĎÐEÉÈĚÊËĘFGĞHıIÍÌİÎÏJKLŁMNŃŇÑOÓÒÔPQRŘSŚŠŞTŤUÚÙŮÛÜVWXYÝZŹŻŽÞÆŒØÕÅÄÖ';
+    var equiv = 'AÁÀÂÃÄ,CÇ,EÉÈÊË,IÍÌİÎÏ,OÓÒÔÕÖ,Sß,UÚÙÛÜ';
+    array[AlphanumericSortOrder] = order.split('').map(function(str) {
+      return str + str.toLowerCase();
+    }).join('');
+    var equivalents = {};
+    equiv.split(',').each(function(set) {
+      var equivalent = set.charAt(0);
+      set.slice(1).chars(function(chr) {
+        equivalents[chr] = equivalent;
+        equivalents[chr.toLowerCase()] = equivalent.toLowerCase();
+      });
+    });
+    array[AlphanumericSortIgnoreCase] = true;
+    array[AlphanumericSortEquivalents] = equivalents;
+  }
 
   extend(array, false, false, {
 
@@ -1187,7 +1274,7 @@
             i++;
           }
         }
-      }, false);
+      });
       return arr;
     },
 
@@ -1307,8 +1394,8 @@
      ***/
     'union': function() {
       var arr = this;
-      multiArgs(arguments, function(a) {
-        arr = arr.concat(a);
+      multiArgs(arguments, function(arg) {
+        arr = arr.concat(arg);
       });
       return arrayUnique(arr);
     },
@@ -1324,7 +1411,7 @@
      *
      ***/
     'intersect': function() {
-      return arrayIntersect(this, multiArgs(arguments), false);
+      return arrayIntersect(this, multiArgs(arguments, null, true), false);
     },
 
     /***
@@ -1339,7 +1426,7 @@
      *
      ***/
     'subtract': function(a) {
-      return arrayIntersect(this, multiArgs(arguments), true);
+      return arrayIntersect(this, multiArgs(arguments, null, true), true);
     },
 
     /***
@@ -1687,7 +1774,7 @@
      * @method sortBy(<map>, [desc] = false)
      * @returns Array
      * @short Sorts the array by <map>.
-     * @extra <map> may be a function or a string acting as a shortcut. [desc] will sort the array in descending order.
+     * @extra <map> may be a function, a string acting as a shortcut, or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal algorithm that is optimized for major Western languages, but can be customized. For more information see @array_sorting.
      * @example
      *
      *   ['world','a','new'].sortBy('length')       -> ['a','new','world']
@@ -1703,10 +1790,14 @@
         var aProperty, bProperty, comp;
         aProperty = transformArgument(a, map, arr, [a]);
         bProperty = transformArgument(b, map, arr, [b]);
-        if(aProperty && aProperty.compare) {
-          comp = aProperty.compare(bProperty);
+        if(object.isString(aProperty) && object.isString(bProperty)) {
+          comp = collateStrings(aProperty, bProperty);
+        } else if(aProperty < bProperty) {
+          comp = -1;
+        } else if(aProperty > bProperty) {
+          comp = 1;
         } else {
-          comp = aProperty < bProperty;
+          comp = 0;
         }
         return comp * (desc ? -1 : 1);
       });
@@ -1771,7 +1862,6 @@
       }
       return arguments.length > 0 ? result : result[0];
     }
-
 
   });
 
@@ -2254,22 +2344,6 @@
      ***/
     'hex': function(pad) {
       return this.pad(pad || 1, false, 16);
-    },
-
-    /***
-     * @method compare(<num>)
-     * @returns Number
-     * @short Performs a numeric comparison against the number.
-     * @extra This method is also defined on %String% and %Date%, and is useful when performing complex sort operations where the type isn't known.
-     * @example
-     *
-     *   (255).compare(254) ->  1;
-     *   (245).compare(254) -> -9;
-     *   (0).compare(0)     ->  0;
-     *
-     ***/
-    'compare': function(num) {
-      return this - Number(num);
     }
 
   });
@@ -2496,8 +2570,13 @@
     return string.Inflector && string.Inflector.acronyms && string.Inflector.acronyms[word];
   }
 
+  var btoa, atob;
+
   function buildBase64(key) {
-    if(this.btoa) return;
+    if(this.btoa) {
+      btoa = this.btoa;
+      atob = this.atob;
+    }
     var base64reg = /[^A-Za-z0-9\+\/\=]/g;
     btoa = function(str) {
       var output = '';
@@ -2728,7 +2807,7 @@
      *
      ***/
     'capitalize': function(all) {
-      var reg = all ? /\b[a-z]/g : /^[a-z]/;
+      var reg = all ? /^\S|\s\S/g : /^\S/;
       return this.toLowerCase().replace(reg, function(letter) {
         return letter.toUpperCase();
       });
@@ -2792,7 +2871,7 @@
     },
 
     /***
-     * @method each([search] = /./g, [fn])
+     * @method each([search] = single character, [fn])
      * @returns Array
      * @short Runs callback [fn] against each occurence of [search].
      * @extra Returns an array of matches. [search] may be either a string or regex, and defaults to every character in the string.
@@ -2808,9 +2887,9 @@
     'each': function(search, fn) {
       if(object.isFunction(search)) {
         fn = search;
-        search = /./g;
+        search = /[\s\S]/g;
       } else if(!search) {
-        search = /./g
+        search = /[\s\S]/g
       } else if(object.isString(search)) {
         search = regexp(regexp.escape(search), 'gi');
       } else if(object.isRegExp(search)) {
@@ -2879,7 +2958,7 @@
      *
      ***/
     'chars': function(fn) {
-      return this.trim().each(fn);
+      return this.each(fn);
     },
 
     /***
@@ -3160,8 +3239,9 @@
      *
      ***/
     'compact': function() {
-      var str = this.replace(/[\r\n]/g, '');
-      return str.trim().replace(/([\s　])+/g, '$1');
+      return this.trim().replace(/([\r\n\s　])+/g, function(match, whitespace){
+        return whitespace === '　' ? whitespace : ' ';
+      });
     },
 
     /***
@@ -3417,30 +3497,6 @@
       return this.replace(/\{(.+?)\}/g, function(m, key) {
         return hasOwnProperty(assign, key) ? assign[key] : m;
       });
-    },
-
-    /***
-     * @method compare(<str>, [ignore] = false)
-     * @returns Number
-     * @short Performs a lexical (alphabetic) comparison against the number.
-     * @extra This method is also defined on %Number% and %Date%, and is useful when performing complex sort operations where the type isn't known. If [ignore] is %true%, will ignore any non-alphanumeric character when performing comparison. [ignore] can also be a regexp.
-     * @example
-     *
-     *   ('a').compare('b') -> -1;
-     *   ('b').compare('a') ->  1;
-     *   ('a').compare('a') ->  0;
-     *   ('a').compare('@a', true) ->  0;
-     *
-     ***/
-    'compare': function(cmp, ignore) {
-      var str = this, cmp = String(cmp);
-      if(ignore === true) ignore = /\W/g;
-      if(ignore) {
-        cmp = cmp.remove(ignore);
-        str = str.remove(ignore);
-      }
-      if(str == cmp) return 0;
-      else return str < cmp ? -1 : 1;
     }
 
   });
@@ -3899,6 +3955,7 @@
   buildObject();
   buildString();
   buildFunction();
+  buildArray();
   initializeClass(date);
 
   Object.initializeClass = initializeClass;
