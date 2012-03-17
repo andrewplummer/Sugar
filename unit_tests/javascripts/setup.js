@@ -1,6 +1,6 @@
 
 
-environment = 'default'; // Override me!
+if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
 // The scope when none is set.
 nullScope = (function(){ return this; }).call();
