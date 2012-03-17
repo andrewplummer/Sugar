@@ -1,7 +1,7 @@
 
 // These tests also shamefully stolen from the Underscore.js test suite.
 // Careful checks for cyclical references, equality between primitives and
-// wrappers, and more. Sugar's Object.equal is not egal for now, but this may change.
+// wrappers, and more. Sugar's Object.equal should now be considered "egal".
 
 test('Equality', function() {
 
@@ -29,10 +29,8 @@ test('Equality', function() {
   equal(Object.equal(new String("Curly"), new String("Curly")), true, "String objects with identical primitive values are equal");
 
   equal(Object.equal("Curly", "Larry"), false, "String primitives with different values are not equal");
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal(new String("Curly"), "Curly"), true, "String primitives and their corresponding object wrappers are not equal");
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal("Curly", new String("Curly")), true, "Commutative equality is implemented for string objects and primitives");
+  equal(Object.equal(new String("Curly"), "Curly"), false, "String primitives and their corresponding object wrappers are not equal");
+  equal(Object.equal("Curly", new String("Curly")), false, "Commutative equality is implemented for string objects and primitives");
   equal(Object.equal(new String("Curly"), new String("Larry")), false, "String objects with different primitive values are not equal");
   equal(Object.equal(new String("Curly"), {toString: function(){ return "Curly"; }}), false, "String objects and objects with a custom `toString` method are not equal");
 
@@ -40,16 +38,13 @@ test('Equality', function() {
   equal(Object.equal(75, 75), true, "Identical number primitives are equal");
   equal(Object.equal(new Number(75), new Number(75)), true, "Number objects with identical primitive values are equal");
 
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal(75, new Number(75)), true, "Number primitives and their corresponding object wrappers are not equal");
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal(new Number(75), 75), true, "Commutative equality is implemented for number objects and primitives");
+  equal(Object.equal(75, new Number(75)), false, "Number primitives and their corresponding object wrappers are not equal");
+  equal(Object.equal(new Number(75), 75), false, "Commutative equality is implemented for number objects and primitives");
   equal(Object.equal(new Number(75), new Number(63)), false, "Number objects with different primitive values are not equal");
   equal(Object.equal(new Number(63), {valueOf: function(){ return 63; }}), false, "Number objects and objects with a `valueOf` method are not equal");
 
 
   // Comparisons involving `NaN`.
-  // CHANGED: Object.equal is not egal
   equal(Object.equal(NaN, NaN), true, "`NaN` is equal to `NaN`");
   equal(Object.equal(61, NaN), false, "A number primitive is not equal to `NaN`");
   equal(Object.equal(new Number(79), NaN), false, "A number object is not equal to `NaN`");
@@ -58,10 +53,8 @@ test('Equality', function() {
   // Boolean object and primitive comparisons.
   equal(Object.equal(true, true), true, "Identical boolean primitives are equal");
   equal(Object.equal(new Boolean, new Boolean), true, "Boolean objects with identical primitive values are equal");
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal(true, new Boolean(true)), true, "Boolean primitives and their corresponding object wrappers are not equal");
-  // CHANGED: Object.equal is not egal
-  equal(Object.equal(new Boolean(true), true), true, "Commutative equality is implemented for booleans");
+  equal(Object.equal(true, new Boolean(true)), false, "Boolean primitives and their corresponding object wrappers are not equal");
+  equal(Object.equal(new Boolean(true), true), false, "Commutative equality is implemented for booleans");
   equal(Object.equal(new Boolean(true), new Boolean), false, "Boolean objects with different primitive values are not equal");
 
   // Common type coercions.
