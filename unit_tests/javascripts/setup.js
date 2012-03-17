@@ -55,6 +55,20 @@ var arrayEqual = function(one, two) {
   return result && one.length === two.length;
 }
 
+var sortOnStringValue = function(arr) {
+  return arr.sort(function(a, b) {
+    var aType = typeof a;
+    var bType = typeof b;
+    var aVal = String(a);
+    var bVal = String(b);
+    if(aType != bType) {
+      return aType < bType;
+    }
+    if(aVal === bVal) return 0;
+    return a < b ? -1 : 1;
+  });
+}
+
 var arrayIndexOf = function(arr, obj) {
   for(var i = 0; i < arr.length; i++) {
     if(arr[i] === obj) {
@@ -248,6 +262,11 @@ equalWithWarning = function(expected, actual, message) {
 
 equalWithMargin = function(actual, expected, margin, message) {
   equal((actual > expected - margin) && (actual < expected + margin), true, message, null, 1);
+}
+
+// Array content is equal, but order may differ
+arrayEquivalent = function(a, b, message) {
+  equal(sortOnStringValue(a), sortOnStringValue(b), message);
 }
 
 raisesError = function(fn, message, exceptions) {
