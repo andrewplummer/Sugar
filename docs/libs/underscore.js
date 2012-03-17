@@ -186,7 +186,7 @@ var SugarUnderscoreMethods = [
     name: 'size',
     description: 'Returns the number of values in the list.',
     sugar_compatibility: 0,
-    sugar_notes: '_.size does not exist in Sugar. If you need to know the "size" of a hash, you can get the length of Object.keys, although in that case it\'s likely that you should be using an array in any case.',
+    sugar_notes: "_.size does not exist in Sugar. If you need to know the \"size\" of a hash, you can get the length of Object.keys, although in that case it's likely that you should be using an array in any case.",
     original: '_.size(obj)',
     sugar: 'Object.keys(obj).length',
     ref: 'Object/keys'
