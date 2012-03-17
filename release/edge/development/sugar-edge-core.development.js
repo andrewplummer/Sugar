@@ -370,7 +370,8 @@
       if(obj == null) {
         return false;
       } else {
-        return isClass(obj, 'Object') && obj.constructor === object;
+        // === on the constructor is not safe across iframes
+        return isClass(obj, 'Object') && string(obj.constructor) === string(object);
       }
     },
 
