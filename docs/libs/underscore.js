@@ -490,8 +490,8 @@ var SugarUnderscoreMethods = [
   {
     name: 'isEqual',
     description: 'Performs a deep comparison between two objects to determine if they are equal.',
-    sugar_compatibility: 1,
-    sugar_notes: '_.isEqual exists in Sugar as Object.equal and is nearly identical, save a couple minor points concerning primitive object equality (ie. new String("foo") is equal to "foo" in Sugar but not in Underscore, which is considered to be "egal"). Note also that in its instance method form the naming changes to "equals" for better readability.',
+    sugar_compatibility: 2,
+    sugar_notes: '_.isEqual exists in Sugar as Object.equal. Note also that in its instance method form the naming changes to "equals" for better readability.',
     original_code: '_.isEqual(obj1, obj2)',
     sugar_code: 'Object.equal(obj1, obj2)',
     ref: 'Object/equal'
