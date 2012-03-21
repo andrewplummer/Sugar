@@ -9,6 +9,7 @@ var SugarPrototypeMethods = [
   {
   // Global namespace
   type: 'class',
+  namespace: 'Global',
   methods: [
     {
       name: 'Hash',
