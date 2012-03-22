@@ -10,6 +10,14 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.2.4+
+=======
+
+- Level: Minor
+  - Object.equal and its instance method form "equals" is now considered "egal". This means that, for example, new String('w') will NOT be equal to 'w', etc. Previously equal was nearly egal, but not quite, so this should only affect very small edge cases. This now means that Sugar will match Underscore's _.isEqual method 100% of the time with the only exception being custom "isEqual" methods that Underscore checks explicitly.
+
+
+
 v1.2.3+
 =======
 
