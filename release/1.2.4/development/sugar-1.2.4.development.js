@@ -102,10 +102,6 @@
     }
   }
 
-  function equal(a, b) {
-    return stringify(a) === stringify(b);
-  }
-
   function stringify(thing, stack) {
     var value, klass, isObject, isArray, arr, i, key, type = typeof thing;
 
@@ -488,7 +484,7 @@
      *
      ***/
     'equal': function(a, b) {
-      return equal(a, b);
+      return stringify(a) === stringify(b);
     },
 
     /***
