@@ -1,3 +1,22 @@
+v1.2.4
+======
+
+
+### API Changes ###
+
+- Major performance improvement for Array#unique, Array#union, Array#intersect (now On vs. On²)
+- Array#min, Array#max, Array#most, Array#least also benefit from this.
+- Object.equal(s) is now egal (this should only matter for edge cases) like Underscore.
+- Custom formats in Date.addFormat will now override built-in formats.
+- Fix for Array#union incorrectly flattening arrays.
+- Fix for isObject not working across iframes.
+- Fix for String#chars incorrectly trimming.
+- Fix for String#each not matching all characters.
+
+### Internal Changes ###
+
+- multiArgs now flatten is opt-in
+
 v1.2.3
 ======
 
