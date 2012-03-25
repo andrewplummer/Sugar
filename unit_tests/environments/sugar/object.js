@@ -242,7 +242,7 @@ test('Object', function () {
 
 
   equal(Object.merge({ foo: 'bar' }, { broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object.merge | basic');
-  equal(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar' }, 'Object.merge | will not merge a string', { mootools: { foo: 'bar', aha: undefined } });
+  equal(Object.merge({ foo: 'bar' }, 'aha'), { foo: 'bar', 0: 'a', 1: 'h', 2: 'a' }, 'Object.merge | will merge a string', { mootools: { foo: 'bar', aha: undefined } });
   equal(Object.merge({ foo: 'bar' }, null), { foo: 'bar' }, 'Object.merge | merge null');
   equal(Object.merge({}, {}), {}, 'Object.merge | merge multi empty');
 
@@ -250,7 +250,7 @@ test('Object', function () {
   equal(Object.merge({ foo: 'bar' }, 8), { foo: 'bar' }, 'Object.merge | merge number', { mootools: (function() { var s = Object.clone(8); s.foo = 'bar'; return s; })() });
 
 
-  equal(Object.merge({ foo:'bar' }, 'wear', 8, null), { foo:'bar' }, 'Object.merge | merge multi invalid', { mootools: { foo: 'bar', wear: 7 } });
+  equal(Object.merge({ foo:'bar' }, 'wear', 8, null), { foo:'bar',0:'w',1:'e',2:'a',3:'r' }, 'Object.merge | merge multi invalid', { mootools: { foo: 'bar', wear: 7 } });
   equal(Object.merge([1,2,3,4], [4,5,6]), [4,5,6,4], 'Object.merge | arrays should also be mergeable');
   equal(Object.merge({ foo: { one: 'two' }}, { foo: { two: 'three' }}, true, true), { foo: { one: 'two', two: 'three' }}, 'Object.merge | accepts deep merges');
 
@@ -264,6 +264,10 @@ test('Object', function () {
   equal(Object.merge({ a:undefined }, { a:2 }, false, false), { a:2 }, 'Object.merge | false |existing but undefined properties are overwritten');
   equal(Object.merge({ a:null }, { a:2 }, false, false), { a:null }, 'Object.merge | false | null properties are not overwritten');
   equal(Object.merge([{ foo:'bar' }], [{ moo:'car' }], true, true), [{ foo:'bar',moo:'car' }], 'Object.merge | can merge arrays as well');
+
+  var fn1 = function() {};
+  fn1.foo = 'bar';
+  equal(Object.merge(function(){}, fn1).foo, 'bar', 'Object.merge | retains properties');
 
   var fn = function(key, a, b) {
     equal(key, 'a', 'Object.merge | resolve function | first argument is the key');
@@ -334,11 +338,17 @@ test('Object', function () {
 
 
   equal(Object.extended({ foo: 'bar' }).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
-  equal(Object.extended({ foo: 'bar' }).merge('aha'), { foo: 'bar' }, 'Object#merge | will not merge a string', { mootools: { foo: 'bar', aha: undefined } });
+  equal(Object.extended({ foo: 'bar' }).merge('aha'), { foo: 'bar',0:'a',1:'h',2:'a' }, 'Object#merge | will merge a string', { mootools: { foo: 'bar', aha: undefined } });
   equal(Object.extended({ foo: 'bar' }).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
   equal(Object.extended({}).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
 
-  equal(Object.extended({ foo: 'bar' }).merge('wear', 8, null), { foo:'bar' }, 'Object#merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
+  equal(Object.extended({ foo: 'bar' }).merge('wear', 8, null), { foo:'bar',0:'w',1:'e',2:'a',3:'r' }, 'Object#merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
+
+
+  var fn1 = function() {};
+  fn1.foo = 'bar';
+  equal(Object.extended(function(){}).merge(fn1).foo, 'bar', 'Object.merge | retains properties');
+
 
   equal(Object.extended({ a:1 }).merge({ a:2 }), { a:2 }, 'Object.merge | incoming wins');
   equal(Object.extended({ a:1 }).merge({ a:2 }, true), { a:2 }, 'Object.merge | incoming wins | params true');
