@@ -421,35 +421,33 @@
      ***/
     'merge': function(target, source, deep, resolve) {
       var key, val;
-      if(typeof source == 'object') {
-        for(key in source) {
-          if(!hasOwnProperty(source, key) || !target) continue;
-          val = source[key];
-          // Conflict!
-          if(target[key] !== Undefined) {
-            // Do not merge.
-            if(resolve === false) {
-              continue;
-            }
-            // Use the result of the callback as the result.
-            if(object.isFunction(resolve)) {
-              val = resolve.call(source, key, target[key], source[key])
-            }
+      for(key in source) {
+        if(!hasOwnProperty(source, key) || !target) continue;
+        val = source[key];
+        // Conflict!
+        if(target[key] !== Undefined) {
+          // Do not merge.
+          if(resolve === false) {
+            continue;
           }
-          // Deep merging.
-          if(deep === true && val && typeof val === 'object') {
-            if(object.isDate(val)) {
-              val = new Date(val.getTime());
-            } else if(object.isRegExp(val)) {
-              val = new RegExp(val.source, val.getFlags());
-            } else {
-              if(!target[key]) target[key] = array.isArray(val) ? [] : {};
-              Object.merge(target[key], source[key], deep, resolve);
-              continue;
-            }
+          // Use the result of the callback as the result.
+          if(object.isFunction(resolve)) {
+            val = resolve.call(source, key, target[key], source[key])
           }
-          target[key] = val;
         }
+        // Deep merging.
+        if(deep === true && val && typeof val === 'object') {
+          if(object.isDate(val)) {
+            val = new Date(val.getTime());
+          } else if(object.isRegExp(val)) {
+            val = new RegExp(val.source, val.getFlags());
+          } else {
+            if(!target[key]) target[key] = array.isArray(val) ? [] : {};
+            Object.merge(target[key], source[key], deep, resolve);
+            continue;
+          }
+        }
+        target[key] = val;
       }
       return target;
     },
