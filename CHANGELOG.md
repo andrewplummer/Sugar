@@ -7,6 +7,7 @@ v1.2.4
 - Major performance improvement for Array#unique, Array#union, Array#intersect (now On vs. On²)
 - Array#min, Array#max, Array#most, Array#least also benefit from this.
 - Object.equal(s) is now egal (this should only matter for edge cases) like Underscore.
+- Object.merge will now work on non-objects as well.
 - Custom formats in Date.addFormat will now override built-in formats.
 - Fix for Array#union incorrectly flattening arrays.
 - Fix for isObject not working across iframes.
