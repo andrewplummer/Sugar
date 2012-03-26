@@ -10,7 +10,6 @@ test('Date', function () {
   };
 
   var day, d, o;
-  var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
   var staticJanDateNumber = 1000 * 60 * 60 * 24 * 14975; // 2011-01-01 00:00:00 
   var staticSummerTimezoneOffset = new Date(2011, 8, 1).getTimezoneOffset();
@@ -25,9 +24,9 @@ test('Date', function () {
   equal(Date.create('a fridge too far').isValid(), false, 'Date#isValid | Date#create invalid');
 
 
-  equal(new Date().isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC is true if the current timezone has no offset');
+  equal(new Date('1998').isUTC(), staticWinterTimezoneOffset === 0 ? true : false, 'Date#isUTC | UTC is true if the current timezone has no offset');
   // UTC is not if there is a timezone offset, even if the time is reset to the intended utc equivalent, as timezones can never be changed
-  equal(new Date(now.getTime()).addMinutes(timezoneOffset).isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
+  equal(new Date('1998').addMinutes(staticWinterTimezoneOffset).isUTC(), staticWinterTimezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
 
   dateEqual(Date.create(), new Date(), 'Date#create | empty');
 
@@ -37,9 +36,9 @@ test('Date', function () {
 
   d = Date.create('1998');
 
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC().toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | cannot be chained');
+  dateEqual(d.toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
+  dateEqual(d.toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
+  dateEqual(d.toUTC().toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | cannot be chained');
   equal(Date.create().toUTC().isUTC(), true, 'Date#isUTC | can be set by toUTC');
 
 
