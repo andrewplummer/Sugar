@@ -421,6 +421,8 @@
      ***/
     'merge': function(target, source, deep, resolve) {
       var key, val;
+      // Strings cannot be reliably merged thanks to
+      // their properties not being enumerable in < IE8.
       if(target && typeof source != 'string') {
         for(key in source) {
           if(!hasOwnProperty(source, key) || !target) continue;
