@@ -772,7 +772,7 @@
     var min = p.date.getTime();
     var max = min + accuracy;
     if(p.set && p.set.specificity == 'week' && new Date(max + 1).getHours() != 0) {
-      max -= date['DSTOffset'];
+      max += date['DSTOffset'];
     }
     return t >= (min - loBuffer) && t <= (max + hiBuffer);
   }
