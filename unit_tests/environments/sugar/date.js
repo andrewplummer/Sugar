@@ -271,6 +271,7 @@ test('Date', function () {
 
 
   dateEqual(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
+  dateEqual(Date.create('1997-07-16T19:20+00:00'), getUTCDate(1997, 7, 16, 19, 20), 'Date#create | ISO8601 | zero minutes with timezone');
   dateEqual(Date.create('1997-07-16T19:20+01:00'), getUTCDate(1997, 7, 16, 18, 20), 'Date#create | ISO8601 | minutes with timezone');
   dateEqual(Date.create('1997-07-16T19:20:30+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30), 'Date#create | ISO8601 | seconds with timezone');
   dateEqual(Date.create('1997-07-16T19:20:30.45+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 450), 'Date#create | ISO8601 | milliseconds with timezone');
