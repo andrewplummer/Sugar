@@ -1,5 +1,140 @@
+v1.2.4
+======
+
+
+### API Changes ###
+
+- Major performance improvement for Array#unique, Array#union, Array#intersect (now On vs. On²)
+- Array#min, Array#max, Array#most, Array#least also benefit from this.
+- Object.equal(s) is now egal (this should only matter for edge cases) like Underscore.
+- Object.merge will now work on non-objects as well.
+- Custom formats in Date.addFormat will now override built-in formats.
+- Fix for Array#union incorrectly flattening arrays.
+- Fix for isObject not working across iframes.
+- Fix for String#chars incorrectly trimming.
+- Fix for String#each not matching all characters.
+
+### Internal Changes ###
+
+- multiArgs now flatten is opt-in
+
+v1.2.3
+======
+
+
+### API Changes ###
+
+- String#compare, Number#compare, and Date#compare are deprecated.
+- Array#sortBy now makes much more sensible sorting when sorting on strings.
+- Added Array.AlphanumericSortOrder
+- Added Array.AlphanumericSortIgnore
+- Added Array.AlphanumericSortIgnoreCase
+- Added Array.AlphanumericSortEquivalents
+- Object.merge defaults are now more sensible. shallow/deep is 3rd with shallow default and resolve is 4th
+- Added Number#duration to dates package.
+- Bugfix for leaking globals.
+- Bugfix for String#compact (Issue 115)
+
+### Internal Changes ###
+
+- Cleanup for toISOString internal code.
+
+
+
+
+v1.2.2
+======
+
+
+### API Changes ###
+
+- Performance optimization for Object.merge and by extension Object.clone
+- Object.extended now maintains its "Hash" constructor and checks against it when cloning.
+- Object.merge now will also clone dates and regexes as well.
+- Reset dates that will be set with UTC methods (fixes issue #98).
+
+### Internal Changes ###
+
+
+- Removed references to isDefined, isNull, and isObjectPrimitive
+
+
+
+
+v1.2.1
+======
+
+
+### API Changes ###
+
+- Added Object.has to fix issue #97. Stand-in for Object#hasOwnProperty.
+- Fixed issue with String#has not escaping regex tokens.
+- Date.setLocale can now overwrite a default locale object.
+- Date locales can now add their own formats.
+- Fix for Ender, which was broken when modularized in 1.2.
+- Workaround for Ender requiring externs.
+
+### Internal Changes ###
+
+- Date optional tokens now start from {0}
+- References to Object.extend and Object.restore now held and allowed to be restored later.
+
+
+v1.2
+====
+
+
+### API Changes ###
+
+- Allowed external libraries to extend natives through a common interface "extend".
+- Renamed "sugar" to "restore" to restore Sugar methods on a given class.
+- Extending Object.prototype functionality is now on "extend" instead.
+- Split the date library into its own module that hooks into this new interface.
+- Added a new module: String inflections
+- Object.keys now passes values as part of the callback like array methods.
+- Object.merge now merges undefined properties as well.
+- Array#every now uses fuzzy object matching
+- Array#some now uses fuzzy object matching
+- Array#filter now uses fuzzy object matching
+- Array#find now uses fuzzy object matching
+- Array#findAll now uses fuzzy object matching
+- Array#findIndex now uses fuzzy object matching
+- Array#remove now uses fuzzy object matching
+- Array#none now uses fuzzy object matching
+- Array#count now uses fuzzy object matching
+- Array#exclude now uses fuzzy object matching
+- Array#clone is now no longer based off Array#concat, which will fail on sparse arrays in IE7.
+- Added Number#abbr
+- Added Number#metric
+- Added Number#bytes
+- Added Number#isInteger
+- Fixed issue with Number#ordinalize where 113 would be "113rd".
+- String#each will now pass the match into the callback
+- String#toDate will now check for Date.create before hooking into it.
+- String#underscore will now check for acronyms if Inflectors module is present.
+- String#camelize will now check for acronyms if Inflectors module is present.
+- RegExp.escape will now perform a [toString] operation on non-strings (ie. numbers, etc).
+- Function#fill now uses internal Array#splice to fill in arguments.
+- Added support for JSON date format Date(xxxxxxxxxx).
+- Fixed issues with Date#getWeek.
+- Fixed issues with traversing months before January.
+
+
+### Internal Changes ###
+
+- Reworked "multiMatch" to recursively traverse object structures.
+- mergeObject now merges undefined properties as well
+- Created method arrayIntersect to handle both Array#intersect and Array#subtract
+- Array#intersect and Array#subtract will not allow fuzzy object matching
+- Array#indexOf and Array#lastIndexOf polyfills now work off arrayIndexOf
+- Added internal support for other dates that use timestamps.
+- Reworked adding of Date#toISOString and Date#toJSON support.
+
+
+
+
 v1.1.3
-=====
+======
 
 ### API Changes ###
 
@@ -11,7 +146,7 @@ v1.1.3
 
 
 v1.1.2
-=====
+======
 
 ### API Changes ###
 
@@ -39,7 +174,7 @@ v1.1.2
 - Refactored checkMonthTraversal to be more robust in a variety of situations.
 
 v1.1.1
-=====
+======
 
 ### API Changes ###
 
@@ -57,7 +192,7 @@ v1.1.1
 - Fixed Date bug "2 weeks from Monday"
 
 v1.1
-=====
+====
 
 ### API Changes ###
 
@@ -88,7 +223,7 @@ v1.1
 
 
 v1.0
-=====
+====
 
 ### API Changes ###
 
@@ -133,7 +268,7 @@ v1.0
 
 
 v0.9.5
-=====
+======
 
 ### API Changes ###
 
@@ -182,12 +317,12 @@ v0.9.5
 
 
 v0.9.4
-=====
+======
 
 - Emergency fix for Array#compact incorrectly detecting NaN.
 
 v0.9.3
-=====
+======
 
 ### API Changes ###
 
@@ -220,7 +355,7 @@ v0.9.3
 - Array#least/most refactored to use an internal method instead of Array#unique to avoid collisions
 - Array#groupBy will now throw a TypeError if the first argument exists, but is not a string or function
 - Array#sortBy will now throw a TypeError if the first argument exists, but is not a string or function
-- Array#compact/flatten now internally use Array.isArray instead of Object.isArray
+- Array#compact/flatten now internally uses Array.isArray instead of Object.isArray
 - Array#collect alias removed
 - Array#shuffle alias removed
 - String#hankaku/zenkaku/hiragana/katakana refactored to shift char codes instead of using a hash table
@@ -267,14 +402,14 @@ v0.9.3
 
 
 v0.9.2
-=====
+======
 
 - Emergency fix to alleviate issues with indexOf/lastIndexOf breaking on functions/deep objects
 
 
 
 v0.9.1
-=====
+======
 
 - Change Object.create to Object.extended to avoid collision with ES5
 - Use of defineProperty in modern browsers to prevent enumeration in for..in loops.

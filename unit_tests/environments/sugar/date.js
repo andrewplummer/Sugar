@@ -6,12 +6,10 @@ test('Date', function () {
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
   if(Object.isFunction(Date.create())) {
-    Date.sugar('create');
+    Date.restore('create');
   };
 
-
   var day, d, o;
-  var timezoneOffset = new Date().getTimezoneOffset();
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
   var staticJanDateNumber = 1000 * 60 * 60 * 24 * 14975; // 2011-01-01 00:00:00 
   var staticSummerTimezoneOffset = new Date(2011, 8, 1).getTimezoneOffset();
@@ -26,9 +24,9 @@ test('Date', function () {
   equal(Date.create('a fridge too far').isValid(), false, 'Date#isValid | Date#create invalid');
 
 
-  equal(new Date().isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC is true if the current timezone has no offset');
+  equal(new Date('1998').isUTC(), staticWinterTimezoneOffset === 0 ? true : false, 'Date#isUTC | UTC is true if the current timezone has no offset');
   // UTC is not if there is a timezone offset, even if the time is reset to the intended utc equivalent, as timezones can never be changed
-  equal(new Date(now.getTime()).addMinutes(timezoneOffset).isUTC(), timezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
+  equal(new Date('1998').addMinutes(staticWinterTimezoneOffset).isUTC(), staticWinterTimezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
 
   dateEqual(Date.create(), new Date(), 'Date#create | empty');
 
@@ -38,9 +36,9 @@ test('Date', function () {
 
   d = Date.create('1998');
 
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC().toUTC(), Date.create('1998').addMinutes(timezoneOffset).addMilliseconds(), 'Date#toUTC | cannot be chained');
+  dateEqual(d.toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
+  dateEqual(d.toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
+  dateEqual(d.toUTC().toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | cannot be chained');
   equal(Date.create().toUTC().isUTC(), true, 'Date#isUTC | can be set by toUTC');
 
 
@@ -273,6 +271,7 @@ test('Date', function () {
 
 
   dateEqual(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
+  dateEqual(Date.create('1997-07-16T19:20+00:00'), getUTCDate(1997, 7, 16, 19, 20), 'Date#create | ISO8601 | zero minutes with timezone');
   dateEqual(Date.create('1997-07-16T19:20+01:00'), getUTCDate(1997, 7, 16, 18, 20), 'Date#create | ISO8601 | minutes with timezone');
   dateEqual(Date.create('1997-07-16T19:20:30+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30), 'Date#create | ISO8601 | seconds with timezone');
   dateEqual(Date.create('1997-07-16T19:20:30.45+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 450), 'Date#create | ISO8601 | milliseconds with timezone');
@@ -879,7 +878,7 @@ test('Date', function () {
   equal(d.format('{ord}'), '5th', 'Date#format | custom formats | ord');
 
   var offsetHours = d.getUTCOffset().replace(/(\d{2})\d{2}/, '$1');
-  equal(d.format('{z}'), offsetHours.replace(/0/, '').toString(), 'Date#format | custom formats | z');
+  equal(d.format('{z}'), offsetHours.replace(/0+([1-9])/, '$1').toString(), 'Date#format | custom formats | z');
   equal(d.format('{zz}'), offsetHours, 'Date#format | custom formats | zz');
   equal(d.format('{zzz}'), d.getUTCOffset(), 'Date#format | custom formats | zzz');
   equal(d.format('{tz}'), d.getUTCOffset(), 'Date#format | custom formats | tz');
@@ -1242,20 +1241,20 @@ test('Date', function () {
 
   d = new Date(2010,7,5,13,45,2,542);
 
-  equal(d.getWeek(), 31, 'Date#getWeek | basic');
+  equal(d.getWeek(), 31, 'Date#getWeek | basic August 5th, 2010');
   equal(getDST(d).getUTCWeek(), staticSummerTimezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
-  equal(new Date(2010, 0, 1).getWeek(), 1, 'Date#getWeek | January 1st');
-  equal(new Date(2010, 0, 1).getUTCWeek(), staticWinterTimezoneOffset >= 0 ? 1 : 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
-  equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th');
+  equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
+  equal(new Date(2010, 0, 1).getUTCWeek(), 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
+  equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th, 2010');
   equal(new Date(2010, 0, 6).getUTCWeek(), 1, 'Date#getUTCWeek | January 6th');
-  equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th');
+  equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th, 2010');
   equal(new Date(2010, 0, 7).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th');
-  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th 23:59:59.999');
-  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), staticWinterTimezoneOffset > 0 ? 2 : 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
-  equal(new Date(2010, 0, 8).getWeek(), 2, 'Date#getWeek | January 8th');
-  equal(new Date(2010, 0, 8).getUTCWeek(), staticWinterTimezoneOffset >= 0 ? 2 : 1, 'Date#getUTCWeek | January 8th');
-  equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th');
+  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th, 2010 h23:59:59.999');
+  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
+  equal(new Date(2010, 0, 8).getWeek(), 1, 'Date#getWeek | January 8th, 2010');
+  equal(new Date(2010, 0, 8).getUTCWeek(), 1, 'Date#getUTCWeek | January 8th');
+  equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th, 2010');
   equal(new Date(2010, 3, 15).getUTCWeek(), 15, 'Date#getUTCWeek | April 15th');
 
 
@@ -1500,8 +1499,6 @@ test('Date', function () {
   equal(d.isYesterday(), false, 'Date#isYesterday | 2 years from now');
   equal(d.isToday(), false, 'Date#isToday | 2 years from now');
   equal(d.isTomorrow(), false, 'Date#isTomorrow | 2 years from now');
-  equal(d.isWeekday(), true, 'Date#isWeekday | 2 years from now');
-  equal(d.isWeekend(), false, 'Date#isWeekend | 2 years from now');
   equal(d.isFuture(), true, 'Date#isFuture | 2 years from now');
   equal(d.isPast(), false, 'Date#isPast | 2 years from now');
 
@@ -1865,6 +1862,10 @@ test('Date', function () {
   equal(typeof Date.getLocale(), 'object', 'Date Locale | current localization object is exposed in case needed');
 
 
+
+
+
+
   // Date locale setup
   equal(new Date(2011, 5, 18).format('{Month} {date}, {yyyy}'), 'June 18, 2011', 'Date Locales | Non-initialized defaults to English formatting');
   equal(getRelativeDate(null, null, null, -1).relative(), '1 hour ago', 'Date Locales | Non-initialized relative formatting is also English');
@@ -1905,10 +1906,269 @@ test('Date', function () {
   dateEqual(d.set({ month: 1, day: 3 }), new Date(2011, 1, 3), 'Date#create | set will also not cause date traversal');
 
 
-  // Date#compare
 
-  equal(new Date(1999, 1, 3).compare(new Date(1999, 1, 2)), (1).day(), 'Date#compare | 1 day ago returns 1 day in ms');
-  equal(new Date(1999, 1, 3).compare(new Date(1999, 1, 3)), 0, 'Date#compare | 1 day ago returns 1 day in ms');
-  equal(new Date(1999, 1, 3).compare(new Date(1999, 1, 4)), (-1).day(), 'Date#compare | 1 day from now returns -1 day in ms');
+  // Number methods
+
+  equal((4).milliseconds(), 4, 'Number#milliseconds | 4');
+  equal((3.25).milliseconds(), 3, 'Number#milliseconds | rounded');
+
+  equal((0).seconds(), 0, 'Number#seconds | 0');
+  equal((1).seconds(), 1000, 'Number#seconds | 1');
+  equal((30).seconds(), 30000, 'Number#seconds | 30');
+  equal((60).seconds(), 60000, 'Number#seconds | 60');
+
+
+  equal((1).minutes(), 60000, 'Number#minutes | 1');
+  equal((10).minutes(), 600000, 'Number#minutes | 10');
+  equal((100).minutes(), 6000000, 'Number#minutes | 100');
+  equal((0).minutes(), 0, 'Number#minutes | 0');
+  equal((0.5).minutes(), 30000, 'Number#minutes | 0.5');
+  equal((1).minutes(), (60).seconds(), 'Number#minutes | 1 minute is 60 seconds');
+
+  equal((1).hours(), 3600000, 'Number#hours | 1');
+  equal((10).hours(), 36000000, 'Number#hours | 10');
+  equal((100).hours(), 360000000, 'Number#hours | 100');
+  equal((0).hours(), 0, 'Number#hours | 0');
+  equal((0.5).hours(), 1800000, 'Number#hours | 0.5');
+  equal((1).hours(), (60).minutes(), 'Number#hours | 1 hour is 60 minutes');
+  equal((1).hours(), (3600).seconds(), 'Number#hours | 1 hour is 3600 seconds');
+
+
+  equal((1).days(), 86400000, 'Number#days | 1');
+  equal((10).days(), 864000000, 'Number#days | 10');
+  equal((100).days(), 8640000000, 'Number#days | 100');
+  equal((0).days(), 0, 'Number#days | 0');
+  equal((0.5).days(), 43200000, 'Number#days | 0.5');
+  equal((1).days(), (24).hours(), 'Number#days | 1 day is 24 hours');
+  equal((1).days(), (1440).minutes(), 'Number#days | 1 day is 1440 minutes');
+  equal((1).days(), (86400).seconds(), 'Number#days | 1 day is 86400 seconds');
+
+
+  equal((1).weeks(), 604800000, 'Number#weeks | 1');
+  equal((0.5).weeks(), 302400000, 'Number#weeks | 0.5');
+  equal((10).weeks(), 6048000000, 'Number#weeks | 10');
+  equal((0).weeks(), 0, 'Number#weeks | 0');
+  equal((1).weeks(), (7).days(), 'Number#weeks | 1 week is 7 days');
+  equal((1).weeks(), (24 * 7).hours(), 'Number#weeks | 1 week is 24 * 7 hours');
+  equal((1).weeks(), (60 * 24 * 7).minutes(), 'Number#weeks | 1 week is 60 * 24 * 7 minutes');
+  equal((1).weeks(), (60 * 60 * 24 * 7).seconds(), 'Number#weeks | 1 week is 60 * 60 * 24 * 7 seconds');
+
+  equal((1).months(), 2629800000, 'Number#months | 1 month');
+  equal((0.5).months(), 1314900000, 'Number#months | 0.5 month');
+  equal((10).months(), 26298000000, 'Number#months | 10 month');
+  equal((0).months(), 0, 'Number#months | 0 months');
+  equal((1).months(), (30.4375).days(), 'Number#months | 1 month is 30.4375 days');
+  equal((1).months(), (24 * 30.4375).hours(), 'Number#months | 1 month is 24 * 30.4375 hours');
+  equal((1).months(), (60 * 24 * 30.4375).minutes(), 'Number#months | 1 month is 60 * 24 * 30.4375 minutes');
+  equal((1).months(), (60 * 60 * 24 * 30.4375).seconds(), 'Number#months | 1 month is 60 * 60 * 24 * 30.4375 seconds');
+
+  equal((1).years(), 31557600000, 'Number#years | 1');
+  equal((0.5).years(), 15778800000, 'Number#years | 0.5');
+  equal((10).years(), 315576000000, 'Number#years | 10');
+  equal((0).years(), 0, 'Number#years | 0');
+  equal((1).years(), (365.25).days(), 'Number#years | 1 year is 365.25 days');
+  equal((1).years(), (24 * 365.25).hours(), 'Number#years | 1 year is 24 * 365.25 hours');
+  equal((1).years(), (60 * 24 * 365.25).minutes(), 'Number#years | 1 year is 60 * 24 * 365.25 minutes');
+  equal((1).years(), (60 * 60 * 24 * 365.25).seconds(), 'Number#years | 1 year is 60 * 60 * 24 * 365.25 seconds');
+
+
+
+  /* compatibility */
+
+  equal((1).second(), 1000, 'Number#second | 1 second');
+  equal((1).minute(), 60000, 'Number#minute | 1 minute');
+  equal((1).hour(), 3600000, 'Number#hour | 1 hour');
+  equal((1).day(), 86400000, 'Number#day | 1 day');
+  equal((1).week(), 604800000, 'Number#week | 1 week');
+  equal((1).month(), 2629800000, 'Number#month | 1 month');
+  equal((1).year(), 31557600000, 'Number#year | 1 year');
+
+
+  dateEqual((1).secondAfter(), 1000, 'Number#secondAfter | 1');
+  dateEqual((5).secondsAfter(), 5000, 'Number#secondsAfter | 5');
+  dateEqual((10).minutesAfter(), 600000, 'Number#minutesAfter | 10');
+
+  dateEqual((1).secondFromNow(), 1000, 'Number#secondFromNow | 1');
+  dateEqual((5).secondsFromNow(), 5000, 'Number#secondsFromNow | 5');
+  dateEqual((10).minutesFromNow(), 600000, 'Number#minutesFromNow | 10');
+
+  dateEqual((1).secondAgo(), -1000, 'Number#secondAgo | 1');
+  dateEqual((5).secondsAgo(), -5000, 'Number#secondAgo | 5');
+  dateEqual((10).secondsAgo(), -10000, 'Number#secondAgo | 10');
+
+  dateEqual((1).secondBefore(), -1000, 'Number#secondBefore | 1');
+  dateEqual((5).secondsBefore(), -5000, 'Number#secondBefore | 5');
+  dateEqual((10).secondsBefore(), -10000, 'Number#secondBefore | 10');
+
+
+  dateEqual((5).minutesAfter((5).minutesAgo()), 0, 'Number#minutesAfter | 5 minutes after 5 minutes ago');
+  dateEqual((10).minutesAfter((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesAfter | 10 minutes after 5 minutes ago');
+
+  dateEqual((5).minutesFromNow((5).minutesAgo()), 0, 'Number#minutesFromNow | 5 minutes from now 5 minutes ago');
+  dateEqual((10).minutesFromNow((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesFromNow | 10 minutes from now 5 minutes ago');
+
+  dateEqual((5).minutesAgo((5).minutesFromNow()), 0, 'Number#minutesAgo | 5 minutes ago 5 minutes from now');
+  dateEqual((10).minutesAgo((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesAgo | 10 minutes ago 5 minutes from now');
+
+  dateEqual((5).minutesBefore((5).minutesFromNow()), 0, 'Number#minutesBefore | 5 minutes before 5 minutes from now');
+  dateEqual((10).minutesBefore((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesBefore | 10 minutes before 5 minutes from now');
+
+
+  var christmas = new Date('December 25, 1965');
+  dateEqual((5).minutesBefore(christmas), getRelativeDate.call(christmas, null, null, null, null, -5), 'Number#minutesBefore | 5 minutes before christmas');
+  dateEqual((5).minutesAfter(christmas), getRelativeDate.call(christmas, null, null, null, null, 5), 'Number#minutesAfter | 5 minutes after christmas');
+
+  dateEqual((5).hoursBefore(christmas), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | 5 hours before christmas');
+  dateEqual((5).hoursAfter(christmas), getRelativeDate.call(christmas, null, null, null, 5), 'Number#hoursAfter | 5 hours after christmas');
+
+  dateEqual((5).daysBefore(christmas), getRelativeDate.call(christmas, null, null, -5), 'Number#daysBefore | 5 days before christmas');
+  dateEqual((5).daysAfter(christmas), getRelativeDate.call(christmas, null, null, 5), 'Number#daysAfter | 5 days after christmas');
+
+  dateEqual((5).weeksBefore(christmas), getRelativeDate.call(christmas, null, null, -35), 'Number#weeksBefore | 5 weeks before christmas');
+  dateEqual((5).weeksAfter(christmas), getRelativeDate.call(christmas, null, null, 35), 'Number#weeksAfter | 5 weeks after christmas');
+
+  dateEqual((5).monthsBefore(christmas), getRelativeDate.call(christmas, null, -5), 'Number#monthsBefore | 5 months before christmas');
+  dateEqual((5).monthsAfter(christmas), getRelativeDate.call(christmas, null, 5), 'Number#monthsAfter | 5 months after christmas');
+
+  dateEqual((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore | 5 years before christmas');
+  dateEqual((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter | 5 years after christmas');
+
+  dateEqual((5).hoursBefore(1965, 11, 25), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | accepts numbers');
+
+  // Hooking it all up!!
+
+  // Try this in WinXP:
+  // 1. Set timezone to Damascus
+  // 2. var d = new Date(1998, 3, 3, 17); d.setHours(0); d.getHours();
+  // 3. hours = 23
+  // 4. PROFIT $$$
+
+  dateEqual((5).minutesBefore('April 2rd, 1998'), new Date(1998, 3, 1, 23, 55), 'Number#minutesBefore | 5 minutes before April 3rd, 1998');
+  dateEqual((5).minutesAfter('January 2nd, 2005'), new Date(2005, 0, 2, 0, 5), 'Number#minutesAfter | 5 minutes after January 2nd, 2005');
+  dateEqual((5).hoursBefore('the first day of 2005'), new Date(2004, 11, 31, 19), 'Number#hoursBefore | 5 hours before the first day of 2005');
+  dateEqual((5).hoursAfter('the last day of 2006'), new Date(2006, 11, 31, 5), 'Number#hoursAfter | 5 hours after the last day of 2006');
+  dateEqual((5).hoursAfter('the end of 2006'), new Date(2007, 0, 1, 4, 59, 59, 999), 'Number#hoursAfter | 5 hours after the end of 2006');
+  dateEqual((5).daysBefore('last week monday'), getDateWithWeekdayAndOffset(1, -7).rewind({ days: 5 }), 'Number#daysBefore | 5 days before last week monday');
+  dateEqual((5).daysAfter('next tuesday'), getDateWithWeekdayAndOffset(2, 7).advance({ days: 5 }), 'Number#daysAfter | 5 days after next week tuesday');
+  dateEqual((5).weeksBefore('today'), getRelativeDate(null, null, -35).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#weeksBefore | 5 weeks before today');
+  dateEqual((5).weeksAfter('now'), getRelativeDate(null, null, 35), 'Number#weeksAfter | 5 weeks after now');
+  dateEqual((5).monthsBefore('today'), getRelativeDate(null, -5).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#monthsBefore | 5 months before today');
+  dateEqual((5).monthsAfter('now'), getRelativeDate(null, 5), 'Number#monthsAfter | 5 months after now');
+
+
+
+
+
+
+  // String methods
+
+
+  // Got to pass a language code here because the other unit tests may have set
+  // the locale to a non-US format thereby enabling date variants. This test
+  // also acts to ensure that the locale can be passed here.
+  dateEqual('11/5/56'.toDate('en-US'), new Date(1956, 10, 5), 'String#toDate | slash format');
+  dateEqual('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
+  equal(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
+  equal('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
+  dateEqual('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
+
+
+  equal(new Date(2011, 0, 1).getWeek(), 52, 'String#getWeek | January 1, 2011');
+  equal(new Date(2011, 0, 2).getWeek(), 52, 'String#getWeek | January 2, 2011');
+  equal(new Date(2011, 0, 3).getWeek(),  1, 'String#getWeek | January 3, 2011');
+  equal(new Date(2011, 0, 4).getWeek(),  1, 'String#getWeek | January 4, 2011');
+
+  equal(new Date(2011, 11, 25).getWeek(), 51, 'String#getWeek | December 25, 2011');
+  equal(new Date(2011, 11, 26).getWeek(), 52, 'String#getWeek | December 26, 2011');
+  equal(new Date(2011, 11, 27).getWeek(), 52, 'String#getWeek | December 27, 2011');
+
+  equal(new Date(2011, 11, 31).getWeek(), 52, 'String#getWeek | December 31, 2011');
+  equal(new Date(2012, 0, 1).getWeek(),   52, 'String#getWeek | January 1, 2012');
+  equal(new Date(2012, 0, 2).getWeek(),    1, 'String#getWeek | January 2, 2012');
+
+  equal(new Date(2013, 11, 28).getWeek(), 52, 'String#getWeek | December 28, 2013');
+  equal(new Date(2013, 11, 29).getWeek(), 52, 'String#getWeek | December 29, 2013');
+  equal(new Date(2013, 11, 30).getWeek(),  1, 'String#getWeek | December 30, 2013');
+  equal(new Date(2013, 11, 31).getWeek(),  1, 'String#getWeek | December 31, 2013');
+  equal(new Date(2014,  0,  1).getWeek(),  1, 'String#getWeek | January 01, 2014');
+  equal(new Date(2014,  0,  2).getWeek(),  1, 'String#getWeek | January 02, 2014');
+  equal(new Date(2014,  0,  5).getWeek(),  1, 'String#getWeek | January 05, 2014');
+  equal(new Date(2014,  0,  6).getWeek(),  2, 'String#getWeek | January 06, 2014');
+
+
+  // Date.restore may not exist in dates-only build.
+
+  if(Date.restore) {
+    Date.prototype.advance = undefined;
+    equal(typeof Date.prototype.advance,  'undefined', 'Date#advance was removed');
+    Date.restore('advance');
+    equal(typeof Date.prototype.advance,  'function', 'Date#advance was restored');
+  }
+
+
+  // Issue #98: System time set to January 31st
+
+  dateEqual(Date.create('2011-09-01T05:00:00Z'), getUTCDate(2011, 9, 1, 5), 'String#toDate | text format');
+
+
+  // Number#duration
+
+  Date.setLocale('en');
+
+  equal((1).duration(), '1 millisecond', 'Number#duration | 1 millisecond');
+  equal((2).duration(), '2 milliseconds', 'Number#duration | 2 milliseconds');
+  equal((100).duration(), '100 milliseconds', 'Number#duration | 100 milliseconds');
+  equal((500).duration(), '500 milliseconds', 'Number#duration | 500 milliseconds');
+  equal((949).duration(), '949 milliseconds', 'Number#duration | 949 milliseconds');
+  equal((950).duration(), '1 second', 'Number#duration | 950 milliseconds');
+  equal((999).duration(), '1 second', 'Number#duration | 999 milliseconds');
+  equal((1000).duration(), '1 second', 'Number#duration | 1 second');
+  equal((1999).duration(), '2 seconds', 'Number#duration | 2 seconds');
+  equal((5000).duration(), '5 seconds', 'Number#duration | 5 seconds');
+  equal((55000).duration(), '55 seconds', 'Number#duration | 55 seconds');
+  equal((56000).duration(), '56 seconds', 'Number#duration | 56 seconds');
+  equal((57000).duration(), '1 minute', 'Number#duration | 57 seconds');
+  equal((60000).duration(), '1 minute', 'Number#duration | 60 seconds');
+  equal((3600000).duration(), '1 hour', 'Number#duration | 360000 seconds');
+  equal((5).hours().duration(), '5 hours', 'Number#duration | 5 hours');
+  equal((22).hours().duration(), '22 hours', 'Number#duration | 22 hours');
+  equal((23).hours().duration(), '1 day', 'Number#duration | 23 hours');
+  equal((6).days().duration(), '6 days', 'Number#duration | 6 days');
+  equal((7).days().duration(), '1 week', 'Number#duration | 1 week');
+  equal((28).days().duration(), '4 weeks', 'Number#duration | 30 days');
+  equal((29).days().duration(), '1 month', 'Number#duration | 1 months');
+  equal((11).months().duration(), '11 months', 'Number#duration | 11 months');
+  equal((12).months().duration(), '1 year', 'Number#duration | 1 year');
+  equal((2).years().duration(), '2 years', 'Number#duration | 2 years');
+  equal((15).years().duration(), '15 years', 'Number#duration | 15 years');
+  equal((1500).years().duration(), '1500 years', 'Number#duration | 1500 years');
+
+  Date.setLocale('ja');
+
+  equal((5).days().duration(), '5日', 'Number#duration | Japanese | 5 days');
+  equal((150).days().duration(), '4ヶ月', 'Number#duration | Japanese | 150 days');
+  equal((38000).seconds().duration(), '10時間', 'Number#duration | Japanese | 38000 seconds');
+  equal((38000).minutes().duration(), '3週間', 'Number#duration | Japanese | 38000 minutes');
+  equal((38000).hours().duration(), '4年', 'Number#duration | Japanese | 38000 hours');
+
+
+  // Duration without setting the locale code
+
+  equal((5).days().duration('ko'), '5일', 'Number#duration | Korean | 5 days');
+  equal((150).days().duration('ko'), '4개월', 'Number#duration | Korean | 150 days');
+  equal((38000).seconds().duration('ko'), '10시간', 'Number#duration | Korean | 38000 seconds');
+  equal((38000).minutes().duration('ko'), '3주', 'Number#duration | Korean | 38000 minutes');
+  equal((38000).hours().duration('ko'), '4년', 'Number#duration | Korean | 38000 hours');
+
+
+
+  // Custom date formats
+  // https://github.com/andrewplummer/Sugar/issues/119#issuecomment-4520966
+
+  Date.addFormat('(\\d{2})(\\d{2})',['hour','minute']);
+  dateEqual(Date.create('0615'), new Date().set({ hours: 6, minutes: 15 }, true), 'Date.addFormat | Overrides defined formats');
+
+  // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
+  Date.addFormat('(\\d{4})', ['year']);
 
 });

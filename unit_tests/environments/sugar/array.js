@@ -603,6 +603,7 @@ test('Array', function () {
     equal(a, [1], 'Array#unique | third param should also be the array');
   });
 
+  equal([function(){ return 'a' }, function() { return 'a'; }, function() { return 'b'; }].unique().length, 3, 'Array#unique | Functions are always unique');
 
   equal([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union | 1,2,3 + 3,4,5');
   equal([1,1,1].union([1,2,3]), [1,2,3], 'Array#union | 1,1,1 + 1,2,3');
@@ -652,6 +653,9 @@ test('Array', function () {
     equal([1,1].intersect(1,1,[1,1]), [1], 'Array#intersect | assure uniqueness');
     equal([1,2,3].intersect(1), [1], 'Array#intersect | 1,2,3 + 1');
   });
+
+
+
 
 
 
@@ -1428,7 +1432,19 @@ test('Array', function () {
   equal([1,2,3].sortBy(null), [1,2,3], 'Array#sortBy | null');
   equal([1,2,3].sortBy(4), [1,2,3], 'Array#sortBy | number');
 
+  var Simple = function(num) {
+    this.valueOf = function() {
+      return num;
+    }
+  }
 
+  var a = new Simple(5);
+  var b = new Simple(2);
+  var c = new Simple(3);
+  var d = new Simple(1);
+  var e = new Simple(2);
+
+  equal([a,b,c,d,e].sortBy(), [d,b,e,c,a], 'Array#sortBy | objects with "valueOf" defined will also be sorted properly');
 
   arr = [1,2,3,4,5,6,7,8,9,10];
   var firsts = [];
@@ -1579,9 +1595,784 @@ test('Array', function () {
   equal(arr.sample(11).length, 10, "Array#sample | can't sample more than the length of the array");
   equal(arr.sample(10).unique().length, arr.length, "Array#sample | should not sample the same element twice");
 
+  // Array#findAll - Complex matching
+
+  var people = [
+    { name: 'jim',    age: 27, hair: 'brown'  },
+    { name: 'mary',   age: 52, hair: 'blonde' },
+    { name: 'ronnie', age: 13, hair: 'brown'  },
+    { name: 'edmund', age: 27, hair: 'blonde' },
+    { name: 'buddy', age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
+  ];
+
+
+  equal(people.findAll({}), [], 'Array#findAll | complex | empty object');
+  equal(people.findAll(), [], 'Array#findAll | complex | no arguments');
+  equal(people.findAll('age'), [], 'Array#findAll | complex | string argument');
+  equal(people.findAll(4), [], 'Array#findAll | complex | number argument');
+  equal(people.findAll({ age: 27 }), [people[0], people[3]], 'Array#findAll | complex | one property');
+  equal(people.findAll({ age: 27, hair: 'brown' }), [people[0]], 'Array#findAll | complex | two properties');
+  equal(people.findAll({ hair: { color: 'red' }}), [people[4]], 'Array#findAll | complex | nested property');
+  equal(people.findAll({ hair: { color: 'green' }}), [], 'Array#findAll | complex | non-matching nested property');
+  equal(people.findAll({ hair: { color: 'red', type: 'long' }}), [people[4]], 'Array#findAll | complex | two nested properties');
+  equal(people.findAll({ hair: { color: 'green', type: 'mean' }}), [], 'Array#findAll | complex | two non-matching nested properties');
+  equal(people.findAll({ hair: { color: 'red', type: 'mean' }}), [], 'Array#findAll | complex | two nested properties, one non-matching');
+  equal(people.findAll({ hair: { color: 'red', life: 'long' }}), [], 'Array#findAll | complex | two nested properties, one non-existing');
+  equal(people.findAll({ hair: { color: /r/ }}), [people[4]], 'Array#findAll | complex | nested regex');
+  equal(people.findAll({ hair: { cost: 15 }}), [people[4]], 'Array#findAll | complex | nested number');
+  equal(people.findAll({ hair: { cost: 23 }}), [], 'Array#findAll | complex | nested non-matching number');
+  equal(people.findAll({ hair: { cost: undefined }}), [], 'Array#findAll | complex | nested undefined property');
+  equal(people.findAll({ hair: { cost: NaN }}), [], 'Array#findAll | complex | nested property is NaN');
+  equal(people.findAll({ hair: { color: function(c){ return c == 'red'; } }}), [people[4]], 'Array#findAll | complex | nested function');
+  equal(people.findAll({ some: { random: { shit: {}}}}), [], 'Array#findAll | complex | totally unrelated properties');
+  equal(people.findAll({ hair: { last_cut: new Date(2010, 4, 18) }}), [people[4]], 'Array#findAll | complex | simple date');
+
+  equal(people.some({ age: 27 }), true, 'Array#some | complex | one property');
+  equal(people.some({ age: 27, hair: 'brown' }), true, 'Array#some | complex | two properties');
+  equal(people.some({ hair: { color: 'red' }}), true, 'Array#some | complex | nested property');
+  equal(people.some({ hair: { color: 'green' }}), false, 'Array#some | complex | non-matching nested property');
+  equal(people.some({ hair: { color: 'red', type: 'long' }}), true, 'Array#some | complex | two nested properties');
+  equal(people.some({ hair: { color: 'green', type: 'mean' }}), false, 'Array#some | complex | two non-matching nested properties');
+  equal(people.some({ hair: { color: 'red', type: 'mean' }}), false, 'Array#some | complex | two nested properties, one non-matching');
+  equal(people.some({ hair: { color: 'red', life: 'long' }}), false, 'Array#some | complex | two nested properties, one non-existing');
+  equal(people.some({ hair: { color: /r/ }}), true, 'Array#some | complex | nested regex');
+  equal(people.some({ hair: { cost: 15 }}), true, 'Array#some | complex | nested number');
+  equal(people.some({ hair: { cost: 23 }}), false, 'Array#some | complex | nested non-matching number');
+  equal(people.some({ hair: { cost: undefined }}), false, 'Array#some | complex | nested undefined property');
+  equal(people.some({ hair: { cost: NaN }}), false, 'Array#some | complex | nested property is NaN');
+  equal(people.some({ hair: { color: function(c){ return c == 'red'; } }}), true, 'Array#some | complex | nested function');
+  equal(people.some({ some: { random: { shit: {}}}}), false, 'Array#some | complex | totally unrelated properties');
+  equal(people.some({ hair: { last_cut: new Date(2010, 4, 18) }}), true, 'Array#some | complex | simple date');
+
+  equal(people.none({ age: 27 }), false, 'Array#none | complex | one property');
+  equal(people.none({ age: 27, hair: 'brown' }), false, 'Array#none | complex | two properties');
+  equal(people.none({ hair: { color: 'red' }}), false, 'Array#none | complex | nested property');
+  equal(people.none({ hair: { color: 'green' }}), true, 'Array#none | complex | non-matching nested property');
+  equal(people.none({ hair: { color: 'red', type: 'long' }}), false, 'Array#none | complex | two nested properties');
+  equal(people.none({ hair: { color: 'green', type: 'mean' }}), true, 'Array#none | complex | two non-matching nested properties');
+  equal(people.none({ hair: { color: 'red', type: 'mean' }}), true, 'Array#none | complex | two nested properties, one non-matching');
+  equal(people.none({ hair: { color: 'red', life: 'long' }}), true, 'Array#none | complex | two nested properties, one non-existing');
+  equal(people.none({ hair: { color: /r/ }}), false, 'Array#none | complex | nested regex');
+  equal(people.none({ hair: { cost: 15 }}), false, 'Array#none | complex | nested number');
+  equal(people.none({ hair: { cost: 23 }}), true, 'Array#none | complex | nested non-matching number');
+  equal(people.none({ hair: { cost: undefined }}), true, 'Array#none | complex | nested undefined property');
+  equal(people.none({ hair: { cost: NaN }}), true, 'Array#none | complex | nested property is NaN');
+  equal(people.none({ hair: { color: function(c){ return c == 'red'; } }}), false, 'Array#none | complex | nested function');
+  equal(people.none({ none: { random: { shit: {}}}}), true, 'Array#none | complex | totally unrelated properties');
+  equal(people.none({ hair: { last_cut: new Date(2010, 4, 18) }}), false, 'Array#none | complex | simple date');
+
+
+  // Testing change to fuzzy finding on objects
+
+
+  arr = [{name: 'joe', age: 25}];
+  var match = { name: /j/ };
+
+  equal(arr.every(match), true, 'Array#every is now fuzzy');
+  equal(arr.some(match), true, 'Array#some is now fuzzy');
+  equal(arr.none(match), false, 'Array#none is now fuzzy');
+  equal(arr.count(match), 1, 'Array#count is now fuzzy');
+  equal(arr.find(match), arr[0], 'Array#find is now fuzzy');
+  equal(arr.findAll(match), [arr[0]], 'Array#findAll is now fuzzy');
+  equal(arr.findIndex(match), 0, 'Array#findIndex is now fuzzy');
+  equal(arr.exclude(match).length, 0, 'Array#exclude is now fuzzy');
+
+
+  equal(arr.clone().remove(match).length, 0, 'Array#remove is now fuzzy');
+  equal(arr.clone().remove(match).length, 0, 'Array#remove is now fuzzy');
+
+  equal([arr].intersect([match]), [], 'Array#intersect is NOT fuzzy');
+  equal([match].intersect([arr]), [], 'Array#intersect reverse is NOT fuzzy');
+
+  equal(arr.subtract([match]), arr, 'Array#subtract is NOT fuzzy');
+  equal([match].subtract([arr]), [match], 'Array#subtract reverse is NOT fuzzy');
+
+  equal(arr.unique(match), arr, 'Array#unique is NOT fuzzy');
+  equal([match].unique(arr), [match], 'Array#unique reverse is NOT fuzzy');
 
 
 
+  // Testing sortBy behavior
+
+  var CapturedSortOrder       = Array.AlphanumericSortOrder;
+  var CapturedSortIgnore      = Array.AlphanumericSortIgnore;
+  var CapturedSortIgnoreCase  = Array.AlphanumericSortIgnoreCase;
+  var CapturedSortEquivalents = Array.AlphanumericSortEquivalents;
+
+
+  equal([0,1,2,3,4].sortBy(), [0,1,2,3,4], 'Array#sortBy | 0 is properly sorted');
+  equal(['0','1','2','3','4'].sortBy(), ['0','1','2','3','4'], 'Array#sortBy | string numerals are properly sorted');
+  equal(['c','B','a'].sortBy(), ['a','B','c'], 'Array#sortBy | upper-case is properly sorted');
+  equal(['back','Bad','banker'].sortBy(), ['back','Bad','banker'], 'Array#sortBy | case is ignored by default');
+  equal(['c','B','a','ä','ò','p'].sortBy(), ['a','ä','B','c','ò','p'], 'Array#sortBy | should allow normalization if exists');
+  equal(['apple','apples'].sortBy(), ['apple','apples'], 'Array#sortBy | basic string length');
+  equal(['has','hàs','had','hàd'].sortBy(), ['had','hàd','has','hàs'], 'Array#sortBy | special chars basic');
+
+  arr = ['San','San Cristobal','San Juan','San Teodoro','San Tomas','Santa Barbara','Santa Clara','Santa Cruz','Santo Domingo'];
+  equal(arr.sortBy(), arr, 'Array#sortBy | spaces are counted');
+
+  equal(['AM','AB'].sortBy(), ['AB','AM'], '0 index is properly sorted');
+
+
+  arr = ['#foob','(fooc','fooa'];
+  equal(arr.sortBy(), arr, 'Array#sortBy | special chars are not ignored by default');
+
+  arr = [
+    '8braham',
+    'a4raham',
+    'abraham'
+  ];
+
+  equal(arr.sortBy(), arr, 'Array#sortBy | Numbers are filtered to the top');
+
+  arr = [
+    'pine',
+    'pino',
+    'piñata'
+  ];
+
+  equal(arr.sortBy(), arr, 'Array#sortBy | Spanish ñ is respected');
+
+  var french_names = [
+    'abelle',
+    'aceline',
+    'adélaïde',
+    'adelais',
+    'adèle',
+    'adélie',
+    'adeline',
+    'adelle',
+    'adelphe',
+    'adrienne',
+    'agace',
+    'agate',
+    'aglaë',
+    'agnès',
+    'agrippine',
+    'aimée',
+    'alaina',
+    'alais',
+    'alayna',
+    'albertine',
+    'alexandrie',
+    'alexandrine',
+    'aliénor',
+    'aline',
+    'alison',
+    'alphonsine',
+    'alvery',
+    'amaline',
+    'amandine',
+    'amarante',
+    'ambre',
+    'ambrosine',
+    'amélie',
+    'amorette',
+    'anaïs',
+    'anastaise',
+    'anastasie',
+    'andrée',
+    'andromaque',
+    'anette',
+    'angèle',
+    'angeline',
+    'angelique',
+    'ann',
+    'anne'
+  ];
+
+  equal(french_names.randomize().sortBy(), french_names, 'Array#sortBy | sorting french names');
+  equal(french_names.map('toUpperCase').randomize().sortBy(), french_names.map('toUpperCase'), 'Array#sortBy | sorting french names in upper case');
+
+
+  // MSDN http://msdn.microsoft.com/en-us/library/cc194880.aspx
+  arr = [
+    'andere',
+    'ändere',
+    'chaque',
+    'chemin',
+    'cote',
+    'cotÉ',
+    'cÔte',
+    'cÔtÉ',
+    'Czech',
+    'ČuČet',
+    'hiŠa',
+    'irdisch',
+    'lävi',
+    'lie',
+    'lire',
+    'llama',
+    'LÖwen',
+    'lÒza',
+    'LÜbeck',
+    'luck',
+    'luČ',
+    'lye',
+    'Männer',
+    'mÀŠta',
+    'mÎr',
+    'mÖchten',
+    'myndig',
+    'pint',
+    'piÑa',
+    'pylon',
+    'sämtlich',
+    'savoir',
+    'Sietla',
+    'subtle',
+    'symbol',
+    'Ślub',
+    'ŠÀran',
+    'väga',
+    'verkehrt',
+    'vox',
+    'waffle',
+    'wood',
+    'yen',
+    'yuan',
+    'yucca',
+    'zoo',
+    'ZÜrich',
+    'Zviedrija',
+    'zysk',
+    'Žal',
+    'Žena'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Default collation');
+
+  arr = [
+    'cweat',
+    'cwect',
+    'čweat',
+    'čweet',
+    'sweat',
+    'swect',
+    'šweat',
+    'šweet',
+    'zweat',
+    'zwect',
+    'žweat',
+    'žweet'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Czech/Lithuanian order is respected');
+
+
+  arr = [
+    'cat',
+    'drone',
+    'ðroll',
+    'ebert'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Icelandic ð order is respected');
+
+  arr = [
+    'goth',
+    'ğoad',
+    'hover',
+    'sing',
+    'şeparate',
+    'tumble'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Turkish order is respected');
+
+  arr = [
+    'ape',
+    'ące',
+    'central',
+    'ćenter',
+    'eulo',
+    'ęula',
+    'latch',
+    'lever',
+    'łevel',
+    'martyr',
+    'noob',
+    'ńookie',
+    'oppai',
+    'sweat',
+    'swect',
+    'śweat',
+    'śweet',
+    'yeouch',
+    'ýellow',
+    'zipper',
+    'zoophilia',
+    'źebra',
+    'żoo'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Polish order is respected');
+
+  arr = [
+    'cab',
+    'opec',
+    'still',
+    'zounds',
+    'æee',
+    'ølaf',
+    'ålegra'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Danish/Norwegian order is respected');
+
+  arr = [
+    'llama',
+    'luck',
+    'lye'
+  ];
+
+
+
+  // Compressions simply can't be handled without a complex collation system
+  // as there is simply no way fundamentally to know what was intended as a
+  // compression. For example "catch a llama" vs "catch Al Lama"
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Compressions are not handled');
+
+
+  arr = [
+    'àbel',
+    'abet',
+    'äpe',
+    'apu',
+    'âvec',
+    'avel',
+    'áxe',
+    'axiom',
+    'çoupon',
+    'coupos',
+    'écma',
+    'ecmo',
+    'êlam',
+    'elan',
+    'ëpic',
+    'epil',
+    'ëthen',
+    'ether',
+    'évac',
+    'eval',
+    'èxile',
+    'exilo',
+    'ïce',
+    'icy',
+    'îll',
+    'ilp',
+    'ïmpetum',
+    'impetus',
+    'íp',
+    'is',
+    'ìtalian',
+    'italians',
+    'luck',
+    'lye',
+    'òblast',
+    'oblong',
+    'ómam',
+    'omar',
+    'öpal',
+    'opam',
+    'ôva',
+    'ovum',
+    'ùla',
+    'ule',
+    'ûmar',
+    'umas',
+    'úni',
+    'uny',
+    'ùral',
+    'uranus',
+    'üte',
+    'utu'
+  ];
+
+  equal(arr.randomize().sortBy(), arr, 'Array#sortBy | Standard Western-Latin equivalents are enforced');
+
+  // Swedish collation
+  var swedish_words = [
+    'att borsta',
+    'att bränna',
+    'att brinna',
+    'att brinna',
+    'att brista',
+    'att bruka',
+    'att bryta',
+    'att bryta i bitar',
+    'att buller',
+    'att bygga',
+    'att byta',
+    'att chocka',
+    'att dela',
+    'att detaljera',
+    'att dimpa',
+    'att dö',
+    'att dö',
+    'att döda',
+    'att dofta',
+    'att dölja',
+    'att döma',
+    'att dra',
+    'att dra',
+    'att drabba',
+    'att dricka',
+    'att driva',
+    'att driva',
+    'att drömma',
+    'att duga',
+    'att erbjuda',
+    'att erkänna',
+    'att ersätta',
+    'att explodera',
+    'att falla',
+    'att falla',
+    'att fängsla',
+    'att fara',
+    'att fästa',
+    'att fastna',
+    'att fastställa',
+    'att fatta',
+    'att finna',
+    'att finna',
+    'att finnas',
+    'att fira',
+    'att fläta',
+    'att få',
+    'att fånga'
+  ];
+
+  equal(swedish_words.sortBy(), swedish_words, 'Array#sortBy | swedish strings sorted on utf8_general_ci');
+
+  var swedish_collated = [
+    'att borsta',
+    'att brinna',
+    'att brinna',
+    'att brista',
+    'att bruka',
+    'att bryta',
+    'att bryta i bitar',
+    'att bränna',
+    'att buller',
+    'att bygga',
+    'att byta',
+    'att chocka',
+    'att dela',
+    'att detaljera',
+    'att dimpa',
+    'att dofta',
+    'att dra',
+    'att dra',
+    'att drabba',
+    'att dricka',
+    'att driva',
+    'att driva',
+    'att drömma',
+    'att duga',
+    'att dö',
+    'att dö',
+    'att döda',
+    'att dölja',
+    'att döma',
+    'att erbjuda',
+    'att erkänna',
+    'att ersätta',
+    'att explodera',
+    'att falla',
+    'att falla',
+    'att fara',
+    'att fastna',
+    'att fastställa',
+    'att fatta',
+    'att finna',
+    'att finna',
+    'att finnas',
+    'att fira',
+    'att fläta',
+    'att få',
+    'att fånga',
+    'att fängsla',
+    'att fästa'
+  ];
+
+  Array.AlphanumericSortEquivalents['ö'] = null;
+  Array.AlphanumericSortEquivalents['ä'] = null;
+
+  equal(swedish_words.sortBy(), swedish_collated, 'Array#sortBy | removing equivalents can restore sort order');
+
+  // Capitals
+
+  arr = [
+    'abner',
+    'aBBey',
+    'Adrian',
+    'aDella'
+  ];
+
+  expected = [
+    'aBBey',
+    'abner',
+    'aDella',
+    'Adrian'
+  ];
+
+  Array.AlphanumericSortIgnoreCase = true;
+  equal(arr.sortBy(), expected, 'Array#sortBy | allows case ignore');
+
+
+  expected = [
+    'aDella',
+    'Adrian',
+    'aBBey',
+    'abner'
+  ];
+
+  Array.AlphanumericSortOrder = 'dba';
+  equal(arr.sortBy(), expected, 'Array#sortBy | allows other order');
+
+  expected = [
+    'aDella',
+    'abner',
+    'Adrian',
+    'aBBey'
+  ];
+
+
+  Array.AlphanumericSortIgnore = /[abcde]/g;
+  equal(arr.sortBy(), expected, 'Array#sortBy | allows custom ignore');
+
+  Array.AlphanumericSortOrder = 'cba';
+  Array.AlphanumericSortIgnore = CapturedSortIgnore;
+  arr = ['cotÉ', 'cÔte', 'cÔtÉ', 'andere', 'ändere'];
+  equal(arr.sortBy(), arr, 'Array#sortBy | cba');
+
+  Array.AlphanumericSortOrder = CapturedSortOrder;
+  Array.AlphanumericSortIgnore = CapturedSortIgnore;
+  Array.AlphanumericSortIgnoreCase = CapturedSortIgnoreCase;
+  Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
+
+
+
+  // Testing Array#union and Array#intersect on complex elements as found http://ermouth.com/fastArray/
+  // Thanks to @ermouth!
+
+
+  var yFunc = function () { return 'y'; }
+  var xFunc = function () { return 'x'; }
+
+  var arr1 = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    /rowdy/,
+    /randy/,
+    yFunc,
+    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
+    xFunc,
+    2
+  ];
+
+  var arr2 = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    /rowdy/,
+    /pandy/,
+    xFunc,
+    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
+    [8, "c9f0f895fb98ab9159f51fd0297e236d"]
+  ];
+
+  var unionExpected = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    /rowdy/,
+    /randy/,
+    yFunc,
+    [6, "1679091c5a880faf6fb5e6087eb1b2dc"],
+    xFunc,
+    2,
+    /pandy/,
+    { e4da3b7fbbce2345d7772b0674a318d5: 5 },
+    [8, "c9f0f895fb98ab9159f51fd0297e236d"]
+  ];
+
+  var intersectExpected = [
+    { eccbc87e4b5ce2fe28308fd9f2a7baf3: 3 },
+    /rowdy/,
+    xFunc
+  ];
+
+
+  equal(arr1.union(arr2), unionExpected, 'Array#union | complex array unions');
+  equal(arr1.intersect(arr2), intersectExpected, 'Array#union | complex array intersects');
+
+
+  equal([function(){ return 'a' }].intersect([function() { return 'a'; }, function() { return 'b'; }]), [], 'Array#intersect | functions are always unique');
+  equal([xFunc].intersect([xFunc, yFunc]), [xFunc], 'Array#intersect | function references are ===');
+
+  equal([function(){ return 'a' }, function() { return 'b'; }].subtract([function() { return 'a'; }]).length, 2, 'Array#subtract | functions are always unique');
+  equal([xFunc, yFunc].subtract([xFunc]), [yFunc], 'Array#subtract | function references are ===');
+
+
+  equal([['a',1]].intersect([['a',1],['b',2]]), [['a',1]], 'Array#intersect | nested arrays are not flattened');
+  equal([['a',1],['b',2]].subtract([['a',1]]), [['b',2]], 'Array#subtract | nested arrays are not flattened');
+
+
+
+  // Comprehensive unit tests for new uniquing method.
+
+
+  var aFunc = function(){
+    return 'a';
+  }
+  var bFunc = function(){
+    return 'b';
+  }
+  var cFunc = function(){
+    return 'c';
+  }
+  var dFunc = function(){
+    return 'd';
+  }
+
+
+  arrayEquivalent([1,2,3].union([3,4,5]), [1,2,3,4,5], 'Array#union | Basic');
+  arrayEquivalent([1,2,3].union(['1','2','3']), [1,2,3,'1','2','3'], 'Array#union | Numbers vs. Strings');
+  arrayEquivalent([[1,2,3]].union([['1','2','3']]), [[1,2,3],['1','2','3']], 'Array#union | Numbers vs. Strings nested');
+
+  arrayEquivalent([1,2,3].union([1,2,3]), [1,2,3], 'Array#union | Number array');
+  arrayEquivalent([[1,2,3]].union([[1,2,3]]), [[1,2,3]], 'Array#union | Nested number array');
+  arrayEquivalent([[1,2,3]].union([[3,2,1]]), [[1,2,3],[3,2,1]], 'Array#union | Nested and reversed');
+
+  arrayEquivalent([aFunc].union([bFunc]), [aFunc, bFunc], 'Array#union | Function references');
+  arrayEquivalent([aFunc].union([bFunc, cFunc]), [aFunc, bFunc, cFunc], 'Array#union | Function references');
+  arrayEquivalent([aFunc, bFunc].union([bFunc, cFunc]), [aFunc, bFunc, cFunc], 'Array#union | Function references');
+  arrayEquivalent([aFunc, bFunc, cFunc].union([aFunc, bFunc, cFunc]), [aFunc, bFunc, cFunc], 'Array#union | Function references');
+  arrayEquivalent([cFunc, cFunc].union([cFunc, cFunc]), [cFunc], 'Array#union | Function references');
+  arrayEquivalent([].union([aFunc]), [aFunc], 'Array#union | Function references');
+
+  equal([function() { return 'a'; }].union([function() { return 'a'; }]).length, 2, 'Array#union | Functions are never equivalent');
+
+
+  arrayEquivalent([/bar/].union([/bas/]), [/bar/,/bas/], 'Array#union | Regexes');
+  arrayEquivalent([[/bar/]].union([[/bas/,/bap/]]), [[/bar/],[/bas/,/bap/]], 'Array#union | Nested Regexes');
+  arrayEquivalent([{ reg: /bar/ }].union([{ reg: /bar/ }, { reg: /map/ }]), [{ reg: /bar/ }, { reg: /map/ }], 'Array#union | Object Regexes');
+
+  arrayEquivalent([true].union([false]), [true,false], 'Array#union | Booleans');
+  arrayEquivalent([true].union([true]), [true], 'Array#union | Same Booleans');
+  arrayEquivalent([[true]].union([[true, false]]), [[true],[true, false]], 'Array#union | Nested Booleans');
+  arrayEquivalent([{ b: false }].union([{ b: false }, { b: true }]), [{ b: false }, { b: true }], 'Array#union | Object Booleans');
+
+
+  arrayEquivalent([{},{}].union([{},{}]), [{}], 'Array#union | empty object array');
+  arrayEquivalent([[{}]].union([[{},{}]]), [[{}],[{},{}]], 'Array#union | nested empty object array');
+  arrayEquivalent([[{},{}]].union([[{},{}]]), [[{},{}]], 'Array#union | nested double object array');
+
+  arrayEquivalent([{0:1}].union([[1]]), [{0:1},[1]], 'Array#union | object posing as array');
+  arrayEquivalent([{}].union([[]]), [{},[]], 'Array#union | empty object vs. empty array');
+
+  arrayEquivalent([[[],1]].union([[[1]]]), [[[],1], [[1]]], 'Array#union | empty array, 1 vs. empty array WITH one');
+
+  var aObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    arr: [{foo:'bar'},{moo:'car'}],
+    date: new Date(2001, 5, 15)
+  }
+
+  var bObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    arr: [{foo:'bar'},{moo:'car'}],
+    date: new Date(2001, 5, 15)
+  }
+
+  var cObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofo/,
+    arr: [{foo:'bar'},{moo:'car'}],
+    date: new Date(2001, 5, 15)
+  }
+
+  var dObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    arr: [{foo:'bar'},{moo:'car'}],
+    date: new Date(2001, 8, 15)
+  }
+
+  var eObj = {
+    text: 'foo',
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    arr: [{foo:'bar'},{moo:'par'}],
+    date: new Date(2001, 8, 15)
+  }
+
+
+  arrayEquivalent([aObj].union([aObj]), [aObj], 'Array#union | Nested objects a + a');
+  arrayEquivalent([aObj].union([bObj]), [aObj], 'Array#union | Nested objects a + b');
+  arrayEquivalent([aObj,bObj,cObj].union([]), [aObj, cObj], 'Array#union | Nested objects a,b,c + []');
+  arrayEquivalent([].union([aObj,bObj,cObj]), [aObj, cObj], 'Array#union | Nested objects [] + a,b,c');
+  arrayEquivalent([aObj,bObj].union([cObj]), [aObj, cObj], 'Array#union | Nested objects a,b + c');
+  arrayEquivalent([cObj, cObj].union([cObj, cObj]), [cObj], 'Array#union | Nested objects c,c + c,c');
+  arrayEquivalent([aObj, bObj, cObj, dObj].union([]), [aObj, cObj, dObj], 'Array#union | Nested objects a,b,c,d + []');
+  arrayEquivalent([].union([aObj, bObj, cObj, dObj]), [aObj, cObj, dObj], 'Array#union | Nested objects a,b,c,d + a,c,d');
+  arrayEquivalent([aObj, bObj].union([cObj, dObj]), [aObj, cObj, dObj], 'Array#union | Nested objects a,b + c,d');
+
+  arrayEquivalent([aObj, bObj, cObj, dObj, eObj].union([aObj, bObj, cObj, dObj, eObj]), [aObj, cObj, dObj, eObj], 'Array#union | Nested objects a,b,c,d,e + a,b,c,d,e');
+
+  var aFuncObj = {
+    text: 'foo',
+    func: function() { return 'a'; },
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    date: new Date(2001, 5, 15)
+  }
+
+  var bFuncObj = {
+    text: 'foo',
+    func: function() { return 'a'; },
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    date: new Date(2001, 5, 15)
+  }
+
+  var cFuncObj = {
+    text: 'foo',
+    func: function() { return 'c'; },
+    arr:  ['a','b','c'],
+    reg: /moofa/,
+    date: new Date(2001, 5, 15)
+  }
+
+
+  arrayEquivalent([aFuncObj].union([aFuncObj]), [aFuncObj], 'Array#union | Nested objects with functions');
+  arrayEquivalent([aFuncObj].union([bFuncObj]), [aFuncObj], 'Array#union | Nested objects with functions');
+  arrayEquivalent([aFuncObj,bFuncObj,cFuncObj].union([]), [aFuncObj, cFuncObj], 'Array#union | Nested objects with functions');
+  arrayEquivalent([aFuncObj,bFuncObj].union([cFuncObj]), [aFuncObj, cFuncObj], 'Array#union | Nested objects with functions');
+  arrayEquivalent([cFuncObj, cFuncObj].union([cFuncObj, cFuncObj]), [cFuncObj], 'Array#union | Nested objects with functions meh');
+
+
+  arrayEquivalent([NaN,NaN].union([NaN,NaN]), [NaN], 'Array#union | NaN');
+  arrayEquivalent([null,null].union([null,null]), [null], 'Array#union | Null');
+  arrayEquivalent([undefined,undefined].union([undefined,undefined]), [undefined], 'Array#union | undefined');
+
+
+  var aObj = {
+    one:    1,
+    two:    2,
+    three:  3
+  }
+
+  var bObj = {
+    three:  3,
+    two:    2,
+    one:    1
+  }
+
+  equal([aObj].union([bObj]).length, 1, 'Array#union | Properties may not be in the same order.');
 
 });
 

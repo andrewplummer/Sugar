@@ -298,6 +298,7 @@ test('Function', function () {
 
   equal((function(first){ return first; }).fill(['a','b'])(), ['a','b'], 'Function#fill | can be passed arrays');
 
+  equal((function(){ return arguments; }).fill(0)('a'), [0, 'a'], 'Function#fill | falsy values can be passed');
 
 });
 

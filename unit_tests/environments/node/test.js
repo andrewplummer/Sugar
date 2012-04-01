@@ -1,7 +1,9 @@
 
 environment = 'node';
 
-require(process.env.SUGAR || '../../../lib/sugar.js');
+require(process.env.SUGAR_CORE || '../../../lib/core.js');
+require(process.env.SUGAR_DATES || '../../../lib/dates.js');
+require(process.env.SUGAR_DATES || '../../../lib/inflections.js');
 
 // Test suite
 require('../../javascripts/setup.js');
@@ -28,5 +30,6 @@ require('../sugar/date_fr.js')
 require('../sugar/date_it.js')
 require('../sugar/date_de.js')
 require('../sugar/date_ja.js')
+require('../sugar/inflections.js');
 
 syncTestsFinished();
