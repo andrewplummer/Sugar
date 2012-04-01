@@ -1595,6 +1595,18 @@ test('Array', function () {
   equal(arr.sample(11).length, 10, "Array#sample | can't sample more than the length of the array");
   equal(arr.sample(10).unique().length, arr.length, "Array#sample | should not sample the same element twice");
 
+	// Array#punctuate
+	
+	equal(['a', 'b', 'c'].punctuate(), 'a, b and c', "Array#punctuate | builds a simple grammatical list | no params");
+	equal(['a', 2, {c:3}].punctuate(), 'a, 2 and [object Object]', "Array#punctuate | default handler copes with objects other than strings | no params")
+  equal(['a', 'b'].punctuate(), 'a and b', "Array#punctuate | doesn't use ',' with 2 elements | no params");
+  equal([].punctuate(), '', "Array#punctuate | nothing is build with an empty list | no params");
+  equal([{letter:'a', count:2}, {letter:'b', count:4}, {letter:'c', count:3}].punctuate(function(n) {
+    return element.letter.repeat(element.count);
+  }), 'aa, bbbb and ccc', "Array#punctuate | custom handler can be used to manipulate elements | fn");
+  equal(['a'].punctuate(false), 'a only', "Array#punctuate | default handler can be used with false | false");
+  equal(['a'].punctuate(false, false), 'a', "Array#punctuate | only is used with 1 element | false false");
+
   // Array#findAll - Complex matching
 
   var people = [
