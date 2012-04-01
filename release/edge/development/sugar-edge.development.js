@@ -1865,7 +1865,44 @@
         if(arr.length == 0) break;
       }
       return arguments.length > 0 ? result : result[0];
-    }
+    },
+
+			/***
+	     * @method punctuate([fn(<n>)], [useOnly] = true)
+	     * @returns String
+	     * @short Builds a grammatical list from the array
+	     * @extra [fn] will be called on every object in the array. The default handler will be used if [fn] is not specified or is false. Supplying [useOnly] will omit 'only' for single length arrays.
+	     * @example
+	     *
+	     *   ['a', 'b', 'c'].punctuate() 							-> 'a, b and c';
+	     *   ['a'].punctuate()					   						-> 'a only';
+	     *   ['a', 2, {c:3}].punctuate()					 		-> 'a, 2 and [object Object]';
+			 *	 ['a', 'b', 'c'].punctuate(function(n) {
+			 *		// returns 'aa, bb and cc'
+			 *   	return n.repeat(2);
+			 *	 })
+			 *	 ['a'].punctuate(false, false)						-> 'a';
+	     *
+	     ***/
+			'punctuate': function(handler, useOnly) {
+			  var sentence = "";
+
+			  if (Object.isFunction(handler) == false || handler === false)
+			    handler = function(n) { return element.toString() + 'a'; };
+
+			  if (Object.isBoolean(useOnly) == false)
+			    useOnly = true;
+
+			  for (var i = 0; i < this.length; i++) {
+			      sentence += handler(this[i]);
+
+			      if (useOnly == true && this.length == 1) sentence += ' only';
+			      else if (i < (this.length - 2)) sentence += ', ';
+			      else if (i == (this.length - 2)) sentence += ' and ';
+			  }
+
+			  return sentence;
+			}
 
   });
 
@@ -3478,6 +3515,47 @@
     },
 
     /***
+		 * @method shorten(<length>, [position] = 'center', [countSplitter] = true, [splitter] = '...')
+	   * @returns String
+	   * @short Shortens the string at a given [position].
+	   * @extra Supply a [position] to move the [splitter]. [countSplitter] determinds whether the result's <length> will include [splitter].
+	   * @example
+	   *
+	   *   'just sittin on the dock of the bay'.shorten(25)                			-> 'just sittin... of the bay'
+	   *   'just sittin on the dock of the bay'.shorten(25, 'right')       			-> 'just sittin on the doc...'
+	   *   'just sittin on the dock of the bay'.shorten(25, 'left', false)			-> '...in on the dock of the bay'
+	   *   'just sittin on the dock of the bay'.shorten(25, 'left', false, '>>> ')	-> '>>> in on the dock of the bay'
+	   *
+	   ***/
+   	'shorten': function(length, position, countSplitter, splitter) {
+     if (this.length < 1 && length < 1) return String(this);
+
+     if (!Object.isString(splitter)) splitter = '...';
+     if (!Object.isBoolean(countSplitter)) countSplitter = true;
+
+     var balance = (countSplitter) ? splitter.length : 0;
+
+     if (length <= balance || this.length <= length) return String(this);
+
+     // Perform shortening
+     var shortened, beforeSplitter, afterSplitter;
+
+     if (position == 'left') {
+       afterSplitter = this.from(this.length - length + balance);
+       shortened = splitter + afterSplitter;
+     } else if (position == 'right') {
+       beforeSplitter = this.to(length - balance);
+       shortened = beforeSplitter + splitter;
+     } else {
+       beforeSplitter = this.to(((length / 2) - (balance / 2)).ceil());
+       afterSplitter = this.from(this.length - ((length / 2) - (balance / 2)).floor());
+       shortened = beforeSplitter + splitter + afterSplitter;
+     }
+
+     return shortened;
+   	},
+
+		/***
      * @method assign(<obj1>, <obj2>, ...)
      * @returns String
      * @short Assigns variables to tokens in a string.
