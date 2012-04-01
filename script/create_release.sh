@@ -1,9 +1,48 @@
-S=`awk 'END {print NR-0}' lib/sugar.js`; sed -e '1,2 d' -e "$S,$ d" lib/sugar.js > release/tmp.js
+#!/bin/bash
 
-java -jar script/jsmin/compiler.jar --warning_level QUIET --js release/tmp.js --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js --output_wrapper "(function(){%output%})();" | cat release/copyright.txt - | sed "s/VERSION/$1/" > release/sugar-$1.min.js
+DIR=`dirname $0`
+VERSION=$1
 
-java -jar script/jsmin/compiler.jar --warning_level QUIET --js release/tmp.js --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js --charset UTF-8 --output_wrapper "(function(){%output%})();" | cat release/copyright.txt - | sed "s/VERSION/$1/" | sed "s/  /\\\u2028\\\u2029/" > release/utf8/sugar-$1.min.js
+source $DIR/gcc_compile.sh
 
-cat release/copyright.txt lib/sugar.js | sed "s/VERSION/$1 (Development)/" > release/development/sugar-$1.development.js
+create_minified_script()
+{
+  file="lib/$1.js"
+  gcc_compile $file false
+  mv tmp/compiled.js release/$VERSION/minified/sugar-$VERSION-$1.min.js
+  cp $file release/$VERSION/development/sugar-$VERSION-$1.development.js
+}
 
-rm release/tmp.js
+fullname()
+{
+  path="release/$VERSION/$1/sugar-$VERSION"
+  if [ $2 ]; then
+    path="${path}-$2"
+  fi
+  if [ "$1" = "minified" ]; then
+    path="${path}.min.js"
+  else
+    path="${path}.development.js"
+  fi
+  echo $path
+}
+
+strip_license()
+{
+  path=$(fullname $1 $2)
+  echo "`sed "1,8 d" $path`"
+}
+
+mkdir release/$VERSION
+mkdir release/$VERSION/minified
+mkdir release/$VERSION/development
+
+create_minified_script 'core'
+create_minified_script 'dates'
+create_minified_script 'inflections'
+create_minified_script 'dates-only'
+
+
+strip_license "minified" "dates" | cat $(fullname "minified" "core") - > $(fullname "minified")
+cat $(fullname "development" "core") $(fullname "development" "dates") > $(fullname "development")
+

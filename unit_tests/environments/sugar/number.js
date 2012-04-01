@@ -202,6 +202,11 @@ test('Number', function () {
   equal((103).ordinalize(), '103rd', 'Number#ordinalize | 103');
   equal((104).ordinalize(), '104th', 'Number#ordinalize | 104');
   equal((105).ordinalize(), '105th', 'Number#ordinalize | 105');
+  equal((111).ordinalize(), '111th', 'Number#ordinalize | 111');
+  equal((112).ordinalize(), '112th', 'Number#ordinalize | 112');
+  equal((113).ordinalize(), '113th', 'Number#ordinalize | 113');
+  equal((114).ordinalize(), '114th', 'Number#ordinalize | 114');
+  equal((-1).ordinalize(), '-1st', 'Number#ordinalize | -1');
 
 
   equal((100).format(), '100', 'Number#format | 100')
@@ -320,178 +325,407 @@ test('Number', function () {
   equal((0.5).hex(4), '0000.8', 'Number#hex | padding 4 places | 0.5')
   equal((2.5).hex(4), '0002.8', 'Number#hex | padding 4 places | 2.8')
 
-  equal((4).milliseconds(), 4, 'Number#milliseconds | 4');
-  equal((3.25).milliseconds(), 3, 'Number#milliseconds | rounded');
 
-  equal((0).seconds(), 0, 'Number#seconds | 0');
-  equal((1).seconds(), 1000, 'Number#seconds | 1');
-  equal((30).seconds(), 30000, 'Number#seconds | 30');
-  equal((60).seconds(), 60000, 'Number#seconds | 60');
+  // Number#isInteger
 
-
-  equal((1).minutes(), 60000, 'Number#minutes | 1');
-  equal((10).minutes(), 600000, 'Number#minutes | 10');
-  equal((100).minutes(), 6000000, 'Number#minutes | 100');
-  equal((0).minutes(), 0, 'Number#minutes | 0');
-  equal((0.5).minutes(), 30000, 'Number#minutes | 0.5');
-  equal((1).minutes(), (60).seconds(), 'Number#minutes | 1 minute is 60 seconds');
-
-  equal((1).hours(), 3600000, 'Number#hours | 1');
-  equal((10).hours(), 36000000, 'Number#hours | 10');
-  equal((100).hours(), 360000000, 'Number#hours | 100');
-  equal((0).hours(), 0, 'Number#hours | 0');
-  equal((0.5).hours(), 1800000, 'Number#hours | 0.5');
-  equal((1).hours(), (60).minutes(), 'Number#hours | 1 hour is 60 minutes');
-  equal((1).hours(), (3600).seconds(), 'Number#hours | 1 hour is 3600 seconds');
+  equal((15).isInteger(), true, 'Number#isInteger | 15');
+  equal((15.2).isInteger(), false, 'Number#isInteger | 15.2');
+  equal((15.2668).isInteger(), false, 'Number#isInteger | 15.2668');
+  equal((15.0).isInteger(), true, 'Number#isInteger | 15.0');
+  equal(Number.prototype.isInteger.call('15'), true, 'Number#isInteger | "15"');
+  equal(Number.prototype.isInteger.call('15.8'), false, 'Number#isInteger | "15.8"');
 
 
-  equal((1).days(), 86400000, 'Number#days | 1');
-  equal((10).days(), 864000000, 'Number#days | 10');
-  equal((100).days(), 8640000000, 'Number#days | 100');
-  equal((0).days(), 0, 'Number#days | 0');
-  equal((0.5).days(), 43200000, 'Number#days | 0.5');
-  equal((1).days(), (24).hours(), 'Number#days | 1 day is 24 hours');
-  equal((1).days(), (1440).minutes(), 'Number#days | 1 day is 1440 minutes');
-  equal((1).days(), (86400).seconds(), 'Number#days | 1 day is 86400 seconds');
+  // Number#abbr
+
+  equal((1).abbr(), '1', 'Number#abbr | 1');
+  equal((10).abbr(), '10', 'Number#abbr | 10');
+  equal((100).abbr(), '100', 'Number#abbr | 100');
+  equal((1000).abbr(), '1k', 'Number#abbr | 1,000');
+  equal((10000).abbr(), '10k', 'Number#abbr | 10,000');
+  equal((100000).abbr(), '100k', 'Number#abbr | 100,000');
+  equal((1000000).abbr(), '1m', 'Number#abbr | 1,000,000');
+  equal((10000000).abbr(), '10m', 'Number#abbr | 10,000,000');
+  equal((100000000).abbr(), '100m', 'Number#abbr | 100,000,000');
+  equal((1000000000).abbr(), '1b', 'Number#abbr | 1,000,000,000');
+  equal((10000000000).abbr(), '10b', 'Number#abbr | 10,000,000,000');
+  equal((100000000000).abbr(), '100b', 'Number#abbr | 100,000,000,000');
+  equal((1000000000000).abbr(), '1t', 'Number#abbr | 1,000,000,000,000');
+  equal((1000000000000000000).abbr(), '1,000,000t', 'Number#abbr | 1,000,000,000,000,000,000');
+
+  equal((1).abbr(), '1', 'Number#abbr | decimal | 1');
+  equal((12).abbr(), '12', 'Number#abbr | decimal | 12');
+  equal((124).abbr(), '124', 'Number#abbr | decimal | 124');
+  equal((1249).abbr(), '1k', 'Number#abbr | decimal | 1,249');
+  equal((1749).abbr(), '2k', 'Number#abbr | decimal | 1,749');
+  equal((12495).abbr(), '12k', 'Number#abbr | decimal | 12,495');
+  equal((17495).abbr(), '17k', 'Number#abbr | decimal | 17,495');
+  equal((124958).abbr(), '125k', 'Number#abbr | decimal | 124,958');
+  equal((174958).abbr(), '175k', 'Number#abbr | decimal | 174,958');
+  equal((1249584).abbr(), '1m', 'Number#abbr | decimal | 1,249,584');
+  equal((1749584).abbr(), '2m', 'Number#abbr | decimal | 1,749,584');
+
+  equal((1).abbr(1), '1', 'Number#abbr | decimal 1 place | 1');
+  equal((12).abbr(1), '12', 'Number#abbr | decimal 1 place | 12');
+  equal((124).abbr(1), '124', 'Number#abbr | decimal 1 place | 124');
+  equal((1249).abbr(1), '1.2k', 'Number#abbr | decimal 1 place | 1,249');
+  equal((1749).abbr(1), '1.7k', 'Number#abbr | decimal 1 place | 1,749');
+  equal((12495).abbr(1), '12.5k', 'Number#abbr | decimal 1 place | 12,495');
+  equal((17495).abbr(1), '17.5k', 'Number#abbr | decimal 1 place | 17,495');
+  equal((124958).abbr(1), '125k', 'Number#abbr | decimal 1 place | 124,958');
+  equal((174958).abbr(1), '175k', 'Number#abbr | decimal 1 place | 174,958');
+  equal((1249584).abbr(1), '1.2m', 'Number#abbr | decimal 1 place | 1,249,584');
+  equal((1749584).abbr(1), '1.7m', 'Number#abbr | decimal 1 place | 1,749,584');
+
+  equal((1).abbr(2), '1', 'Number#abbr | decimal 2 places | 1');
+  equal((12).abbr(2), '12', 'Number#abbr | decimal 2 places | 12');
+  equal((124).abbr(2), '124', 'Number#abbr | decimal 2 places | 124');
+  equal((1249).abbr(2), '1.25k', 'Number#abbr | decimal 2 places | 1,249');
+  equal((1749).abbr(2), '1.75k', 'Number#abbr | decimal 2 places | 1,749');
+  equal((12495).abbr(2), '12.5k', 'Number#abbr | decimal 2 places | 12,495');
+  equal((17495).abbr(2), '17.5k', 'Number#abbr | decimal 2 places | 17,495');
+  equal((124958).abbr(2), '124.96k', 'Number#abbr | decimal 2 places | 124,958');
+  equal((174958).abbr(2), '174.96k', 'Number#abbr | decimal 2 places | 174,958');
+  equal((1249584).abbr(2), '1.25m', 'Number#abbr | decimal 2 places | 1,249,584');
+  equal((1749584).abbr(2), '1.75m', 'Number#abbr | decimal 2 places | 1,749,584');
+
+  equal((1).abbr(3), '1', 'Number#abbr | decimal 3 places | 1');
+  equal((12).abbr(3), '12', 'Number#abbr | decimal 3 places | 12');
+  equal((124).abbr(3), '124', 'Number#abbr | decimal 3 places | 124');
+  equal((1249).abbr(3), '1.249k', 'Number#abbr | decimal 3 places | 1,249');
+  equal((1749).abbr(3), '1.749k', 'Number#abbr | decimal 3 places | 1,749');
+  equal((12495).abbr(3), '12.495k', 'Number#abbr | decimal 3 places | 12,495');
+  equal((17495).abbr(3), '17.495k', 'Number#abbr | decimal 3 places | 17,495');
+  equal((124958).abbr(3), '124.958k', 'Number#abbr | decimal 3 places | 124,958');
+  equal((174958).abbr(3), '174.958k', 'Number#abbr | decimal 3 places | 174,958');
+  equal((1249584).abbr(3), '1.25m', 'Number#abbr | decimal 3 places | 1,249,584');
+  equal((1749584).abbr(3), '1.75m', 'Number#abbr | decimal 3 places | 1,749,584');
+
+  equal((1).abbr(-1), '0', 'Number#abbr | decimal -1 places | 1');
+  equal((12).abbr(-1), '10', 'Number#abbr | decimal -1 places | 12');
+  equal((124).abbr(-1), '120', 'Number#abbr | decimal -1 places | 124');
+  equal((1249).abbr(-1), '0k', 'Number#abbr | decimal -1 places | 1,249');
+  equal((1749).abbr(-1), '0k', 'Number#abbr | decimal -1 places | 1,749');
+  equal((12495).abbr(-1), '10k', 'Number#abbr | decimal -1 places | 12,495');
+  equal((17495).abbr(-1), '20k', 'Number#abbr | decimal -1 places | 17,495');
+  equal((124958).abbr(-1), '120k', 'Number#abbr | decimal -1 places | 124,958');
+  equal((174958).abbr(-1), '170k', 'Number#abbr | decimal -1 places | 174,958');
+  equal((1249584).abbr(-1), '0m', 'Number#abbr | decimal -1 places | 1,249,584');
+  equal((1749584).abbr(-1), '0m', 'Number#abbr | decimal -1 places | 1,749,584');
+
+  equal((0.1).abbr(), '0', 'Number#abbr | 0.1');
+  equal((0.01).abbr(), '0', 'Number#abbr | 0.01');
+  equal((0.001).abbr(), '0', 'Number#abbr | 0.001');
+  equal((0.0001).abbr(), '0', 'Number#abbr | 0.00001');
+  equal((0.00001).abbr(), '0', 'Number#abbr | 0.000001');
+  equal((0.000001).abbr(), '0', 'Number#abbr | 0.0000001');
+  equal((0.0000001).abbr(), '0', 'Number#abbr | 0.00000001');
+  equal((0.00000001).abbr(), '0', 'Number#abbr | 0.000000001');
+
+  equal((1.1).abbr(), '1', 'Number#abbr | 1.1');
+  equal((1.01).abbr(), '1', 'Number#abbr | 1.01');
+  equal((1.001).abbr(), '1', 'Number#abbr | 1.001');
+  equal((1.0001).abbr(), '1', 'Number#abbr | 1.00001');
+  equal((1.00001).abbr(), '1', 'Number#abbr | 1.000001');
+  equal((1.000001).abbr(), '1', 'Number#abbr | 1.0000001');
+  equal((1.0000001).abbr(), '1', 'Number#abbr | 1.00000001');
+  equal((1.00000001).abbr(), '1', 'Number#abbr | 1.000000001');
+
+  equal((1000.004).abbr(), '1k', 'Number#abbr | 1000.004');
+  equal((10000.004).abbr(), '10k', 'Number#abbr | 10,000.004');
+  equal((100000.004).abbr(), '100k', 'Number#abbr | 100,000.004');
+  equal((1000000.004).abbr(), '1m', 'Number#abbr | 1,000,000.004');
+
+  equal((1000.004).abbr(2), '1k', 'Number#abbr | 2 places | 1000.004');
+  equal((10000.004).abbr(2), '10k', 'Number#abbr | 2 places | 10,000.004');
+  equal((100000.004).abbr(2), '100k', 'Number#abbr | 2 places | 100,000.004');
+  equal((1000000.004).abbr(2), '1m', 'Number#abbr | 2 places | 1,000,000.004');
+
+  // Number#metric
+
+  equal((1).metric(0, false), '1', 'Number#metric | 1');
+  equal((10).metric(0, false), '10', 'Number#metric | 10');
+  equal((100).metric(0, false), '100', 'Number#metric | 100');
+  equal((1000).metric(0, false), '1k', 'Number#metric | 1,000');
+  equal((10000).metric(0, false), '10k', 'Number#metric | 10,000');
+  equal((100000).metric(0, false), '100k', 'Number#metric | 100,000');
+  equal((1000000).metric(0, false), '1M', 'Number#metric | 1,000,000');
+  equal((10000000).metric(0, false), '10M', 'Number#metric | 10,000,000');
+  equal((100000000).metric(0, false), '100M', 'Number#metric | 100,000,000');
+  equal((1000000000).metric(0, false), '1G', 'Number#metric | 1,000,000,000');
+  equal((10000000000).metric(0, false), '10G', 'Number#metric | 10,000,000,000');
+  equal((100000000000).metric(0, false), '100G', 'Number#metric | 100,000,000,000');
+  equal((1000000000000).metric(0, false), '1T', 'Number#metric | 10,000,000,000,000');
+  equal((10000000000000).metric(0, false), '10T', 'Number#metric | 100,000,000,000,000');
+  equal((100000000000000).metric(0, false), '100T', 'Number#metric | 1,000,000,000,000,000');
+  equal((1000000000000000).metric(0, false), '1P', 'Number#metric | 10,000,000,000,000,000');
+  equal((10000000000000000).metric(0, false), '10P', 'Number#metric | 100,000,000,000,000,000');
+  equal((100000000000000000).metric(0, false), '100P', 'Number#metric | 1,000,000,000,000,000,000');
+
+  equal((1).metric(0, false), '1', 'Number#metric | decimal | 1');
+  equal((12).metric(0, false), '12', 'Number#metric | decimal | 12');
+  equal((124).metric(0, false), '124', 'Number#metric | decimal | 124');
+  equal((1249).metric(0, false), '1k', 'Number#metric | decimal | 1,249');
+  equal((1749).metric(0, false), '2k', 'Number#metric | decimal | 1,749');
+  equal((12495).metric(0, false), '12k', 'Number#metric | decimal | 12,495');
+  equal((17495).metric(0, false), '17k', 'Number#metric | decimal | 17,495');
+  equal((124958).metric(0, false), '125k', 'Number#metric | decimal | 124,958');
+  equal((174958).metric(0, false), '175k', 'Number#metric | decimal | 174,958');
+  equal((1249584).metric(0, false), '1M', 'Number#metric | decimal | 1,249,584');
+  equal((1749584).metric(0, false), '2M', 'Number#metric | decimal | 1,749,584');
+  equal((1249584000).metric(0, false), '1G', 'Number#metric | decimal | 1,249,584,000');
+  equal((1749584000).metric(0, false), '2G', 'Number#metric | decimal | 1,749,584,000');
+
+  equal((1).metric(1, false), '1', 'Number#metric | decimal 1 place | 1');
+  equal((12).metric(1, false), '12', 'Number#metric | decimal 1 place | 12');
+  equal((124).metric(1, false), '124', 'Number#metric | decimal 1 place | 124');
+  equal((1249).metric(1, false), '1.2k', 'Number#metric | decimal 1 place | 1,249');
+  equal((1749).metric(1, false), '1.7k', 'Number#metric | decimal 1 place | 1,749');
+  equal((12495).metric(1, false), '12.5k', 'Number#metric | decimal 1 place | 12,495');
+  equal((17495).metric(1, false), '17.5k', 'Number#metric | decimal 1 place | 17,495');
+  equal((124958).metric(1, false), '125k', 'Number#metric | decimal 1 place | 124,958');
+  equal((174958).metric(1, false), '175k', 'Number#metric | decimal 1 place | 174,958');
+  equal((1249584).metric(1, false), '1.2M', 'Number#metric | decimal 1 place | 1,249,584');
+  equal((1749584).metric(1, false), '1.7M', 'Number#metric | decimal 1 place | 1,749,584');
+  equal((1249584000).metric(1, false), '1.2G', 'Number#metric | decimal 1 place | 1,249,584,000');
+  equal((1749584000).metric(1, false), '1.7G', 'Number#metric | decimal 1 place | 1,749,584,000');
+
+  equal((1).metric(2, false), '1', 'Number#metric | decimal 2 places | 1');
+  equal((12).metric(2, false), '12', 'Number#metric | decimal 2 places | 12');
+  equal((124).metric(2, false), '124', 'Number#metric | decimal 2 places | 124');
+  equal((1249).metric(2, false), '1.25k', 'Number#metric | decimal 2 places | 1,249');
+  equal((1749).metric(2, false), '1.75k', 'Number#metric | decimal 2 places | 1,749');
+  equal((12495).metric(2, false), '12.5k', 'Number#metric | decimal 2 places | 12,495');
+  equal((17495).metric(2, false), '17.5k', 'Number#metric | decimal 2 places | 17,495');
+  equal((124958).metric(2, false), '124.96k', 'Number#metric | decimal 2 places | 124,958');
+  equal((174958).metric(2, false), '174.96k', 'Number#metric | decimal 2 places | 174,958');
+  equal((1249584).metric(2, false), '1.25M', 'Number#metric | decimal 2 places | 1,249,584');
+  equal((1749584).metric(2, false), '1.75M', 'Number#metric | decimal 2 places | 1,749,584');
+  equal((1249584000).metric(2, false), '1.25G', 'Number#metric | decimal 2 places | 1,249,584,000');
+  equal((1749584000).metric(2, false), '1.75G', 'Number#metric | decimal 2 places | 1,749,584,000');
+
+  equal((1).metric(3, false), '1', 'Number#metric | decimal 3 places | 1');
+  equal((12).metric(3, false), '12', 'Number#metric | decimal 3 places | 12');
+  equal((124).metric(3, false), '124', 'Number#metric | decimal 3 places | 124');
+  equal((1249).metric(3, false), '1.249k', 'Number#metric | decimal 3 places | 1,249');
+  equal((1749).metric(3, false), '1.749k', 'Number#metric | decimal 3 places | 1,749');
+  equal((12495).metric(3, false), '12.495k', 'Number#metric | decimal 3 places | 12,495');
+  equal((17495).metric(3, false), '17.495k', 'Number#metric | decimal 3 places | 17,495');
+  equal((124958).metric(3, false), '124.958k', 'Number#metric | decimal 3 places | 124,958');
+  equal((174958).metric(3, false), '174.958k', 'Number#metric | decimal 3 places | 174,958');
+  equal((1249584).metric(3, false), '1.25M', 'Number#metric | decimal 3 places | 1,249,584');
+  equal((1749584).metric(3, false), '1.75M', 'Number#metric | decimal 3 places | 1,749,584');
+  equal((1249584000).metric(3, false), '1.25G', 'Number#metric | decimal 3 places | 1,249,584,000');
+  equal((1749584000).metric(3, false), '1.75G', 'Number#metric | decimal 3 places | 1,749,584,000');
 
 
-  equal((1).weeks(), 604800000, 'Number#weeks | 1');
-  equal((0.5).weeks(), 302400000, 'Number#weeks | 0.5');
-  equal((10).weeks(), 6048000000, 'Number#weeks | 10');
-  equal((0).weeks(), 0, 'Number#weeks | 0');
-  equal((1).weeks(), (7).days(), 'Number#weeks | 1 week is 7 days');
-  equal((1).weeks(), (24 * 7).hours(), 'Number#weeks | 1 week is 24 * 7 hours');
-  equal((1).weeks(), (60 * 24 * 7).minutes(), 'Number#weeks | 1 week is 60 * 24 * 7 minutes');
-  equal((1).weeks(), (60 * 60 * 24 * 7).seconds(), 'Number#weeks | 1 week is 60 * 60 * 24 * 7 seconds');
+  equal((1).metric(-1, false), '0', 'Number#metric | decimal -1 places | 1');
+  equal((12).metric(-1, false), '10', 'Number#metric | decimal -1 places | 12');
+  equal((124).metric(-1, false), '120', 'Number#metric | decimal -1 places | 124');
+  equal((1249).metric(-1, false), '0k', 'Number#metric | decimal -1 places | 1,249');
+  equal((1749).metric(-1, false), '0k', 'Number#metric | decimal -1 places | 1,749');
+  equal((12495).metric(-1, false), '10k', 'Number#metric | decimal -1 places | 12,495');
+  equal((17495).metric(-1, false), '20k', 'Number#metric | decimal -1 places | 17,495');
+  equal((124958).metric(-1, false), '120k', 'Number#metric | decimal -1 places | 124,958');
+  equal((174958).metric(-1, false), '170k', 'Number#metric | decimal -1 places | 174,958');
+  equal((1249584).metric(-1, false), '0M', 'Number#metric | decimal -1 places | 1,249,584');
+  equal((1749584).metric(-1, false), '0M', 'Number#metric | decimal -1 places | 1,749,584');
+  equal((1249584000).metric(-1, false), '0G', 'Number#metric | decimal -1 places | 1,249,584,000');
+  equal((1749584000).metric(-1, false), '0G', 'Number#metric | decimal -1 places | 1,749,584,000');
 
-  equal((1).months(), 2629800000, 'Number#months | 1 month');
-  equal((0.5).months(), 1314900000, 'Number#months | 0.5 month');
-  equal((10).months(), 26298000000, 'Number#months | 10 month');
-  equal((0).months(), 0, 'Number#months | 0 months');
-  equal((1).months(), (30.4375).days(), 'Number#months | 1 month is 30.4375 days');
-  equal((1).months(), (24 * 30.4375).hours(), 'Number#months | 1 month is 24 * 30.4375 hours');
-  equal((1).months(), (60 * 24 * 30.4375).minutes(), 'Number#months | 1 month is 60 * 24 * 30.4375 minutes');
-  equal((1).months(), (60 * 60 * 24 * 30.4375).seconds(), 'Number#months | 1 month is 60 * 60 * 24 * 30.4375 seconds');
+  equal((0.1000000000000).metric(), '100m',    'Number#metric | fractional | 0.1');
+  equal((0.0100000000000).metric(), '10m',     'Number#metric | fractional | 0.01');
+  equal((0.0010000000000).metric(), '1m',      'Number#metric | fractional | 0.001');
+  equal((0.0001000000000).metric(), '100μ',    'Number#metric | fractional | 0.0001');
+  equal((0.0000100000000).metric(), '10μ',     'Number#metric | fractional | 0.00001');
+  equal((0.0000010000000).metric(), '1μ',      'Number#metric | fractional | 0.000001');
+  equal((0.0000001000000).metric(), '100n',    'Number#metric | fractional | 0.0000001');
+  equal((0.0000000100000).metric(), '10n',     'Number#metric | fractional | 0.00000001');
+  equal((0.0000000010000).metric(), '1n',      'Number#metric | fractional | 0.000000001');
+  equal((0.0000000001000).metric(), '0.1n',    'Number#metric | fractional | 0.0000000001');
+  equal((0.0000000000100).metric(), '0.01n',   'Number#metric | fractional | 0.00000000001');
+  equal((0.0000000000010).metric(), '0.001n',  'Number#metric | fractional | 0.000000000001');
+  equal((0.0000000000001).metric(), '0.0001n', 'Number#metric | fractional | 0.0000000000001');
 
-  equal((1).years(), 31557600000, 'Number#years | 1');
-  equal((0.5).years(), 15778800000, 'Number#years | 0.5');
-  equal((10).years(), 315576000000, 'Number#years | 10');
-  equal((0).years(), 0, 'Number#years | 0');
-  equal((1).years(), (365.25).days(), 'Number#years | 1 year is 365.25 days');
-  equal((1).years(), (24 * 365.25).hours(), 'Number#years | 1 year is 24 * 365.25 hours');
-  equal((1).years(), (60 * 24 * 365.25).minutes(), 'Number#years | 1 year is 60 * 24 * 365.25 minutes');
-  equal((1).years(), (60 * 60 * 24 * 365.25).seconds(), 'Number#years | 1 year is 60 * 60 * 24 * 365.25 seconds');
+  equal((0.1111111111111).metric(), '111m',    'Number#metric | fractional | 0 places | 0.1111111111111');
+  equal((0.0111111111111).metric(), '11m',     'Number#metric | fractional | 0 places | 0.0111111111111');
+  equal((0.0011111111111).metric(), '1m',      'Number#metric | fractional | 0 places | 0.0011111111111');
+  equal((0.0001111111111).metric(), '111μ',    'Number#metric | fractional | 0 places | 0.0001111111111');
+  equal((0.0000111111111).metric(), '11μ',     'Number#metric | fractional | 0 places | 0.0000111111111');
+  equal((0.0000011111111).metric(), '1μ',      'Number#metric | fractional | 0 places | 0.0000011111111');
+  equal((0.0000001111111).metric(), '111n',    'Number#metric | fractional | 0 places | 0.0000001111111');
+  equal((0.0000000111111).metric(), '11n',     'Number#metric | fractional | 0 places | 0.0000000111111');
+  equal((0.0000000011111).metric(), '1n',      'Number#metric | fractional | 0 places | 0.0000000011111');
+  equal((0.0000000001111).metric(), '0.1n',    'Number#metric | fractional | 0 places | 0.0000000001111');
+  equal((0.0000000000111).metric(), '0.01n',   'Number#metric | fractional | 0 places | 0.0000000000111');
+  equal((0.0000000000011).metric(), '0.001n',  'Number#metric | fractional | 0 places | 0.0000000000011');
+  equal((0.0000000000001).metric(), '0.0001n', 'Number#metric | fractional | 0 places | 0.0000000000001');
+
+  equal((0.1111111111111).metric(2, false), '111.11m', 'Number#metric | fractional | 2 places | 0.1111111111111');
+  equal((0.0111111111111).metric(2, false), '11.11m',  'Number#metric | fractional | 2 places | 0.0111111111111');
+  equal((0.0011111111111).metric(2, false), '1.11m',   'Number#metric | fractional | 2 places | 0.0011111111111');
+  equal((0.0001111111111).metric(2, false), '111.11μ', 'Number#metric | fractional | 2 places | 0.0001111111111');
+  equal((0.0000111111111).metric(2, false), '11.11μ',  'Number#metric | fractional | 2 places | 0.0000111111111');
+  equal((0.0000011111111).metric(2, false), '1.11μ',   'Number#metric | fractional | 2 places | 0.0000011111111');
+  equal((0.0000001111111).metric(2, false), '111.11n', 'Number#metric | fractional | 2 places | 0.0000001111111');
+  equal((0.0000000111111).metric(2, false), '11.11n',  'Number#metric | fractional | 2 places | 0.0000000111111');
+  equal((0.0000000011111).metric(2, false), '1.11n',   'Number#metric | fractional | 2 places | 0.0000000011111');
+  equal((0.0000000001111).metric(2, false), '0.1n',    'Number#metric | fractional | 2 places | 0.0000000001111');
+  equal((0.0000000000111).metric(2, false), '0.01n',   'Number#metric | fractional | 2 places | 0.0000000000111');
+  equal((0.0000000000011).metric(2, false), '0.001n',  'Number#metric | fractional | 2 places | 0.0000000000011');
+  equal((0.0000000000001).metric(2, false), '0.0001n', 'Number#metric | fractional | 2 places | 0.0000000000001');
+
+  equal((1.1111111111111).metric(), '1', 'Number#metric | fractional | 0 places | 1.1111111111111');
+  equal((1.0111111111111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0111111111111');
+  equal((1.0011111111111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0011111111111');
+  equal((1.0001111111111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0001111111111');
+  equal((1.0000111111111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000111111111');
+  equal((1.0000011111111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000011111111');
+  equal((1.0000001111111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000001111111');
+  equal((1.0000000111111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000111111');
+  equal((1.0000000011111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000011111');
+  equal((1.0000000001111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000001111');
+  equal((1.0000000000111).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000000111');
+  equal((1.0000000000011).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000000011');
+  equal((1.0000000000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000000001');
+
+  equal((1.1111111111111).metric(2, false), '1.11', 'Number#metric | fractional | 2 places | 1.1111111111111');
+  equal((1.0111111111111).metric(2, false), '1.01', 'Number#metric | fractional | 2 places | 1.0111111111111');
+  equal((1.0011111111111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0011111111111');
+  equal((1.0001111111111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0001111111111');
+  equal((1.0000111111111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000111111111');
+  equal((1.0000011111111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000011111111');
+  equal((1.0000001111111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000001111111');
+  equal((1.0000000111111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000111111');
+  equal((1.0000000011111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000011111');
+  equal((1.0000000001111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000001111');
+  equal((1.0000000000111).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000000111');
+  equal((1.0000000000011).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000000011');
+  equal((1.0000000000001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000000001');
+
+  equal((1.1000000000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.1000000000001');
+  equal((1.0100000000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0100000000001');
+  equal((1.0010000000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0010000000001');
+  equal((1.0001000000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0001000000001');
+  equal((1.0000100000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000100000001');
+  equal((1.0000010000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000010000001');
+  equal((1.0000001000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000001000001');
+  equal((1.0000000100001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000100001');
+  equal((1.0000000010001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000010001');
+  equal((1.0000000001001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000001001');
+  equal((1.0000000000101).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000000101');
+  equal((1.0000000000011).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000000011');
+  equal((1.0000000000001).metric(), '1', 'Number#metric | fractional | 0 places | 1.0000000000001');
+
+  equal((1.1000000000001).metric(2, false), '1.1',  'Number#metric | fractional | 2 places | 1.1000000000001');
+  equal((1.0100000000001).metric(2, false), '1.01', 'Number#metric | fractional | 2 places | 1.0100000000001');
+  equal((1.0010000000001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0010000000001');
+  equal((1.0001000000001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0001000000001');
+  equal((1.0000100000001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000100000001');
+  equal((1.0000010000001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000010000001');
+  equal((1.0000001000001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000001000001');
+  equal((1.0000000100001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000100001');
+  equal((1.0000000010001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000010001');
+  equal((1.0000000001001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000001001');
+  equal((1.0000000000101).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000000101');
+  equal((1.0000000000011).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000000011');
+  equal((1.0000000000001).metric(2, false), '1',    'Number#metric | fractional | 2 places | 1.0000000000001');
+
+  equal((12334.5880).metric(3, false), '12.335k', 'Number#metric | fractional | 3 places | 12334.5880');
+  equal((12334.5880).metric(), '12k', 'Number#metric | fractional | 0 places | 12334.5880');
+  equal((.588500).metric(9, false), '588.5m', 'Number#metric | fractional | 9 places | .5885');
+  equal((.580085).metric(9, false), '580.085m', 'Number#metric | fractional | 9 places | .580085');
+  equal((.580085).metric(7, false), '580.085m', 'Number#metric | fractional | 7 places | .580085');
+  equal((.580085).metric(5, false), '580.085m', 'Number#metric | fractional | 5 places | .580085');
+  equal((.580085).metric(3, false), '580.085m', 'Number#metric | fractional | 3 places | .580085');
+  equal((.580085).metric(1, false), '580.1m', 'Number#metric | fractional | 1 places | .580085');
+
+
+  equal((0.0001).metric()     + 'm', '100μm',       'Number#metric | 100μm');
+  equal((0.001).metric()      + 'm', '1mm',         'Number#metric | 1mm');
+  equal((0.01).metric()       + 'm', '10mm',        'Number#metric | 10mm');
+  equal((0.1).metric()        + 'm', '100mm',       'Number#metric | 100mm');
+  equal((1).metric()          + 'm', '1m',          'Number#metric | 1m');
+  equal((1000).metric()       + 'm', '1km',         'Number#metric | 1km');
+  equal((1000000).metric()    + 'm', '1,000km',     'Number#metric | 1,000km');
+  equal((1000000000).metric() + 'm', '1,000,000km', 'Number#metric | 1,000,000km');
+
+  equal((1000000000).metric(0, 0) + 'm', '1,000,000,000m', 'Number#metric | limited to meters | 1,000,000,000m');
+  equal((1000000).metric(0, 0)    + 'm', '1,000,000m',     'Number#metric | limited to meters | 1,000,000m');
+  equal((1000).metric(0, 0)       + 'm', '1,000m',         'Number#metric | limited to meters | 1,000m');
+  equal((1).metric(0, 0)          + 'm', '1m',             'Number#metric | limited to meters | 1m');
+
+  equal((12323.424558).metric(3, 0), '12,323.425', 'Number#metric | limited and 3 decimals');
+  equal((1).metric(0, -1) + 'm', '1,000mm', 'Number#metric | 1 meter is 1,000mm');
 
 
 
-  /* compatibility */
+  // Number#bytes
 
-  equal((1).second(), 1000, 'Number#second | 1 second');
-  equal((1).minute(), 60000, 'Number#minute | 1 minute');
-  equal((1).hour(), 3600000, 'Number#hour | 1 hour');
-  equal((1).day(), 86400000, 'Number#day | 1 day');
-  equal((1).week(), 604800000, 'Number#week | 1 week');
-  equal((1).month(), 2629800000, 'Number#month | 1 month');
-  equal((1).year(), 31557600000, 'Number#year | 1 year');
+  equal((1).bytes(),                  '1B' ,       'Number#bytes | 1B       ');
+  equal((10).bytes(),                 '10B' ,      'Number#bytes | 10B      ');
+  equal((100).bytes(),                '100B' ,     'Number#bytes | 100B     ');
+  equal((1000).bytes(),               '1kB' ,      'Number#bytes | 1kB      ');
+  equal((10000).bytes(),              '10kB' ,     'Number#bytes | 10kB     ');
+  equal((100000).bytes(),             '98kB' ,     'Number#bytes | 100kB    ');
+  equal((1000000).bytes(),            '1MB' ,      'Number#bytes | 1MB      ');
+  equal((10000000).bytes(),           '10MB' ,     'Number#bytes | 10MB     ');
+  equal((100000000).bytes(),          '95MB' ,     'Number#bytes | 100MB    ');
+  equal((1000000000).bytes(),         '1GB' ,      'Number#bytes | 1GB      ');
+  equal((10000000000).bytes(),        '9GB' ,      'Number#bytes | 10GB     ');
+  equal((100000000000).bytes(),       '93GB' ,     'Number#bytes | 100GB    ');
+  equal((1000000000000).bytes(),      '1TB' ,      'Number#bytes | 1TB      ');
+  equal((10000000000000).bytes(),     '9TB' ,      'Number#bytes | 10TB     ');
+  equal((100000000000000).bytes(),    '91TB' ,     'Number#bytes | 100TB    ');
+  equal((1000000000000000).bytes(),   '909TB' ,    'Number#bytes | 1,000TB  ');
+  equal((10000000000000000).bytes(),  '9,095TB' ,  'Number#bytes | 10,000TB ');
+  equal((100000000000000000).bytes(), '90,949TB' , 'Number#bytes | 10,000TB ');
 
+  equal((1).bytes(0, false),                  '1B' ,   'Number#bytes | no limit | 1B       ');
+  equal((10).bytes(0, false),                 '10B' ,  'Number#bytes | no limit | 10B      ');
+  equal((100).bytes(0, false),                '100B' , 'Number#bytes | no limit | 100B     ');
+  equal((1000).bytes(0, false),               '1kB' ,  'Number#bytes | no limit | 1kB      ');
+  equal((10000).bytes(0, false),              '10kB' , 'Number#bytes | no limit | 10kB     ');
+  equal((100000).bytes(0, false),             '98kB' , 'Number#bytes | no limit | 100kB    ');
+  equal((1000000).bytes(0, false),            '1MB' ,  'Number#bytes | no limit | 1MB      ');
+  equal((10000000).bytes(0, false),           '10MB' , 'Number#bytes | no limit | 10MB     ');
+  equal((100000000).bytes(0, false),          '95MB' , 'Number#bytes | no limit | 100MB    ');
+  equal((1000000000).bytes(0, false),         '1GB' ,  'Number#bytes | no limit | 1GB      ');
+  equal((10000000000).bytes(0, false),        '9GB' ,  'Number#bytes | no limit | 10GB     ');
+  equal((100000000000).bytes(0, false),       '93GB' , 'Number#bytes | no limit | 100GB    ');
+  equal((1000000000000).bytes(0, false),      '1TB' ,  'Number#bytes | no limit | 1TB      ');
+  equal((10000000000000).bytes(0, false),     '9TB' ,  'Number#bytes | no limit | 10TB     ');
+  equal((100000000000000).bytes(0, false),    '91TB' , 'Number#bytes | no limit | 100TB    ');
+  equal((1000000000000000).bytes(0, false),   '1PB' ,  'Number#bytes | no limit | 1,000TB  ');
+  equal((10000000000000000).bytes(0, false),  '9PB' ,  'Number#bytes | no limit | 10,000TB ');
+  equal((100000000000000000).bytes(0, false), '89PB' , 'Number#bytes | no limit | 10,000TB ');
 
-  dateEqual((1).secondAfter(), 1000, 'Number#secondAfter | 1');
-  dateEqual((5).secondsAfter(), 5000, 'Number#secondsAfter | 5');
-  dateEqual((10).minutesAfter(), 600000, 'Number#minutesAfter | 10');
+  equal((1).bytes(2, false),                  '1B' ,      'Number#bytes | no limit, 2 places | 1B       ');
+  equal((10).bytes(2, false),                 '10B' ,     'Number#bytes | no limit, 2 places | 10B      ');
+  equal((100).bytes(2, false),                '100B' ,    'Number#bytes | no limit, 2 places | 100B     ');
+  equal((1000).bytes(2, false),               '0.98kB' ,  'Number#bytes | no limit, 2 places | 1kB      ');
+  equal((10000).bytes(2, false),              '9.77kB' ,  'Number#bytes | no limit, 2 places | 10kB     ');
+  equal((100000).bytes(2, false),             '97.66kB' , 'Number#bytes | no limit, 2 places | 100kB    ');
+  equal((1000000).bytes(2, false),            '0.95MB' ,  'Number#bytes | no limit, 2 places | 1MB      ');
+  equal((10000000).bytes(2, false),           '9.54MB' ,  'Number#bytes | no limit, 2 places | 10MB     ');
+  equal((100000000).bytes(2, false),          '95.37MB' , 'Number#bytes | no limit, 2 places | 100MB    ');
+  equal((1000000000).bytes(2, false),         '0.93GB' ,  'Number#bytes | no limit, 2 places | 1GB      ');
+  equal((10000000000).bytes(2, false),        '9.31GB' ,  'Number#bytes | no limit, 2 places | 10GB     ');
+  equal((100000000000).bytes(2, false),       '93.13GB' , 'Number#bytes | no limit, 2 places | 100GB    ');
+  equal((1000000000000).bytes(2, false),      '0.91TB' ,  'Number#bytes | no limit, 2 places | 1TB      ');
+  equal((10000000000000).bytes(2, false),     '9.09TB' ,  'Number#bytes | no limit, 2 places | 10TB     ');
+  equal((100000000000000).bytes(2, false),    '90.95TB' , 'Number#bytes | no limit, 2 places | 100TB    ');
+  equal((1000000000000000).bytes(2, false),   '0.89PB' ,  'Number#bytes | no limit, 2 places | 1,000TB  ');
+  equal((10000000000000000).bytes(2, false),  '8.88PB' ,  'Number#bytes | no limit, 2 places | 10,000TB ');
+  equal((100000000000000000).bytes(2, false), '88.82PB' , 'Number#bytes | no limit, 2 places | 10,000TB ');
 
-  dateEqual((1).secondFromNow(), 1000, 'Number#secondFromNow | 1');
-  dateEqual((5).secondsFromNow(), 5000, 'Number#secondsFromNow | 5');
-  dateEqual((10).minutesFromNow(), 600000, 'Number#minutesFromNow | 10');
+  equal((1024).bytes(),     '1kB', 'Number#bytes | 1024 bytes is 1kB');
+  equal((1024).bytes(2),    '1kB', 'Number#bytes | 2 places | 1024 bytes is 1kB');
+  equal((1048576).bytes(),  '1MB', 'Number#bytes | 2 places | 1048576 bytes is 1MB');
+  equal((1048576).bytes(2), '1MB', 'Number#bytes | 2 places | 1048576 bytes is 1MB');
 
-  dateEqual((1).secondAgo(), -1000, 'Number#secondAgo | 1');
-  dateEqual((5).secondsAgo(), -5000, 'Number#secondAgo | 5');
-  dateEqual((10).secondsAgo(), -10000, 'Number#secondAgo | 10');
-
-  dateEqual((1).secondBefore(), -1000, 'Number#secondBefore | 1');
-  dateEqual((5).secondsBefore(), -5000, 'Number#secondBefore | 5');
-  dateEqual((10).secondsBefore(), -10000, 'Number#secondBefore | 10');
-
-
-  dateEqual((5).minutesAfter((5).minutesAgo()), 0, 'Number#minutesAfter | 5 minutes after 5 minutes ago');
-  dateEqual((10).minutesAfter((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesAfter | 10 minutes after 5 minutes ago');
-
-  dateEqual((5).minutesFromNow((5).minutesAgo()), 0, 'Number#minutesFromNow | 5 minutes from now 5 minutes ago');
-  dateEqual((10).minutesFromNow((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesFromNow | 10 minutes from now 5 minutes ago');
-
-  dateEqual((5).minutesAgo((5).minutesFromNow()), 0, 'Number#minutesAgo | 5 minutes ago 5 minutes from now');
-  dateEqual((10).minutesAgo((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesAgo | 10 minutes ago 5 minutes from now');
-
-  dateEqual((5).minutesBefore((5).minutesFromNow()), 0, 'Number#minutesBefore | 5 minutes before 5 minutes from now');
-  dateEqual((10).minutesBefore((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesBefore | 10 minutes before 5 minutes from now');
-
-
-  var christmas = new Date('December 25, 1965');
-  dateEqual((5).minutesBefore(christmas), getRelativeDate.call(christmas, null, null, null, null, -5), 'Number#minutesBefore | 5 minutes before christmas');
-  dateEqual((5).minutesAfter(christmas), getRelativeDate.call(christmas, null, null, null, null, 5), 'Number#minutesAfter | 5 minutes after christmas');
-
-  dateEqual((5).hoursBefore(christmas), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | 5 hours before christmas');
-  dateEqual((5).hoursAfter(christmas), getRelativeDate.call(christmas, null, null, null, 5), 'Number#hoursAfter | 5 hours after christmas');
-
-  dateEqual((5).daysBefore(christmas), getRelativeDate.call(christmas, null, null, -5), 'Number#daysBefore | 5 days before christmas');
-  dateEqual((5).daysAfter(christmas), getRelativeDate.call(christmas, null, null, 5), 'Number#daysAfter | 5 days after christmas');
-
-  dateEqual((5).weeksBefore(christmas), getRelativeDate.call(christmas, null, null, -35), 'Number#weeksBefore | 5 weeks before christmas');
-  dateEqual((5).weeksAfter(christmas), getRelativeDate.call(christmas, null, null, 35), 'Number#weeksAfter | 5 weeks after christmas');
-
-  dateEqual((5).monthsBefore(christmas), getRelativeDate.call(christmas, null, -5), 'Number#monthsBefore | 5 months before christmas');
-  dateEqual((5).monthsAfter(christmas), getRelativeDate.call(christmas, null, 5), 'Number#monthsAfter | 5 months after christmas');
-
-  dateEqual((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore | 5 years before christmas');
-  dateEqual((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter | 5 years after christmas');
-
-  dateEqual((5).hoursBefore(1965, 11, 25), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | accepts numbers');
-
-  // Hooking it all up!!
-
-  // Try this in WinXP:
-  // 1. Set timezone to Damascus
-  // 2. var d = new Date(1998, 3, 3, 17); d.setHours(0); d.getHours();
-  // 3. hours = 23
-  // 4. PROFIT $$$
-
-  dateEqual((5).minutesBefore('April 2rd, 1998'), new Date(1998, 3, 1, 23, 55), 'Number#minutesBefore | 5 minutes before April 3rd, 1998');
-  dateEqual((5).minutesAfter('January 2nd, 2005'), new Date(2005, 0, 2, 0, 5), 'Number#minutesAfter | 5 minutes after January 2nd, 2005');
-  dateEqual((5).hoursBefore('the first day of 2005'), new Date(2004, 11, 31, 19), 'Number#hoursBefore | 5 hours before the first day of 2005');
-  dateEqual((5).hoursAfter('the last day of 2006'), new Date(2006, 11, 31, 5), 'Number#hoursAfter | 5 hours after the last day of 2006');
-  dateEqual((5).hoursAfter('the end of 2006'), new Date(2007, 0, 1, 4, 59, 59, 999), 'Number#hoursAfter | 5 hours after the end of 2006');
-  dateEqual((5).daysBefore('last week monday'), getDateWithWeekdayAndOffset(1, -7).rewind({ days: 5 }), 'Number#daysBefore | 5 days before last week monday');
-  dateEqual((5).daysAfter('next tuesday'), getDateWithWeekdayAndOffset(2, 7).advance({ days: 5 }), 'Number#daysAfter | 5 days after next week tuesday');
-  dateEqual((5).weeksBefore('today'), getRelativeDate(null, null, -35).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#weeksBefore | 5 weeks before today');
-  dateEqual((5).weeksAfter('now'), getRelativeDate(null, null, 35), 'Number#weeksAfter | 5 weeks after now');
-  dateEqual((5).monthsBefore('today'), getRelativeDate(null, -5).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#monthsBefore | 5 months before today');
-  dateEqual((5).monthsAfter('now'), getRelativeDate(null, 5), 'Number#monthsAfter | 5 months after now');
-
-
-
-  // Number#compare
-
-  equal((0).compare(0), 0, 'Number#compare | 0 is equal to 0');
-  equal((0).compare(-1), 1, 'Number#compare | 0 is greater than -1');
-  equal((0).compare(1), -1, 'Number#compare | 0 is less than 1');
-  equal((1).compare(1), 0, 'Number#compare | 1 is equal to 1');
-  equal((1).compare(2), -1, 'Number#compare | 1 is less than 2');
-  equal((1).compare(0), 1, 'Number#compare | 1 is greater than than 0');
-  equal((5).compare(15), -10, 'Number#compare | 5 is less than than 15');
-  equal((15).compare(5), 10, 'Number#compare | 15 is greater than than 5');
-
-  equal((0).compare('0'), 0, 'Number#compare | strings are coerced | 0 is equal to 0');
-  equal((0).compare('-1'), 1, 'Number#compare | strings are coerced | 0 is greater than -1');
-  equal((0).compare('1'), -1, 'Number#compare | strings are coerced | 0 is less than 1');
-  equal((1).compare('1'), 0, 'Number#compare | strings are coerced | 1 is equal to 1');
-  equal((1).compare('2'), -1, 'Number#compare | strings are coerced | 1 is less than 2');
-  equal((1).compare('0'), 1, 'Number#compare | strings are coerced | 1 is greater than than 0');
-  equal((5).compare('15'), -10, 'Number#compare | strings are coerced | 5 is less than than 15');
-  equal((15).compare('5'), 10, 'Number#compare | strings are coerced | 15 is greater than than 5');
-
-  equal((15).compare('wasabi'), NaN, 'Number#compare | cannot compare numbers to strings');
-  equal((15).compare({ foo: 'bar' }), NaN, 'Number#compare | cannot compare numbers to objects');
-  equal((15).compare(/wasabi/), NaN, 'Number#compare | cannot compare numbers to regexps');
-  equal((15).compare(new Date) < 0, true, 'Number#compare | Dates are implicitly converted to numbers');
+  equal(((10).pow(16)).bytes(), '9,095TB', 'Number#bytes | 10 ^ 16 bytes');
+  equal(((10).pow(16)).bytes(-2), '9,100TB', 'Number#bytes | 10 ^ 16 bytes | -2 places');
 
 });
 

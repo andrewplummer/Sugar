@@ -71,6 +71,12 @@ test('String', function () {
   equal('räksmörgås'.encodeBase64(), 'cuRrc232cmflcw==', 'String#encodeBase64 | shrimp sandwich');
   equal('rÃ¤ksmÃ¶rgÃ¥s'.encodeBase64(), 'csOka3Ntw7ZyZ8Olcw==', 'String#encodeBase64 | shrimp sandwich');
 
+  // Ensure that btoa and atob don't leak in node
+  if(environment == 'node') {
+    equal(typeof btoa, 'undefined', 'btoa global does not exist in node');
+    equal(typeof atob, 'undefined', 'atob global does not exist in node');
+  }
+
   equal('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='.decodeBase64(), 'This webpage is not available', 'String#decodeBase64 | webpage');
   equal('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ=='.decodeBase64(), 'I grow, I prosper; Now, gods, stand up for bastards!', 'String#decodeBase64 | gods');
 
@@ -81,10 +87,12 @@ test('String', function () {
   equal('reuben sandwich'.capitalize(), 'Reuben sandwich', 'String#capitalize | should capitalize first letter of first word only.', { mootools: 'Reuben Sandwich' });
   equal('Reuben sandwich'.capitalize(), 'Reuben sandwich', 'String#capitalize | should leave the string alone', { mootools: 'Reuben Sandwich' });
   equal('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', 'String#capitalize | should uncapitalize all other letters', { mootools: 'REUBEN SANDWICH' });
+  equal('фыва йцук'.capitalize(), 'Фыва йцук', 'String#capitalize | should capitalize unicode letters', { mootools: 'Фыва йцук' });
 
   equal('reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize all first letters', { prototype: 'Reuben sandwich' });
   equal('Reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize the second letter only', { prototype: 'Reuben sandwich' });
   equal('REUBEN SANDWICH'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should uncapitalize all other letters', { prototype: 'Reuben sandwich', mootools: 'REUBEN SANDWICH' });
+  equal('фыва йцук'.capitalize(true), 'Фыва Йцук', 'String#capitalize | all | should capitalize unicode letters', { prototype: 'Фыва йцук' });
   equal('what a shame of a title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | all lower-case', { prototype: 'What a shame of a title' });
   equal('What A Shame Of A Title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | already capitalized', { prototype: 'What a shame of a title' });
   equal(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', 'String#capitalize | all | preserves whitespace', { prototype: ' what a shame of a title    ' });
@@ -92,8 +100,9 @@ test('String', function () {
 
 
   equal('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
+  equal(' wasabi \n'.chars(), [' ','w','a','s','a','b','i',' ','\n'], 'String#chars | should not trim whitespace');
 
-  equal('   wasabi   '.trim(), 'wasabi', 'String#chars | should trim both left and right whitespace');
+  equal('   wasabi   '.trim(), 'wasabi', 'String#trim | should trim both left and right whitespace');
   equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim | should trim left whitespace only');
   equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim | should trim right whitespace only');
 
@@ -300,6 +309,8 @@ test('String', function () {
   equal('hello'.startsWith(/hell/), true, 'String#startsWith | accepts regex', { prototype: false });
   equal('hello'.startsWith(/[a-h]/), true, 'String#startsWith | accepts regex alternates', { prototype: false });
   equal('HELLO'.startsWith('hell', false), true, 'String#startsWith | case insensitive | HELLO starts with hell', { prototype: false });
+  equal('HELLO'.startsWith(), false, 'String#startsWith | undefined produces false');
+  equal('10'.startsWith(10), true, 'String#startsWith | Numbers will be converted');
   equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith | valley girls rock starts with valley girls');
   equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith | valley girls rock starts with valley girls r');
 
@@ -313,6 +324,8 @@ test('String', function () {
   equal('VADER'.endsWith('der', false), true, 'String#endsWith | case insensitive |  VADER ends with der', { prototype: false });
   equal('VADER'.endsWith('DER', true), true, 'String#endsWith | case sensitive | VADER ends with DER');
   equal('VADER'.endsWith('der', true), false, 'String#endsWith | case sensitive |  VADER ends with der');
+  equal('HELLO'.endsWith(), false, 'String#endsWith | undefined produces false');
+  equal('10'.endsWith(10), true, 'String#endsWith | Numbers will be converted');
   equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith | vader ends with der');
   equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith | vader ends with der');
 
@@ -331,8 +344,14 @@ test('String', function () {
   equal('foo'.has(/f/), true, 'String#has | foo has /f/');
   equal('foo'.has(/[a-g]/), true, 'String#has | foo has /[a-g]/');
   equal('foo'.has(/[p-z]/), false, 'String#has | foo has /[p-z]/');
-  equal('foo'.has(/f$/), false, 'String#has | foo has /f$/');
-
+  equal('flu?ffy'.has('?'), true, 'String#has | flu?ffy has ?');
+  equal('flu?ffy'.has('\?'), true, 'String#has | flu?ffy has one slash and ?');
+  equal('flu?ffy'.has('\\?'), false, 'String#has | flu?ffy has two slashes and ?');
+  equal('flu?ffy'.has('\\\?'), false, 'String#has | flu?ffy has three slashes and ?');
+  equal('flu?ffy'.has(/\?/), true, 'String#has | flu?ffy has one slash and ? in a regex');
+  equal('flu?ffy'.has(/\\?/), true, 'String#has | flu?ffy has two slashes and ? in a regex');
+  equal('flu?ffy'.has(/\\\?/), false, 'String#has | flu?ffy has three slashes and ? in a regex');
+  equal('flu\\?ffy'.has(/\\\?/), true, 'String#has | flu\\?ffy has three slashes and ? in a regex');
 
   equal('schfifty'.add(' five'), 'schfifty five', 'String#add | schfifty five');
   equal('dopamine'.add('e', 3), 'dopeamine', 'String#add | dopeamine');
@@ -349,6 +368,8 @@ test('String', function () {
   equal('schfifty five'.remove(/f/), 'schifty five', 'String#remove | /f/');
   equal('schfifty five'.remove(/f/g), 'schity ive', 'String#remove | /f/g');
   equal('schfifty five'.remove(/[a-f]/g), 'shity iv', 'String#remove | /[a-f]/');
+  equal('?'.remove('?'), '', 'String#remove | strings have tokens escaped');
+  equal('?('.remove('?('), '', 'String#remove | strings have all tokens escaped');
 
   equal('schfifty'.insert(' five'), 'schfifty five', 'String#insert | schfifty five');
   equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert | dopeamine');
@@ -517,7 +538,9 @@ test('String', function () {
   var compactedWithoutJapaneseSpaces = '日本語　の　スペース　も';
   var compactedWithTrailingJapaneseSpaces = '　日本語　の　スペース　も　';
 
-
+  equal('moo\tmoo'.compact(), 'moo moo', 'String#compact | moo moo tab');
+  equal('moo \tmoo'.compact(), 'moo moo', 'String#compact | moo moo space tab');
+  equal('moo \t moo'.compact(), 'moo moo', 'String#compact | moo moo space tab space');
 
 
   equal('foop'.at(0), 'f', 'String#at | pos 0');
@@ -594,17 +617,12 @@ test('String', function () {
   equal('quack'.to(-4), 'q', 'String#to | to -4');
 
 
-  // Got to pass a language code here because the other unit tests may have set
-  // the locale to a non-US format thereby enabling date variants. This test
-  // also acts to ensure that the locale can be passed here.
-  dateEqual('11/5/56'.toDate('en-US'), new Date(1956, 10, 5), 'String#toDate | slash format');
-  dateEqual('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
-  equal(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
-  equal('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
-  dateEqual('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
+  // Basic date comprehensions without full date module include
+  equal('January 14, 2012'.toDate().getTime(), new Date(2012, 0, 14).getTime(), 'String#toDate');
+
 
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
-  equal('HOP_ON_POP'.dasherize(), 'h-o-p-o-n-p-o-p', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
+  equal('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
   equal('hopOnPop'.dasherize(), 'hop-on-pop', 'String#dasherize | camel-case', { prototype: 'hopOnPop' });
   equal('watch me fail'.dasherize(), 'watch-me-fail', 'String#dasherize | whitespace', { prototype: 'watch me fail' });
   equal('watch me fail_sad_face'.dasherize(), 'watch-me-fail-sad-face', 'String#dasherize | whitespace sad face', { prototype: 'watch me fail-sad-face' });
@@ -615,13 +633,13 @@ test('String', function () {
 
 
   equal('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize | dashes', { prototype: 'hopOnPop' });
-  equal('HOP-ON-POP'.camelize(), 'HOPONPOP', 'String#camelize | capital dashes', { prototype: 'HOPONPOP' });
+  equal('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize | capital dashes', { prototype: 'HOPONPOP' });
   equal('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize | underscores', { prototype: 'hop_on_pop' });
   equal('hop-on-pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | dashes');
-  equal('HOP-ON-POP'.camelize(false), 'hOPONPOP', 'String#camelize | first false | capital dashes', { prototype: 'HOPONPOP' });
+  equal('HOP-ON-POP'.camelize(false), 'hopOnPop', 'String#camelize | first false | capital dashes', { prototype: 'HOPONPOP' });
   equal('hop_on_pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | underscores', { prototype: 'hop_on_pop' });
   equal('hop-on-pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | dashes', { prototype: 'hopOnPop' });
-  equal('HOP-ON-POP'.camelize(true), 'HOPONPOP', 'String#camelize | first true | capital dashes', { prototype: 'HOPONPOP' });
+  equal('HOP-ON-POP'.camelize(true), 'HopOnPop', 'String#camelize | first true | capital dashes', { prototype: 'HOPONPOP' });
   equal('hop_on_pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | underscores', { prototype: 'hop_on_pop' });
 
   equal('watch me fail'.camelize(), 'WatchMeFail', 'String#camelize | whitespace', { prototype: 'watch me fail' });
@@ -638,8 +656,8 @@ test('String', function () {
 
   equal('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
   equal('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
-  equal('HOPONPOP'.underscore(), 'h_o_p_o_n_p_o_p', 'String#underscore | all caps', { prototype: 'hoponpop' });
-  equal('HOP-ON-POP'.underscore(), 'h_o_p_o_n_p_o_p', 'String#underscore | caps and dashes', { prototype: 'hop_on_pop' });
+  equal('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps', { prototype: 'hoponpop' });
+  equal('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore | caps and dashes', { prototype: 'hop_on_pop' });
   equal('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore | lower-case and dashes');
 
   equal('watch me fail'.underscore(), 'watch_me_fail', 'String#underscore | whitespace', { prototype: 'watch me fail' });
@@ -650,8 +668,8 @@ test('String', function () {
 
   equal('hopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case');
   equal('HopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case capital first');
-  equal('HOPONPOP'.spacify(), 'h o p o n p o p', 'String#spacify | all caps', { prototype: 'hoponpop' });
-  equal('HOP-ON-POP'.spacify(), 'h o p o n p o p', 'String#spacify | caps and dashes', { prototype: 'hop on pop' });
+  equal('HOPONPOP'.spacify(), 'hoponpop', 'String#spacify | all caps', { prototype: 'hoponpop' });
+  equal('HOP-ON-POP'.spacify(), 'hop on pop', 'String#spacify | caps and dashes', { prototype: 'hop on pop' });
   equal('hop-on-pop'.spacify(), 'hop on pop', 'String#spacify | lower-case and dashes');
 
   equal('watch_me_fail'.spacify(), 'watch me fail', 'String#spacify | whitespace');
@@ -866,7 +884,7 @@ test('String', function () {
   /* Stipping self-closing tags */
   equal('<input type="text" class="blech" />'.stripTags(), '', 'String#stripTags | full input stripped');
 
-  equal('<b>bold<b> and <i>italic</i> and <a>link</a>'.stripTags(['b','i']), 'bold and italic and <a>link</a>', 'String#stripTags | handles multi args', { prototype: 'bold and italic and link' });
+  equal('<b>bold<b> and <i>italic</i> and <a>link</a>'.stripTags('b','i'), 'bold and italic and <a>link</a>', 'String#stripTags | handles multi args', { prototype: 'bold and italic and link' });
 
   html =
   '<form action="poo.php" method="post">' +
@@ -960,7 +978,7 @@ test('String', function () {
   /* No errors on RegExp */
   raisesError(function(){ '<xsl(template>foobar</xsl(template>'.removeTags('xsl(template') }, 'String#removeTags | form | you now have the power to cause your own regex pain');
 
-  equal('<b>bold</b> and <i>italic</i> and <a>link</a>'.removeTags(['b','i']), ' and  and <a>link</a>', 'String#removeTags | handles multi args');
+  equal('<b>bold</b> and <i>italic</i> and <a>link</a>'.removeTags('b','i'), ' and  and <a>link</a>', 'String#removeTags | handles multi args');
 
 
 
@@ -1225,32 +1243,5 @@ test('String', function () {
   equal('Hello, {1}'.assign(''), 'Hello, ', 'String#assign | empty string as argument');
   equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
 
-
-  // String#compare
-
-  equal(('a').compare('a'), 0, 'String#compare | a and a results in 0');
-  equal(('a').compare('b'), -1, 'String#compare | a and b results in 0');
-  equal(('b').compare('a'), 1, 'String#compare | b and a results in 1');
-  equal(('z').compare('a'), 1, 'String#compare | z and a results in 1');
-  equal(('a').compare('z'), -1, 'String#compare | a and z results in 0');
-
-  equal(('A').compare('a'), -1, 'String#compare | caps come before lower case');
-  equal(('_').compare('-'), 1, 'String#compare | special chars are also compared by code point');
-
-  equal(('advertising').compare('@advertising', true), 0, 'String#compare | all special characters can be ignored');
-  equal(('advertising').compare('@advertising', '@'), 0, 'String#compare | specific characters can be ignored');
-  equal(('advertising').compare('@advertising', '#'), 1, 'String#compare | only specific characters are ignored');
-
-  equal(('@advertising').compare('advertising', true), 0, 'String#compare | inverse ignore is also true');
-  equal(('@advertising').compare('advertising', '@'), 0, 'String#compare | inverse ignore is also true');
-
-  equal(('2advertising').compare('advertising', true), -1, 'String#compare | numeric characters still count');
-
-  equal(('1').compare(0), 1, 'String#compare | numbers are coerced | 0');
-  equal(('1').compare(1), 0, 'String#compare | numbers are coerced | 1');
-  equal(('1').compare(2), -1, 'String#compare | numbers are coerced | 2');
-  equal(('1').compare(87), -1, 'String#compare | numbers are coerced | 87');
-
-  equal(('80').compare(9), -1, 'String#compare | in lexical comparison, 80 comes before 9');
 
 });

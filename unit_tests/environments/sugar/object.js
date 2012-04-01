@@ -5,6 +5,8 @@ test('Object', function () {
   var Person = function() {};
   var p = new Person();
 
+
+
   equal(Object.isObject({}), true, 'Object.isObject | {}');
   equal(Object.isObject(new Object({})), true, 'Object.isObject | new Object()');
   equal(Object.isObject([]), false, 'Object.isObject | []');
@@ -149,7 +151,6 @@ test('Object', function () {
 
   equal(({}).keys, undefined, 'Object | native objects are not wrapped by default');
   equal(Object.extended(), Object.extended({}), 'Object.extended | null argument same as empty object');
-  equal(Object.extended().constructor, Object, 'Object.extended | constructor is Object');
 
   var keys,values;
   var d = new Date();
@@ -251,18 +252,22 @@ test('Object', function () {
 
   equal(Object.merge({ foo:'bar' }, 'wear', 8, null), { foo:'bar' }, 'Object.merge | merge multi invalid', { mootools: { foo: 'bar', wear: 7 } });
   equal(Object.merge([1,2,3,4], [4,5,6]), [4,5,6,4], 'Object.merge | arrays should also be mergeable');
-  equal(Object.merge({ foo: { one: 'two' }}, { foo: { two: 'three' }}), { foo: { one: 'two', two: 'three' }}, 'Object.merge | accepts deep merges');
+  equal(Object.merge({ foo: { one: 'two' }}, { foo: { two: 'three' }}, true, true), { foo: { one: 'two', two: 'three' }}, 'Object.merge | accepts deep merges');
 
   equal(Object.merge('foo', 'bar'), 'foo', 'Object.merge | two strings');
 
   equal(Object.merge({ a:1 }, { a:2 }), { a:2 }, 'Object.merge | incoming wins');
-  equal(Object.merge({ a:1 }, { a:2 }, true), { a:2 }, 'Object.merge | incoming wins | params true');
-  equal(Object.merge({ a:1 }, { a:2 }, false), { a:1 }, 'Object.merge | target wins');
+  equal(Object.merge({ a:1 }, { a:2 }), { a:2 }, 'Object.merge | incoming wins | params true');
+  equal(Object.merge({ a:1 }, { a:2 }, false, false), { a:1 }, 'Object.merge | target wins');
   equal(Object.merge({ a:undefined }, { a:2 }), { a:2 }, 'Object.merge | existing but undefined properties are overwritten');
   equal(Object.merge({ a:null }, { a:2 }), { a:2 }, 'Object.merge | null properties are not overwritten');
-  equal(Object.merge({ a:undefined }, { a:2 }, false), { a:2 }, 'Object.merge | false |existing but undefined properties are overwritten');
-  equal(Object.merge({ a:null }, { a:2 }, false), { a:null }, 'Object.merge | false | null properties are not overwritten');
-  equal(Object.merge([{ foo:'bar' }], [{ moo:'car' }]), [{ foo:'bar',moo:'car' }], 'Object.merge | can merge arrays as well');
+  equal(Object.merge({ a:undefined }, { a:2 }, false, false), { a:2 }, 'Object.merge | false |existing but undefined properties are overwritten');
+  equal(Object.merge({ a:null }, { a:2 }, false, false), { a:null }, 'Object.merge | false | null properties are not overwritten');
+  equal(Object.merge([{ foo:'bar' }], [{ moo:'car' }], true, true), [{ foo:'bar',moo:'car' }], 'Object.merge | can merge arrays as well');
+
+  var fn1 = function() {};
+  fn1.foo = 'bar';
+  equal(Object.merge(function(){}, fn1).foo, 'bar', 'Object.merge | retains properties');
 
   var fn = function(key, a, b) {
     equal(key, 'a', 'Object.merge | resolve function | first argument is the key');
@@ -272,7 +277,7 @@ test('Object', function () {
     return a + b;
   };
 
-  equal(Object.merge({ a:1 }, { a:2 }, fn), { a:3 }, 'Object.merge | function resolves');
+  equal(Object.merge({ a:1 }, { a:2 }, false, fn), { a:3 }, 'Object.merge | function resolves');
 
   var fn1 = function() { return 'joe' };
   var fn2 = function() { return 'moe' };
@@ -326,7 +331,7 @@ test('Object', function () {
     arr: [4,5,6,4]
   }
 
-  equal(Object.merge(obj1, obj2, fn), expected, 'Object.merge | complex objects with resolve function');
+  equal(Object.merge(obj1, obj2, true, fn), expected, 'Object.merge | complex objects with resolve function');
   equal(obj1.fn(), 'moe', 'Object.merge | fn conflict resolved');
   equal(obj1.date.getTime(), new Date(2005, 1, 6).getTime(), 'Object.merge | date conflict resolved');
 
@@ -339,10 +344,16 @@ test('Object', function () {
 
   equal(Object.extended({ foo: 'bar' }).merge('wear', 8, null), { foo:'bar' }, 'Object#merge | merge multi invalid', { mootools: { foo: 'bar', wear: 8 } });
 
+
+  var fn1 = function() {};
+  fn1.foo = 'bar';
+  equal(Object.extended(function(){}).merge(fn1).foo, 'bar', 'Object.merge | retains properties');
+
+
   equal(Object.extended({ a:1 }).merge({ a:2 }), { a:2 }, 'Object.merge | incoming wins');
   equal(Object.extended({ a:1 }).merge({ a:2 }, true), { a:2 }, 'Object.merge | incoming wins | params true');
-  equal(Object.extended({ a:1 }).merge({ a:2 }, false), { a:1 }, 'Object.merge | target wins');
-  equal(Object.extended({ a:1 }).merge({ a:2 }, function(key, a, b){ return a + b; }), { a:3 }, 'Object.merge | function resolves');
+  equal(Object.extended({ a:1 }).merge({ a:2 }, false, false), { a:1 }, 'Object.merge | target wins');
+  equal(Object.extended({ a:1 }).merge({ a:2 }, false, function(key, a, b){ return a + b; }), { a:3 }, 'Object.merge | function resolves');
 
 
 
@@ -355,6 +366,7 @@ test('Object', function () {
   equal(Object.clone({ foo: 'bar', broken: 1, wear: null }), { foo: 'bar', broken: 1, wear: null }, 'Object.clone | complex clone');
   equal(Object.clone({ foo: { broken: 'wear' }}), { foo: { broken: 'wear' }}, 'Object.clone | deep clone');
   equal(Object.clone({ foo: 'bar', broken: 1, wear: /foo/ }) == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object.clone | fully cloned');
+  equal(Object.clone([1,2,3]), [1,2,3], 'Object.clone | clone on arrays');
 
 
   var obj1, obj2, obj3;
@@ -464,9 +476,9 @@ test('Object', function () {
   equal(Object.equal({x: 1, y: undefined}, {x: 1, z: 2}), false, 'Object.equal | undefined keys');
 
 
-  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | objects are equal');
+  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), false, 'Object#equals | extended objects are not equal to plain objects');
   equal(Object.extended({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
-  equal(Object.extended({}).equals({}), true, 'Object#equals | empty objects are equal');
+  equal(Object.extended({}).equals({}), false, 'Object#equals | empty extended objects are not equal to empty plain objects');
   equal(Object.extended({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
   equal(Object.extended({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 
@@ -484,7 +496,7 @@ test('Object', function () {
 
   rememberObjectProtoypeMethods();
 
-  Object.sugar();
+  Object.extend();
 
   var prototypeBaseValues = ({}).values().sort();
 
@@ -573,6 +585,28 @@ test('Object', function () {
 
 
 
+  // Object#watch
+
+  var obj = Object.extended({ foo: 'bar' }), ran = false, counter = 0, key;
+
+  obj.watch('foo', function(prop, oldVal, newVal) {
+    equal(this, obj, 'Object#watch | scope is the object');
+    equal(prop, 'foo', 'Object#watch | first argument is the propety');
+    equal(oldVal, 'bar', 'Object#watch | second argument is the old value');
+    equal(newVal, 'howdy', 'Object#watch | third argument is the new value');
+    ran = true;
+    return newVal;
+  });
+
+  equal(obj.foo, 'bar', 'Object#watch | old property is retained');
+  obj.foo = 'howdy';
+  equal(obj.foo, 'howdy', 'Object#watch | property was set');
+  equal(ran, true, 'Object#watch | setter ran');
+  for(key in obj) counter++;
+  equal(counter, 1, 'Object#watch | property should be enumerable');
+
+
+
   // Object#tap
 
   var fn = function(first) {
@@ -649,6 +683,8 @@ test('Object', function () {
 
   equal(Object.fromQueryString('foo=3.14156'), { foo: 3.14156 }, 'String#fromQueryString | can handle float values');
 
+
+
   // Object.watch
 
   var obj = { foo: 'bar' }, ran = false, counter = 0, key;
@@ -668,25 +704,6 @@ test('Object', function () {
   equal(ran, true, 'Object.watch | setter ran');
   for(key in obj) counter++;
   equal(counter, 1, 'Object.watch | property should be enumerable');
-
-
-  var obj = Object.extended({ foo: 'bar' }), ran = false, counter = 0, key;
-
-  obj.watch('foo', function(prop, oldVal, newVal) {
-    equal(this, obj, 'Object#watch | scope is the object');
-    equal(prop, 'foo', 'Object#watch | first argument is the propety');
-    equal(oldVal, 'bar', 'Object#watch | second argument is the old value');
-    equal(newVal, 'howdy', 'Object#watch | third argument is the new value');
-    ran = true;
-    return newVal;
-  });
-
-  equal(obj.foo, 'bar', 'Object#watch | old property is retained');
-  obj.foo = 'howdy';
-  equal(obj.foo, 'howdy', 'Object#watch | property was set');
-  equal(ran, true, 'Object#watch | setter ran');
-  for(key in obj) counter++;
-  equal(counter, 1, 'Object#watch | property should be enumerable');
 
 
 
@@ -715,7 +732,85 @@ test('Object', function () {
   var obj = { foo: 'bar' };
   equal(Object.tap(obj), obj, 'Object.tap | return value is strictly equal');
 
+  // Class.extend functionality
 
 
+  String.extend({
+    foo: function() {
+      return 'bar';
+    }
+  });
+
+
+  equal('s'.foo(), 'bar', 'Class.extend | basic functionality');
+
+  Number.extend({
+    plus: function(a, b) {
+      return this + a + b;
+    }
+  });
+
+
+  equal((1).plus(2, 3), 6, 'Class.extend | arguments and scope are correct');
+
+  Number.prototype.chr = function() { return 'F'; };
+
+  equal((69).chr(), 'F', 'Class.extend | should overwrite existing methods');
+
+  Number.restore('chr');
+
+  equal((69).chr(), 'E', 'Class.extend | simple array of strings should restore Sugar methods');
+  equal((1).plus(2, 3), 6, 'Class.extend | restoring Sugar methods should not override other custom extended methods');
+
+
+  // Object.extended hasOwnProperty issue #97
+  // see: http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
+
+  var a = Object.extended({ hasOwnProperty: true });
+
+
+  // Object.has
+
+  equal(Object.has({ foo: 'bar' }, 'foo'), true, 'Object.has | finds a property');
+  equal(Object.has({ foo: 'bar' }, 'baz'), false, 'Object.has | does not find a nonexistant property');
+  equal(Object.has({ hasOwnProperty: true, foo: 'bar' }, 'foo'), true, 'Object.has | local hasOwnProperty is ignored');
+
+
+
+  // Object.clone on dates and regexes
+
+  var obj1 = {
+    d: new Date(2000, 5, 25),
+    r: /dasfsa/gi
+  }
+
+  var obj2 = Object.clone(obj1, true);
+
+  obj1.d.setDate(3);
+  obj1.r.source = 'mwahaha';
+
+  equal(obj2.d.getDate(), 25, 'Object.clone | deep cloning also clones dates');
+  equal(obj2.r.source, 'dasfsa', 'Object.clone | deep cloning also clones regexes');
+
+
+  // Object.merge should not merge prototype properties
+
+  var Foo = function(){};
+  Foo.prototype.bar = 3;
+
+  var f = new Foo();
+
+  equal(Object.merge({}, f).bar, undefined, 'Object.merge should not merge inherited properties');
+
+  // Object.merge should not choke when target and source contain strictly equal objects
+
+  var obj = { foo: 'bar' };
+
+  equal(Object.merge({ one: obj }, { one: obj }), { one: obj }, 'Object.merge should be able to handle identical source/target objects');
+
+  obj.moo = obj;
+
+  equal(typeof Object.merge(obj, { foo: obj }), 'object', 'Object.merge should not choke on cyclic references');
+  
 });
 

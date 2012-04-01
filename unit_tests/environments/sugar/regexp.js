@@ -7,7 +7,11 @@ test('RegExp', function () {
   equal(RegExp.escape('hey there (budday)'), 'hey there \\(budday\\)', 'RegExp#escape');
   equal(RegExp.escape('what a day...'), 'what a day\\.\\.\\.', 'RegExp#escape');
   equal(RegExp.escape('.'), '\\.', 'RegExp#escape');
-  equal(RegExp.escape('*.+[]{}()?|/'), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'RegExp#escape');
+  equal(RegExp.escape('*.+[]{}()?|/\\'), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/\\\\', 'RegExp#escape');
+  equal(RegExp.escape('?'), '\\?', 'RegExp#escape | ?');
+  equal(RegExp.escape('\?'), '\\?', 'RegExp#escape | one slash and ?');
+  equal(RegExp.escape('\\?'), '\\\\\\?', 'RegExp#escape | two slashes and ?');
+  equal(RegExp.escape('\\?'), '\\\\\\?', 'RegExp#escape | two slashes and ?');
 
   r = /foobar/;
   n = r.setFlags('gim');

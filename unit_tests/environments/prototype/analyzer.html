@@ -6,9 +6,10 @@
   <body>
     <script src="prototype-1.7.js" type="text/javascript"></script>
     <script src="../../../lib/analyzer.js" type="text/javascript"></script>
+    <script src="../../../lib/core.js" type="text/javascript"></script>
     <script type="text/javascript">
 
-      var h = new Hash({ foo: { moo: 'bar' } });
+      //var h = new Hash({ foo: { moo: 'bar' } });
 
       //$A({ foo: { moo: 'bar' } });
       //$H({ foo: { moo: 'bar' } });
@@ -37,7 +38,7 @@
       //['moo','me'].inject([], function(){});
       //['moo','me'].invoke('toUpperCase');
       //[1,2,3].max(function(){}, 'hahah');
-      //[1,2,3].min(function(){}, 'hahah');
+      ////[1,2,3].min(function(){}, 'hahah');
       //[1,2,3].member(3);
       //[1,2,3].partition();
       //['a','b','c'].pluck('length');
@@ -51,7 +52,7 @@
       //Object.isUndefined({ foo: { moo: 'bar' } });
       //Object.toJSON({ foo: { moo: 'bar' } });
       //Array.from({ foo: { moo: 'bar' } });
-      h.each(function(){}, 'hadha');
+      //h.each(function(){}, 'hadha');
       //h.get('foo');
       //h.index('foo');
       //h.inspect('foo');
@@ -100,7 +101,7 @@
       //(8).toPaddedString(3);
 
       //(function(){}).argumentNames();
-      //(function(){}).bindAsEventListener();
+      (function(){}).bindAsEventListener();
       //(function(){}).curry();
       //(function(){}).defer();
       //(function(){}).delay();
