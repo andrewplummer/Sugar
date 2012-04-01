@@ -1195,6 +1195,8 @@ test('String', function () {
   equal(str.shorten(4), 'G...', 'String#shorten | no arguments | 4');
   equal(str.shorten(3), '...', 'String#shorten | no arguments | 3');
   equal(str.shorten(2), 'Gotta be an entire sentence.', 'String#shorten | no arguments | 2');
+	equal(str.shorten(0), 'Gotta be an entire sentence.', 'String#shorten | no arguments | 0');
+	equal(str.shorten(-100), 'Gotta be an entire sentence.', 'String#shorten | no arguments | -100');
   
   equal(str.shorten(28, 'right'), 'Gotta be an entire sentence', 'String#shorten | splitter right | 28');
   equal(str.shorten(21, 'right'), 'Gotta be an entire...', 'String#shorten | splitter right | 21');
@@ -1217,8 +1219,10 @@ test('String', function () {
   equal(str.shorten(28, 'left', true, '>>> '), 'Gotta be an entire sentence.', 'String#shorten | custom [splitter] | 28');
   equal(str.shorten(23, 'left', true, '>>> '), '>>>  be an entire sentence.', 'String#shorten | custom [splitter] | 27');
   equal(str.shorten(5, 'left', true, '>>> '), '>>> .', 'String#shorten | custom [splitter] | 5');
-  equal(str.shorten(4, 'left', true, '>>> '), 'GOtta be an entire sentence.', 'String#shorten | custom [splitter] | 4');
-  
+  equal(str.shorten(4, 'left', true, '>>> '), 'Gotta be an entire sentence.', 'String#shorten | custom [splitter] | 4');
+  	
+  equal(str.shorten(3, 'center', true, '-'), 'G-.', 'String#shorten | custom [splitter] | 4');
+
   equal(str.shorten(10, 'right', false, ''), 'Gotta be a...', 'String#shorten | invalid [splitter] | 10');
   
 
