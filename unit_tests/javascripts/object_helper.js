@@ -1,6 +1,6 @@
 
 objectPrototypeMethods = {};
-sugarEnabledMethods = ['isArray','isBoolean','isDate','isFunction','isNumber','isString','isRegExp','isNaN','isObject','keys','values','each','merge','isEmpty','equals','clone','watch','tap'];
+sugarEnabledMethods = ['isArray','isBoolean','isDate','isFunction','isNumber','isString','isRegExp','isNaN','isObject','keys','values','each','merge','isEmpty','equals','clone','watch','tap','has'];
 
 rememberObjectProtoypeMethods = function() {
   for(var m in Object.prototype) {

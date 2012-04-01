@@ -1,1 +1,60 @@
-/Volumes/Andrew/Projects/tooltip/stylesheets/tooltip.css
+
+#tooltip {
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0px 0px 3px rgba(0,0,0,0.4);
+  max-width: 600px;
+}
+
+#tooltip.black {
+  background: #080808;
+  background: rgba(0,0,0,0.9);
+  color: #fff;
+}
+
+#tooltip.white {
+  background: #f8f8f8;
+  background: rgba(255,255,255,0.9);
+  color: #222;
+}
+
+#tooltip .arrow {
+  width: 11px;
+  height: 11px;
+  position: absolute;
+  background-image: url('../images/tooltip.png');
+  background-repeat: no-repeat;
+}
+
+#tooltip.black.top .arrow {
+  background-position: -6px -17px;
+}
+
+#tooltip.black.right .arrow {
+  background-position: 5px -6px;
+}
+
+#tooltip.black.bottom .arrow {
+  background-position: -6px 5px;
+}
+
+#tooltip.black.left .arrow {
+  background-position: -17px -6px;
+}
+
+#tooltip.white.top .arrow {
+  background-position: -39px -17px;
+}
+
+#tooltip.white.right .arrow {
+  background-position: -28px -6px;
+}
+
+#tooltip.white.bottom .arrow {
+  background-position: -39px 5px;
+}
+
+#tooltip.white.left .arrow {
+  background-position: -50px -6px;
+}
+
