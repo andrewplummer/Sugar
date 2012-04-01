@@ -1,9 +1,15 @@
 
+
+if(typeof environment == 'undefined') environment = 'default'; // Override me!
+
 // The scope when none is set.
 nullScope = (function(){ return this; }).call();
 
 var results;
 var currentTest;
+var moduleName;
+var moduleSetupMethod;
+var moduleTeardownMethod;
 
 var syncTestsRunning = true;
 
@@ -47,6 +53,20 @@ var arrayEqual = function(one, two) {
     }
   });
   return result && one.length === two.length;
+}
+
+var sortOnStringValue = function(arr) {
+  return arr.sort(function(a, b) {
+    var aType = typeof a;
+    var bType = typeof b;
+    var aVal = String(a);
+    var bVal = String(b);
+    if(aType != bType) {
+      return aType < bType;
+    }
+    if(aVal === bVal) return 0;
+    return a < b ? -1 : 1;
+  });
 }
 
 var arrayIndexOf = function(arr, obj) {
@@ -100,7 +120,7 @@ var isEqual = function(one, two) {
 
 var addFailure = function(actual, expected, message, stack, warning) {
   var meta = getMeta(stack);
-  currentTest.failures.push({ actual: actual, expected: expected, message: message, file: meta.file, line: meta.line, warning: !!warning });
+  currentTest.failures.push({ actual: actual, expected: expected, message: message, file: meta.file, line: meta.line, col: meta.col, warning: !!warning });
 }
 
 var getMeta = function(stack) {
@@ -113,9 +133,9 @@ var getMeta = function(stack) {
     return {};
   }
   var s = e.stack.split(/@|at/m);
-  var match = s[level].match(/(http.+):(\d+)(?::(\d+))?/);
+  var match = s[level].match(/(.+\.js):(\d+)(?::(\d+))?/);
   if(!match) match = [];
-  return { file: match[1], line: match[2] };
+  return { file: match[1], line: match[2], col: match[3] };
 }
 
 var checkCanFinish = function() {
@@ -156,7 +176,7 @@ var displayResults = function() {
       console.info('\n'+ (j + 1) + ') Failure:');
       console.info(failure.message);
       console.info('Expected: ' + JSON.stringify(failure.expected) + ' but was: ' + JSON.stringify(failure.actual));
-      console.info('File: ' + failure.file + ', Line: ' + failure.line + '\n');
+      console.info('File: ' + failure.file + ', Line: ' + failure.line, ' Col: ' + failure.col + '\n');
     }
   };
   var time = (runtime / 1000);
@@ -164,6 +184,9 @@ var displayResults = function() {
 }
 
 test = function(name, fn) {
+  if(moduleSetupMethod) {
+    moduleSetupMethod();
+  }
   if(!results) {
     results = [];
     testsStarted();
@@ -179,6 +202,9 @@ test = function(name, fn) {
     console.info(e);
   }
   results.push(currentTest);
+  if(moduleTeardownMethod) {
+    moduleTeardownMethod();
+  }
 }
 
 setTimeout = function(fn, delay) {
@@ -207,6 +233,12 @@ var removeCapturedTimer = function(timer) {
   }
 };
 
+testModule = function(name, options) {
+  moduleName = name;
+  moduleSetupMethod = options.setup;
+  moduleTeardownMethod = options.teardown;
+}
+
 equal = function(actual, expected, message, exceptions, stack) {
   exceptions = exceptions || {};
   if(environment in exceptions) {
@@ -230,6 +262,11 @@ equalWithWarning = function(expected, actual, message) {
 
 equalWithMargin = function(actual, expected, margin, message) {
   equal((actual > expected - margin) && (actual < expected + margin), true, message, null, 1);
+}
+
+// Array content is equal, but order may differ
+arrayEquivalent = function(a, b, message) {
+  equal(sortOnStringValue(a), sortOnStringValue(b), message);
 }
 
 raisesError = function(fn, message, exceptions) {
@@ -259,3 +296,21 @@ syncTestsFinished = function() {
 async = function(fn) {
   setTimeout(fn, 200);
 }
+
+runPerformanceTest = function() {
+  var iterations, fn, start, i = 0;
+  if(arguments.length == 1) {
+    iterations = 10000;
+    fn = arguments[0];
+  } else {
+    iterations = arguments[0];
+    fn = arguments[1];
+  }
+  start = new Date();
+  while(i < iterations) {
+    fn();
+    i++;
+  }
+  console.info(iterations, ' iterations finished in ', new Date() - start, ' milliseconds');
+}
+

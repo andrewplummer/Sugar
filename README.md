@@ -24,8 +24,6 @@ still adds a number of methods to the `String`, `Number`, and `Array` classes th
 internally, including all the ES5 polyfill methods that are heavily used. This build will not follow
 the standard release schedule, but will be updated when the Sugar Date module changes significantly.
 
-Current build is based off `v1.1.3`.
-
 
 Unit Tests Node
 ===============
@@ -57,7 +55,7 @@ In addition to these major locales, custom locales can be added using:
 Date.setFormat(LOCALE_CODE, LOCALIZATION_OBJECT)
 ```
 
-More documentation to come soon, but for now refer to `lib/locales.js` for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main package will be kept in this file.
+More documentation to come soon, but for now refer to `lib/locales` for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main package will be kept here.
 
 Contributing Locales
 ====================

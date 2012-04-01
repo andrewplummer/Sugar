@@ -7,8 +7,7 @@ fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/javascripts
 
 fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
-modules = []
-@current_module = nil
+@modules = {}
 
 
 def get_property(prop, s, multiline = false)
@@ -27,8 +26,9 @@ def get_html_parameters(str)
   str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
   str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
   str.gsub!(/@date_format/, '<a target="_blank" href="/dates">dates</a>')
+  str.gsub!(/@array_sorting/, '<a target="_blank" href="/sorting">array sorting</a>')
   str.gsub!(/extended objects/, '<a target="_blank" href="/objects#extended_objects">extended objects</a>')
-  str.gsub!(/Object\.sugar\(\)/, '<a target="_blank" href="/objects#object_sugar" class="monospace">Object.sugar()</a>')
+  str.gsub!(/Object\.extend\(\)/, '<a target="_blank" href="/objects#object_extend" class="monospace">Object.extend()</a>')
   str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
 end
 
@@ -133,69 +133,76 @@ def clean(m)
 end
 
 
-File.open('lib/sugar.js', 'r') do |f|
-  i = 0
-  pos = 0
-  f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
-    if mod = b.match(/(\w+) module/)
-      if @current_module
-        modules << @current_module
-      end
-      @current_module = { :name => mod[1], :methods => [] }
-    else
-      method = get_method(b)
-      method[:returns] = get_property(:returns, b)
-      method[:short] = get_property(:short, b)
-      method[:set] = get_property(:set, b)
-      method[:extra] = get_property(:extra, b)
-      method[:examples] = get_examples(b, method[:name])
-      method[:alias] = get_property(:alias, b)
-      method[:module] = @current_module[:name]
-      get_html_parameters(method[:short])
-      get_html_parameters(method[:extra])
-      @current_module[:methods] << method
-      if method[:name] == 'stripTags' || method[:name] == 'removeTags' || method[:name] == 'escapeHTML' || method[:name] == 'unescapeHTML'
-        method[:escape_html] = true
-      end
-      if method[:alias]
-        method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
-        method[:short] = "Alias for <span class=\"code\">#{method[:alias]}</span>."
-      end
-      if method[:set]
-        method[:pos] = pos
-        pos += 1
+def extract_docs(package)
+  File.open("lib/#{package}.js", 'r') do |f|
+    i = 0
+    pos = 0
+    f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
+      if mod = b.match(/(\w+) module/)
+        name = mod[1]
+        if !@modules[name]
+          @modules[name] = []
+        end
+        @current_module = @modules[name]
+        @current_module_name = name
       else
-        pos = 0
+        method = get_method(b)
+        method[:package] = package
+        method[:returns] = get_property(:returns, b)
+        method[:short] = get_property(:short, b)
+        method[:set] = get_property(:set, b)
+        method[:extra] = get_property(:extra, b)
+        method[:examples] = get_examples(b, method[:name])
+        method[:alias] = get_property(:alias, b)
+        method[:module] = @current_module_name
+        get_html_parameters(method[:short])
+        get_html_parameters(method[:extra])
+        @current_module << method
+        if method[:name] == 'stripTags' || method[:name] == 'removeTags' || method[:name] == 'escapeHTML' || method[:name] == 'unescapeHTML'
+          method[:escape_html] = true
+        end
+        if method[:alias]
+          method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
+          method[:short] = "Alias for <span class=\"code\">#{method[:alias]}</span>."
+        end
+        if method[:set]
+          method[:pos] = pos
+          pos += 1
+        else
+          pos = 0
+        end
+        if method[:name] =~ /\[/
+          method[:set_base] = method[:name].gsub(/\w*\[(\w+?)\]\w*/, '\1')
+          method[:name].gsub!(/[\[\]]/, '')
+        end
+        clean(method)
+        #if current_module[:name] == 'Object' && method[:name] != 'create'
+        #  instance_version = method.dup
+        #  instance_version[:class_method] = false
+        #  instance_version[:short].gsub!(/<span class=".*?">obj<\/span>/, 'the object')
+        #  if method[:name] == 'merge'
+        #    instance_version[:short].gsub!(/the first/, 'itself')
+        #  end
+        #  if method[:name] == 'equals'
+        #    instance_version[:short].gsub!(/(<span class=".*?">a<\/span>).+are equal/, 'the object is equal to \\1')
+        #  end
+        #  instance_version[:params].delete_if { |p| p[:name] == 'obj' || p[:name] == 'a' }
+        #  instance_version[:short] << ' This method is only available on objects created with the alternate constructor <span class="code">Object.create</span>.'
+        #  current_module[:methods] << instance_version
+        #end
       end
-      if method[:name] =~ /\[/
-        method[:set_base] = method[:name].gsub(/\w*\[(\w+?)\]\w*/, '\1')
-        method[:name].gsub!(/[\[\]]/, '')
-      end
-      clean(method)
-      #if current_module[:name] == 'Object' && method[:name] != 'create'
-      #  instance_version = method.dup
-      #  instance_version[:class_method] = false
-      #  instance_version[:short].gsub!(/<span class=".*?">obj<\/span>/, 'the object')
-      #  if method[:name] == 'merge'
-      #    instance_version[:short].gsub!(/the first/, 'itself')
-      #  end
-      #  if method[:name] == 'equals'
-      #    instance_version[:short].gsub!(/(<span class=".*?">a<\/span>).+are equal/, 'the object is equal to \\1')
-      #  end
-      #  instance_version[:params].delete_if { |p| p[:name] == 'obj' || p[:name] == 'a' }
-      #  instance_version[:short] << ' This method is only available on objects created with the alternate constructor <span class="code">Object.create</span>.'
-      #  current_module[:methods] << instance_version
-      #end
     end
   end
-  modules << @current_module
 end
 
-#puts pp modules
+#puts pp @modules
 
+extract_docs(:core)
+extract_docs(:dates)
+extract_docs(:inflections)
 
-modules.each do |mod|
-  mod[:methods].sort! do |a,b|
+@modules.each do |name, mod|
+  mod.sort! do |a,b|
     if a[:class_method] == b[:class_method]
       a[:name] <=> b[:name]
     else
@@ -205,5 +212,5 @@ modules.each do |mod|
 end
 
 File.open(fileout, 'w') do |f|
-  f.puts "SugarModules = #{modules.to_json};"
+  f.puts "SugarModules = #{@modules.to_json};"
 end
