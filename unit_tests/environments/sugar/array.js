@@ -1605,7 +1605,11 @@ test('Array', function () {
     return n.letter.repeat(n.count);
   }), 'aa, bbbb and ccc', "Array#punctuate | custom handler can be used to manipulate elements | fn");
   equal(['a'].punctuate(false), 'a only', "Array#punctuate | default handler can be used with false | false");
-  equal(['a'].punctuate(false, false), 'a', "Array#punctuate | only is used with 1 element | false false");
+	equal(['abelle', 'aceline', 'adélaïde', 'adelais'].punctuate(function(n) {
+		return n.capitalize();
+	}, 'et'), 'Abelle, Aceline, Adélaïde et Adelais', 'Array#punctuate | a subsitute conjunction can be used | et');
+	equal(['a', 'b', 'c'].punctuate(false, false), 'a, b and c', "Array#punctuate | 'and' is used if conjunction === false | false false")
+  equal(['a'].punctuate(false, false, false), 'a', "Array#punctuate | only is used with 1 element | false false false");
 
   // Array#findAll - Complex matching
 
