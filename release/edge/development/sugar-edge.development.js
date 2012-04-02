@@ -1888,7 +1888,7 @@
 			  var sentence = "";
 
 			  if (Object.isFunction(handler) == false || handler === false)
-			    handler = function(n) { return element.toString() + 'a'; };
+			    handler = function(n) { return String(n); };
 
 			  if (Object.isBoolean(useOnly) == false)
 			    useOnly = true;
@@ -3514,7 +3514,7 @@
       return this.slice(0, length) + (length > 0 ? append : '');
     },
 
-    /***
+		/***
 		 * @method shorten(<length>, [position] = 'center', [countSplitter] = true, [splitter] = '...')
 	   * @returns String
 	   * @short Shortens the string at a given [position].
@@ -3533,9 +3533,9 @@
      if (!Object.isString(splitter)) splitter = '...';
      if (!Object.isBoolean(countSplitter)) countSplitter = true;
 
+		 // Make sure the result will be less than the input, 
      var balance = (countSplitter) ? splitter.length : 0;
-
-     if (length <= balance || this.length <= length) return String(this);
+     if (this.length <= length + balance || length < balance) return String(this);
 
      // Perform shortening
      var shortened, beforeSplitter, afterSplitter;
