@@ -1,9 +1,7 @@
 
 environment = 'node';
 
-require(process.env.SUGAR_CORE || '../../../lib/core.js');
-require(process.env.SUGAR_DATES || '../../../lib/dates.js');
-require(process.env.SUGAR_DATES || '../../../lib/inflections.js');
+var Sugar = require('../../../lib/main');
 
 // Test suite
 require('../../javascripts/setup.js');
@@ -31,5 +29,13 @@ require('../sugar/date_it.js')
 require('../sugar/date_de.js')
 require('../sugar/date_ja.js')
 require('../sugar/inflections.js');
+
+equal(Array.prototype.remove, Sugar.Array.prototype.remove, 'Array should have been exported');
+equal(String.prototype.chars, Sugar.String.prototype.chars, 'String should have been exported');
+equal(Number.prototype.upto, Sugar.Number.prototype.upto, 'Number should have been exported');
+equal(RegExp.prototype.getFlags, Sugar.RegExp.prototype.getFlags, 'RegExp should have been exported');
+equal(Function.prototype.lazy, Sugar.Function.prototype.lazy, 'Function should have been exported');
+equal(Date.prototype.iso, Sugar.Date.prototype.iso, 'Date should have been exported');
+equal(Object.merge, Sugar.Object.merge, 'Object should have been exported');
 
 syncTestsFinished();
