@@ -1601,15 +1601,17 @@ test('Array', function () {
 	equal(['a', 2, {c:3}].punctuate(), 'a, 2 and [object Object]', "Array#punctuate | default handler copes with objects other than strings | no params")
   equal(['a', 'b'].punctuate(), 'a and b', "Array#punctuate | doesn't use ',' with 2 elements | no params");
   equal([].punctuate(), '', "Array#punctuate | nothing is build with an empty list | no params");
-  equal([{letter:'a', count:2}, {letter:'b', count:4}, {letter:'c', count:3}].punctuate(function(n) {
+	equal(['a'].punctuate(), 'a', "Array#punctuate | single item in array will not have punctuation | no params");
+  equal([{letter:'a', count:2}, {letter:'b', count:4}, {letter:'c', count:3}].punctuate('and', function(n) {
     return n.letter.repeat(n.count);
-  }), 'aa, bbbb and ccc', "Array#punctuate | custom handler can be used to manipulate elements | fn");
-  equal(['a'].punctuate(false), 'a only', "Array#punctuate | default handler can be used with false | false");
-	equal(['abelle', 'aceline', 'adélaïde', 'adelais'].punctuate(function(n) {
+  }), 'aa, bbbb and ccc', "Array#punctuate | custom handler can be used to manipulate elements | 'and' fn");
+	equal(['abelle', 'aceline', 'adélaïde', 'adelais'].punctuate('et', function(n) {
 		return n.capitalize();
-	}, 'et'), 'Abelle, Aceline, Adélaïde et Adelais', 'Array#punctuate | a subsitute conjunction can be used | et');
-	equal(['a', 'b', 'c'].punctuate(false, false), 'a, b and c', "Array#punctuate | 'and' is used if conjunction === false | false false")
-  equal(['a'].punctuate(false, false, false), 'a', "Array#punctuate | only is used with 1 element | false false false");
+	}), 'Abelle, Aceline, Adélaïde et Adelais', "Array#punctuate | a subsitute conjunction can be used | fn 'et'");
+	equal(['a', 'b', 'c'].punctuate(false), 'a, b and c', "Array#punctuate | 'and' is used if conjunction === false | false")
+	equal(['a', 'b', 'c'].punctuate({}), 'a, b and c', "Array#punctuate | 'and' is used if conjunction !== boolean | {}");
+  equal(['a', 'b', 'c', 'd'].punctuate(false, false), 'a, b, c and d', "Array#punctuate | default handler is used if !== fn | false {}");
+  equal(['a', 'b', 'c', 'd'].punctuate(false, {}), 'a, b, c and d', "Array#punctuate | default handler is used if === false | false false");
 
   // Array#findAll - Complex matching
 
