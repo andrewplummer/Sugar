@@ -3397,6 +3397,47 @@
     },
 
     /***
+     * @method shorten(<length>, [position] = 'center', [countSplitter] = true, [splitter] = '...')
+     * @returns String
+     * @short Shortens the string at a given [position].
+     * @extra Supply a [position] to move the [splitter]. [countSplitter] determinds whether the result's <length> will include [splitter].
+     * @example
+     *
+     *   'just sittin on the dock of the bay'.shorten(25)                			-> 'just sittin... of the bay'
+     *   'just sittin on the dock of the bay'.shorten(25, 'right')       			-> 'just sittin on the doc...'
+     *   'just sittin on the dock of the bay'.shorten(25, 'left', false)			-> '...in on the dock of the bay'
+     *   'just sittin on the dock of the bay'.shorten(25, 'left', false, '>>> ')	-> '>>> in on the dock of the bay'
+     *
+     ***/
+    'shorten': function(length, position, countSplitter, splitter) {
+      if (this.length < 1 && length < 1) return String(this);
+      
+      if (!Object.isString(splitter)) splitter = '...';
+      if (!Object.isBoolean(countSplitter)) countSplitter = true;
+
+      var balance = (countSplitter) ? splitter.length : 0;
+      
+      if (length <= balance || this.length <= length) return String(this);
+      
+      // Perform shortening
+      var shortened, beforeSplitter, afterSplitter;
+      
+      if (position == 'left') {
+        afterSplitter = this.from(this.length - length + balance);
+        shortened = splitter + afterSplitter;
+      } else if (position == 'right') {
+        beforeSplitter = this.to(length - balance);
+        shortened = beforeSplitter + splitter;
+      } else {
+        beforeSplitter = this.to(((length / 2) - (balance / 2)).ceil());
+        afterSplitter = this.from(this.length - ((length / 2) - (balance / 2)).floor());
+        shortened = beforeSplitter + splitter + afterSplitter;
+      }
+      
+      return shortened;
+    },
+    
+    /***
      * @method assign(<obj1>, <obj2>, ...)
      * @returns String
      * @short Assigns variables to tokens in a string.
