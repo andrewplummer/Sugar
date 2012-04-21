@@ -1868,22 +1868,22 @@
     },
 
     /***
-     * @method punctuate([conjunction] = 'and', [fn])
+     * @method toSentence([conjunction] = 'and', [fn])
      * @returns String
      * @short Builds a grammatical list from the array
      * @extra [fn] will be called on every object in the array. The default handler will be used if [fn] is not specified or is false. A custom [conjuction] can be supplied for localization, default is 'and'.
      * @example
      *
-     *   ['a', 'b', 'c'].punctuate()                      -> 'a, b and c';
-     *   ['a', 2, {c:3}].punctuate()                      -> 'a, 2 and [object Object]';
-     *   ['Lundi', 'Mardi', 'Mercredi'].punctuate('et')   -> 'Lundi, Mardi et Mercredi';
-     *   ['a', 'b', 'c'].punctuate('and', function(n) {
+     *   ['a', 'b', 'c'].toSentence()                      -> 'a, b and c';
+     *   ['a', 2, {c:3}].toSentence()                      -> 'a, 2 and [object Object]';
+     *   ['Lundi', 'Mardi', 'Mercredi'].toSentence('et')   -> 'Lundi, Mardi et Mercredi';
+     *   ['a', 'b', 'c'].toSentence('and', function(n) {
      *     // returns 'aa, bb and cc'
      *     return n.repeat(2);
      *   })
      *
      ***/
-    'punctuate': function(conjunction, handler) {
+    'toSentence': function(conjunction, handler) {
       var sentence = "",
           applied,
           twoWordConjunction,
