@@ -1144,87 +1144,101 @@ test('String', function () {
 
   var str = 'Gotta be an entire sentence.';
 
-  equal(str.truncate(21), 'Gotta be an entire...', 'String#truncate | no arguments | 21');
-  equal(str.truncate(20), 'Gotta be an...', 'String#truncate | no arguments | 20', { prototype: 'Gotta be an entir...' });
-  equal(str.truncate(14), 'Gotta be an...', 'String#truncate | no arguments | 14');
-  equal(str.truncate(13), 'Gotta be...', 'String#truncate | no arguments | 13', { prototype: 'Gotta be a...' });
-  equal(str.truncate(11), 'Gotta be...', 'String#truncate | no arguments | 11');
-  equal(str.truncate(10), 'Gotta...', 'String#truncate | no arguments | 10', { prototype: 'Gotta b...' });
-  equal(str.truncate(4), '', 'String#truncate | no arguments | 4', { prototype: 'G...' });
-  equal(str.truncate(3), '', 'String#truncate | no arguments | 3', { prototype: '...' });
+  equal(str.truncate(29), 'Gotta be an entire sentence.', 'String#truncate | no arguments | 29');
+  equal(str.truncate(28), 'Gotta be an entire sentence.', 'String#truncate | no arguments | 28');
+  equal(str.truncate(21), 'Gotta be an entire se...', 'String#truncate | split words | 21');
+  equal(str.truncate(20), 'Gotta be an entire s...', 'String#truncate | split words | 20');
+  equal(str.truncate(14), 'Gotta be an en...', 'String#truncate | split words | 14');
+  equal(str.truncate(13), 'Gotta be an e...', 'String#truncate | split words | 13');
+  equal(str.truncate(11), 'Gotta be an...', 'String#truncate | split words | 11');
+  equal(str.truncate(10), 'Gotta be a...', 'String#truncate | split words | 10');
+  equal(str.truncate(4), 'Gott...', 'String#truncate | split words | 4');
+  equal(str.truncate(3), 'Got...', 'String#truncate | split words | 3', { prototype: '...' });
+  equal(str.truncate(2), 'Go...', 'String#truncate | split words | 2', { prototype: '...' });
+  equal(str.truncate(1), 'G...', 'String#truncate | split words | 1', { prototype: '...' });
+  equal(str.truncate(0), '...', 'String#truncate | split words | 0', { prototype: '...' });
 
+  equal(str.truncate(21, false), 'Gotta be an entire...', 'String#truncate | no split | 21');
+  equal(str.truncate(20, false), 'Gotta be an entire...', 'String#truncate | no split | 20');
+  equal(str.truncate(19, false), 'Gotta be an entire...', 'String#truncate | no split | 19');
+  equal(str.truncate(18, false), 'Gotta be an entire...', 'String#truncate | no split | 18');
+  equal(str.truncate(17, false), 'Gotta be an...', 'String#truncate | no split | 17');
+  equal(str.truncate(14, false), 'Gotta be an...', 'String#truncate | no split | 14');
+  equal(str.truncate(13, false), 'Gotta be an...', 'String#truncate | no split | 13', { prototype: 'Gotta be a...' });
+  equal(str.truncate(11, false), 'Gotta be an...', 'String#truncate | no split | 11');
+  equal(str.truncate(10, false), 'Gotta be...', 'String#truncate | no split | 10', { prototype: 'Gotta b...' });
+  equal(str.truncate(4, false), 'Gott...', 'String#truncate | no split | 4', { prototype: 'G...' });
+  equal(str.truncate(3, false), 'Got...', 'String#truncate | no split | 3', { prototype: '...' });
+  equal(str.truncate(2, false), 'Go...', 'String#truncate | no split | 2', { prototype: '...' });
+  equal(str.truncate(1, false), 'G...', 'String#truncate | no split | 1', { prototype: '...' });
+  equal(str.truncate(0, false), '...', 'String#truncate | no split | 0', { prototype: '...' });
 
-  equal('GOTTA BE AN ENTIRE SENTENCE.'.truncate(21), 'GOTTA BE AN ENTIRE...', 'String#truncate | caps too | 21');
-  equal('GOTTA BE AN ENTIRE SENTENCE.'.truncate(20), 'GOTTA BE AN...', 'String#truncate | caps too | 20', { prototype: 'GOTTA BE AN ENTIR...' });
+  equal('GOTTA BE AN ENTIRE SENTENCE.'.truncate(21, false), 'GOTTA BE AN ENTIRE...', 'String#truncate | caps too | 21');
+  equal('GOTTA BE AN ENTIRE SENTENCE.'.truncate(17, false), 'GOTTA BE AN...', 'String#truncate | caps too | 20', { prototype: 'GOTTA BE AN ENTIR...' });
 
-  equal('gotta. be. an. entire. sentence.'.truncate(17), 'gotta. be. an...', 'String#truncate | punctuation | 17', { prototype: 'gotta. be. an....' });
+  equal('gotta. be. an. entire. sentence.'.truncate(17, false), 'gotta. be. an....', 'String#truncate | no special punctuation treatment | 17');
   equal('too short!'.truncate(30), 'too short!', 'String#truncate | will not add ellipsis if the string is too short');
-  equal('almost there'.truncate(11), 'almost...', 'String#truncate | will not add more than the original string', { prototype: 'almost t...' });
+  equal('almost there'.truncate(11, false), 'almost...', 'String#truncate | will not add more than the original string', { prototype: 'almost t...' });
+
+  equal('Gotta be an entire sentence.'.truncate(22, false, 'right', 'hooha'), 'Gotta be an entirehooha', 'String#truncate | different ellipsis', { prototype: 'Gotta be an entirhooha' });
+  equal('Gotta be an entire sentence.'.truncate(22, true, 'right', 'hooha'), 'Gotta be an entire senhooha', 'String#truncate | different ellipsis');
+
+  equal('booh pooh mooh'.truncate(7, true, 'right', 455), 'booh po455', 'String#truncate | converts numbers to strings', { prototype: '455' });
+
+  equal('こんな　ストリングは　あまり　ない　と　思う　けど。。。'.truncate(6, false), 'こんな...', 'String#truncate | correctly finds spaces in Japanese');
+  equal('한국어 도 이렇게 할 수 있어요?'.truncate(9, false), '한국어 도 이렇게...', 'String#truncate | correctly finds spaces in Korean', { prototype: '한국어 도 ...' });
 
 
-  equal('Gotta be an entire sentence.'.truncate(21, '...', true), 'Gotta be an entire...', 'String#truncate | split words | 21');
-  equal('Gotta be an entire sentence.'.truncate(20, '...', true), 'Gotta be an entir...', 'String#truncate | split words | 20');
-  equal('Gotta be an entire sentence.'.truncate(14, '...', true), 'Gotta be an...', 'String#truncate | split words | 14');
-  equal('Gotta be an entire sentence.'.truncate(13, '...', true), 'Gotta be a...', 'String#truncate | split words | 13');
-  equal('Gotta be an entire sentence.'.truncate(11, '...', true), 'Gotta be...', 'String#truncate | split words | 11');
-  equal('Gotta be an entire sentence.'.truncate(10, '...', true), 'Gotta b...', 'String#truncate | split words | 10');
-  equal('Gotta be an entire sentence.'.truncate(4, '...', true), 'G...', 'String#truncate | split words | 4');
-  equal('Gotta be an entire sentence.'.truncate(3, '...', true), '', 'String#truncate | split words | 3', { prototype: '...' });
+  // String#truncate
+
+  equal(str.truncate(21, true, 'middle'), 'Gotta be a...sentence.', 'String#truncate | middle | no arguments | 21');
+  equal(str.truncate(11, true, 'middle'), 'Gotta...ence.', 'String#truncate | middle | no arguments | 11');
+  equal(str.truncate(4, true, 'middle'), 'Go...e.', 'String#truncate | middle | no arguments | 4');
+  equal(str.truncate(3, true, 'middle'), 'G....', 'String#truncate | middle | no arguments | 3');
+  equal(str.truncate(2, true, 'middle'), 'G....', 'String#truncate | middle | no arguments | 2');
+  equal(str.truncate(0, true, 'middle'), '...', 'String#truncate | middle | no arguments | 0');
+  equal(str.truncate(-100, true, 'middle'), '...', 'String#truncate | middle | no arguments | -100');
+
+  equal(str.truncate(21, false, 'middle'), 'Gotta be...sentence.', 'String#truncate | middle | no split | 21');
+  equal(str.truncate(11, false, 'middle'), 'Gotta...ence.', 'String#truncate | middle | no split | 11');
+  equal(str.truncate(4, false, 'middle'), 'Go...e.', 'String#truncate | middle | no split | 4');
+  equal(str.truncate(3, false, 'middle'), 'G....', 'String#truncate | middle | no split | 3');
+  equal(str.truncate(2, false, 'middle'), 'G....', 'String#truncate | middle | no split | 2');
+  equal(str.truncate(0, false, 'middle'), '...', 'String#truncate | middle | no split | 0');
+  equal(str.truncate(-100, false, 'middle'), '...', 'String#truncate | middle | no split | -100');
+
+  equal(str.truncate(21, true, 'left'), '...e an entire sentence.', 'String#truncate | left | no arguments | 21');
+  equal(str.truncate(11, true, 'left'), '...e sentence.', 'String#truncate | left | no arguments | 11');
+  equal(str.truncate(9, true, 'left'), '...sentence.', 'String#truncate | left | no arguments | 9');
+  equal(str.truncate(4, true, 'left'), '...nce.', 'String#truncate | left | no arguments | 4');
+  equal(str.truncate(3, true, 'left'), '...ce.', 'String#truncate | left | no arguments | 3');
+  equal(str.truncate(2, true, 'left'), '...e.', 'String#truncate | left | no arguments | 2');
+  equal(str.truncate(0, true, 'left'), '...', 'String#truncate | left | no arguments | 0');
+  equal(str.truncate(-100, true, 'left'), '...', 'String#truncate | left | no arguments | -100');
+
+  equal(str.truncate(21, false, 'left'), '...an entire sentence.', 'String#truncate | left | no split | 21');
+  equal(str.truncate(11, false, 'left'), '...sentence.', 'String#truncate | left | no split | 11');
+  equal(str.truncate(9, false, 'left'), '...sentence.', 'String#truncate | left | no split | 9');
+  equal(str.truncate(4, false, 'left'), '...nce.', 'String#truncate | left | no split | 4');
+  equal(str.truncate(3, false, 'left'), '...ce.', 'String#truncate | left | no split | 3');
+  equal(str.truncate(2, false, 'left'), '...e.', 'String#truncate | left | no split | 2');
+  equal(str.truncate(0, false, 'left'), '...', 'String#truncate | left | no split | 0');
+  equal(str.truncate(-100, false, 'left'), '...', 'String#truncate | left | no split | -100');
 
 
-  equal('Gotta be an entire sentence.'.truncate(22, 'hooha', false), 'Gotta be anhooha', 'String#truncate | different ellipsis', { prototype: 'Gotta be an entirhooha' });
-  equal('Gotta be an entire sentence.'.truncate(22, 'hooha', true), 'Gotta be an entirhooha', 'String#truncate | different ellipsis');
+  equal('123456'.truncate(2, false, 'left'), '...56', 'String#truncate | splitter not included left | 2');
+  equal('123456'.truncate(2, false, 'middle'), '1...6', 'String#truncate | splitter not included center | 2');
+  equal('123456'.truncate(2, false), '12...', 'String#truncate | splitter not included right | 2');
 
-  equal('booh pooh mooh'.truncate(9, 'hooha'), 'boohhooha', 'String#truncate | only not include when the ellipsis is all the same character');
-  equal('booh pooh mooh'.truncate(7, 455), 'booh455', 'String#truncate | only accepts strings for append', { prototype: '455' });
+  equal(str.truncate(28, true, 'left', '>>> '), 'Gotta be an entire sentence.', 'String#truncate | custom [splitter] | 28');
+  equal(str.truncate(23, true, 'left', '>>> '), '>>>  be an entire sentence.', 'String#truncate | custom [splitter] | 23');
+  equal(str.truncate(5, true, 'left', '>>> '), '>>> ence.', 'String#truncate | custom [splitter] | 5');
+  equal(str.truncate(4, true, 'left', '>>> '), '>>> nce.', 'String#truncate | custom [splitter] | 4');
+  equal(str.truncate(3, false, 'left', '>>> '), '>>> ce.', 'String#truncate | custom [splitter] | 4');
 
-  equal(''.truncate(0), '', 'String#truncate | returned strings are equal');
-  equal('foobar'.truncate(30), 'foobar', 'String#truncate | short strings are equal');
+  equal(str.truncate(3, true, 'middle', '-'), 'G-.', 'String#truncate | custom [splitter] | 4');
+  equal(str.truncate(10, false, 'right', ''), 'Gotta be', 'String#truncate | empty [splitter]  | 10');
 
-  equal('こんな　ストリングは　あまり　ない　と　思う　けど。。。'.truncate(6), 'こんな...', 'String#truncate | correctly finds spaces in Japanese');
-  equal('한국어 도 이렇게 할 수 있어요?'.truncate(9), '한국어 도...', 'String#truncate | correctly finds spaces in Korean', { prototype: '한국어 도 ...' });
-
-
-
-  // String#shorten
-
-	equal(str.shorten(29), 'Gotta be an entire sentence.', 'String#shorten | no arguments | 29');
-  equal(str.shorten(28), 'Gotta be an entire sentence.', 'String#shorten | no arguments | 28');
-  equal(str.shorten(21), 'Gotta be ...sentence.', 'String#shorten | no arguments | 21');
-  equal(str.shorten(11), 'Gott...nce.', 'String#shorten | no arguments | 11');
-  equal(str.shorten(4), 'G...', 'String#shorten | no arguments | 4');
-  equal(str.shorten(3), '...', 'String#shorten | no arguments | 3');
-  equal(str.shorten(2), 'Gotta be an entire sentence.', 'String#shorten | no arguments | 2');
-	equal(str.shorten(0), 'Gotta be an entire sentence.', 'String#shorten | no arguments | 0');
-	equal(str.shorten(-100), 'Gotta be an entire sentence.', 'String#shorten | no arguments | -100');
-
-  equal(str.shorten(28, 'right'), 'Gotta be an entire sentence.', 'String#shorten | splitter right | 28');
-  equal(str.shorten(21, 'right'), 'Gotta be an entire...', 'String#shorten | splitter right | 21');
-  equal(str.shorten(4, 'right'), 'G...', 'String#shorten | splitter right | 4');
-
-  equal(str.shorten(28, 'left'), 'Gotta be an entire sentence.', 'String#shorten | splitter left | 28');
-  equal(str.shorten(21, 'left'), '...n entire sentence.', 'String#shorten | splitter left | 21');
-  equal(str.shorten(4, 'left'), '....', 'String#shorten | splitter left | 4');
-
-  equal(str.shorten(28, 'center', false), 'Gotta be an entire sentence.', 'String#shorten | splitter not included in results <length> | 28');
-  equal(str.shorten(21, 'center', false), 'Gotta be an... sentence.', 'String#shorten | splitter not included in results <length> | 21');
-  equal(str.shorten(4, 'center', false), 'Go...e.', 'String#shorten | splitter not included in results <length> | 4');
-  equal(str.shorten(3, 'center', false), 'Go....', 'String#shorten | splitter not included in results <length> | 3');
-  equal(str.shorten(1, 'center', false), 'G...', 'String#shorten | splitter not included in results <length> | 1');
-
-  equal('123456'.shorten(2, 'left', false), '...56', 'String#shorten | splitter not included left | 2');
-  equal('123456'.shorten(2, 'center', false), '1...6', 'String#shorten | splitter not included center | 2');
-  equal('123456'.shorten(2, 'right', false), '12...', 'String#shorten | splitter not included right | 2');
-
-  equal(str.shorten(28, 'left', true, '>>> '), 'Gotta be an entire sentence.', 'String#shorten | custom [splitter] | 28');
-  equal(str.shorten(23, 'left', true, '>>> '), '>>> an entire sentence.', 'String#shorten | custom [splitter] | 23');
-  equal(str.shorten(5, 'left', true, '>>> '), '>>> .', 'String#shorten | custom [splitter] | 5');
-  equal(str.shorten(4, 'left', true, '>>> '), '>>> ', 'String#shorten | custom [splitter] | 4');
-	equal(str.shorten(3, 'left', false, '>>> '), '>>> ce.', 'String#shorten | custom [splitter] | 4');
-
-  equal(str.shorten(3, 'center', true, '-'), 'G-.', 'String#shorten | custom [splitter] | 4');
-  equal(str.shorten(10, 'right', false, ''), 'Gotta be a', 'String#shorten | empty [splitter]  | 10');
-  
 
   // String#assign
 
