@@ -1595,6 +1595,24 @@ test('Array', function () {
   equal(arr.sample(11).length, 10, "Array#sample | can't sample more than the length of the array");
   equal(arr.sample(10).unique().length, arr.length, "Array#sample | should not sample the same element twice");
 
+	// Array#toSentence
+	
+	equal(['a', 'b', 'c'].toSentence(), 'a, b and c', "Array#toSentence | builds a simple grammatical list | no params");
+	equal(['a', 2, {c:3}].toSentence(), 'a, 2 and [object Object]', "Array#toSentence | default handler copes with objects other than strings | no params")
+  equal(['a', 'b'].toSentence(), 'a and b', "Array#toSentence | doesn't use ',' with 2 elements | no params");
+  equal([].toSentence(), '', "Array#toSentence | nothing is build with an empty list | no params");
+	equal(['a'].toSentence(), 'a', "Array#toSentence | single item in array will not have punctuation | no params");
+  equal([{letter:'a', count:2}, {letter:'b', count:4}, {letter:'c', count:3}].toSentence('and', function(n) {
+    return n.letter.repeat(n.count);
+  }), 'aa, bbbb and ccc', "Array#toSentence | custom handler can be used to manipulate elements | 'and' fn");
+	equal(['abelle', 'aceline', 'adélaïde', 'adelais'].toSentence('et', function(n) {
+		return n.capitalize();
+	}), 'Abelle, Aceline, Adélaïde et Adelais', "Array#toSentence | a subsitute conjunction can be used | fn 'et'");
+	equal(['a', 'b', 'c'].toSentence(false), 'a, b and c', "Array#toSentence | 'and' is used if conjunction === false | false")
+	equal(['a', 'b', 'c'].toSentence({}), 'a, b and c', "Array#toSentence | 'and' is used if conjunction !== boolean | {}");
+  equal(['a', 'b', 'c', 'd'].toSentence(false, false), 'a, b, c and d', "Array#toSentence | default handler is used if !== fn | false {}");
+  equal(['a', 'b', 'c', 'd'].toSentence(false, {}), 'a, b, c and d', "Array#toSentence | default handler is used if === false | false false");
+
   // Array#findAll - Complex matching
 
   var people = [
