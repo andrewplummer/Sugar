@@ -9,5 +9,6 @@
   "ender": "./release/1.2.4/development/sugar-1.2.4.development.js",
   "directories" : {"lib" : "./lib"},
   "repository" : {"type" : "git", "url": "https://github.com/andrewplummer/Sugar.git"},
-  "engines" : {"node" : ">= 0.4.0"}
+  "engines" : {"node" : ">= 0.4.0"},
+  "scripts": {"test": "./unit_tests/node.sh"}
 }

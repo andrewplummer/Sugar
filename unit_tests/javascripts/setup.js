@@ -1,5 +1,3 @@
-
-
 if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
 // The scope when none is set.
@@ -161,7 +159,11 @@ var testsFinished = function() {
     testsFinishedCallback(results, runtime);
   }
   if(environment == 'node') {
+    this.totalFailures = 0
+    // displayResults will increment totalFailures by 1 for each failed test encountered
     displayResults();
+    // will exit now setting the status to the number of failed tests
+    process.exit(this.totalFailures);
   }
   results = [];
 }
@@ -170,7 +172,7 @@ var displayResults = function() {
   var i, j, failure, totalAssertions = 0, totalFailures = 0;
   for (i = 0; i < results.length; i += 1) {
     totalAssertions += results[i].assertions;
-    totalFailures += results[i].failures.length;
+    this.totalFailures += results[i].failures.length;
     for(j = 0; j < results[i].failures.length; j++) {
       failure = results[i].failures[j];
       console.info('\n'+ (j + 1) + ') Failure:');
@@ -180,7 +182,7 @@ var displayResults = function() {
     }
   };
   var time = (runtime / 1000);
-  console.info(results.length + ' tests, ' + totalAssertions + ' assertions, ' + totalFailures + ' failures, ' + time + 's\n');
+  console.info(results.length + ' tests, ' + totalAssertions + ' assertions, ' + this.totalFailures + ' failures, ' + time + 's\n');
 }
 
 test = function(name, fn) {
