@@ -292,6 +292,19 @@ test('Date', function () {
   dateEqual(Date.create('1997-07-16T19:20:30.46284+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 463), 'Date#create | ISO8601 | milliseconds have no limit 5');
 
 
+  // .NET output
+  dateEqual(Date.create('2012-04-23T07:58:42.7940000z'), getUTCDate(2012, 4, 23, 7, 58, 42, 794), 'Date#create | ISO8601 | .NET long format');
+
+  // Fractions in ISO8601 dates
+  dateEqual(Date.create('1997-07-16T14:30:40.5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'Date#create | ISO8601 | fractions in seconds');
+  dateEqual(Date.create('1997-07-16T14:30.5'), new Date(1997, 6, 16, 14, 30, 30), 'Date#create | ISO8601 | fractions in minutes');
+  dateEqual(Date.create('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
+
+  // Comma based fractions in ISO8601 dates
+  dateEqual(Date.create('1997-07-16T14:30:40,5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'Date#create | ISO8601 | fractions in seconds');
+  dateEqual(Date.create('1997-07-16T14:30,5'), new Date(1997, 6, 16, 14, 30, 30), 'Date#create | ISO8601 | fractions in minutes');
+  dateEqual(Date.create('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
+
   // These are all the same moment...
   dateEqual(Date.create('2001-04-03T18:30Z'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 1');
   dateEqual(Date.create('2001-04-03T22:30+04'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 2');
