@@ -1,6 +1,8 @@
 Sugar
 =====
 
+[![Build Status](https://secure.travis-ci.org/spaghetticode/Sugar.png)](http://travis-ci.org/spaghetticode/Sugar)
+
 A Javascript library for working with native objects.
 http://sugarjs.com/
 
@@ -28,7 +30,7 @@ the standard release schedule, but will be updated when the Sugar Date module ch
 Unit Tests Node
 ===============
 
-Unit tests can be run through the shell script at `./unit_tests/node.sh`.
+Unit tests can be run through the shell script at `./unit_tests/node.sh`
 
 
 Date Localizations
