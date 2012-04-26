@@ -178,12 +178,15 @@ test('Function', function () {
     }, 500);
   });
 
+
+  // Function#throttle
+
   async(function(){
     var fn, ret, counter = 0, expected = [['3p0', 1],['luke', 6]];
     var fn = (function(one){
       equal([this.toString(), one], expected[counter], 'Function#debounce | immediate execution | scope and arguments are correct');
       counter++;
-    }).debounce(50, false);
+    }).throttle(50);
 
     fn.call('3p0', 1);
     fn.call('r2d2', 2);
@@ -204,7 +207,6 @@ test('Function', function () {
       equal(counter, 2, 'Function#debounce | immediate execution | counter is correct');
     }, 200);
   });
-
 
 
   // Function#after
