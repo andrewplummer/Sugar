@@ -8,7 +8,7 @@ test('Object', function () {
 
 
   equal(Object.isObject({}), true, 'Object.isObject | {}');
-  equal(Object.isObject(Object.extended()), false, 'Object.isObject | extended object');
+  equal(Object.isObject(Object.extended()), true, 'Object.isObject | extended object');
   equal(Object.isObject(new Object({})), true, 'Object.isObject | new Object()');
   equal(Object.isObject([]), false, 'Object.isObject | []');
   equal(Object.isObject(new Array(1,2,3)), false, 'Object.isObject | new Array(1,2,3)');
