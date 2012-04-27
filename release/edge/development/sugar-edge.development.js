@@ -1868,55 +1868,41 @@
     },
 
     /***
-     * @method toSentence([conjunction] = 'and', [fn])
+     * @method toSentence([conjunction] = 'and'])
      * @returns String
      * @short Builds a grammatical list from the array
-     * @extra [fn] will be called on every object in the array. The default handler will be used if [fn] is not specified or is false. A custom [conjuction] can be supplied for localization, default is 'and'.
+     * @extra A custom string [conjuction] can be supplied for localization, 'and' is used if not a string.
      * @example
      *
      *   ['a', 'b', 'c'].toSentence()                      -> 'a, b and c';
      *   ['a', 2, {c:3}].toSentence()                      -> 'a, 2 and [object Object]';
      *   ['Lundi', 'Mardi', 'Mercredi'].toSentence('et')   -> 'Lundi, Mardi et Mercredi';
-     *   ['a', 'b', 'c'].toSentence('and', function(n) {
-     *     // returns 'aa, bb and cc'
-     *     return n.repeat(2);
-     *   })
      *
      ***/
-    'toSentence': function(conjunction, handler) {
+    'toSentence': function(conjunction) {
       var sentence = "",
-          applied,
           twoWordConjunction,
           lastWordConjunction;
       
       // Quick escape
       if (this.length === 0) return sentence;
 
-      // Default handler
-      if (Object.isFunction(handler) === false || handler === false) {
-        handler = function (n) {
-          return Object.isString(n) ? n : String(n);
-        };
-      }
-
-      if (Object.isString(conjunction) === false || conjunction === false) {
+      if (Object.isString(conjunction) === false) {
         conjunction = "and";
       }
-      
-      applied = this.map(handler);
       
       twoWordConjunction = ' ' + conjunction + ' ';
       lastWordConjunction = ' ' + conjunction + ' ';
 
-      switch (applied.length) {
+      switch (this.length) {
         case 1:
-          sentence = applied[0];
+          sentence = this[0];
           break;
         case 2:
-          sentence = applied.join(twoWordConjunction);
+          sentence = this.join(twoWordConjunction);
           break;
         default:
-          sentence = applied.first(applied.length - 2).join(', ') + lastWordConjunction + applied.last();
+          sentence = this.first(this.length - 1).join(', ') + lastWordConjunction + this.last();
           break;
       };
 
