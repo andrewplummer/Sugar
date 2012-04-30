@@ -10,6 +10,19 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.2.5+
+=======
+
+- Level: Major
+  - `String#truncate` arguments changed. `ellipsis` (`"..."` by default) is now the last argument of four. Second argument is now `split` which is true by default, so the method will behave like standard truncate methods by default. `from` added as the third parameter and determines where to truncate. Can be `"right"` (default), `"left"`, or `"middle"`.
+
+- Level: Major
+  - `Function#debounce` no longer has an argument `wait`. Equivalent function is now `Function#throttle` (no arguments). `fn.debounce(100, false)` is now `fn.throttle(100)`.
+
+- Level: Minor
+  - `Object.isObject` now returns `true` for extended objects.
+
+
 v1.2.4+
 =======
 
