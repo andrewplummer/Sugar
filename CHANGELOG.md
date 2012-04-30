@@ -1,3 +1,17 @@
+v1.2.5
+======
+
+
+### API Changes ###
+
+- String#truncate refactored to split words by default (standard behavior) allow splitting in various positions, and changing argument order.
+- Object.isObject should be true for extended objects as well.
+- Function#throttle added to take the place of Function#debounce with `false` as the `wait` parameter.
+- Date parsing support for hour/minute/second fractions (now take the place of milliseconds).
+- Date parsing support now sees commas in decimals.
+- Date parsing support for .NET dates.
+
+
 v1.2.4
 ======
 
