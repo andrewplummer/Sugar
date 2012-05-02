@@ -1,7 +1,7 @@
 Sugar
 =====
 
-[![Build Status](https://secure.travis-ci.org/spaghetticode/Sugar.png)](http://travis-ci.org/spaghetticode/Sugar)
+[![Build Status](https://secure.travis-ci.org/andrewplummer/Sugar.png)](http://travis-ci.org/andrewplummer/Sugar)
 
 A Javascript library for working with native objects.
 http://sugarjs.com/
