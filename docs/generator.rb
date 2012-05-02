@@ -43,7 +43,7 @@ def get_method(s)
   accepts_unlimited_params = false
   if match[3]
     p = match[3].split(/,(?!')/)
-    if p.last =~ /\.\.\./
+    if p.last =~ /[^'"]\.\.\./
       p.delete_at(-1)
       method[:accepts_unlimited_params] = true
     end
