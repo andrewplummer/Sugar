@@ -663,6 +663,8 @@ test('Inflections', function () {
       equal(under.dasherize().underscore(), under, 'String#dasherize | reverse')
   });
 
+  // More irregulars
+  equal('street'.pluralize(), 'streets', 'String.Inflector | street > streets');
 
   // Test clearing inflectors KEEP ME AT THE BOTTOM
   equal('foo'.pluralize(), 'foos', 'String.Inflector.clear | foo is foos');
