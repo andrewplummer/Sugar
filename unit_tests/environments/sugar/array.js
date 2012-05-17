@@ -1010,6 +1010,11 @@ test('Array', function () {
   equal([1].inGroupsOf(3, undefined), [[1,null,null]], 'Array#inGroupsOf | passing undefined reverts to null');
 
 
+  // Issue #142 - inGroupsOf corrupting array length
+  arr = (1).upto(20);
+  arr.inGroupsOf(3);
+  equal(arr.length, 20, 'Array#inGroupsOf | does not corrupt original array length');
+
 
   // Emulating example of Enumerable#each_slice
   equal((1).upto(10).inGroupsOf(3).map(function(g) { return g[1]; }).compact(), [2,5,8], 'Array#inGroupsOf | 1 to 10 in groups of 3 compacted');
