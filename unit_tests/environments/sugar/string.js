@@ -77,6 +77,8 @@ test('String', function () {
     equal(typeof atob, 'undefined', 'atob global does not exist in node');
   }
 
+  equal('L2hvd2FyZHNmaXJld29ya3MvYXBpL29yZGVyLzc1TU0lMjBNSVg='.decodeBase64(), '/howardsfireworks/api/order/75MM%20MIX', 'String#decodeBase64 | %20')
+
   equal('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='.decodeBase64(), 'This webpage is not available', 'String#decodeBase64 | webpage');
   equal('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ=='.decodeBase64(), 'I grow, I prosper; Now, gods, stand up for bastards!', 'String#decodeBase64 | gods');
 
