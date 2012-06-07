@@ -2184,4 +2184,48 @@ test('Date', function () {
   // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
   Date.addFormat('(\\d{4})', ['year']);
 
+  // Tests around issue#146
+
+  equal(Date.create('2010-01-20T20:00:00.000Z').iso(), '2010-01-20T20:00:00.000Z');
+  equal(Date.create('2010-02-20T20:00:00.000Z').iso(), '2010-02-20T20:00:00.000Z');
+  equal(Date.create('2010-03-20T20:00:00.000Z').iso(), '2010-03-20T20:00:00.000Z');
+  equal(Date.create('2010-04-20T20:00:00.000Z').iso(), '2010-04-20T20:00:00.000Z');
+  equal(Date.create('2010-05-20T20:00:00.000Z').iso(), '2010-05-20T20:00:00.000Z');
+  equal(Date.create('2010-05-20T20:00:00.000Z').iso(), '2010-05-20T20:00:00.000Z');
+  equal(Date.create('2010-06-20T20:00:00.000Z').iso(), '2010-06-20T20:00:00.000Z');
+  equal(Date.create('2010-07-20T20:00:00.000Z').iso(), '2010-07-20T20:00:00.000Z');
+  equal(Date.create('2010-08-20T20:00:00.000Z').iso(), '2010-08-20T20:00:00.000Z');
+  equal(Date.create('2010-09-20T20:00:00.000Z').iso(), '2010-09-20T20:00:00.000Z');
+  equal(Date.create('2010-10-20T20:00:00.000Z').iso(), '2010-10-20T20:00:00.000Z');
+  equal(Date.create('2010-11-20T20:00:00.000Z').iso(), '2010-11-20T20:00:00.000Z');
+  equal(Date.create('2010-12-20T20:00:00.000Z').iso(), '2010-12-20T20:00:00.000Z');
+
+  //equal(Date.create('2010-01-20Z').iso(), '2010-01-20T00:00:00.000Z');
+  //equal(Date.create('2010-02-20Z').iso(), '2010-02-20T00:00:00.000Z');
+  //equal(Date.create('2010-03-20Z').iso(), '2010-03-20T00:00:00.000Z');
+  //equal(Date.create('2010-04-20Z').iso(), '2010-04-20T00:00:00.000Z');
+  //equal(Date.create('2010-05-20Z').iso(), '2010-05-20T00:00:00.000Z');
+  //equal(Date.create('2010-05-20Z').iso(), '2010-05-20T00:00:00.000Z');
+  //equal(Date.create('2010-06-20Z').iso(), '2010-06-20T00:00:00.000Z');
+  //equal(Date.create('2010-07-20Z').iso(), '2010-07-20T00:00:00.000Z');
+  //equal(Date.create('2010-08-20Z').iso(), '2010-08-20T00:00:00.000Z');
+  //equal(Date.create('2010-09-20Z').iso(), '2010-09-20T00:00:00.000Z');
+  //equal(Date.create('2010-10-20Z').iso(), '2010-10-20T00:00:00.000Z');
+  //equal(Date.create('2010-11-20Z').iso(), '2010-11-20T00:00:00.000Z');
+  //equal(Date.create('2010-12-20Z').iso(), '2010-12-20T00:00:00.000Z');
+
+  equal(Date.create('Jan 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-01-20T20:00:00.000Z');
+  equal(Date.create('Feb 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-02-20T20:00:00.000Z');
+  equal(Date.create('Mar 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-03-20T20:00:00.000Z');
+  equal(Date.create('Apr 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-04-20T20:00:00.000Z');
+  equal(Date.create('May 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-05-20T20:00:00.000Z');
+  equal(Date.create('Jun 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-06-20T20:00:00.000Z');
+  equal(Date.create('Jul 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-07-20T20:00:00.000Z');
+  equal(Date.create('Aug 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-08-20T20:00:00.000Z');
+  equal(Date.create('Sep 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-09-20T20:00:00.000Z');
+  equal(Date.create('Oct 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-10-20T20:00:00.000Z');
+  equal(Date.create('Nov 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-11-20T20:00:00.000Z');
+  equal(Date.create('Dec 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-12-20T20:00:00.000Z');
+
+
 });
