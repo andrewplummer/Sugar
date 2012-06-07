@@ -47,6 +47,10 @@ test('Dates | Italian', function () {
   dateEqual(Date.create("l'anno scorso"), getRelativeDate(-1), 'Date#create | Italian | Last year');
   dateEqual(Date.create("l'anno prossimo"), getRelativeDate(1), 'Date#create | Italian | Next year');
 
+  dateEqual(Date.create("prossimo lunedì"), getDateWithWeekdayAndOffset(1, 7), 'Date#create | Italian | next monday');
+  dateEqual(Date.create("scorsa lunedì"), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Italian | last monday');
+
+
   // No accents
   dateEqual(Date.create('Martedi, 5 Gennaio 2012'), new Date(2012, 0, 5), 'Date#create | Italian | no accents | 2012-01-05');
   dateEqual(Date.create('Lunedi'), getDateWithWeekdayAndOffset(1), 'Date#create | Italian | no accents | Monday');

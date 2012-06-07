@@ -59,6 +59,9 @@ test('Dates | Swedish', function () {
   dateEqual(Date.create('förra året'), getRelativeDate(-1), 'Date#create | Swedish | Last year');
   dateEqual(Date.create('nästa år'), getRelativeDate(1), 'Date#create | Swedish | Next year');
 
+  dateEqual(Date.create('förra måndagen'), getDateWithWeekdayAndOffset(1,  7), 'Date#create | Swedish | next monday');
+  dateEqual(Date.create('nästa måndag'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Swedish | last monday');
+
 
   // no accents
   dateEqual(Date.create('mandag'), getDateWithWeekdayAndOffset(1), 'Date#create | Swedish | Monday');
