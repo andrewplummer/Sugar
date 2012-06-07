@@ -79,6 +79,8 @@ test('Dates | French', function () {
   dateEqual(Date.create('la semaine derniere'), getRelativeDate(null, null, -7), 'Date#create | French | Last week');
   dateEqual(Date.create("l'annee prochaine"), getRelativeDate(1), 'Date#create | French | Next year');
 
+  dateEqual(Date.create('lundi prochain'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | French | next monday');
+  dateEqual(Date.create('lundi dernièr'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | French | last monday');
 
 
   equal(Date.create('2000-04-08').format(), '8 avril 2000', 'Date#create | French | standard format');
