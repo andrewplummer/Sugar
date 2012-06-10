@@ -1,4 +1,4 @@
-//  Compatiblity index:
+//  Compatibility index:
 //
 //  0 - Does not exist.
 //  1 - Exists but does not support all functionality.
