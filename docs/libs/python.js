@@ -192,7 +192,7 @@ var SugarPythonMethods = [
         js_compatibility: 2,
         sugar_compatibility: 2,
         original_code:  "str.replace('is', 'was');",
-        js_code: "str.replace('is', 'was')"
+        js_code: "str.replace(/is/g, 'was')"
       },
       {
         name: 'rfind',
