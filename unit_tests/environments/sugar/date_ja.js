@@ -3,7 +3,6 @@ test('Dates | Japanese', function () {
   var now = new Date();
   Date.setLocale('ja');
 
-
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | once a language has been initialized it will always be recognized');
 
@@ -114,6 +113,16 @@ test('Dates | Japanese', function () {
   equal(Date.create('5 week from now').relative(),   '1ヶ月後',  'Date#create | Japanese | relative format future');
   equal(Date.create('5 month from now').relative(),  '5ヶ月後',   'Date#create | Japanese | relative format future');
   equal(Date.create('5 year from now').relative(),   '5年後',     'Date#create | Japanese | relative format future');
+
+  dateEqual(Date.create('2011年5月15日 3:45:59'), new Date(2011, 4, 15, 3, 45, 59), 'Date#create | Japanese | full date with time');
+  dateEqual(Date.create('2011年5月15日 3時45分'), new Date(2011, 4, 15, 3, 45, 0), 'Date#create | Japanese | full date with kanji markers');
+  dateEqual(Date.create('2011年5月15日 3時45分59秒'), new Date(2011, 4, 15, 3, 45, 59), 'Date#create | Japanese | full date with kanji markers');
+  dateEqual(Date.create('2011年5月15日 午前3時45分'), new Date(2011, 4, 15, 3, 45), 'Date#create | Japanese | full date with gozen');
+  dateEqual(Date.create('2011年5月15日 午後3時45分'), new Date(2011, 4, 15, 15, 45), 'Date#create | Japanese | full date with gogo');
+  dateEqual(Date.create('２０１１年５月１５日　３時４５分'), new Date(2011, 4, 15, 3, 45), 'Date#create | Japanese | full date with zenkaku');
+  dateEqual(Date.create('２０１１年５月１５日　午後３時４５分'), new Date(2011, 4, 15, 15, 45), 'Date#create | Japanese | full date with zenkaku and gogo');
+
+  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 3, 45), 'Date#create | Japanese | pm still works');
 
 });
 
