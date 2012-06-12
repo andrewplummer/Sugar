@@ -16,6 +16,7 @@ test('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
+
   // Invalid date
   equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
   equal(new Date().isValid(), true, 'Date#isValid | new Date valid');
@@ -2200,20 +2201,6 @@ test('Date', function () {
   equal(Date.create('2010-11-20T20:00:00.000Z').iso(), '2010-11-20T20:00:00.000Z');
   equal(Date.create('2010-12-20T20:00:00.000Z').iso(), '2010-12-20T20:00:00.000Z');
 
-  //equal(Date.create('2010-01-20Z').iso(), '2010-01-20T00:00:00.000Z');
-  //equal(Date.create('2010-02-20Z').iso(), '2010-02-20T00:00:00.000Z');
-  //equal(Date.create('2010-03-20Z').iso(), '2010-03-20T00:00:00.000Z');
-  //equal(Date.create('2010-04-20Z').iso(), '2010-04-20T00:00:00.000Z');
-  //equal(Date.create('2010-05-20Z').iso(), '2010-05-20T00:00:00.000Z');
-  //equal(Date.create('2010-05-20Z').iso(), '2010-05-20T00:00:00.000Z');
-  //equal(Date.create('2010-06-20Z').iso(), '2010-06-20T00:00:00.000Z');
-  //equal(Date.create('2010-07-20Z').iso(), '2010-07-20T00:00:00.000Z');
-  //equal(Date.create('2010-08-20Z').iso(), '2010-08-20T00:00:00.000Z');
-  //equal(Date.create('2010-09-20Z').iso(), '2010-09-20T00:00:00.000Z');
-  //equal(Date.create('2010-10-20Z').iso(), '2010-10-20T00:00:00.000Z');
-  //equal(Date.create('2010-11-20Z').iso(), '2010-11-20T00:00:00.000Z');
-  //equal(Date.create('2010-12-20Z').iso(), '2010-12-20T00:00:00.000Z');
-
   equal(Date.create('Jan 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-01-20T20:00:00.000Z');
   equal(Date.create('Feb 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-02-20T20:00:00.000Z');
   equal(Date.create('Mar 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-03-20T20:00:00.000Z');
@@ -2227,5 +2214,6 @@ test('Date', function () {
   equal(Date.create('Nov 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-11-20T20:00:00.000Z');
   equal(Date.create('Dec 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-12-20T20:00:00.000Z');
 
+  dateEqual(Date.create('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'Date#create | Fuzzy Dates | thursday of next week, 3:30pm');
 
 });

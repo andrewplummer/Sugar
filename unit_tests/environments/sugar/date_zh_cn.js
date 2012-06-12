@@ -96,4 +96,12 @@ test('Dates | Simplified Chinese', function () {
   equal(Date.create('5 month from now').relative(),  '5个月后',   'Date#create | Simplified Chinese | relative format future');
   equal(Date.create('5 year from now').relative(),   '5年后',     'Date#create | Simplified Chinese | relative format future');
 
+
+  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 3, 45), 'Date#create | Simplified Chinese | pm still works');
+
+  dateEqual(Date.create('2011年5月15日 3:45:59'), new Date(2011, 4, 15, 3, 45, 59), 'Date#create | Simplified Chinese | full date with time');
+  dateEqual(Date.create('2011年5月15日 3点45分'), new Date(2011, 4, 15, 3, 45, 0), 'Date#create | Simplified Chinese | full date with kanji markers');
+  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分'), new Date(2008, 11, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji');
+  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分钟'), new Date(2008, 11, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji and zhong');
+
 });
