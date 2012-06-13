@@ -3,7 +3,6 @@ test('Dates | Simplified Chinese', function () {
   var now = new Date();
   Date.setLocale('zh-CN');
 
-
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
   dateEqual(Date.create('2011年5月'), new Date(2011, 4), 'Date#create | Simplified Chinese | year and month');
   dateEqual(Date.create('5月15日'), new Date(now.getFullYear(), 4, 15), 'Date#create | Simplified Chinese | month and date');
@@ -101,7 +100,43 @@ test('Dates | Simplified Chinese', function () {
 
   dateEqual(Date.create('2011年5月15日 3:45:59'), new Date(2011, 4, 15, 3, 45, 59), 'Date#create | Simplified Chinese | full date with time');
   dateEqual(Date.create('2011年5月15日 3点45分'), new Date(2011, 4, 15, 3, 45, 0), 'Date#create | Simplified Chinese | full date with kanji markers');
-  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分'), new Date(2008, 11, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji');
-  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分钟'), new Date(2008, 11, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji and zhong');
+
+  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分'), new Date(2008, 10, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji');
+  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分钟'), new Date(2008, 10, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji and zhong');
+
+  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分钟'), new Date(2008, 10, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji and zhong');
+
+
+
+  // Kanji conversion tests
+
+  dateEqual(Date.create('二〇一二年五月'), new Date(2012, 4), 'Date#create | Simplified Chinese | 二〇一二年五月');
+  dateEqual(Date.create('二〇一二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 二〇一二年');
+  dateEqual(Date.create('五月'), new Date(now.getFullYear(), 4), 'Date#create | Simplified Chinese | 五月');
+  dateEqual(Date.create('十二月'), new Date(2012, 11), 'Date#create | Simplified Chinese | 十二年');
+  dateEqual(Date.create('十一月'), new Date(2012, 10), 'Date#create | Simplified Chinese | 十一年');
+  dateEqual(Date.create('十月'), new Date(2012, 9), 'Date#create | Simplified Chinese | 十年');
+  dateEqual(Date.create('一二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 一二年');
+
+  dateEqual(Date.create('二千二百二十二年'), new Date(2222, 0), 'Date#create | Simplified Chinese | 二千二百二十二年');
+  dateEqual(Date.create('二千二十二年'), new Date(2022, 0), 'Date#create | Simplified Chinese | 二千二十二年');
+  dateEqual(Date.create('二千二年'), new Date(2002, 0), 'Date#create | Simplified Chinese | 二千二年');
+  dateEqual(Date.create('二千年'), new Date(2000, 0), 'Date#create | Simplified Chinese | 二千年');
+  dateEqual(Date.create('千年'), new Date(1000, 0), 'Date#create | Simplified Chinese | 千年');
+
+  dateEqual(Date.create('二千二百二十年'), new Date(2220, 0), 'Date#create | Simplified Chinese | 二千二百二十年');
+  dateEqual(Date.create('二千二百年'), new Date(2200, 0), 'Date#create | Simplified Chinese | 二千二百年');
+  dateEqual(Date.create('二千二年'), new Date(2002, 0), 'Date#create | Simplified Chinese | 二千二年');
+
+  dateEqual(Date.create('千二百二十二年'), new Date(1222, 0), 'Date#create | Simplified Chinese | 千二百二十二年');
+  dateEqual(Date.create('二百二十二年'), new Date(222, 0), 'Date#create | Simplified Chinese | 二百二十二年');
+  dateEqual(Date.create('百二十二年'), new Date(122, 0), 'Date#create | Simplified Chinese | 百二十二年');
+  dateEqual(Date.create('二十二年'), new Date(2022, 0), 'Date#create | Simplified Chinese | 二十二年');
+  dateEqual(Date.create('十二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 十二年');
+
+  dateEqual(Date.create('二一年'), new Date(2021, 0), 'Date#create | Simplified Chinese | 二一年');
+  dateEqual(Date.create('三二一年'), new Date(321, 0), 'Date#create | Simplified Chinese | 三二一年');
+  dateEqual(Date.create('四三二一年'), new Date(4321, 0), 'Date#create | Simplified Chinese | 四三二一年');
 
 });
+
