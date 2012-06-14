@@ -367,8 +367,8 @@ var SugarPythonMethods = [
         description: 'Converts a value to a Boolean.',
         js_compatibility: 2,
         sugar_compatibility: 2,
-        original_code:  "bool('some value')",
-        js_code: "Boolean('some value')"
+        original_code:  "bool(val)",
+        js_code: "Boolean(val) or simply !!val"
       },
       {
         name: 'bytearray',
