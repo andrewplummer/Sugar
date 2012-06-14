@@ -1,5 +1,5 @@
 
-//  Compatiblity index:
+//  Compatibility index:
 //
 //  0 - Does not exist.
 //  1 - Exists but does not support all functionality.
@@ -8,7 +8,7 @@
 
 var SugarPythonMethods = [
   {
-    // Global namepace
+    // Global namespace
     type: 'instance',
     namespace: 'String',
     methods: [
@@ -192,7 +192,7 @@ var SugarPythonMethods = [
         js_compatibility: 2,
         sugar_compatibility: 2,
         original_code:  "str.replace('is', 'was');",
-        js_code: "str.replace('is', 'was')"
+        js_code: "str.replace(/is/g, 'was')"
       },
       {
         name: 'rfind',
