@@ -1,5 +1,5 @@
 
-//  Compatiblity index:
+//  Compatibility index:
 //
 //  0 - Does not exist.
 //  1 - Exists but does not support all functionality.
@@ -331,7 +331,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         original_code:  "str.replace('new string')",
         js_code: "str = 'new string';",
-        js_notes: "Javascript strings are not passed by reference, so simply set the variable to a new string. %replace% in Javascript is instead the same as %gsub%."
+        js_notes: "Javascript strings are not passed by reference, so simply set the variable to a new string. %replace% in Javascript is instead similar to %gsub%."
       },
       {
         name: 'reverse',
