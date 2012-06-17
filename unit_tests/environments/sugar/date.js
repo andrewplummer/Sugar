@@ -1872,10 +1872,8 @@ test('Date', function () {
   Date.addFormat('on ze (\\d+)th of (janvier|février|mars|avril|mai) lavigne', ['date','month'], 'fr');
   dateEqual(Date.create('on ze 18th of avril lavigne'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other languages');
 
-  equal(Date.currentLocale, 'en', 'Date Locale | current locale code is exposed');
   equal(typeof Date.getLocale(), 'object', 'Date Locale | current localization object is exposed in case needed');
-
-
+  equal(Date.getLocale().code, 'en', 'Date Locale | adding the format did not change the current locale');
 
 
 

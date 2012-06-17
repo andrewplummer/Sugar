@@ -9,6 +9,9 @@ test('Dates | German', function () {
   dateEqual(Date.create('15. Mai'), new Date(now.getFullYear(), 4, 15), 'Date#create | German | month and date');
   dateEqual(Date.create('2011'), new Date(2011, 0), 'Date#create | German | year');
 
+  dateEqual(Date.create('Dienstag, 5. Januar 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | German | 2012-01-05 3:45');
+  dateEqual(Date.create('Dienstag, 5. Januar 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | German | 2012-01-05 3:45pm');
+
   dateEqual(Date.create('Januar'), new Date(now.getFullYear(), 0), 'Date#create | German | January');
   dateEqual(Date.create('Februar'), new Date(now.getFullYear(), 1), 'Date#create | German | February');
   dateEqual(Date.create('Marz'), new Date(now.getFullYear(), 2), 'Date#create | German | March');

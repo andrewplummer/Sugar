@@ -122,7 +122,14 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('２０１１年５月１５日　３時４５分'), new Date(2011, 4, 15, 3, 45), 'Date#create | Japanese | full date with zenkaku');
   dateEqual(Date.create('２０１１年５月１５日　午後３時４５分'), new Date(2011, 4, 15, 15, 45), 'Date#create | Japanese | full date with zenkaku and gogo');
 
-  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 3, 45), 'Date#create | Japanese | pm still works');
+  dateEqual(Date.create('二千十一年五月十五日　午後三時四十五分'), new Date(2011, 4, 15, 15, 45), 'Date#create | Japanese | full date with full kanji and full markers');
+
+  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | Japanese | pm still works');
+
+
+  dateEqual(Date.create('5月15日 3:45:59'), new Date(now.getFullYear(), 4, 15, 3, 45, 59), 'Date#create | Japanese | mm-dd format with time');
+  dateEqual(Date.create('15日 3:45:59'), new Date(now.getFullYear(), now.getMonth(), 15, 3, 45, 59), 'Date#create | Japanese | dd format with time');
+  dateEqual(Date.create('先週水曜日 5:15'), getDateWithWeekdayAndOffset(3, -7).set({ hour: 5, minute: 15 }), 'Date#create | Japanese | Last wednesday with time');
 
 });
 

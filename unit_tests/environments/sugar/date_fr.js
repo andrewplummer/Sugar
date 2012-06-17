@@ -10,6 +10,9 @@ test('Dates | French', function () {
   dateEqual(Date.create('Le 15 mai'), new Date(now.getFullYear(), 4, 15), 'Date#create | French | month and date');
   dateEqual(Date.create('2011'), new Date(2011, 0), 'Date#create | French | year');
 
+  dateEqual(Date.create('Le 5 janvier 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | French | 2012-01-05 3:45');
+  dateEqual(Date.create('Le 5 janvier 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | French | 2012-01-05 3:45pm');
+
   dateEqual(Date.create('janvier'), new Date(now.getFullYear(), 0), 'Date#create | French | January');
   dateEqual(Date.create('février'), new Date(now.getFullYear(), 1), 'Date#create | French | February');
   dateEqual(Date.create('fevrier'), new Date(now.getFullYear(), 1), 'Date#create | French | February');
