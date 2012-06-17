@@ -69,36 +69,36 @@ test('Dates | Korean', function () {
   equal(Date.create('2011-08-25').format('{yyyy}년{MM}월{dd}일'), '2011년08월25일', 'Date#create | Korean | format');
 
 
-  equal(Date.create('1 second ago').relative(), '1초 전', 'Date#create | Korean | relative format past');
-  equal(Date.create('1 minute ago').relative(), '1분 전',  'Date#create | Korean | relative format past');
-  equal(Date.create('1 hour ago').relative(),   '1시간 전',     'Date#create | Korean | relative format past');
-  equal(Date.create('1 day ago').relative(),    '1일 전',    'Date#create | Korean | relative format past');
-  equal(Date.create('1 week ago').relative(),   '1주 전',  'Date#create | Korean | relative format past');
-  equal(Date.create('1 month ago').relative(),  '1개월 전',   'Date#create | Korean | relative format past');
-  equal(Date.create('1 year ago').relative(),   '1년 전',     'Date#create | Korean | relative format past');
+  equal(Date.create('1 second ago', 'en').relative(), '1초 전', 'Date#create | Korean | relative format past');
+  equal(Date.create('1 minute ago', 'en').relative(), '1분 전',  'Date#create | Korean | relative format past');
+  equal(Date.create('1 hour ago', 'en').relative(),   '1시간 전',     'Date#create | Korean | relative format past');
+  equal(Date.create('1 day ago', 'en').relative(),    '1일 전',    'Date#create | Korean | relative format past');
+  equal(Date.create('1 week ago', 'en').relative(),   '1주 전',  'Date#create | Korean | relative format past');
+  equal(Date.create('1 month ago', 'en').relative(),  '1개월 전',   'Date#create | Korean | relative format past');
+  equal(Date.create('1 year ago', 'en').relative(),   '1년 전',     'Date#create | Korean | relative format past');
 
-  equal(Date.create('2 seconds ago').relative(), '2초 전', 'Date#create | Korean | relative format past');
-  equal(Date.create('2 minutes ago').relative(), '2분 전',  'Date#create | Korean | relative format past');
-  equal(Date.create('2 hours ago').relative(),   '2시간 전',     'Date#create | Korean | relative format past');
-  equal(Date.create('2 days ago').relative(),    '2일 전',    'Date#create | Korean | relative format past');
-  equal(Date.create('2 weeks ago').relative(),   '2주 전',  'Date#create | Korean | relative format past');
-  equal(Date.create('2 months ago').relative(),  '2개월 전',   'Date#create | Korean | relative format past');
-  equal(Date.create('2 years ago').relative(),   '2년 전',     'Date#create | Korean | relative format past');
+  equal(Date.create('2 seconds ago', 'en').relative(), '2초 전', 'Date#create | Korean | relative format past');
+  equal(Date.create('2 minutes ago', 'en').relative(), '2분 전',  'Date#create | Korean | relative format past');
+  equal(Date.create('2 hours ago', 'en').relative(),   '2시간 전',     'Date#create | Korean | relative format past');
+  equal(Date.create('2 days ago', 'en').relative(),    '2일 전',    'Date#create | Korean | relative format past');
+  equal(Date.create('2 weeks ago', 'en').relative(),   '2주 전',  'Date#create | Korean | relative format past');
+  equal(Date.create('2 months ago', 'en').relative(),  '2개월 전',   'Date#create | Korean | relative format past');
+  equal(Date.create('2 years ago', 'en').relative(),   '2년 전',     'Date#create | Korean | relative format past');
 
-  equal(Date.create('1 second from now').relative(), '1초 후', 'Date#create | Korean | relative format future');
-  equal(Date.create('1 minute from now').relative(), '1분 후',  'Date#create | Korean | relative format future');
-  equal(Date.create('1 hour from now').relative(),   '1시간 후',     'Date#create | Korean | relative format future');
-  equal(Date.create('1 day from now').relative(),    '1일 후',    'Date#create | Korean | relative format future');
-  equal(Date.create('1 week from now').relative(),   '1주 후',  'Date#create | Korean | relative format future');
-  equal(Date.create('1 month from now').relative(),  '1개월 후',   'Date#create | Korean | relative format future');
-  equal(Date.create('1 year from now').relative(),   '1년 후',     'Date#create | Korean | relative format future');
+  equal(Date.create('1 second from now', 'en').relative(), '1초 후', 'Date#create | Korean | relative format future');
+  equal(Date.create('1 minute from now', 'en').relative(), '1분 후',  'Date#create | Korean | relative format future');
+  equal(Date.create('1 hour from now', 'en').relative(),   '1시간 후',     'Date#create | Korean | relative format future');
+  equal(Date.create('1 day from now', 'en').relative(),    '1일 후',    'Date#create | Korean | relative format future');
+  equal(Date.create('1 week from now', 'en').relative(),   '1주 후',  'Date#create | Korean | relative format future');
+  equal(Date.create('1 month from now', 'en').relative(),  '1개월 후',   'Date#create | Korean | relative format future');
+  equal(Date.create('1 year from now', 'en').relative(),   '1년 후',     'Date#create | Korean | relative format future');
 
-  equal(Date.create('5 second from now').relative(), '5초 후', 'Date#create | Korean | relative format future');
-  equal(Date.create('5 minute from now').relative(), '5분 후',  'Date#create | Korean | relative format future');
-  equal(Date.create('5 hour from now').relative(),   '5시간 후',     'Date#create | Korean | relative format future');
-  equal(Date.create('5 day from now').relative(),    '5일 후',    'Date#create | Korean | relative format future');
-  equal(Date.create('5 week from now').relative(),   '1개월 후',  'Date#create | Korean | relative format future');
-  equal(Date.create('5 month from now').relative(),  '5개월 후',   'Date#create | Korean | relative format future');
-  equal(Date.create('5 year from now').relative(),   '5년 후',     'Date#create | Korean | relative format future');
+  equal(Date.create('5 second from now', 'en').relative(), '5초 후', 'Date#create | Korean | relative format future');
+  equal(Date.create('5 minute from now', 'en').relative(), '5분 후',  'Date#create | Korean | relative format future');
+  equal(Date.create('5 hour from now', 'en').relative(),   '5시간 후',     'Date#create | Korean | relative format future');
+  equal(Date.create('5 day from now', 'en').relative(),    '5일 후',    'Date#create | Korean | relative format future');
+  equal(Date.create('5 week from now', 'en').relative(),   '1개월 후',  'Date#create | Korean | relative format future');
+  equal(Date.create('5 month from now', 'en').relative(),  '5개월 후',   'Date#create | Korean | relative format future');
+  equal(Date.create('5 year from now', 'en').relative(),   '5년 후',     'Date#create | Korean | relative format future');
 
 });
