@@ -52,6 +52,9 @@ test('Dates | Spanish', function () {
   dateEqual(Date.create('pasado lunes'), Date.create('last monday'), 'Date#create | Spanish | last monday front');
   dateEqual(Date.create('lunes pasado'), Date.create('last monday'), 'Date#create | Spanish | last monday back');
 
+  dateEqual(Date.create('lunes pasado 3:45'), Date.create('last monday').set({ hour: 3, minute: 45 }, true), 'Date#create | Spanish | last monday back 3:45');
+  dateEqual(Date.create('proximo lunes 3:45'), Date.create('next monday').set({ hour: 3, minute: 45 }, true), 'Date#create | Spanish | next monday no accent 3:45');
+
   dateEqual(Date.create('el año pasado'), getRelativeDate(-1), 'Date#create | Spanish | Last year');
   dateEqual(Date.create('el próximo año'), getRelativeDate(1), 'Date#create | Spanish | Next year');
 

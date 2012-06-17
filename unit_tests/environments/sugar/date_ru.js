@@ -70,6 +70,7 @@ test('Dates | Russian', function () {
   dateEqual(Date.create('следующий понедельник'), getDateWithWeekdayAndOffset(1,  7), 'Date#create | Russian | next monday');
   dateEqual(Date.create('в прошлый вторник'), getDateWithWeekdayAndOffset(2, -7), 'Date#create | Russian | last tuesday');
 
+  dateEqual(Date.create('следующий понедельник 3:45pm'), getDateWithWeekdayAndOffset(1,7).set({ hour: 15, minute: 45 }, true), 'Date#create | Russian | next monday');
 
   equal(Date.create('1989-05-02').format(), '2 мая 1989 года', 'Date#create | Russian | standard format 1');
   equal(Date.create('2008-10-03').format(), '3 октября 2008 года', 'Date#create | Russian | standard format 1');
