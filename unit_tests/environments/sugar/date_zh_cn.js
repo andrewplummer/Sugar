@@ -120,7 +120,7 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('十二月'), new Date(2012, 11), 'Date#create | Simplified Chinese | 十二年');
   dateEqual(Date.create('十一月'), new Date(2012, 10), 'Date#create | Simplified Chinese | 十一年');
   dateEqual(Date.create('十月'), new Date(2012, 9), 'Date#create | Simplified Chinese | 十年');
-  dateEqual(Date.create('一二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 一二年');
+  dateEqual(Date.create('二〇一二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 二〇一二年');
 
   dateEqual(Date.create('二千二百二十二年'), new Date(2222, 0), 'Date#create | Simplified Chinese | 二千二百二十二年');
   dateEqual(Date.create('二千二十二年'), new Date(2022, 0), 'Date#create | Simplified Chinese | 二千二十二年');
@@ -133,16 +133,16 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('二千二年'), new Date(2002, 0), 'Date#create | Simplified Chinese | 二千二年');
 
   dateEqual(Date.create('千二百二十二年'), new Date(1222, 0), 'Date#create | Simplified Chinese | 千二百二十二年');
-  dateEqual(Date.create('二百二十二年'), new Date(222, 0), 'Date#create | Simplified Chinese | 二百二十二年');
-  dateEqual(Date.create('百二十二年'), new Date(122, 0), 'Date#create | Simplified Chinese | 百二十二年');
-  dateEqual(Date.create('二十二年'), new Date(2022, 0), 'Date#create | Simplified Chinese | 二十二年');
-  dateEqual(Date.create('十二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 十二年');
+  dateEqual(Date.create('千二百二十二年'), new Date(1222, 0), 'Date#create | Simplified Chinese | 千二百二十二年');
+  dateEqual(Date.create('千百二十二年'), new Date(1122, 0), 'Date#create | Simplified Chinese | 千百二十二年');
+  dateEqual(Date.create('千二十二年'), new Date(1022, 0), 'Date#create | Simplified Chinese | 千二十二年');
+  dateEqual(Date.create('千十二年'), new Date(1012, 0), 'Date#create | Simplified Chinese | 千十二年');
 
-  dateEqual(Date.create('二一年'), new Date(2021, 0), 'Date#create | Simplified Chinese | 二一年');
-  dateEqual(Date.create('三二一年'), new Date(321, 0), 'Date#create | Simplified Chinese | 三二一年');
+  dateEqual(Date.create('二〇二一年'), new Date(2021, 0), 'Date#create | Simplified Chinese | 二〇二一年');
+  dateEqual(Date.create('二三二一年'), new Date(2321, 0), 'Date#create | Simplified Chinese | 二三二一年');
   dateEqual(Date.create('四三二一年'), new Date(4321, 0), 'Date#create | Simplified Chinese | 四三二一年');
 
-  dateEqual(Date.create('1/2/3'), new Date(2003, 0, 2), 'Date#create | Simplified Chinese | uses American style ambiguity');
+  dateEqual(Date.create('1/2/13'), new Date(2013, 0, 2), 'Date#create | Simplified Chinese | uses American style ambiguity');
 
 });
 
