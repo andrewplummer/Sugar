@@ -3,6 +3,9 @@ test('Dates | Traditional Chinese', function () {
   var now = new Date();
   Date.setLocale('zh-TW');
 
+  dateEqual(Date.create('1/2/13'), new Date(2013, 1, 1), 'Date#create | Traditional Chinese | uses American style ambiguity');
+  return;
+
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Traditional Chinese date');
   dateEqual(Date.create('2011年5月'), new Date(2011, 4), 'Date#create | Traditional Chinese | year and month');
@@ -97,5 +100,7 @@ test('Dates | Traditional Chinese', function () {
   equal(Date.create('5 week from now').relative(),   '1個月後',  'Date#create | Traditional Chinese | relative format future');
   equal(Date.create('5 month from now').relative(),  '5個月後',   'Date#create | Traditional Chinese | relative format future');
   equal(Date.create('5 year from now').relative(),   '5年後',     'Date#create | Traditional Chinese | relative format future');
+
+  dateEqual(Date.create('1/2/13'), new Date(2013, 1, 1), 'Date#create | Traditional Chinese | uses American style ambiguity');
 
 });

@@ -85,6 +85,7 @@ test('Dates | French', function () {
   dateEqual(Date.create('lundi prochain'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | French | next monday');
   dateEqual(Date.create('lundi dernièr'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | French | last monday');
 
+  dateEqual(Date.create('lundi dernièr 3:45'), getDateWithWeekdayAndOffset(1, -7).set({ hour: 3, minute: 45 }, true), 'Date#create | French | last monday 3:45');
 
   equal(Date.create('2000-04-08').format(), '8 avril 2000', 'Date#create | French | standard format');
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 août 2011', 'Date#create | French | format');

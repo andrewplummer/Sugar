@@ -44,8 +44,9 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('내일'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Korean | tomorrow');
   dateEqual(Date.create('모레'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Korean | 모레');
 
-  dateEqual(Date.create('내일 3:45'), getRelativeDate(null, null, 1).set({ hours: 3, minutes: 45 }), 'Date#create | Korean | tomorrow with time 3:45');
-  dateEqual(Date.create('내일 3:45pm'), getRelativeDate(null, null, 1).set({ hours: 15, minutes: 45 }), 'Date#create | Korean | tomorrow with time 3:45pm');
+  dateEqual(Date.create('내일 3:45'), getRelativeDate(null, null, 1).set({ hours: 3, minutes: 45 }, true), 'Date#create | Korean | tomorrow with time 3:45');
+  dateEqual(Date.create('내일 3:45pm'), getRelativeDate(null, null, 1).set({ hours: 15, minutes: 45 }, true), 'Date#create | Korean | tomorrow with time 3:45pm');
+  dateEqual(Date.create('수요일 3:45'), getDateWithWeekdayAndOffset(3, 0).set({ hours: 3, minutes: 45 }, true), 'Date#create | Korean | wednesday with time 3:45');
 
   dateEqual(Date.create('지난 주'), getRelativeDate(null, null, -7), 'Date#create | Korean | Last week');
   dateEqual(Date.create('이번 주'), getRelativeDate(null, null, 0), 'Date#create | Korean | this week');

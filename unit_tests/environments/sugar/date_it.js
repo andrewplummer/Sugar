@@ -52,6 +52,7 @@ test('Dates | Italian', function () {
   dateEqual(Date.create("prossimo lunedì"), getDateWithWeekdayAndOffset(1, 7), 'Date#create | Italian | next monday');
   dateEqual(Date.create("scorsa lunedì"), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Italian | last monday');
 
+  dateEqual(Date.create("scorsa lunedì 3:45"), getDateWithWeekdayAndOffset(1, -7).set({ hour: 3, minute: 45 }, true), 'Date#create | Italian | last monday 3:45');
 
   // No accents
   dateEqual(Date.create('Martedi, 5 Gennaio 2012'), new Date(2012, 0, 5), 'Date#create | Italian | no accents | 2012-01-05');
