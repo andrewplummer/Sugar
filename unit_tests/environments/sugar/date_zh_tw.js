@@ -13,7 +13,12 @@ test('Dates | Traditional Chinese', function () {
   dateEqual(Date.create('星期一'), getDateWithWeekdayAndOffset(1), 'Date#create | Traditional Chinese | Monday');
   dateEqual(Date.create('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Traditional Chinese | the 9th');
   dateEqual(Date.create('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Traditional Chinese | the 25th');
-  dateEqual(Date.create('二十五號'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Simplified Chinese | 號 should be understood as well');
+  dateEqual(Date.create('二十五號'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Traditional Chinese | 號 should be understood as well');
+
+  dateEqual(Date.create('2011年5月15日 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Traditional Chinese date 3:45');
+  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Traditional Chinese date 3:45pm');
+  dateEqual(Date.create('2011年5月15日 3點45分鐘'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Traditional Chinese date 3:45pm kanji');
+  dateEqual(Date.create('2011年5月15日 下午3點45分鐘'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Traditional Chinese date 3:45pm kanji afternoon');
 
   dateEqual(Date.create('一毫秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Traditional Chinese | one millisecond ago');
   dateEqual(Date.create('一秒鐘前'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Traditional Chinese | one second ago');

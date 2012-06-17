@@ -12,6 +12,8 @@ test('Dates | Russian', function () {
   dateEqual(Date.create('Май'), new Date(now.getFullYear(), 4), 'Date#create | Russian | month');
   dateEqual(Date.create('понедельник'), getDateWithWeekdayAndOffset(1), 'Date#create | Russian | Monday');
 
+  dateEqual(Date.create('15 мая 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Russian date 3:45');
+  dateEqual(Date.create('15 мая 2011 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Russian date 3:45pm');
 
   dateEqual(Date.create('одну миллисекунду назад'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Russian | one millisecond ago');
   dateEqual(Date.create('одну секунду назад'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Russian | one second ago');
