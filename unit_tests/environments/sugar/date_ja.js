@@ -82,37 +82,37 @@ test('Dates | Japanese', function () {
   equal(Date.create('2011-08-25').format(), '2011年8月25日', 'Date#create | Japanese | standard format');
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Japanese | format');
 
-  equal(Date.create('1 second ago').relative(), '1秒前', 'Date#create | Japanese | relative format past');
-  equal(Date.create('1 minute ago').relative(), '1分前',  'Date#create | Japanese | relative format past');
-  equal(Date.create('1 hour ago').relative(),   '1時間前',     'Date#create | Japanese | relative format past');
-  equal(Date.create('1 day ago').relative(),    '1日前',    'Date#create | Japanese | relative format past');
-  equal(Date.create('1 week ago').relative(),   '1週間前',  'Date#create | Japanese | relative format past');
-  equal(Date.create('1 month ago').relative(),  '1ヶ月前',   'Date#create | Japanese | relative format past');
-  equal(Date.create('1 year ago').relative(),   '1年前',     'Date#create | Japanese | relative format past');
+  equal(Date.create('1 second ago', 'en').relative(), '1秒前', 'Date#create | Japanese | relative format past');
+  equal(Date.create('1 minute ago', 'en').relative(), '1分前',  'Date#create | Japanese | relative format past');
+  equal(Date.create('1 hour ago', 'en').relative(),   '1時間前',     'Date#create | Japanese | relative format past');
+  equal(Date.create('1 day ago', 'en').relative(),    '1日前',    'Date#create | Japanese | relative format past');
+  equal(Date.create('1 week ago', 'en').relative(),   '1週間前',  'Date#create | Japanese | relative format past');
+  equal(Date.create('1 month ago', 'en').relative(),  '1ヶ月前',   'Date#create | Japanese | relative format past');
+  equal(Date.create('1 year ago', 'en').relative(),   '1年前',     'Date#create | Japanese | relative format past');
 
-  equal(Date.create('2 seconds ago').relative(), '2秒前', 'Date#create | Japanese | relative format past');
-  equal(Date.create('2 minutes ago').relative(), '2分前',  'Date#create | Japanese | relative format past');
-  equal(Date.create('2 hours ago').relative(),   '2時間前',     'Date#create | Japanese | relative format past');
-  equal(Date.create('2 days ago').relative(),    '2日前',    'Date#create | Japanese | relative format past');
-  equal(Date.create('2 weeks ago').relative(),   '2週間前',  'Date#create | Japanese | relative format past');
-  equal(Date.create('2 months ago').relative(),  '2ヶ月前',   'Date#create | Japanese | relative format past');
-  equal(Date.create('2 years ago').relative(),   '2年前',     'Date#create | Japanese | relative format past');
+  equal(Date.create('2 seconds ago', 'en').relative(), '2秒前', 'Date#create | Japanese | relative format past');
+  equal(Date.create('2 minutes ago', 'en').relative(), '2分前',  'Date#create | Japanese | relative format past');
+  equal(Date.create('2 hours ago', 'en').relative(),   '2時間前',     'Date#create | Japanese | relative format past');
+  equal(Date.create('2 days ago', 'en').relative(),    '2日前',    'Date#create | Japanese | relative format past');
+  equal(Date.create('2 weeks ago', 'en').relative(),   '2週間前',  'Date#create | Japanese | relative format past');
+  equal(Date.create('2 months ago', 'en').relative(),  '2ヶ月前',   'Date#create | Japanese | relative format past');
+  equal(Date.create('2 years ago', 'en').relative(),   '2年前',     'Date#create | Japanese | relative format past');
 
-  equal(Date.create('1 second from now').relative(), '1秒後', 'Date#create | Japanese | relative format future');
-  equal(Date.create('1 minute from now').relative(), '1分後',  'Date#create | Japanese | relative format future');
-  equal(Date.create('1 hour from now').relative(),   '1時間後',     'Date#create | Japanese | relative format future');
-  equal(Date.create('1 day from now').relative(),    '1日後',    'Date#create | Japanese | relative format future');
-  equal(Date.create('1 week from now').relative(),   '1週間後',  'Date#create | Japanese | relative format future');
-  equal(Date.create('1 month from now').relative(),  '1ヶ月後',   'Date#create | Japanese | relative format future');
-  equal(Date.create('1 year from now').relative(),   '1年後',     'Date#create | Japanese | relative format future');
+  equal(Date.create('1 second from now', 'en').relative(), '1秒後', 'Date#create | Japanese | relative format future');
+  equal(Date.create('1 minute from now', 'en').relative(), '1分後',  'Date#create | Japanese | relative format future');
+  equal(Date.create('1 hour from now', 'en').relative(),   '1時間後',     'Date#create | Japanese | relative format future');
+  equal(Date.create('1 day from now', 'en').relative(),    '1日後',    'Date#create | Japanese | relative format future');
+  equal(Date.create('1 week from now', 'en').relative(),   '1週間後',  'Date#create | Japanese | relative format future');
+  equal(Date.create('1 month from now', 'en').relative(),  '1ヶ月後',   'Date#create | Japanese | relative format future');
+  equal(Date.create('1 year from now', 'en').relative(),   '1年後',     'Date#create | Japanese | relative format future');
 
-  equal(Date.create('5 second from now').relative(), '5秒後', 'Date#create | Japanese | relative format future');
-  equal(Date.create('5 minute from now').relative(), '5分後',  'Date#create | Japanese | relative format future');
-  equal(Date.create('5 hour from now').relative(),   '5時間後',     'Date#create | Japanese | relative format future');
-  equal(Date.create('5 day from now').relative(),    '5日後',    'Date#create | Japanese | relative format future');
-  equal(Date.create('5 week from now').relative(),   '1ヶ月後',  'Date#create | Japanese | relative format future');
-  equal(Date.create('5 month from now').relative(),  '5ヶ月後',   'Date#create | Japanese | relative format future');
-  equal(Date.create('5 year from now').relative(),   '5年後',     'Date#create | Japanese | relative format future');
+  equal(Date.create('5 second from now', 'en').relative(), '5秒後', 'Date#create | Japanese | relative format future');
+  equal(Date.create('5 minute from now', 'en').relative(), '5分後',  'Date#create | Japanese | relative format future');
+  equal(Date.create('5 hour from now', 'en').relative(),   '5時間後',     'Date#create | Japanese | relative format future');
+  equal(Date.create('5 day from now', 'en').relative(),    '5日後',    'Date#create | Japanese | relative format future');
+  equal(Date.create('5 week from now', 'en').relative(),   '1ヶ月後',  'Date#create | Japanese | relative format future');
+  equal(Date.create('5 month from now', 'en').relative(),  '5ヶ月後',   'Date#create | Japanese | relative format future');
+  equal(Date.create('5 year from now', 'en').relative(),   '5年後',     'Date#create | Japanese | relative format future');
 
   dateEqual(Date.create('2011年5月15日 3:45:59'), new Date(2011, 4, 15, 3, 45, 59), 'Date#create | Japanese | full date with time');
   dateEqual(Date.create('2011年5月15日 3時45分'), new Date(2011, 4, 15, 3, 45, 0), 'Date#create | Japanese | full date with kanji markers');

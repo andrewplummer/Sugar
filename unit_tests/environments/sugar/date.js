@@ -1875,7 +1875,7 @@ test('Date', function () {
   dateEqual(Date.create('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
 
   Date.addFormat('on ze (\\d+)th of (janvier|février|mars|avril|mai) lavigne', ['date','month'], 'fr');
-  dateEqual(Date.create('on ze 18th of avril lavigne'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other languages');
+  dateEqual(Date.create('on ze 18th of avril lavigne', 'fr'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other languages');
 
   equal(typeof Date.getLocale(), 'object', 'Date Locale | current localization object is exposed in case needed');
   equal(Date.getLocale().code, 'en', 'Date Locale | adding the format did not change the current locale');
@@ -1891,25 +1891,25 @@ test('Date', function () {
   // Can't guarantee this one for now as the loading order of the unit tests can be random.
   // equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not be parsed before the locale is set');
   equal(Date.create('２０１１年０６月１８日', 'ja').isValid(), true, 'Date Locales | Japanese dates will parse if their locale is passed');
-  equal(Date.create('２０１１年０６月１８日').isValid(), true, 'Date Locales | Japanese dates will then parse thereafter');
+  equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not parse thereafter as the current locale is still en');
 
 
   Date.setLocale('ja');
+
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | changes the locale');
   Date.setLocale();
+  equal(Date.getLocale().code, 'ja', 'Date.setLocale | setting locale with no arguments had no effect');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if no argument passed');
   equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011', 'Date#format | local locale should override global');
-  equal(Date.create('5 months ago').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
+  equal(Date.create('5 months ago', 'en').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
   Date.setLocale('');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
 
-
   dateEqual(Date.create('2010-Jan-25', 'ja'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
-
   raisesError(function(){ Date.setLocale('pink'); }, 'Array#map | raises an error if locale set to pink');
-
   equal(Date.create('2010-Jan-25').format(), '2010年1月25日', 'Date#create | will not set the current locale to an invalid locale');
 
+  Date.setLocale('en');
 
   // If traversing into a new month don't reset the date if the date was also advanced
 
@@ -2177,6 +2177,7 @@ test('Date', function () {
   equal((38000).minutes().duration('ko'), '3주', 'Number#duration | Korean | 38000 minutes');
   equal((38000).hours().duration('ko'), '4년', 'Number#duration | Korean | 38000 hours');
 
+  Date.setLocale('en');
 
 
   // Custom date formats
@@ -2218,5 +2219,13 @@ test('Date', function () {
   equal(Date.create('Dec 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-12-20T20:00:00.000Z');
 
   dateEqual(Date.create('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'Date#create | Fuzzy Dates | thursday of next week, 3:30pm');
+
+
+  // Issue #152 times should be allowed in front
+  dateEqual(Date.create('3:45 2012-3-15'), new Date(2012, 2, 15, 3, 45), 'Date#create | time in the front');
+  dateEqual(Date.create('3:45pm 2012-3-15'), new Date(2012, 2, 15, 15, 45), 'Date#create | big endian with time');
+  dateEqual(Date.create('3:45pm 3/15/2012'), new Date(2012, 2, 15, 15, 45), 'Date#create | crazy endian slashes with time');
+  dateEqual(Date.create('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45), 'Date#create | little endian slashes with time');
+
 
 });
