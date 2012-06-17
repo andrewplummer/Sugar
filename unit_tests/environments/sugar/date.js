@@ -16,7 +16,6 @@ test('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-
   // Invalid date
   equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
   equal(new Date().isValid(), true, 'Date#isValid | new Date valid');
@@ -141,6 +140,12 @@ test('Date', function () {
   dateEqual(Date.create('08-05-05', 'en-GB'), new Date(2005, 4, 8), 'Date#create | dd-dd-dd is NOT an ISO8601 format');
 
   dateEqual(Date.create('8/10/85'), new Date(1985, 7, 10), 'Date#create | American format will now revert back');
+
+
+  Date.setLocale('en-GB');
+  dateEqual(Date.create('8/10/85'), new Date(1985, 9, 8), 'Date#create | European style slashes | after global set');
+  Date.setLocale('en');
+  dateEqual(Date.create('8/10/85'), new Date(1985, 7, 10), 'Date#create | European style slashes | before global reset');
 
 
   // Stolen with love from XDate, ability to parse IETF format
