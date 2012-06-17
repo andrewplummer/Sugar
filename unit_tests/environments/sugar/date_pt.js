@@ -12,6 +12,8 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('maio'), new Date(now.getFullYear(), 4), 'Date#create | Portuguese | month');
   dateEqual(Date.create('segunda-feira'), getDateWithWeekdayAndOffset(1), 'Date#create | Portuguese | Monday');
 
+  dateEqual(Date.create('5 de janeiro de 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | Portuguese | 2012-01-05 3:45');
+  dateEqual(Date.create('5 de janeiro de 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | Portuguese | 2012-01-05 3:45pm');
 
   dateEqual(Date.create('um milisegundo atrás'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Portuguese | one millisecond ago');
   dateEqual(Date.create('um segundo atrás'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Portuguese | one second ago');

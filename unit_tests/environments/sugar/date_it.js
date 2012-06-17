@@ -12,6 +12,8 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('Maggio'), new Date(now.getFullYear(), 4), 'Date#create | Italian | month');
   dateEqual(Date.create('Lunedì'), getDateWithWeekdayAndOffset(1), 'Date#create | Italian | Monday');
 
+  dateEqual(Date.create('Martedì, 5 Gennaio 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | Italian | 2012-01-05 3:45');
+  dateEqual(Date.create('Martedì, 5 Gennaio 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | Italian | 2012-01-05 3:45pm');
 
   dateEqual(Date.create('un millisecondo fa'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Italian | one millisecond ago');
   dateEqual(Date.create('un secondo fa'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Italian | one second ago');
@@ -90,7 +92,6 @@ test('Dates | Italian', function () {
   equal(Date.create('5 week from now').relative(),   '1 mese da adesso',  'Date#create | Italian | relative format future');
   equal(Date.create('5 month from now').relative(),  '5 mesi da adesso',   'Date#create | Italian | relative format future');
   equal(Date.create('5 year from now').relative(),   '5 anni da adesso',     'Date#create | Italian | relative format future');
-
 
 
 });

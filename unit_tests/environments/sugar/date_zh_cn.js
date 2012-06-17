@@ -15,6 +15,10 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('二十五号'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Simplified Chinese | 号 should be understood as well');
   dateEqual(Date.create('九月二十五号'), new Date(now.getFullYear(), 8, 25), 'Date#create | Simplified Chinese | 9.25');
 
+  dateEqual(Date.create('2011年5月15日 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Simplified Chinese date 3:45');
+  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Simplified Chinese date 3:45pm');
+  dateEqual(Date.create('2011年5月15日 3点45分钟'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Simplified Chinese date 3:45pm kanji');
+  dateEqual(Date.create('2011年5月15日 下午3点45分钟'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Simplified Chinese date 3:45pm kanji afternoon');
 
   dateEqual(Date.create('一毫秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Simplified Chinese | one millisecond ago');
   dateEqual(Date.create('一秒钟前'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Simplified Chinese | one second ago');
@@ -96,7 +100,7 @@ test('Dates | Simplified Chinese', function () {
   equal(Date.create('5 year from now').relative(),   '5年后',     'Date#create | Simplified Chinese | relative format future');
 
 
-  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 3, 45), 'Date#create | Simplified Chinese | pm still works');
+  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | Simplified Chinese | pm still works');
 
   dateEqual(Date.create('2011年5月15日 3:45:59'), new Date(2011, 4, 15, 3, 45, 59), 'Date#create | Simplified Chinese | full date with time');
   dateEqual(Date.create('2011年5月15日 3点45分'), new Date(2011, 4, 15, 3, 45, 0), 'Date#create | Simplified Chinese | full date with kanji markers');
@@ -137,6 +141,8 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('二一年'), new Date(2021, 0), 'Date#create | Simplified Chinese | 二一年');
   dateEqual(Date.create('三二一年'), new Date(321, 0), 'Date#create | Simplified Chinese | 三二一年');
   dateEqual(Date.create('四三二一年'), new Date(4321, 0), 'Date#create | Simplified Chinese | 四三二一年');
+
+  dateEqual(Date.create('1/2/3'), new Date(2003, 0, 2), 'Date#create | Simplified Chinese | uses American style ambiguity');
 
 });
 

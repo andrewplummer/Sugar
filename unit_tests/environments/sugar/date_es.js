@@ -12,6 +12,9 @@ test('Dates | Spanish', function () {
   dateEqual(Date.create('mayo'), new Date(now.getFullYear(), 4), 'Date#create | Spanish | month');
   dateEqual(Date.create('lunes'), getDateWithWeekdayAndOffset(1), 'Date#create | Spanish | Monday');
 
+  dateEqual(Date.create('5 de enero de 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | Spanish | 2012-01-05 3:45');
+  dateEqual(Date.create('5 de enero de 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | Spanish | 2012-01-05 3:45pm');
+
 
   dateEqual(Date.create('hace 1 milisegundo'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Spanish | one millisecond ago');
   dateEqual(Date.create('hace 1 segundo'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Spanish | one second ago');
