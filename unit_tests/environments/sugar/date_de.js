@@ -132,5 +132,6 @@ test('Dates | German', function () {
   equal(Date.create('5 month from now', 'en').relative(),  'in 5 Monaten',   'Date#create | German | relative format future');
   equal(Date.create('5 year from now', 'en').relative(),   'in 5 Jahren',     'Date#create | German | relative format future');
 
+  dateEqual(Date.create('3:45 15. Mai 2011'), new Date(2011, 4, 15, 3, 45), 'Date#create | time first format');
 
 });
