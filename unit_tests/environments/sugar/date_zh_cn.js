@@ -144,5 +144,10 @@ test('Dates | Simplified Chinese', function () {
 
   dateEqual(Date.create('1/2/13'), new Date(2013, 0, 2), 'Date#create | Simplified Chinese | uses American style ambiguity');
 
+  // Issue #148 various Chinese dates
+
+  dateEqual(Date.create('星期日 2:00pm'), getDateWithWeekdayAndOffset(0).set({ hour: 14 }), 'Date#create | Simplified Chinese | 星期日 2:00pm');
+  dateEqual(Date.create('12/31/2012'), new Date(2012, 11, 31), 'Date#create | Simplified Chinese | 12/31/2012');
+
 });
 
