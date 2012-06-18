@@ -59,7 +59,7 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('Lunedi'), getDateWithWeekdayAndOffset(1), 'Date#create | Italian | no accents | Monday');
 
 
-  equal(Date.create('1999-11-04').format(), '4 novembre 1999', 'Date#create | Italian | format');
+  equal(Date.create('1999-11-04 3:45pm').format(), '4 novembre 1999, 15:45', 'Date#create | Italian | format');
   equal(Date.create('2011-08-25').format('{dd} {Month} {yyyy}'), '25 Agosto 2011', 'Date#create | Italian | format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1 secondo fa', 'Date#create | Italian | relative format past');

@@ -63,7 +63,7 @@ test('Dates | Traditional Chinese', function () {
   dateEqual(Date.create('這個月'), getRelativeDate(null, 0), 'Date#create | Traditional Chinese | this month');
   dateEqual(Date.create('下週五'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Traditional Chinese | Next friday');
 
-  equal(Date.create('2011-08-25').format(), '2011年8月25日', 'Date#create | Traditional Chinese | standard format');
+  equal(Date.create('2011-08-25 3:45pm').format(), '2011年8月25日 15點45分鐘', 'Date#create | Traditional Chinese | standard format');
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Traditional Chinese | format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1秒鐘前', 'Date#create | Traditional Chinese | relative format past');
