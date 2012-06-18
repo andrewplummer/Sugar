@@ -96,7 +96,7 @@ test('Dates | Swedish', function () {
   dateEqual(Date.create('nasta ar'), getRelativeDate(1), 'Date#create | Swedish | Next year');
 
 
-  equal(Date.create('2001-06-14').format(), 'den 14 juni 2001', 'Date#create | Swedish | format');
+  equal(Date.create('2001-06-14 3:45pm').format(), 'den 14 juni 2001, 15:45', 'Date#create | Swedish | format');
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 augusti 2011', 'Date#create | Swedish | format');
 
   equal(Date.create('1 second ago').relative(), '1 sekund sedan', 'Date#create | Swedish | relative format past');
