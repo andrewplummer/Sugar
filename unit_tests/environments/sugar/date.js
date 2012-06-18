@@ -1908,7 +1908,7 @@ test('Date', function () {
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
 
   dateEqual(Date.create('2010-Jan-25', 'ja'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
-  raisesError(function(){ Date.setLocale('pink'); }, 'Array#map | raises an error if locale set to pink');
+  equal(Date.setLocale('pink'), false, 'Non-existent locales will return false');
   equal(Date.create('2010-Jan-25').format(), '2010年1月25日 0時00分', 'Date#create | will not set the current locale to an invalid locale');
 
   Date.setLocale('en');
