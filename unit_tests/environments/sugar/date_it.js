@@ -98,4 +98,12 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('15/3/2012 12:45'), new Date(2012, 2, 15, 12, 45), 'Date#create | Italian | slash format with time');
   dateEqual(Date.create('12:45 15/3/2012'), new Date(2012, 2, 15, 12, 45), 'Date#create | Italian | slash format with time front');
 
+  // Issue #150 Fully qualified ISO codes should be allowed
+  dateEqual(Date.create('7 gennaio 2012', 'it_IT'), new Date(2012, 0, 7), 'Date#create | Italian | it_IT');
+  dateEqual(Date.create('7 gennaio 2012', 'it-IT'), new Date(2012, 0, 7), 'Date#create | Italian | it-IT');
+
+  // Issue #150 Unrecognized locales will result in invalid dates, but will not throw an error
+  equal(Date.create('August 25th, 2008', 'ux_UX').isValid(), false, 'Date#create | Italian | unknown locale code');
+
+
 });
