@@ -2230,6 +2230,10 @@ test('Date', function () {
   dateEqual(Date.create('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45), 'Date#create | little endian slashes with time');
 
 
+  // Issue #144 various time/date formats
+  dateEqual(Date.create('6/30/2012 3:00 PM'), new Date(2012, 5, 30, 15), 'Date#create | 6/30/2012 3:00 PM');
+  dateEqual(Date.create('Thursday at 3:00 PM'), getDateWithWeekdayAndOffset(4).set({ hour: 15 }), 'Date#create | Thursday at 3:00 PM');
+  dateEqual(Date.create('Thursday at 3:00PM'), getDateWithWeekdayAndOffset(4).set({ hour: 15 }), 'Date#create | Thursday at 3:00PM (no space)');
 
 
 });
