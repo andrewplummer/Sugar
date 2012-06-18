@@ -131,6 +131,13 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('15日 3:45:59'), new Date(now.getFullYear(), now.getMonth(), 15, 3, 45, 59), 'Date#create | Japanese | dd format with time');
   dateEqual(Date.create('先週水曜日 5:15'), getDateWithWeekdayAndOffset(3, -7).set({ hour: 5, minute: 15 }), 'Date#create | Japanese | Last wednesday with time');
 
+
+  // Issue #148 various Japanese dates
+
+  dateEqual(Date.create('来週火曜日午後3:00'), getDateWithWeekdayAndOffset(2, 7).set({ hours: 15 }), 'Date#create | Japanese | next Tuesday at 3:00pm');
+  dateEqual(Date.create('火曜日3:00'), getDateWithWeekdayAndOffset(2, 0).set({ hours: 3 }), 'Date.create | Japanese | Tuesday at 3:00am');
+  dateEqual(Date.create('火曜日午後3:00'), getDateWithWeekdayAndOffset(2, 0).set({ hours: 15 }), 'Date.create | Japanese | Tuesday at 3:00pm');
+  dateEqual(Date.create('2012年6月5日3:00'), new Date(2012, 5, 5, 3), 'Date.create | Japanese | June 5th at 3:00pm');
+
+
 });
-
-
