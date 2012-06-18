@@ -94,5 +94,8 @@ test('Dates | Italian', function () {
   equal(Date.create('5 month from now', 'en').relative(),  '5 mesi da adesso',   'Date#create | Italian | relative format future');
   equal(Date.create('5 year from now', 'en').relative(),   '5 anni da adesso',     'Date#create | Italian | relative format future');
 
+  // Issue #152 Italian should not use a variant in any format
+  dateEqual(Date.create('15/3/2012 12:45'), new Date(2012, 2, 15, 12, 45), 'Date#create | Italian | slash format with time');
+  dateEqual(Date.create('12:45 15/3/2012'), new Date(2012, 2, 15, 12, 45), 'Date#create | Italian | slash format with time front');
 
 });
