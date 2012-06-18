@@ -2191,7 +2191,7 @@ test('Date', function () {
   // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
   Date.addFormat('(\\d{4})', ['year']);
 
-  // Tests around issue#146
+  // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
 
   equal(Date.create('2010-01-20T20:00:00.000Z').iso(), '2010-01-20T20:00:00.000Z');
   equal(Date.create('2010-02-20T20:00:00.000Z').iso(), '2010-02-20T20:00:00.000Z');
@@ -2228,6 +2228,8 @@ test('Date', function () {
   dateEqual(Date.create('3:45pm 2012-3-15'), new Date(2012, 2, 15, 15, 45), 'Date#create | big endian with time');
   dateEqual(Date.create('3:45pm 3/15/2012'), new Date(2012, 2, 15, 15, 45), 'Date#create | crazy endian slashes with time');
   dateEqual(Date.create('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45), 'Date#create | little endian slashes with time');
+
+
 
 
 });
