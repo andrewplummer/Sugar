@@ -72,8 +72,8 @@ test('Dates | Russian', function () {
 
   dateEqual(Date.create('следующий понедельник 3:45pm'), getDateWithWeekdayAndOffset(1,7).set({ hour: 15, minute: 45 }, true), 'Date#create | Russian | next monday');
 
-  equal(Date.create('1989-05-02').format(), '2 мая 1989 года', 'Date#create | Russian | standard format 1');
-  equal(Date.create('2008-10-03').format(), '3 октября 2008 года', 'Date#create | Russian | standard format 1');
+  equal(Date.create('1989-05-02 3:45pm').format(), '2 мая 1989 года, 15:45', 'Date#create | Russian | standard format 1');
+  equal(Date.create('2008-10-03 3:45pm').format(), '3 октября 2008 года, 15:45', 'Date#create | Russian | standard format 1');
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 августа 2011', 'Date#create | Russian | format');
   equal(Date.create('2011-08-25').format('{dd} {month2} {yyyy}'), '25 август 2011', 'Date#create | Russian | format allows alternates');
 

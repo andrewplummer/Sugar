@@ -856,7 +856,7 @@ test('Date', function () {
   d = new Date('August 5, 2010 13:45:02');
 
 
-  equal(d.format(), 'August 5, 2010', 'Date#format | no arguments is standard format with no time');
+  equal(d.format(), 'August 5, 2010 1:45pm', 'Date#format | no arguments is standard format with no time');
 
   equal(d.format('{ms}'), '0', 'Date#format | custom formats | ms');
   equal(d.format('{milliseconds}'), '0', 'Date#format | custom formats | milliseconds');
@@ -1037,7 +1037,7 @@ test('Date', function () {
       equal(unit, 0, 'Date format | relative fn | still passes millisecond is zero');
     });
 
-    equal(Date.create('2002-02-17').format(function() {}), 'February 17, 2002', 'Date#format | function that returns undefined defaults to standard format');
+    equal(Date.create('2002-02-17').format(function() {}), 'February 17, 2002 12:00am', 'Date#format | function that returns undefined defaults to standard format');
 
   });
 
@@ -1902,14 +1902,14 @@ test('Date', function () {
   Date.setLocale();
   equal(Date.getLocale().code, 'ja', 'Date.setLocale | setting locale with no arguments had no effect');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if no argument passed');
-  equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011', 'Date#format | local locale should override global');
+  equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011 12:00am', 'Date#format | local locale should override global');
   equal(Date.create('5 months ago', 'en').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
   Date.setLocale('');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
 
   dateEqual(Date.create('2010-Jan-25', 'ja'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
   raisesError(function(){ Date.setLocale('pink'); }, 'Array#map | raises an error if locale set to pink');
-  equal(Date.create('2010-Jan-25').format(), '2010年1月25日', 'Date#create | will not set the current locale to an invalid locale');
+  equal(Date.create('2010-Jan-25').format(), '2010年1月25日 0時00分', 'Date#create | will not set the current locale to an invalid locale');
 
   Date.setLocale('en');
 

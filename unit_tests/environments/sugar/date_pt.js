@@ -62,7 +62,7 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('amanha'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Portuguese | tomorrow');
 
 
-  equal(Date.create('1890-04-07').format(), '7 de abril de 1890', 'Date#create | Portuguese | standard format');
+  equal(Date.create('1890-04-07 3:45pm').format(), '7 de abril de 1890, 15:45', 'Date#create | Portuguese | standard format');
   equal(Date.create('2011-08-25').format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Portuguese | format');
 
 
