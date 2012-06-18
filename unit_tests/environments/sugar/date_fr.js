@@ -87,7 +87,7 @@ test('Dates | French', function () {
 
   dateEqual(Date.create('lundi dernièr 3:45'), getDateWithWeekdayAndOffset(1, -7).set({ hour: 3, minute: 45 }, true), 'Date#create | French | last monday 3:45');
 
-  equal(Date.create('2000-04-08').format(), '8 avril 2000', 'Date#create | French | standard format');
+  equal(Date.create('2000-04-08 3:45pm').format(), '8 avril 2000, 15:45', 'Date#create | French | standard format');
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 août 2011', 'Date#create | French | format');
 
   equal(Date.create('1 second ago', 'en').relative(), 'il y a 1 seconde', 'Date#create | French | relative format past');
