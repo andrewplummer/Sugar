@@ -17,6 +17,9 @@ test('Date', function () {
   var thisYear = now.getFullYear();
 
 
+  d = new Date(2010,7,5,13,45,2,542);
+  equal(getDST(d).hoursSince('the last day of 2011'), -12298, 'Date#hoursSince | hours since the last day of 2011');
+  return;
 
   // Invalid date
   equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
