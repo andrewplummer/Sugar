@@ -1,6 +1,7 @@
 test('Dates | Spanish', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('es');
 
 
@@ -66,9 +67,17 @@ test('Dates | Spanish', function () {
   dateEqual(Date.create('hace 1 ano'), getRelativeDate(-1), 'Date#create | Spanish | one year ago');
 
 
-  equal(Date.create('2012-01-05 3:45pm').format(), '5 de enero de 2012, 15:45', 'Date#create | Spanish | standard format');
-  equal(Date.create('2011-08-25').format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Spanish | format');
+  equal(then.format(), '25 agosto 2011 15:45', 'Date#create | Spanish | standard format');
+  equal(then.format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Spanish | format');
 
+  // Format shortcuts
+  equal(then.format('long'), '25 agosto 2011 15:45', 'Date#create | Spanish | long format');
+  equal(then.long(), '25 agosto 2011 15:45', 'Date#create | Spanish | long shortcut');
+  equal(then.format('full'), 'Jueves 25 agosto 2011 15:45:50', 'Date#create | Spanish | full format');
+  equal(then.full(), 'Jueves 25 agosto 2011 15:45:50', 'Date#create | Spanish | full shortcut');
+  equal(then.format('short'), '25 agosto 2011', 'Date#create | Spanish | short format');
+  equal(then.short(), '25 agosto 2011', 'Date#create | Spanish | short shortcut');
+  equal(then.format('hmmm {time}'), 'hmmm 15:45:50', 'Date#create | Spanish | custom time format');
 
 
   equal(Date.create('1 second ago', 'en').relative(), 'hace 1 segundo', 'Date#create | Spanish | relative format past');

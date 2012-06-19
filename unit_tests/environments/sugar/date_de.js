@@ -1,6 +1,7 @@
 test('Dates | German', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('de');
 
   dateEqual(Date.create('15. Mai 2011'), new Date(2011, 4, 15), 'Date#create | basic German date');
@@ -97,8 +98,18 @@ test('Dates | German', function () {
   dateEqual(Date.create('naechstes Jahr'), getRelativeDate(1), 'Date#create | German | Next year');
 
 
-  equal(Date.create('2001-06-14 3:45pm').format(), '14. Juni 2001, 15:45', 'Date#create | German | format');
-  equal(Date.create('2011-08-25').format('{dd} {Month} {yyyy}'), '25 August 2011', 'Date#create | German | format');
+  equal(then.format(), '25. August 2011 15:45', 'Date#create | German | format');
+  equal(then.format('{dd} {Month} {yyyy}'), '25 August 2011', 'Date#create | German | format');
+
+  // Format shortcuts
+  equal(then.format('long'), '25. August 2011 15:45', 'Date#create | German | long format');
+  equal(then.long(), '25. August 2011 15:45', 'Date#create | German | long shortcut');
+  equal(then.format('full'), 'Donnerstag 25. August 2011 15:45:50', 'Date#create | German | full format');
+  equal(then.full(), 'Donnerstag 25. August 2011 15:45:50', 'Date#create | German | full shortcut');
+  equal(then.format('short'), '25. August 2011', 'Date#create | German | short format');
+  equal(then.short(), '25. August 2011', 'Date#create | German | short shortcut');
+  equal(then.format('nein! {time}'), 'nein! 15:45:50', 'Date#create | German | short format');
+
 
   equal(Date.create('1 second ago', 'en').relative(), 'vor 1 Sekunde', 'Date#create | German | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), 'vor 1 Minute',  'Date#create | German | relative format past');
