@@ -64,7 +64,8 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('这周六'), getDateWithWeekdayAndOffset(6), 'Date#create | Simplified Chinese | this Saturday');
   dateEqual(Date.create('下周五'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Simplified Chinese | Next friday');
 
-  equal(Date.create('2011-08-25 3:45pm').format(), '2011年8月25日 15点45分钟', 'Date#create | Simplified Chinese | standard format');
+  equal(Date.create('2011-08-25 3:45pm').format(), '2011年8月25日 下午3:45', 'Date#create | Simplified Chinese | standard format');
+  equal(Date.create('2011-08-25 3:45am').format(), '2011年8月25日 上午3:45', 'Date#create | Simplified Chinese | standard format');
   equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1秒钟前', 'Date#create | Simplified Chinese | relative format past');
