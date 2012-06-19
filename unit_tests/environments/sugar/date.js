@@ -927,6 +927,20 @@ test('Date', function () {
   equal(d.format('{Month}, {yyyy}'), 'August, 2010', 'Date#format | full formats | month and year');
 
 
+
+  // Locale specific output formats/shortcuts
+
+  equal(d.format('short'), 'August 5, 2010', 'Date#format | shortcuts | short');
+  equal(d.short(), 'August 5, 2010', 'Date#format | shortcuts | short method');
+  equal(d.format('long'), 'August 5, 2010 4:03am', 'Date#format | shortcuts | long');
+  equal(d.long(), 'August 5, 2010 4:03am', 'Date#format | shortcuts | long method');
+  equal(d.format('full'), 'Thursday August 5, 2010 4:03:02am', 'Date#format | shortcuts | full');
+  equal(d.full(), 'Thursday August 5, 2010 4:03:02am', 'Date#format | shortcuts | full method');
+  equal(d.format('w00t {time}'), 'w00t 4:03:02am', 'Date#format | shortcuts | custom time format');
+
+
+
+
   // Be VERY careful here. Timezone offset is NOT always guaranteed to be the same for a given timezone,
   // as DST may come into play.
   var offset = d.getTimezoneOffset();

@@ -1,6 +1,8 @@
 test('Dates | Japanese', function () {
 
-  var now = new Date();
+  var now  = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
+
   Date.setLocale('ja');
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
@@ -79,8 +81,19 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('先週水曜日'), getDateWithWeekdayAndOffset(3, -7), 'Date#create | Japanese | Last wednesday');
   dateEqual(Date.create('来週金曜日'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Japanese | Next friday');
 
-  equal(Date.create('2011-08-25 3:45pm').format(), '2011年8月25日 15時45分', 'Date#create | Japanese | standard format');
-  equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Japanese | format');
+  equal(then.format(), '2011年8月25日 15時45分', 'Date#create | Japanese | default format');
+  equal(then.format('long'), '2011年8月25日 15時45分', 'Date#create | Japanese | long format');
+  equal(then.format('full'), '2011年8月25日 木曜日 15時45分50秒', 'Date#create | Japanese | full formatting');
+  equal(then.full(), '2011年8月25日 木曜日 15時45分50秒', 'Date#create | Japanese | full shortcut');
+  equal(then.full('en'), 'Thursday August 25, 2011 3:45:50pm', 'Date#create | Japanese | full locale override');
+  equal(then.format('long'), '2011年8月25日 15時45分', 'Date#create | Japanese | long formatting');
+  equal(then.long(), '2011年8月25日 15時45分', 'Date#create | Japanese | long shortcut');
+  equal(then.long('en'), 'August 25, 2011 3:45pm', 'Date#create | Japanese | long locale override');
+  equal(then.format('short'), '2011年8月25日', 'Date#create | Japanese | short formatting');
+  equal(then.short(), '2011年8月25日', 'Date#create | Japanese | short shortcut');
+  equal(then.short('en'), 'August 25, 2011', 'Date#create | Japanese | short locale override');
+  equal(then.format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Japanese | custom format');
+  equal(then.format('look at the {time}'), 'look at the 15時45分50秒', 'Date#create | Japanese | custom format with time');
 
   equal(Date.create('1 second ago', 'en').relative(), '1秒前', 'Date#create | Japanese | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1分前',  'Date#create | Japanese | relative format past');

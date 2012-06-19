@@ -1,6 +1,7 @@
 test('Dates | Italian', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('it');
 
 
@@ -59,8 +60,18 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('Lunedi'), getDateWithWeekdayAndOffset(1), 'Date#create | Italian | no accents | Monday');
 
 
-  equal(Date.create('1999-11-04 3:45pm').format(), '4 novembre 1999, 15:45', 'Date#create | Italian | format');
-  equal(Date.create('2011-08-25').format('{dd} {Month} {yyyy}'), '25 Agosto 2011', 'Date#create | Italian | format');
+  equal(then.format(), '25 Agosto 2011 15:45', 'Date#create | Italian | format');
+  equal(then.format('{dd} {Month} {yyyy}'), '25 Agosto 2011', 'Date#create | Italian | format');
+
+  // Format shortcuts
+  equal(then.format('long'), '25 Agosto 2011 15:45', 'Date#create | Italian | long format');
+  equal(then.long(), '25 Agosto 2011 15:45', 'Date#create | Italian | long shortcut');
+  equal(then.format('full'), 'Giovedì 25 Agosto 2011 15:45:50', 'Date#create | Italian | full format');
+  equal(then.full(), 'Giovedì 25 Agosto 2011 15:45:50', 'Date#create | Italian | full shortcut');
+  equal(then.format('short'), '25 Agosto 2011', 'Date#create | Italian | short format');
+  equal(then.short(), '25 Agosto 2011', 'Date#create | Italian | short shortcut');
+  equal(then.format('mario! {time}'), 'mario! 15:45:50', 'Date#create | Italian | short format');
+
 
   equal(Date.create('1 second ago', 'en').relative(), '1 secondo fa', 'Date#create | Italian | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1 minuto fa',  'Date#create | Italian | relative format past');

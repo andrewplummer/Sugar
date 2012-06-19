@@ -1,6 +1,7 @@
 test('Dates | Korean', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('ko');
 
   dateEqual(Date.create('2011년5월15일'), new Date(2011, 4, 15), 'Date#create | basic Korean date');
@@ -65,9 +66,17 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('다음 주 금요일'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Korean | Next friday');
 
 
-  equal(Date.create('2011-08-25 3:45pm').format(), '2011년8월25일 15시45분', 'Date#create | Korean | standard format');
-  equal(Date.create('2011-08-25').format('{yyyy}년{MM}월{dd}일'), '2011년08월25일', 'Date#create | Korean | format');
+  equal(then.format(), '2011년8월25일 15시45분', 'Date#create | Korean | standard format');
+  equal(then.format('{yyyy}년{MM}월{dd}일'), '2011년08월25일', 'Date#create | Korean | format');
 
+  // Format shortcuts
+  equal(then.format('full'), '2011년8월25일 목요일 15시45분50초', 'Date#create | Korean | full format');
+  equal(then.full(), '2011년8월25일 목요일 15시45분50초', 'Date#create | Korean | full shortcut');
+  equal(then.format('long'), '2011년8월25일 15시45분', 'Date#create | Korean | long format');
+  equal(then.long(), '2011년8월25일 15시45분', 'Date#create | Korean | long shortcut');
+  equal(then.format('short'), '2011년8월25일', 'Date#create | Korean | short format');
+  equal(then.short(), '2011년8월25일', 'Date#create | Korean | short shortcut');
+  equal(then.format('time'), '15시45분50초', 'Date#create | Korean | time format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1초 전', 'Date#create | Korean | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1분 전',  'Date#create | Korean | relative format past');

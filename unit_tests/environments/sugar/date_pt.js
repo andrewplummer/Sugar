@@ -1,6 +1,7 @@
 test('Dates | Portuguese', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('pt');
 
 
@@ -62,9 +63,17 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('amanha'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Portuguese | tomorrow');
 
 
-  equal(Date.create('1890-04-07 3:45pm').format(), '7 de abril de 1890, 15:45', 'Date#create | Portuguese | standard format');
-  equal(Date.create('2011-08-25').format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Portuguese | format');
+  equal(then.format(), '25 de agosto de 2011 15:45', 'Date#create | Portuguese | standard format');
+  equal(then.format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Portuguese | format');
 
+  // Format shortcuts
+  equal(then.format('long'), '25 de agosto de 2011 15:45', 'Date#create | Portuguese | long format');
+  equal(then.long(), '25 de agosto de 2011 15:45', 'Date#create | Portuguese | long shortcut');
+  equal(then.format('full'), 'Quinta-feira, 25 de agosto de 2011 15:45:50', 'Date#create | Portuguese | full format');
+  equal(then.full(), 'Quinta-feira, 25 de agosto de 2011 15:45:50', 'Date#create | Portuguese | full shortcut');
+  equal(then.format('short'), '25 de agosto de 2011', 'Date#create | Portuguese | short format');
+  equal(then.short(), '25 de agosto de 2011', 'Date#create | Portuguese | short shortcut');
+  equal(then.format('wow {time}'), 'wow 15:45:50', 'Date#create | Portuguese | custom time format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1 segundo atrás', 'Date#create | Portuguese | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1 minuto atrás',  'Date#create | Portuguese | relative format past');

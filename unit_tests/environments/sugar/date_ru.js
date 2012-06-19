@@ -1,6 +1,7 @@
 test('Dates | Russian', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('ru');
 
   dateEqual(Date.create('15 мая 2011'), new Date(2011, 4, 15), 'Date#create | basic Russian date');
@@ -72,10 +73,21 @@ test('Dates | Russian', function () {
 
   dateEqual(Date.create('следующий понедельник 3:45pm'), getDateWithWeekdayAndOffset(1,7).set({ hour: 15, minute: 45 }, true), 'Date#create | Russian | next monday');
 
-  equal(Date.create('1989-05-02 3:45pm').format(), '2 мая 1989 года, 15:45', 'Date#create | Russian | standard format 1');
-  equal(Date.create('2008-10-03 3:45pm').format(), '3 октября 2008 года, 15:45', 'Date#create | Russian | standard format 1');
-  equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 августа 2011', 'Date#create | Russian | format');
-  equal(Date.create('2011-08-25').format('{dd} {month2} {yyyy}'), '25 август 2011', 'Date#create | Russian | format allows alternates');
+  equal(then.format(), '25 августа 2011 года 15:45', 'Date#create | Russian | standard format');
+  equal(then.format(), '25 августа 2011 года 15:45', 'Date#create | Russian | standard format');
+  equal(then.format('{dd} {month} {yyyy}'), '25 августа 2011', 'Date#create | Russian | format');
+  equal(then.format('{dd} {month2} {yyyy}'), '25 август 2011', 'Date#create | Russian | format allows alternates');
+
+
+  // Format shortcuts
+
+  equal(then.format('full'), 'Четверг 25 августа 2011 года 15:45:50', 'Date#create | Russian | full format');
+  equal(then.full(), 'Четверг 25 августа 2011 года 15:45:50', 'Date#create | Russian | full format');
+  equal(then.format('long'), '25 августа 2011 года 15:45', 'Date#create | Russian | long format');
+  equal(then.long(), '25 августа 2011 года 15:45', 'Date#create | Russian | long shortcut');
+  equal(then.format('short'), '25 августа 2011 года', 'Date#create | Russian | short format');
+  equal(then.short(), '25 августа 2011 года', 'Date#create | Russian | short shortcut');
+
 
   equal(Date.create('1 second ago', 'en').relative(), '1 секунду назад', 'Date#relative | Russian | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1 минуту назад',  'Date#relative | Russian | relative format past');
