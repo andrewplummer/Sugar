@@ -1,6 +1,7 @@
 test('Dates | French', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('fr');
 
 
@@ -87,8 +88,17 @@ test('Dates | French', function () {
 
   dateEqual(Date.create('lundi dernièr 3:45'), getDateWithWeekdayAndOffset(1, -7).set({ hour: 3, minute: 45 }, true), 'Date#create | French | last monday 3:45');
 
-  equal(Date.create('2000-04-08 3:45pm').format(), '8 avril 2000, 15:45', 'Date#create | French | standard format');
-  equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 août 2011', 'Date#create | French | format');
+  equal(then.format(), '25 août 2011 15:45', 'Date#create | French | standard format');
+  equal(then.format('{dd} {month} {yyyy}'), '25 août 2011', 'Date#create | French | format');
+
+  // Format shortcuts
+  equal(then.format('long'), '25 août 2011 15:45', 'Date#create | French | long format');
+  equal(then.long(), '25 août 2011 15:45', 'Date#create | French | long shortcut');
+  equal(then.format('full'), 'Jeudi 25 août 2011 15:45:50', 'Date#create | French | full format');
+  equal(then.full(), 'Jeudi 25 août 2011 15:45:50', 'Date#create | French | full format');
+  equal(then.format('short'), '25 août 2011', 'Date#create | French | short format');
+  equal(then.short(), '25 août 2011', 'Date#create | French | short shortcut');
+  equal(then.format('beuf {time}'), 'beuf 15:45:50', 'Date#create | French | custom time');
 
   equal(Date.create('1 second ago', 'en').relative(), 'il y a 1 seconde', 'Date#create | French | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), 'il y a 1 minute',  'Date#create | French | relative format past');

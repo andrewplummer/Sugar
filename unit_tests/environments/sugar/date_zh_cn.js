@@ -1,6 +1,7 @@
 test('Dates | Simplified Chinese', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('zh-CN');
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
@@ -64,9 +65,17 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('这周六'), getDateWithWeekdayAndOffset(6), 'Date#create | Simplified Chinese | this Saturday');
   dateEqual(Date.create('下周五'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Simplified Chinese | Next friday');
 
-  equal(Date.create('2011-08-25 3:45pm').format(), '2011年8月25日 下午3:45', 'Date#create | Simplified Chinese | standard format');
-  equal(Date.create('2011-08-25 3:45am').format(), '2011年8月25日 上午3:45', 'Date#create | Simplified Chinese | standard format');
-  equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
+  equal(then.format(), '2011年8月25日 下午3:45', 'Date#create | Simplified Chinese | standard format');
+  equal(then.format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
+
+  // Format shortcuts
+  equal(then.format('long'), '2011年8月25日 下午3:45', 'Date#create | Traditional Chinese | long format');
+  equal(then.long(), '2011年8月25日 下午3:45', 'Date#create | Traditional Chinese | long shortcut');
+  equal(then.format('full'), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Traditional Chinese | full format');
+  equal(then.full(), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Traditional Chinese | full format');
+  equal(then.format('short'), '2011年8月25日', 'Date#create | Traditional Chinese | short format');
+  equal(then.short(), '2011年8月25日', 'Date#create | Traditional Chinese | short format');
+  equal(then.format('lo mein {time}'), 'lo mein 下午3:45:50', 'Date#create | Traditional Chinese | custom time format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1秒钟前', 'Date#create | Simplified Chinese | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1分钟前',  'Date#create | Simplified Chinese | relative format past');
