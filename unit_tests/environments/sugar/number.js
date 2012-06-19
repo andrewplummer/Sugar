@@ -76,6 +76,36 @@ test('Number', function () {
   equal((3).pow(), 3, 'Number#pow | undefined defaults to 1', { mootools: NaN });
 
 
+  equal((1).sin(), 0.8414709848078965, 'Number#sin | 1');
+  equal((0).sin(), 0, 'Number#sin | 0');
+  equal((Math.PI/2).sin(), 1, 'Number#sin | PI/2');
+  equal((0).cos(), 1, 'Number#cos | 0');
+  equal((Math.PI).cos(), -1, 'Number#cos | PI');
+  equal((Math.PI*2).cos(), 1, 'Number#cos | PI*2');
+  equal((0).tan(), 0, 'Number#tan | 0');
+  equal((45).tan(), 1.6197751905438615, 'Number#tan | 45');
+  equal((90).tan(), -1.995200412208242, 'Number#tan | 90');
+  equal((0).asin(), 0, 'Number#asin | 0');
+  equal((1).asin(), Math.PI/2, 'Number#asin | 1');
+  equal((0).acos(), Math.PI/2, 'Number#acos | 0');
+  equal((1).acos(), 0, 'Number#acos | 1');
+  equal((0).atan(), 0, 'Number#atan | 0');
+  equal((45).atan(), 1.5485777614681775, 'Number#atan | 45');
+
+
+  equal((64).log(2), 6, 'Number#log | 64 with base 2');
+  equal((9).log(3), 2, 'Number#log | 9 with base 3');
+  equal((5).log(), 1.6094379124341003, 'Number#log | 5');
+  equal((Math.E).log(), 1, 'Number#log | E');
+  equal((1).exp(), Math.E, 'Number#exp | 1');
+  equal((0).exp(), 1, 'Number#exp | 0');
+
+
+  equal((9).sqrt(), 3, 'Number#sqrt | 9');
+  equal((1024).sqrt(), 32, 'Number#sqrt | 1024');
+
+
+
   equal((3).round(), 3, 'Number#round | 3');
   equal((3.241).round(), 3, 'Number#round | 3.241');
   equal((3.752).round(), 4, 'Number#round | 3.752');
