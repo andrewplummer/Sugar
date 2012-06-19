@@ -100,6 +100,15 @@ test('String', function () {
   equal(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', 'String#capitalize | all | preserves whitespace', { prototype: ' what a shame of a title    ' });
   equal(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', 'String#capitalize | all | preserves new lines', { prototype: ' what a shame of\n a title    ' });
 
+  equal('reuben-sandwich'.capitalize(true), 'Reuben-Sandwich', 'String#capitalize | all | hyphen');
+  equal('reuben,sandwich'.capitalize(true), 'Reuben,Sandwich', 'String#capitalize | all | comma');
+  equal('reuben;sandwich'.capitalize(true), 'Reuben;Sandwich', 'String#capitalize | all | semicolon');
+  equal('reuben.sandwich'.capitalize(true), 'Reuben.Sandwich', 'String#capitalize | all | period');
+  equal('reuben_sandwich'.capitalize(true), 'Reuben_Sandwich', 'String#capitalize | all | underscore');
+  equal('фыва-йцук'.capitalize(true), 'Фыва-Йцук', 'String#capitalize | all | Russian with hyphens');
+  equal('фыва,йцук'.capitalize(true), 'Фыва,Йцук', 'String#capitalize | all | Russian with comma');
+  equal('фыва;йцук'.capitalize(true), 'Фыва;Йцук', 'String#capitalize | all | Russian with semicolon');
+  equal('фыва7йцук'.capitalize(true), 'Фыва7Йцук', 'String#capitalize | all | Russian with 7');
 
   equal('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
   equal(' wasabi \n'.chars(), [' ','w','a','s','a','b','i',' ','\n'], 'String#chars | should not trim whitespace');
