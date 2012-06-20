@@ -9,17 +9,13 @@ test('Date', function () {
     Date.restore('create');
   };
 
-  var day, d, o;
+  var day, d, dst, o;
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
   var staticJanDateNumber = 1000 * 60 * 60 * 24 * 14975; // 2011-01-01 00:00:00 
   var staticSummerTimezoneOffset = new Date(2011, 8, 1).getTimezoneOffset();
   var now = new Date();
   var thisYear = now.getFullYear();
 
-
-  d = new Date(2010,7,5,13,45,2,542);
-  equal(getDST(d).hoursSince('the last day of 2011'), -12298, 'Date#hoursSince | hours since the last day of 2011');
-  return;
 
   // Invalid date
   equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
@@ -71,9 +67,6 @@ test('Date', function () {
   dateEqual(Date.create({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }), new Date(1998,1,23,11,54,32), 'Date#create | object | January 23, 1998 11:54:32');
   dateEqual(Date.create({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), new Date(1998,1,23,11,54,32,454), 'Date#create | object | January 23, 1998 11:54:32.454');
 
-
-  // DST Offset is properly set
-  equal(Date.DSTOffset, (new Date(2001, 6, 1).getTimezoneOffset() - new Date(2000, 0, 1).getTimezoneOffset()) * 60 * 1000, 'Date#DSTOffset | is the correct offset');
 
   dateEqual(new Date(new Date(2008, 6, 22)), new Date(2008, 6, 22), 'Date | date accepts itself as a constructor');
 
@@ -1280,7 +1273,7 @@ test('Date', function () {
   d = new Date(2010,7,5,13,45,2,542);
 
   equal(d.getWeek(), 31, 'Date#getWeek | basic August 5th, 2010');
-  equal(getDST(d).getUTCWeek(), staticSummerTimezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
+  equal(d.getUTCWeek(), staticSummerTimezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
   equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
   equal(new Date(2010, 0, 1).getUTCWeek(), 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
@@ -1299,6 +1292,7 @@ test('Date', function () {
 
 
   d = new Date(2010,7,5,13,45,2,542);
+  dst = (d.getTimezoneOffset() - d.clone().set({ month: 0 }).getTimezoneOffset()) * 60 * 1000;
 
   equal(new Date(2010,7,5,13,45,2,543).millisecondsSince(d), 1, 'Date#millisecondsSince | 1 milliseconds since');
   equal(new Date(2010,7,5,13,45,2,541).millisecondsUntil(d), 1, 'Date#millisecondsUntil | 1 milliseconds until');
@@ -1356,22 +1350,22 @@ test('Date', function () {
 
 
   // Works with Date.create?
-  equal(getDST(d).millisecondsSince('the last day of 2011'), -44273697458, 'Date#millisecondsSince | milliseconds since the last day of 2011');
-  equal(getDST(d).millisecondsUntil('the last day of 2011'), 44273697458, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
-  equal(getDST(d).secondsSince('the last day of 2011'), -44273697, 'Date#secondsSince | seconds since the last day of 2011');
-  equal(getDST(d).secondsUntil('the last day of 2011'), 44273697, 'Date#secondsUntil | seconds until the last day of 2011');
-  equal(getDST(d).minutesSince('the last day of 2011'), -737895, 'Date#minutesSince | minutes since the last day of 2011');
-  equal(getDST(d).minutesUntil('the last day of 2011'), 737895, 'Date#minutesUntil | minutes until the last day of 2011');
-  equal(getDST(d).hoursSince('the last day of 2011'), -12298, 'Date#hoursSince | hours since the last day of 2011');
-  equal(getDST(d).hoursUntil('the last day of 2011'), 12298, 'Date#hoursUntil | hours until the last day of 2011');
-  equal(getDST(d).daysSince('the last day of 2011'), -512, 'Date#daysSince | days since the last day of 2011');
-  equal(getDST(d).daysUntil('the last day of 2011'), 512, 'Date#daysUntil | days until the last day of 2011');
-  equal(getDST(d).weeksSince('the last day of 2011'), -73, 'Date#weeksSince | weeks since the last day of 2011');
-  equal(getDST(d).weeksUntil('the last day of 2011'), 73, 'Date#weeksUntil | weeks until the last day of 2011');
-  equal(getDST(d).monthsSince('the last day of 2011'), -17, 'Date#monthsSince | months since the last day of 2011');
-  equal(getDST(d).monthsUntil('the last day of 2011'), 17, 'Date#monthsUntil | months until the last day of 2011');
-  equal(getDST(d).yearsSince('the last day of 2011'), -1, 'Date#yearsSince | years since the last day of 2011');
-  equal(getDST(d).yearsUntil('the last day of 2011'), 1, 'Date#yearsUntil | years until the last day of 2011');
+  equal(d.millisecondsSince('the last day of 2011'), -44273697458 + dst, 'Date#millisecondsSince | milliseconds since the last day of 2011');
+  equal(d.millisecondsUntil('the last day of 2011'), 44273697458 - dst, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
+  equal(d.secondsSince('the last day of 2011'), -44273697 + (dst / 1000), 'Date#secondsSince | seconds since the last day of 2011');
+  equal(d.secondsUntil('the last day of 2011'), 44273697 - (dst / 1000), 'Date#secondsUntil | seconds until the last day of 2011');
+  equal(d.minutesSince('the last day of 2011'), -737895 + (dst / 60 / 1000), 'Date#minutesSince | minutes since the last day of 2011');
+  equal(d.minutesUntil('the last day of 2011'), 737895 - (dst / 60 / 1000), 'Date#minutesUntil | minutes until the last day of 2011');
+  equal(d.hoursSince('the last day of 2011'), -12298 + (dst / 60 / 60 / 1000), 'Date#hoursSince | hours since the last day of 2011');
+  equal(d.hoursUntil('the last day of 2011'), 12298 - (dst / 60 / 60 / 1000), 'Date#hoursUntil | hours until the last day of 2011');
+  equal(d.daysSince('the last day of 2011'), -512, 'Date#daysSince | days since the last day of 2011');
+  equal(d.daysUntil('the last day of 2011'), 512, 'Date#daysUntil | days until the last day of 2011');
+  equal(d.weeksSince('the last day of 2011'), -73, 'Date#weeksSince | weeks since the last day of 2011');
+  equal(d.weeksUntil('the last day of 2011'), 73, 'Date#weeksUntil | weeks until the last day of 2011');
+  equal(d.monthsSince('the last day of 2011'), -17, 'Date#monthsSince | months since the last day of 2011');
+  equal(d.monthsUntil('the last day of 2011'), 17, 'Date#monthsUntil | months until the last day of 2011');
+  equal(d.yearsSince('the last day of 2011'), -1, 'Date#yearsSince | years since the last day of 2011');
+  equal(d.yearsUntil('the last day of 2011'), 1, 'Date#yearsUntil | years until the last day of 2011');
 
 
 
