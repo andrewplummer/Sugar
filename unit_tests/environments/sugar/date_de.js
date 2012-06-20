@@ -1,6 +1,7 @@
 test('Dates | German', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('de');
 
   dateEqual(Date.create('15. Mai 2011'), new Date(2011, 4, 15), 'Date#create | basic German date');
@@ -8,6 +9,9 @@ test('Dates | German', function () {
   dateEqual(Date.create('Mai 2011'), new Date(2011, 4), 'Date#create | German | year and month');
   dateEqual(Date.create('15. Mai'), new Date(now.getFullYear(), 4, 15), 'Date#create | German | month and date');
   dateEqual(Date.create('2011'), new Date(2011, 0), 'Date#create | German | year');
+
+  dateEqual(Date.create('Dienstag, 5. Januar 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | German | 2012-01-05 3:45');
+  dateEqual(Date.create('Dienstag, 5. Januar 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | German | 2012-01-05 3:45pm');
 
   dateEqual(Date.create('Januar'), new Date(now.getFullYear(), 0), 'Date#create | German | January');
   dateEqual(Date.create('Februar'), new Date(now.getFullYear(), 1), 'Date#create | German | February');
@@ -83,6 +87,8 @@ test('Dates | German', function () {
   dateEqual(Date.create('nächster Montag'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | German | next monday');
   dateEqual(Date.create('letztes Montag'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | German | last monday');
 
+  dateEqual(Date.create('letztes Montag 3:45'), getDateWithWeekdayAndOffset(1, -7).set({ hour: 3, minute: 45 }, true), 'Date#create | German | last monday 3:45');
+
   // no accents
   dateEqual(Date.create('ubermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German (no accents) | day after tomorrow');
   dateEqual(Date.create('naechster Monat'), getRelativeDate(null, 1), 'Date#create | German (no accents) | Next month nachster');
@@ -92,40 +98,51 @@ test('Dates | German', function () {
   dateEqual(Date.create('naechstes Jahr'), getRelativeDate(1), 'Date#create | German | Next year');
 
 
-  equal(Date.create('2001-06-14').format(), '14. Juni 2001', 'Date#create | German | format');
-  equal(Date.create('2011-08-25').format('{dd} {Month} {yyyy}'), '25 August 2011', 'Date#create | German | format');
+  equal(then.format(), '25. August 2011 15:45', 'Date#create | German | format');
+  equal(then.format('{dd} {Month} {yyyy}'), '25 August 2011', 'Date#create | German | format');
 
-  equal(Date.create('1 second ago').relative(), 'vor 1 Sekunde', 'Date#create | German | relative format past');
-  equal(Date.create('1 minute ago').relative(), 'vor 1 Minute',  'Date#create | German | relative format past');
-  equal(Date.create('1 hour ago').relative(),   'vor 1 Stunde',     'Date#create | German | relative format past');
-  equal(Date.create('1 day ago').relative(),    'vor 1 Tag',    'Date#create | German | relative format past');
-  equal(Date.create('1 week ago').relative(),   'vor 1 Woche',  'Date#create | German | relative format past');
-  equal(Date.create('1 month ago').relative(),  'vor 1 Monat',   'Date#create | German | relative format past');
-  equal(Date.create('1 year ago').relative(),   'vor 1 Jahr',     'Date#create | German | relative format past');
+  // Format shortcuts
+  equal(then.format('long'), '25. August 2011 15:45', 'Date#create | German | long format');
+  equal(then.long(), '25. August 2011 15:45', 'Date#create | German | long shortcut');
+  equal(then.format('full'), 'Donnerstag 25. August 2011 15:45:50', 'Date#create | German | full format');
+  equal(then.full(), 'Donnerstag 25. August 2011 15:45:50', 'Date#create | German | full shortcut');
+  equal(then.format('short'), '25. August 2011', 'Date#create | German | short format');
+  equal(then.short(), '25. August 2011', 'Date#create | German | short shortcut');
+  equal(then.format('nein! {time}'), 'nein! 15:45:50', 'Date#create | German | short format');
 
-  equal(Date.create('5 seconds ago').relative(), 'vor 5 Sekunden', 'Date#create | German | relative format past');
-  equal(Date.create('5 minutes ago').relative(), 'vor 5 Minuten',  'Date#create | German | relative format past');
-  equal(Date.create('5 hours ago').relative(),   'vor 5 Stunden',     'Date#create | German | relative format past');
-  equal(Date.create('5 days ago').relative(),    'vor 5 Tagen',    'Date#create | German | relative format past');
-  equal(Date.create('5 weeks ago').relative(),   'vor 1 Monat',  'Date#create | German | relative format past');
-  equal(Date.create('5 months ago').relative(),  'vor 5 Monaten',   'Date#create | German | relative format past');
-  equal(Date.create('5 years ago').relative(),   'vor 5 Jahren',     'Date#create | German | relative format past');
 
-  equal(Date.create('1 second from now').relative(), 'in 1 Sekunde', 'Date#create | German | relative format future');
-  equal(Date.create('1 minute from now').relative(), 'in 1 Minute',  'Date#create | German | relative format future');
-  equal(Date.create('1 hour from now').relative(),   'in 1 Stunde',     'Date#create | German | relative format future');
-  equal(Date.create('1 day from now').relative(),    'in 1 Tag',    'Date#create | German | relative format future');
-  equal(Date.create('1 week from now').relative(),   'in 1 Woche',  'Date#create | German | relative format future');
-  equal(Date.create('1 month from now').relative(),  'in 1 Monat',   'Date#create | German | relative format future');
-  equal(Date.create('1 year from now').relative(),   'in 1 Jahr',     'Date#create | German | relative format future');
+  equal(Date.create('1 second ago', 'en').relative(), 'vor 1 Sekunde', 'Date#create | German | relative format past');
+  equal(Date.create('1 minute ago', 'en').relative(), 'vor 1 Minute',  'Date#create | German | relative format past');
+  equal(Date.create('1 hour ago', 'en').relative(),   'vor 1 Stunde',     'Date#create | German | relative format past');
+  equal(Date.create('1 day ago', 'en').relative(),    'vor 1 Tag',    'Date#create | German | relative format past');
+  equal(Date.create('1 week ago', 'en').relative(),   'vor 1 Woche',  'Date#create | German | relative format past');
+  equal(Date.create('1 month ago', 'en').relative(),  'vor 1 Monat',   'Date#create | German | relative format past');
+  equal(Date.create('1 year ago', 'en').relative(),   'vor 1 Jahr',     'Date#create | German | relative format past');
 
-  equal(Date.create('5 second from now').relative(), 'in 5 Sekunden', 'Date#create | German | relative format future');
-  equal(Date.create('5 minutes from now').relative(),'in 5 Minuten',  'Date#create | German | relative format future');
-  equal(Date.create('5 hour from now').relative(),   'in 5 Stunden',     'Date#create | German | relative format future');
-  equal(Date.create('5 day from now').relative(),    'in 5 Tagen',    'Date#create | German | relative format future');
-  equal(Date.create('5 week from now').relative(),   'in 1 Monat',  'Date#create | German | relative format future');
-  equal(Date.create('5 month from now').relative(),  'in 5 Monaten',   'Date#create | German | relative format future');
-  equal(Date.create('5 year from now').relative(),   'in 5 Jahren',     'Date#create | German | relative format future');
+  equal(Date.create('5 seconds ago', 'en').relative(), 'vor 5 Sekunden', 'Date#create | German | relative format past');
+  equal(Date.create('5 minutes ago', 'en').relative(), 'vor 5 Minuten',  'Date#create | German | relative format past');
+  equal(Date.create('5 hours ago', 'en').relative(),   'vor 5 Stunden',     'Date#create | German | relative format past');
+  equal(Date.create('5 days ago', 'en').relative(),    'vor 5 Tagen',    'Date#create | German | relative format past');
+  equal(Date.create('5 weeks ago', 'en').relative(),   'vor 1 Monat',  'Date#create | German | relative format past');
+  equal(Date.create('5 months ago', 'en').relative(),  'vor 5 Monaten',   'Date#create | German | relative format past');
+  equal(Date.create('5 years ago', 'en').relative(),   'vor 5 Jahren',     'Date#create | German | relative format past');
 
+  equal(Date.create('1 second from now', 'en').relative(), 'in 1 Sekunde', 'Date#create | German | relative format future');
+  equal(Date.create('1 minute from now', 'en').relative(), 'in 1 Minute',  'Date#create | German | relative format future');
+  equal(Date.create('1 hour from now', 'en').relative(),   'in 1 Stunde',     'Date#create | German | relative format future');
+  equal(Date.create('1 day from now', 'en').relative(),    'in 1 Tag',    'Date#create | German | relative format future');
+  equal(Date.create('1 week from now', 'en').relative(),   'in 1 Woche',  'Date#create | German | relative format future');
+  equal(Date.create('1 month from now', 'en').relative(),  'in 1 Monat',   'Date#create | German | relative format future');
+  equal(Date.create('1 year from now', 'en').relative(),   'in 1 Jahr',     'Date#create | German | relative format future');
+
+  equal(Date.create('5 second from now', 'en').relative(), 'in 5 Sekunden', 'Date#create | German | relative format future');
+  equal(Date.create('5 minutes from now', 'en').relative(),'in 5 Minuten',  'Date#create | German | relative format future');
+  equal(Date.create('5 hour from now', 'en').relative(),   'in 5 Stunden',     'Date#create | German | relative format future');
+  equal(Date.create('5 day from now', 'en').relative(),    'in 5 Tagen',    'Date#create | German | relative format future');
+  equal(Date.create('5 week from now', 'en').relative(),   'in 1 Monat',  'Date#create | German | relative format future');
+  equal(Date.create('5 month from now', 'en').relative(),  'in 5 Monaten',   'Date#create | German | relative format future');
+  equal(Date.create('5 year from now', 'en').relative(),   'in 5 Jahren',     'Date#create | German | relative format future');
+
+  dateEqual(Date.create('3:45 15. Mai 2011'), new Date(2011, 4, 15, 3, 45), 'Date#create | time first format');
 
 });
