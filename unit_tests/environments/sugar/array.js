@@ -574,8 +574,6 @@ test('Array', function () {
   equal([null, null].findAll(null, 1, true), [null, null], 'Array#findAll | looping | null from index 1');
 
 
-
-
   // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
   arr = [{name:'john',age:10,food:'sushi'},{name:'randy',age:23,food:'natto'},{name:'karen',age:32,food:'salad'}];
   arr = [1,2,3,4,5,6,7,8,9];
@@ -2378,6 +2376,42 @@ test('Array', function () {
   }
 
   equal([aObj].union([bObj]).length, 1, 'Array#union | Properties may not be in the same order.');
+
+
+  // Issue #157 Ensure that instances can be subject to fuzzy matches despite not being "objects"
+
+  function Foo(a) {
+    this.a = a;
+  }
+
+  var one   = new Foo('one');
+  var two   = new Foo('two');
+  var three = new Foo('three');
+  var four  = new Foo(new Date(2001, 3, 15));
+
+  equal([one, two, three, four].findAll({ a: 'one' }), [one], 'Array#findAll | matches class instances | object with string');
+  equal([one, two, three, four].findAll({ a: /t/ }), [two, three], 'Array#findAll | matches class instances | object with regex');
+  equal([one, two, three, four].findAll('one'), [], 'Array#findAll | matches class instances | string');
+  equal([one, two, three, four].findAll(/t/), [], 'Array#findAll | matches class instances | string');
+  equal([one, two, three, four].findAll(true), [], 'Array#findAll | matches class instances | boolean');
+  equal([one, two, three, four].findAll(new Date()), [], 'Array#findAll | matches class instances | now');
+  equal([one, two, three, four].findAll(new Date(2001, 3, 15)), [], 'Array#findAll | matches class instances | correct date');
+  equal([one, two, three, four].findAll(null), [], 'Array#findAll | matches class instances | null');
+  equal([one, two, three, four].findAll(undefined), [], 'Array#findAll | matches class instances | undefined');
+  equal([one, two, three, four].findAll({ a: 'twof' }), [], 'Array#findAll | matches class instances | nonexistent string');
+  equal([one, two, three, four].findAll({ b: 'one' }), [], 'Array#findAll | matches class instances | nonexistent property');
+  equal([one, two, three, four].findAll({}), [], 'Array#findAll | matches class instances | empty object');
+  equal([one, two, three, four].findAll({ a: new Date(2001, 3, 15) }), [four], 'Array#findAll | matches class instances | object with correct date');
+  equal([one, two, three, four].findAll({ b: new Date(2001, 3, 15) }), [], 'Array#findAll | matches class instances | object with correct date but wrong property');
+  equal([one, two, three, four].findAll({ a: new Date(2001, 3, 16) }), [], 'Array#findAll | matches class instances | object with incorrect date');
+  equal([one, two, three, four].findAll({ a: new Date(2001, 3, 15, 0, 0, 0, 1) }), [], 'Array#findAll | matches class instances | object with date off by 1ms');
+
+  var five = new Foo(one);
+
+  equal([five].findAll({ a: 'one' }), [], 'Array#findAll | nested instances | object with string');
+  equal([five].findAll({ a: { a: 'one' } }), [five], 'Array#findAll | nested instances | object with double nested string');
+  equal([five].findAll({ a: { a: 'two' } }), [], 'Array#findAll | nested instances | object with double nested string but incorrect');
+
 
 });
 

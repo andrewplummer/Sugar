@@ -77,6 +77,8 @@ test('String', function () {
     equal(typeof atob, 'undefined', 'atob global does not exist in node');
   }
 
+  equal('L2hvd2FyZHNmaXJld29ya3MvYXBpL29yZGVyLzc1TU0lMjBNSVg='.decodeBase64(), '/howardsfireworks/api/order/75MM%20MIX', 'String#decodeBase64 | %20')
+
   equal('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='.decodeBase64(), 'This webpage is not available', 'String#decodeBase64 | webpage');
   equal('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ=='.decodeBase64(), 'I grow, I prosper; Now, gods, stand up for bastards!', 'String#decodeBase64 | gods');
 
@@ -98,6 +100,15 @@ test('String', function () {
   equal(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', 'String#capitalize | all | preserves whitespace', { prototype: ' what a shame of a title    ' });
   equal(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', 'String#capitalize | all | preserves new lines', { prototype: ' what a shame of\n a title    ' });
 
+  equal('reuben-sandwich'.capitalize(true), 'Reuben-Sandwich', 'String#capitalize | all | hyphen');
+  equal('reuben,sandwich'.capitalize(true), 'Reuben,Sandwich', 'String#capitalize | all | comma');
+  equal('reuben;sandwich'.capitalize(true), 'Reuben;Sandwich', 'String#capitalize | all | semicolon');
+  equal('reuben.sandwich'.capitalize(true), 'Reuben.Sandwich', 'String#capitalize | all | period');
+  equal('reuben_sandwich'.capitalize(true), 'Reuben_Sandwich', 'String#capitalize | all | underscore');
+  equal('фыва-йцук'.capitalize(true), 'Фыва-Йцук', 'String#capitalize | all | Russian with hyphens');
+  equal('фыва,йцук'.capitalize(true), 'Фыва,Йцук', 'String#capitalize | all | Russian with comma');
+  equal('фыва;йцук'.capitalize(true), 'Фыва;Йцук', 'String#capitalize | all | Russian with semicolon');
+  equal('фыва7йцук'.capitalize(true), 'Фыва7Йцук', 'String#capitalize | all | Russian with 7');
 
   equal('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
   equal(' wasabi \n'.chars(), [' ','w','a','s','a','b','i',' ','\n'], 'String#chars | should not trim whitespace');
@@ -1260,6 +1271,11 @@ test('String', function () {
 
   equal('Hello, {1}'.assign(''), 'Hello, ', 'String#assign | empty string as argument');
   equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
+  equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
+
+  equal('{{1} {2}}'.assign(5,6), '{5 6}', 'String#assign | nested braces');
+  equal('{one {1} {2} two}'.assign(5,6), '{one 5 6 two}', 'String#assign | nested braces with strings outside');
+
 
 
 });
