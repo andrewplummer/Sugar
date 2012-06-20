@@ -1,6 +1,7 @@
 test('Dates | Portuguese', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('pt');
 
 
@@ -12,6 +13,8 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('maio'), new Date(now.getFullYear(), 4), 'Date#create | Portuguese | month');
   dateEqual(Date.create('segunda-feira'), getDateWithWeekdayAndOffset(1), 'Date#create | Portuguese | Monday');
 
+  dateEqual(Date.create('5 de janeiro de 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | Portuguese | 2012-01-05 3:45');
+  dateEqual(Date.create('5 de janeiro de 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | Portuguese | 2012-01-05 3:45pm');
 
   dateEqual(Date.create('um milisegundo atrás'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Portuguese | one millisecond ago');
   dateEqual(Date.create('um segundo atrás'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Portuguese | one second ago');
@@ -49,6 +52,8 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('próximo segunda-feira'), getDateWithWeekdayAndOffset(1,  7), 'Date#create | Portuguese | next monday');
   dateEqual(Date.create('passada segunda-feira'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Portuguese | last monday');
 
+  dateEqual(Date.create('passada segunda-feira 3:45'), getDateWithWeekdayAndOffset(1, -7).set({ hour: 3, minute: 45 }, true), 'Date#create | Portuguese | last monday 3:45');
+
   // no accents
   dateEqual(Date.create('daqui a 5 meses'), getRelativeDate(null, 5), 'Date#create | Portuguese | five months from now | meses');
   dateEqual(Date.create('mes passado'), getRelativeDate(null, -1), 'Date#create | Portuguese | last month');
@@ -58,40 +63,48 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('amanha'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Portuguese | tomorrow');
 
 
-  equal(Date.create('1890-04-07').format(), '7 de abril de 1890', 'Date#create | Portuguese | standard format');
-  equal(Date.create('2011-08-25').format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Portuguese | format');
+  equal(then.format(), '25 de agosto de 2011 15:45', 'Date#create | Portuguese | standard format');
+  equal(then.format('{dd} de {month} {yyyy}'), '25 de agosto 2011', 'Date#create | Portuguese | format');
 
+  // Format shortcuts
+  equal(then.format('long'), '25 de agosto de 2011 15:45', 'Date#create | Portuguese | long format');
+  equal(then.long(), '25 de agosto de 2011 15:45', 'Date#create | Portuguese | long shortcut');
+  equal(then.format('full'), 'Quinta-feira, 25 de agosto de 2011 15:45:50', 'Date#create | Portuguese | full format');
+  equal(then.full(), 'Quinta-feira, 25 de agosto de 2011 15:45:50', 'Date#create | Portuguese | full shortcut');
+  equal(then.format('short'), '25 de agosto de 2011', 'Date#create | Portuguese | short format');
+  equal(then.short(), '25 de agosto de 2011', 'Date#create | Portuguese | short shortcut');
+  equal(then.format('wow {time}'), 'wow 15:45:50', 'Date#create | Portuguese | custom time format');
 
-  equal(Date.create('1 second ago').relative(), '1 segundo atrás', 'Date#create | Portuguese | relative format past');
-  equal(Date.create('1 minute ago').relative(), '1 minuto atrás',  'Date#create | Portuguese | relative format past');
-  equal(Date.create('1 hour ago').relative(),   '1 hora atrás',     'Date#create | Portuguese | relative format past');
-  equal(Date.create('1 day ago').relative(),    '1 dia atrás',    'Date#create | Portuguese | relative format past');
-  equal(Date.create('1 week ago').relative(),   '1 semana atrás',  'Date#create | Portuguese | relative format past');
-  equal(Date.create('1 month ago').relative(),  '1 mês atrás',   'Date#create | Portuguese | relative format past');
-  equal(Date.create('1 year ago').relative(),   '1 ano atrás',     'Date#create | Portuguese | relative format past');
+  equal(Date.create('1 second ago', 'en').relative(), '1 segundo atrás', 'Date#create | Portuguese | relative format past');
+  equal(Date.create('1 minute ago', 'en').relative(), '1 minuto atrás',  'Date#create | Portuguese | relative format past');
+  equal(Date.create('1 hour ago', 'en').relative(),   '1 hora atrás',     'Date#create | Portuguese | relative format past');
+  equal(Date.create('1 day ago', 'en').relative(),    '1 dia atrás',    'Date#create | Portuguese | relative format past');
+  equal(Date.create('1 week ago', 'en').relative(),   '1 semana atrás',  'Date#create | Portuguese | relative format past');
+  equal(Date.create('1 month ago', 'en').relative(),  '1 mês atrás',   'Date#create | Portuguese | relative format past');
+  equal(Date.create('1 year ago', 'en').relative(),   '1 ano atrás',     'Date#create | Portuguese | relative format past');
 
-  equal(Date.create('2 seconds ago').relative(), '2 segundos atrás', 'Date#create | Portuguese | relative format past');
-  equal(Date.create('2 minutes ago').relative(), '2 minutos atrás',  'Date#create | Portuguese | relative format past');
-  equal(Date.create('2 hours ago').relative(),   '2 horas atrás',     'Date#create | Portuguese | relative format past');
-  equal(Date.create('2 days ago').relative(),    '2 dias atrás',    'Date#create | Portuguese | relative format past');
-  equal(Date.create('2 weeks ago').relative(),   '2 semanas atrás',  'Date#create | Portuguese | relative format past');
-  equal(Date.create('2 months ago').relative(),  '2 mêses atrás',   'Date#create | Portuguese | relative format past');
-  equal(Date.create('2 years ago').relative(),   '2 anos atrás',     'Date#create | Portuguese | relative format past');
+  equal(Date.create('2 seconds ago', 'en').relative(), '2 segundos atrás', 'Date#create | Portuguese | relative format past');
+  equal(Date.create('2 minutes ago', 'en').relative(), '2 minutos atrás',  'Date#create | Portuguese | relative format past');
+  equal(Date.create('2 hours ago', 'en').relative(),   '2 horas atrás',     'Date#create | Portuguese | relative format past');
+  equal(Date.create('2 days ago', 'en').relative(),    '2 dias atrás',    'Date#create | Portuguese | relative format past');
+  equal(Date.create('2 weeks ago', 'en').relative(),   '2 semanas atrás',  'Date#create | Portuguese | relative format past');
+  equal(Date.create('2 months ago', 'en').relative(),  '2 mêses atrás',   'Date#create | Portuguese | relative format past');
+  equal(Date.create('2 years ago', 'en').relative(),   '2 anos atrás',     'Date#create | Portuguese | relative format past');
 
-  equal(Date.create('1 second from now').relative(), 'daqui a 1 segundo', 'Date#create | Portuguese | relative format future');
-  equal(Date.create('1 minute from now').relative(), 'daqui a 1 minuto',  'Date#create | Portuguese | relative format future');
-  equal(Date.create('1 hour from now').relative(),   'daqui a 1 hora',     'Date#create | Portuguese | relative format future');
-  equal(Date.create('1 day from now').relative(),    'daqui a 1 dia',    'Date#create | Portuguese | relative format future');
-  equal(Date.create('1 week from now').relative(),   'daqui a 1 semana',  'Date#create | Portuguese | relative format future');
-  equal(Date.create('1 month from now').relative(),  'daqui a 1 mês',   'Date#create | Portuguese | relative format future');
-  equal(Date.create('1 year from now').relative(),   'daqui a 1 ano',     'Date#create | Portuguese | relative format future');
+  equal(Date.create('1 second from now', 'en').relative(), 'daqui a 1 segundo', 'Date#create | Portuguese | relative format future');
+  equal(Date.create('1 minute from now', 'en').relative(), 'daqui a 1 minuto',  'Date#create | Portuguese | relative format future');
+  equal(Date.create('1 hour from now', 'en').relative(),   'daqui a 1 hora',     'Date#create | Portuguese | relative format future');
+  equal(Date.create('1 day from now', 'en').relative(),    'daqui a 1 dia',    'Date#create | Portuguese | relative format future');
+  equal(Date.create('1 week from now', 'en').relative(),   'daqui a 1 semana',  'Date#create | Portuguese | relative format future');
+  equal(Date.create('1 month from now', 'en').relative(),  'daqui a 1 mês',   'Date#create | Portuguese | relative format future');
+  equal(Date.create('1 year from now', 'en').relative(),   'daqui a 1 ano',     'Date#create | Portuguese | relative format future');
 
-  equal(Date.create('5 second from now').relative(), 'daqui a 5 segundos', 'Date#create | Portuguese | relative format future');
-  equal(Date.create('5 minute from now').relative(), 'daqui a 5 minutos',  'Date#create | Portuguese | relative format future');
-  equal(Date.create('5 hour from now').relative(),   'daqui a 5 horas',     'Date#create | Portuguese | relative format future');
-  equal(Date.create('5 day from now').relative(),    'daqui a 5 dias',    'Date#create | Portuguese | relative format future');
-  equal(Date.create('5 week from now').relative(),   'daqui a 1 mês',  'Date#create | Portuguese | relative format future');
-  equal(Date.create('5 month from now').relative(),  'daqui a 5 mêses',   'Date#create | Portuguese | relative format future');
-  equal(Date.create('5 year from now').relative(),   'daqui a 5 anos',     'Date#create | Portuguese | relative format future');
+  equal(Date.create('5 second from now', 'en').relative(), 'daqui a 5 segundos', 'Date#create | Portuguese | relative format future');
+  equal(Date.create('5 minute from now', 'en').relative(), 'daqui a 5 minutos',  'Date#create | Portuguese | relative format future');
+  equal(Date.create('5 hour from now', 'en').relative(),   'daqui a 5 horas',     'Date#create | Portuguese | relative format future');
+  equal(Date.create('5 day from now', 'en').relative(),    'daqui a 5 dias',    'Date#create | Portuguese | relative format future');
+  equal(Date.create('5 week from now', 'en').relative(),   'daqui a 1 mês',  'Date#create | Portuguese | relative format future');
+  equal(Date.create('5 month from now', 'en').relative(),  'daqui a 5 mêses',   'Date#create | Portuguese | relative format future');
+  equal(Date.create('5 year from now', 'en').relative(),   'daqui a 5 anos',     'Date#create | Portuguese | relative format future');
 
 });

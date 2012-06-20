@@ -1,8 +1,8 @@
 test('Dates | Simplified Chinese', function () {
 
   var now = new Date();
+  var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('zh-CN');
-
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
   dateEqual(Date.create('2011年5月'), new Date(2011, 4), 'Date#create | Simplified Chinese | year and month');
@@ -16,6 +16,10 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('二十五号'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Simplified Chinese | 号 should be understood as well');
   dateEqual(Date.create('九月二十五号'), new Date(now.getFullYear(), 8, 25), 'Date#create | Simplified Chinese | 9.25');
 
+  dateEqual(Date.create('2011年5月15日 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Simplified Chinese date 3:45');
+  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Simplified Chinese date 3:45pm');
+  dateEqual(Date.create('2011年5月15日 3点45分钟'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Simplified Chinese date 3:45pm kanji');
+  dateEqual(Date.create('2011年5月15日 下午3点45分钟'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Simplified Chinese date 3:45pm kanji afternoon');
 
   dateEqual(Date.create('一毫秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Simplified Chinese | one millisecond ago');
   dateEqual(Date.create('一秒钟前'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Simplified Chinese | one second ago');
@@ -61,39 +65,99 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('这周六'), getDateWithWeekdayAndOffset(6), 'Date#create | Simplified Chinese | this Saturday');
   dateEqual(Date.create('下周五'), getDateWithWeekdayAndOffset(5, 7), 'Date#create | Simplified Chinese | Next friday');
 
-  equal(Date.create('2011-08-25').format(), '2011年8月25日', 'Date#create | Simplified Chinese | standard format');
-  equal(Date.create('2011-08-25').format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
+  equal(then.format(), '2011年8月25日 下午3:45', 'Date#create | Simplified Chinese | standard format');
+  equal(then.format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
 
-  equal(Date.create('1 second ago').relative(), '1秒钟前', 'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('1 minute ago').relative(), '1分钟前',  'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('1 hour ago').relative(),   '1小时前',     'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('1 day ago').relative(),    '1天前',    'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('1 week ago').relative(),   '1个星期前',  'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('1 month ago').relative(),  '1个月前',   'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('1 year ago').relative(),   '1年前',     'Date#create | Simplified Chinese | relative format past');
+  // Format shortcuts
+  equal(then.format('long'), '2011年8月25日 下午3:45', 'Date#create | Traditional Chinese | long format');
+  equal(then.long(), '2011年8月25日 下午3:45', 'Date#create | Traditional Chinese | long shortcut');
+  equal(then.format('full'), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Traditional Chinese | full format');
+  equal(then.full(), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Traditional Chinese | full format');
+  equal(then.format('short'), '2011年8月25日', 'Date#create | Traditional Chinese | short format');
+  equal(then.short(), '2011年8月25日', 'Date#create | Traditional Chinese | short format');
+  equal(then.format('lo mein {time}'), 'lo mein 下午3:45:50', 'Date#create | Traditional Chinese | custom time format');
 
-  equal(Date.create('2 seconds ago').relative(), '2秒钟前', 'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('2 minutes ago').relative(), '2分钟前',  'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('2 hours ago').relative(),   '2小时前',     'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('2 days ago').relative(),    '2天前',    'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('2 weeks ago').relative(),   '2个星期前',  'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('2 months ago').relative(),  '2个月前',   'Date#create | Simplified Chinese | relative format past');
-  equal(Date.create('2 years ago').relative(),   '2年前',     'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 second ago', 'en').relative(), '1秒钟前', 'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 minute ago', 'en').relative(), '1分钟前',  'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 hour ago', 'en').relative(),   '1小时前',     'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 day ago', 'en').relative(),    '1天前',    'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 week ago', 'en').relative(),   '1个星期前',  'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 month ago', 'en').relative(),  '1个月前',   'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('1 year ago', 'en').relative(),   '1年前',     'Date#create | Simplified Chinese | relative format past');
 
-  equal(Date.create('1 second from now').relative(), '1秒钟后', 'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('1 minute from now').relative(), '1分钟后',  'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('1 hour from now').relative(),   '1小时后',     'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('1 day from now').relative(),    '1天后',    'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('1 week from now').relative(),   '1个星期后',  'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('1 month from now').relative(),  '1个月后',   'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('1 year from now').relative(),   '1年后',     'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('2 seconds ago', 'en').relative(), '2秒钟前', 'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 minutes ago', 'en').relative(), '2分钟前',  'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 hours ago', 'en').relative(),   '2小时前',     'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 days ago', 'en').relative(),    '2天前',    'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 weeks ago', 'en').relative(),   '2个星期前',  'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 months ago', 'en').relative(),  '2个月前',   'Date#create | Simplified Chinese | relative format past');
+  equal(Date.create('2 years ago', 'en').relative(),   '2年前',     'Date#create | Simplified Chinese | relative format past');
 
-  equal(Date.create('5 second from now').relative(), '5秒钟后', 'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('5 minute from now').relative(), '5分钟后',  'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('5 hour from now').relative(),   '5小时后',     'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('5 day from now').relative(),    '5天后',    'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('5 week from now').relative(),   '1个月后',  'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('5 month from now').relative(),  '5个月后',   'Date#create | Simplified Chinese | relative format future');
-  equal(Date.create('5 year from now').relative(),   '5年后',     'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 second from now', 'en').relative(), '1秒钟后', 'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 minute from now', 'en').relative(), '1分钟后',  'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 hour from now', 'en').relative(),   '1小时后',     'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 day from now', 'en').relative(),    '1天后',    'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 week from now', 'en').relative(),   '1个星期后',  'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 month from now', 'en').relative(),  '1个月后',   'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('1 year from now', 'en').relative(),   '1年后',     'Date#create | Simplified Chinese | relative format future');
+
+  equal(Date.create('5 second from now', 'en').relative(), '5秒钟后', 'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 minute from now', 'en').relative(), '5分钟后',  'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 hour from now', 'en').relative(),   '5小时后',     'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 day from now', 'en').relative(),    '5天后',    'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 week from now', 'en').relative(),   '1个月后',  'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 month from now', 'en').relative(),  '5个月后',   'Date#create | Simplified Chinese | relative format future');
+  equal(Date.create('5 year from now', 'en').relative(),   '5年后',     'Date#create | Simplified Chinese | relative format future');
+
+
+  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | Simplified Chinese | pm still works');
+
+  dateEqual(Date.create('2011年5月15日 3:45:59'), new Date(2011, 4, 15, 3, 45, 59), 'Date#create | Simplified Chinese | full date with time');
+  dateEqual(Date.create('2011年5月15日 3点45分'), new Date(2011, 4, 15, 3, 45, 0), 'Date#create | Simplified Chinese | full date with kanji markers');
+
+  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分'), new Date(2008, 10, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji');
+  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分钟'), new Date(2008, 10, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji and zhong');
+
+  dateEqual(Date.create('二〇〇八年十一月十四日 三点四十五分钟'), new Date(2008, 10, 14, 3, 45), 'Date#create | Simplified Chinese | full date with full kanji and zhong');
+
+
+
+  // Kanji conversion tests
+
+  dateEqual(Date.create('二〇一二年五月'), new Date(2012, 4), 'Date#create | Simplified Chinese | 二〇一二年五月');
+  dateEqual(Date.create('二〇一二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 二〇一二年');
+  dateEqual(Date.create('五月'), new Date(now.getFullYear(), 4), 'Date#create | Simplified Chinese | 五月');
+  dateEqual(Date.create('十二月'), new Date(2012, 11), 'Date#create | Simplified Chinese | 十二年');
+  dateEqual(Date.create('十一月'), new Date(2012, 10), 'Date#create | Simplified Chinese | 十一年');
+  dateEqual(Date.create('十月'), new Date(2012, 9), 'Date#create | Simplified Chinese | 十年');
+  dateEqual(Date.create('二〇一二年'), new Date(2012, 0), 'Date#create | Simplified Chinese | 二〇一二年');
+
+  dateEqual(Date.create('二千二百二十二年'), new Date(2222, 0), 'Date#create | Simplified Chinese | 二千二百二十二年');
+  dateEqual(Date.create('二千二十二年'), new Date(2022, 0), 'Date#create | Simplified Chinese | 二千二十二年');
+  dateEqual(Date.create('二千二年'), new Date(2002, 0), 'Date#create | Simplified Chinese | 二千二年');
+  dateEqual(Date.create('二千年'), new Date(2000, 0), 'Date#create | Simplified Chinese | 二千年');
+  dateEqual(Date.create('千年'), new Date(1000, 0), 'Date#create | Simplified Chinese | 千年');
+
+  dateEqual(Date.create('二千二百二十年'), new Date(2220, 0), 'Date#create | Simplified Chinese | 二千二百二十年');
+  dateEqual(Date.create('二千二百年'), new Date(2200, 0), 'Date#create | Simplified Chinese | 二千二百年');
+  dateEqual(Date.create('二千二年'), new Date(2002, 0), 'Date#create | Simplified Chinese | 二千二年');
+
+  dateEqual(Date.create('千二百二十二年'), new Date(1222, 0), 'Date#create | Simplified Chinese | 千二百二十二年');
+  dateEqual(Date.create('千二百二十二年'), new Date(1222, 0), 'Date#create | Simplified Chinese | 千二百二十二年');
+  dateEqual(Date.create('千百二十二年'), new Date(1122, 0), 'Date#create | Simplified Chinese | 千百二十二年');
+  dateEqual(Date.create('千二十二年'), new Date(1022, 0), 'Date#create | Simplified Chinese | 千二十二年');
+  dateEqual(Date.create('千十二年'), new Date(1012, 0), 'Date#create | Simplified Chinese | 千十二年');
+
+  dateEqual(Date.create('二〇二一年'), new Date(2021, 0), 'Date#create | Simplified Chinese | 二〇二一年');
+  dateEqual(Date.create('二三二一年'), new Date(2321, 0), 'Date#create | Simplified Chinese | 二三二一年');
+  dateEqual(Date.create('四三二一年'), new Date(4321, 0), 'Date#create | Simplified Chinese | 四三二一年');
+
+  dateEqual(Date.create('1/2/13'), new Date(2013, 0, 2), 'Date#create | Simplified Chinese | uses American style ambiguity');
+
+  // Issue #148 various Chinese dates
+
+  dateEqual(Date.create('星期日 2:00pm'), getDateWithWeekdayAndOffset(0).set({ hour: 14 }), 'Date#create | Simplified Chinese | 星期日 2:00pm');
+  dateEqual(Date.create('12/31/2012'), new Date(2012, 11, 31), 'Date#create | Simplified Chinese | 12/31/2012');
 
 });
+

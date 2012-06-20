@@ -14,6 +14,8 @@ test('Dates | Swedish', function () {
   dateEqual(Date.create('maj'), new Date(now.getFullYear(), 4), 'Date#create | Swedish | month');
   dateEqual(Date.create('måndag'), getDateWithWeekdayAndOffset(1), 'Date#create | Swedish | Monday');
 
+  dateEqual(Date.create('15 maj 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Swedish date 3:45');
+  dateEqual(Date.create('15 maj 2011 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Swedish date 3:45pm');
 
   dateEqual(Date.create('för en millisekund sedan'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Swedish | one millisecond ago');
   dateEqual(Date.create('för en sekund sedan'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Swedish | one second ago');
@@ -94,7 +96,7 @@ test('Dates | Swedish', function () {
   dateEqual(Date.create('nasta ar'), getRelativeDate(1), 'Date#create | Swedish | Next year');
 
 
-  equal(Date.create('2001-06-14').format(), 'den 14 juni 2001', 'Date#create | Swedish | format');
+  equal(Date.create('2001-06-14 3:45pm').format(), 'den 14 juni 2001, 15:45', 'Date#create | Swedish | format');
   equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 augusti 2011', 'Date#create | Swedish | format');
 
   equal(Date.create('1 second ago').relative(), '1 sekund sedan', 'Date#create | Swedish | relative format past');
