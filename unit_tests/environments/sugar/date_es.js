@@ -46,6 +46,8 @@ test('Dates | Spanish', function () {
 
   dateEqual(Date.create('proximo lunes'), Date.create('next monday'), 'Date#create | Spanish | next monday no accent');
   dateEqual(Date.create('próximo lunes'), Date.create('next monday'), 'Date#create | Spanish | next monday accent');
+  dateEqual(Date.create('pasado lunes'), Date.create('last monday'), 'Date#create | Spanish | last monday front');
+  dateEqual(Date.create('lunes pasado'), Date.create('last monday'), 'Date#create | Spanish | last monday back');
 
   dateEqual(Date.create('el año pasado'), getRelativeDate(-1), 'Date#create | Spanish | Last year');
   dateEqual(Date.create('el próximo año'), getRelativeDate(1), 'Date#create | Spanish | Next year');
