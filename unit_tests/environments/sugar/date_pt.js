@@ -46,6 +46,9 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('ano passado'), getRelativeDate(-1), 'Date#create | Portuguese | Last year');
   dateEqual(Date.create('próximo ano'), getRelativeDate(1), 'Date#create | Portuguese | Next year');
 
+  dateEqual(Date.create('próximo segunda-feira'), getDateWithWeekdayAndOffset(1,  7), 'Date#create | Portuguese | next monday');
+  dateEqual(Date.create('passada segunda-feira'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | Portuguese | last monday');
+
   // no accents
   dateEqual(Date.create('daqui a 5 meses'), getRelativeDate(null, 5), 'Date#create | Portuguese | five months from now | meses');
   dateEqual(Date.create('mes passado'), getRelativeDate(null, -1), 'Date#create | Portuguese | last month');

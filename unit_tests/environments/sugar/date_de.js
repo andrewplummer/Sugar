@@ -79,6 +79,10 @@ test('Dates | German', function () {
   dateEqual(Date.create('nächstes Jahr'), getRelativeDate(1), 'Date#create | German | Next year');
 
 
+  dateEqual(Date.create('kommenden Montag'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | German | kommenden Montag');
+  dateEqual(Date.create('nächster Montag'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | German | next monday');
+  dateEqual(Date.create('letztes Montag'), getDateWithWeekdayAndOffset(1, -7), 'Date#create | German | last monday');
+
   // no accents
   dateEqual(Date.create('ubermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German (no accents) | day after tomorrow');
   dateEqual(Date.create('naechster Monat'), getRelativeDate(null, 1), 'Date#create | German (no accents) | Next month nachster');
