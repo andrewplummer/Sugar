@@ -11,10 +11,10 @@ test('Date', function () {
 
   var day, d, dst, o;
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
-  var staticJanDateNumber = 1000 * 60 * 60 * 24 * 14975; // 2011-01-01 00:00:00 
   var staticSummerTimezoneOffset = new Date(2011, 8, 1).getTimezoneOffset();
   var now = new Date();
   var thisYear = now.getFullYear();
+
 
 
   // Invalid date
@@ -25,9 +25,12 @@ test('Date', function () {
   equal(Date.create('a fridge too far').isValid(), false, 'Date#isValid | Date#create invalid');
 
 
-  equal(new Date('1998').isUTC(), staticWinterTimezoneOffset === 0 ? true : false, 'Date#isUTC | UTC is true if the current timezone has no offset');
-  // UTC is not if there is a timezone offset, even if the time is reset to the intended utc equivalent, as timezones can never be changed
-  equal(new Date('1998').addMinutes(staticWinterTimezoneOffset).isUTC(), staticWinterTimezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
+  d = new Date(1998, 0);
+
+  equal(d.isUTC(), d.getTimezoneOffset() === 0, 'Date#isUTC | UTC is true if the current timezone has no offset');
+
+  // UTC is still false even if the time is reset to the intended utc equivalent, as timezones can never be changed
+  equal(d.clone().addMinutes(d.getTimezoneOffset()).isUTC(), d.getTimezoneOffset() === 0, 'Date#isUTC | UTC cannot be forced');
 
   dateEqual(Date.create(), new Date(), 'Date#create | empty');
 
@@ -35,11 +38,10 @@ test('Date', function () {
 
   // All date modifications are clones
 
-  d = Date.create('1998');
+  d.toUTC();
 
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC().toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | cannot be chained');
+  dateEqual(d, new Date(1998, 0), 'Date#toUTC | should not affect original date');
+  dateEqual(d.toUTC().toUTC(), d.toUTC(), 'Date#toUTC | cannot be chained');
   equal(Date.create().toUTC().isUTC(), true, 'Date#isUTC | can be set by toUTC');
 
 
@@ -70,7 +72,17 @@ test('Date', function () {
 
   dateEqual(new Date(new Date(2008, 6, 22)), new Date(2008, 6, 22), 'Date | date accepts itself as a constructor');
 
-  dateEqual(Date.create(staticJanDateNumber), new Date(2011, 0, 1, 0, -staticWinterTimezoneOffset) , 'Date#create | Accepts numbers');
+
+  var timestamp = 1294012800000;
+  d = Date.create(timestamp); // 2011-01-03 00:00:00 
+
+  equal(d.getFullYear(), 2011, 'Date#create | Accepts numbers | 2011');
+  equal(d.getMonth(), 0, 'Date#create | Accepts numbers | January');
+  equal(d.getDate(), Math.floor(3 - (d.getTimezoneOffset() / 60 / 24)), 'Date#create | Accepts numbers | January');
+
+  equal(d.is(timestamp), true, 'Date#is | Accepts numbers');
+
+
   dateEqual(Date.create('1999'), new Date(1999, 0), 'Date#create | Just the year');
 
   dateEqual(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
@@ -548,7 +560,7 @@ test('Date', function () {
   equal(d.getMonth(), 7, 'Date#set | reset utc | month');
   equal(d.getDate(), d.getTimezoneOffset() > 240 ? 24 : 25, 'Date#set | reset utc | date');
   equal(d.getHours(), getHours(4 - (d.getTimezoneOffset() / 60)), 'Date#set | reset utc | hours');
-  equal(d.getMinutes(), d.getTimezoneOffset() % 60, 'Date#set | reset utc | minutes');
+  equal(d.getMinutes(), Math.abs(d.getTimezoneOffset() % 60), 'Date#set | reset utc | minutes');
   equal(d.getSeconds(), 0, 'Date#set | reset utc | seconds');
   equal(d.getMilliseconds(), 0, 'Date#set | reset utc | milliseconds');
 
@@ -1143,8 +1155,6 @@ test('Date', function () {
   equal(getDateWithWeekdayAndOffset(0).is('the beginning of the week'), true, 'Date#is | the beginning of the week');
   equal(getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999).is('the end of the week'), true, 'Date#is | the end of the week');
 
-  equal(new Date(2011, 0, 1, 0, -staticWinterTimezoneOffset).is(staticJanDateNumber), true, 'Date#is | Accepts numbers');
-
 
 
   equal(new Date(1970,4,15,22,3,1,432).is(new Date(1970,4,15,22,3,1,431)), false, 'Date#is | accuracy | accurate to millisecond by default | 431');
@@ -1273,7 +1283,7 @@ test('Date', function () {
   d = new Date(2010,7,5,13,45,2,542);
 
   equal(d.getWeek(), 31, 'Date#getWeek | basic August 5th, 2010');
-  equal(d.getUTCWeek(), staticSummerTimezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
+  equal(d.getUTCWeek(), d.getTimezoneOffset() > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
   equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
   equal(new Date(2010, 0, 1).getUTCWeek(), 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
@@ -1292,7 +1302,6 @@ test('Date', function () {
 
 
   d = new Date(2010,7,5,13,45,2,542);
-  dst = (d.getTimezoneOffset() - d.clone().set({ month: 0 }).getTimezoneOffset()) * 60 * 1000;
 
   equal(new Date(2010,7,5,13,45,2,543).millisecondsSince(d), 1, 'Date#millisecondsSince | 1 milliseconds since');
   equal(new Date(2010,7,5,13,45,2,541).millisecondsUntil(d), 1, 'Date#millisecondsUntil | 1 milliseconds until');
@@ -1348,6 +1357,7 @@ test('Date', function () {
   equal(new Date(2011,7,5,13,45,2,542).yearsFromNow(d), 1, 'Date#yearsFromNow | FromNow alias | years');
   equal(new Date(2009,7,5,13,45,2,542).yearsAgo(d), 1, 'Date#yearsAgo | Ago alias | years');
 
+  dst = (d.getTimezoneOffset() - new Date(2011, 11, 31).getTimezoneOffset()) * 60 * 1000;
 
   // Works with Date.create?
   equal(d.millisecondsSince('the last day of 2011'), -44273697458 + dst, 'Date#millisecondsSince | milliseconds since the last day of 2011');
