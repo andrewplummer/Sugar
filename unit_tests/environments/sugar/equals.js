@@ -70,6 +70,7 @@ test('Equality', function() {
 
   // Dates.
   equal(Object.equal(new Date(2009, 9, 25), new Date(2009, 9, 25)), true, "Date objects referencing identical times are equal");
+  equal(Object.equal(new Date(2009, 9, 25), new Date(2009, 9, 25, 0, 0, 0, 1)), false, "Date objects 1ms apart");
   equal(Object.equal(new Date(2009, 9, 25), new Date(2009, 11, 13)), false, "Date objects referencing different times are not equal");
   equal(Object.equal(new Date(2009, 11, 13), {
     getTime: function(){
