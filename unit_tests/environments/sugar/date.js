@@ -9,12 +9,13 @@ test('Date', function () {
     Date.restore('create');
   };
 
-  var day, d, o;
+  var day, d, dst, o;
   var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
-  var staticJanDateNumber = 1000 * 60 * 60 * 24 * 14975; // 2011-01-01 00:00:00 
   var staticSummerTimezoneOffset = new Date(2011, 8, 1).getTimezoneOffset();
   var now = new Date();
   var thisYear = now.getFullYear();
+
+
 
   // Invalid date
   equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
@@ -24,9 +25,12 @@ test('Date', function () {
   equal(Date.create('a fridge too far').isValid(), false, 'Date#isValid | Date#create invalid');
 
 
-  equal(new Date('1998').isUTC(), staticWinterTimezoneOffset === 0 ? true : false, 'Date#isUTC | UTC is true if the current timezone has no offset');
-  // UTC is not if there is a timezone offset, even if the time is reset to the intended utc equivalent, as timezones can never be changed
-  equal(new Date('1998').addMinutes(staticWinterTimezoneOffset).isUTC(), staticWinterTimezoneOffset === 0 ? true : false, 'Date#isUTC | UTC cannot be forced');
+  d = new Date(1998, 0);
+
+  equal(d.isUTC(), d.getTimezoneOffset() === 0, 'Date#isUTC | UTC is true if the current timezone has no offset');
+
+  // UTC is still false even if the time is reset to the intended utc equivalent, as timezones can never be changed
+  equal(d.clone().addMinutes(d.getTimezoneOffset()).isUTC(), d.getTimezoneOffset() === 0, 'Date#isUTC | UTC cannot be forced');
 
   dateEqual(Date.create(), new Date(), 'Date#create | empty');
 
@@ -34,11 +38,10 @@ test('Date', function () {
 
   // All date modifications are clones
 
-  d = Date.create('1998');
+  d.toUTC();
 
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC().toUTC(), Date.create('1998').addMinutes(staticWinterTimezoneOffset).addMilliseconds(), 'Date#toUTC | cannot be chained');
+  dateEqual(d, new Date(1998, 0), 'Date#toUTC | should not affect original date');
+  dateEqual(d.toUTC().toUTC(), d.toUTC(), 'Date#toUTC | cannot be chained');
   equal(Date.create().toUTC().isUTC(), true, 'Date#isUTC | can be set by toUTC');
 
 
@@ -67,12 +70,19 @@ test('Date', function () {
   dateEqual(Date.create({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), new Date(1998,1,23,11,54,32,454), 'Date#create | object | January 23, 1998 11:54:32.454');
 
 
-  // DST Offset is properly set
-  equal(Date.DSTOffset, (new Date(2001, 6, 1).getTimezoneOffset() - new Date(2000, 0, 1).getTimezoneOffset()) * 60 * 1000, 'Date#DSTOffset | is the correct offset');
-
   dateEqual(new Date(new Date(2008, 6, 22)), new Date(2008, 6, 22), 'Date | date accepts itself as a constructor');
 
-  dateEqual(Date.create(staticJanDateNumber), new Date(2011, 0, 1, 0, -staticWinterTimezoneOffset) , 'Date#create | Accepts numbers');
+
+  var timestamp = 1294012800000;
+  d = Date.create(timestamp); // 2011-01-03 00:00:00 
+
+  equal(d.getFullYear(), 2011, 'Date#create | Accepts numbers | 2011');
+  equal(d.getMonth(), 0, 'Date#create | Accepts numbers | January');
+  equal(d.getDate(), Math.floor(3 - (d.getTimezoneOffset() / 60 / 24)), 'Date#create | Accepts numbers | January');
+
+  equal(d.is(timestamp), true, 'Date#is | Accepts numbers');
+
+
   dateEqual(Date.create('1999'), new Date(1999, 0), 'Date#create | Just the year');
 
   dateEqual(Date.create('June'), new Date(thisYear, 5), 'Date#create | Just the month');
@@ -140,6 +150,12 @@ test('Date', function () {
   dateEqual(Date.create('08-05-05', 'en-GB'), new Date(2005, 4, 8), 'Date#create | dd-dd-dd is NOT an ISO8601 format');
 
   dateEqual(Date.create('8/10/85'), new Date(1985, 7, 10), 'Date#create | American format will now revert back');
+
+
+  Date.setLocale('en-GB');
+  dateEqual(Date.create('8/10/85'), new Date(1985, 9, 8), 'Date#create | European style slashes | after global set');
+  Date.setLocale('en');
+  dateEqual(Date.create('8/10/85'), new Date(1985, 7, 10), 'Date#create | European style slashes | before global reset');
 
 
   // Stolen with love from XDate, ability to parse IETF format
@@ -240,34 +256,34 @@ test('Date', function () {
   dateEqual(Date.create('08-25-1978 12:04:57'), new Date(1978, 7, 25, 12, 4, 57), 'Date#create | Date/Time | with seconds');
   dateEqual(Date.create('08-25-1978 12:04:57.322'), new Date(1978, 7, 25, 12, 4, 57, 322), 'Date#create | Date/Time | with milliseconds');
 
-  dateEqual(Date.create('08-25-1978 12pm'), new Date(1978, 7, 25, 12), 'Date#create | Date/Time | with meridian');
-  dateEqual(Date.create('08-25-1978 12:42pm'), new Date(1978, 7, 25, 12, 42), 'Date#create | Date/Time | with minutes and meridian');
-  dateEqual(Date.create('08-25-1978 12:42:32pm'), new Date(1978, 7, 25, 12, 42, 32), 'Date#create | Date/Time | with seconds and meridian');
-  dateEqual(Date.create('08-25-1978 12:42:32.488pm'), new Date(1978, 7, 25, 12, 42, 32, 488), 'Date#create | Date/Time | with seconds and meridian');
+  dateEqual(Date.create('08-25-1978 12pm'), new Date(1978, 7, 25, 12), 'Date#create | Date/Time | with am/pm');
+  dateEqual(Date.create('08-25-1978 12:42pm'), new Date(1978, 7, 25, 12, 42), 'Date#create | Date/Time | with minutes and am/pm');
+  dateEqual(Date.create('08-25-1978 12:42:32pm'), new Date(1978, 7, 25, 12, 42, 32), 'Date#create | Date/Time | with seconds and am/pm');
+  dateEqual(Date.create('08-25-1978 12:42:32.488pm'), new Date(1978, 7, 25, 12, 42, 32, 488), 'Date#create | Date/Time | with seconds and am/pm');
 
   dateEqual(Date.create('08-25-1978 00:00am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'Date#create | Date/Time | with zero am');
   dateEqual(Date.create('08-25-1978 00:00:00am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'Date#create | Date/Time | with seconds and zero am');
   dateEqual(Date.create('08-25-1978 00:00:00.000am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'Date#create | Date/Time | with milliseconds and zero am');
 
-  dateEqual(Date.create('08-25-1978 1pm'), new Date(1978, 7, 25, 13), 'Date#create | Date/Time | 1pm meridian');
-  dateEqual(Date.create('08-25-1978 1:42pm'), new Date(1978, 7, 25, 13, 42), 'Date#create | Date/Time | 1pm minutes and meridian');
-  dateEqual(Date.create('08-25-1978 1:42:32pm'), new Date(1978, 7, 25, 13, 42, 32), 'Date#create | Date/Time | 1pm seconds and meridian');
-  dateEqual(Date.create('08-25-1978 1:42:32.488pm'), new Date(1978, 7, 25, 13, 42, 32, 488), 'Date#create | Date/Time | 1pm seconds and meridian');
+  dateEqual(Date.create('08-25-1978 1pm'), new Date(1978, 7, 25, 13), 'Date#create | Date/Time | 1pm am/pm');
+  dateEqual(Date.create('08-25-1978 1:42pm'), new Date(1978, 7, 25, 13, 42), 'Date#create | Date/Time | 1pm minutes and am/pm');
+  dateEqual(Date.create('08-25-1978 1:42:32pm'), new Date(1978, 7, 25, 13, 42, 32), 'Date#create | Date/Time | 1pm seconds and am/pm');
+  dateEqual(Date.create('08-25-1978 1:42:32.488pm'), new Date(1978, 7, 25, 13, 42, 32, 488), 'Date#create | Date/Time | 1pm seconds and am/pm');
 
-  dateEqual(Date.create('08-25-1978 1am'), new Date(1978, 7, 25, 1), 'Date#create | Date/Time | 1am meridian');
-  dateEqual(Date.create('08-25-1978 1:42am'), new Date(1978, 7, 25, 1, 42), 'Date#create | Date/Time | 1am minutes and meridian');
-  dateEqual(Date.create('08-25-1978 1:42:32am'), new Date(1978, 7, 25, 1, 42, 32), 'Date#create | Date/Time | 1am seconds and meridian');
-  dateEqual(Date.create('08-25-1978 1:42:32.488am'), new Date(1978, 7, 25, 1, 42, 32, 488), 'Date#create | Date/Time | 1am seconds and meridian');
+  dateEqual(Date.create('08-25-1978 1am'), new Date(1978, 7, 25, 1), 'Date#create | Date/Time | 1am am/pm');
+  dateEqual(Date.create('08-25-1978 1:42am'), new Date(1978, 7, 25, 1, 42), 'Date#create | Date/Time | 1am minutes and am/pm');
+  dateEqual(Date.create('08-25-1978 1:42:32am'), new Date(1978, 7, 25, 1, 42, 32), 'Date#create | Date/Time | 1am seconds and am/pm');
+  dateEqual(Date.create('08-25-1978 1:42:32.488am'), new Date(1978, 7, 25, 1, 42, 32, 488), 'Date#create | Date/Time | 1am seconds and am/pm');
 
-  dateEqual(Date.create('08-25-1978 11pm'), new Date(1978, 7, 25, 23), 'Date#create | Date/Time | 11pm meridian');
-  dateEqual(Date.create('08-25-1978 11:42pm'), new Date(1978, 7, 25, 23, 42), 'Date#create | Date/Time | 11pm minutes and meridian');
-  dateEqual(Date.create('08-25-1978 11:42:32pm'), new Date(1978, 7, 25, 23, 42, 32), 'Date#create | Date/Time | 11pm seconds and meridian');
-  dateEqual(Date.create('08-25-1978 11:42:32.488pm'), new Date(1978, 7, 25, 23, 42, 32, 488), 'Date#create | Date/Time | 11pm seconds and meridian');
+  dateEqual(Date.create('08-25-1978 11pm'), new Date(1978, 7, 25, 23), 'Date#create | Date/Time | 11pm am/pm');
+  dateEqual(Date.create('08-25-1978 11:42pm'), new Date(1978, 7, 25, 23, 42), 'Date#create | Date/Time | 11pm minutes and am/pm');
+  dateEqual(Date.create('08-25-1978 11:42:32pm'), new Date(1978, 7, 25, 23, 42, 32), 'Date#create | Date/Time | 11pm seconds and am/pm');
+  dateEqual(Date.create('08-25-1978 11:42:32.488pm'), new Date(1978, 7, 25, 23, 42, 32, 488), 'Date#create | Date/Time | 11pm seconds and am/pm');
 
-  dateEqual(Date.create('08-25-1978 11am'), new Date(1978, 7, 25, 11), 'Date#create | Date/Time | 11am meridian');
-  dateEqual(Date.create('08-25-1978 11:42am'), new Date(1978, 7, 25, 11, 42), 'Date#create | Date/Time | 11am minutes and meridian');
-  dateEqual(Date.create('08-25-1978 11:42:32am'), new Date(1978, 7, 25, 11, 42, 32), 'Date#create | Date/Time | 11am seconds and meridian');
-  dateEqual(Date.create('08-25-1978 11:42:32.488am'), new Date(1978, 7, 25, 11, 42, 32, 488), 'Date#create | Date/Time | 11am seconds and meridian');
+  dateEqual(Date.create('08-25-1978 11am'), new Date(1978, 7, 25, 11), 'Date#create | Date/Time | 11am am/pm');
+  dateEqual(Date.create('08-25-1978 11:42am'), new Date(1978, 7, 25, 11, 42), 'Date#create | Date/Time | 11am minutes and am/pm');
+  dateEqual(Date.create('08-25-1978 11:42:32am'), new Date(1978, 7, 25, 11, 42, 32), 'Date#create | Date/Time | 11am seconds and am/pm');
+  dateEqual(Date.create('08-25-1978 11:42:32.488am'), new Date(1978, 7, 25, 11, 42, 32, 488), 'Date#create | Date/Time | 11am seconds and am/pm');
 
 
   dateEqual(Date.create('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'Date#create | ISO8601 | full with UTC timezone');
@@ -544,7 +560,7 @@ test('Date', function () {
   equal(d.getMonth(), 7, 'Date#set | reset utc | month');
   equal(d.getDate(), d.getTimezoneOffset() > 240 ? 24 : 25, 'Date#set | reset utc | date');
   equal(d.getHours(), getHours(4 - (d.getTimezoneOffset() / 60)), 'Date#set | reset utc | hours');
-  equal(d.getMinutes(), d.getTimezoneOffset() % 60, 'Date#set | reset utc | minutes');
+  equal(d.getMinutes(), Math.abs(d.getTimezoneOffset() % 60), 'Date#set | reset utc | minutes');
   equal(d.getSeconds(), 0, 'Date#set | reset utc | seconds');
   equal(d.getMilliseconds(), 0, 'Date#set | reset utc | milliseconds');
 
@@ -848,7 +864,7 @@ test('Date', function () {
   d = new Date('August 5, 2010 13:45:02');
 
 
-  equal(d.format(), 'August 5, 2010', 'Date#format | no arguments is standard format with no time');
+  equal(d.format(), 'August 5, 2010 1:45pm', 'Date#format | no arguments is standard format with no time');
 
   equal(d.format('{ms}'), '0', 'Date#format | custom formats | ms');
   equal(d.format('{milliseconds}'), '0', 'Date#format | custom formats | milliseconds');
@@ -917,6 +933,20 @@ test('Date', function () {
   equal(d.format('{12hr}:{mm}:{ss} {tt}'), '4:03:02 am', 'Date#format | full formats | hr:min:sec');
   equal(d.format('{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'), '2010-08-05 04:03:02Z', 'Date#format | full formats | ISO8601 UTC');
   equal(d.format('{Month}, {yyyy}'), 'August, 2010', 'Date#format | full formats | month and year');
+
+
+
+  // Locale specific output formats/shortcuts
+
+  equal(d.format('short'), 'August 5, 2010', 'Date#format | shortcuts | short');
+  equal(d.short(), 'August 5, 2010', 'Date#format | shortcuts | short method');
+  equal(d.format('long'), 'August 5, 2010 4:03am', 'Date#format | shortcuts | long');
+  equal(d.long(), 'August 5, 2010 4:03am', 'Date#format | shortcuts | long method');
+  equal(d.format('full'), 'Thursday August 5, 2010 4:03:02am', 'Date#format | shortcuts | full');
+  equal(d.full(), 'Thursday August 5, 2010 4:03:02am', 'Date#format | shortcuts | full method');
+  equal(d.format('w00t {time}'), 'w00t 4:03:02am', 'Date#format | shortcuts | custom time format');
+
+
 
 
   // Be VERY careful here. Timezone offset is NOT always guaranteed to be the same for a given timezone,
@@ -1029,7 +1059,7 @@ test('Date', function () {
       equal(unit, 0, 'Date format | relative fn | still passes millisecond is zero');
     });
 
-    equal(Date.create('2002-02-17').format(function() {}), 'February 17, 2002', 'Date#format | function that returns undefined defaults to standard format');
+    equal(Date.create('2002-02-17').format(function() {}), 'February 17, 2002 12:00am', 'Date#format | function that returns undefined defaults to standard format');
 
   });
 
@@ -1124,8 +1154,6 @@ test('Date', function () {
 
   equal(getDateWithWeekdayAndOffset(0).is('the beginning of the week'), true, 'Date#is | the beginning of the week');
   equal(getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999).is('the end of the week'), true, 'Date#is | the end of the week');
-
-  equal(new Date(2011, 0, 1, 0, -staticWinterTimezoneOffset).is(staticJanDateNumber), true, 'Date#is | Accepts numbers');
 
 
 
@@ -1255,7 +1283,7 @@ test('Date', function () {
   d = new Date(2010,7,5,13,45,2,542);
 
   equal(d.getWeek(), 31, 'Date#getWeek | basic August 5th, 2010');
-  equal(getDST(d).getUTCWeek(), staticSummerTimezoneOffset > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
+  equal(d.getUTCWeek(), d.getTimezoneOffset() > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
   equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
   equal(new Date(2010, 0, 1).getUTCWeek(), 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
@@ -1329,24 +1357,25 @@ test('Date', function () {
   equal(new Date(2011,7,5,13,45,2,542).yearsFromNow(d), 1, 'Date#yearsFromNow | FromNow alias | years');
   equal(new Date(2009,7,5,13,45,2,542).yearsAgo(d), 1, 'Date#yearsAgo | Ago alias | years');
 
+  dst = (d.getTimezoneOffset() - new Date(2011, 11, 31).getTimezoneOffset()) * 60 * 1000;
 
   // Works with Date.create?
-  equal(getDST(d).millisecondsSince('the last day of 2011'), -44273697458, 'Date#millisecondsSince | milliseconds since the last day of 2011');
-  equal(getDST(d).millisecondsUntil('the last day of 2011'), 44273697458, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
-  equal(getDST(d).secondsSince('the last day of 2011'), -44273697, 'Date#secondsSince | seconds since the last day of 2011');
-  equal(getDST(d).secondsUntil('the last day of 2011'), 44273697, 'Date#secondsUntil | seconds until the last day of 2011');
-  equal(getDST(d).minutesSince('the last day of 2011'), -737895, 'Date#minutesSince | minutes since the last day of 2011');
-  equal(getDST(d).minutesUntil('the last day of 2011'), 737895, 'Date#minutesUntil | minutes until the last day of 2011');
-  equal(getDST(d).hoursSince('the last day of 2011'), -12298, 'Date#hoursSince | hours since the last day of 2011');
-  equal(getDST(d).hoursUntil('the last day of 2011'), 12298, 'Date#hoursUntil | hours until the last day of 2011');
-  equal(getDST(d).daysSince('the last day of 2011'), -512, 'Date#daysSince | days since the last day of 2011');
-  equal(getDST(d).daysUntil('the last day of 2011'), 512, 'Date#daysUntil | days until the last day of 2011');
-  equal(getDST(d).weeksSince('the last day of 2011'), -73, 'Date#weeksSince | weeks since the last day of 2011');
-  equal(getDST(d).weeksUntil('the last day of 2011'), 73, 'Date#weeksUntil | weeks until the last day of 2011');
-  equal(getDST(d).monthsSince('the last day of 2011'), -17, 'Date#monthsSince | months since the last day of 2011');
-  equal(getDST(d).monthsUntil('the last day of 2011'), 17, 'Date#monthsUntil | months until the last day of 2011');
-  equal(getDST(d).yearsSince('the last day of 2011'), -1, 'Date#yearsSince | years since the last day of 2011');
-  equal(getDST(d).yearsUntil('the last day of 2011'), 1, 'Date#yearsUntil | years until the last day of 2011');
+  equal(d.millisecondsSince('the last day of 2011'), -44273697458 + dst, 'Date#millisecondsSince | milliseconds since the last day of 2011');
+  equal(d.millisecondsUntil('the last day of 2011'), 44273697458 - dst, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
+  equal(d.secondsSince('the last day of 2011'), -44273697 + (dst / 1000), 'Date#secondsSince | seconds since the last day of 2011');
+  equal(d.secondsUntil('the last day of 2011'), 44273697 - (dst / 1000), 'Date#secondsUntil | seconds until the last day of 2011');
+  equal(d.minutesSince('the last day of 2011'), -737895 + (dst / 60 / 1000), 'Date#minutesSince | minutes since the last day of 2011');
+  equal(d.minutesUntil('the last day of 2011'), 737895 - (dst / 60 / 1000), 'Date#minutesUntil | minutes until the last day of 2011');
+  equal(d.hoursSince('the last day of 2011'), -12298 + (dst / 60 / 60 / 1000), 'Date#hoursSince | hours since the last day of 2011');
+  equal(d.hoursUntil('the last day of 2011'), 12298 - (dst / 60 / 60 / 1000), 'Date#hoursUntil | hours until the last day of 2011');
+  equal(d.daysSince('the last day of 2011'), -512, 'Date#daysSince | days since the last day of 2011');
+  equal(d.daysUntil('the last day of 2011'), 512, 'Date#daysUntil | days until the last day of 2011');
+  equal(d.weeksSince('the last day of 2011'), -73, 'Date#weeksSince | weeks since the last day of 2011');
+  equal(d.weeksUntil('the last day of 2011'), 73, 'Date#weeksUntil | weeks until the last day of 2011');
+  equal(d.monthsSince('the last day of 2011'), -17, 'Date#monthsSince | months since the last day of 2011');
+  equal(d.monthsUntil('the last day of 2011'), 17, 'Date#monthsUntil | months until the last day of 2011');
+  equal(d.yearsSince('the last day of 2011'), -1, 'Date#yearsSince | years since the last day of 2011');
+  equal(d.yearsUntil('the last day of 2011'), 1, 'Date#yearsUntil | years until the last day of 2011');
 
 
 
@@ -1869,12 +1898,10 @@ test('Date', function () {
   dateEqual(Date.create('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
 
   Date.addFormat('on ze (\\d+)th of (janvier|février|mars|avril|mai) lavigne', ['date','month'], 'fr');
-  dateEqual(Date.create('on ze 18th of avril lavigne'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other languages');
+  dateEqual(Date.create('on ze 18th of avril lavigne', 'fr'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other languages');
 
-  equal(Date.currentLocale, 'en', 'Date Locale | current locale code is exposed');
   equal(typeof Date.getLocale(), 'object', 'Date Locale | current localization object is exposed in case needed');
-
-
+  equal(Date.getLocale().code, 'en', 'Date Locale | adding the format did not change the current locale');
 
 
 
@@ -1887,25 +1914,25 @@ test('Date', function () {
   // Can't guarantee this one for now as the loading order of the unit tests can be random.
   // equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not be parsed before the locale is set');
   equal(Date.create('２０１１年０６月１８日', 'ja').isValid(), true, 'Date Locales | Japanese dates will parse if their locale is passed');
-  equal(Date.create('２０１１年０６月１８日').isValid(), true, 'Date Locales | Japanese dates will then parse thereafter');
+  equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not parse thereafter as the current locale is still en');
 
 
   Date.setLocale('ja');
+
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | changes the locale');
   Date.setLocale();
+  equal(Date.getLocale().code, 'ja', 'Date.setLocale | setting locale with no arguments had no effect');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if no argument passed');
-  equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011', 'Date#format | local locale should override global');
-  equal(Date.create('5 months ago').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
+  equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011 12:00am', 'Date#format | local locale should override global');
+  equal(Date.create('5 months ago', 'en').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
   Date.setLocale('');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
 
-
   dateEqual(Date.create('2010-Jan-25', 'ja'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
+  equal(Date.setLocale('pink'), false, 'Non-existent locales will return false');
+  equal(Date.create('2010-Jan-25').format(), '2010年1月25日 0時00分', 'Date#create | will not set the current locale to an invalid locale');
 
-  raisesError(function(){ Date.setLocale('pink'); }, 'Array#map | raises an error if locale set to pink');
-
-  equal(Date.create('2010-Jan-25').format(), '2010年1月25日', 'Date#create | will not set the current locale to an invalid locale');
-
+  Date.setLocale('en');
 
   // If traversing into a new month don't reset the date if the date was also advanced
 
@@ -2173,6 +2200,7 @@ test('Date', function () {
   equal((38000).minutes().duration('ko'), '3주', 'Number#duration | Korean | 38000 minutes');
   equal((38000).hours().duration('ko'), '4년', 'Number#duration | Korean | 38000 hours');
 
+  Date.setLocale('en');
 
 
   // Custom date formats
@@ -2184,7 +2212,7 @@ test('Date', function () {
   // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
   Date.addFormat('(\\d{4})', ['year']);
 
-  // Tests around issue#146
+  // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
 
   equal(Date.create('2010-01-20T20:00:00.000Z').iso(), '2010-01-20T20:00:00.000Z');
   equal(Date.create('2010-02-20T20:00:00.000Z').iso(), '2010-02-20T20:00:00.000Z');
@@ -2200,20 +2228,6 @@ test('Date', function () {
   equal(Date.create('2010-11-20T20:00:00.000Z').iso(), '2010-11-20T20:00:00.000Z');
   equal(Date.create('2010-12-20T20:00:00.000Z').iso(), '2010-12-20T20:00:00.000Z');
 
-  //equal(Date.create('2010-01-20Z').iso(), '2010-01-20T00:00:00.000Z');
-  //equal(Date.create('2010-02-20Z').iso(), '2010-02-20T00:00:00.000Z');
-  //equal(Date.create('2010-03-20Z').iso(), '2010-03-20T00:00:00.000Z');
-  //equal(Date.create('2010-04-20Z').iso(), '2010-04-20T00:00:00.000Z');
-  //equal(Date.create('2010-05-20Z').iso(), '2010-05-20T00:00:00.000Z');
-  //equal(Date.create('2010-05-20Z').iso(), '2010-05-20T00:00:00.000Z');
-  //equal(Date.create('2010-06-20Z').iso(), '2010-06-20T00:00:00.000Z');
-  //equal(Date.create('2010-07-20Z').iso(), '2010-07-20T00:00:00.000Z');
-  //equal(Date.create('2010-08-20Z').iso(), '2010-08-20T00:00:00.000Z');
-  //equal(Date.create('2010-09-20Z').iso(), '2010-09-20T00:00:00.000Z');
-  //equal(Date.create('2010-10-20Z').iso(), '2010-10-20T00:00:00.000Z');
-  //equal(Date.create('2010-11-20Z').iso(), '2010-11-20T00:00:00.000Z');
-  //equal(Date.create('2010-12-20Z').iso(), '2010-12-20T00:00:00.000Z');
-
   equal(Date.create('Jan 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-01-20T20:00:00.000Z');
   equal(Date.create('Feb 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-02-20T20:00:00.000Z');
   equal(Date.create('Mar 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-03-20T20:00:00.000Z');
@@ -2226,6 +2240,22 @@ test('Date', function () {
   equal(Date.create('Oct 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-10-20T20:00:00.000Z');
   equal(Date.create('Nov 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-11-20T20:00:00.000Z');
   equal(Date.create('Dec 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-12-20T20:00:00.000Z');
+
+  dateEqual(Date.create('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'Date#create | Fuzzy Dates | thursday of next week, 3:30pm');
+
+
+  // Issue #152 times should be allowed in front
+  dateEqual(Date.create('3:45 2012-3-15'), new Date(2012, 2, 15, 3, 45), 'Date#create | time in the front');
+  dateEqual(Date.create('3:45pm 2012-3-15'), new Date(2012, 2, 15, 15, 45), 'Date#create | big endian with time');
+  dateEqual(Date.create('3:45pm 3/15/2012'), new Date(2012, 2, 15, 15, 45), 'Date#create | crazy endian slashes with time');
+  dateEqual(Date.create('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45), 'Date#create | little endian slashes with time');
+
+
+
+  // Issue #144 various time/date formats
+  dateEqual(Date.create('6/30/2012 3:00 PM'), new Date(2012, 5, 30, 15), 'Date#create | 6/30/2012 3:00 PM');
+  dateEqual(Date.create('Thursday at 3:00 PM'), getDateWithWeekdayAndOffset(4).set({ hour: 15 }), 'Date#create | Thursday at 3:00 PM');
+  dateEqual(Date.create('Thursday at 3:00PM'), getDateWithWeekdayAndOffset(4).set({ hour: 15 }), 'Date#create | Thursday at 3:00PM (no space)');
 
 
 });
