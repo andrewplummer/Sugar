@@ -838,7 +838,7 @@ test('Date', function () {
   dateEqual(d.set({ month: 1 }, true), new Date(2010,1), 'Date#set | reset dates will not accidentally traverse into a different month');
 
   d = new Date(2010, 0, 31);
-  dateEqual(d.advance({ month: 1 }, true), new Date(2010,1,28), 'Date#set | reset dates will not accidentally traverse into a different month');
+  dateEqual(d.advance({ month: 1 }), new Date(2010,1,28), 'Date#set | reset dates will not accidentally traverse into a different month');
 
   d = new Date('August 25, 2010 11:45:20');
   d.setWeek(1);
@@ -1513,7 +1513,30 @@ test('Date', function () {
 
   d = new Date('February 29, 2012 22:15:42');
 
-  dateEqual(d.resetTime(), new Date(2012, 1, 29), 'Date#resetTime | Clears time');
+  var yearZero = new Date(2000, 0);
+  yearZero.setFullYear(0);
+
+  dateEqual(d.clone().reset(),               new Date(2012, 1, 29), 'Date#resetTime | Clears time');
+
+  dateEqual(d.clone().reset('years'),        yearZero, 'Date#reset | years');
+  dateEqual(d.clone().reset('months'),       new Date(2012, 0), 'Date#reset | months');
+  dateEqual(d.clone().reset('weeks'),        new Date(2012, 0), 'Date#reset | identical to resetting the month');
+  dateEqual(d.clone().reset('days'),         new Date(2012, 1, 1), 'Date#reset | days');
+  dateEqual(d.clone().reset('hours'),        new Date(2012, 1, 29), 'Date#reset | hours');
+  dateEqual(d.clone().reset('minutes'),      new Date(2012, 1, 29, 22), 'Date#reset | minutes');
+  dateEqual(d.clone().reset('seconds'),      new Date(2012, 1, 29, 22, 15), 'Date#reset | seconds');
+  dateEqual(d.clone().reset('milliseconds'), new Date(2012, 1, 29, 22, 15, 42), 'Date#reset | milliseconds');
+
+  dateEqual(d.clone().reset('year'),        yearZero, 'Date#reset | year');
+  dateEqual(d.clone().reset('month'),       new Date(2012, 0), 'Date#reset | month');
+  dateEqual(d.clone().reset('week'),        new Date(2012, 0), 'Date#reset | identical to resetting the month');
+  dateEqual(d.clone().reset('day'),         new Date(2012, 1, 1), 'Date#reset | day');
+  dateEqual(d.clone().reset('hour'),        new Date(2012, 1, 29), 'Date#reset | hour');
+  dateEqual(d.clone().reset('minute'),      new Date(2012, 1, 29, 22), 'Date#reset | minute');
+  dateEqual(d.clone().reset('second'),      new Date(2012, 1, 29, 22, 15), 'Date#reset | second');
+  dateEqual(d.clone().reset('millisecond'), new Date(2012, 1, 29, 22, 15, 42), 'Date#reset | millisecond');
+
+  dateEqual(d.clone().addDays(5, true), new Date(2012, 2, 5), 'Date#addDays | can also reset the time');
 
 
   equal(now.isYesterday(), false, 'Date#isYesterday');
@@ -1945,6 +1968,19 @@ test('Date', function () {
   d = new Date(2011, 0, 31);
   dateEqual(d.set({ month: 1, day: 3 }), new Date(2011, 1, 3), 'Date#create | set will also not cause date traversal');
 
+
+
+  // Advance also allows resetting.
+
+  d = new Date(2011, 0, 31, 23, 40, 28, 500);
+  dateEqual(d.clone().advance({ year: 1 }, true), new Date(2012, 0), 'Date#advance | with reset | year');
+  dateEqual(d.clone().advance({ month: 1 }, true), new Date(2011, 1), 'Date#advance | with reset | month');
+  dateEqual(d.clone().advance({ week: 1 }, true), new Date(2011, 1, 7), 'Date#advance | with reset | week');
+  dateEqual(d.clone().advance({ date: 1 }, true), new Date(2011, 1, 1), 'Date#advance | with reset | date');
+  dateEqual(d.clone().advance({ hour: 1 }, true), new Date(2011, 1, 1, 0), 'Date#advance | with reset | hour');
+  dateEqual(d.clone().advance({ minute: 1 }, true), new Date(2011, 0, 31, 23, 41), 'Date#advance | with reset | minute');
+  dateEqual(d.clone().advance({ second: 1 }, true), new Date(2011, 0, 31, 23, 40, 29), 'Date#advance | with reset | second');
+  dateEqual(d.clone().advance({ millisecond: 1 }, true), new Date(2011, 0, 31, 23, 40, 28, 501), 'Date#advance | with reset | millisecond');
 
 
   // Number methods
