@@ -193,6 +193,8 @@ test('Date', function () {
   dateEqual(Date.create('June 2008'), new Date(2008, 5), 'Date#create | Full text | Month yyyy');
   dateEqual(Date.create('June-2008'), new Date(2008, 5), 'Date#create | Full text | Month-yyyy');
   dateEqual(Date.create('June.2008'), new Date(2008, 5), 'Date#create | Full text | Month.yyyy');
+  dateEqual(Date.create('06-2008'), new Date(2008, 5), 'Date#create | Full text | mm-yyyy');
+  dateEqual(Date.create('6-2008'), new Date(2008, 5), 'Date#create | Full text | m-yyyy');
   dateEqual(Date.create('June 1st, 2008'), new Date(2008, 5, 1), 'Date#create | Full text | Month 1st, yyyy');
   dateEqual(Date.create('June 2nd, 2008'), new Date(2008, 5, 2), 'Date#create | Full text | Month 2nd, yyyy');
   dateEqual(Date.create('June 3rd, 2008'), new Date(2008, 5, 3), 'Date#create | Full text | Month 3rd, yyyy');
