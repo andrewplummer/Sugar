@@ -1,5 +1,7 @@
 test('Date Ranges', function () {
 
+  Date.setLocale('en');
+
   var range, expected, result, count, range1, range2;
 
   range = Date.range(new Date(2011,8,10,9), new Date(2010,10,10,9));
