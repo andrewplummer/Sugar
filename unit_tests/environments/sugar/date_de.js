@@ -65,11 +65,11 @@ test('Dates | German', function () {
   dateEqual(Date.create('in 5 Jahren'), getRelativeDate(5), 'Date#create | German | dans | five years from now');
 
 
-  dateEqual(Date.create('vorgestern'), getRelativeDate(null, null, -2).resetTime(), 'Date#create | German | day before yesterday');
-  dateEqual(Date.create('gestern'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | German | yesterday');
-  dateEqual(Date.create('heute'), getRelativeDate(null, null, 0).resetTime(), 'Date#create | German | today');
-  dateEqual(Date.create('morgen'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | German | tomorrow');
-  dateEqual(Date.create('übermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German | day after tomorrow');
+  dateEqual(Date.create('vorgestern'), getRelativeDate(null, null, -2).reset(), 'Date#create | German | day before yesterday');
+  dateEqual(Date.create('gestern'), getRelativeDate(null, null, -1).reset(), 'Date#create | German | yesterday');
+  dateEqual(Date.create('heute'), getRelativeDate(null, null, 0).reset(), 'Date#create | German | today');
+  dateEqual(Date.create('morgen'), getRelativeDate(null, null, 1).reset(), 'Date#create | German | tomorrow');
+  dateEqual(Date.create('übermorgen'), getRelativeDate(null, null, 2).reset(), 'Date#create | German | day after tomorrow');
 
   dateEqual(Date.create('letzte Woche'), getRelativeDate(null, null, -7), 'Date#create | German | Last week');
   dateEqual(Date.create('nächste Woche'), getRelativeDate(null, null, 7), 'Date#create | German | Next week');
@@ -90,9 +90,9 @@ test('Dates | German', function () {
   dateEqual(Date.create('letztes Montag 3:45'), getDateWithWeekdayAndOffset(1, -7).set({ hour: 3, minute: 45 }, true), 'Date#create | German | last monday 3:45');
 
   // no accents
-  dateEqual(Date.create('ubermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German (no accents) | day after tomorrow');
+  dateEqual(Date.create('ubermorgen'), getRelativeDate(null, null, 2).reset(), 'Date#create | German (no accents) | day after tomorrow');
   dateEqual(Date.create('naechster Monat'), getRelativeDate(null, 1), 'Date#create | German (no accents) | Next month nachster');
-  dateEqual(Date.create('uebermorgen'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | German | day after tomorrow');
+  dateEqual(Date.create('uebermorgen'), getRelativeDate(null, null, 2).reset(), 'Date#create | German | day after tomorrow');
   dateEqual(Date.create('naechster Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachster');
   dateEqual(Date.create('naechsten Monat'), getRelativeDate(null, 1), 'Date#create | German | Next month nachsten');
   dateEqual(Date.create('naechstes Jahr'), getRelativeDate(1), 'Date#create | German | Next year');

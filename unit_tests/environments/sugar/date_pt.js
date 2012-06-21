@@ -35,10 +35,10 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('daqui a 5 anos'), getRelativeDate(5), 'Date#create | Portuguese | five years from now');
 
 
-  dateEqual(Date.create('anteontem'), getRelativeDate(null, null, -2).resetTime(), 'Date#create | Portuguese | the day before yesterday');
-  dateEqual(Date.create('ontem'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | Portuguese | yesterday');
-  dateEqual(Date.create('hoje'), getRelativeDate(null, null, 0).resetTime(), 'Date#create | Portuguese | today');
-  dateEqual(Date.create('amanhã'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Portuguese | tomorrow');
+  dateEqual(Date.create('anteontem'), getRelativeDate(null, null, -2).reset(), 'Date#create | Portuguese | the day before yesterday');
+  dateEqual(Date.create('ontem'), getRelativeDate(null, null, -1).reset(), 'Date#create | Portuguese | yesterday');
+  dateEqual(Date.create('hoje'), getRelativeDate(null, null, 0).reset(), 'Date#create | Portuguese | today');
+  dateEqual(Date.create('amanhã'), getRelativeDate(null, null, 1).reset(), 'Date#create | Portuguese | tomorrow');
 
   dateEqual(Date.create('semana passada'), getRelativeDate(null, null, -7), 'Date#create | Portuguese | Last week');
   dateEqual(Date.create('próxima semana'), getRelativeDate(null, null, 7), 'Date#create | Portuguese | Next week');
@@ -60,7 +60,7 @@ test('Dates | Portuguese', function () {
   dateEqual(Date.create('proximo ano'), getRelativeDate(1), 'Date#create | Portuguese | Next year');
   dateEqual(Date.create('uma hora atras'), getRelativeDate(null, null, null, -1), 'Date#create | Portuguese | one hour ago');
   dateEqual(Date.create('ha um ano'), getRelativeDate(-1), 'Date#create | Portuguese | one year ago');
-  dateEqual(Date.create('amanha'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Portuguese | tomorrow');
+  dateEqual(Date.create('amanha'), getRelativeDate(null, null, 1).reset(), 'Date#create | Portuguese | tomorrow');
 
 
   equal(then.format(), '25 de agosto de 2011 15:45', 'Date#create | Portuguese | standard format');

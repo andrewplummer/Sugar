@@ -37,10 +37,10 @@ test('Dates | Spanish', function () {
   dateEqual(Date.create('5 años de ahora'), getRelativeDate(5), 'Date#create | Spanish | five years from now');
 
 
-  dateEqual(Date.create('anteayer'), getRelativeDate(null, null, -2).resetTime(), 'Date#create | Spanish | 一昨日');
-  dateEqual(Date.create('ayer'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | Spanish | yesterday');
-  dateEqual(Date.create('hoy'), getRelativeDate(null, null, 0).resetTime(), 'Date#create | Spanish | today');
-  dateEqual(Date.create('mañana'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Spanish | tomorrow');
+  dateEqual(Date.create('anteayer'), getRelativeDate(null, null, -2).reset(), 'Date#create | Spanish | 一昨日');
+  dateEqual(Date.create('ayer'), getRelativeDate(null, null, -1).reset(), 'Date#create | Spanish | yesterday');
+  dateEqual(Date.create('hoy'), getRelativeDate(null, null, 0).reset(), 'Date#create | Spanish | today');
+  dateEqual(Date.create('mañana'), getRelativeDate(null, null, 1).reset(), 'Date#create | Spanish | tomorrow');
 
   dateEqual(Date.create('semana pasada'), getRelativeDate(null, null, -7), 'Date#create | Spanish | Last week');
   dateEqual(Date.create('semana próxima'), getRelativeDate(null, null, 7), 'Date#create | Spanish | Next week');
@@ -63,7 +63,7 @@ test('Dates | Spanish', function () {
   dateEqual(Date.create('hace 1 dia'), getRelativeDate(null, null, -1), 'Date#create | Spanish | one day ago');
   dateEqual(Date.create('mes proximo'), getRelativeDate(null, 1), 'Date#create | Spanish | Next month');
   dateEqual(Date.create('semana proxima'), getRelativeDate(null, null, 7), 'Date#create | Spanish | Next week');
-  dateEqual(Date.create('manana'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Spanish | tomorrow');
+  dateEqual(Date.create('manana'), getRelativeDate(null, null, 1).reset(), 'Date#create | Spanish | tomorrow');
   dateEqual(Date.create('hace 1 ano'), getRelativeDate(-1), 'Date#create | Spanish | one year ago');
 
 
