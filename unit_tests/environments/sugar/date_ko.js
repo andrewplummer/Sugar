@@ -39,11 +39,11 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('5개월 후'), getRelativeDate(null, 5), 'Date#create | Korean | five months 개월');
   dateEqual(Date.create('5년 후'), getRelativeDate(5), 'Date#create | Korean | five years from now');
 
-  dateEqual(Date.create('그저께'), getRelativeDate(null, null, -2).resetTime(), 'Date#create | Korean | 그저께');
-  dateEqual(Date.create('어제'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | Korean | yesterday');
-  dateEqual(Date.create('오늘'), getRelativeDate(null, null, 0).resetTime(), 'Date#create | Korean | today');
-  dateEqual(Date.create('내일'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Korean | tomorrow');
-  dateEqual(Date.create('모레'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Korean | 모레');
+  dateEqual(Date.create('그저께'), getRelativeDate(null, null, -2).reset(), 'Date#create | Korean | 그저께');
+  dateEqual(Date.create('어제'), getRelativeDate(null, null, -1).reset(), 'Date#create | Korean | yesterday');
+  dateEqual(Date.create('오늘'), getRelativeDate(null, null, 0).reset(), 'Date#create | Korean | today');
+  dateEqual(Date.create('내일'), getRelativeDate(null, null, 1).reset(), 'Date#create | Korean | tomorrow');
+  dateEqual(Date.create('모레'), getRelativeDate(null, null, 2).reset(), 'Date#create | Korean | 모레');
 
   dateEqual(Date.create('내일 3:45'), getRelativeDate(null, null, 1).set({ hours: 3, minutes: 45 }, true), 'Date#create | Korean | tomorrow with time 3:45');
   dateEqual(Date.create('내일 3:45pm'), getRelativeDate(null, null, 1).set({ hours: 15, minutes: 45 }, true), 'Date#create | Korean | tomorrow with time 3:45pm');
