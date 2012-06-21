@@ -66,9 +66,9 @@ test('Dates | French', function () {
   dateEqual(Date.create("d'ici 5 mois"), getRelativeDate(null, 5), 'Date#create | French | dans | five months from now');
   dateEqual(Date.create("d'ici 5 ans"), getRelativeDate(5), 'Date#create | French | dans | five years from now');
 
-  dateEqual(Date.create('hier'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | French | yesterday');
-  dateEqual(Date.create("aujourd'hui"), getRelativeDate(null, null, 0).resetTime(), 'Date#create | French | today');
-  dateEqual(Date.create('demain'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | French | tomorrow');
+  dateEqual(Date.create('hier'), getRelativeDate(null, null, -1).reset(), 'Date#create | French | yesterday');
+  dateEqual(Date.create("aujourd'hui"), getRelativeDate(null, null, 0).reset(), 'Date#create | French | today');
+  dateEqual(Date.create('demain'), getRelativeDate(null, null, 1).reset(), 'Date#create | French | tomorrow');
 
   dateEqual(Date.create('la semaine dernière'), getRelativeDate(null, null, -7), 'Date#create | French | Last week');
   dateEqual(Date.create('la semaine prochaine'), getRelativeDate(null, null, 7), 'Date#create | French | Next week');

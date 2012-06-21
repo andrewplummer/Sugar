@@ -62,11 +62,11 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('５年後'), getRelativeDate(5), 'Date#create | Japanese full-width | five years from now');
 
 
-  dateEqual(Date.create('一昨日'), getRelativeDate(null, null, -2).resetTime(), 'Date#create | Japanese | 一昨日');
-  dateEqual(Date.create('昨日'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | Japanese | yesterday');
-  dateEqual(Date.create('今日'), getRelativeDate(null, null, 0).resetTime(), 'Date#create | Japanese | today');
-  dateEqual(Date.create('明日'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Japanese | tomorrow');
-  dateEqual(Date.create('明後日'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Japanese | 明後日');
+  dateEqual(Date.create('一昨日'), getRelativeDate(null, null, -2).reset(), 'Date#create | Japanese | 一昨日');
+  dateEqual(Date.create('昨日'), getRelativeDate(null, null, -1).reset(), 'Date#create | Japanese | yesterday');
+  dateEqual(Date.create('今日'), getRelativeDate(null, null, 0).reset(), 'Date#create | Japanese | today');
+  dateEqual(Date.create('明日'), getRelativeDate(null, null, 1).reset(), 'Date#create | Japanese | tomorrow');
+  dateEqual(Date.create('明後日'), getRelativeDate(null, null, 2).reset(), 'Date#create | Japanese | 明後日');
 
   dateEqual(Date.create('先週'), getRelativeDate(null, null, -7), 'Date#create | Japanese | Last week');
   dateEqual(Date.create('来週'), getRelativeDate(null, null, 7), 'Date#create | Japanese | Next week');
