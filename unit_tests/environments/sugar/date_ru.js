@@ -52,11 +52,11 @@ test('Dates | Russian', function () {
   dateEqual(Date.create('через 5 месяцев'), getRelativeDate(null, 5), 'Date#create | Russian | five months from now');
   dateEqual(Date.create('через 5 лет'), getRelativeDate(5), 'Date#create | Russian | five years from now');
 
-  dateEqual(Date.create('позавчера'), getRelativeDate(null, null, -2).resetTime(), 'Date#create | Russian | day before yesterday');
-  dateEqual(Date.create('Вчера'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | Russian | yesterday');
-  dateEqual(Date.create('Сегодня'), getRelativeDate(null, null, 0).resetTime(), 'Date#create | Russian | today');
-  dateEqual(Date.create('Завтра'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Russian | tomorrow');
-  dateEqual(Date.create('послезавтра'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Russian | day after tomorrow');
+  dateEqual(Date.create('позавчера'), getRelativeDate(null, null, -2).reset(), 'Date#create | Russian | day before yesterday');
+  dateEqual(Date.create('Вчера'), getRelativeDate(null, null, -1).reset(), 'Date#create | Russian | yesterday');
+  dateEqual(Date.create('Сегодня'), getRelativeDate(null, null, 0).reset(), 'Date#create | Russian | today');
+  dateEqual(Date.create('Завтра'), getRelativeDate(null, null, 1).reset(), 'Date#create | Russian | tomorrow');
+  dateEqual(Date.create('послезавтра'), getRelativeDate(null, null, 2).reset(), 'Date#create | Russian | day after tomorrow');
 
   dateEqual(Date.create('на прошлой неделе'), getRelativeDate(null, null, -7), 'Date#create | Russian | Last week');
   dateEqual(Date.create('на следующей неделе'), getRelativeDate(null, null, 7), 'Date#create | Russian | Next week');

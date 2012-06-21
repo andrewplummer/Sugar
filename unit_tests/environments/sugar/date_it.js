@@ -36,10 +36,10 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('5 anni da adesso'), getRelativeDate(5), 'Date#create | Italian | danni | five years from now');
 
 
-  dateEqual(Date.create('ieri'), getRelativeDate(null, null, -1).resetTime(), 'Date#create | Italian | yesterday');
-  dateEqual(Date.create('oggi'), getRelativeDate(null, null, 0).resetTime(), 'Date#create | Italian | today');
-  dateEqual(Date.create('domani'), getRelativeDate(null, null, 1).resetTime(), 'Date#create | Italian | tomorrow');
-  dateEqual(Date.create('dopodomani'), getRelativeDate(null, null, 2).resetTime(), 'Date#create | Italian | day after tomorrow');
+  dateEqual(Date.create('ieri'), getRelativeDate(null, null, -1).reset(), 'Date#create | Italian | yesterday');
+  dateEqual(Date.create('oggi'), getRelativeDate(null, null, 0).reset(), 'Date#create | Italian | today');
+  dateEqual(Date.create('domani'), getRelativeDate(null, null, 1).reset(), 'Date#create | Italian | tomorrow');
+  dateEqual(Date.create('dopodomani'), getRelativeDate(null, null, 2).reset(), 'Date#create | Italian | day after tomorrow');
 
   dateEqual(Date.create('la settimana scorsa'), getRelativeDate(null, null, -7), 'Date#create | Italian | Last week');
   dateEqual(Date.create('la settimana prossima'), getRelativeDate(null, null, 7), 'Date#create | Italian | Next week');
