@@ -16,7 +16,6 @@ test('Date', function () {
   var thisYear = now.getFullYear();
 
 
-
   // Invalid date
   equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
   equal(new Date().isValid(), true, 'Date#isValid | new Date valid');
@@ -2295,5 +2294,57 @@ test('Date', function () {
   dateEqual(Date.create('Thursday at 3:00 PM'), getDateWithWeekdayAndOffset(4).set({ hour: 15 }), 'Date#create | Thursday at 3:00 PM');
   dateEqual(Date.create('Thursday at 3:00PM'), getDateWithWeekdayAndOffset(4).set({ hour: 15 }), 'Date#create | Thursday at 3:00PM (no space)');
 
+
+
+  // Issue #141 future/past preference
+
+  var weekdayOffset = now.getWeekday();
+
+  equal(Date.past('Sunday').isPast(),    true, 'Date#past | weekdays | Sunday');
+  equal(Date.past('Monday').isPast(),    true, 'Date#past | weekdays | Monday');
+  equal(Date.past('Tuesday').isPast(),   true, 'Date#past | weekdays | Tuesday');
+  equal(Date.past('Wednesday').isPast(), true, 'Date#past | weekdays | Wednesday');
+  equal(Date.past('Thursday').isPast(),  true, 'Date#past | weekdays | Thursday');
+  equal(Date.past('Friday').isPast(),    true, 'Date#past | weekdays | Friday');
+  equal(Date.past('Saturday').isPast(),  true, 'Date#past | weekdays | Saturday');
+
+  equal(Date.future('Sunday').isFuture(),    true, 'Date#future | weekdays | Sunday');
+  equal(Date.future('Monday').isFuture(),    true, 'Date#future | weekdays | Monday');
+  equal(Date.future('Tuesday').isFuture(),   true, 'Date#future | weekdays | Tuesday');
+  equal(Date.future('Wednesday').isFuture(), true, 'Date#future | weekdays | Wednesday');
+  equal(Date.future('Thursday').isFuture(),  true, 'Date#future | weekdays | Thursday');
+  equal(Date.future('Friday').isFuture(),    true, 'Date#future | weekdays | Friday');
+  equal(Date.future('Saturday').isFuture(),  true, 'Date#future | weekdays | Saturday');
+
+  equal(Date.past('January').isPast(),   true, 'Date#past | months | January');
+  equal(Date.past('February').isPast(),  true, 'Date#past | months | February');
+  equal(Date.past('March').isPast(),     true, 'Date#past | months | March');
+  equal(Date.past('April').isPast(),     true, 'Date#past | months | April');
+  equal(Date.past('May').isPast(),       true, 'Date#past | months | May');
+  equal(Date.past('June').isPast(),      true, 'Date#past | months | June');
+  equal(Date.past('July').isPast(),      true, 'Date#past | months | July');
+  equal(Date.past('August').isPast(),    true, 'Date#past | months | August');
+  equal(Date.past('September').isPast(), true, 'Date#past | months | September');
+  equal(Date.past('October').isPast(),   true, 'Date#past | months | October');
+  equal(Date.past('November').isPast(),  true, 'Date#past | months | November');
+  equal(Date.past('December').isPast(),  true, 'Date#past | months | December');
+
+  equal(Date.future('January').isFuture(),   true, 'Date#future | months | January');
+  equal(Date.future('February').isFuture(),  true, 'Date#future | months | February');
+  equal(Date.future('March').isFuture(),     true, 'Date#future | months | March');
+  equal(Date.future('April').isFuture(),     true, 'Date#future | months | April');
+  equal(Date.future('May').isFuture(),       true, 'Date#future | months | May');
+  equal(Date.future('June').isFuture(),      true, 'Date#future | months | June');
+  equal(Date.future('July').isFuture(),      true, 'Date#future | months | July');
+  equal(Date.future('August').isFuture(),    true, 'Date#future | months | August');
+  equal(Date.future('September').isFuture(), true, 'Date#future | months | September');
+  equal(Date.future('October').isFuture(),   true, 'Date#future | months | October');
+  equal(Date.future('November').isFuture(),  true, 'Date#future | months | November');
+  equal(Date.future('December').isFuture(),  true, 'Date#future | months | December');
+
+
+
+  //dateEqual(Date.create('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'Date#create | the 2nd tuesday of November');
+  //dateEqual(Date.create('in 45 minutes'), new Date(2012, 10, 13), 'Date#create | in 45 minutes');
 
 });
