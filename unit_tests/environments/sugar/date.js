@@ -16,6 +16,12 @@ test('Date', function () {
   var thisYear = now.getFullYear();
 
 
+  //dateEqual(Date.create('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'Date#create | the 2nd tuesday of June');
+  dateEqual(Date.create('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'Date#create | the 2nd tuesday of November');
+
+
+  return;
+
   // Invalid date
   equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
   equal(new Date().isValid(), true, 'Date#isValid | new Date valid');
