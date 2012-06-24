@@ -83,4 +83,93 @@ test('Date Ranges', function () {
   equal(range.start.is(new Date(), 10), true, 'DateRange | both null | start');
   equal(range.end.is(new Date(), 10), true, 'DateRange | both null | end');
 
+
+  // Union of overlapping ranges
+
+  range1 = Date.range(Date.create('2001'), Date.create('2003'));
+  range2 = Date.range(Date.create('2002'), Date.create('2004'));
+
+  range = range1.union(range2);
+
+  dateRangeEqual(range, Date.range(Date.create('2001'), Date.create('2004')), 'DateRange#union | simple merge');
+  dateRangeEqual(range1, Date.range(Date.create('2001'), Date.create('2003')), 'DateRange#union | range1 has not changed');
+  dateRangeEqual(range2, Date.range(Date.create('2002'), Date.create('2004')), 'DateRange#union | range2 has not changed');
+
+
+
+  // Union of non-overlapping ranges
+
+  range1 = Date.range(Date.create('2001'), Date.create('2003'));
+  range2 = Date.range(Date.create('2005'), Date.create('2008'));
+
+  range = range1.union(range2);
+
+  dateRangeEqual(range, Date.range(Date.create('2001'), Date.create('2008')), 'DateRange#union | non-overlapping includes middle');
+  dateRangeEqual(range1, Date.range(Date.create('2001'), Date.create('2003')), 'DateRange#union | range1 has not changed');
+  dateRangeEqual(range2, Date.range(Date.create('2005'), Date.create('2008')), 'DateRange#union | range2 has not changed');
+
+
+  // Union of reversed overlapping ranges
+
+  range1 = Date.range(Date.create('2002'), Date.create('2004'));
+  range2 = Date.range(Date.create('2001'), Date.create('2003'));
+
+  range = range1.union(range2);
+
+  dateRangeEqual(range, Date.range(Date.create('2001'), Date.create('2004')), 'DateRange#union | reversed | simple merge');
+
+
+  // Union of reversed non-overlapping ranges
+
+  range1 = Date.range(Date.create('2005'), Date.create('2008'));
+  range2 = Date.range(Date.create('2001'), Date.create('2003'));
+
+  range = range1.union(range2);
+
+  dateRangeEqual(range, Date.range(Date.create('2001'), Date.create('2008')), 'DateRange#union | reversed | includes middle');
+
+
+
+
+  // Intersect of overlapping ranges
+
+  range1 = Date.range(Date.create('2001'), Date.create('2003'));
+  range2 = Date.range(Date.create('2002'), Date.create('2004'));
+
+  range = range1.intersect(range2);
+
+  dateRangeEqual(range, Date.range(Date.create('2002'), Date.create('2003')), 'DateRange#intersect | simple merge');
+  dateRangeEqual(range1, Date.range(Date.create('2001'), Date.create('2003')), 'DateRange#intersect | range1 has not changed');
+  dateRangeEqual(range2, Date.range(Date.create('2002'), Date.create('2004')), 'DateRange#intersect | range2 has not changed');
+
+  // Intersect of non-overlapping ranges
+
+  range1 = Date.range(Date.create('2001'), Date.create('2003'));
+  range2 = Date.range(Date.create('2005'), Date.create('2008'));
+
+  range = range1.intersect(range2);
+
+  equal(range.isValid(), false, 'DateRange#intersect | non-overlapping ranges are invalid');
+
+
+  // Intersect of reversed overlapping ranges
+
+  range1 = Date.range(Date.create('2002'), Date.create('2004'));
+  range2 = Date.range(Date.create('2001'), Date.create('2003'));
+
+  range = range1.intersect(range2);
+
+  dateRangeEqual(range, Date.range(Date.create('2002'), Date.create('2003')), 'DateRange#intersect | simple merge');
+
+  // Intersect of reversed non-overlapping ranges
+
+  range1 = Date.range(Date.create('2005'), Date.create('2008'));
+  range2 = Date.range(Date.create('2001'), Date.create('2003'));
+
+  range = range1.intersect(range2);
+
+  equal(range.isValid(), false, 'DateRange#intersect | non-overlapping ranges are invalid');
+
+
+
 });
