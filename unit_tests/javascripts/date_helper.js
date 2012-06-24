@@ -11,6 +11,11 @@ dateEqual = function(a, b, message) {
   equal(offset < buffer, true, message + ' | expected: ' + b.format(format) + ' got: ' + a.format(format));
 }
 
+dateRangeEqual = function(a, b, message) {
+  dateEqual(a.start, b.start, message);
+  dateEqual(a.end, b.end, message);
+}
+
 getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   var d = this.getFullYear ? this : new Date();
   var setYear  = d.getFullYear() + (year || 0)
