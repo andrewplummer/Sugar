@@ -2366,6 +2366,20 @@ test('Date', function () {
   equal(Date.future('the 1st Friday of February').getFullYear(), new Date().getMonth() > 1 ? thisYear + 1 : thisYear, 'Date#future | 1st friday of February should be this year or next');
   equal(Date.past('the 1st Friday of February').getFullYear(), new Date().getMonth() < 1 ? thisYear - 1 : thisYear, 'Date#past | 1st friday of February should be this year or last');
 
-  //dateEqual(Date.create('in 45 minutes'), new Date(2012, 10, 13), 'Date#create | in 45 minutes');
+  dateEqual(Date.create('in 60 seconds'), new Date().addMinutes(1), 'Date#create | in 60 seconds');
+  dateEqual(Date.create('in 45 minutes'), new Date().addMinutes(45), 'Date#create | in 45 minutes');
+  dateEqual(Date.create('in 5 hours'), new Date().addHours(5), 'Date#create | in 5 hours');
+  dateEqual(Date.create('in 5 days'), new Date().addDays(5), 'Date#create | in 5 days');
+  dateEqual(Date.create('in 5 weeks'), new Date().addWeeks(5), 'Date#create | in 5 weeks');
+  dateEqual(Date.create('in 5 months'), new Date().addMonths(5), 'Date#create | in 5 months');
+  dateEqual(Date.create('in 5 years'), new Date().addYears(5), 'Date#create | in 5 years');
+
+
+  // Invalid dates should not return true or false
+  equal(Date.create('my pants').isPast(), undefined, 'Date#isPast | invalid dates should return false');
+  equal(Date.create('my pants').isFuture(), undefined, 'Date#isFuture | invalid dates should return false');
+  equal(Date.create('my pants').isToday(), undefined, 'Date#isToday | invalid dates should return false');
+  equal(Date.create('my pants').isTomorrow(), undefined, 'Date#isTomorrow | invalid dates should return false');
+  equal(Date.create('my pants').is('today'), undefined, 'Date#is | invalid dates should return false');
 
 });
