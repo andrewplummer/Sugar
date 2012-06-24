@@ -15,13 +15,6 @@ test('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-
-  //dateEqual(Date.create('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'Date#create | the 2nd tuesday of June');
-  dateEqual(Date.create('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'Date#create | the 2nd tuesday of November');
-
-
-  return;
-
   // Invalid date
   equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
   equal(new Date().isValid(), true, 'Date#isValid | new Date valid');
@@ -2348,9 +2341,31 @@ test('Date', function () {
   equal(Date.future('November').isFuture(),  true, 'Date#future | months | November');
   equal(Date.future('December').isFuture(),  true, 'Date#future | months | December');
 
+  // Ensure that dates don't traverse TOO far into the past/future
+  equal(Date.future('January').monthsFromNow() > 12, false, 'Date#future | months | no more than 12 months from now');
+  equal(Date.future('December').monthsFromNow() > 12, false, 'Date#future | months | no more than 12 months from now');
 
 
-  //dateEqual(Date.create('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'Date#create | the 2nd tuesday of November');
+  dateEqual(Date.create('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'Date#create | the 2nd tuesday of June');
+
+  dateEqual(Date.create('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6), 'Date#create | the 1st tuesday of November');
+  dateEqual(Date.create('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'Date#create | the 2nd tuesday of November');
+  dateEqual(Date.create('the 3rd Tuesday of November, 2012'), new Date(2012, 10, 20), 'Date#create | the 3rd tuesday of November');
+  dateEqual(Date.create('the 4th Tuesday of November, 2012'), new Date(2012, 10, 27), 'Date#create | the 4th tuesday of November');
+  dateEqual(Date.create('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4), 'Date#create | the 5th tuesday of November');
+  dateEqual(Date.create('the 6th Tuesday of November, 2012'), new Date(2012, 11, 11), 'Date#create | the 6th tuesday of November');
+
+  dateEqual(Date.create('the 1st Friday of February, 2012'), new Date(2012, 1, 3), 'Date#create | the 1st Friday of February');
+  dateEqual(Date.create('the 2nd Friday of February, 2012'), new Date(2012, 1, 10), 'Date#create | the 2nd Friday of February');
+  dateEqual(Date.create('the 3rd Friday of February, 2012'), new Date(2012, 1, 17), 'Date#create | the 3rd Friday of February');
+  dateEqual(Date.create('the 4th Friday of February, 2012'), new Date(2012, 1, 24), 'Date#create | the 4th Friday of February');
+  dateEqual(Date.create('the 5th Friday of February, 2012'), new Date(2012, 2, 2), 'Date#create | the 5th Friday of February');
+  dateEqual(Date.create('the 6th Friday of February, 2012'), new Date(2012, 2, 9), 'Date#create | the 6th Friday of February');
+
+  equal(Date.create('the 1st Friday of February').getFullYear(), thisYear, 'Date#create | 1st friday of February should be this year');
+  equal(Date.future('the 1st Friday of February').getFullYear(), new Date().getMonth() > 1 ? thisYear + 1 : thisYear, 'Date#future | 1st friday of February should be this year or next');
+  equal(Date.past('the 1st Friday of February').getFullYear(), new Date().getMonth() < 1 ? thisYear - 1 : thisYear, 'Date#past | 1st friday of February should be this year or last');
+
   //dateEqual(Date.create('in 45 minutes'), new Date(2012, 10, 13), 'Date#create | in 45 minutes');
 
 });
