@@ -73,7 +73,7 @@ test('Number', function () {
   equal((12).pow(2), 144, 'Number#pow | 12 ^ 2');
   equal((3).pow(3), 27, 'Number#pow | 3 ^ 3');
   equal((3).pow(0), 1, 'Number#pow | zero is allowed');
-  equal((3).pow(), 3, 'Number#pow | undefined defaults to 1', { mootools: NaN });
+  equal((3).pow(), NaN, 'Number#pow | defaults to no number');
 
 
   equal((1).sin(), 0.8414709848078965, 'Number#sin | 1');
