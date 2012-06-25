@@ -2375,7 +2375,9 @@ test('Date', function () {
   dateEqual(Date.create('in 5 years'), new Date().addYears(5), 'Date#create | in 5 years');
 
 
+
   // Invalid dates should not return true or false
+
   equal(Date.create('my pants').isPast(), undefined, 'Date#isPast | invalid dates should return false');
   equal(Date.create('my pants').isFuture(), undefined, 'Date#isFuture | invalid dates should return false');
   equal(Date.create('my pants').isToday(), undefined, 'Date#isToday | invalid dates should return false');
