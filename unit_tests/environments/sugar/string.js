@@ -372,7 +372,7 @@ test('String', function () {
   equal('five'.add('schfifty ', -20), 'schfifty five', 'String#add | adds out of negative range');
   equal('five'.add('schfifty', 4), 'fiveschfifty', 'String#add | add at position 4');
   equal('five'.add('schfifty', 5), 'fiveschfifty', 'String#add | add at position 5');
-  equal(''.add(['schfifty', ' five']), 'schfifty five', 'String#add | also concats arrays');
+  equal(''.add(['schfifty', ' five']), 'schfifty, five', 'String#add | arrays are stringified');
 
   equal('schfifty five'.remove('five'), 'schfifty ', 'String#remove | five');
   equal('schfifty five'.remove(/five/), 'schfifty ', 'String#remove | /five/');
@@ -394,8 +394,8 @@ test('String', function () {
   equal('abcd'.insert('X', 2), 'abXcd', 'String#insert | X | 2');
   equal('abcd'.insert('X', 1), 'aXbcd', 'String#insert | X | 1');
   equal('abcd'.insert('X', 0), 'Xabcd', 'String#insert | X | 0');
-  equal('abcd'.insert('X', -1), 'abcdX', 'String#insert | X | -1');
-  equal('abcd'.insert('X', -2), 'abcXd', 'String#insert | X | -2');
+  equal('abcd'.insert('X', -1), 'abcXd', 'String#insert | X | -1');
+  equal('abcd'.insert('X', -2), 'abXcd', 'String#insert | X | -2');
 
   equal('カタカナ'.hankaku(), 'ｶﾀｶﾅ', 'String#hankaku | katakana');
   equal('こんにちは。ヤマダタロウです。'.hankaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku |  hankaku katakana inside a string');
