@@ -67,7 +67,7 @@ var sortOnStringValue = function(arr) {
   });
 }
 
-var arrayIndexOf = function(arr, obj) {
+var testArrayIndexOf = function(arr, obj) {
   for(var i = 0; i < arr.length; i++) {
     if(arr[i] === obj) {
       return i;
@@ -229,7 +229,7 @@ restoreNativeTimeout = function() {
 }
 
 var removeCapturedTimer = function(timer) {
-  var index = arrayIndexOf(capturedTimers, timer);
+  var index = testArrayIndexOf(capturedTimers, timer);
   if(index !== -1) {
     capturedTimers.splice(index, 1);
   }
@@ -282,7 +282,7 @@ raisesError = function(fn, message, exceptions) {
 }
 
 skipEnvironments = function(environments, test) {
-  if(arrayIndexOf(environments, environment) === -1) {
+  if(testArrayIndexOf(environments, environment) === -1) {
     test.call();
   }
 }
