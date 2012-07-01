@@ -923,7 +923,7 @@ test('Array', function () {
   equal([1,2,3].groupBy(undefined), { 1: [1], 2: [2], 3: [3] }, 'Array#groupBy | undefined');
   equal([1,2,3].groupBy(null), { 'undefined': [1,2,3] }, 'Array#groupBy | null');
   equal([1,2,3].groupBy(4), { 'undefined': [1,2,3] }, 'Array#groupBy | number');
-  equal(['one','two','three'].groupBy('length').keys(), ['3','5'], 'Array#groupBy | result should be an extended object');
+  equal(['one','two','three'].groupBy('length').keys, undefined, 'Array#groupBy | result should not be an extended object');
 
   var counter = 0;
   ['one','two','three'].groupBy('length', function() {
