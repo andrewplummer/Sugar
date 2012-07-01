@@ -192,7 +192,7 @@ test('Object', function () {
 
   var strippedValues;
 
-  strippedValues = obj.values().remove(function(m) { return typeof m == 'function'; });
+  strippedValues = obj.values().filter(function(m) { return typeof m != 'function'; });
   equal(strippedValues, values, "Object#values | returns object's values", { prototype: values });
   count = 0;
   obj.values(function(value) {
@@ -202,7 +202,7 @@ test('Object', function () {
 
   equal(count, 3, 'Object#values | accepts a block | iterated properly', { prototype: 0, mootools: 0 });
 
-  strippedValues = Object.values(obj).remove(function(m) { return typeof m == 'function'; });
+  strippedValues = Object.values(obj).filter(function(m) { return typeof m != 'function'; });
   equal(strippedValues, values, "Object.values | returns object's values", { prototype: values });
   count = 0;
   Object.values(obj, function(value) {
@@ -211,10 +211,10 @@ test('Object', function () {
   });
   equal(count, 3, 'Object.values | accepts a block | iterated properly', { prototype: 0, mootools: 0 });
 
-  strippedValues = Object.extended().values().remove(function(m) { return typeof m == 'function'; });
+  strippedValues = Object.extended().values().filter(function(m) { return typeof m != 'function'; });
   equal(strippedValues, [], 'Object#values | empty object');
 
-  strippedValues = Object.values(Object.extended()).remove(function(m) { return typeof m == 'function'; });
+  strippedValues = Object.values(Object.extended()).filter(function(m) { return typeof m != 'function'; });
   equal(strippedValues, [], 'Object#values | empty object');
 
 
@@ -428,6 +428,7 @@ test('Object', function () {
   obj2 = obj1.clone();
   obj3 = obj1.clone(true);
 
+  console.info('hmm', obj1.foo);
   equal(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equal(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
