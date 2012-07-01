@@ -428,7 +428,6 @@ test('Object', function () {
   obj2 = obj1.clone();
   obj3 = obj1.clone(true);
 
-  console.info('hmm', obj1.foo);
   equal(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
   obj1.foo.jumpy = 'hump';
   equal(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
@@ -478,9 +477,9 @@ test('Object', function () {
   equal(Object.equal({x: 1, y: undefined}, {x: 1, z: 2}), false, 'Object.equal | undefined keys');
 
 
-  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), false, 'Object#equals | extended objects are not equal to plain objects');
+  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | extended objects are not equal to plain objects');
   equal(Object.extended({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
-  equal(Object.extended({}).equals({}), false, 'Object#equals | empty extended objects are not equal to empty plain objects');
+  equal(Object.extended({}).equals({}), true, 'Object#equals | empty extended objects are not equal to empty plain objects');
   equal(Object.extended({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
   equal(Object.extended({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 
@@ -627,8 +626,8 @@ test('Object', function () {
   equal([1,2,3,4,5].tap('pop').map(map), expected, 'Object#tap | string shortcut | pop the array');
   equal([1,2].tap(function() { this.push(3, 4); }).map(map), expected, 'Object#tap | push to the array');
   equal([1,2].tap('push', 3, 4).map(map), [2,4], 'Object#tap | string shortcut | passing arguments is not supported');
-  equal([1,2,3].tap(function(){ if(this.none(4)) this.add(4); }).map(map), expected, 'Object#tap | Sugar adding elements');
-  equal([1,2,3,4].tap(function(){ if(this.last() === 5) this.pop(); }).map(map), expected, 'Object#tap | checking last');
+  equal([1,2,3].tap(function(){ if(this.filter(4).length === 0) this.push(4); }).map(map), expected, 'Object#tap | Sugar adding elements');
+  equal([1,2,3,4].tap(function(){ if(this[this.length - 1] === 5) this.pop(); }).map(map), expected, 'Object#tap | checking last');
 
 
   var obj = { foo: 'bar' };
@@ -673,7 +672,8 @@ test('Object', function () {
   sparse[10] = 'har har';
   equal(Object.fromQueryString('foo[3]=hardy&foo[10]=har har'), { foo: sparse }, 'String#fromQueryString | constructed arrays can be sparse');
 
-  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles escaped params');
+  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles partially escaped params');
+  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles fully escaped params');
 
   equal(Object.fromQueryString('http://fake.com?foo=bar'), { foo: 'bar' }, 'String#fromQueryString | handles whole URLs');
   equal(Object.fromQueryString('foo=bar&moo=car').keys(), ['foo', 'moo'], 'String#fromQueryString | should be extended');
@@ -727,8 +727,8 @@ test('Object', function () {
   equal(Object.tap([1,2,3,4,5], 'pop').map(map), expected, 'Object.tap | string shortcut | pop the array');
   equal(Object.tap([1,2], function() { this.push(3, 4); }).map(map), expected, 'Object.tap | push to the array');
   equal(Object.tap([1,2], 'push', 3, 4).map(map), [2,4], 'Object.tap | string shortcut | not supported');
-  equal(Object.tap([1,2,3], function(){ if(this.none(4)) this.add(4); }).map(map), expected, 'Object.tap | Sugar adding elements');
-  equal(Object.tap([1,2,3,4], function(){ if(this.last() === 5) this.pop(); }).map(map), expected, 'Object.tap | checking last');
+  equal(Object.tap([1,2,3], function(){ if(this.filter(4).length === 0) this.push(4); }).map(map), expected, 'Object.tap | Sugar adding elements');
+  equal(Object.tap([1,2,3,4], function(){ if(this[this.length - 1] === 5) this.pop(); }).map(map), expected, 'Object.tap | checking last');
 
 
   var obj = { foo: 'bar' };
