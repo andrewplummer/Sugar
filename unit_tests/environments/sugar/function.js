@@ -274,8 +274,27 @@ test('Function', function () {
 
   // Function#fill
 
+  // Now that core is being split up, Number#format may not exist, so replicating it here.
 
-  Number.prototype.two = Number.prototype.format.fill(2);
+  var format = function(place, thousands, decimal) {
+      var str, split, method, after, r = /(\d+)(\d{3})/;
+      if(string(thousands).match(/\d/)) throw new TypeError('Thousands separator cannot contain numbers.');
+      str = object.isNumber(place) ? round(this, place).toFixed(Math.max(place, 0)) : this.toString();
+      thousands = thousands || ',';
+      decimal = decimal || '.';
+      split = str.split('.');
+      str = split[0];
+      after = split[1] || '';
+      while (str.match(r)) {
+        str = str.replace(r, '$1' + thousands + '$2');
+      }
+      if(after.length > 0) {
+        str += decimal + after.pad('0', place - after.length);
+      }
+      return str;
+    }
+
+  Number.prototype.two = format.fill(2);
 
   equal((18).two(), '18.00', 'Function#fill | 18');
   equal((9999).two(), '9,999.00', 'Function#fill | 9,999.00');
@@ -283,7 +302,7 @@ test('Function', function () {
   equal((9999).two('+', '-'), '9+999-00', 'Function#fill | 9+999-00');
 
 
-  Number.prototype.euro = Number.prototype.format.fill(undefined, '.', ',');
+  Number.prototype.euro = format.fill(undefined, '.', ',');
 
   equal((9999.77).euro(), '9.999,77', 'Function#fill | no params | 9.999,77');
   equal((9999.77).euro(0), '10.000', 'Function#fill | 0 | 9.999');
@@ -292,7 +311,7 @@ test('Function', function () {
   equal((9999.77).euro(3), '9.999,770', 'Function#fill | 3 | 9.999,777');
 
 
-  Number.prototype.noop = Number.prototype.format.fill();
+  Number.prototype.noop = format.fill();
 
   equal((1000).noop(3, ' ', ','), '1 000,000', 'Function#fill | noop | 1 000,000');
   equal((1000).noop(4, ' ', ','), '1 000,0000', 'Function#fill | noop | 1 000,0000');
