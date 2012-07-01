@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sugar Core and Inflections</title>
+    <title>Sugar (Inflections Package)</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="stylesheets/custom.css" type="text/css" />
     <link rel="stylesheet" href="stylesheets/tooltip.css" type="text/css" />
@@ -16,25 +16,19 @@
     <script type="text/javascript" src="javascripts/suite.js"></script>
     <script type="text/javascript" src="javascripts/tooltip.js"></script>
     <!-- sugar -->
-    <!--<script type="text/javascript" src="../lib/core.js"></script>-->
-    <!--<script type="text/javascript" src="../lib/inflections.js"></script>-->
-    <script type="text/javascript" src="../release/1.2.5/minified/sugar-1.2.5-core.min.js"></script>
-    <script type="text/javascript" src="../release/1.2.5/minified/sugar-1.2.5-inflections.min.js"></script>
+    <script type="text/javascript" src="../lib/core.js"></script>
+    <script type="text/javascript" src="../lib/inflections.js"></script>
+    <!--<script type="text/javascript" src="../release/1.2.5/minified/sugar-1.2.5-core.min.js"></script>-->
+    <!--<script type="text/javascript" src="../release/1.2.5/minified/sugar-1.2.5-inflections.min.js"></script>-->
     <script type="text/javascript">
       registerEnvironment('core', [
         {
           name: 'core',
           path: 'environments/sugar/',
           tests: [
-            'object.js',
-            'equals.js',
-            'array.js',
-            'number.js',
-            'string.js',
-            'regexp.js',
-            'es5.js',
-            'inflections.js',
-            'function.js'
+            //'equals.js',
+            //'es5.js',
+            'inflections.js'
           ]
         }
       ]);
