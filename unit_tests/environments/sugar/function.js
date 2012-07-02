@@ -278,8 +278,14 @@ test('Function', function () {
 
   var format = function(place, thousands, decimal) {
       var str, split, method, after, r = /(\d+)(\d{3})/;
-      if(string(thousands).match(/\d/)) throw new TypeError('Thousands separator cannot contain numbers.');
-      str = object.isNumber(place) ? round(this, place).toFixed(Math.max(place, 0)) : this.toString();
+      function round(val, precision, method) {
+        var fn = Math[method || 'round'];
+        var multiplier = Math.pow(10, Math.abs(precision || 0));
+        if(precision < 0) multiplier = 1 / multiplier;
+        return fn(val * multiplier) / multiplier;
+      }
+      if(String(thousands).match(/\d/)) throw new TypeError('Thousands separator cannot contain numbers.');
+      str = Object.isNumber(place) ? round(this, place).toFixed(Math.max(place, 0)) : this.toString();
       thousands = thousands || ',';
       decimal = decimal || '.';
       split = str.split('.');
