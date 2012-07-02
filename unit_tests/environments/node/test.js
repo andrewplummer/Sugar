@@ -29,5 +29,6 @@ require('../sugar/date_it.js')
 require('../sugar/date_de.js')
 require('../sugar/date_ja.js')
 require('../sugar/inflections.js');
+require('../sugar/date_range.js');
 
 syncTestsFinished();
