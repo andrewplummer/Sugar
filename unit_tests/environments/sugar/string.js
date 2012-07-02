@@ -628,10 +628,6 @@ test('String', function () {
   equal('quack'.to(-4), 'q', 'String#to | to -4');
 
 
-  // Basic date comprehensions without full date module include
-  equal('January 14, 2012'.toDate().getTime(), new Date(2012, 0, 14).getTime(), 'String#toDate');
-
-
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
   equal('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
   equal('hopOnPop'.dasherize(), 'hop-on-pop', 'String#dasherize | camel-case', { prototype: 'hopOnPop' });
