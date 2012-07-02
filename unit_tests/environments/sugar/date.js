@@ -977,16 +977,16 @@ test('Date', function () {
   equal(d.toUTC().format('ISO8601_DATETIME'), iso, 'Date#format | string constants | ISO8601_DATETIME UTC');
 
 
-  var rfc1123 = getWeekdayFromDate(d).to(3).capitalize()+', '+d.getDate().pad(2)+' '+getMonthFromDate(d).to(3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
-  var rfc1036 = getWeekdayFromDate(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonthFromDate(d).to(3).capitalize()+'-'+d.getFullYear().toString().slice(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
+  var rfc1123 = getWeekdayFromDate(d).slice(0,3).capitalize()+', '+d.getDate().pad(2)+' '+getMonthFromDate(d).slice(0,3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
+  var rfc1036 = getWeekdayFromDate(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonthFromDate(d).slice(0,3).capitalize()+'-'+d.getFullYear().toString().slice(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
   equal(d.format(Date.RFC1123), rfc1123, 'Date#format | constants | RFC1123');
   equal(d.format(Date.RFC1036), rfc1036, 'Date#format | constants | RFC1036');
   equal(d.format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123');
   equal(d.format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036');
 
 
-  rfc1123 = getWeekdayFromDate(d,true).to(3).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonthFromDate(d,true).to(3).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' +0000';
-  rfc1036 = getWeekdayFromDate(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonthFromDate(d,true).to(3).capitalize()+'-'+d.getUTCFullYear().toString().slice(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' +0000';
+  rfc1123 = getWeekdayFromDate(d,true).slice(0,3).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonthFromDate(d,true).slice(0,3).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' +0000';
+  rfc1036 = getWeekdayFromDate(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonthFromDate(d,true).slice(0,3).capitalize()+'-'+d.getUTCFullYear().toString().slice(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' +0000';
   equal(d.toUTC().format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123 UTC');
   equal(d.toUTC().format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036 UTC');
 
@@ -2133,21 +2133,7 @@ test('Date', function () {
 
 
 
-
-
-
-  // String methods
-
-
-  // Got to pass a language code here because the other unit tests may have set
-  // the locale to a non-US format thereby enabling date variants. This test
-  // also acts to ensure that the locale can be passed here.
-  dateEqual('11/5/56'.toDate('en-US'), new Date(1956, 10, 5), 'String#toDate | slash format');
-  dateEqual('October 16, 1987'.toDate(), new Date('October 16, 1987'), 'String#toDate | text format');
-  equal(''.toDate().toString(), new Date().toString(), 'String#toDate | blank');
-  equal('barf'.toDate().toString(), new Date('barf').toString(), 'String#toDate | barf');
-  dateEqual('August 25, 1978'.toDate(),  new Date(1978, 7, 25), 'String#toDate | relative format');
-
+  // Date#getWeek
 
   equal(new Date(2011, 0, 1).getWeek(), 52, 'String#getWeek | January 1, 2011');
   equal(new Date(2011, 0, 2).getWeek(), 52, 'String#getWeek | January 2, 2011');
