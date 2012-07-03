@@ -184,7 +184,7 @@ test('Function', function () {
   async(function(){
     var fn, ret, counter = 0, expected = [['3p0', 1],['luke', 6]];
     var fn = (function(one){
-      equal([this.toString(), one], expected[counter], 'Function#debounce | immediate execution | scope and arguments are correct');
+      equal([this.toString(), one], expected[counter], 'Function#throttle | immediate execution | scope and arguments are correct');
       counter++;
     }).throttle(50);
 
@@ -204,7 +204,7 @@ test('Function', function () {
     ret = fn.call('vader', 4);
 
     setTimeout(function() {
-      equal(counter, 2, 'Function#debounce | immediate execution | counter is correct');
+      equal(counter, 2, 'Function#throttle | immediate execution | counter is correct');
     }, 200);
   });
 
