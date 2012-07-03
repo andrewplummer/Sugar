@@ -813,6 +813,10 @@ test('Object', function () {
   obj.moo = obj;
 
   equal(typeof Object.merge(obj, { foo: obj }), 'object', 'Object.merge should not choke on cyclic references');
-  
+
+
+
+
+
 });
 
