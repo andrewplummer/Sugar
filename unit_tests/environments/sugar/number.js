@@ -306,7 +306,7 @@ test('Number', function () {
   }
 
   // Test ordinalize
-  Object.each(OrdinalNumbers, function(str, ordinalized) {
+  testIterateOverObject(OrdinalNumbers, function(str, ordinalized) {
       equal(str.toNumber().ordinalize(), ordinalized, 'String#ordinalize')
   });
 
