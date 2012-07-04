@@ -2545,13 +2545,10 @@ test('Array', function () {
   equal(Object.reduce(obj1, function(acc, b) { return acc + b; }, 10), 28, 'Object.reduce | obj1 | with initial');
   equal(Object.reduce(obj1, function(acc, b) { return acc - b; }), -12, 'Object.reduce | obj1 | a - b');
   equal(Object.reduce(obj1, function(acc, b) { return acc - b; }, 10), -8, 'Object.reduce | obj1 | a - b with initial');
-  equal(Object.reduceRight(obj1, function(acc, b) { return acc - b; }), -6, 'Object.reduceRight | obj1 | a - b');
-  equal(Object.reduceRight(obj1, function(acc, b) { return acc - b; }, 10), -8, 'Object.reduceRight | obj1 | a - b with initial');
+  equal(Object.reduce(obj1, function(acc, b) { return acc * b; }, 0), 0, 'Object.reduce | obj1 | a * b with 0 initial is 0');
 
   equal(Object.reduce(obj2, function(acc, b) { return (acc.age ? acc.age : acc) + b.age; }), 110, 'Object.reduce | obj2 | a + b');
   equal(Object.reduce(obj2, function(acc, b) { return acc - b.age; }, 10), -100, 'Object.reduce | obj2 | a - b with initial');
-  equal(Object.reduceRight(obj2, function(acc, b) { return (acc.age ? acc.age : acc) + b.age; }), 110, 'Object.reduceRight | obj2 | a + b');
-  equal(Object.reduceRight(obj2, function(acc, b) { return acc - b.age; }, 10), -100, 'Object.reduceRight | obj2 | a - b with initial');
 
 });
 
