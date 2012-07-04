@@ -364,25 +364,25 @@ test('Inflections', function () {
 
 
   // Test pluralize singular
-  Object.each(SingularToPlural, function(singular, plural) {
+  testIterateOverObject(SingularToPlural, function(singular, plural) {
     equal(singular.pluralize(), plural, 'String#pluralize | singular > plural');
     equal(singular.capitalize().pluralize(), plural.capitalize(), 'String#pluralize | singular > capitalize > plural == plural > capitalize');
   });
 
   // Test singularize plural
-  Object.each(SingularToPlural, function(singular, plural) {
+  testIterateOverObject(SingularToPlural, function(singular, plural) {
     equal(plural.singularize(), singular, 'String#singularize | plural > singular');
     equal(plural.capitalize().singularize(), singular.capitalize(), 'String#singularize | plural > capitalize > singular == singular > capitalize');
   });
 
   // Test singularize singular
-  Object.each(SingularToPlural, function(singular, plural) {
+  testIterateOverObject(SingularToPlural, function(singular, plural) {
     equal(singular.singularize(), singular, 'String#singularize | singular > singular');
     equal(singular.capitalize().singularize(), singular.capitalize(), 'String#singularize | singular > capitalize > singular == singular > capitalize');
   });
 
   // Test pluralize plural
-  Object.each(SingularToPlural, function(singular, plural) {
+  testIterateOverObject(SingularToPlural, function(singular, plural) {
     equal(plural.pluralize(), plural, 'String#pluralize | plural > plural');
     equal(plural.capitalize().pluralize(), plural.capitalize(), 'String#singularize | plural > capitalize > plural == plural > capitalize');
   });
@@ -397,28 +397,28 @@ test('Inflections', function () {
 
   // Test irregulars
 
-  Object.each(Irregulars, function(singular, plural) {
+  testIterateOverObject(Irregulars, function(singular, plural) {
     equal(plural.singularize(), singular, 'String#singularize | irregulars');
     equal(singular.pluralize(), plural, 'String#pluralize | irregulars | pluralized singular is plural');
   });
 
-  Object.each(Irregulars, function(singular, plural) {
+  testIterateOverObject(Irregulars, function(singular, plural) {
     equal(plural.pluralize(), plural, 'String#singularize | irregulars | pluralized plural id pluralized');
   });
 
 
   // Test titleize
-  Object.each(MixtureToTitleCase, function(before, titleized) {
+  testIterateOverObject(MixtureToTitleCase, function(before, titleized) {
     equal(before.titleize(), titleized, 'String#titleize | mixed cases')
   });
 
 
   // Test camelize
-  Object.each(CamelToUnderscore, function(camel, underscore) {
+  testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
     equal(underscore.camelize(), camel, 'String#camelize | mixed cases')
   });
 
-  Object.each(UnderscoreToLowerCamel, function(under, lowerCamel) {
+  testIterateOverObject(UnderscoreToLowerCamel, function(under, lowerCamel) {
     // Sugar differs from ActiveSupport here in that the first character is upcased by default
     equal(under.camelize(false), lowerCamel, 'String#camelize | lower camel')
   });
@@ -506,30 +506,30 @@ test('Inflections', function () {
 
 
   // Test underscore
-  Object.each(CamelToUnderscore, function(camel, underscore) {
+  testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
       equal(camel.underscore(), underscore, 'String#underscore | mixed cases')
   });
 
-  Object.each(CamelToUnderscoreWithoutReverse, function(camel, underscore) {
+  testIterateOverObject(CamelToUnderscoreWithoutReverse, function(camel, underscore) {
       equal(camel.underscore(), underscore, 'String#underscore | mixed cases')
   });
 
 
   // Test parameterize
 
-  Object.each(StringToParameterized, function(str, parameterized) {
+  testIterateOverObject(StringToParameterized, function(str, parameterized) {
       equal(str.parameterize(), parameterized, 'String#parameterized')
   });
 
-  Object.each(StringToParameterizedAndNormalized, function(str, parameterized) {
+  testIterateOverObject(StringToParameterizedAndNormalized, function(str, parameterized) {
       equal(str.parameterize(), parameterized, 'String#parameterized | and normalized')
   });
 
-  Object.each(StringToParameterizeWithUnderscore, function(str, parameterized) {
+  testIterateOverObject(StringToParameterizeWithUnderscore, function(str, parameterized) {
       equal(str.parameterize('_'), parameterized, 'String#parameterized | with underscore')
   });
 
-  Object.each(StringToParameterized, function(str, parameterized) {
+  testIterateOverObject(StringToParameterized, function(str, parameterized) {
       equal(str.parameterize('__sep__'), parameterized.replace(/-/g, '__sep__'), 'String#parameterized | with underscore')
   });
 
@@ -539,7 +539,7 @@ test('Inflections', function () {
 
   // Test humanize
 
-  Object.each(UnderscoreToHuman, function(under, human) {
+  testIterateOverObject(UnderscoreToHuman, function(under, human) {
       equal(under.humanize(), human, 'String#humanize | underscore')
   });
 
@@ -586,11 +586,11 @@ test('Inflections', function () {
 
 
   // Test dasherize
-  Object.each(UnderscoresToDashes, function(under, dasherized) {
+  testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
       equal(under.dasherize(), dasherized, 'String#dasherize')
   });
 
-  Object.each(UnderscoresToDashes, function(under, dasherized) {
+  testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
       equal(under.dasherize().underscore(), under, 'String#dasherize | reverse')
   });
 
