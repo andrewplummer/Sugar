@@ -2493,15 +2493,6 @@ test('Array', function () {
   equal(Object.average(obj1, function(key, value) { return key === 'foo' ? value : 0; }), .75, 'Object.average | key is foo');
   equal(Object.average(obj2, 'age'), 27.5, 'Object.average | accepts a string shortcut');
 
-  equal(Object.filter(obj1, function(key, value) { return key == 'foo'; }), {foo: 3}, 'Object.filter | key is foo');
-  equal(Object.filter(obj1, function(key, value) { return key.length > 3; }), {}, 'Object.filter | key length is greater than 3');
-  equal(Object.filter(obj1, function(key, value) { return key.length > 0; }), obj1, 'Object.filter | key length is greater than 0');
-  equal(Object.filter(obj1, function(key, value) { return value > 0; }), obj1, 'Object.filter | value is greater than 0');
-  equal(Object.filter(obj1, function(key, value) { return value > 5; }), {car:6}, 'Object.filter | value is greater than 5');
-  equal(Object.filter(obj1, function(key, value) { return value > 6; }), {}, 'Object.filter | value is greater than 6');
-  equal(Object.filter(obj1, 5), {moo:5},  'Object.filter | shortcut | 5');
-  equal(Object.filter(obj1, 7), {}, 'Object.filter | shortcut | 7');
-
   equal(Object.find(obj1, function(key, value) { return key == 'foo'; }), 'foo', 'Object.find | key is foo');
   equal(Object.find(obj1, function(key, value) { return key.length > 3; }), undefined, 'Object.find | key length is greater than 3');
   equal(Object.find(obj1, function(key, value) { return key.length > 0; }), 'foo', 'Object.find | key length is greater than 0');
@@ -2510,6 +2501,7 @@ test('Array', function () {
   equal(Object.find(obj1, function(key, value) { return value > 6; }), undefined, 'Object.find | value is greater than 6');
   equal(Object.find(obj1, 5), 'moo',  'Object.find | shortcut | 5');
   equal(Object.find(obj1, 7), undefined, 'Object.find | shortcut | 7');
+  equal(Object.find({foo:'bar'}, /b/), 'foo', 'Object.find | uses multi-match');
 
   equal(Object.findAll(obj1, function(key, value) { return key == 'foo'; }), {foo:3}, 'Object.findAll | key is foo');
   equal(Object.findAll(obj1, function(key, value) { return key.length > 3; }), {}, 'Object.findAll | key length is greater than 3');
@@ -2519,6 +2511,7 @@ test('Array', function () {
   equal(Object.findAll(obj1, function(key, value) { return value > 6; }), {}, 'Object.findAll | value is greater than 6');
   equal(Object.findAll(obj1, 5), {moo:5},  'Object.findAll | shortcut | 5');
   equal(Object.findAll(obj1, 7), {}, 'Object.findAll | shortcut | 7');
+  equal(Object.findAll({foo:'bar',moo:'car'}, /a/), {foo:'bar',moo:'car'}, 'Object.findAll | uses multi-match');
 
   var obj3 = testCloneObject(obj1); obj3['blue'] = 4;
   var obj4 = testCloneObject(obj2); obj4['blue'] = {age:11};
@@ -2548,20 +2541,17 @@ test('Array', function () {
   equal(Object.most(obj4, 'age'), {foo: {age:11},blue:{age:11}}, 'Object.most | accepts a string shortcut');
 
 
-  // Deal with this later....
-  // what to do about each?? can it be incorporated?
-  // find is OK?
-  // find/findAll just add the index, etc abilities, which are lost here so is it really necessary??
-  // groupby??
-  // equal(Object.reduce(obj1, function(acc, value) { return acc + value; }), 18, 'Object.reduce');
+  equal(Object.reduce(obj1, function(acc, b) { return acc + b; }), 18, 'Object.reduce | obj1 | default');
+  equal(Object.reduce(obj1, function(acc, b) { return acc + b; }, 10), 28, 'Object.reduce | obj1 | with initial');
+  equal(Object.reduce(obj1, function(acc, b) { return acc - b; }), -12, 'Object.reduce | obj1 | a - b');
+  equal(Object.reduce(obj1, function(acc, b) { return acc - b; }, 10), -8, 'Object.reduce | obj1 | a - b with initial');
+  equal(Object.reduceRight(obj1, function(acc, b) { return acc - b; }), -6, 'Object.reduceRight | obj1 | a - b');
+  equal(Object.reduceRight(obj1, function(acc, b) { return acc - b; }, 10), -8, 'Object.reduceRight | obj1 | a - b with initial');
 
-  var names = 'all,any,none,map,filter,reduce,reduceRight,each,groupBy,find,findAll,count,min,max,most,least,sum,average,sample'.split(',');
-  // Not doing reduce and reduceRight as they have different functionality.
-  // map, every? (all), some? (any), none, count, sum, average, filter, min, max, least, most, reduce, reduceRight, each, groupBy, find, findAll
-
-
-
-
+  equal(Object.reduce(obj2, function(acc, b) { return (acc.age ? acc.age : acc) + b.age; }), 110, 'Object.reduce | obj2 | a + b');
+  equal(Object.reduce(obj2, function(acc, b) { return acc - b.age; }, 10), -100, 'Object.reduce | obj2 | a - b with initial');
+  equal(Object.reduceRight(obj2, function(acc, b) { return (acc.age ? acc.age : acc) + b.age; }), 110, 'Object.reduceRight | obj2 | a + b');
+  equal(Object.reduceRight(obj2, function(acc, b) { return acc - b.age; }, 10), -100, 'Object.reduceRight | obj2 | a - b with initial');
 
 });
 
