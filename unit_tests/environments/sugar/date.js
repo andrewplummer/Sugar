@@ -5,7 +5,7 @@ test('Date', function () {
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
-  if(Object.isFunction(Date.create())) {
+  if(typeof Date.create() === 'function') {
     Date.restore('create');
   };
 
