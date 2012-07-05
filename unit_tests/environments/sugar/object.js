@@ -626,7 +626,6 @@ test('Object', function () {
   equal([1,2,3,4,5].tap('pop').map(map), expected, 'Object#tap | string shortcut | pop the array');
   equal([1,2].tap(function() { this.push(3, 4); }).map(map), expected, 'Object#tap | push to the array');
   equal([1,2].tap('push', 3, 4).map(map), [2,4], 'Object#tap | string shortcut | passing arguments is not supported');
-  equal([1,2,3].tap(function(){ if(this.filter(4).length === 0) this.push(4); }).map(map), expected, 'Object#tap | Sugar adding elements');
   equal([1,2,3,4].tap(function(){ if(this[this.length - 1] === 5) this.pop(); }).map(map), expected, 'Object#tap | checking last');
 
 
@@ -646,44 +645,44 @@ test('Object', function () {
 
   // Object.fromQueryString
 
-  equal(Object.fromQueryString('foo=bar&moo=car'), {foo:'bar',moo:'car'}, 'String#fromQueryString | basic');
-  equal(Object.fromQueryString('foo=bar&moo=3'), {foo:'bar',moo:3}, 'String#fromQueryString | with numbers');
-  equal(Object.fromQueryString('foo=bar&moo=true'), {foo:'bar',moo:true}, 'String#fromQueryString | with true');
-  equal(Object.fromQueryString('foo=bar&moo=false'), {foo:'bar',moo:false}, 'String#fromQueryString | with false');
-  equal(Object.fromQueryString('foo=bar3'), { foo: 'bar3' }, 'String#fromQueryString | number in back');
-  equal(Object.fromQueryString('foo=3bar'), { foo: '3bar' }, 'String#fromQueryString | number up front');
-  equal(Object.fromQueryString('foo=345'), { foo: 345 }, 'String#fromQueryString | numbers only');
-  equal(Object.fromQueryString('foo=&bar='), { foo: '', bar: '' }, 'String#fromQueryString | undefined params');
-  equal(Object.fromQueryString('foo[]=bar&foo[]=car'), { foo: ['bar','car'] }, 'String#fromQueryString | handles array params');
-  equal(Object.fromQueryString('foo[bar]=tee&foo[car]=hee'), { foo: { bar: 'tee', car: 'hee' } }, 'String#fromQueryString | handles hash params');
-  equal(Object.fromQueryString('foo[0]=a&foo[1]=b&foo[2]=c'), { foo: ['a','b','c'] }, 'String#fromQueryString | handles array indexes');
-  equal(Object.fromQueryString('foo[cap][map]=3'), { foo: { cap: { map: 3 } } }, 'String#fromQueryString | handles array indexes');
-  equal(Object.fromQueryString('foo[cap][map][]=3'), { foo: { cap: { map: [3] } } }, 'String#fromQueryString | nested with trailing array');
-  equal(Object.fromQueryString('foo[moo]=1&bar[far]=2'), { foo: { moo: 1 }, bar: { far: 2 }}, 'String#fromQueryString | sister objects');
-  equal(Object.fromQueryString('f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f'), { f: ['a','b','c','d','e','f'] }, 'String#fromQueryString | large array');
-  equal(Object.fromQueryString('foo[0][]=a&foo[1][]=b'), { foo: [['a'],['b']] }, 'String#fromQueryString | nested arrays separate');
-  equal(Object.fromQueryString('foo[0][0]=3&foo[0][1]=4'), { foo: [[3,4]] }, 'String#fromQueryString | nested arrays together');
-  equal(Object.fromQueryString('foo[][]=3&foo[][]=4'), { foo: [[3],[4]] }, 'String#fromQueryString | nested arrays');
+  equal(Object.fromQueryString('foo=bar&moo=car'), {foo:'bar',moo:'car'}, 'Object.fromQueryString | basic');
+  equal(Object.fromQueryString('foo=bar&moo=3'), {foo:'bar',moo:3}, 'Object.fromQueryString | with numbers');
+  equal(Object.fromQueryString('foo=bar&moo=true'), {foo:'bar',moo:true}, 'Object.fromQueryString | with true');
+  equal(Object.fromQueryString('foo=bar&moo=false'), {foo:'bar',moo:false}, 'Object.fromQueryString | with false');
+  equal(Object.fromQueryString('foo=bar3'), { foo: 'bar3' }, 'Object.fromQueryString | number in back');
+  equal(Object.fromQueryString('foo=3bar'), { foo: '3bar' }, 'Object.fromQueryString | number up front');
+  equal(Object.fromQueryString('foo=345'), { foo: 345 }, 'Object.fromQueryString | numbers only');
+  equal(Object.fromQueryString('foo=&bar='), { foo: '', bar: '' }, 'Object.fromQueryString | undefined params');
+  equal(Object.fromQueryString('foo[]=bar&foo[]=car'), { foo: ['bar','car'] }, 'Object.fromQueryString | handles array params');
+  equal(Object.fromQueryString('foo[bar]=tee&foo[car]=hee'), { foo: { bar: 'tee', car: 'hee' } }, 'Object.fromQueryString | handles hash params');
+  equal(Object.fromQueryString('foo[0]=a&foo[1]=b&foo[2]=c'), { foo: ['a','b','c'] }, 'Object.fromQueryString | handles array indexes');
+  equal(Object.fromQueryString('foo[cap][map]=3'), { foo: { cap: { map: 3 } } }, 'Object.fromQueryString | handles array indexes');
+  equal(Object.fromQueryString('foo[cap][map][]=3'), { foo: { cap: { map: [3] } } }, 'Object.fromQueryString | nested with trailing array');
+  equal(Object.fromQueryString('foo[moo]=1&bar[far]=2'), { foo: { moo: 1 }, bar: { far: 2 }}, 'Object.fromQueryString | sister objects');
+  equal(Object.fromQueryString('f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f'), { f: ['a','b','c','d','e','f'] }, 'Object.fromQueryString | large array');
+  equal(Object.fromQueryString('foo[0][]=a&foo[1][]=b'), { foo: [['a'],['b']] }, 'Object.fromQueryString | nested arrays separate');
+  equal(Object.fromQueryString('foo[0][0]=3&foo[0][1]=4'), { foo: [[3,4]] }, 'Object.fromQueryString | nested arrays together');
+  equal(Object.fromQueryString('foo[][]=3&foo[][]=4'), { foo: [[3],[4]] }, 'Object.fromQueryString | nested arrays');
 
-  equal(Object.fromQueryString('foo[]=bar&foo[]=car', false), { 'foo[]': 'car' }, 'String#fromQueryString | disallows nested params');
+  equal(Object.fromQueryString('foo[]=bar&foo[]=car', false), { 'foo[]': 'car' }, 'Object.fromQueryString | disallows nested params');
 
   var sparse = [];
   sparse[3] = 'hardy';
   sparse[10] = 'har har';
-  equal(Object.fromQueryString('foo[3]=hardy&foo[10]=har har'), { foo: sparse }, 'String#fromQueryString | constructed arrays can be sparse');
+  equal(Object.fromQueryString('foo[3]=hardy&foo[10]=har har'), { foo: sparse }, 'Object.fromQueryString | constructed arrays can be sparse');
 
-  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles partially escaped params');
-  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'String#fromQueryString | handles fully escaped params');
+  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'Object.fromQueryString | handles partially escaped params');
+  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'Object.fromQueryString | handles fully escaped params');
 
-  equal(Object.fromQueryString('http://fake.com?foo=bar'), { foo: 'bar' }, 'String#fromQueryString | handles whole URLs');
-  equal(Object.fromQueryString('foo=bar&moo=car').keys(), ['foo', 'moo'], 'String#fromQueryString | should be extended');
-  equal(Object.fromQueryString(), {}, 'String#fromQueryString | will not die if no arguments');
+  equal(Object.fromQueryString('http://fake.com?foo=bar'), { foo: 'bar' }, 'Object.fromQueryString | handles whole URLs');
+  equal(Object.fromQueryString('foo=bar&moo=car').keys(), ['foo', 'moo'], 'Object.fromQueryString | should be extended');
+  equal(Object.fromQueryString(), {}, 'Object.fromQueryString | will not die if no arguments');
 
   if(typeof window !== 'undefined') {
-    equal(Object.isArray(Object.fromQueryString(window.location).keys()), true, 'String#fromQueryString | can handle just window.location');
+    equal(Object.isArray(Object.fromQueryString(window.location).keys()), true, 'Object.fromQueryString | can handle just window.location');
   }
 
-  equal(Object.fromQueryString('foo=3.14156'), { foo: 3.14156 }, 'String#fromQueryString | can handle float values');
+  equal(Object.fromQueryString('foo=3.14156'), { foo: 3.14156 }, 'Object.fromQueryString | can handle float values');
 
 
 
@@ -727,7 +726,6 @@ test('Object', function () {
   equal(Object.tap([1,2,3,4,5], 'pop').map(map), expected, 'Object.tap | string shortcut | pop the array');
   equal(Object.tap([1,2], function() { this.push(3, 4); }).map(map), expected, 'Object.tap | push to the array');
   equal(Object.tap([1,2], 'push', 3, 4).map(map), [2,4], 'Object.tap | string shortcut | not supported');
-  equal(Object.tap([1,2,3], function(){ if(this.filter(4).length === 0) this.push(4); }).map(map), expected, 'Object.tap | Sugar adding elements');
   equal(Object.tap([1,2,3,4], function(){ if(this[this.length - 1] === 5) this.pop(); }).map(map), expected, 'Object.tap | checking last');
 
 
@@ -749,6 +747,9 @@ test('Object', function () {
   Number.extend({
     plus: function(a, b) {
       return this + a + b;
+    },
+    chr: function() {
+      return String.fromCharCode(this);
     }
   });
 
