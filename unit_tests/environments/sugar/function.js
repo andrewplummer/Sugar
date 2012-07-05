@@ -276,52 +276,31 @@ test('Function', function () {
 
   // Now that core is being split up, Number#format may not exist, so replicating it here.
 
-  var format = function(place, thousands, decimal) {
-      var str, split, method, after, r = /(\d+)(\d{3})/;
-      function round(val, precision, method) {
-        var fn = Math[method || 'round'];
-        var multiplier = Math.pow(10, Math.abs(precision || 0));
-        if(precision < 0) multiplier = 1 / multiplier;
-        return fn(val * multiplier) / multiplier;
-      }
-      if(String(thousands).match(/\d/)) throw new TypeError('Thousands separator cannot contain numbers.');
-      str = Object.isNumber(place) ? round(this, place).toFixed(Math.max(place, 0)) : this.toString();
-      thousands = thousands || ',';
-      decimal = decimal || '.';
-      split = str.split('.');
-      str = split[0];
-      after = split[1] || '';
-      while (str.match(r)) {
-        str = str.replace(r, '$1' + thousands + '$2');
-      }
-      if(after.length > 0) {
-        str += decimal + after.pad('0', place - after.length);
-      }
-      return str;
+  var format = function(place, last){
+      return (last || '') + this.toFixed(place);
     }
 
   Number.prototype.two = format.fill(2);
 
-  equal((18).two(), '18.00', 'Function#fill | 18');
-  equal((9999).two(), '9,999.00', 'Function#fill | 9,999.00');
-  equal((9999).two(' '), '9 999.00', 'Function#fill | 9 999.00');
-  equal((9999).two('+', '-'), '9+999-00', 'Function#fill | 9+999-00');
+  equal((18).two(), '18.00', 'Function#fill | two | 18');
+  equal((9999).two(), '9999.00', 'Function#fill | two | 9999.00');
+  equal((9999).two('$'), '$9999.00', 'Function#fill | two | $9999.00');
 
 
-  Number.prototype.euro = format.fill(undefined, '.', ',');
+  Number.prototype.euro = format.fill(undefined, '€');
 
-  equal((9999.77).euro(), '9.999,77', 'Function#fill | no params | 9.999,77');
-  equal((9999.77).euro(0), '10.000', 'Function#fill | 0 | 9.999');
-  equal((9999.77).euro(1), '9.999,8', 'Function#fill | 1 | 9.999,8');
-  equal((9999.77).euro(2), '9.999,77', 'Function#fill | 2 | 9.999,77');
-  equal((9999.77).euro(3), '9.999,770', 'Function#fill | 3 | 9.999,777');
+  equal((9999.77).euro(), '€10000', 'Function#fill | euro | no params | 9.999,77');
+  equal((9999.77).euro(0), '€10000', 'Function#fill | euro | 0 | 9.999');
+  equal((9999.77).euro(1), '€9999.8', 'Function#fill | euro | 1 | 9.999,8');
+  equal((9999.77).euro(2), '€9999.77', 'Function#fill | euro | 2 | 9.999,77');
+  equal((9999.77).euro(3), '€9999.770', 'Function#fill | euro | 3 | 9.999,777');
 
 
   Number.prototype.noop = format.fill();
 
-  equal((1000).noop(3, ' ', ','), '1 000,000', 'Function#fill | noop | 1 000,000');
-  equal((1000).noop(4, ' ', ','), '1 000,0000', 'Function#fill | noop | 1 000,0000');
-  equal((1000).noop(5, ' ', ','), '1 000,00000', 'Function#fill | noop | 1 000,00000');
+  equal((1000).noop(3, '$'), '$1000.000', 'Function#fill | noop | noop | 1 000,000');
+  equal((1000).noop(4, '$'), '$1000.0000', 'Function#fill | noop | noop | 1 000,0000');
+  equal((1000).noop(5, '$'), '$1000.00000', 'Function#fill | noop | noop | 1 000,00000');
 
   equal((function(first){ return first; }).fill(['a','b'])(), ['a','b'], 'Function#fill | can be passed arrays');
 
