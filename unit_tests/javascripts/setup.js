@@ -45,7 +45,7 @@ var deepEqual = function(one, two) {
 var arrayEqual = function(one, two) {
   var i, result = true;
   // This MUST be .each as we can have very large sparse arrays in the tests!
-  one.each(function(a, i) {
+  testArrayEach(one, function(a, i) {
     if(!isEqual(one[i], two[i])) {
       result = false;
     }
@@ -83,6 +83,35 @@ var testCloneObject = function(obj) {
     result[key] = obj[key];
   }
   return result;
+}
+
+var testArrayEach = function(arr, fn, sparse) {
+  var length = arr.length, i = 0;
+  while(i < length) {
+    if(!(i in arr)) {
+      return testIterateOverSparseArray(arr, fn, i);
+    } else if(fn.call(arr, arr[i], i, arr) === false) {
+      break;
+    }
+    i++;
+  }
+}
+
+var testIterateOverSparseArray = function(arr, fn, fromIndex) {
+  var indexes = [], i;
+  for(i in arr) {
+    if(testIsArrayIndex(arr, i) && i >= fromIndex) {
+      indexes.push(parseInt(i));
+    }
+  }
+  testArrayEach(indexes.sort(), function(index) {
+    return fn.call(arr, arr[index], index, arr);
+  });
+  return arr;
+}
+
+var testIsArrayIndex = function(arr, i) {
+  return i in arr && (i >>> 0) == i && i != 0xffffffff;
 }
 
 var objectEqual = function(one, two) {

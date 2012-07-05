@@ -1009,13 +1009,13 @@ test('Array', function () {
 
 
   // Issue #142 - inGroupsOf corrupting array length
-  arr = (1).upto(20);
+  arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
   arr.inGroupsOf(3);
   equal(arr.length, 20, 'Array#inGroupsOf | does not corrupt original array length');
 
 
   // Emulating example of Enumerable#each_slice
-  equal((1).upto(10).inGroupsOf(3).map(function(g) { return g[1]; }).compact(), [2,5,8], 'Array#inGroupsOf | 1 to 10 in groups of 3 compacted');
+  equal([1,2,3,4,5,6,7,8,9,10].inGroupsOf(3).map(function(g) { return g[1]; }).compact(), [2,5,8], 'Array#inGroupsOf | 1 to 10 in groups of 3 compacted');
 
 
 
@@ -1590,7 +1590,7 @@ test('Array', function () {
   /* Note that there is a built-in 0.00000001% chance that this test will fail */
   equal(samples.all(function(a) { return a == 1; }), false, 'Array#sample');
 
-  equal(Object.isNumber(arr.sample()), true, 'Array#sample | no params');
+  equal(typeof arr.sample(), 'number', 'Array#sample | no params');
   equal(arr.sample(1).length, 1, 'Array#sample | 1');
   equal(arr.sample(2).length, 2, 'Array#sample | 2');
   equal(arr.sample(3).length, 3, 'Array#sample | 3');
@@ -2392,7 +2392,7 @@ test('Array', function () {
   equal([one, two, three, four].findAll({ a: 'one' }), [one], 'Array#findAll | matches class instances | object with string');
   equal([one, two, three, four].findAll({ a: /t/ }), [two, three], 'Array#findAll | matches class instances | object with regex');
   equal([one, two, three, four].findAll('one'), [], 'Array#findAll | matches class instances | string');
-  equal([one, two, three, four].findAll(/t/), [], 'Array#findAll | matches class instances | string');
+  equal([one, two, three, four].findAll(/t/), [], 'Array#findAll | matches class instances | regex');
   equal([one, two, three, four].findAll(true), [], 'Array#findAll | matches class instances | boolean');
   equal([one, two, three, four].findAll(new Date()), [], 'Array#findAll | matches class instances | now');
   equal([one, two, three, four].findAll(new Date(2001, 3, 15)), [], 'Array#findAll | matches class instances | correct date');
