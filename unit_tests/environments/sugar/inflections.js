@@ -342,7 +342,7 @@ test('Inflections', function () {
 
 
   // Test uncountability of words
-  Uncountables.each(function(word) {
+  Uncountables.forEach(function(word) {
     equal(word.singularize(), word, 'String#singularize | uncountables');
     equal(word.pluralize(), word, 'String#pluralize | uncountables');
     equal(word.singularize(), word.pluralize(), 'String#singularize | uncountables | same as pluralize');
@@ -467,7 +467,7 @@ test('Inflections', function () {
     ["Restfully",         "restfully",          "Restfully",        "Restfully"]
     // This one confounds the JS implementation, but I argue that it isn't correct anyway.
     // ["RoRails",           "ro_rails",           "Ro rails",         "Ro Rails"]
-  ].each(function(set) {
+  ].forEach(function(set) {
     var camel = set[0], under = set[1], human = set[2], title = set[3];
     equal(under.camelize(), camel, 'String#camelize | under.camelize()')
     equal(camel.camelize(), camel, 'String#camelize | camel.camelize()')

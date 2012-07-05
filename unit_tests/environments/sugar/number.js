@@ -307,7 +307,7 @@ test('Number', function () {
 
   // Test ordinalize
   testIterateOverObject(OrdinalNumbers, function(str, ordinalized) {
-      equal(str.toNumber().ordinalize(), ordinalized, 'String#ordinalize')
+      equal(parseInt(str).ordinalize(), ordinalized, 'String#ordinalize')
   });
 
 
@@ -396,7 +396,7 @@ test('Number', function () {
   equal((547).pad(2), '547', 'Number#pad | 547 padded to 2 places')
   equal((547).pad(3), '547', 'Number#pad | 547 padded to 3 places')
   equal((547).pad(4), '0547', 'Number#pad | 547 padded to 4 places')
-  equal((0).pad(0), '', 'Number#pad | 0 no padding')
+  equal((0).pad(0), '0', 'Number#pad | 0 no padding')
   equal((0).pad(1), '0', 'Number#pad | 0 padded to 1 place')
   equal((0).pad(2), '00', 'Number#pad | 0 padded to 2 places')
   equal((0).pad(3), '000', 'Number#pad | 0 padded to 3 places')
