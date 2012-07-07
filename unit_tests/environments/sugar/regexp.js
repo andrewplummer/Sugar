@@ -2,6 +2,13 @@ test('RegExp', function () {
 
   var r, n;
 
+
+  function flagsEqual(actual, expected, message) {
+    var actualSorted   = actual.split('').sort().join('');
+    var expectedSorted = actual.split('').sort().join('');
+    equal(actualSorted, expectedSorted, message);
+  }
+
   equal(RegExp.escape('test regexp'), 'test regexp', 'RegExp#escape');
   equal(RegExp.escape('test reg|exp'), 'test reg\\|exp', 'RegExp#escape');
   equal(RegExp.escape('hey there (budday)'), 'hey there \\(budday\\)', 'RegExp#escape');
@@ -46,10 +53,14 @@ test('RegExp', function () {
   equal(r.ignoreCase, true, 'RegExp#removeFlag | initial regex is untouched | ignoreCase');
   equal(r.multiline, true, 'RegExp#removeFlag | initial regex is untouched | multiline');
 
+  raisesError(function(){ /foobar/gim.addFlag('d'); }, 'RegExp#addFlags | d');
 
   // RegExp#getFlags
 
-  equal(/foobar/gim.getFlags(), 'gim', 'RegExp#getFlags');
+  flagsEqual(/foobar/gim.getFlags(), 'gim', 'RegExp#getFlags | gim');
+  flagsEqual(/foobar/im.getFlags(), 'im', 'RegExp#getFlags | gi');
+  flagsEqual(/foobar/i.getFlags(), 'i', 'RegExp#getFlags | i');
+  flagsEqual(/foobar/.getFlags(), '', 'RegExp#getFlags | none');
 
 });
 
