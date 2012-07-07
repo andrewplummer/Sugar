@@ -952,7 +952,7 @@ test('Date', function () {
   // Be VERY careful here. Timezone offset is NOT always guaranteed to be the same for a given timezone,
   // as DST may come into play.
   var offset = d.getTimezoneOffset();
-  var isotzd = Math.round(-offset / 60).pad(2, true) + ':' + (offset % 60).pad(2);
+  var isotzd = testPadNumber(Math.round(-offset / 60), 2, true) + ':' + testPadNumber(offset % 60, 2);
   var tzd = isotzd.replace(/:/, '');
   if(d.isUTC()) {
     isotzd = 'Z';
@@ -971,22 +971,22 @@ test('Date', function () {
   equal(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | string constants | ISO8601_DATE');
   equal(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
 
-  var iso = d.getUTCFullYear()+'-'+(d.getUTCMonth()+1).pad(2)+'-'+d.getUTCDate().pad(2)+'T'+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+'.'+d.getUTCMilliseconds().pad(3)+'Z';
+  var iso = d.getUTCFullYear()+'-'+testPadNumber(d.getUTCMonth()+1, 2)+'-'+testPadNumber(d.getUTCDate(), 2)+'T'+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+'.'+testPadNumber(d.getUTCMilliseconds(), 3)+'Z';
 
   equal(d.toUTC().format(Date.ISO8601_DATETIME), iso, 'Date#format | constants | ISO8601_DATETIME UTC HOLY');
   equal(d.toUTC().format('ISO8601_DATETIME'), iso, 'Date#format | string constants | ISO8601_DATETIME UTC');
 
 
-  var rfc1123 = getWeekdayFromDate(d).slice(0,3).capitalize()+', '+d.getDate().pad(2)+' '+getMonthFromDate(d).slice(0,3).capitalize()+' '+d.getFullYear()+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
-  var rfc1036 = getWeekdayFromDate(d).capitalize()+', '+d.getDate().pad(2)+'-'+getMonthFromDate(d).slice(0,3).capitalize()+'-'+d.getFullYear().toString().slice(2)+' '+d.getHours().pad(2)+':'+d.getMinutes().pad(2)+':'+d.getSeconds().pad(2)+' '+d.getUTCOffset();
+  var rfc1123 = testCapitalize(getWeekdayFromDate(d).slice(0,3))+', '+testPadNumber(d.getDate(), 2)+' '+testCapitalize(getMonthFromDate(d).slice(0,3))+' '+d.getFullYear()+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+d.getUTCOffset();
+  var rfc1036 = testCapitalize(getWeekdayFromDate(d))+', '+testPadNumber(d.getDate(), 2)+'-'+testCapitalize(getMonthFromDate(d).slice(0,3))+'-'+d.getFullYear().toString().slice(2)+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+d.getUTCOffset();
   equal(d.format(Date.RFC1123), rfc1123, 'Date#format | constants | RFC1123');
   equal(d.format(Date.RFC1036), rfc1036, 'Date#format | constants | RFC1036');
   equal(d.format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123');
   equal(d.format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036');
 
 
-  rfc1123 = getWeekdayFromDate(d,true).slice(0,3).capitalize()+', '+d.getUTCDate().pad(2)+' '+getMonthFromDate(d,true).slice(0,3).capitalize()+' '+d.getUTCFullYear()+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' +0000';
-  rfc1036 = getWeekdayFromDate(d,true).capitalize()+', '+d.getUTCDate().pad(2)+'-'+getMonthFromDate(d,true).slice(0,3).capitalize()+'-'+d.getUTCFullYear().toString().slice(2)+' '+d.getUTCHours().pad(2)+':'+d.getUTCMinutes().pad(2)+':'+d.getUTCSeconds().pad(2)+' +0000';
+  rfc1123 = testCapitalize(getWeekdayFromDate(d,true).slice(0,3))+', '+testPadNumber(d.getUTCDate(), 2)+' '+testCapitalize(getMonthFromDate(d,true).slice(0,3))+' '+d.getUTCFullYear()+' '+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+' +0000';
+  rfc1036 = testCapitalize(getWeekdayFromDate(d,true))+', '+testPadNumber(d.getUTCDate(), 2)+'-'+testCapitalize(getMonthFromDate(d,true).slice(0,3))+'-'+d.getUTCFullYear().toString().slice(2)+' '+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+' +0000';
   equal(d.toUTC().format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123 UTC');
   equal(d.toUTC().format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036 UTC');
 
