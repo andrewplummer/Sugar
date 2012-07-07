@@ -114,6 +114,20 @@ var testIsArrayIndex = function(arr, i) {
   return i in arr && (i >>> 0) == i && i != 0xffffffff;
 }
 
+var testPadNumber = function(val, place, sign) {
+  var num = Math.abs(val);
+  var len = Math.abs(num).toString().replace(/\.\d+/, '').length;
+  var str =  new Array(Math.max(0, place - len) + 1).join('0') + num;
+  if(val < 0 || sign) {
+    str = (val < 0 ? '-' : '+') + str;
+  }
+  return str;
+}
+
+var testCapitalize = function(str) {
+  return str.slice(0,1).toUpperCase() + str.slice(1);
+}
+
 var objectEqual = function(one, two) {
   var onep = 0, twop = 0, key;
   for(key in one) {
