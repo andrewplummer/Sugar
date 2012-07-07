@@ -815,7 +815,13 @@ test('Object', function () {
 
   equal(typeof Object.merge(obj, { foo: obj }), 'object', 'Object.merge should not choke on cyclic references');
 
+  // Object.merge deep merges should clone regexes
 
+  var obj1 = {
+    reg: /foobar/g
+  }
+
+  equal(Object.merge({}, obj1, true).reg === obj1.reg, false, 'Object.merge | deep merging will clone regexes');
 
 });
 
