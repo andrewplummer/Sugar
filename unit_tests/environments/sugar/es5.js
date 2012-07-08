@@ -53,179 +53,187 @@ test('ECMAScript', function () {
     count++;
   }, 'wasabi');
 
-  /*
-   equal(count, 4, 'Array#forEach | will not visit elements that were added since beginning the loop or visit missing elements');
+  equal(count, 4, 'Array#forEach | will not visit elements that were added since beginning the loop or visit missing elements');
 
-   /*
-    arr = ['a'];
-    arr[-3] = 'b';
+  arr = ['a'];
+  arr[-3] = 'b';
 
 
-    // This will lock browsers, including native implementations. Sparse array
-    // optimizations are NOT in the ECMA spec, it would seem.
-    // arr[4294967294] = 'c';
+  // This will lock browsers, including native implementations. Sparse array
+  // optimizations are NOT in the ECMA spec, it would seem.
+  // arr[4294967294] = 'c';
 
 
-    arr[256] = 'd';
-    count = 0;
-    arr.forEach(function(el, i){
-      count++;
-    });
+  arr[256] = 'd';
+  count = 0;
+  arr.forEach(function(el, i){
+    count++;
+  });
 
-    equal(count, 2, 'Array#forEach | will only visit elements with valid indexes');
-    equal(arr.length, 257, 'Array#forEach | "numerically greater than the name of every property whose name is an array index"');
+  equal(count, 2, 'Array#forEach | will only visit elements with valid indexes');
+  equal(arr.length, 257, 'Array#forEach | "numerically greater than the name of every property whose name is an array index"');
 
-    arr.length = 50;
-    arr.forEach(function(){
-      count++;
-    });
-    equal(arr[4294967294], undefined, 'Array#forEach | setting the length property will delete all elements above that index');
-    */
+  arr.length = 50;
+  arr.forEach(function() {
+    count++;
+  });
+  equal(arr[4294967294], undefined, 'Array#forEach | setting the length property will delete all elements above that index');
 
-   arr = ['a','b','c'];
-   expected = ['a','x'];
-   count = 0;
-   arr.forEach(function(el, i){
-     if(i == 0) {
-       arr[1] = 'x';
-       delete arr[2];
-     }
-     equal(el, expected[count], 'Array#forEach | elements should be as expected');
-     count++;
-   });
-   equal(count, 2, 'Array#forEach | elements deleted after the loop begins should not be visited');
+  arr = ['a','b','c'];
+  expected = ['a','x'];
+  count = 0;
+  arr.forEach(function(el, i){
+    if(i == 0) {
+      arr[1] = 'x';
+      delete arr[2];
+    }
+    equal(el, expected[count], 'Array#forEach | elements should be as expected');
+    count++;
+  });
+  equal(count, 2, 'Array#forEach | elements deleted after the loop begins should not be visited');
 
-   arr = [];
-   expected = ['moo'];
-   count = 0;
-   arr[2] = 'two';
-   arr['2'] = 'moo';
-   arr.forEach(function(el, i){
-     equal(el, expected[count], 'Array#forEach | strings and numbers are both the same for accessing array elements');
-     count++;
-   });
+  arr = [];
+  expected = ['moo'];
+  count = 0;
+  arr[2] = 'two';
+  arr['2'] = 'moo';
+  arr.forEach(function(el, i){
+    equal(el, expected[count], 'Array#forEach | strings and numbers are both the same for accessing array elements');
+    count++;
+  });
 
-   equal(count, 1, 'Array#forEach | setting array elements with a string is the same as with a number');
+  equal(count, 1, 'Array#forEach | setting array elements with a string is the same as with a number');
 
 
-   arr = [];
-   arr[2] = 'c';
-   arr[1] = 'b';
-   arr[0] = 'a';
+  arr = [];
+  arr[2] = 'c';
+  arr[1] = 'b';
+  arr[0] = 'a';
 
-   result = [];
-   arr.forEach(function(el) {
-     result.push(el);
-   });
-   equal(result, ['a','b','c'], 'Array#forEach | walks array in order');
+  result = [];
+  arr.forEach(function(el) {
+    result.push(el);
+  });
+  equal(result, ['a','b','c'], 'Array#forEach | walks array in order');
 
 
 
-   count = 0;
-   [1,2,3].forEach(function(el) {
-     count++;
-     return false;
-   });
-   equal(count, 3, 'Array#forEach | returning false will not break the loop');
+  count = 0;
+  [1,2,3].forEach(function(el) {
+    count++;
+    return false;
+  });
+  equal(count, 3, 'Array#forEach | returning false will not break the loop');
+
+
+  count = 0;
+  arr = [1,2];
+  arr.push(undefined);
+  arr.push(3);
+  arr.forEach(function(el) {
+    count++;
+    return false;
+  });
+  equal(count, 4, 'Array#forEach | undefined members are counted');
 
 
 
-   // Array#indexOf
+  // Array#indexOf
 
-   arr = [1,2,3];
-   arr[-2] = 4; // Throw a wrench in the gears by assigning a non-valid array index as object property.
+  arr = [1,2,3];
+  arr[-2] = 4; // Throw a wrench in the gears by assigning a non-valid array index as object property.
 
-   equal(arr.indexOf(1), 0, 'Array#indexOf | finds 1');
-   equal(arr.indexOf(1) === 0, true, 'Array#indexOf | finds 1 and is result strictly equal');
-   equal(arr.indexOf(4), -1, 'Array#indexOf | does not find 4');
-   equal(arr.indexOf('1'), -1, 'Array#indexOf | Uses strict equality');
-   equal(arr.indexOf(2, 1), 1, 'Array#indexOf | from index 1');
-   equal(arr.indexOf(2, 2), -1, 'Array#indexOf | from index 2');
-   equal(arr.indexOf(2, 3), -1, 'Array#indexOf | from index 3');
-   equal(arr.indexOf(2, 4), -1, 'Array#indexOf | from index 4');
-   equal(arr.indexOf(3, -1), 2, 'Array#indexOf | from index -1');
-   equal(arr.indexOf(3, -2), 2, 'Array#indexOf | from index -2');
-   equal(arr.indexOf(3, -3), 2, 'Array#indexOf | from index -3');
-   equal(arr.indexOf(3, -4), 2, 'Array#indexOf | from index -4');
+  equal(arr.indexOf(1), 0, 'Array#indexOf | finds 1');
+  equal(arr.indexOf(1) === 0, true, 'Array#indexOf | finds 1 and is result strictly equal');
+  equal(arr.indexOf(4), -1, 'Array#indexOf | does not find 4');
+  equal(arr.indexOf('1'), -1, 'Array#indexOf | Uses strict equality');
+  equal(arr.indexOf(2, 1), 1, 'Array#indexOf | from index 1');
+  equal(arr.indexOf(2, 2), -1, 'Array#indexOf | from index 2');
+  equal(arr.indexOf(2, 3), -1, 'Array#indexOf | from index 3');
+  equal(arr.indexOf(2, 4), -1, 'Array#indexOf | from index 4');
+  equal(arr.indexOf(3, -1), 2, 'Array#indexOf | from index -1');
+  equal(arr.indexOf(3, -2), 2, 'Array#indexOf | from index -2');
+  equal(arr.indexOf(3, -3), 2, 'Array#indexOf | from index -3');
+  equal(arr.indexOf(3, -4), 2, 'Array#indexOf | from index -4');
 
-   // These tests will by proxy be stress testing the toInteger internal private function.
-   equal(arr.indexOf(1, NaN), 0, 'Array#indexOf | index NaN becomes 0');
-   equal(arr.indexOf(1, true), -1, 'Array#indexOf | index true becomes 1');
-   equal(arr.indexOf(1, false), 0, 'Array#indexOf | index false becomes 0');
-   equal(arr.indexOf(1, 0.1), 0, 'Array#indexOf | index 0.1 becomes 0');
-   equal(arr.indexOf(1, 1.1), -1, 'Array#indexOf | index 1.1 becomes 1');
-   equal(arr.indexOf(3, -0.1), 2, 'Array#indexOf | index -0.1 becomes 0');
-   equal(arr.indexOf(3, -1.1), 2, 'Array#indexOf | index -1.1 becomes -1');
-   equal(arr.indexOf(1, 1.7), -1, 'Array#indexOf | index 1.7 becomes 1');
-   equal(arr.indexOf(3, -1.7), 2, 'Array#indexOf | index -1.7 becomes -1');
-
-
-   fn  = function(){};
-   reg = /arf/;
-   obj = { moo: 'cow' };
-
-   equal([fn].indexOf(fn), 0, 'Array#indexOf | finds function references');
-   equal([reg].indexOf(reg), 0, 'Array#indexOf | finds regex references');
-   equal([obj].indexOf(obj), 0, 'Array#indexOf | finds object references');
-
-   arr = [];
-   arr[2] = 'c';
-   arr[1] = 'c';
-   arr[0] = 'c';
-
-   equal(arr.indexOf('c'), 0, 'Array#indexOf | walks array in order');
-   equal(Array.prototype.indexOf.call('moo', 'o'), 1, 'Array#indexOf | should work on strings as well');
-
-   arr = [];
-   arr[3] = 'a';
-
-   equal(arr.indexOf('a'), 3, 'Array#indexOf | must work on sparse arrays as well');
-
-   // Although Infinity appears to be allowable in the ECMA spec, both of these cases
-   // would appear to kill all modern browsers.
-   // equal(arr.indexOf(1, Infinity), -1, 'Array#indexOf | infinity is valid');  This locks the browser... should it??
-   // equal(arr.indexOf(1, -Infinity), 0, 'Array#indexOf | -infinity is valid');
+  // These tests will by proxy be stress testing the toInteger internal private function.
+  equal(arr.indexOf(1, NaN), 0, 'Array#indexOf | index NaN becomes 0');
+  equal(arr.indexOf(1, true), -1, 'Array#indexOf | index true becomes 1');
+  equal(arr.indexOf(1, false), 0, 'Array#indexOf | index false becomes 0');
+  equal(arr.indexOf(1, 0.1), 0, 'Array#indexOf | index 0.1 becomes 0');
+  equal(arr.indexOf(1, 1.1), -1, 'Array#indexOf | index 1.1 becomes 1');
+  equal(arr.indexOf(3, -0.1), 2, 'Array#indexOf | index -0.1 becomes 0');
+  equal(arr.indexOf(3, -1.1), 2, 'Array#indexOf | index -1.1 becomes -1');
+  equal(arr.indexOf(1, 1.7), -1, 'Array#indexOf | index 1.7 becomes 1');
+  equal(arr.indexOf(3, -1.7), 2, 'Array#indexOf | index -1.7 becomes -1');
 
 
-   // Array#lastIndexOf
+  fn  = function(){};
+  reg = /arf/;
+  obj = { moo: 'cow' };
 
-   arr = ['a', 1, 'a'];
-   arr[-2] = 'a'; // Throw a wrench in the gears by assigning a non-valid array index as object property.
+  equal([fn].indexOf(fn), 0, 'Array#indexOf | finds function references');
+  equal([reg].indexOf(reg), 0, 'Array#indexOf | finds regex references');
+  equal([obj].indexOf(obj), 0, 'Array#indexOf | finds object references');
 
-   equal(arr.lastIndexOf('a'), 2, 'Array#lastIndexOf | finds a');
-   equal(arr.lastIndexOf('a') === 2, true, 'Array#lastIndexOf | finds a and is result strictly equal');
-   equal(arr.lastIndexOf('c'), -1, 'Array#lastIndexOf | does not find c');
-   equal(arr.lastIndexOf('1'), -1, 'Array#lastIndexOf | Uses strict equality');
-   equal(arr.lastIndexOf('a', 1), 0, 'Array#lastIndexOf | from index 1');
-   equal(arr.lastIndexOf('a', 2), 2, 'Array#lastIndexOf | from index 2');
-   equal(arr.lastIndexOf('a', 3), 2, 'Array#lastIndexOf | from index 3');
-   equal(arr.lastIndexOf('a', 4), 2, 'Array#lastIndexOf | from index 4');
-   equal(arr.lastIndexOf('a', 0), 0, 'Array#lastIndexOf | from index 0');
-   equal(arr.lastIndexOf('a', -1), 2, 'Array#lastIndexOf | from index -1');
-   equal(arr.lastIndexOf('a', -2), 0, 'Array#lastIndexOf | from index -2');
-   equal(arr.lastIndexOf('a', -3), 0, 'Array#lastIndexOf | from index -3');
-   equal(arr.lastIndexOf('a', -4), -1, 'Array#lastIndexOf | from index -4');
+  arr = [];
+  arr[2] = 'c';
+  arr[1] = 'c';
+  arr[0] = 'c';
 
-   fn  = function(){};
-   reg = /arf/;
-   obj = { moo: 'cow' };
+  equal(arr.indexOf('c'), 0, 'Array#indexOf | walks array in order');
+  equal(Array.prototype.indexOf.call('moo', 'o'), 1, 'Array#indexOf | should work on strings as well');
 
-   equal([fn].lastIndexOf(fn), 0, 'Array#lastIndexOf | finds function references');
-   equal([reg].lastIndexOf(reg), 0, 'Array#lastIndexOf | finds regex references');
-   equal([obj].lastIndexOf(obj), 0, 'Array#lastIndexOf | finds object references');
+  arr = [];
+  arr[3] = 'a';
 
-   arr = [];
-   arr[2] = 'c';
-   arr[1] = 'c';
-   arr[0] = 'c';
+  equal(arr.indexOf('a'), 3, 'Array#indexOf | must work on sparse arrays as well');
 
-   equal(arr.lastIndexOf('c'), 2, 'Array#lastIndexOf | walks array in order');
-   equal(Array.prototype.lastIndexOf.call('moo', 'o'), 2, 'Array#lastIndexOf | should work on strings as well');
+  // Although Infinity appears to be allowable in the ECMA spec, both of these cases
+  // would appear to kill all modern browsers.
+  // equal(arr.indexOf(1, Infinity), -1, 'Array#indexOf | infinity is valid');  This locks the browser... should it??
+  // equal(arr.indexOf(1, -Infinity), 0, 'Array#indexOf | -infinity is valid');
 
-   arr = ['c'];
-   arr[3] = 'a';
 
-   equal(arr.lastIndexOf('c'), 0, 'Array#lastIndexOf | must work on sparse arrays as well');
+  // Array#lastIndexOf
+
+  arr = ['a', 1, 'a'];
+  arr[-2] = 'a'; // Throw a wrench in the gears by assigning a non-valid array index as object property.
+
+  equal(arr.lastIndexOf('a'), 2, 'Array#lastIndexOf | finds a');
+  equal(arr.lastIndexOf('a') === 2, true, 'Array#lastIndexOf | finds a and is result strictly equal');
+  equal(arr.lastIndexOf('c'), -1, 'Array#lastIndexOf | does not find c');
+  equal(arr.lastIndexOf('1'), -1, 'Array#lastIndexOf | Uses strict equality');
+  equal(arr.lastIndexOf('a', 1), 0, 'Array#lastIndexOf | from index 1');
+  equal(arr.lastIndexOf('a', 2), 2, 'Array#lastIndexOf | from index 2');
+  equal(arr.lastIndexOf('a', 3), 2, 'Array#lastIndexOf | from index 3');
+  equal(arr.lastIndexOf('a', 4), 2, 'Array#lastIndexOf | from index 4');
+  equal(arr.lastIndexOf('a', 0), 0, 'Array#lastIndexOf | from index 0');
+  equal(arr.lastIndexOf('a', -1), 2, 'Array#lastIndexOf | from index -1');
+  equal(arr.lastIndexOf('a', -2), 0, 'Array#lastIndexOf | from index -2');
+  equal(arr.lastIndexOf('a', -3), 0, 'Array#lastIndexOf | from index -3');
+  equal(arr.lastIndexOf('a', -4), -1, 'Array#lastIndexOf | from index -4');
+
+  fn  = function(){};
+  reg = /arf/;
+  obj = { moo: 'cow' };
+
+  equal([fn].lastIndexOf(fn), 0, 'Array#lastIndexOf | finds function references');
+  equal([reg].lastIndexOf(reg), 0, 'Array#lastIndexOf | finds regex references');
+  equal([obj].lastIndexOf(obj), 0, 'Array#lastIndexOf | finds object references');
+
+  arr = [];
+  arr[2] = 'c';
+  arr[1] = 'c';
+  arr[0] = 'c';
+
+  equal(arr.lastIndexOf('c'), 2, 'Array#lastIndexOf | walks array in order');
+  equal(Array.prototype.lastIndexOf.call('moo', 'o'), 2, 'Array#lastIndexOf | should work on strings as well');
+
+  arr = ['c'];
+  arr[3] = 'a';
+
+  equal(arr.lastIndexOf('c'), 0, 'Array#lastIndexOf | must work on sparse arrays as well');
 
 
    // Array#every
