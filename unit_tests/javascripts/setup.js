@@ -114,6 +114,10 @@ var testIsArrayIndex = function(arr, i) {
   return i in arr && (i >>> 0) == i && i != 0xffffffff;
 }
 
+var testIsArray = function(obj) {
+  return Object.prototype.toString.call(obj) === '[object Array]';
+}
+
 var testPadNumber = function(val, place, sign) {
   var num = Math.abs(val);
   var len = Math.abs(num).toString().replace(/\.\d+/, '').length;
