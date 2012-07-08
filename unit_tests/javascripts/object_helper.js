@@ -31,3 +31,14 @@ testIterateOverObject = function(obj, fn) {
     fn.call(obj, key, obj[key]);
   }
 }
+
+testClassAndInstance = function(name, obj, args, expected, message) {
+  if(!testIsArray(args)) {
+    args = [args];
+  }
+  equal(Object[name].apply(obj, [obj].concat(args)), expected, message);
+  if(Object.extended) {
+    extended = Object.extended(testCloneObject(obj));
+    equal(extended[name].apply(extended, args), expected, message + ' | On extended object');
+  }
+}
