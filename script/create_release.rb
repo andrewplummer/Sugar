@@ -19,20 +19,21 @@ end
 
 
 def concat
-  file = File.open('tmp/uncompiled.js', 'w')
-  @packages.each do |p|
-    file.puts content = File.open("lib/#{p}.js").read + @delimiter
+  File.open('tmp/uncompiled.js', 'w') do |file|
+    @packages.each do |p|
+      file.puts content = File.open("lib/#{p}.js").read + @delimiter
+    end
   end
 end
 
 def compile
-  command = "java -jar script/jsmin/compiler.jar --warning_level QUIET --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js --variable_map_output_file tmp/variable_map --property_map_output_file tmp/property_map --js tmp/uncompiled.js --js_output_file tmp/compiled.js"
+  command = "java -jar script/jsmin/compiler.jar --warning_level QUIET --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js --js tmp/uncompiled.js --js_output_file tmp/compiled.js"
   puts "EXECUTING: #{command}"
   `#{command}`
 end
 
 def split_compiled
-  contents = File.open('tmp/compiled.js', 'r').read.split('console.info("-----BREAK-----");')
+  contents = File.open('tmp/compiled.js', 'r').read.split(@delimiter)
   @packages.each_with_index do |name, index|
     File.open("#{@full_path}/precompiled/#{name}.js", 'w') do |f|
       f.puts contents[index]
@@ -55,8 +56,8 @@ def create_package(name, arr)
 end
 
 def cleanup
-  `rm tmp/variable_map`
-  `rm tmp/property_map`
+  #`rm tmp/variable_map`
+  #`rm tmp/property_map`
   `rm tmp/compiled`
   `rm tmp/uncompiled`
 end
