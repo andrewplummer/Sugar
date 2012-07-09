@@ -7,6 +7,8 @@ test('Date Ranges', function () {
   range = Date.range(new Date(2011,8,10,9), new Date(2010,10,10,9));
 
   equal(range.isValid(), false, 'DateRange | invalid range');
+  equal(typeof range.start.getTime, 'function', 'DateRange | start is not minified');
+  equal(typeof range.end.getTime, 'function', 'DateRange | end is not minified');
   equal(isNaN(range.duration()), true, 'DateRange | invalid ranges have no duration');
   equal(range.toString(), 'Invalid DateRange', 'DateRange | invalid toString');
 
