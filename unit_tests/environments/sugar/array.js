@@ -1289,6 +1289,7 @@ test('Array', function () {
 
 
 
+
   equal([1,2,3].isEmpty(), false, 'Array#empty | 1,2,3');
   equal([].isEmpty(), true, 'Array#empty | empty array');
   equal([null].isEmpty(), true, 'Array#empty | [null]');
@@ -1322,23 +1323,6 @@ test('Array', function () {
   }, 'wasabi');
 
 
-  raisesError(function(){ [1,2,3].has(); }, 'Array#has | no argument raises a TypeError', { prototype: false });
-  equal([1,2,3].has(1), true, 'Array#has | numeric | 1');
-  equal([1,2,3].has(4), false, 'Array#has | numeric | 4');
-  equal([1,2,3].has('a'), false, 'Array#has | numeric | a');
-  equal(['a','b','c'].has('a'), true, 'Array#has | alphabet | a');
-  equal(['a','b','c'].has('f'), false, 'Array#has | alphabet | f');
-  equal(['a','b','c'].has(/[a-f]/), true, 'Array#has | alphabet | /[a-f]/');
-  equal(['a','b','c'].has(/[m-z]/), false, 'Array#has | alphabet | /[m-z]/');
-  equal(['a','b','c'].has(function(e) { return e.length > 1; }), false, 'Array#has | alphabet | length greater than 1');
-  equal(['a','b','c'].has(function(e) { return e.length < 2; }), true, 'Array#has | alphabet | length less than 2');
-  equal(['a','bar','cat'].has(function(e) { return e.length < 2; }), true, 'Array#has | a,bar,cat | length less than 2');
-  equal([{a:1},{a:2},{a:1}].has(1), false, 'Array#has | objects | 1');
-  equal([{a:1},{a:2},{a:1}].has({a:1}), true, 'Array#has | objects | a:1');
-  equal([{a:1},{a:2},{a:1}].has(function(e) { return e['a'] == 1; }), true, 'Array#has | objects | key "a" is 1');
-  equal([{a:1},{a:2},{a:1}].has(function(e) { return e['b'] == 1; }), false, 'Array#has | objects | key "b" is 1');
-
-
 
 
   raisesError(function() { [1,2,3].none(); }, 'Array#none | no argument raises a TypeError', { prototype: false });
@@ -1357,7 +1341,6 @@ test('Array', function () {
   equal(['a','bar','cat'].none(function(e) { return e.length < 2; }), false, 'Array#none | a,bar,cat | length is less than 2');
   equal([{a:1},{a:2},{a:1}].none(function(e) { return e['a'] == 1; }), false, 'Array#none | objects | key "a" is 1');
   equal([{a:1},{a:2},{a:1}].none(function(e) { return e['b'] == 1; }), true, 'Array#none | objects | key "b" is 1');
-
 
 
 
