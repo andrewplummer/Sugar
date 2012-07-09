@@ -27,7 +27,7 @@ restoreObjectPrototypeMethods = function() {
 testIterateOverObject = function(obj, fn) {
   var key;
   for(key in obj) {
-    if(!hasOwnProperty(obj, key)) continue;
+    if(!Object.hasOwnProperty(key)) continue;
     fn.call(obj, key, obj[key]);
   }
 }
