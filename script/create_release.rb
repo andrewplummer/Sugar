@@ -19,7 +19,6 @@ end
 
 
 def concat
-  `rm tmp/uncompiled.js`
   file = File.open('tmp/uncompiled.js', 'w')
   @packages.each do |p|
     file.puts content = File.open("lib/#{p}.js").read + @delimiter
@@ -42,6 +41,7 @@ def split_compiled
 end
 
 def create_packages
+  create_package('full', @packages)
   create_package('default', @default_package)
 end
 
