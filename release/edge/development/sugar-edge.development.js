@@ -96,22 +96,6 @@
     return result;
   }
 
-  // Used for both arrays and strings
-
-  function entryAtIndex(arr, args, str) {
-    var result = [], length = arr.length, loop = args[args.length - 1] !== false, r;
-    multiArgs(args, function(index) {
-      if(isBoolean(index)) return false;
-      if(loop) {
-        index = index % length;
-        if(index < 0) index = length + index;
-      }
-      r = str ? arr.charAt(index) || '' : arr[index];
-      result.push(r);
-    });
-    return result.length < 2 ? result[0] : result;
-  }
-
   // General helpers
 
   function isDefined(o) {
@@ -122,8 +106,12 @@
     return o === Undefined;
   }
 
-  function isClass(obj, str) {
-    return object.prototype.toString.call(obj) === '[object '+str+']';
+
+  // Object helpers
+
+  function isObjectPrimitive(obj) {
+    // Check for null
+    return obj && typeof obj === 'object';
   }
 
   function isObject(obj) {
@@ -131,24 +119,12 @@
     return !!obj && isClass(obj, 'Object') && string(obj.constructor) === string(object);
   }
 
-  function isObjectPrimitive(obj) {
-    // Check for null
-    return obj && typeof obj === 'object';
-  }
-
   function hasOwnProperty(obj, key) {
     return object['hasOwnProperty'].call(obj, key);
   }
 
-
-  // Object helpers
-
-  function buildObjectInstanceMethods(set, target) {
-    extendSimilar(target, true, false, set, function(methods, name) {
-      methods[name + (name === 'equal' ? 's' : '')] = function() {
-        return object[name].apply(null, [this].concat(multiArgs(arguments)));
-      }
-    });
+  function isClass(obj, str) {
+    return object.prototype.toString.call(obj) === '[object '+str+']';
   }
 
   function iterateOverObject(obj, fn) {
@@ -157,10 +133,6 @@
       if(!hasOwnProperty(obj, key)) continue;
       if(fn.call(obj, key, obj[key]) === false) break;
     }
-  }
-
-  function commaSeparatedEach(str, fn) {
-    str.split(',').forEach(fn);
   }
 
   function simpleMerge(target, source) {
@@ -172,49 +144,6 @@
 
   function simpleCapitalize(str) {
     return str.slice(0,1).toUpperCase() + str.slice(1);
-  }
-
-  function stringify(thing, stack) {
-    var value, klass, isObject, isArray, arr, i, key, type = typeof thing;
-
-    // Return quickly if string to save cycles
-    if(type === 'string') return thing;
-
-    klass    = object.prototype.toString.call(thing)
-    isObject = klass === '[object Object]';
-    isArray  = klass === '[object Array]';
-
-    if(thing != null && isObject || isArray) {
-      // This method for checking for cyclic structures was egregiously stolen from
-      // the ingenious method by @kitcambridge from the Underscore script:
-      // https://github.com/documentcloud/underscore/issues/240
-      if(!stack) stack = [];
-      // Allowing a step into the structure before triggering this
-      // script to save cycles on standard JSON structures and also to
-      // try as hard as possible to catch basic properties that may have
-      // been modified.
-      if(stack.length > 1) {
-        i = stack.length;
-        while (i--) {
-          if (stack[i] === thing) {
-            return 'CYC';
-          }
-        }
-      }
-      stack.push(thing);
-      value = string(thing.constructor);
-      arr = isArray ? thing : object.keys(thing).sort();
-      for(i = 0; i < arr.length; i++) {
-        key = isArray ? i : arr[i];
-        value += key + stringify(thing[key], stack);
-      }
-      stack.pop();
-    } else if(1 / thing === -Infinity) {
-      value = '-0';
-    } else {
-      value = string(thing && thing.valueOf());
-    }
-    return type + klass + value;
   }
 
   var ClassNames = 'Array,Boolean,Date,Function,Number,String,RegExp'.split(',');
@@ -307,6 +236,80 @@
   function escapeRegExp(str) {
     if(!isString(str)) str = string(str);
     return str.replace(/([\\/'*+?|()\[\]{}.^$])/g,'\\$1');
+  }
+
+
+  // Used by Array#unique and Object.equal
+
+  function stringify(thing, stack) {
+    var value, klass, isObject, isArray, arr, i, key, type = typeof thing;
+
+    // Return quickly if string to save cycles
+    if(type === 'string') return thing;
+
+    klass    = object.prototype.toString.call(thing)
+    isObject = klass === '[object Object]';
+    isArray  = klass === '[object Array]';
+
+    if(thing != null && isObject || isArray) {
+      // This method for checking for cyclic structures was egregiously stolen from
+      // the ingenious method by @kitcambridge from the Underscore script:
+      // https://github.com/documentcloud/underscore/issues/240
+      if(!stack) stack = [];
+      // Allowing a step into the structure before triggering this
+      // script to save cycles on standard JSON structures and also to
+      // try as hard as possible to catch basic properties that may have
+      // been modified.
+      if(stack.length > 1) {
+        i = stack.length;
+        while (i--) {
+          if (stack[i] === thing) {
+            return 'CYC';
+          }
+        }
+      }
+      stack.push(thing);
+      value = string(thing.constructor);
+      arr = isArray ? thing : object.keys(thing).sort();
+      for(i = 0; i < arr.length; i++) {
+        key = isArray ? i : arr[i];
+        value += key + stringify(thing[key], stack);
+      }
+      stack.pop();
+    } else if(1 / thing === -Infinity) {
+      value = '-0';
+    } else {
+      value = string(thing && thing.valueOf());
+    }
+    return type + klass + value;
+  }
+
+
+  // Used by Array#at and String#at
+
+  function entryAtIndex(arr, args, str) {
+    var result = [], length = arr.length, loop = args[args.length - 1] !== false, r;
+    multiArgs(args, function(index) {
+      if(isBoolean(index)) return false;
+      if(loop) {
+        index = index % length;
+        if(index < 0) index = length + index;
+      }
+      r = str ? arr.charAt(index) || '' : arr[index];
+      result.push(r);
+    });
+    return result.length < 2 ? result[0] : result;
+  }
+
+
+  // Object class methods implemented as instance methods
+
+  function buildObjectInstanceMethods(set, target) {
+    extendSimilar(target, true, false, set, function(methods, name) {
+      methods[name + (name === 'equal' ? 's' : '')] = function() {
+        return object[name].apply(null, [this].concat(multiArgs(arguments)));
+      }
+    });
   }
 
   initializeClasses();
@@ -1046,7 +1049,7 @@
       return str + str.toLowerCase();
     }).join('');
     var equivalents = {};
-    commaSeparatedEach(equiv, function(set) {
+    arrayEach(equiv.split(','), function(set) {
       var equivalent = set.charAt(0);
       arrayEach(set.slice(1).split(''), function(chr) {
         equivalents[chr] = equivalent;
