@@ -41,7 +41,7 @@ def create_development
 end
 
 def compile
-  command = "java -jar script/jsmin/compiler.jar --warning_level QUIET --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js --js tmp/uncompiled.js --js_output_file tmp/compiled.js"
+  command = "java -jar script/jsmin/compiler.jar --warning_level QUIET --compilation_level ADVANCED_OPTIMIZATIONS --externs script/jsmin/externs.js --js tmp/uncompiled.js --js_output_file tmp/compiled.js"
   puts "EXECUTING: #{command}"
   `#{command}`
 end
