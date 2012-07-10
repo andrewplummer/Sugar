@@ -76,7 +76,7 @@ var testArrayIndexOf = function(arr, obj) {
   return -1;
 }
 
-var testCloneObject = function(obj) {
+testCloneObject = function(obj) {
   var result = {}, key;
   for(key in obj) {
     if(!obj.hasOwnProperty(key)) continue;
@@ -85,7 +85,7 @@ var testCloneObject = function(obj) {
   return result;
 }
 
-var testArrayEach = function(arr, fn, sparse) {
+testArrayEach = function(arr, fn, sparse) {
   var length = arr.length, i = 0;
   while(i < length) {
     if(!(i in arr)) {
@@ -97,7 +97,7 @@ var testArrayEach = function(arr, fn, sparse) {
   }
 }
 
-var testIterateOverSparseArray = function(arr, fn, fromIndex) {
+testIterateOverSparseArray = function(arr, fn, fromIndex) {
   var indexes = [], i;
   for(i in arr) {
     if(testIsArrayIndex(arr, i) && i >= fromIndex) {
@@ -110,15 +110,15 @@ var testIterateOverSparseArray = function(arr, fn, fromIndex) {
   return arr;
 }
 
-var testIsArrayIndex = function(arr, i) {
+testIsArrayIndex = function(arr, i) {
   return i in arr && (i >>> 0) == i && i != 0xffffffff;
 }
 
-var testIsArray = function(obj) {
+testIsArray = function(obj) {
   return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
-var testPadNumber = function(val, place, sign) {
+testPadNumber = function(val, place, sign) {
   var num = Math.abs(val);
   var len = Math.abs(num).toString().replace(/\.\d+/, '').length;
   var str =  new Array(Math.max(0, place - len) + 1).join('0') + num;
@@ -128,7 +128,7 @@ var testPadNumber = function(val, place, sign) {
   return str;
 }
 
-var testCapitalize = function(str) {
+testCapitalize = function(str) {
   return str.slice(0,1).toUpperCase() + str.slice(1);
 }
 
