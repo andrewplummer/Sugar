@@ -6,6 +6,12 @@ require 'pp'
 @default_package = @packages.values_at(0,1,2,3,5,6,7,8,9)
 @delimiter = 'console.info("-----BREAK-----");'
 @full_path = "release/#{@version}"
+@copyright = File.open('release/copyright.txt').read.gsub(/VERSION/, @version)
+
+@precompiled_notice = <<NOTICE
+Note that the files in this directory are not prodution ready. They are
+intended to be concatenated together and wrapped with a closure.
+NOTICE
 
 if !@version
   puts "No version specified!"
@@ -26,6 +32,14 @@ def concat
   end
 end
 
+def create_development
+  content = ''
+  @packages.each do |p|
+    content << File.open("lib/#{p}.js").read
+  end
+  File.open("release/#{@version}/development/sugar-#{@version}.development.js", 'w').write(@copyright + wrap(content))
+end
+
 def compile
   command = "java -jar script/jsmin/compiler.jar --warning_level QUIET --compilation_level ADVANCED_OPTIMIZATIONS --externs lib/externs.js --js tmp/uncompiled.js --js_output_file tmp/compiled.js"
   puts "EXECUTING: #{command}"
@@ -39,6 +53,7 @@ def split_compiled
       f.puts contents[index]
     end
   end
+  `echo "#{@precompiled_notice}" > release/#{@version}/precompiled/readme.txt`
 end
 
 def create_packages
@@ -51,8 +66,12 @@ def create_package(name, arr)
   arr.each do |s|
     contents << File.open("#{@full_path}/precompiled/#{s}.js").read
   end
-  with_wrapper = "(function(){#{contents.sub(/\n+\Z/m, '')}})();"
-  File.open("#{@full_path}/minified/sugar-#{@version}-#{name}.min.js", 'w').write(with_wrapper)
+  contents = @copyright + wrap(contents.sub(/\n+\Z/m, ''))
+  File.open("#{@full_path}/minified/sugar-#{@version}-#{name}.min.js", 'w').write(contents)
+end
+
+def wrap(js)
+  "(function(){#{js}})();"
 end
 
 def cleanup
@@ -64,5 +83,6 @@ concat
 compile
 split_compiled
 create_packages
+create_development
 cleanup
 
