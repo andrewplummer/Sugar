@@ -50,7 +50,7 @@ def split_compiled
   contents = File.open('tmp/compiled.js', 'r').read.split(@delimiter)
   @packages.each_with_index do |name, index|
     File.open("#{@full_path}/precompiled/#{name}.js", 'w') do |f|
-      f.puts contents[index]
+      f.puts contents[index].gsub(/\A\n+/, '')
     end
   end
   `echo "#{@precompiled_notice}" > release/#{@version}/precompiled/readme.txt`
@@ -75,10 +75,10 @@ def wrap(js)
 end
 
 def cleanup
-  `rm tmp/compiled.js`
-  `rm tmp/uncompiled.js`
-  `rm release/development.js`
-  `ln -s #{@version}/development/sugar-#{@version}.development.js release/development.js`
+  #`rm tmp/compiled.js`
+  #`rm tmp/uncompiled.js`
+  #`rm release/development.js`
+  #`ln -s #{@version}/development/sugar-#{@version}.development.js release/development.js`
 end
 
 concat
