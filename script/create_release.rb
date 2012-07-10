@@ -2,6 +2,12 @@
 require 'pp'
 
 @version  = ARGV[0]
+
+if !@version
+  puts "No version specified!"
+  exit
+end
+
 @packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections']
 @default_package = @packages.values_at(0,1,2,3,5,6,7,8,9)
 @delimiter = 'console.info("-----BREAK-----");'
@@ -12,11 +18,6 @@ require 'pp'
 Note that the files in this directory are not prodution ready. They are
 intended to be concatenated together and wrapped with a closure.
 NOTICE
-
-if !@version
-  puts "No version specified!"
-  exit
-end
 
 `mkdir release/#{@version}`
 `mkdir release/#{@version}/minified`
