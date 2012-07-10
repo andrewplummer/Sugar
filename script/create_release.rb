@@ -56,14 +56,13 @@ def create_package(name, arr)
 end
 
 def cleanup
-  #`rm tmp/variable_map`
-  #`rm tmp/property_map`
-  `rm tmp/compiled`
-  `rm tmp/uncompiled`
+  `rm tmp/compiled.js`
+  `rm tmp/uncompiled.js`
 end
 
 concat
 compile
 split_compiled
 create_packages
+cleanup
 
