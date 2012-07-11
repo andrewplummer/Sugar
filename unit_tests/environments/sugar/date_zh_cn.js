@@ -3,8 +3,6 @@ test('Dates | Simplified Chinese', function () {
   var now = new Date();
   var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('zh-CN');
-  dateEqual(Date.create('上午3点12分'), new Date().set({ hour: 3, minute: 12 }, true), 'Date#create | Simplified Chinese | 3:12am');
-  return;
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
   dateEqual(Date.create('2011年5月'), new Date(2011, 4), 'Date#create | Simplified Chinese | year and month');
@@ -45,6 +43,7 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('5年后'), getRelativeDate(5), 'Date#create | Simplified Chinese | five years from now');
 
   dateEqual(Date.create('２０１１年'), new Date(2011, 0), 'Date#create | Simplified Chinese | full-width year');
+  dateEqual(Date.create('星期三'), getDateWithWeekdayAndOffset(3, 0), 'Date#create | Simplified Chinese | 星期 Wednesday');
 
   dateEqual(Date.create('前天'), getRelativeDate(null, null, -2).reset(), 'Date#create | Simplified Chinese | 一昨日');
   dateEqual(Date.create('昨天'), getRelativeDate(null, null, -1).reset(), 'Date#create | Simplified Chinese | yesterday');
@@ -162,7 +161,11 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('12/31/2012'), new Date(2012, 11, 31), 'Date#create | Simplified Chinese | 12/31/2012');
   dateEqual(Date.create('下星期六 3点12分'), getDateWithWeekdayAndOffset(6, 7, 3, 12), 'Date#create | Simplified Chinese | Saturday 3:12');
 
-  dateEqual(Date.create('上午3点12分'), new Date().set({ hour: 3, minute: 12 }), 'Date#create | Simplified Chinese | 3:12am');
+  dateEqual(Date.create('上午3点12分'), new Date().set({ hour: 3, minute: 12 }, true), 'Date#create | Simplified Chinese | 3:12am');
+  dateEqual(Date.create('上午3点'), new Date().set({ hour: 3 }, true), 'Date#create | Simplified Chinese | 3am');
+
+  dateEqual(Date.create('上午3时12分'), new Date().set({ hour: 3, minute: 12 }, true), 'Date#create | Simplified Chinese | 时 | 3:12am');
+  dateEqual(Date.create('上午3时'), new Date().set({ hour: 3 }, true), 'Date#create | Simplified Chinese | 时 | 3am');
 
 });
 
