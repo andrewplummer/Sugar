@@ -2,6 +2,11 @@ test('Date', function () {
 
   Date.setLocale('en');
 
+  // Issue #160
+  equal(Date.create('12/01/2013').is('November 2013'), false, 'Date#is | December 2013 is not November 2013');
+
+
+
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
