@@ -15,6 +15,50 @@
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, math = Math, Undefined;
 
+
+  // Class initializers and isClass type helpers
+
+  var ClassNames = 'Array,Boolean,Date,Function,Number,String,RegExp'.split(',');
+
+  var isArray    = buildClassCheck(ClassNames[0]);
+  var isBoolean  = buildClassCheck(ClassNames[1]);
+  var isDate     = buildClassCheck(ClassNames[2]);
+  var isFunction = buildClassCheck(ClassNames[3]);
+  var isNumber   = buildClassCheck(ClassNames[4]);
+  var isString   = buildClassCheck(ClassNames[5]);
+  var isRegExp   = buildClassCheck(ClassNames[6]);
+
+  function buildClassCheck(type) {
+    return function(obj) {
+      return isClass(obj, type);
+    }
+  }
+
+  function initializeClasses() {
+    initializeClass(object);
+    iterateOverObject(ClassNames, function(i,name) {
+      initializeClass(globalContext[name]);
+    });
+  }
+
+  function initializeClass(klass) {
+    if(klass['SugarMethods']) return;
+    defineProperty(klass, 'SugarMethods', {});
+    extend(klass, false, false, {
+      'restore': function() {
+        var all = arguments.length === 0, methods = multiArgs(arguments);
+        iterateOverObject(klass['SugarMethods'], function(name, m) {
+          if(all || methods.indexOf(name) > -1) {
+            defineProperty(m.instance ? klass.prototype : klass, name, m.method);
+          }
+        });
+      },
+      'extend': function(methods, override, instance) {
+        extend(klass, instance !== false, override, methods);
+      }
+    });
+  }
+
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
 
@@ -37,24 +81,6 @@
       }
       // If the method is internal to Sugar, then store a reference so it can be restored later.
       klass['SugarMethods'][name] = { instance: instance, method: method, original: original };
-    });
-  }
-
-  function initializeClass(klass) {
-    if(klass['SugarMethods']) return;
-    defineProperty(klass, 'SugarMethods', {});
-    extend(klass, false, false, {
-      'restore': function() {
-        var all = arguments.length === 0, methods = multiArgs(arguments);
-        iterateOverObject(klass['SugarMethods'], function(name, m) {
-          if(all || methods.indexOf(name) > -1) {
-            defineProperty(m.instance ? klass.prototype : klass, name, m.method);
-          }
-        });
-      },
-      'extend': function(methods, override, instance) {
-        extend(klass, instance !== false, override, methods);
-      }
     });
   }
 
@@ -85,6 +111,7 @@
     extend(klass, instance, override, methods);
   }
 
+
   // Argument helpers
 
   function multiArgs(args, fn) {
@@ -95,6 +122,7 @@
     }
     return result;
   }
+
 
   // General helpers
 
@@ -142,32 +170,15 @@
     return target;
   }
 
+
+  // String helpers
+
   function simpleCapitalize(str) {
     return str.slice(0,1).toUpperCase() + str.slice(1);
   }
 
-  var ClassNames = 'Array,Boolean,Date,Function,Number,String,RegExp'.split(',');
 
-  var isArray    = buildClassCheck(ClassNames[0]);
-  var isBoolean  = buildClassCheck(ClassNames[1]);
-  var isDate     = buildClassCheck(ClassNames[2]);
-  var isFunction = buildClassCheck(ClassNames[3]);
-  var isNumber   = buildClassCheck(ClassNames[4]);
-  var isString   = buildClassCheck(ClassNames[5]);
-  var isRegExp   = buildClassCheck(ClassNames[6]);
-
-  function buildClassCheck(type) {
-    return function(obj) {
-      return isClass(obj, type);
-    }
-  }
-
-  function initializeClasses() {
-    initializeClass(object);
-    iterateOverObject(ClassNames, function(i,name) {
-      initializeClass(globalContext[name]);
-    });
-  }
+  // Number helpers
 
   function getRange(start, stop, fn, step) {
     var arr = [], i = parseInt(start), down = step < 0;
@@ -1928,7 +1939,6 @@
   buildEnumerableMethods('sum,average,min,max,least,most', true);
   buildObjectInstanceMethods('map,reduce', Hash);
 
-
   // TODO final rinse (add comments and rearrange core methods)
 
   /***
@@ -2458,18 +2468,30 @@
     }).join('|');
   }
 
-  function collectDateArguments(args) {
+  function collectDateArguments(args, allowDuration) {
     var obj, arr;
     if(isObject(args[0])) {
       return args;
     } else if (isNumber(args[0]) && !isNumber(args[1])) {
       return [args[0]];
+    } else if (isString(args[0]) && allowDuration) {
+      return [getParamsFromString(args[0]), args[1]];
     }
     obj = {};
     DateArgumentUnits.forEach(function(u,i) {
       obj[u.unit] = args[i];
     });
     return [obj];
+  }
+
+  function getParamsFromString(str, num) {
+    var params = {};
+    match = str.match(/^(\d+)?\s?(\w+?)s?$/i);
+    if(isUndefined(num)) {
+      num = parseInt(match[1]) || 1;
+    }
+    params[match[2].toLowerCase()] = num;
+    return params;
   }
 
   function convertAsianDigits(str) {
@@ -2508,7 +2530,7 @@
   }
 
   function cleanDateInput(str) {
-    str = str.trim().replace(/\.+$/,'').replace(/^now$/, '');
+    str = str.trim().replace(/\.+$/,'').replace(/^just /, '').replace(/^now$/, '');
     return convertAsianDigits(str);
   }
 
@@ -3739,7 +3761,6 @@
     }, false, false);
   }
 
-
   function buildDate() {
     English = date.setLocale('en');
     buildDateUnits();
@@ -4027,7 +4048,7 @@
      *
      ***/
     'advance': function() {
-      var args = collectDateArguments(arguments);
+      var args = collectDateArguments(arguments, true);
       return updateDate(this, args[0], args[1], false, 1);
     },
 
@@ -4044,7 +4065,7 @@
      *
      ***/
     'rewind': function() {
-      var args = collectDateArguments(arguments);
+      var args = collectDateArguments(arguments, true);
       return updateDate(this, args[0], args[1], false, -1);
     },
 
@@ -4375,7 +4396,7 @@
      ***/
     'contains': function(obj) {
       var self = this, arr = obj.start && obj.end ? [obj.start, obj.end] : [obj];
-      return arr.all(function(d) {
+      return arr.every(function(d) {
         return d >= self.start && d <= self.end;
       });
     },
@@ -4391,19 +4412,17 @@
      *
      ***/
     'every': function(increment, fn) {
-      var current = this.start.clone(), result = [], method, index = 0, match;
+      var current = this.start.clone(), result = [], index = 0, params;
       if(isString(increment)) {
-        match = increment.match(/^(\d+)?\s?(\w+?)s?$/i);
-        increment = parseInt(match[1] || 1);
-        method = 'add' + simpleCapitalize(match[2]) + 's';
-        current[method](0, true);
+        current.advance(getParamsFromString(increment, 0), true);
+        params = getParamsFromString(increment);
       } else {
-        method = 'addMilliseconds';
+        params = { 'milliseconds': increment };
       }
       while(current <= this.end) {
         result.push(current);
         if(fn) fn(current, index);
-        current = current.clone()[method](increment);
+        current = current.clone().advance(params, true);
         index++;
       }
       return result;
@@ -4477,8 +4496,8 @@
    * @method eachYear()
    * @set eachUnit
    ***/
-  ['Millisecond','Second','Minute','Hour','Day','Week','Month','Year'].each(function(u) {
-    DateRange.prototype['each' + u] = function(fn) { return this.every(u, fn); }
+  extendSimilar(DateRange, true, false, 'Millisecond,Second,Minute,Hour,Day,Week,Month,Year', function(methods, name) {
+    methods['each' + name] = function(fn) { return this.every(name, fn); }
   });
 
   extend(date, false, false, {
