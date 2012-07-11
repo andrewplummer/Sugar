@@ -1941,7 +1941,7 @@
 
   var TimeFormat = ['12hr','hour','minute','second','12hr','utc','offset_sign','offset_hours','offset_minutes','12hr']
   var FloatReg = '\\d{1,2}(?:[,.]\\d+)?';
-  var RequiredTime = '({t})?\\s*('+FloatReg+')(?:[:{h}]\\s*('+FloatReg+'){m}\\s*(?::?('+FloatReg+'){s})?\\s*(?:(am|pm)|(Z)|(?:([+-])(\\d{2})(?::?(\\d{2}))?)?)?|\\s*(am|pm))';
+  var RequiredTime = '({t})?\\s*('+FloatReg+')(?:{h}('+FloatReg+')?{m}(?::?('+FloatReg+'){s})?\\s*(?:(am|pm)|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*(am|pm))';
 
   var KanjiDigits     = '〇一二三四五六七八九十百千万';
   var FullWidthDigits = '０１２３４５６７８９';
@@ -2148,9 +2148,9 @@
 
     'de': '2;;;Januar,Februar,März|Marz,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember;Sonntag,Montag,Dienstag,Mittwoch,Donnerstag,Freitag,Samstag;Millisekunde:|n,Sekunde:|n,Minute:|n,Stunde:|n,Tag:|en,Woche:|n,Monat:|en,Jahr:|en;ein:|e|er|em|en,zwei,drei,vier,fuenf,sechs,sieben,acht,neun,zehn;;der;am,pm;;{sign} {num} {unit},{num} {unit} {sign},{shift} {unit=5-7};{weekday?} {date?} {month} {year?},{shift} {weekday};{Weekday} {d}. {Month} {yyyy};{H}:{mm}:{ss};vorgestern,gestern,heute,morgen,übermorgen|ubermorgen|uebermorgen;,vor:|her,,in;,letzte:|r|n|s,,nächste:|r|n|s+naechste:|r|n|s+kommende:n|r',
 
-    'zh-TW': '1;月;年;;星期日|週日,星期一|週一,星期二|週二,星期三|週三,星期四|週四,星期五|週五,星期六|週六;毫秒,秒鐘,分鐘,小時,天,個星期|週,個月,年;;;日|號;上午,下午;點,分鐘?,秒;{num}{unit}{sign},{shift}{unit=5-7};{shift}{weekday},{year}年{month?}月?{date?}{0},{month}月{date?}{0},{date}{0};{yyyy}年{M}月{d}日 {Weekday};{tt}{h}:{mm}:{ss};前天,昨天,今天,明天,後天;,前,,後;,上|去,這,下|明',
+    'zh-TW': '1;月;年;;星期日|週日,星期一|週一,星期二|週二,星期三|週三,星期四|週四,星期五|週五,星期六|週六;毫秒,秒鐘,分鐘,小時,天,個星期|週,個月,年;;;日|號;上午,下午;點|時,分鐘?,秒;{num}{unit}{sign},{shift}{unit=5-7};{shift}{weekday},{year}年{month?}月?{date?}{0},{month}月{date?}{0},{date}{0};{yyyy}年{M}月{d}日 {Weekday};{tt}{h}:{mm}:{ss};前天,昨天,今天,明天,後天;,前,,後;,上|去,這,下|明',
 
-    'zh-CN': '9;月;年;;星期日|周日,星期一|周一,星期二|周二,星期三|周三,星期四|周四,星期五|周五,星期六|周六;毫秒,秒钟,分钟,小时,天,个星期|周,个月,年;;;日|号;上午,下午;点,分钟?,秒;{num}{unit}{sign},{shift}{unit=5-7};{shift}{weekday},{year}年{month?}月?{date?}{0},{month}月{date?}{0},{date}{0};{yyyy}年{M}月{d}日 {Weekday};{tt}{h}:{mm}:{ss};前天,昨天,今天,明天,后天;,前,,后;,上|去,这,下|明'
+    'zh-CN': '9;月;年;;星期日|周日,星期一|周一,星期二|周二,星期三|周三,星期四|周四,星期五|周五,星期六|周六;毫秒,秒钟,分钟,小时,天,个星期|周,个月,年;;;日|号;上午,下午;点|时,分钟?,秒;{num}{unit}{sign},{shift}{unit=5-7};{shift}{weekday},{year}年{month?}月?{date?}{0},{month}月{date?}{0},{date}{0};{yyyy}年{M}月{d}日 {Weekday};{tt}{h}:{mm}:{ss};前天,昨天,今天,明天,后天;,前,,后;,上|去,这,下|明'
 
   }
 
@@ -2280,15 +2280,9 @@
         }
       });
       if(allowsTime) {
-        time = prepareTime(RequiredTime, this)
+        time = prepareTime(RequiredTime, this, iso)
         lastIsNumeral = src.match(/\\d\{\d,\d\}\)+\??$/);
         addDateInputFormat(this, '(?:' + time + ')[,\\s\\u3000]+?' + src, TimeFormat.concat(to), variant);
-        if(iso) {
-          // The ISO format allows times strung together without a demarcating ":", so make sure
-          // that these markers are now optional. Also making the second capturing group (minutes or am|pm)
-          // optional as well to match fractional hours. If this becomes an issue turn it off.
-          time = time.replace(/\[:\]/, ':?') + '?';
-        }
         addDateInputFormat(this, src + '(?:[,\\s]*(?:t|at |[\\s\\u3000]'+ (lastIsNumeral ? '+' : '*') +')' + time + ')?', to.concat(TimeFormat), variant);
       } else {
         addDateInputFormat(this, src, to, variant);
@@ -2389,6 +2383,12 @@
     // later will take precedence over formats that come before. This generally means that
     // more specific formats should come later, however, the {year} format should come before
     // {day}, as 2011 needs to be parsed as a year (2011) and not date (20) + hours (11)
+
+    // If the locale has time suffixes then add a time only format for that locale
+    // that is separate from the core English-based one.
+    if(loc['timeSuffixes'].length > 0) {
+      loc.addFormat(prepareTime(RequiredTime, loc), false, TimeFormat)
+    }
 
     loc.addFormat('{day}', true);
     loc.addFormat('{month}' + loc['monthSuffix']);
@@ -2956,16 +2956,25 @@
     return d[prefix + (utc ? 'UTC' : '') + method](value);
   }
 
-  function prepareTime(format, loc) {
+  // The ISO format allows times strung together without a demarcating ":", so make sure
+  // that these markers are now optional.
+  function prepareTime(format, loc, iso) {
     var timeSuffixMapping = {'h':0,'m':1,'s':2}, add;
     loc = loc || English;
     return format.replace(/{([a-z])}/g, function(full, token) {
+      var separators = [],
+          isHours = token === 'h',
+          tokenIsRequired = isHours && !iso;
       if(token === 't') {
         return loc['12hr'].join('|');
-      } else if (add = loc['timeSuffixes'][timeSuffixMapping[token]]) {
-        return token === 'h' ? add : '(?:'+ add +')?';
       } else {
-        return '';
+        if(isHours) {
+          separators.push(':');
+        }
+        if(add = loc['timeSuffixes'][timeSuffixMapping[token]]) {
+          separators.push(add + '\\s*');
+        }
+        return separators.length === 0 ? '' : '(?:' + separators.join('|') + ')' + (tokenIsRequired ? '' : '?');
       }
     });
   }
@@ -6540,13 +6549,9 @@
 
 
   /***
-   * Inflections module
-   * @dependency String
    *
-   ***/
-
-  /***
    * String module
+   * @dependency String
    *
    ***/
 
