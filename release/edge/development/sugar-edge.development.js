@@ -83,6 +83,15 @@
     });
   }
 
+  function extendSimilar(klass, instance, override, set, fn) {
+    var methods = {};
+    set = isString(set) ? set.split(',') : set;
+    set.forEach(function(name, i) {
+      fn(methods, name, i);
+    });
+    extend(klass, instance, override, methods);
+  }
+
   function wrapNative(nativeFn, extendedFn, condition) {
     return function() {
       if(nativeFn && (condition === true || !condition.apply(this, arguments))) {
@@ -99,15 +108,6 @@
     } else {
       target[name] = method;
     }
-  }
-
-  function extendSimilar(klass, instance, override, set, fn) {
-    var methods = {};
-    set = isString(set) ? set.split(',') : set;
-    set.forEach(function(name, i) {
-      fn(methods, name, i);
-    });
-    extend(klass, instance, override, methods);
   }
 
 
@@ -170,13 +170,6 @@
   }
 
 
-  // String helpers
-
-  function simpleCapitalize(str) {
-    return str.slice(0,1).toUpperCase() + str.slice(1);
-  }
-
-
   // Number helpers
 
   function getRange(start, stop, fn, step) {
@@ -204,15 +197,6 @@
     return round(val, precision, 'floor');
   }
 
-  // WhiteSpace/LineTerminator as defined in ES5.1 plus Unicode characters in the Space, Separator category.
-  function getTrimmableCharacters() {
-    return '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
-  }
-
-  function repeatString(times, str) {
-    return array(math.max(0, isDefined(times) ? times : 1) + 1).join(str || '');
-  }
-
   function padNumber(num, place, sign, base) {
     var str = math.abs(num).toString(base || 10);
     str = repeatString(place - str.replace(/\.\d+/, '').length, '0') + str;
@@ -235,6 +219,21 @@
     }
   }
 
+
+  // String helpers
+
+  // WhiteSpace/LineTerminator as defined in ES5.1 plus Unicode characters in the Space, Separator category.
+  function getTrimmableCharacters() {
+    return '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
+  }
+
+  function repeatString(times, str) {
+    return array(math.max(0, isDefined(times) ? times : 1) + 1).join(str || '');
+  }
+
+
+  // RegExp helpers
+
   function getRegExpFlags(reg, add) {
     var flags = reg.toString().match(/[^/]*$/)[0];
     if(add) {
@@ -247,6 +246,9 @@
     if(!isString(str)) str = string(str);
     return str.replace(/([\\/'*+?|()\[\]{}.^$])/g,'\\$1');
   }
+
+
+  // Specialized helpers
 
 
   // Used by Array#unique and Object.equal
@@ -2163,14 +2165,151 @@
 
   }
 
-  function addDateInputFormat(locale, format, match, variant) {
-    locale.compiledFormats.unshift({
-      variant: variant,
-      locale: locale,
-      reg: regexp('^' + format + '$', 'i'),
-      to: match
-    });
+
+  // Localization object
+
+  function Localization(l) {
+    simpleMerge(this, l);
+    this.compiledFormats = CoreDateFormats.concat();
   }
+
+  Localization.prototype = {
+
+    getMonth: function(n) {
+      if(isNumber(n)) {
+        return n - 1;
+      } else {
+        return this['months'].indexOf(n) % 12;
+      }
+    },
+
+    getWeekday: function(n) {
+      return this['weekdays'].indexOf(n) % 7;
+    },
+
+    getNumber: function(n) {
+      var i;
+      if(isNumber(n)) {
+        return n;
+      } else if(n && (i = this['numbers'].indexOf(n)) !== -1) {
+        return (i + 1) % 10;
+      } else {
+        return 1;
+      }
+    },
+
+    getNumericDate: function(n) {
+      var self = this;
+      return n.replace(regexp(this['num'], 'g'), function(d) {
+        var num = self.getNumber(d);
+        return num || '';
+      });
+    },
+
+    getEnglishUnit: function(n) {
+      return English['units'][this['units'].indexOf(n) % 8];
+    },
+
+    relative: function(adu) {
+      return this.convertAdjustedToFormat(adu, adu[2] > 0 ? 'futureRelativeFormat' : 'pastRelativeFormat');
+    },
+
+    duration: function(ms) {
+      return this.convertAdjustedToFormat(getAdjustedUnit(ms), 'durationFormat');
+    },
+
+    hasVariant: function(code) {
+      code = code || this.code;
+      return code === 'en' || code === 'en-US' ? true : this['variant'];
+    },
+
+    matchPM: function(str) {
+      return str && (str === 'pm' || str === this['pm']);
+    },
+
+    convertAdjustedToFormat: function(adu, format) {
+      var num = adu[0], u = adu[1], ms = adu[2], sign, unit, last, mult;
+      if(this['code'] == 'ru') {
+        last = num.toString().slice(-1);
+        switch(true) {
+          case last == 1: mult = 1; break;
+          case last >= 2 && last <= 4: mult = 2; break;
+          default: mult = 3;
+        }
+      } else {
+        mult = this['hasPlural'] && num > 1 ? 1 : 0;
+      }
+      unit = this['units'][mult * 8 + u] || this['units'][u];
+      if(this['capitalizeUnit']) unit = simpleCapitalize(unit);
+      sign = this['modifiers'].filter(function(m) { return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1); })[0];
+      return this[format].replace(/\{(.*?)\}/g, function(full, match) {
+        switch(match) {
+          case 'num': return num;
+          case 'unit': return unit;
+          case 'sign': return sign.src;
+        }
+      });
+    },
+
+    getFormats: function() {
+      return this.cachedFormat ? [this.cachedFormat].concat(this.compiledFormats) : this.compiledFormats;
+    },
+
+    addFormat: function(src, allowsTime, match, variant, iso) {
+      var to = match || [], loc = this, time, lastIsNumeral;
+
+      src = src.replace(/\s+/g, '[-,. ]*');
+      src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
+        var opt = k.match(/\?$/), slice = k.match(/(\d)(?:-(\d))?/), nc = k.match(/^\d+$/), key = k.replace(/[^a-z]+$/, ''), value, arr;
+        if(nc) {
+          value = loc['optionals'][nc[0]];
+        } else if(loc[key]) {
+          value = loc[key];
+        } else if(loc[key + 's']) {
+          value = loc[key + 's'];
+          if(slice) {
+            // Can't use filter here as Prototype hijacks the method and doesn't
+            // pass an index, so use a simple loop instead!
+            arr = [];
+            value.forEach(function(m, i) {
+              var mod = i % (loc['units'] ? 8 : value.length);
+              if(mod >= slice[1] && mod <= (slice[2] || slice[1])) {
+                arr.push(m);
+              }
+            });
+            value = arr;
+          }
+          value = arrayToAlternates(value);
+        }
+        if(nc) {
+          return '(?:' + value + ')?';
+        } else {
+          if(!match) {
+            to.push(key);
+          }
+          return '(' + value + ')' + (opt ? '?' : '');
+        }
+      });
+      if(allowsTime) {
+        time = prepareTime(RequiredTime, this)
+        lastIsNumeral = src.match(/\\d\{\d,\d\}\)+\??$/);
+        addDateInputFormat(this, '(?:' + time + ')[,\\s\\u3000]+?' + src, TimeFormat.concat(to), variant);
+        if(iso) {
+          // The ISO format allows times strung together without a demarcating ":", so make sure
+          // that these markers are now optional. Also making the second capturing group (minutes or am|pm)
+          // optional as well to match fractional hours. If this becomes an issue turn it off.
+          time = time.replace(/\[:\]/, ':?') + '?';
+        }
+        addDateInputFormat(this, src + '(?:[,\\s]*(?:t|at |[\\s\\u3000]'+ (lastIsNumeral ? '+' : '*') +')' + time + ')?', to.concat(TimeFormat), variant);
+      } else {
+        addDateInputFormat(this, src, to, variant);
+      }
+    }
+
+  };
+
+
+  // Localization helpers
 
   function getLocalization(localeCode, skipFallback, set) {
     var loc;
@@ -2320,152 +2459,29 @@
     return set;
   }
 
-  function Localization(l) {
-    simpleMerge(this, l);
-    this.compiledFormats = CoreDateFormats.concat();
+
+  // General helpers
+
+  function addDateInputFormat(locale, format, match, variant) {
+    locale.compiledFormats.unshift({
+      variant: variant,
+      locale: locale,
+      reg: regexp('^' + format + '$', 'i'),
+      to: match
+    });
   }
 
-  Localization.prototype = {
-
-    getMonth: function(n) {
-      if(isNumber(n)) {
-        return n - 1;
-      } else {
-        return this['months'].indexOf(n) % 12;
-      }
-    },
-
-    getWeekday: function(n) {
-      return this['weekdays'].indexOf(n) % 7;
-    },
-
-    getNumber: function(n) {
-      var i;
-      if(isNumber(n)) {
-        return n;
-      } else if(n && (i = this['numbers'].indexOf(n)) !== -1) {
-        return (i + 1) % 10;
-      } else {
-        return 1;
-      }
-    },
-
-    getNumericDate: function(n) {
-      var self = this;
-      return n.replace(regexp(this['num'], 'g'), function(d) {
-        var num = self.getNumber(d);
-        return num || '';
-      });
-    },
-
-    getEnglishUnit: function(n) {
-      return English['units'][this['units'].indexOf(n) % 8];
-    },
-
-    relative: function(adu) {
-      return this.convertAdjustedToFormat(adu, adu[2] > 0 ? 'futureRelativeFormat' : 'pastRelativeFormat');
-    },
-
-    duration: function(ms) {
-      return this.convertAdjustedToFormat(getAdjustedUnit(ms), 'durationFormat');
-    },
-
-    hasVariant: function(code) {
-      code = code || this.code;
-      return code === 'en' || code === 'en-US' ? true : this['variant'];
-    },
-
-    matchPM: function(str) {
-      return str && (str === 'pm' || str === this['pm']);
-    },
-
-    convertAdjustedToFormat: function(adu, format) {
-      var num = adu[0], u = adu[1], ms = adu[2], sign, unit, last, mult;
-      if(this['code'] == 'ru') {
-        last = num.toString().slice(-1);
-        switch(true) {
-          case last == 1: mult = 1; break;
-          case last >= 2 && last <= 4: mult = 2; break;
-          default: mult = 3;
-        }
-      } else {
-        mult = this['hasPlural'] && num > 1 ? 1 : 0;
-      }
-      unit = this['units'][mult * 8 + u] || this['units'][u];
-      if(this['capitalizeUnit']) unit = simpleCapitalize(unit);
-      sign = this['modifiers'].filter(function(m) { return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1); })[0];
-      return this[format].replace(/\{(.*?)\}/g, function(full, match) {
-        switch(match) {
-          case 'num': return num;
-          case 'unit': return unit;
-          case 'sign': return sign.src;
-        }
-      });
-    },
-
-    getFormats: function() {
-      return this.cachedFormat ? [this.cachedFormat].concat(this.compiledFormats) : this.compiledFormats;
-    },
-
-    addFormat: function(src, allowsTime, match, variant, iso) {
-      var to = match || [], loc = this, time, lastIsNumeral;
-
-      src = src.replace(/\s+/g, '[-,. ]*');
-      src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
-        var opt = k.match(/\?$/), slice = k.match(/(\d)(?:-(\d))?/), nc = k.match(/^\d+$/), key = k.replace(/[^a-z]+$/, ''), value, arr;
-        if(nc) {
-          value = loc['optionals'][nc[0]];
-        } else if(loc[key]) {
-          value = loc[key];
-        } else if(loc[key + 's']) {
-          value = loc[key + 's'];
-          if(slice) {
-            // Can't use filter here as Prototype hijacks the method and doesn't
-            // pass an index, so use a simple loop instead!
-            arr = [];
-            value.forEach(function(m, i) {
-              var mod = i % (loc['units'] ? 8 : value.length);
-              if(mod >= slice[1] && mod <= (slice[2] || slice[1])) {
-                arr.push(m);
-              }
-            });
-            value = arr;
-          }
-          value = arrayToAlternates(value);
-        }
-        if(nc) {
-          return '(?:' + value + ')?';
-        } else {
-          if(!match) {
-            to.push(key);
-          }
-          return '(' + value + ')' + (opt ? '?' : '');
-        }
-      });
-      if(allowsTime) {
-        time = prepareTime(RequiredTime, this)
-        lastIsNumeral = src.match(/\\d\{\d,\d\}\)+\??$/);
-        addDateInputFormat(this, '(?:' + time + ')[,\\s\\u3000]+?' + src, TimeFormat.concat(to), variant);
-        if(iso) {
-          // The ISO format allows times strung together without a demarcating ":", so make sure
-          // that these markers are now optional. Also making the second capturing group (minutes or am|pm)
-          // optional as well to match fractional hours. If this becomes an issue turn it off.
-          time = time.replace(/\[:\]/, ':?') + '?';
-        }
-        addDateInputFormat(this, src + '(?:[,\\s]*(?:t|at |[\\s\\u3000]'+ (lastIsNumeral ? '+' : '*') +')' + time + ')?', to.concat(TimeFormat), variant);
-      } else {
-        addDateInputFormat(this, src, to, variant);
-      }
-    }
-
-  };
-
+  function simpleCapitalize(str) {
+    return str.slice(0,1).toUpperCase() + str.slice(1);
+  }
 
   function arrayToAlternates(arr) {
     return arr.filter(function(el) {
       return !!el;
     }).join('|');
   }
+
+  // Date argument helpers
 
   function collectDateArguments(args, allowDuration) {
     var obj, arr;
@@ -2474,7 +2490,7 @@
     } else if (isNumber(args[0]) && !isNumber(args[1])) {
       return [args[0]];
     } else if (isString(args[0]) && allowDuration) {
-      return [getParamsFromString(args[0]), args[1]];
+      return [getDateParamsFromString(args[0]), args[1]];
     }
     obj = {};
     DateArgumentUnits.forEach(function(u,i) {
@@ -2483,7 +2499,7 @@
     return [obj];
   }
 
-  function getParamsFromString(str, num) {
+  function getDateParamsFromString(str, num) {
     var params = {};
     match = str.match(/^(\d+)?\s?(\w+?)s?$/i);
     if(isUndefined(num)) {
@@ -2491,6 +2507,25 @@
     }
     params[match[2].toLowerCase()] = num;
     return params;
+  }
+
+  // Date parsing helpers
+
+  function getFormatMatch(match, arr) {
+    var obj = {}, value, num;
+    arr.forEach(function(key, i) {
+      value = match[i + 1];
+      if(isUndefined(value) || value === '') return;
+      if(key === 'year') obj.yearAsString = value;
+      num = parseFloat(value.replace(/,/, '.'));
+      obj[key] = !isNaN(num) ? num : value.toLowerCase();
+    });
+    return obj;
+  }
+
+  function cleanDateInput(str) {
+    str = str.trim().replace(/^(just )?now|\.+$/i, '');
+    return convertAsianDigits(str);
   }
 
   function convertAsianDigits(str) {
@@ -2514,23 +2549,6 @@
       if(lastWasHolder) sum += place;
       return sum;
     });
-  }
-
-  function getFormatMatch(match, arr) {
-    var obj = {}, value, num;
-    arr.forEach(function(key, i) {
-      value = match[i + 1];
-      if(isUndefined(value) || value === '') return;
-      if(key === 'year') obj.yearAsString = value;
-      num = parseFloat(value.replace(/,/, '.'));
-      obj[key] = !isNaN(num) ? num : value.toLowerCase();
-    });
-    return obj;
-  }
-
-  function cleanDateInput(str) {
-    str = str.trim().replace(/^(just )?now|\.+$/i, '');
-    return convertAsianDigits(str);
   }
 
   function getExtendedDate(f, localeCode, prefer) {
@@ -2729,6 +2747,38 @@
     }
   }
 
+  // If the year is two digits, add the most appropriate century prefix.
+  function getYearFromAbbreviation(year) {
+    return round(new date().getFullYear() / 100) * 100 - round(year / 100) * 100 + year;
+  }
+
+  function getShortHour(d, utc) {
+    var hours = callDateMethod(d, 'get', utc, 'Hours');
+    return hours === 0 ? 12 : hours - (floor(hours / 13) * 12);
+  }
+
+  // weeksSince won't work here as the result needs to be floored, not rounded.
+  function getWeekNumber(date) {
+    var dow = date.getDay() || 7;
+    date.addDays(4 - dow).reset();
+    return 1 + floor(date.daysSince(date.clone().beginningOfYear()) / 7);
+  }
+
+  function getAdjustedUnit(ms) {
+    var next, ams = math.abs(ms), value = ams, unit = 0;
+    DateUnitsReversed.slice(1).forEach(function(u, i) {
+      next = floor(round(ams / u.multiplier() * 10) / 10);
+      if(next >= 1) {
+        value = next;
+        unit = i + 1;
+      }
+    });
+    return [value, unit, ms];
+  }
+
+
+  // Date formatting helpers
+
   function formatDate(date, format, relative, localeCode) {
     var adu, loc = getLocalization(localeCode), caps = regexp(/^[A-Z]/), value, shortcut;
     if(!date.isValid()) {
@@ -2768,6 +2818,8 @@
     });
     return format;
   }
+
+  // Date comparison helpers
 
   function compareDate(d, find, buffer) {
     var p = getExtendedDate(find), accuracy = 0, loBuffer = 0, hiBuffer = 0, override, capitalized;
@@ -2829,11 +2881,12 @@
 
     // "date" can also be passed for the day
     if(params['date']) params['day'] = params['date'];
+
     // Reset any unit lower than the least specific unit set. Do not do this for weeks
     // or for years. This needs to be performed before the acutal setting of the date
-    // because the order needs to be reversed in order to get the lowest specificity.
-    // The order of the date setting is also fixed because higher order units can be
-    // overwritten by lower order units, such as setting hour: 3, minute: 345, etc.
+    // because the order needs to be reversed in order to get the lowest specificity,
+    // also because higher order units can be overwritten by lower order units, such
+    // as setting hour: 3, minute: 345, etc.
     iterateOverObject(DateUnitsReversed, function(i,u) {
       var isDay = u.unit === 'day';
       if(paramExists(u.unit) || (isDay && paramExists('weekday'))) {
@@ -2912,35 +2965,6 @@
 
   function callDateMethod(d, prefix, utc, method, value) {
     return d[prefix + (utc ? 'UTC' : '') + method](value);
-  }
-
-  // If the year is two digits, add the most appropriate century prefix.
-  function getYearFromAbbreviation(year) {
-    return round(new date().getFullYear() / 100) * 100 - round(year / 100) * 100 + year;
-  }
-
-  function getShortHour(d, utc) {
-    var hours = callDateMethod(d, 'get', utc, 'Hours');
-    return hours === 0 ? 12 : hours - (floor(hours / 13) * 12);
-  }
-
-  // weeksSince won't work here as the result needs to be floored, not rounded.
-  function getWeekNumber(date) {
-    var dow = date.getDay() || 7;
-    date.addDays(4 - dow).reset();
-    return 1 + floor(date.daysSince(date.clone().beginningOfYear()) / 7);
-  }
-
-  function getAdjustedUnit(ms) {
-    var next, ams = math.abs(ms), value = ams, unit = 0;
-    DateUnitsReversed.slice(1).forEach(function(u, i) {
-      next = floor(round(ams / u.multiplier() * 10) / 10);
-      if(next >= 1) {
-        value = next;
-        unit = i + 1;
-      }
-    });
-    return [value, unit, ms];
   }
 
   function prepareTime(format, loc) {
@@ -3325,7 +3349,6 @@
     English.addFormat('(\\d{1,2})[-.\\/]{full_month}(?:[-.\\/](\\d{2,4}))?', true, ['date','month','year'], true);
     English.addFormat('{full_month}[-.](\\d{4,4})', false, ['month','year']);
     English.addFormat('\\/Date\\((\\d+(?:\\+\\d{4,4})?)\\)\\/', false, ['timestamp'])
-
     English.addFormat(prepareTime(RequiredTime, English), false, TimeFormat)
 
     // When a new locale is initialized it will have the CoreDateFormats initialized by default.
@@ -3359,9 +3382,9 @@
     FullWidthDigits.split('').forEach(function(digit, value) {
       AsianDigitMap[digit] = value;
     });
-    // Kanji may also be included in phrases which are text-based rather than
-    // numerals such as Chinese weekdays (上周三), and "the day before yesterday"
-    // (一昨日) in Japanese, so don't match these.
+    // Kanji numerals may also be included in phrases which are text-based rather
+    // than actual numbers such as Chinese weekdays (上周三), and "the day before
+    // yesterday" (一昨日) in Japanese, so don't match these.
     AsianDigitReg = regexp('([期週周])?([' + KanjiDigits + FullWidthDigits + ']+)(?!昨)', 'g');
   }
 
@@ -4422,8 +4445,8 @@
     'every': function(increment, fn) {
       var current = this.start.clone(), result = [], index = 0, params;
       if(isString(increment)) {
-        current.advance(getParamsFromString(increment, 0), true);
-        params = getParamsFromString(increment);
+        current.advance(getDateParamsFromString(increment, 0), true);
+        params = getDateParamsFromString(increment);
       } else {
         params = { 'milliseconds': increment };
       }
