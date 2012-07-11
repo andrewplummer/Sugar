@@ -1,2 +1,2 @@
-t.oa=M(t("()??").exec("")[1]);H(t,m,m,{escape:function(a){return R(a)}});
-H(t,j,m,{getFlags:function(){return qa(this)},setFlags:function(a){return t(this.source,a)},addFlag:function(a){return this.setFlags(qa(this,a))},removeFlag:function(a){return this.setFlags(qa(this).replace(a,""))}});
+t.oa=M(t("()??").exec("")[1]);G(t,m,m,{escape:function(a){return R(a)}});
+G(t,j,m,{getFlags:function(){return ra(this)},setFlags:function(a){return t(this.source,a)},addFlag:function(a){return this.setFlags(ra(this,a))},removeFlag:function(a){return this.setFlags(ra(this).replace(a,""))}});
