@@ -2382,4 +2382,7 @@ test('Date', function () {
   equal(Date.create('my pants').isTomorrow(), undefined, 'Date#isTomorrow | invalid dates should return false');
   equal(Date.create('my pants').is('today'), undefined, 'Date#is | invalid dates should return false');
 
+  // Issue #160
+  equal(Date.create('12/01/2013').is('November 2013'), false, 'Date#is | December 2013 is not November 2013');
+
 });
