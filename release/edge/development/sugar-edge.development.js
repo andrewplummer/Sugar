@@ -2455,18 +2455,30 @@
     }).join('|');
   }
 
-  function collectDateArguments(args) {
+  function collectDateArguments(args, allowDuration) {
     var obj, arr;
     if(isObject(args[0])) {
       return args;
     } else if (isNumber(args[0]) && !isNumber(args[1])) {
       return [args[0]];
+    } else if (isString(args[0]) && allowDuration) {
+      return [getParamsFromString(args[0]), args[1]];
     }
     obj = {};
     DateArgumentUnits.forEach(function(u,i) {
       obj[u.unit] = args[i];
     });
     return [obj];
+  }
+
+  function getParamsFromString(str, num) {
+    var params = {};
+    match = str.match(/^(\d+)?\s?(\w+?)s?$/i);
+    if(isUndefined(num)) {
+      num = parseInt(match[1]) || 1;
+    }
+    params[match[2].toLowerCase()] = num;
+    return params;
   }
 
   function convertAsianDigits(str) {
@@ -4024,7 +4036,7 @@
      *
      ***/
     'advance': function() {
-      var args = collectDateArguments(arguments);
+      var args = collectDateArguments(arguments, true);
       return updateDate(this, args[0], args[1], false, 1);
     },
 
@@ -4041,7 +4053,7 @@
      *
      ***/
     'rewind': function() {
-      var args = collectDateArguments(arguments);
+      var args = collectDateArguments(arguments, true);
       return updateDate(this, args[0], args[1], false, -1);
     },
 
@@ -4372,7 +4384,7 @@
      ***/
     'contains': function(obj) {
       var self = this, arr = obj.start && obj.end ? [obj.start, obj.end] : [obj];
-      return arr.all(function(d) {
+      return arr.every(function(d) {
         return d >= self.start && d <= self.end;
       });
     },
@@ -4388,19 +4400,17 @@
      *
      ***/
     'every': function(increment, fn) {
-      var current = this.start.clone(), result = [], method, index = 0, match;
+      var current = this.start.clone(), result = [], index = 0, params;
       if(isString(increment)) {
-        match = increment.match(/^(\d+)?\s?(\w+?)s?$/i);
-        increment = parseInt(match[1] || 1);
-        method = 'add' + simpleCapitalize(match[2]) + 's';
-        current[method](0, true);
+        current.advance(getParamsFromString(increment, 0), true);
+        params = getParamsFromString(increment);
       } else {
-        method = 'addMilliseconds';
+        params = { 'milliseconds': increment };
       }
       while(current <= this.end) {
         result.push(current);
         if(fn) fn(current, index);
-        current = current.clone()[method](increment);
+        current = current.clone().advance(params, true);
         index++;
       }
       return result;
@@ -4474,8 +4484,8 @@
    * @method eachYear()
    * @set eachUnit
    ***/
-  ['Millisecond','Second','Minute','Hour','Day','Week','Month','Year'].each(function(u) {
-    DateRange.prototype['each' + u] = function(fn) { return this.every(u, fn); }
+  extendSimilar(DateRange, true, false, 'Millisecond,Second,Minute,Hour,Day,Week,Month,Year', function(methods, name) {
+    methods['each' + name] = function(fn) { return this.every(name, fn); }
   });
 
   extend(date, false, false, {
