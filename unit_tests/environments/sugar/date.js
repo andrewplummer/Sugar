@@ -1982,6 +1982,17 @@ test('Date', function () {
   dateEqual(d.clone().advance({ second: 1 }, true), new Date(2011, 0, 31, 23, 40, 29), 'Date#advance | with reset | second');
   dateEqual(d.clone().advance({ millisecond: 1 }, true), new Date(2011, 0, 31, 23, 40, 28, 501), 'Date#advance | with reset | millisecond');
 
+  // Advance also allows string methods
+
+  d = new Date(2011, 0, 31, 23, 40, 28, 500);
+  dateEqual(d.clone().advance('3 years'), new Date(2014, 0, 31, 23, 40, 28, 500), 'Date#advance | string input | year');
+  dateEqual(d.clone().advance('3 months'), new Date(2011, 3, 30, 23, 40, 28, 500), 'Date#advance | string input | month');
+  dateEqual(d.clone().advance('3 weeks'), new Date(2011, 1, 21, 23, 40, 28, 500), 'Date#advance | string input | week');
+  dateEqual(d.clone().advance('3 days'), new Date(2011, 1, 3, 23, 40, 28, 500), 'Date#advance | string input | date');
+  dateEqual(d.clone().advance('3 hours'), new Date(2011, 1, 1, 2, 40, 28, 500), 'Date#advance | string input | hour');
+  dateEqual(d.clone().advance('3 minutes'), new Date(2011, 0, 31, 23, 43, 28, 500), 'Date#advance | string input | minute');
+  dateEqual(d.clone().advance('3 seconds'), new Date(2011, 0, 31, 23, 40, 31, 500), 'Date#advance | string input | second');
+  dateEqual(d.clone().advance('3 milliseconds'), new Date(2011, 0, 31, 23, 40, 28, 503), 'Date#advance | string input | millisecond');
 
   // Number methods
 
