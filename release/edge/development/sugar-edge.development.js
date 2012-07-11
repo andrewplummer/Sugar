@@ -15,6 +15,12 @@
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, math = Math, Undefined;
 
+  // The global context
+  var globalContext = typeof global !== 'undefined' ? global : this;
+
+  // defineProperty exists in IE8 but will error when trying to define a property on
+  // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
+  var definePropertySupport = object.defineProperty && object.defineProperties;
 
   // Class initializers and isClass type helpers
 
@@ -58,13 +64,6 @@
       }
     });
   }
-
-  // The global context
-  var globalContext = typeof global !== 'undefined' ? global : this;
-
-  // defineProperty exists in IE8 but will error when trying to define a property on
-  // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
-  var definePropertySupport = object.defineProperty && object.defineProperties;
 
   // Class extending methods
 
@@ -381,7 +380,7 @@
   }
 
   function arrayReduce(arr, fn, initialValue, fromRight) {
-    var length = arr.length, count = 0, defined = initialValue !== Undefined, result, index;
+    var length = arr.length, count = 0, defined = isDefined(initialValue), result, index;
     checkCallback(fn);
     if(length == 0 && !defined) {
       throw new TypeError('Reduce called on empty array with no initial value');
@@ -394,7 +393,7 @@
     while(count < length) {
       index = fromRight ? length - count - 1 : count;
       if(index in arr) {
-        result = fn.call(Undefined, result, arr[index], index, arr);
+        result = fn(result, arr[index], index, arr);
       }
       count++;
     }
@@ -2530,7 +2529,7 @@
   }
 
   function cleanDateInput(str) {
-    str = str.trim().replace(/\.+$/,'').replace(/^just /, '').replace(/^now$/, '');
+    str = str.trim().replace(/^(just )?now|\.+$/i, '');
     return convertAsianDigits(str);
   }
 
@@ -2771,7 +2770,7 @@
   }
 
   function compareDate(d, find, buffer) {
-    var p = getExtendedDate(find), accuracy = 0, loBuffer = 0, hiBuffer = 0, override;
+    var p = getExtendedDate(find), accuracy = 0, loBuffer = 0, hiBuffer = 0, override, capitalized;
     if(buffer > 0) {
       loBuffer = hiBuffer = buffer;
       override = true;
@@ -2783,8 +2782,12 @@
           accuracy = u.multiplier(p.date, d - p.date) - 1;
         }
       });
+      capitalized = simpleCapitalize(p.set.specificity);
       if(p.set['edge'] || p.set['shift']) {
-        p.date['beginningOf' + simpleCapitalize(p.set.specificity)]();
+        p.date['beginningOf' + capitalized]();
+      }
+      if(p.set.specificity === 'month') {
+        max = p.date.clone()['endOf' + capitalized]().getTime();
       }
       if(!override && p.set['sign'] && p.set.specificity != 'millisecond') {
         // If the time is relative, there can occasionally be an disparity between the relative date
@@ -2795,9 +2798,8 @@
     }
     var t   = d.getTime();
     var min = p.date.getTime();
-    var max = min + accuracy;
+    var max = max || (min + accuracy);
     // Offset any shift that may occur as a result of DST traversal.
-    max += (d.getTimezoneOffset() - p.date.getTimezoneOffset()).minutes();
     return t >= (min - loBuffer) && t <= (max + hiBuffer);
   }
 
@@ -4343,8 +4345,13 @@
     this.end   = isDate(end)   ? end.clone()   : new date();
   };
 
-  extend(DateRange, true, true, {
-
+  // 'toString' doesn't appear in a for..in loop in IE even though
+  // hasOwnProperty reports true, so extend() can't be used here.
+  // Also tried simply setting the prototype = {} up front for all
+  // methods but GCC very oddly started dropping properties in the
+  // object randomly (maybe because of the global scope?) hence
+  // the need for the split logic here.
+  DateRange.prototype.toString = function() {
     /***
      * @method toString()
      * @returns String
@@ -4354,9 +4361,10 @@
      *   Date.range(Date.create('2003'), Date.create('2005')).toString() -> January 1, 2003..January 1, 2005
      *
      ***/
-    'toString': function(obj) {
-      return this.isValid() ? this.start.full() + '..' + this.end.full() : 'Invalid DateRange';
-    },
+    return this.isValid() ? this.start.full() + '..' + this.end.full() : 'Invalid DateRange';
+  };
+
+  extend(DateRange, true, false, {
 
     /***
      * @method isValid()
@@ -5457,7 +5465,7 @@
           if(!hasOwnProperty(source, key) || !target) continue;
           val = source[key];
           // Conflict!
-          if(target[key] !== Undefined) {
+          if(isDefined(target[key])) {
             // Do not merge.
             if(resolve === false) {
               continue;
