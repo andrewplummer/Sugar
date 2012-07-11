@@ -158,6 +158,8 @@ test('Dates | Simplified Chinese', function () {
 
   dateEqual(Date.create('星期日 2:00pm'), getDateWithWeekdayAndOffset(0).set({ hour: 14 }), 'Date#create | Simplified Chinese | 星期日 2:00pm');
   dateEqual(Date.create('12/31/2012'), new Date(2012, 11, 31), 'Date#create | Simplified Chinese | 12/31/2012');
+  dateEqual(Date.create('下星期六 3点12分'), getDateWithWeekdayAndOffset(6, 7, 3, 12), 'Date#create | Simplified Chinese | Saturday 3:12');
+
 
 });
 

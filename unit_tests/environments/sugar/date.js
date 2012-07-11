@@ -2,10 +2,6 @@ test('Date', function () {
 
   Date.setLocale('en');
 
-  // Issue #160
-  equal(Date.create('12/01/2013').is('November 2013'), false, 'Date#is | December 2013 is not November 2013');
-
-
 
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
@@ -319,12 +315,21 @@ test('Date', function () {
   // Fractions in ISO8601 dates
   dateEqual(Date.create('1997-07-16T14:30:40.5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'Date#create | ISO8601 | fractions in seconds');
   dateEqual(Date.create('1997-07-16T14:30.5'), new Date(1997, 6, 16, 14, 30, 30), 'Date#create | ISO8601 | fractions in minutes');
-  dateEqual(Date.create('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
 
   // Comma based fractions in ISO8601 dates
   dateEqual(Date.create('1997-07-16T14:30:40,5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'Date#create | ISO8601 | fractions in seconds');
   dateEqual(Date.create('1997-07-16T14:30,5'), new Date(1997, 6, 16, 14, 30, 30), 'Date#create | ISO8601 | fractions in minutes');
-  dateEqual(Date.create('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
+
+  // Due to various complexities, these formats are no longer valid.
+  // The bottom line is that since it is now possible to have time forward formats, the time
+  // regex needs to be robust enough that it doesn't collide with other date formats. This means
+  // that there must either be a ":" or another hour indicator ("시" in Korean will also trigger),
+  // otherwise simple number first formats can be mistaken as dates (formats like 12.25, which
+  // is a valid date). If this somehow becomes a requirement, it should be added as a separate manual
+  // format that avoids the main time regex altogether.
+  //
+  // dateEqual(Date.create('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
+  // dateEqual(Date.create('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
 
   // These are all the same moment...
   dateEqual(Date.create('2001-04-03T18:30Z'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 1');
