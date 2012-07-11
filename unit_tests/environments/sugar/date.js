@@ -335,6 +335,7 @@ test('Date', function () {
 
   // Fuzzy dates
   dateEqual(Date.create('now'), new Date(), 'Date#create | Fuzzy Dates | Now');
+  dateEqual(Date.create('Just now'), new Date(), 'Date#create | Fuzzy Dates | Just Now');
   dateEqual(Date.create('today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'Date#create | Fuzzy Dates | Today');
   dateEqual(Date.create('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Date#create | Fuzzy Dates | Yesterday');
   dateEqual(Date.create('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Date#create | Fuzzy Dates | Tomorrow');
