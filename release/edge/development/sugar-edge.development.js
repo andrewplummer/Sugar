@@ -7,10 +7,7 @@
  *
  * ---------------------------- */
 (function(){
-  /***
-   * Core package
-   *
-   ***/
+
 
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, math = Math, Undefined;
@@ -327,10 +324,6 @@
   initializeClasses();
 
 
-  /***
-   * ES5 package
-   *
-   ***/
 
 
   /***
@@ -624,32 +617,27 @@
        * @returns String
        * @short Removes leading and/or trailing whitespace from the string.
        * @extra Whitespace is defined as line breaks, tabs, and any character in the "Space, Separator" Unicode category, conforming to the the ES5 spec. The standard %trim% method is only added when not fully supported natively.
+       *
+       * @set
+       *   trim
+       *   trimLeft
+       *   trimRight
+       *
        * @example
        *
        *   '   wasabi   '.trim()      -> 'wasabi'
        *   '   wasabi   '.trimLeft()  -> 'wasabi   '
        *   '   wasabi   '.trimRight() -> '   wasabi'
        *
-       ***
-       * @method trim()
-       * @set trimSide
        ***/
       'trim': function() {
         return this.toString().trimLeft().trimRight();
       },
 
-      /***
-       * @method trimLeft()
-       * @set trimSide
-       ***/
       'trimLeft': function() {
         return this.replace(regexp('^['+getTrimmableCharacters()+']+'), '');
       },
 
-      /***
-       * @method trimRight()
-       * @set trimSide
-       ***/
       'trimRight': function() {
         return this.replace(regexp('['+getTrimmableCharacters()+']+$'), '');
       }
@@ -755,11 +743,12 @@
   buildISOString();
 
 
+
+
   /***
-   * Array package
+   * Array module
    *
    ***/
-
 
   var HashSupport = typeof Hash !== 'undefined' && Object['extended'];
 
@@ -1943,7 +1932,7 @@
   // TODO final rinse (add comments and rearrange core methods)
 
   /***
-   * Date package
+   * Date module
    *
    ***/
 
@@ -3018,6 +3007,17 @@
    * @returns Number
    * @short Returns the time since [d] in the appropriate unit.
    * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. For more see @date_format.
+   *
+   * @set
+   *   millisecondsSince()
+   *   secondsSince()
+   *   minutesSince()
+   *   hoursSince()
+   *   daysSince()
+   *   weeksSince()
+   *   monthsSince()
+   *   yearsSince()
+   *
    * @example
    *
    *   Date.create().millisecondsSince('1 hour ago') -> 3,600,000
@@ -3026,33 +3026,20 @@
    *   Date.create('15 years ago').yearsAgo()        -> 15
    *
    ***
-   * @method millisecondsSince()
-   * @set unitsSince
-   ***
-   * @method secondsSince()
-   * @set unitsSince
-   ***
-   * @method minutesSince()
-   * @set unitsSince
-   ***
-   * @method hoursSince()
-   * @set unitsSince
-   ***
-   * @method daysSince()
-   * @set unitsSince
-   ***
-   * @method weeksSince()
-   * @set unitsSince
-   ***
-   * @method monthsSince()
-   * @set unitsSince
-   ***
-   * @method yearsSince()
-   * @set unitsSince
-   ***
    * @method [units]Ago()
    * @returns Number
    * @short Returns the time ago in the appropriate unit.
+   *
+   * @set
+   *   millisecondsAgo()
+   *   secondsAgo()
+   *   minutesAgo()
+   *   hoursAgo()
+   *   daysAgo()
+   *   weeksAgo()
+   *   monthsAgo()
+   *   yearsAgo()
+   *
    * @example
    *
    *   Date.create('last year').millisecondsAgo() -> 3,600,000
@@ -3060,34 +3047,21 @@
    *   Date.create('last year').yearsAgo()        -> 15
    *
    ***
-   * @method millisecondsAgo()
-   * @set unitsAgo
-   ***
-   * @method secondsAgo()
-   * @set unitsAgo
-   ***
-   * @method minutesAgo()
-   * @set unitsAgo
-   ***
-   * @method hoursAgo()
-   * @set unitsAgo
-   ***
-   * @method daysAgo()
-   * @set unitsAgo
-   ***
-   * @method weeksAgo()
-   * @set unitsAgo
-   ***
-   * @method monthsAgo()
-   * @set unitsAgo
-   ***
-   * @method yearsAgo()
-   * @set unitsAgo
-   ***
    * @method [units]Until([d], [locale] = currentLocale)
    * @returns Number
    * @short Returns the time until [d] in the appropriate unit.
    * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. %[unit]FromNow% is provided as an alias to make this more readable. For more see @date_format.
+   *
+   * @set
+   *   millisecondsUntil()
+   *   secondsUntil()
+   *   minutesUntil()
+   *   hoursUntil()
+   *   daysUntil()
+   *   weeksUntil()
+   *   monthsUntil()
+   *   yearsUntil()
+   *
    * @example
    *
    *   Date.create().millisecondsUntil('1 hour from now') -> 3,600,000
@@ -3096,33 +3070,21 @@
    *   Date.create('15 years from now').yearsFromNow()    -> 15
    *
    ***
-   * @method millisecondsUntil()
-   * @set unitsUntil
-   ***
-   * @method secondsUntil()
-   * @set unitsUntil
-   ***
-   * @method minutesUntil()
-   * @set unitsUntil
-   ***
-   * @method hoursUntil()
-   * @set unitsUntil
-   ***
-   * @method daysUntil()
-   * @set unitsUntil
-   ***
-   * @method weeksUntil()
-   * @set unitsUntil
-   ***
-   * @method monthsUntil()
-   * @set unitsUntil
-   ***
-   * @method yearsUntil()
-   * @set unitsUntil
-   ***
    * @method [units]FromNow()
    * @returns Number
    * @short Returns the time from now in the appropriate unit.
+   *
+   * @set
+   *
+   *   millisecondsFromNow()
+   *   secondsFromNow()
+   *   minutesFromNow()
+   *   hoursFromNow()
+   *   daysFromNow()
+   *   weeksFromNow()
+   *   monthsFromNow()
+   *   yearsFromNow()
+   *
    * @example
    *
    *   Date.create('next year').millisecondsFromNow() -> 3,600,000
@@ -3130,34 +3092,21 @@
    *   Date.create('next year').yearsFromNow()        -> 15
    *
    ***
-   * @method millisecondsFromNow()
-   * @set unitsFromNow
-   ***
-   * @method secondsFromNow()
-   * @set unitsFromNow
-   ***
-   * @method minutesFromNow()
-   * @set unitsFromNow
-   ***
-   * @method hoursFromNow()
-   * @set unitsFromNow
-   ***
-   * @method daysFromNow()
-   * @set unitsFromNow
-   ***
-   * @method weeksFromNow()
-   * @set unitsFromNow
-   ***
-   * @method monthsFromNow()
-   * @set unitsFromNow
-   ***
-   * @method yearsFromNow()
-   * @set unitsFromNow
-   ***
    * @method add[Units](<num>)
    * @returns Date
    * @short Adds <num> of the unit to the date.
    * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Don't use this method if you need precision.
+   *
+   * @set
+   *   addMilliseconds()
+   *   addSeconds()
+   *   addMinutes()
+   *   addHours()
+   *   addDays()
+   *   addWeeks()
+   *   addMonths()
+   *   addYears()
+   *
    * @example
    *
    *   Date.create().addMilliseconds(5) -> current time + 5 milliseconds
@@ -3165,33 +3114,15 @@
    *   Date.create().addYears(5)        -> current time + 5 years
    *
    ***
-   * @method addMilliseconds()
-   * @set addUnits
-   ***
-   * @method addSeconds()
-   * @set addUnits
-   ***
-   * @method addMinutes()
-   * @set addUnits
-   ***
-   * @method addHours()
-   * @set addUnits
-   ***
-   * @method addDays()
-   * @set addUnits
-   ***
-   * @method addWeeks()
-   * @set addUnits
-   ***
-   * @method addMonths()
-   * @set addUnits
-   ***
-   * @method addYears()
-   * @set addUnits
-   ***
    * @method isLast[Unit]()
    * @returns Boolean
    * @short Returns true if the date is last week/month/year.
+   *
+   * @set
+   *   isLastWeek()
+   *   isLastMonth()
+   *   isLastYear()
+   *
    * @example
    *
    *   Date.create('yesterday').isLastWeek()  -> true or false?
@@ -3202,6 +3133,12 @@
    * @method isThis[Unit]()
    * @returns Boolean
    * @short Returns true if the date is this week/month/year.
+   *
+   * @set
+   *   isThisWeek()
+   *   isThisMonth()
+   *   isThisYear()
+   *
    * @example
    *
    *   Date.create('tomorrow').isThisWeek()  -> true or false?
@@ -3212,6 +3149,12 @@
    * @method isNext[Unit]()
    * @returns Boolean
    * @short Returns true if the date is next week/month/year.
+   *
+   * @set
+   *   isNextWeek()
+   *   isNextMonth()
+   *   isNextYear()
+   *
    * @example
    *
    *   Date.create('tomorrow').isNextWeek()  -> true or false?
@@ -3219,36 +3162,16 @@
    *   Date.create('tomorrow').isNextYear()  -> even less likely...
    *
    ***
-   * @method isLastWeek()
-   * @set isLastUnit
-   ***
-   * @method isLastMonth()
-   * @set isLastUnit
-   ***
-   * @method isLastYear()
-   * @set isLastUnit
-   ***
-   * @method isThisWeek()
-   * @set isThisUnit
-   ***
-   * @method isThisMonth()
-   * @set isThisUnit
-   ***
-   * @method isThisYear()
-   * @set isThisUnit
-   ***
-   * @method isNextWeek()
-   * @set isNextUnit
-   ***
-   * @method isNextMonth()
-   * @set isNextUnit
-   ***
-   * @method isNextYear()
-   * @set isNextUnit
-   ***
    * @method beginningOf[Unit]()
    * @returns Date
    * @short Sets the date to the beginning of the appropriate unit.
+   *
+   * @set
+   *   beginningOfDay()
+   *   beginningOfWeek()
+   *   beginningOfMonth()
+   *   beginningOfYear()
+   *
    * @example
    *
    *   Date.create().beginningOfDay()   -> the beginning of today (resets the time)
@@ -3260,6 +3183,13 @@
    * @method endOf[Unit]()
    * @returns Date
    * @short Sets the date to the end of the appropriate unit.
+   *
+   * @set
+   *   endOfDay()
+   *   endOfWeek()
+   *   endOfMonth()
+   *   endOfYear()
+   *
    * @example
    *
    *   Date.create().endOfDay()   -> the end of today (sets the time to 23:59:59.999)
@@ -3267,30 +3197,6 @@
    *   Date.create().endOfMonth() -> the end of the month
    *   Date.create().endOfYear()  -> the end of the year
    *
-   ***
-   * @method beginningOfDay()
-   * @set beginningOfUnit
-   ***
-   * @method beginningOfWeek()
-   * @set beginningOfUnit
-   ***
-   * @method beginningOfMonth()
-   * @set beginningOfUnit
-   ***
-   * @method beginningOfYear()
-   * @set beginningOfUnit
-   ***
-   * @method endOfDay()
-   * @set endOfUnit
-   ***
-   * @method endOfWeek()
-   * @set endOfUnit
-   ***
-   * @method endOfMonth()
-   * @set endOfUnit
-   ***
-   * @method endOfYear()
-   * @set endOfUnit
    ***/
 
   function buildDateMethods() {
@@ -3393,6 +3299,21 @@
    * @returns Boolean
    * @short Returns true if the date falls on that day.
    * @extra Also available: %isYesterday%, %isToday%, %isTomorrow%, %isWeekday%, and %isWeekend%.
+   *
+   * @set
+   *   isToday()
+   *   isYesterday()
+   *   isTomorrow()
+   *   isWeekday()
+   *   isWeekend()
+   *   isSunday()
+   *   isMonday()
+   *   isTuesday()
+   *   isWednesday()
+   *   isThursday()
+   *   isFriday()
+   *   isSaturday()
+   *
    * @example
    *
    *   Date.create('tomorrow').isToday() -> false
@@ -3400,42 +3321,6 @@
    *   Date.create('yesterday').isWednesday() -> ?
    *   Date.create('today').isWeekend() -> ?
    *
-   ***
-   * @method isToday()
-   * @set isDay
-   ***
-   * @method isYesterday()
-   * @set isDay
-   ***
-   * @method isTomorrow()
-   * @set isDay
-   ***
-   * @method isWeekday()
-   * @set isDay
-   ***
-   * @method isWeekend()
-   * @set isDay
-   ***
-   * @method isSunday()
-   * @set isDay
-   ***
-   * @method isMonday()
-   * @set isDay
-   ***
-   * @method isTuesday()
-   * @set isDay
-   ***
-   * @method isWednesday()
-   * @set isDay
-   ***
-   * @method isThursday()
-   * @set isDay
-   ***
-   * @method isFriday()
-   * @set isDay
-   ***
-   * @method isSaturday()
-   * @set isDay
    ***
    * @method isFuture()
    * @returns Boolean
@@ -3471,6 +3356,25 @@
    * @returns Number
    * @short Takes the number as a corresponding unit of time and converts to milliseconds.
    * @extra Method names can be both singular and plural.  Note that as "a month" is ambiguous as a unit of time, %months% will be equivalent to 30.4375 days, the average number in a month. Be careful using %months% if you need exact precision.
+   *
+   * @set
+   *   millisecond()
+   *   milliseconds()
+   *   second()
+   *   seconds()
+   *   minute()
+   *   minutes()
+   *   hour()
+   *   hours()
+   *   day()
+   *   days()
+   *   week()
+   *   weeks()
+   *   month()
+   *   months()
+   *   year()
+   *   years()
+   *
    * @example
    *
    *   (5).milliseconds() -> 5
@@ -3478,285 +3382,121 @@
    *   (1).day()          -> 86400000
    *
    ***
-   * @method millisecond()
-   * @set unit
-   ***
-   * @method milliseconds()
-   * @set unit
-   ***
-   * @method second()
-   * @set unit
-   ***
-   * @method seconds()
-   * @set unit
-   ***
-   * @method minute()
-   * @set unit
-   ***
-   * @method minutes()
-   * @set unit
-   ***
-   * @method hour()
-   * @set unit
-   ***
-   * @method hours()
-   * @set unit
-   ***
-   * @method day()
-   * @set unit
-   ***
-   * @method days()
-   * @set unit
-   ***
-   * @method week()
-   * @set unit
-   ***
-   * @method weeks()
-   * @set unit
-   ***
-   * @method month()
-   * @set unit
-   ***
-   * @method months()
-   * @set unit
-   ***
-   * @method year()
-   * @set unit
-   ***
-   * @method years()
-   * @set unit
-   ***
    * @method [unit]Before([d], [locale] = currentLocale)
    * @returns Date
    * @short Returns a date that is <n> units before [d], where <n> is the number.
    * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsBefore% if you need exact precision. See @date_format for more information.
+   *
+   * @set
+   *   millisecondBefore()
+   *   millisecondsBefore()
+   *   secondBefore()
+   *   secondsBefore()
+   *   minuteBefore()
+   *   minutesBefore()
+   *   hourBefore()
+   *   hoursBefore()
+   *   dayBefore()
+   *   daysBefore()
+   *   weekBefore()
+   *   weeksBefore()
+   *   monthBefore()
+   *   monthsBefore()
+   *   yearBefore()
+   *   yearsBefore()
+   *
    * @example
    *
    *   (5).daysBefore('tuesday')          -> 5 days before tuesday of this week
    *   (1).yearBefore('January 23, 1997') -> January 23, 1996
    *
    ***
-   * @method millisecondBefore()
-   * @set unitBefore
-   ***
-   * @method millisecondsBefore()
-   * @set unitBefore
-   ***
-   * @method secondBefore()
-   * @set unitBefore
-   ***
-   * @method secondsBefore()
-   * @set unitBefore
-   ***
-   * @method minuteBefore()
-   * @set unitBefore
-   ***
-   * @method minutesBefore()
-   * @set unitBefore
-   ***
-   * @method hourBefore()
-   * @set unitBefore
-   ***
-   * @method hoursBefore()
-   * @set unitBefore
-   ***
-   * @method dayBefore()
-   * @set unitBefore
-   ***
-   * @method daysBefore()
-   * @set unitBefore
-   ***
-   * @method weekBefore()
-   * @set unitBefore
-   ***
-   * @method weeksBefore()
-   * @set unitBefore
-   ***
-   * @method monthBefore()
-   * @set unitBefore
-   ***
-   * @method monthsBefore()
-   * @set unitBefore
-   ***
-   * @method yearBefore()
-   * @set unitBefore
-   ***
-   * @method yearsBefore()
-   * @set unitBefore
-   ***
    * @method [unit]Ago()
    * @returns Date
    * @short Returns a date that is <n> units ago.
    * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsAgo% if you need exact precision.
+   *
+   * @set
+   *   millisecondAgo()
+   *   millisecondsAgo()
+   *   secondAgo()
+   *   secondsAgo()
+   *   minuteAgo()
+   *   minutesAgo()
+   *   hourAgo()
+   *   hoursAgo()
+   *   dayAgo()
+   *   daysAgo()
+   *   weekAgo()
+   *   weeksAgo()
+   *   monthAgo()
+   *   monthsAgo()
+   *   yearAgo()
+   *   yearsAgo()
+   *
    * @example
    *
    *   (5).weeksAgo() -> 5 weeks ago
    *   (1).yearAgo()  -> January 23, 1996
    *
    ***
-   * @method millisecondAgo()
-   * @set unitAgo
-   ***
-   * @method millisecondsAgo()
-   * @set unitAgo
-   ***
-   * @method secondAgo()
-   * @set unitAgo
-   ***
-   * @method secondsAgo()
-   * @set unitAgo
-   ***
-   * @method minuteAgo()
-   * @set unitAgo
-   ***
-   * @method minutesAgo()
-   * @set unitAgo
-   ***
-   * @method hourAgo()
-   * @set unitAgo
-   ***
-   * @method hoursAgo()
-   * @set unitAgo
-   ***
-   * @method dayAgo()
-   * @set unitAgo
-   ***
-   * @method daysAgo()
-   * @set unitAgo
-   ***
-   * @method weekAgo()
-   * @set unitAgo
-   ***
-   * @method weeksAgo()
-   * @set unitAgo
-   ***
-   * @method monthAgo()
-   * @set unitAgo
-   ***
-   * @method monthsAgo()
-   * @set unitAgo
-   ***
-   * @method yearAgo()
-   * @set unitAgo
-   ***
-   * @method yearsAgo()
-   * @set unitAgo
-   ***
    * @method [unit]After([d], [locale] = currentLocale)
    * @returns Date
    * @short Returns a date <n> units after [d], where <n> is the number.
    * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsAfter% if you need exact precision. See @date_format for more information.
+   *
+   * @set
+   *   millisecondAfter()
+   *   millisecondsAfter()
+   *   secondAfter()
+   *   secondsAfter()
+   *   minuteAfter()
+   *   minutesAfter()
+   *   hourAfter()
+   *   hoursAfter()
+   *   dayAfter()
+   *   daysAfter()
+   *   weekAfter()
+   *   weeksAfter()
+   *   monthAfter()
+   *   monthsAfter()
+   *   yearAfter()
+   *   yearsAfter()
+   *
    * @example
    *
    *   (5).daysAfter('tuesday')          -> 5 days after tuesday of this week
    *   (1).yearAfter('January 23, 1997') -> January 23, 1998
    *
    ***
-   * @method millisecondAfter()
-   * @set unitAfter
-   ***
-   * @method millisecondsAfter()
-   * @set unitAfter
-   ***
-   * @method secondAfter()
-   * @set unitAfter
-   ***
-   * @method secondsAfter()
-   * @set unitAfter
-   ***
-   * @method minuteAfter()
-   * @set unitAfter
-   ***
-   * @method minutesAfter()
-   * @set unitAfter
-   ***
-   * @method hourAfter()
-   * @set unitAfter
-   ***
-   * @method hoursAfter()
-   * @set unitAfter
-   ***
-   * @method dayAfter()
-   * @set unitAfter
-   ***
-   * @method daysAfter()
-   * @set unitAfter
-   ***
-   * @method weekAfter()
-   * @set unitAfter
-   ***
-   * @method weeksAfter()
-   * @set unitAfter
-   ***
-   * @method monthAfter()
-   * @set unitAfter
-   ***
-   * @method monthsAfter()
-   * @set unitAfter
-   ***
-   * @method yearAfter()
-   * @set unitAfter
-   ***
-   * @method yearsAfter()
-   * @set unitAfter
-   ***
    * @method [unit]FromNow()
    * @returns Date
    * @short Returns a date <n> units from now.
    * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsFromNow% if you need exact precision.
+   *
+   * @set
+   *   millisecondFromNow()
+   *   millisecondsFromNow()
+   *   secondFromNow()
+   *   secondsFromNow()
+   *   minuteFromNow()
+   *   minutesFromNow()
+   *   hourFromNow()
+   *   hoursFromNow()
+   *   dayFromNow()
+   *   daysFromNow()
+   *   weekFromNow()
+   *   weeksFromNow()
+   *   monthFromNow()
+   *   monthsFromNow()
+   *   yearFromNow()
+   *   yearsFromNow()
+   *
    * @example
    *
    *   (5).weeksFromNow() -> 5 weeks ago
    *   (1).yearFromNow()  -> January 23, 1998
    *
-   ***
-   * @method millisecondFromNow()
-   * @set unitFromNow
-   ***
-   * @method millisecondsFromNow()
-   * @set unitFromNow
-   ***
-   * @method secondFromNow()
-   * @set unitFromNow
-   ***
-   * @method secondsFromNow()
-   * @set unitFromNow
-   ***
-   * @method minuteFromNow()
-   * @set unitFromNow
-   ***
-   * @method minutesFromNow()
-   * @set unitFromNow
-   ***
-   * @method hourFromNow()
-   * @set unitFromNow
-   ***
-   * @method hoursFromNow()
-   * @set unitFromNow
-   ***
-   * @method dayFromNow()
-   * @set unitFromNow
-   ***
-   * @method daysFromNow()
-   * @set unitFromNow
-   ***
-   * @method weekFromNow()
-   * @set unitFromNow
-   ***
-   * @method weeksFromNow()
-   * @set unitFromNow
-   ***
-   * @method monthFromNow()
-   * @set unitFromNow
-   ***
-   * @method monthsFromNow()
-   * @set unitFromNow
-   ***
-   * @method yearFromNow()
-   * @set unitFromNow
-   ***
-   * @method yearsFromNow()
-   * @set unitFromNow
    ***/
   function buildNumberToDateAlias(u, multiplier) {
     var unit = u.unit, methods = {};
@@ -3916,6 +3656,10 @@
      * @returns Date
      * @short Sets the date object.
      * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. %setUTC% will set the date according to universal time.
+     *
+     * @set
+     *   setUTC
+     *
      * @example
      *
      *   new Date().set({ year: 2011, month: 11, day: 31 }) -> December 31, 2011
@@ -3929,10 +3673,6 @@
       return updateDate(this, args[0], args[1])
     },
 
-     /***
-     * @method setUTC()
-     * @set set
-     ***/
     'setUTC': function() {
       var args = collectDateArguments(arguments);
       return updateDate(this, args[0], args[1], true)
@@ -3943,6 +3683,10 @@
      * @returns Nothing
      * @short Sets the weekday of the date.
      * @extra %setUTCWeekday% sets according to universal time.
+     *
+     * @set
+     *   setUTCWeekday
+     *
      * @example
      *
      *   d = new Date(); d.setWeekday(1); d; -> Monday of this week
@@ -3954,10 +3698,6 @@
       this.setDate(this.getDate() + dow - this.getDay());
     },
 
-     /***
-     * @method setUTCWeekday()
-     * @set setWeekday
-     ***/
     'setUTCWeekday': function(dow) {
       if(isUndefined(dow)) return;
       this.setDate(this.getUTCDate() + dow - this.getDay());
@@ -3968,6 +3708,10 @@
      * @returns Nothing
      * @short Sets the week (of the year).
      * @extra %setUTCWeek% sets according to universal time.
+     *
+     * @set
+     *   setUTCWeek
+     *
      * @example
      *
      *   d = new Date(); d.setWeek(15); d; -> 15th week of the year
@@ -3980,10 +3724,6 @@
       this.setDate((week * 7) + 1);
     },
 
-     /***
-     * @method setUTCWeek()
-     * @set setWeek
-     ***/
     'setUTCWeek': function(week) {
       if(isUndefined(week)) return;
       var date = this.getUTCDate();
@@ -3996,6 +3736,10 @@
      * @returns Number
      * @short Gets the date's week (of the year).
      * @extra %getUTCWeek% gets the time according to universal time.
+     *
+     * @set
+     *   getUTCWeek
+     *
      * @example
      *
      *   new Date().getWeek() -> today's week of the year
@@ -4005,10 +3749,6 @@
       return getWeekNumber(this);
     },
 
-     /***
-     * @method getUTCWeek()
-     * @set getWeek
-     ***/
     'getUTCWeek': function() {
       return getWeekNumber(this.toUTC());
     },
@@ -4060,7 +3800,7 @@
       return this.utc || this.getTimezoneOffset() === 0;
     },
 
-     /**
+     /***
      * @method advance(<set>, [reset] = false)
      * @returns Date
      * @short Sets the date forward.
@@ -4266,7 +4006,7 @@
     },
 
      /***
-     * @method reset(unit = 'hours')
+     * @method reset([unit] = 'hours')
      * @returns Date
      * @short Resets the unit passed and all smaller units. Default is "hours", effectively resetting the time.
      * @example
@@ -4358,7 +4098,7 @@
 
 
   /***
-   * DateRange package
+   * DateRange module
    * @dependency Date
    *
    ***/
@@ -4497,35 +4237,22 @@
    * @method each[Unit]([fn])
    * @returns Date
    * @short Increments through the date range for each [unit], calling [fn] if it is passed. Returns an array of each increment visited.
+   *
+   * @set
+   *   eachMillisecond()
+   *   eachSecond()
+   *   eachMinute()
+   *   eachHour()
+   *   eachDay()
+   *   eachWeek()
+   *   eachMonth()
+   *   eachYear()
+   *
    * @example
    *
    *   Date.range(new Date(2003, 1), new Date(2003, 3)).eachMonth() -> [...]
    *   Date.range(new Date(2003, 1), new Date(2003, 3)).eachDay()   -> [...]
    *
-   ***
-   * @method eachMillisecond()
-   * @set eachUnit
-   ***
-   * @method eachSecond()
-   * @set eachUnit
-   ***
-   * @method eachMinute()
-   * @set eachUnit
-   ***
-   * @method eachHour()
-   * @set eachUnit
-   ***
-   * @method eachDay()
-   * @set eachUnit
-   ***
-   * @method eachWeek()
-   * @set eachUnit
-   ***
-   * @method eachMonth()
-   * @set eachUnit
-   ***
-   * @method eachYear()
-   * @set eachUnit
    ***/
   extendSimilar(DateRange, true, false, 'Millisecond,Second,Minute,Hour,Day,Week,Month,Year', function(methods, name) {
     methods['each' + name] = function(fn) { return this.every(name, fn); }
@@ -4548,7 +4275,7 @@
 
 
   /***
-   * Function package
+   * Function module
    *
    ***/
 
@@ -5111,31 +4838,15 @@
   });
 
   /***
-   * @method ceil([precision] = 0)
+   * @method [Rounding](<precision> = 0)
    * @returns Number
-   * @short Rounds the number up. [precision] will round to the given precision.
-   * @example
+   * @short Math rounding functions are mapped as shortcuts to numbers. In addition to serving as shortcuts, they also allow a single argument that determines the precision to which rounding will occur.
    *
-   *   (4.434).ceil()  -> 5
-   *   (-4.434).ceil() -> -4
-   *   (44.17).ceil(1) -> 44.2
-   *   (4417).ceil(-2) -> 4500
+   * @set
+   *   round
+   *   ceil
+   *   floor
    *
-   ***
-   * @method floor([precision] = 0)
-   * @returns Number
-   * @short Rounds the number down. [precision] will round to the given precision.
-   * @example
-   *
-   *   (4.434).floor()  -> 4
-   *   (-4.434).floor() -> -5
-   *   (44.17).floor(1) -> 44.1
-   *   (4417).floor(-2) -> 4400
-   *
-   ***
-   * @method round(<precision> = 0)
-   * @returns Number
-   * @short Rounds a number to the precision of <precision>.
    * @example
    *
    *   (3.241).round()  -> 3
@@ -5146,98 +4857,26 @@
    *   (3748).round(-2) -> 3800
    *
    ***
-   * @method abs()
+   * @method [Math]()
    * @returns Number
-   * @short Returns the absolute value for the number.
+   * @short Math related functions are mapped as shortcuts to numbers and are identical. Note that %Number%log% provides some special defaults.
+   *
+   * @set
+   *   abs
+   *   sin
+   *   asin
+   *   cos
+   *   acos
+   *   tan
+   *   atan
+   *   sqrt
+   *   exp
+   *   pow
+   *
    * @example
    *
-   *   (3).abs()  -> 3
-   *   (-3).abs() -> 3
-   *
-   ***
-   * @method pow(<p> = 1)
-   * @returns Number
-   * @short Returns the number to the power of <p>.
-   * @example
-   *
-   *   (3).pow(2) -> 9
    *   (3).pow(3) -> 27
-   *   (3).pow()  -> 3
-   *
-   ***
-   * @method sin()
-   * @returns Number
-   * @short Returns the sine of the number.
-   * @example
-   *
-   *   (1).sin()         -> 0.8414709848078965
-   *   (0).sin()         -> 0
-   *   (Math.PI/2).sin() -> 1
-   *
-   ***
-   * @method cos()
-   * @returns Number
-   * @short Returns the cosine of the number.
-   * @example
-   *
-   *   (0).cos()         -> 1
-   *   (Math.PI).cos()   -> -1
-   *   (Math.PI*2).cos() -> 1
-   *
-   ***
-   * @method tan()
-   * @returns Number
-   * @short Returns the tangent of the number.
-   * @example
-   *
-   *   (0).tan()  -> 0
-   *   (45).tan() -> 1.6197751905438615
-   *   (90).tan() -> -1.995200412208242
-   *
-   ***
-   * @method asin()
-   * @returns Number
-   * @short Returns the arcsine of the number.
-   * @example
-   *
-   *   (0).asin() -> 0
-   *   (1).asin() -> 1.5707963267948966
-   *   (2).asin() -> NaN
-   *
-   ***
-   * @method acos()
-   * @returns Number
-   * @short Returns the arccosine of the number.
-   * @example
-   *
-   *   (1).acos() -> 0
-   *   (0).acos() -> 1.5707963267948966
-   *
-   ***
-   * @method atan()
-   * @returns Number
-   * @short Returns the arctangent of the number.
-   * @example
-   *
-   *   (0).atan()  -> 0
-   *   (45).atan() -> 1.5485777614681775
-   *
-   ***
-   * @method exp()
-   * @returns Number
-   * @short Returns Math.E raised to the power of the number.
-   * @example
-   *
-   *   (1).exp() -> 2.718281828459045
-   *   (0).exp() -> 1
-   *
-   ***
-   * @method sqrt()
-   * @returns Number
-   * @short Returns the square root of the number.
-   * @example
-   *
-   *   (9).sqrt()    -> 3
+   *   (-3).abs() -> 3
    *   (1024).sqrt() -> 32
    *
    ***/
@@ -5308,6 +4947,18 @@
    * @returns Boolean
    * @short Returns true if <obj> is an object of that type.
    * @extra %isObject% will return false on anything that is not an object literal, including instances of inherited classes. Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number". Type methods are available as instance methods on extended objects.
+   *
+   * @set
+   *   isArray
+   *   isObject
+   *   isBoolean
+   *   isDate
+   *   isFunction
+   *   isNaN
+   *   isNumber
+   *   isString
+   *   isRegExp
+   *
    * @example
    *
    *   Object.isArray([1,2,3])            -> true
@@ -5315,27 +4966,6 @@
    *   Object.isRegExp(/wasabi/)          -> true
    *   Object.isObject({ broken:'wear' }) -> true
    *
-   ***
-   * @method isArray()
-   * @set isType
-   ***
-   * @method isBoolean()
-   * @set isType
-   ***
-   * @method isDate()
-   * @set isType
-   ***
-   * @method isFunction()
-   * @set isType
-   ***
-   * @method isNumber()
-   * @set isType
-   ***
-   * @method isString()
-   * @set isType
-   ***
-   * @method isRegExp()
-   * @set isType
    ***/
   function buildTypeMethods() {
     extendSimilar(object, false, false, ClassNames, function(methods, name) {
@@ -5415,18 +5045,10 @@
 
   extend(object, false, false, {
 
-    /***
-     * @method isObject()
-     * @set isType
-     ***/
     'isObject': function(obj) {
       return isObject(obj);
     },
 
-    /***
-     * @method isNaN()
-     * @set isType
-     ***/
     'isNaN': function(obj) {
       // This is only true of NaN
       return isNumber(obj) && obj.valueOf() !== obj.valueOf();
@@ -5761,7 +5383,7 @@
 
 
   /***
-   * String package
+   * String module
    *
    ***/
 
@@ -5770,6 +5392,22 @@
    * @method has[Script]()
    * @returns Boolean
    * @short Returns true if the string contains any characters in that script.
+   *
+   * @set
+   *   hasArabic
+   *   hasCyrillic
+   *   hasGreek
+   *   hasHangul
+   *   hasHan
+   *   hasKanji
+   *   hasHebrew
+   *   hasHiragana
+   *   hasKana
+   *   hasKatakana
+   *   hasLatin
+   *   hasThai
+   *   hasDevanagari
+   *
    * @example
    *
    *   'أتكلم'.hasArabic()          -> true
@@ -5782,6 +5420,22 @@
    * @method is[Script]()
    * @returns Boolean
    * @short Returns true if the string contains only characters in that script. Whitespace is ignored.
+   *
+   * @set
+   *   isArabic
+   *   isCyrillic
+   *   isGreek
+   *   isHangul
+   *   isHan
+   *   isKanji
+   *   isHebrew
+   *   isHiragana
+   *   isKana
+   *   isKatakana
+   *   isKatakana
+   *   isThai
+   *   isDevanagari
+   *
    * @example
    *
    *   'أتكلم'.isArabic()          -> true
@@ -5790,84 +5444,6 @@
    *   'ミックスです'.isKatakana() -> false
    *   "l'année".isLatin()         -> true
    *
-   ***
-   * @method hasArabic()
-   * @set hasScript
-   ***
-   * @method isArabic()
-   * @set isScript
-   ****
-   * @method hasCyrillic()
-   * @set hasScript
-   ***
-   * @method isCyrillic()
-   * @set isScript
-   ****
-   * @method hasGreek()
-   * @set hasScript
-   ***
-   * @method isGreek()
-   * @set isScript
-   ****
-   * @method hasHangul()
-   * @set hasScript
-   ***
-   * @method isHangul()
-   * @set isScript
-   ****
-   * @method hasHan()
-   * @set hasScript
-   ***
-   * @method isHan()
-   * @set isScript
-   ****
-   * @method hasKanji()
-   * @set hasScript
-   ***
-   * @method isKanji()
-   * @set isScript
-   ****
-   * @method hasHebrew()
-   * @set hasScript
-   ***
-   * @method isHebrew()
-   * @set isScript
-   ****
-   * @method hasHiragana()
-   * @set hasScript
-   ***
-   * @method isHiragana()
-   * @set isScript
-   ****
-   * @method hasKana()
-   * @set hasScript
-   ***
-   * @method isKana()
-   * @set isScript
-   ****
-   * @method hasKatakana()
-   * @set hasScript
-   ***
-   * @method isKatakana()
-   * @set isScript
-   ****
-   * @method hasLatin()
-   * @set hasScript
-   ***
-   * @method isKatakana()
-   * @set isScript
-   ****
-   * @method hasThai()
-   * @set hasScript
-   ***
-   * @method isThai()
-   * @set isScript
-   ****
-   * @method hasDevanagari()
-   * @set hasScript
-   ***
-   * @method isDevanagari()
-   * @set isScript
    ***/
   var unicodeScripts = [
     { names: ['Arabic'],      source: '\u0600-\u06FF' },
@@ -6724,6 +6300,12 @@
      * @returns String
      * @short Pads either/both sides of the string.
      * @extra [num] is the number of characters on each side, and [padding] is the character to pad with.
+     *
+     * @set
+     *   pad
+     *   padLeft
+     *   padRight
+     *
      * @example
      *
      *   'wasabi'.pad('-')         -> '-wasabi-'
@@ -6731,26 +6313,15 @@
      *   'wasabi'.padLeft('-', 2)  -> '--wasabi'
      *   'wasabi'.padRight('-', 2) -> 'wasabi--'
      *
-     ***
-     * @method pad()
-     * @set padSide
      ***/
     'pad': function(padding, num) {
       return repeatString(num, padding) + this + repeatString(num, padding);
     },
 
-    /***
-     * @method padLeft()
-     * @set padSide
-     ***/
     'padLeft': function(padding, num) {
       return repeatString(num, padding) + this;
     },
 
-    /***
-     * @method padRight()
-     * @set padSide
-     ***/
     'padRight': function(padding, num) {
       return this + repeatString(num, padding);
     },
@@ -6969,7 +6540,7 @@
 
 
   /***
-   * Inflections package
+   * Inflections module
    * @dependency String
    *
    ***/
