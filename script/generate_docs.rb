@@ -7,12 +7,11 @@ fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/javascripts
 
 fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
-@modules = {}
-
+@packages = {}
 
 def get_property(prop, s, multiline = false)
   if multiline
-    r = Regexp.new('@'+prop.to_s+'[\s*]+\*\n(.+)\*\n', Regexp::MULTILINE)
+    r = Regexp.new('@'+prop.to_s+'[\s*]+\*\n?(.+?)\*\n', Regexp::MULTILINE)
     match = s.scan(r)
     match[0][0].split(/\n/) if match[0]
   else
@@ -35,7 +34,8 @@ end
 def get_method(s)
   raw = get_property(:method, s)
   match = raw.match(/(.+\.)?(.+)\((.+)?\)/)
-  method = { :name => match[2] }
+  name = match[2]
+  method = {}
   if !!match[1]
     method[:class_method] = true
   end
@@ -49,7 +49,7 @@ def get_method(s)
     end
     params = p.to_enum(:each_with_index).map do |f,i|
       required = !!f.match(/<.+>/)
-      name = f.match(/[<\[](.+)[>\]]/)[1]
+      param_name = f.match(/[<\[](.+)[>\]]/)[1]
       default = f.match(/ = (.+)/)
       css = ''
       css << 'required ' if required
@@ -73,7 +73,7 @@ def get_method(s)
         d = '<span class="' + type.to_s + ' monospace value">' + d + '</span>'
       end
       {
-        :name => name,
+        :name => param_name,
         :type => type,
         :required => required,
         :default => default ? default[1] : nil
@@ -82,8 +82,8 @@ def get_method(s)
   else
     params = []
   end
-  method[:params] = params
-  method
+  method[:params] = params if params.size > 0
+  [name, method]
 end
 
 def get_examples(s, name)
@@ -132,44 +132,72 @@ def clean(m)
   end
 end
 
+def get_set(s)
+  lines = get_property(:set, s, true)
+  lines.map do |l|
+    l.gsub!(/^[\s\*]+/, '')
+    if l == ''
+      nil
+    else
+      l
+    end
+  end.compact if lines
+end
+
+def get_minified_size(package)
+  tmp = 'tmp/package.js'
+  `cp release/edge/precompiled/#{package}.js #{tmp}`
+  `gzip --best #{tmp}`
+  size = File.size("#{tmp}.gz")
+  `rm #{tmp}.gz`
+  size
+end
+
+def get_full_size(package)
+  File.size("lib/#{package}.js")
+end
 
 def extract_docs(package)
+  @packages[package] ||= {
+    :size => get_full_size(package),
+    :minified_size    => get_minified_size(package),
+    :modules => {}
+  }
   File.open("lib/#{package}.js", 'r') do |f|
     i = 0
-    pos = 0
+    current_module = nil
     f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
+      if match = b.match(/@dependency (.+)/)
+        @packages[package][:dependency] = match[1]
+      end
       if mod = b.match(/(\w+) module/)
         name = mod[1]
-        if !@modules[name]
-          @modules[name] = []
-        end
-        @current_module = @modules[name]
-        @current_module_name = name
+        @packages[package][:modules][name.to_sym] ||= {}
+        current_module = @packages[package][:modules][name.to_sym]
+        #if !@modules[name]
+          #@modules[name] = []
+        #kend
+        #@current_module = @modules[name]
+        #@current_module_name = name
       else
-        method = get_method(b)
-        method[:package] = package
+        name, method = get_method(b)
         method[:returns] = get_property(:returns, b)
         method[:short] = get_property(:short, b)
-        method[:set] = get_property(:set, b)
         method[:extra] = get_property(:extra, b)
+        method[:set] = get_set(b)
         method[:examples] = get_examples(b, method[:name])
         method[:alias] = get_property(:alias, b)
-        method[:module] = @current_module_name
+        #method[:module] = @current_module_name
         get_html_parameters(method[:short])
         get_html_parameters(method[:extra])
-        @current_module << method
+        current_module[name] = method
+        #@current_module << method
         if method[:name] == 'stripTags' || method[:name] == 'removeTags' || method[:name] == 'escapeHTML' || method[:name] == 'unescapeHTML'
           method[:escape_html] = true
         end
         if method[:alias]
           method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
           method[:short] = "Alias for <span class=\"code\">#{method[:alias]}</span>."
-        end
-        if method[:set]
-          method[:pos] = pos
-          pos += 1
-        else
-          pos = 0
         end
         if method[:name] =~ /\[/
           method[:set_base] = method[:name].gsub(/\w*\[(\w+?)\]\w*/, '\1')
@@ -195,22 +223,33 @@ def extract_docs(package)
   end
 end
 
-#puts pp @modules
-
 extract_docs(:core)
-extract_docs(:dates)
+extract_docs(:es5)
+extract_docs(:array)
+extract_docs(:object)
+extract_docs(:date)
+extract_docs(:date_ranges)
+extract_docs(:function)
+extract_docs(:number)
+extract_docs(:regexp)
+extract_docs(:string)
 extract_docs(:inflections)
 
-@modules.each do |name, mod|
-  mod.sort! do |a,b|
-    if a[:class_method] == b[:class_method]
-      a[:name] <=> b[:name]
-    else
-      a[:class_method] ? -1 : 1
-    end
-  end
-end
+pp @packages[:regexp][:modules]
+  
+
+
+
+#@modules.each do |name, mod|
+#  mod.sort! do |a,b|
+#    if a[:class_method] == b[:class_method]
+#      a[:name] <=> b[:name]
+#    else
+#      a[:class_method] ? -1 : 1
+#    end
+#  end
+#end
 
 File.open(fileout, 'w') do |f|
-  f.puts "SugarModules = #{@modules.to_json};"
+  f.puts "SugarModules = #{@packages.to_json};"
 end
