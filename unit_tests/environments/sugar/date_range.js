@@ -2,7 +2,7 @@ test('Date Ranges', function () {
 
   Date.setLocale('en');
 
-  var range, expected, result, count, range1, range2;
+  var range, expected, result, count, range1, range2, tzOffset;
 
   range = Date.range(new Date(2011,8,10,9), new Date(2010,10,10,9));
 
@@ -14,9 +14,10 @@ test('Date Ranges', function () {
 
 
   range = Date.range(new Date(2010,8,10,9), new Date(2010,10,10,9));
+  tzOffset = range.end.getTimezoneOffset() - range.start.getTimezoneOffset();
 
   equal(range.toString(), 'Friday September 10, 2010 9:00:00am..Wednesday November 10, 2010 9:00:00am', 'DateRange | toString');
-  equal(range.duration(), 5270400000, 'DateRange | duration');
+  equal(range.duration(), 5270400000 + (tzOffset * 60 * 1000), 'DateRange | duration');
   equal(range.isValid(), true, 'DateRange | valid range');
 
   equal(range.eachYear(), [new Date(2010, 0)], 'DateRange | 2010-9 - 2010-11 | eachYear');
