@@ -3,6 +3,8 @@ test('Dates | Simplified Chinese', function () {
   var now = new Date();
   var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('zh-CN');
+  dateEqual(Date.create('上午3点12分'), new Date().set({ hour: 3, minute: 12 }, true), 'Date#create | Simplified Chinese | 3:12am');
+  return;
 
   dateEqual(Date.create('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
   dateEqual(Date.create('2011年5月'), new Date(2011, 4), 'Date#create | Simplified Chinese | year and month');
@@ -160,6 +162,7 @@ test('Dates | Simplified Chinese', function () {
   dateEqual(Date.create('12/31/2012'), new Date(2012, 11, 31), 'Date#create | Simplified Chinese | 12/31/2012');
   dateEqual(Date.create('下星期六 3点12分'), getDateWithWeekdayAndOffset(6, 7, 3, 12), 'Date#create | Simplified Chinese | Saturday 3:12');
 
+  dateEqual(Date.create('上午3点12分'), new Date().set({ hour: 3, minute: 12 }), 'Date#create | Simplified Chinese | 3:12am');
 
 });
 
