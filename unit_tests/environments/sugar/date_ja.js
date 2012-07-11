@@ -16,6 +16,8 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('月曜日'), getDateWithWeekdayAndOffset(1), 'Date#create | Japanese | Monday');
   dateEqual(Date.create('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Japanese | the 9th');
   dateEqual(Date.create('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Japanese | the 25th');
+  dateEqual(Date.create('3時45分'), new Date().set({ hour: 3, minute: 45 }, true), 'Date#create | Japanese | just time');
+
 
 
   dateEqual(Date.create('一ミリ秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Japanese | one millisecond ago');
