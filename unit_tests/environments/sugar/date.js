@@ -2157,26 +2157,26 @@ test('Date', function () {
 
   // Date#getWeek
 
-  equal(new Date(2011, 0, 1).getWeek(), 52, 'String#getWeek | January 1, 2011');
-  equal(new Date(2011, 0, 2).getWeek(), 52, 'String#getWeek | January 2, 2011');
-  equal(new Date(2011, 0, 3).getWeek(),  1, 'String#getWeek | January 3, 2011');
-  equal(new Date(2011, 0, 4).getWeek(),  1, 'String#getWeek | January 4, 2011');
-
-  equal(new Date(2011, 11, 25).getWeek(), 51, 'String#getWeek | December 25, 2011');
-  equal(new Date(2011, 11, 26).getWeek(), 52, 'String#getWeek | December 26, 2011');
-  equal(new Date(2011, 11, 27).getWeek(), 52, 'String#getWeek | December 27, 2011');
-
-  equal(new Date(2011, 11, 31).getWeek(), 52, 'String#getWeek | December 31, 2011');
-  equal(new Date(2012, 0, 1).getWeek(),   52, 'String#getWeek | January 1, 2012');
+  equal(new Date(2011, 0, 1).getWeek(), 1, 'String#getWeek | January 1, 2011');
+  equal(new Date(2011, 0, 2).getWeek(), 2, 'String#getWeek | January 2, 2011');
+  equal(new Date(2011, 0, 3).getWeek(),  2, 'String#getWeek | January 3, 2011');
+  equal(new Date(2011, 0, 4).getWeek(),  2, 'String#getWeek | January 4, 2011');
+  
+  equal(new Date(2011, 11, 25).getWeek(), 53, 'String#getWeek | December 25, 2011');
+  equal(new Date(2011, 11, 26).getWeek(), 53, 'String#getWeek | December 26, 2011');
+  equal(new Date(2011, 11, 27).getWeek(), 53, 'String#getWeek | December 27, 2011');
+    
+  equal(new Date(2011, 11, 31).getWeek(), 53, 'String#getWeek | December 31, 2011');
+  equal(new Date(2012, 0, 1).getWeek(),   1, 'String#getWeek | January 1, 2012');
   equal(new Date(2012, 0, 2).getWeek(),    1, 'String#getWeek | January 2, 2012');
-
+    
   equal(new Date(2013, 11, 28).getWeek(), 52, 'String#getWeek | December 28, 2013');
-  equal(new Date(2013, 11, 29).getWeek(), 52, 'String#getWeek | December 29, 2013');
-  equal(new Date(2013, 11, 30).getWeek(),  1, 'String#getWeek | December 30, 2013');
-  equal(new Date(2013, 11, 31).getWeek(),  1, 'String#getWeek | December 31, 2013');
+  equal(new Date(2013, 11, 29).getWeek(), 53, 'String#getWeek | December 29, 2013');
+  equal(new Date(2013, 11, 30).getWeek(),  53, 'String#getWeek | December 30, 2013');
+  equal(new Date(2013, 11, 31).getWeek(),  53, 'String#getWeek | December 31, 2013');
   equal(new Date(2014,  0,  1).getWeek(),  1, 'String#getWeek | January 01, 2014');
   equal(new Date(2014,  0,  2).getWeek(),  1, 'String#getWeek | January 02, 2014');
-  equal(new Date(2014,  0,  5).getWeek(),  1, 'String#getWeek | January 05, 2014');
+  equal(new Date(2014,  0,  5).getWeek(),  2, 'String#getWeek | January 05, 2014');
   equal(new Date(2014,  0,  6).getWeek(),  2, 'String#getWeek | January 06, 2014');
 
 
