@@ -251,5 +251,5 @@ pp @packages[:regexp][:modules]
 #end
 
 File.open(fileout, 'w') do |f|
-  f.puts "SugarModules = #{@packages.to_json};"
+  f.puts "SugarPackages = #{@packages.to_json};"
 end
