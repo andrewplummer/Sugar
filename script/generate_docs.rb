@@ -3,11 +3,12 @@ require 'rubygems'
 require 'json'
 require 'pp'
 
-fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/javascripts/methods.js'
+fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/javascripts/packages.js'
 
 fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
 @packages = {}
+@default_packages = [:core,:es5,:array,:object,:date,:function,:number,:regexp,:string]
 
 def get_property(prop, s, multiline = false)
   if multiline
@@ -149,6 +150,10 @@ def get_minified_size(package)
   `cp release/edge/precompiled/#{package}.js #{tmp}`
   `gzip --best #{tmp}`
   size = File.size("#{tmp}.gz")
+  # gzipping the packages together produces sizes
+  # less than gzipping individually, so offset this
+  # a bit... just eyeballin it
+  size -= 190
   `rm #{tmp}.gz`
   size
 end
@@ -161,6 +166,7 @@ def extract_docs(package)
   @packages[package] ||= {
     :size => get_full_size(package),
     :minified_size    => get_minified_size(package),
+    :extra => !@default_packages.include?(package),
     :modules => {}
   }
   File.open("lib/#{package}.js", 'r') do |f|
