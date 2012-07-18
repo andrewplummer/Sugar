@@ -173,18 +173,28 @@ def extract_docs(package)
     i = 0
     current_module = nil
     f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
-      if match = b.match(/@dependency (.+)/)
-        @packages[package][:dependency] = match[1]
-      end
-      if mod = b.match(/(\w+) module/)
-        name = mod[1]
+      if match = b.match(/(\w+) package/)
+
+        name = match[1]
+
+        # package dependency
+        match = b.match(/@dependency (.+)/)
+        if match && match[1]
+          @packages[package][:dependency] = match[1]
+        end
+
+        # package description
+        match = b.match(/@description (.+)/)
+        if match && match[1]
+          @packages[package][:description] = match[1]
+        end
+
         @packages[package][:modules][name.to_sym] ||= {}
         current_module = @packages[package][:modules][name.to_sym]
-        #if !@modules[name]
-          #@modules[name] = []
-        #kend
-        #@current_module = @modules[name]
-        #@current_module_name = name
+      elsif match = b.match(/(\w+) module/)
+        name = match[1]
+        @packages[package][:modules][name.to_sym] ||= {}
+        current_module = @packages[package][:modules][name.to_sym]
       else
         name, method = get_method(b)
         method[:returns] = get_property(:returns, b)
@@ -241,8 +251,7 @@ extract_docs(:regexp)
 extract_docs(:string)
 extract_docs(:inflections)
 
-pp @packages[:regexp][:modules]
-  
+pp @packages[:date_ranges][:description]
 
 
 
