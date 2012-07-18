@@ -477,9 +477,9 @@ test('Object', function () {
   equal(Object.equal({x: 1, y: undefined}, {x: 1, z: 2}), false, 'Object.equal | undefined keys');
 
 
-  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | extended objects are not equal to plain objects');
+  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | extended objects are equal to plain objects');
   equal(Object.extended({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
-  equal(Object.extended({}).equals({}), true, 'Object#equals | empty extended objects are not equal to empty plain objects');
+  equal(Object.extended({}).equals({}), true, 'Object#equals | empty extended objects are equal to empty plain objects');
   equal(Object.extended({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
   equal(Object.extended({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
 

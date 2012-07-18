@@ -37,8 +37,9 @@ def create_development
   content = ''
   @packages.each do |p|
     content << File.open("lib/#{p}.js").read
+    `cp lib/#{p}.js release/#{@version}/development/sugar-#{@version}-#{p}.development.js`
   end
-  File.open("release/#{@version}/development/sugar-#{@version}.development.js", 'w').write(@copyright + wrap(content))
+  File.open("release/#{@version}/development/sugar-#{@version}-full.development.js", 'w').write(@copyright + wrap(content))
 end
 
 def compile
