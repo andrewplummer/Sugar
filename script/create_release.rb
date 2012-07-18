@@ -77,10 +77,8 @@ def wrap(js)
 end
 
 def cleanup
-  #`rm tmp/compiled.js`
-  #`rm tmp/uncompiled.js`
-  #`rm release/development.js`
-  #`ln -s #{@version}/development/sugar-#{@version}.development.js release/development.js`
+  `rm tmp/compiled.js`
+  `rm tmp/uncompiled.js`
 end
 
 concat
