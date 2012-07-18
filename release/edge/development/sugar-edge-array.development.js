@@ -2,8 +2,9 @@
 
 
   /***
-   * Array module
+   * Array package
    * @dependency core
+   * @description WOOOHOOOOOOOOOOOOOOOOo
    *
    ***/
 
