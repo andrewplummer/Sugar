@@ -1,3 +1,46 @@
+v1.3
+======
+
+
+### API Changes ###
+
+- Sugar packages are now further split up and can easily be customized and repackaged. Aside from "core" there is the "es5" package that can be opted out of if <= IE8 support isn't an issue. DateRanges (below) are now their own package, as are inflections.
+- Array#groupBy no longer returns extended objects
+- Array#groupBy no longer corrupts array length (Issue 142)
+- Array#has is deprecated
+- Enumerable methods now allow fuzzy matching of instances of classes (Issue 157)
+- Enumerable methods are now available as class methods on Object, and instance methods on extended objects. This includes: map, any, all, none, count, sum, average, find, findAll, min, max, least, most, and reduce.
+
+- Date format "yyyy-mm-ddThh" is deprecated
+- Date format "just now" now supported
+- Date#reset now supports resetting a unit based on a string.
+- Date#advance and other advance methods can now reset the time.
+- Date#advance now accepts string input like "4 days" (Issue 161)
+- Date.past and Date.future added which allow date parsing that prefers the past or future when the specified date is ambiguous ("Sunday", etc.)
+- Date parsing now allows time to be in front of the date string as well
+- Date parsing formats are now scoped by locale. This means that if the current locale is set to English, only English formats will be parsed when Date#create does not specify a locale, even if a different locale was initialized previously. Numeric and common formats are available in all locales.
+- Fixed various issues with timezones, DST, and date parsing (Issue 146), (Issue 138)
+- Added "in 3 days", etc. as a parsable format
+- Added "the 2nd Tuesday of November", etc. as a parsable format
+- Added more parsable formats with weekdays (such as "last monday", etc) in various locales
+- Added time parsing in non-English date formats
+- Fully qualified ISO language codes will now match more generic codes. This means passing "it_IT" will correctly find "it" if the more specific locale is not available.
+- Unknown languages codes will now simply return an invalid date instead of throwing an error.
+- Added support for full kanji numerals in date parsing
+- Added support for time suffixes in Asian time strings (時 etc)
+- Added support for various relative formats in CKJ dates  (先週水曜日 etc)
+- Fixed inconsistently not allowing spaces before am/pm (Issue 144)
+
+- Added output formats Date#long and Date#full which now included the time. Date#long (mm dd, yyyy hh:mm) is now the default for Date#format, and the previous default (no time) is now Date#short. Date#full includes milliseconds and weekday.
+
+- Added DateRange, accessed through Date.range as a separate package
+- All Math methods are now mapped onto Number and are accessible as instance methods
+- Object.equals now considers identical objects vs. extended objects to be the same ??? really???
+- String#capitalize all will capitalize any letter after a letter that could not be capitalized.
+- String#insert now treats negative indexes like String#slice
+- Fixed issue with decodeBase64 shim (Issue 145)
+
+
 v1.2.5
 ======
 

@@ -1267,7 +1267,6 @@ test('String', function () {
 
   equal('Hello, {1}'.assign(''), 'Hello, ', 'String#assign | empty string as argument');
   equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
-  equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
 
   equal('{{1} {2}}'.assign(5,6), '{5 6}', 'String#assign | nested braces');
   equal('{one {1} {2} two}'.assign(5,6), '{one 5 6 two}', 'String#assign | nested braces with strings outside');
