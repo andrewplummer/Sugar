@@ -1103,6 +1103,38 @@
    *
    ***/
 
+  /***
+   * @method [enumerable](<obj>)
+   * @returns Boolean
+   * @short Enumerable methods on Arrays are also available to the Object class. They will perform their normal operations for every property available in <obj>.
+   * @extra In cases where a callback is used, instead of %element, index%, the callback will instead be passed %key, value%. Enumerable methods are also available to extended objects as instance methods. Note that an error will be raised when any enumerable method is call on a non-object.
+   *
+   * @set
+   *   map
+   *   any
+   *   all
+   *   none
+   *   count
+   *   find
+   *   findAll
+   *   reduce
+   *   isEmpty
+   *   sum
+   *   average
+   *   min
+   *   max
+   *   least
+   *   most
+   *
+   * @example
+   *
+   *   Object.any({foo:'bar'}, 'bar')            -> true
+   *   Object.extended({foo:'bar'}).any('bar')   -> true
+   *   Object.isEmpty({})                        -> true
+   *   Object.map({ fred: { age: 52 } }, 'age'); -> { fred: 52 }
+   *
+   ***/
+
   function buildEnumerableMethods(names, mapping) {
     extendSimilar(object, false, false, names, function(methods, name) {
       methods[name] = function(obj, arg1, arg2) {
@@ -1130,20 +1162,6 @@
 
   extend(object, false, false, {
 
-    /***
-     * @method Object.map(<obj>, <map>)
-     * @returns Object
-     * @short Builds another object that contains values that are the result of calling <map> on each member.
-     * @extra <map> can also be a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
-     *
-     * @example
-     *
-     *   Object.map({ num: 3 }, function(key, value) {
-       *   return value * 3;
-     *   });
-     *   Object.map({ fred: { age: 52 } }, 'age');
-     *
-     ***/
     'map': function(obj, map) {
       return object.keys(obj).reduce(function(result, key) {
         result[key] = transformArgument(obj[key], map, obj, [key, obj[key], obj]);
@@ -1151,37 +1169,32 @@
       }, {});
     },
 
-    /***
-     * @method Object.reduce(<obj>, <fn>, [init])
-     * @returns Object
-     * @short Reduces the object to a single result based on its members (values).
-     * @extra If [init] is passed as a starting value, that value will be passed as the first argument to the callback. The second argument will be a member of the object (order is arbitrary). The result of the callback will then be used as the first argument of the next iteration. This is often refered to as "accumulation", and [init] is often called an "accumulator". If [init] is not passed, then <fn> will be called n - 1 times, where n is the size of the object. In this case, on the first iteration only, the first argument will be one member of the object, and the second will be another. After that callbacks work as normal, using the result of the previous callback as the first argument of the next.
-     *
-     *
-     *
-     * @example
-     *
-     *   Object.reduce({ a:3, b:5 }, function(a, b) {
-     *     return a * b;
-     *   });
-     *   Object.reduce({ a:3, b:5 }, function(a, b) {
-     *     return a * b;
-     *   }, 100);
-     *
-     ***/
     'reduce': function(obj) {
       var values = object.keys(obj).map(function(key) {
         return obj[key];
       });
       return values.reduce.apply(values, multiArgs(arguments).slice(1));
+    },
+
+    /***
+     * @method size(<obj>)
+     * @returns Number
+     * @short Returns the number of properties in <obj>.
+     * @extra %size% is available as an instance method on extended objects.
+     * @example
+     *
+     *   Object.size({ foo: 'bar' }) -> 1
+     *
+     ***/
+    'size': function (obj) {
+      return object.keys(obj).length;
     }
 
   });
 
-
   buildEnhancements();
   buildAlphanumericSort();
-  buildEnumerableMethods('any,all,none,count,find,findAll');
+  buildEnumerableMethods('any,all,none,count,find,findAll,isEmpty');
   buildEnumerableMethods('sum,average,min,max,least,most', true);
-  buildObjectInstanceMethods('map,reduce', Hash);
+  buildObjectInstanceMethods('map,reduce,size', Hash);
 

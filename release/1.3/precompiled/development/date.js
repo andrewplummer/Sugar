@@ -1,8 +1,5 @@
 
   // TODO final rinse (add comments and rearrange core methods)
-  // TODO Object.size??
-  // TODO Include DateRanges in the default package??
-  // TODO Other things that can be removed from default package?
 
   /***
    * Date package
