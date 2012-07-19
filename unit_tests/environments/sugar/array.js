@@ -2555,9 +2555,8 @@ test('Array', function () {
   raisesError(function(){ Object.isEmpty('wasabi'); }, 'Object.isEmpty | non-empty string is not empty');
   raisesError(function(){ Object.isEmpty(NaN); }, 'Object.isEmpty | NaN is empty');
   raisesError(function(){ Object.isEmpty(8); }, 'Object.isEmpty | 8 is empty');
-
-  testClassAndInstance('isEmpty', (function(){ return this; }).call('wasabi'), [], false, 'Object.isEmpty | non-empty string is not empty');
-  testClassAndInstance('isEmpty', (function(){ return this; }).call(8), [], true, 'Object.isEmpty | 8 is empty');
+  raisesError(function(){ Object.isEmpty((function(){ return this; }).call('wasabi')); }, 'Object.isEmpty | non-primitive string still errors');
+  raisesError(function(){ Object.isEmpty((function(){ return this; }).call(8)); }, 'Object.isEmpty | non-primitive number still errors');
 
 
   // Object.size
@@ -2579,10 +2578,9 @@ test('Array', function () {
   raisesError(function(){ Object.size(true) }, 'Object.size | boolean primitive');
   raisesError(function(){ Object.size(null) }, 'Object.size | null');
   raisesError(function(){ Object.size(undefined) }, 'Object.size | undefined');
-
-  testClassAndInstance('size', (function(){ return this; }).call('ho'), [], 2, 'Object.size | string object');
-  testClassAndInstance('size', (function(){ return this; }).call(3), [], 0, 'Object.size | number object');
-  testClassAndInstance('size', (function(){ return this; }).call(true), [], 0, 'Object.size | boolean object');
+  raisesError(function(){ Object.size((function(){ return this; }).call('foo')) }, 'Object.size | non-primitive string still errors');
+  raisesError(function(){ Object.size((function(){ return this; }).call(1)) }, 'Object.size | non-primitive number still errors');
+  raisesError(function(){ Object.size((function(){ return this; }).call(true)) }, 'Object.size | non-primitive boolean still errors');
 
   var Foo = function(){};
   testClassAndInstance('size', new Foo, [], 0, 'Object.size | class instances');
