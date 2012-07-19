@@ -452,22 +452,6 @@ test('Object', function () {
 
 
 
-  equal(Object.isEmpty({}), true, 'Object.isEmpty | object is empty');
-  equal(Object.isEmpty({ broken: 'wear' }), false, 'Object.isEmpty | object is not empty');
-
-  equal(Object.isEmpty(null), true, 'Object.isEmpty | null is empty');
-  equal(Object.isEmpty(undefined), true, 'Object.isEmpty | undefined is empty');
-  equal(Object.isEmpty(''), true, 'Object.isEmpty | empty string is empty');
-  equal(Object.isEmpty('wasabi'), false, 'Object.isEmpty | non-empty string is not empty');
-  equal(Object.isEmpty({ length: 0 }), false, 'Object.isEmpty | simple object with length property is not empty');
-  equal(Object.isEmpty([]), true, 'Object.isEmpty | empty array is empty');
-  equal(Object.isEmpty(NaN), true, 'Object.isEmpty | NaN is empty');
-  equal(Object.isEmpty(0), true, 'Object.isEmpty | 0 is empty');
-  equal(Object.isEmpty(8), true, 'Object.isEmpty | 8 is empty');
-
-  equal(Object.extended({}).isEmpty({}), true, 'Object#isEmpty | object is empty');
-  equal(Object.extended({ broken: 'wear' }).isEmpty(), false, 'Object#empty | object is not empty');
-
   equal(Object.equal({ broken: 'wear' }, { broken: 'wear' }), true, 'Object.equal | objects are equal');
   equal(Object.equal({ broken: 'wear' }, { broken: 'jumpy' }), false, 'Object.equal | objects are not equal');
   equal(Object.equal({}, {}), true, 'Object.equal | empty objects are equal');
@@ -508,7 +492,6 @@ test('Object', function () {
 
   equal(count, 3, 'Object | Object.prototype should have correctly called all functions', { prototype: 2, mootools: 2 });
 
-  equal(({}).isEmpty(), true, 'Object#empty | Object.prototype');
   equal(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
   equal(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype', { mootools: Object.clone({ foo: 'bar', moo: 'car' }) });
 
@@ -822,6 +805,7 @@ test('Object', function () {
   }
 
   equal(Object.merge({}, obj1, true).reg === obj1.reg, false, 'Object.merge | deep merging will clone regexes');
+
 
 });
 
