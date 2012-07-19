@@ -1023,9 +1023,9 @@
      * @extra If [all] is true, all words in the string will be capitalized.
      * @example
      *
-     *   'hello'.capitalize()           -> 'hello'
-     *   'hello kitty'.capitalize()     -> 'hello kitty'
-     *   'hello kitty'.capitalize(true) -> 'hello kitty'
+     *   'hello'.capitalize()           -> 'Hello'
+     *   'hello kitty'.capitalize()     -> 'Hello kitty'
+     *   'hello kitty'.capitalize(true) -> 'Hello Kitty'
      *
      *
      ***/
