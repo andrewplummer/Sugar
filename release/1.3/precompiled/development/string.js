@@ -2,7 +2,7 @@
   /***
    * String package
    * @dependency core
-   * @description Language-based helpers and character conversion, base64 encoding, string escaping, splitting on regexes.
+   * @description Language-based helpers, character conversion, base64 encoding, string escaping, splitting on regexes.
    *
    ***/
 
