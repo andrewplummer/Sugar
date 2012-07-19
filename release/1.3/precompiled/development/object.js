@@ -133,7 +133,7 @@
      ***/
     'keys': function(obj, fn) {
       var keys = object.keys(obj);
-      object.keys(obj).forEach(function(key) {
+      keys.forEach(function(key) {
         fn.call(obj, key, obj[key]);
       });
       return keys;

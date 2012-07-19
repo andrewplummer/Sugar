@@ -1864,6 +1864,13 @@
    *
    ***/
 
+   function keysWithCoercion(obj) {
+     if(obj && obj.valueOf) {
+       obj = obj.valueOf();
+     }
+     return object.keys(obj);
+   }
+
   /***
    * @method [enumerable](<obj>)
    * @returns Boolean
@@ -1900,7 +1907,7 @@
     extendSimilar(object, false, false, names, function(methods, name) {
       methods[name] = function(obj, arg1, arg2) {
         var result;
-        result = array.prototype[name].call(object.keys(obj), function(key) {
+        result = array.prototype[name].call(keysWithCoercion(obj), function(key) {
           if(mapping) {
             return transformArgument(obj[key], arg1, obj, [key, obj[key], obj]);
           } else {
@@ -1924,14 +1931,14 @@
   extend(object, false, false, {
 
     'map': function(obj, map) {
-      return object.keys(obj).reduce(function(result, key) {
+      return keysWithCoercion(obj).reduce(function(result, key) {
         result[key] = transformArgument(obj[key], map, obj, [key, obj[key], obj]);
         return result;
       }, {});
     },
 
     'reduce': function(obj) {
-      var values = object.keys(obj).map(function(key) {
+      var values = keysWithCoercion(obj).map(function(key) {
         return obj[key];
       });
       return values.reduce.apply(values, multiArgs(arguments).slice(1));
@@ -1948,7 +1955,7 @@
      *
      ***/
     'size': function (obj) {
-      return object.keys(obj).length;
+      return keysWithCoercion(obj).length;
     }
 
   });
@@ -5103,7 +5110,7 @@
      ***/
     'keys': function(obj, fn) {
       var keys = object.keys(obj);
-      object.keys(obj).forEach(function(key) {
+      keys.forEach(function(key) {
         fn.call(obj, key, obj[key]);
       });
       return keys;
