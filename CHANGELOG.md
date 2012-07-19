@@ -39,6 +39,8 @@ v1.3
 - String#capitalize all will capitalize any letter after a letter that could not be capitalized.
 - String#insert now treats negative indexes like String#slice
 - Fixed issue with decodeBase64 shim (Issue 145)
+- Added Object.size (also available to extended objects)
+- Refactored Object.isEmpty to be an enumerable method in the Array package. This means that it will error on non-objects now.
 
 
 v1.2.5
