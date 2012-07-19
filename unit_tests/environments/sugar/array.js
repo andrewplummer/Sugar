@@ -1175,9 +1175,10 @@ test('Array', function () {
 
   equal(['a','b','c'].add('d', 5), ['a','b','c','d'], 'Array#add | index 5 | d');
   equal(['a','b','c'].add('d', 0), ['d','a','b','c'], 'Array#add | index 0 | d');
-  equal(['a','b','c'].add('d', -1), ['a','b','c','d'], 'Array#add | index -1 | d');
-  equal(['a','b','c'].add('d', -2), ['a','b','d','c'], 'Array#add | index -2 | d');
-  equal(['a','b','c'].add('d', -3), ['a','d','b','c'], 'Array#add | index -3 | d');
+  equal(['a','b','c'].add('d', -1), ['a','b','d','c'], 'Array#add | index -1 | d');
+  equal(['a','b','c'].add('d', -2), ['a','d','b','c'], 'Array#add | index -2 | d');
+  equal(['a','b','c'].add('d', -3), ['d','a','b','c'], 'Array#add | index -3 | d');
+  equal(['a','b','c'].add('d', -4), ['d','a','b','c'], 'Array#add | index -4 | d');
   equal(['a','b','c'].add('d', null), ['d','a','b','c'], 'Array#add | null index | d');
   equal(['a','b','c'].add('d', undefined), ['a','b','c','d'], 'Array#add | undefined index | d');
   equal(['a','b','c'].add('d', 'a'), ['a','b','c','d'], 'Array#add | index a | d');
@@ -1219,9 +1220,10 @@ test('Array', function () {
   equal(['a','b','c'].insert('d', 5), ['a','b','c','d'], 'Array#insert | index 5 | d');
 
   equal(['a','b','c'].insert('d', 0), ['d','a','b','c'], 'Array#insert | index 0 | d');
-  equal(['a','b','c'].insert('d', -1), ['a','b','c','d'], 'Array#insert | index -1 | d');
-  equal(['a','b','c'].insert('d', -2), ['a','b','d','c'], 'Array#insert | index -2 | d');
-  equal(['a','b','c'].insert('d', -3), ['a','d','b','c'], 'Array#insert | index -3 | d');
+  equal(['a','b','c'].insert('d', -1), ['a','b','d','c'], 'Array#insert | index -1 | d');
+  equal(['a','b','c'].insert('d', -2), ['a','d','b','c'], 'Array#insert | index -2 | d');
+  equal(['a','b','c'].insert('d', -3), ['d','a','b','c'], 'Array#insert | index -3 | d');
+  equal(['a','b','c'].insert('d', -4), ['d','a','b','c'], 'Array#insert | index -4 | d');
   equal(['a','b','c'].insert('d', null), ['d','a','b','c'], 'Array#insert | null index | d');
   equal(['a','b','c'].insert('d', undefined), ['a','b','c','d'], 'Array#insert | undefined index | d');
   equal(['a','b','c'].insert('d', 'a'), ['a','b','c','d'], 'Array#insert | index a | d');
@@ -1265,9 +1267,10 @@ test('Array', function () {
   equal(['a','b','c'].include('d', 5), ['a','b','c','d'], 'Array#include | index 5 | d', { prototype: false });
 
   equal(['a','b','c'].include('d', 0), ['d','a','b','c'], 'Array#include | index 0 | d', { prototype: false, mootools: ['a','b','c','d'] });
-  equal(['a','b','c'].include('d', -1), ['a','b','c','d'], 'Array#include | index -1 | d', { prototype: false, mootools: ['a','b','c','d'] });
-  equal(['a','b','c'].include('d', -2), ['a','b','d','c'], 'Array#include | index -2 | d', { prototype: false, mootools: ['a','b','c','d'] });
-  equal(['a','b','c'].include('d', -3), ['a','d','b','c'], 'Array#include | index -3 | d', { prototype: false, mootools: ['a','b','c','d'] });
+  equal(['a','b','c'].include('d', -1), ['a','b','d','c'], 'Array#include | index -1 | d', { prototype: false, mootools: ['a','b','c','d'] });
+  equal(['a','b','c'].include('d', -2), ['a','d','b','c'], 'Array#include | index -2 | d', { prototype: false, mootools: ['a','b','c','d'] });
+  equal(['a','b','c'].include('d', -3), ['d','a','b','c'], 'Array#include | index -3 | d', { prototype: false, mootools: ['a','b','c','d'] });
+  equal(['a','b','c'].include('d', -4), ['d','a','b','c'], 'Array#include | index -4 | d', { prototype: false, mootools: ['a','b','c','d'] });
   equal(['a','b','c'].include('d', null), ['d','a','b','c'], 'Array#include | null index | d', { prototype: false });
   equal(['a','b','c'].include('d', undefined), ['a','b','c','d'], 'Array#include | undefined index | d', { prototype: false });
   equal(['a','b','c'].include('d', 'a'), ['a','b','c','d'], 'Array#include | index a | d', { prototype: false });
@@ -2541,6 +2544,9 @@ test('Array', function () {
   testClassAndInstance('isEmpty', {}, [], true, 'Object.isEmpty | object is empty');
   testClassAndInstance('isEmpty', { broken: 'wear' }, [], false, 'Object.isEmpty | object is not empty');
   testClassAndInstance('isEmpty', { length: 0 }, [], false, 'Object.isEmpty | simple object with length property is not empty');
+  testClassAndInstance('isEmpty', { foo: null }, [], false, 'Object.isEmpty | null is still counted');
+  testClassAndInstance('isEmpty', { foo: undefined }, [], false, 'Object.isEmpty | undefined is still counted');
+  testClassAndInstance('isEmpty', { foo: NaN }, [], false, 'Object.isEmpty | undefined is still counted');
   testClassAndInstance('isEmpty', [], [], true, 'Object.isEmpty | empty array is empty');
 
   raisesError(function(){ Object.isEmpty(null); }, 'Object.isEmpty | null is empty');
