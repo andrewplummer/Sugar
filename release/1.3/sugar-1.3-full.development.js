@@ -1725,8 +1725,7 @@
      *
      ***/
     'add': function(el, index) {
-      if(!isNumber(number(index)) || isNaN(index) || index == -1) index = this.length;
-      else if(index < -1) index += 1;
+      if(!isNumber(number(index)) || isNaN(index)) index = this.length;
       array.prototype.splice.apply(this, [index, 0].concat(el));
       return this;
     },
@@ -1960,8 +1959,6 @@
   buildEnumerableMethods('sum,average,min,max,least,most', true);
   buildObjectInstanceMethods('map,reduce,size', Hash);
 
-
-  // TODO final rinse (add comments and rearrange core methods)
 
   /***
    * Date package
@@ -3134,7 +3131,7 @@
    *   Date.create('next year').yearsFromNow()        -> 15
    *
    ***
-   * @method add[Units](<num>, [reset])
+   * @method add[Units](<num>, [reset] = false)
    * @returns Date
    * @short Adds <num> of the unit to the date. If [reset] is true, all lower units will be reset.
    * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Don't use %addMonths% if you need precision.
@@ -3560,7 +3557,6 @@
 
   function setDateProperties() {
     date.extend({
-      'INTERNATIONAL_TIME': '{h}:{mm}:{ss}',
       'RFC1123': '{Dow}, {dd} {Mon} {yyyy} {HH}:{mm}:{ss} {tz}',
       'RFC1036': '{Weekday}, {dd}-{Mon}-{yy} {HH}:{mm}:{ss} {tz}',
       'ISO8601_DATE': '{yyyy}-{MM}-{dd}',
@@ -3586,7 +3582,7 @@
      * @method Date.create(<d>, [locale] = currentLocale)
      * @returns Date
      * @short Alternate Date constructor which understands various formats.
-     * @extra Accepts a multitude of text formats, a timestamp, or another date. If no argument is given, date is assumed to be now. %Date.create% additionally can accept enumerated parameters as with the standard date constructor. [locale] can be passed to specify the locale that the date is in. For more information, see @date_format.
+     * @extra Accepts a multitude of text formats, a timestamp, or another date. If no argument is given, date is assumed to be now. %Date.create% additionally can accept enumerated parameters as with the standard date constructor. [locale] can be passed to specify the locale that the date is in. When unspecified, the current locale (default is English) is assumed. For more information, see @date_format.
      * @example
      *
      *   Date.create('July')          -> July of this year
@@ -3846,10 +3842,11 @@
      * @method advance(<set>, [reset] = false)
      * @returns Date
      * @short Sets the date forward.
-     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see @date_format.
+     * @extra This method can accept multiple formats including an object, a string in the format "3 days", a single number as milliseconds, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see @date_format.
      * @example
      *
      *   new Date().advance({ year: 2 }) -> 2 years in the future
+     *   new Date().advance('2 days')    -> 2 days in the future
      *   new Date().advance(0, 2, 3)     -> 2 months 3 days in the future
      *   new Date().advance(86400000)    -> 1 day in the future
      *
@@ -3972,8 +3969,14 @@
      /***
      * @method format(<format>, [locale] = currentLocale)
      * @returns String
-     * @short Formats the date.
-     * @extra <format> will accept a number of tokens as well as pre-determined formats. [locale] specifies a locale code to use (if not specified the current locale is used). If <format> is falsy, a default format for the locale is used. A function may also be passed here to allow more granular control. See @date_format for more details.
+     * @short Formats and outputs the date.
+     * @extra <format> can be a number of pre-determined formats or a string of tokens. Locale-specific formats are %short%, %long%, and %full% which have their own aliases and can be called with %date.short()%, etc. If <format> is not specified the %long% format is assumed. [locale] specifies a locale code to use (if not specified the current locale is used). See @date_format for more details.
+     *
+     * @set
+     *   short
+     *   long
+     *   full
+     *
      * @example
      *
      *   Date.create().format()                                   -> ex. July 4, 2003
@@ -6453,9 +6456,9 @@
      * @extra If [all] is true, all words in the string will be capitalized.
      * @example
      *
-     *   'hello'.capitalize()           -> 'hello'
-     *   'hello kitty'.capitalize()     -> 'hello kitty'
-     *   'hello kitty'.capitalize(true) -> 'hello kitty'
+     *   'hello'.capitalize()           -> 'Hello'
+     *   'hello kitty'.capitalize()     -> 'Hello kitty'
+     *   'hello kitty'.capitalize(true) -> 'Hello Kitty'
      *
      *
      ***/
