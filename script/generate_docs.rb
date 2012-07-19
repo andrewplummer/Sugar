@@ -8,7 +8,7 @@ fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/javascripts
 fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
 @packages = {}
-@default_packages = [:core,:es5,:array,:object,:date,:function,:number,:regexp,:string]
+@default_packages = [:core,:es5,:array,:object,:date,:date_ranges,:function,:number,:regexp,:string]
 
 def get_property(prop, s, multiline = false)
   if multiline
