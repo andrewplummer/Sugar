@@ -2535,5 +2535,55 @@ test('Array', function () {
   testClassAndInstance('reduce', obj2, [function(acc, b) { return (acc.age ? acc.age : acc) + b.age; }], 110, 'Object.reduce | obj2 | a + b');
   testClassAndInstance('reduce', obj2, [function(acc, b) { return acc - b.age; }, 10], -100, 'Object.reduce | obj2 | a - b with initial');
 
+
+  // Object.isEmpty
+
+  testClassAndInstance('isEmpty', {}, [], true, 'Object.isEmpty | object is empty');
+  testClassAndInstance('isEmpty', { broken: 'wear' }, [], false, 'Object.isEmpty | object is not empty');
+  testClassAndInstance('isEmpty', { length: 0 }, [], false, 'Object.isEmpty | simple object with length property is not empty');
+  testClassAndInstance('isEmpty', [], [], true, 'Object.isEmpty | empty array is empty');
+
+  raisesError(function(){ Object.isEmpty(null); }, 'Object.isEmpty | null is empty');
+  raisesError(function(){ Object.isEmpty(undefined); }, 'Object.isEmpty | undefined is empty');
+  raisesError(function(){ Object.isEmpty(''); }, 'Object.isEmpty | empty string is empty');
+  raisesError(function(){ Object.isEmpty('wasabi'); }, 'Object.isEmpty | non-empty string is not empty');
+  raisesError(function(){ Object.isEmpty(NaN); }, 'Object.isEmpty | NaN is empty');
+  raisesError(function(){ Object.isEmpty(8); }, 'Object.isEmpty | 8 is empty');
+
+  testClassAndInstance('isEmpty', (function(){ return this; }).call('wasabi'), [], false, 'Object.isEmpty | non-empty string is not empty');
+  testClassAndInstance('isEmpty', (function(){ return this; }).call(8), [], true, 'Object.isEmpty | 8 is empty');
+
+
+  // Object.size
+
+  testClassAndInstance('size', {}, [], 0, 'Object.size | empty object');
+  testClassAndInstance('size', {foo:'bar'}, [], 1, 'Object.size | 1 property');
+  testClassAndInstance('size', {foo:'bar',moo:'car'}, [], 2, 'Object.size | 2 properties');
+  testClassAndInstance('size', {foo:1}, [], 1, 'Object.size | numbers');
+  testClassAndInstance('size', {foo:/bar/}, [], 1, 'Object.size | regexes');
+  testClassAndInstance('size', {foo:function(){}}, [], 1, 'Object.size | functions');
+  testClassAndInstance('size', {foo:{bar:'car'}}, [], 1, 'Object.size | nested object');
+  testClassAndInstance('size', {foo:[1]}, [], 1, 'Object.size | nested array');
+  testClassAndInstance('size', ['a'], [], 1, 'Object.size | array');
+  testClassAndInstance('size', ['a','b'], [], 2, 'Object.size | array 2 elements');
+  testClassAndInstance('size', ['a','b','c'], [], 3, 'Object.size | array 3 elements');
+
+  raisesError(function(){ Object.size('foo') }, 'Object.size | string primitive');
+  raisesError(function(){ Object.size(1) }, 'Object.size | number primitive');
+  raisesError(function(){ Object.size(true) }, 'Object.size | boolean primitive');
+  raisesError(function(){ Object.size(null) }, 'Object.size | null');
+  raisesError(function(){ Object.size(undefined) }, 'Object.size | undefined');
+
+  testClassAndInstance('size', (function(){ return this; }).call('ho'), [], 2, 'Object.size | string object');
+  testClassAndInstance('size', (function(){ return this; }).call(3), [], 0, 'Object.size | number object');
+  testClassAndInstance('size', (function(){ return this; }).call(true), [], 0, 'Object.size | boolean object');
+
+  var Foo = function(){};
+  testClassAndInstance('size', new Foo, [], 0, 'Object.size | class instances');
+
+  var Foo = function(a){ this.a = a; };
+  testClassAndInstance('size', new Foo, [], 1, 'Object.size | class instances with a single property');
+
+
 });
 
