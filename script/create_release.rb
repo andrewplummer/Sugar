@@ -59,6 +59,7 @@ def split_compiled
 end
 
 def create_packages
+  create_package('full', @packages)
   create_package('default', @default_package)
 end
 
