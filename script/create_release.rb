@@ -20,9 +20,9 @@ intended to be concatenated together and wrapped with a closure.
 NOTICE
 
 `mkdir release/#{@version}`
-`mkdir release/#{@version}/minified`
-`mkdir release/#{@version}/development`
 `mkdir release/#{@version}/precompiled`
+`mkdir release/#{@version}/precompiled/minified`
+`mkdir release/#{@version}/precompiled/development`
 
 
 def concat
@@ -37,9 +37,9 @@ def create_development
   content = ''
   @packages.each do |p|
     content << File.open("lib/#{p}.js").read
-    `cp lib/#{p}.js release/#{@version}/development/sugar-#{@version}-#{p}.development.js`
+    `cp lib/#{p}.js release/#{@version}/precompiled/development/#{p}.js`
   end
-  File.open("release/#{@version}/development/sugar-#{@version}-full.development.js", 'w').write(@copyright + wrap(content))
+  File.open("release/#{@version}/sugar-#{@version}-full.development.js", 'w').write(@copyright + wrap(content))
 end
 
 def compile
@@ -51,7 +51,7 @@ end
 def split_compiled
   contents = File.open('tmp/compiled.js', 'r').read.split(@delimiter)
   @packages.each_with_index do |name, index|
-    File.open("#{@full_path}/precompiled/#{name}.js", 'w') do |f|
+    File.open("#{@full_path}/precompiled/minified/#{name}.js", 'w') do |f|
       f.puts contents[index].gsub(/\A\n+/, '')
     end
   end
@@ -59,17 +59,16 @@ def split_compiled
 end
 
 def create_packages
-  create_package('full', @packages)
   create_package('default', @default_package)
 end
 
 def create_package(name, arr)
   contents = ''
   arr.each do |s|
-    contents << File.open("#{@full_path}/precompiled/#{s}.js").read
+    contents << File.open("#{@full_path}/precompiled/minified/#{s}.js").read
   end
   contents = @copyright + wrap(contents.sub(/\n+\Z/m, ''))
-  File.open("#{@full_path}/minified/sugar-#{@version}-#{name}.min.js", 'w').write(contents)
+  File.open("#{@full_path}/sugar-#{@version}-#{name}.min.js", 'w').write(contents)
 end
 
 def wrap(js)
@@ -79,6 +78,7 @@ end
 def cleanup
   `rm tmp/compiled.js`
   `rm tmp/uncompiled.js`
+  `cd release;rm full.js;ln -s #{@version}/sugar-#{@version}-full.development.js full.js`
 end
 
 concat

@@ -1,15 +1,14 @@
 
   /***
-   * RegExp module
+   * RegExp package
    * @dependency core
+   * @description Escaping regexes and manipulating their flags.
    *
    * Note here that methods on the RegExp class like .exec and .test will fail in the current version of SpiderMonkey being
    * used by CouchDB when using shorthand regex notation like /foo/. This is the reason for the intermixed use of shorthand
    * and compiled regexes here. If you're using JS in CouchDB, it is safer to ALWAYS compile your regexes from a string.
    *
    ***/
-
-  regexp.NPCGSupport = isUndefined(regexp('()??').exec('')[1]); // NPCG: nonparticipating capturing group
 
   function uniqueRegExpFlags(flags) {
     return flags.split('').sort().join('').replace(/([gimy])\1+/g, '$1');
