@@ -1,5 +1,10 @@
 
 
+  /***
+   * Core package
+   * @description Internal utility methods used by Sugar.
+   ***/
+
 
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, math = Math, Undefined;
@@ -27,6 +32,10 @@
     return function(obj) {
       return isClass(obj, type);
     }
+  }
+
+  function isClass(obj, str) {
+    return object.prototype.toString.call(obj) === '[object '+str+']';
   }
 
   function initializeClasses() {
@@ -139,10 +148,6 @@
     return object['hasOwnProperty'].call(obj, key);
   }
 
-  function isClass(obj, str) {
-    return object.prototype.toString.call(obj) === '[object '+str+']';
-  }
-
   function iterateOverObject(obj, fn) {
     var key;
     for(key in obj) {
@@ -158,6 +163,13 @@
     return target;
   }
 
+  // Hash definition
+
+  function Hash(obj) {
+    object.merge(this, obj);
+  };
+
+  Hash.prototype.constructor = object;
 
   // Number helpers
 

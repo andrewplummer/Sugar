@@ -1,7 +1,8 @@
 
   /***
-   * DateRange module
+   * DateRange package
    * @dependency date
+   * @description DateRanges define a range of time with a definite start and finish, and allow enumeration over specific points within that range. They can also be manipulated and tested against.
    *
    ***/
 
@@ -159,6 +160,11 @@
   extendSimilar(DateRange, true, false, 'Millisecond,Second,Minute,Hour,Day,Week,Month,Year', function(methods, name) {
     methods['each' + name] = function(fn) { return this.every(name, fn); }
   });
+
+
+  /***
+   * Date module
+   ***/
 
   extend(date, false, false, {
 
