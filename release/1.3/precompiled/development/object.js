@@ -10,7 +10,7 @@
    ***/
 
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
-  var ObjectHashMethods = 'keys,values,each,merge,isEmpty,clone,equal,watch,tap,has'.split(',');
+  var ObjectHashMethods = 'keys,values,each,merge,clone,equal,watch,tap,has'.split(',');
 
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
@@ -281,23 +281,6 @@
         });
       }
       return obj;
-    },
-
-    /***
-     * @method isEmpty(<obj>)
-     * @returns Boolean
-     * @short Returns true if <obj> is empty.
-     * @extra %isEmpty% is available as an instance method on extended objects.
-     * @example
-     *
-     *   Object.isEmpty({})          -> true
-     *   Object.isEmpty({foo:'bar'}) -> false
-     *   Object.extended({foo:'bar'}).isEmpty() -> false
-     *
-     ***/
-    'isEmpty': function(obj) {
-      if(!isObjectPrimitive(obj)) return !(obj && obj.length > 0);
-      return object.keys(obj).length == 0;
     },
 
     /***
