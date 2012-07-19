@@ -8,6 +8,11 @@
  * ---------------------------- */
 (function(){
 
+  /***
+   * Core package
+   * @description Internal utility methods used by Sugar.
+   ***/
+
 
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, math = Math, Undefined;
@@ -35,6 +40,10 @@
     return function(obj) {
       return isClass(obj, type);
     }
+  }
+
+  function isClass(obj, str) {
+    return object.prototype.toString.call(obj) === '[object '+str+']';
   }
 
   function initializeClasses() {
@@ -147,10 +156,6 @@
     return object['hasOwnProperty'].call(obj, key);
   }
 
-  function isClass(obj, str) {
-    return object.prototype.toString.call(obj) === '[object '+str+']';
-  }
-
   function iterateOverObject(obj, fn) {
     var key;
     for(key in obj) {
@@ -166,6 +171,13 @@
     return target;
   }
 
+  // Hash definition
+
+  function Hash(obj) {
+    object.merge(this, obj);
+  };
+
+  Hash.prototype.constructor = object;
 
   // Number helpers
 
@@ -324,6 +336,12 @@
   initializeClasses();
 
 
+
+  /***
+   * ES5 package
+   * @description Shim methods to provide ES5 compatible functionality for browsers that do not support it. This package can be excluded if you do not require legacy browser support (most notably if you are not supporting IE8 and below).
+   *
+   ***/
 
 
   /***
@@ -746,12 +764,12 @@
 
 
   /***
-   * Array module
+   * Array package
    * @dependency core
+   * @description Array manipulation and "fuzzy matching" against elements, alphanumeric sorting and collation, enumerable methods on Object.
    *
    ***/
 
-  var HashSupport = typeof Hash !== 'undefined' && Object['extended'];
 
   function multiMatch(el, match, scope, params) {
     var result = true;
@@ -1843,7 +1861,6 @@
 
   /***
    * Object module
-   *
    * Enumerable methods on objects
    *
    ***/
@@ -1932,14 +1949,14 @@
 
 
   // TODO final rinse (add comments and rearrange core methods)
-  // TODO CHECK ENDER
   // TODO Object.size??
   // TODO Include DateRanges in the default package??
   // TODO Other things that can be removed from default package?
 
   /***
-   * Date module
+   * Date package
    * @dependency core
+   * @description Date parsing and formatting, relative formats ("1 minute ago"), localization support including 11 locales, methods on the Number class like Number#daysAgo.
    *
    ***/
 
@@ -4113,8 +4130,9 @@
 
 
   /***
-   * DateRange module
+   * DateRange package
    * @dependency date
+   * @description DateRanges define a range of time with a definite start and finish, and allow enumeration over specific points within that range. They can also be manipulated and tested against.
    *
    ***/
 
@@ -4273,6 +4291,11 @@
     methods['each' + name] = function(fn) { return this.every(name, fn); }
   });
 
+
+  /***
+   * Date module
+   ***/
+
   extend(date, false, false, {
 
      /***
@@ -4290,8 +4313,9 @@
 
 
   /***
-   * Function module
+   * Function package
    * @dependency core
+   * @description Lazy, throttled, and memoized functions, delayed functions and handling of timers, argument currying.
    *
    ***/
 
@@ -4511,8 +4535,9 @@
 
 
   /***
-   * Number module
+   * Number package
    * @dependency core
+   * @description Aliases to Math, number padding, and rounding with precision, number formatting.
    *
    ***/
 
@@ -4932,8 +4957,9 @@
 
 
   /***
-   * Object module
+   * Object package
    * @dependency core
+   * @description Object manipulation, type checking (isNumber, isString, ...), extended objects with hash-like methods available as instance methods.
    *
    * Much thanks to kangax for his informative aricle about how problems with instanceof and constructor
    * http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
@@ -4942,12 +4968,6 @@
 
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
   var ObjectHashMethods = 'keys,values,each,merge,isEmpty,clone,equal,watch,tap,has'.split(',');
-
-  function Hash(obj) {
-    object.merge(this, obj);
-  };
-
-  Hash.prototype.constructor = object;
 
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
@@ -5298,7 +5318,6 @@
         }
       }
       fn.call(obj, obj);
-      //transformArgument(obj, fn, obj, [obj]);
       return obj;
     },
 
@@ -5326,16 +5345,15 @@
 
 
   /***
-   * RegExp module
+   * RegExp package
    * @dependency core
+   * @description Escaping regexes and manipulating their flags.
    *
    * Note here that methods on the RegExp class like .exec and .test will fail in the current version of SpiderMonkey being
    * used by CouchDB when using shorthand regex notation like /foo/. This is the reason for the intermixed use of shorthand
    * and compiled regexes here. If you're using JS in CouchDB, it is safer to ALWAYS compile your regexes from a string.
    *
    ***/
-
-  regexp.NPCGSupport = isUndefined(regexp('()??').exec('')[1]); // NPCG: nonparticipating capturing group
 
   function uniqueRegExpFlags(flags) {
     return flags.split('').sort().join('').replace(/([gimy])\1+/g, '$1');
@@ -5419,11 +5437,13 @@
 
 
   /***
-   * String module
+   * String package
    * @dependency core
+   * @description Language-based helpers and character conversion, base64 encoding, string escaping, splitting on regexes.
    *
    ***/
 
+  regexp.NPCGSupport = isUndefined(regexp('()??').exec('')[1]); // NPCG: nonparticipating capturing group
 
   /***
    * @method has[Script]()
@@ -6578,8 +6598,14 @@
 
   /***
    *
-   * String module
+   * Inflections package
    * @dependency string
+   * @description Pluralization similar to ActiveSupport including uncountable words and acronyms. Also humanizing strings and normalizing accented characters.
+   *
+   ***/
+
+  /***
+   * String module
    *
    ***/
 

@@ -1,5 +1,11 @@
 
 
+  /***
+   * ES5 package
+   * @description Shim methods to provide ES5 compatible functionality for browsers that do not support it. This package can be excluded if you do not require legacy browser support (most notably if you are not supporting IE8 and below).
+   *
+   ***/
+
 
   /***
    * Object module

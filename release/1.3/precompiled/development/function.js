@@ -1,7 +1,8 @@
 
   /***
-   * Function module
+   * Function package
    * @dependency core
+   * @description Lazy, throttled, and memoized functions, delayed functions and handling of timers, argument currying.
    *
    ***/
 

@@ -1,13 +1,13 @@
 
   // TODO final rinse (add comments and rearrange core methods)
-  // TODO CHECK ENDER
   // TODO Object.size??
   // TODO Include DateRanges in the default package??
   // TODO Other things that can be removed from default package?
 
   /***
-   * Date module
+   * Date package
    * @dependency core
+   * @description Date parsing and formatting, relative formats ("1 minute ago"), localization support including 11 locales, methods on the Number class like Number#daysAgo.
    *
    ***/
 
