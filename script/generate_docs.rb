@@ -153,7 +153,7 @@ def get_minified_size(package)
   # gzipping the packages together produces sizes
   # less than gzipping individually, so offset this
   # a bit... just eyeballin it
-  size -= 190
+  size -= 190 if package != :regexp
   `rm #{tmp}.gz`
   size
 end

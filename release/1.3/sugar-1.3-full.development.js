@@ -10,7 +10,7 @@
 
   /***
    * Core package
-   * @description Internal utility methods used by Sugar.
+   * @description Internal utility and common methods.
    ***/
 
 
@@ -339,7 +339,7 @@
 
   /***
    * ES5 package
-   * @description Shim methods to provide ES5 compatible functionality for browsers that do not support it. This package can be excluded if you do not require legacy browser support (most notably if you are not supporting IE8 and below).
+   * @description Shim methods that provide ES5 compatible functionality. This package can be excluded if you do not require legacy browser support (notably if you are not supporting IE8 and below).
    *
    ***/
 
@@ -766,7 +766,7 @@
   /***
    * Array package
    * @dependency core
-   * @description Array manipulation and "fuzzy matching" against elements, alphanumeric sorting and collation, enumerable methods on Object.
+   * @description Array manipulation and traversal, "fuzzy matching" against elements, alphanumeric sorting and collation, enumerable methods on Object.
    *
    ***/
 
@@ -1956,7 +1956,7 @@
   /***
    * Date package
    * @dependency core
-   * @description Date parsing and formatting, relative formats ("1 minute ago"), localization support including 11 locales, methods on the Number class like Number#daysAgo.
+   * @description Date parsing and formatting, relative formats like "1 minute ago", localization support including 11 locales, methods on the Number class like Number#daysAgo.
    *
    ***/
 
@@ -4132,7 +4132,7 @@
   /***
    * DateRange package
    * @dependency date
-   * @description DateRanges define a range of time with a definite start and finish, and allow enumeration over specific points within that range. They can also be manipulated and tested against.
+   * @description DateRanges define a range of time with a definite start and finish, and allow enumeration over specific points within that range. They can also be manipulated and compared.
    *
    ***/
 
@@ -5439,7 +5439,7 @@
   /***
    * String package
    * @dependency core
-   * @description Language-based helpers and character conversion, base64 encoding, string escaping, splitting on regexes.
+   * @description Language-based helpers, character conversion, base64 encoding, string escaping, splitting on regexes.
    *
    ***/
 
