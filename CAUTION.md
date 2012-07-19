@@ -10,6 +10,42 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.3+
+=======
+
+
+- Level: Major
+  - `Array#has` is deprecated. Use `Array#some` or `Array#any` instead.
+
+- Level: Major
+  - `String#add`, `String#insert`, `Array#add`, and `Array#insert` now consider negative indexes to be the same as built-in `Array#slice`. This means that adding 'd' to 'abc' at index -1 now results in 'abdc' instead of 'abcd'.
+
+- Level: Major
+  - Date parsing is now scoped by locale. Previously setting a locale would add all its formats into a common pool that would match from that point on. Now the locale must be either be set beforehand `Date.setLocale('fr')` or explicitly passed `Date.create('...', 'fr')`. The exception to this are numeric formats which are core formats and will parse in any locale.
+
+- Level: Minor
+  - Extended objects that are otherwise identical to non-extended counterparts are now considered equal by `Object.equal`.
+
+- Level: Minor
+  - `Object.isEmpty` will now error when passed a non-object. This includes object versions of primitives like strings, numbers, and booleans.
+
+- Level: Minor
+  - Default date output format `date.format()` now includes the time. Previously this was just the date.
+
+- Level: Minor
+  - `Array#groupBy` no longer returns extended objects. Use `Object.extended` on the result if you need this.
+
+- Level: Minor
+  - Unrecognized locale codes will now simply produce an invalid date instead of throwing an error. Likewise, fully qualified locale codes ('it_IT') will fall back to 2 character codes ('it') before giving up.
+
+- Level: Very Minor
+  - Array methods using fuzzy matching (findAll, remove, etc.) now match instances of classes as well as plain objects.
+
+- Level: Very Minor
+  - `String#capitalize` with the first argument as `true` (capitalize all words) will now capitalize any letter whose previous letter could not be capitalized. Previously only words after spaces were counted.
+
+
+
 v1.2.5+
 =======
 
