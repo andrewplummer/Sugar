@@ -1,7 +1,8 @@
 
   /***
-   * Object module
+   * Object package
    * @dependency core
+   * @description Object manipulation, type checking (isNumber, isString, ...), extended objects with hash-like methods available as instance methods.
    *
    * Much thanks to kangax for his informative aricle about how problems with instanceof and constructor
    * http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
@@ -10,12 +11,6 @@
 
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
   var ObjectHashMethods = 'keys,values,each,merge,isEmpty,clone,equal,watch,tap,has'.split(',');
-
-  function Hash(obj) {
-    object.merge(this, obj);
-  };
-
-  Hash.prototype.constructor = object;
 
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
@@ -366,7 +361,6 @@
         }
       }
       fn.call(obj, obj);
-      //transformArgument(obj, fn, obj, [obj]);
       return obj;
     },
 

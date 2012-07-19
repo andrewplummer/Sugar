@@ -1,7 +1,7 @@
 
 environment = 'node';
 
-var Sugar = require('../../../lib/main');
+var Sugar = require('../../../release/full');
 
 // Test suite
 require('../../javascripts/setup.js');
