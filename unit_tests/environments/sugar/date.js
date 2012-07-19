@@ -320,16 +320,9 @@ test('Date', function () {
   dateEqual(Date.create('1997-07-16T14:30:40,5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'Date#create | ISO8601 | fractions in seconds');
   dateEqual(Date.create('1997-07-16T14:30,5'), new Date(1997, 6, 16, 14, 30, 30), 'Date#create | ISO8601 | fractions in minutes');
 
-  // Due to various complexities, these formats are no longer valid.
-  // The bottom line is that since it is now possible to have time forward formats, the time
-  // regex needs to be robust enough that it doesn't collide with other date formats. This means
-  // that there must either be a ":" or another hour indicator ("시" in Korean will also trigger),
-  // otherwise simple number first formats can be mistaken as dates (formats like 12.25, which
-  // is a valid date). If this somehow becomes a requirement, it should be added as a separate manual
-  // format that avoids the main time regex altogether.
-  //
-  // dateEqual(Date.create('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
-  // dateEqual(Date.create('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
+  // Fractional hours in ISO dates
+  dateEqual(Date.create('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
+  dateEqual(Date.create('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'Date#create | ISO8601 | fractions in hours');
 
   // These are all the same moment...
   dateEqual(Date.create('2001-04-03T18:30Z'), getUTCDate(2001,4,3,18,30), 'Date#create | ISO8601 | Synonymous dates with timezone 1');
@@ -973,12 +966,10 @@ test('Date', function () {
   equal(d.getUTCOffset(), tzd, 'Date#getUTCOffset | no colon');
   equal(d.getUTCOffset(true), isotzd, 'Date#getUTCOffset | colon');
 
-  equal(d.format(Date.INTERNATIONAL_TIME), '4:03:02', 'Date#format | constants | INTERNATIONAL_TIME');
   equal(d.format(Date.ISO8601_DATE), '2010-08-05', 'Date#format | constants | ISO8601_DATE');
   equal(d.format(Date.ISO8601_DATETIME), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
 
 
-  equal(d.format('INTERNATIONAL_TIME'), '4:03:02', 'Date#format | string constants | INTERNATIONAL_TIME');
   equal(d.format('ISO8601_DATE'), '2010-08-05', 'Date#format | string constants | ISO8601_DATE');
   equal(d.format('ISO8601_DATETIME'), '2010-08-05T04:03:02.000'+isotzd, 'Date#format | constants | ISO8601_DATETIME');
 

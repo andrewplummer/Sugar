@@ -11,7 +11,6 @@ v1.3
 - Enumerable methods now allow fuzzy matching of instances of classes (Issue 157)
 - Enumerable methods are now available as class methods on Object, and instance methods on extended objects. This includes: map, any, all, none, count, sum, average, find, findAll, min, max, least, most, and reduce.
 
-- Date format "yyyy-mm-ddThh" is deprecated
 - Date format "just now" now supported
 - Date#reset now supports resetting a unit based on a string.
 - Date#advance and other advance methods can now reset the time.
@@ -35,7 +34,7 @@ v1.3
 
 - Added DateRange, accessed through Date.range as a separate package
 - All Math methods are now mapped onto Number and are accessible as instance methods
-- Object.equals now considers identical objects vs. extended objects to be the same ??? really???
+- Object.equals now considers identical objects vs. extended objects to be the same
 - String#capitalize all will capitalize any letter after a letter that could not be capitalized.
 - String#insert now treats negative indexes like String#slice
 - Fixed issue with decodeBase64 shim (Issue 145)
