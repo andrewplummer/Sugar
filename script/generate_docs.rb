@@ -250,6 +250,7 @@ extract_docs(:number)
 extract_docs(:regexp)
 extract_docs(:string)
 extract_docs(:inflections)
+extract_docs(:language)
 
 pp @packages[:date_ranges][:description]
 
