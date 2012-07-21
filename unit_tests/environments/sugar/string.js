@@ -741,8 +741,6 @@ test('String', function () {
   equal('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
   equal('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
   equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
-  //equal(''.normalize(), '', 'String#normalize | blank');
-  //equal('wasabi'.normalize(), 'wasabi', 'String#normalize | wasabi');
   equal(''.insert('-', 0), '-', 'String#insert | - inserted at 0');
   equal('b'.insert('-', 0), '-b', 'String#insert | b inserted at 0');
   equal('b'.insert('-', 1), 'b-', 'String#insert | b inserted at 1');
@@ -1029,6 +1027,7 @@ test('String', function () {
   equal('Dumb.Bar.Moo'.namespace(), undefined, 'String#namespace | non-existant top')
   equal('Foo.Dumb.Moo'.namespace(), undefined, 'String#namespace | non-existant middle')
   equal('Foo.Bar.Dumb'.namespace(), undefined, 'String#namespace | non-existant bottom')
+  equal('Moo'.namespace(Foo.Bar), Foo.Bar.Moo, 'String#namespace | allows starting scope')
 
 
 

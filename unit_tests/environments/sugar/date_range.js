@@ -174,5 +174,22 @@ test('Date Ranges', function () {
   equal(range.isValid(), false, 'DateRange#intersect | non-overlapping ranges are invalid');
 
 
+  // Date ranges should be able to be created from a string
+
+  range = Date.range('2001', '2003');
+
+  dateEqual(range.start, Date.create('2001'), 'Date.range | strings | start is equal');
+  dateEqual(range.end,   Date.create('2003'), 'Date.range | strings | end is equal');
+
+
+  // Modifying the start date of a range shouldn't affect the range.
+
+  var d = new Date();
+
+  range = Date.range(d);
+
+  d.setTime(410194800000);
+
+  equal(range.start.getTime() === 410194800000, false, 'Date.range | start time of the range should not be affected');
 
 });

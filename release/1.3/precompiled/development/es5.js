@@ -1,8 +1,8 @@
 
 
   /***
-   * ES5 package
-   * @description Shim methods that provide ES5 compatible functionality. This package can be excluded if you do not require legacy browser support (notably if you are not supporting IE8 and below).
+   * @package ES5
+   * @description Shim methods that provide ES5 compatible functionality. This package can be excluded if you do not require legacy browser support (IE8 and below).
    *
    ***/
 
@@ -185,7 +185,7 @@
      * @method indexOf(<search>, [fromIndex])
      * @returns Number
      * @short Searches the array and returns the first index where <search> occurs, or -1 if the element is not found.
-     * @extra [fromIndex] is the index from which to begin the search. This method performs a simple strict equality comparison on <search>. It does not support enhanced functionality such as searching the contents against a regex, callback, or deep comparison of objects. For such functionality, use the %find% method instead.
+     * @extra [fromIndex] is the index from which to begin the search. This method performs a simple strict equality comparison on <search>. It does not support enhanced functionality such as searching the contents against a regex, callback, or deep comparison of objects. For such functionality, use the %findIndex% method instead.
      * @example
      *
      *   [1,2,3].indexOf(3)           -> 1
@@ -240,15 +240,15 @@
      * @method reduce(<fn>, [init])
      * @returns Mixed
      * @short Reduces the array to a single result.
-     * @extra If [init] is passed as a starting value, that value will be passed as the first argument to the callback. The second argument will be the first element in the array. From that point , the result of the callback will then be used as the first argument of the next iteration. This is often refered to as "accumulation", and [init] is often called an "accumulator". If [init] is not passed, then <fn> will be called n - 1 times, where n is the length of the array. In this case, on the first iteration only, the first argument will be the first element of the array, and the second argument will be the second. After that callbacks work as normal, using the result of the previous callback as the first argument of the next. This method is only provided for those browsers that do not support it natively.
+     * @extra If [init] is passed as a starting value, that value will be passed as the first argument to the callback. The second argument will be the first element in the array. From that point, the result of the callback will then be used as the first argument of the next iteration. This is often refered to as "accumulation", and [init] is often called an "accumulator". If [init] is not passed, then <fn> will be called n - 1 times, where n is the length of the array. In this case, on the first iteration only, the first argument will be the first element of the array, and the second argument will be the second. After that callbacks work as normal, using the result of the previous callback as the first argument of the next. This method is only provided for those browsers that do not support it natively.
      *
      * @example
      *
      +   [1,2,3,4].reduce(function(a, b) {
-     *     return a + b;
+     *     return a - b;
      *   });
      +   [1,2,3,4].reduce(function(a, b) {
-     *     return a + b;
+     *     return a - b;
      *   }, 100);
      *
      ***/
@@ -259,8 +259,8 @@
     /***
      * @method reduceRight([fn], [init])
      * @returns Mixed
-     * @short Reduces the array to a single result by stepping through it from the right.
-     * @extra If [init] is passed as a starting value, that value will be passed as the first argument to the callback. The second argument will be the last element in the array. From that point , the result of the callback will then be used as the first argument of the next iteration (stepping backward through the array). This is often refered to as "accumulation", and [init] is often called an "accumulator". If [init] is not passed, then <fn> will be called n - 1 times, where n is the length of the array. In this case, on the first iteration only, the first argument will be the last element of the array, and the second argument will be the second to last. After that callbacks work as normal, using the result of the previous callback as the first argument of the next. This method is only provided for those browsers that do not support it natively.
+     * @short Identical to %Array#reduce%, but operates on the elements in reverse order.
+     * @extra This method is only provided for those browsers that do not support it natively.
      *
      *
      *
@@ -346,7 +346,7 @@
        * @method bind(<scope>, [arg1], ...)
        * @returns Function
        * @short Binds <scope> as the %this% object for the function when it is called. Also allows currying an unlimited number of parameters.
-       * @extra "currying" means setting parameters ([arg1], [arg2], etc.) ahead of time so that they are passed when the function is called later. If you pass additional parameters when the function is actually called, they will be added will be added to the end of the curried parameters.
+       * @extra "currying" means setting parameters ([arg1], [arg2], etc.) ahead of time so that they are passed when the function is called later. If you pass additional parameters when the function is actually called, they will be added will be added to the end of the curried parameters. This method is provided for browsers that don't support it internally.
        * @example
        *
        +   (function() {
@@ -395,12 +395,30 @@
    * @method toJSON()
    * @returns String
    * @short Returns a JSON representation of the date.
-   * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Implemented for browsers that do not support it.
+   * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Provided for browsers that do not support this method.
    * @example
    *
    *   Date.create().toJSON() -> ex. 2011-07-05 12:24:55.528Z
    *
    ***/
+
+  extend(date, false, false, {
+
+     /***
+     * @method Date.now()
+     * @returns String
+     * @short Returns the number of milliseconds since January 1st, 1970 00:00:00 (UTC time).
+     * @extra Provided for browsers that do not support this method.
+     * @example
+     *
+     *   Date.now() -> ex. 1311938296231
+     *
+     ***/
+    'now': function() {
+      return new date().getTime();
+    }
+
+  });
 
    function buildISOString() {
     var d = new date(date.UTC(1999, 11, 31)), target = '1999-12-31T00:00:00.000Z';

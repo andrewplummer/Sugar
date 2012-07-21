@@ -1,9 +1,9 @@
 
   /***
    *
-   * Inflections package
+   * @package Inflections
    * @dependency string
-   * @description Pluralization similar to ActiveSupport including uncountable words and acronyms. Also humanizing strings and normalizing accented characters.
+   * @description Pluralization similar to ActiveSupport including uncountable words and acronyms. Humanized and URL-friendly strings.
    *
    ***/
 
