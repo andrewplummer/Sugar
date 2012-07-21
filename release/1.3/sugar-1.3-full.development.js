@@ -1979,7 +1979,7 @@
 
   var TimeFormat = ['12hr','hour','minute','second','12hr','utc','offset_sign','offset_hours','offset_minutes','12hr']
   var FloatReg = '\\d{1,2}(?:[,.]\\d+)?';
-  var RequiredTime = '({t})?\\s*('+FloatReg+')(?:{h}('+FloatReg+')?{m}(?::?('+FloatReg+'){s})?\\s*(?:(am|pm)|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*(am|pm))';
+  var RequiredTime = '({t})?\\s*('+FloatReg+')(?:{h}('+FloatReg+')?{m}(?::?('+FloatReg+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
 
   var KanjiDigits     = '〇一二三四五六七八九十百千万';
   var FullWidthDigits = '０１２３４５６７８９';
@@ -2168,30 +2168,29 @@
 
   var CommonLocales = {
 
-    'en': '2;;;January,February,March,April,May,June,July,August,September,October,November,December;Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday;millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s;one,two,three,four,five,six,seven,eight,nine,ten;a,an,the;the,st|nd|rd|th,of;am,pm;;{num} {unit} {sign},{sign} {num} {unit},{num} {unit=4-5} {sign} {day},{month} {year},{shift} {unit=5-7},{0} {edge} of {shift?} {unit=4-7?}{month?}{year?};{0} {num}{1} {day} of {month} {year?},{weekday?} {month} {date}{1} {year?},{date} {month} {year},{shift} {weekday},{shift} week {weekday},{weekday} {2} {shift} week,{0} {date}{1} of {month},{0}{month?} {date?}{1} of {shift} {unit=6-7};{Weekday} {Month} {d}, {yyyy};{h}:{mm}:{ss}{tt};,yesterday,today,tomorrow;,ago|before,,from now|after|from|in;,last,the|this,next;last day,end,,first day|beginning',
+    'en': '2;;;January,February,March,April,May,June,July,August,September,October,November,December;Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday;millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s;one,two,three,four,five,six,seven,eight,nine,ten;a,an,the;the,st|nd|rd|th,of;at;am,pm;;{num} {unit} {sign},{sign} {num} {unit},{num} {unit=4-5} {sign} {day},{month} {year},{shift} {unit=5-7},{0} {edge} of {shift?} {unit=4-7?}{month?}{year?};{0} {num}{1} {day} of {month} {year?},{weekday?} {month} {date}{1} {year?},{date} {month} {year},{shift} {weekday},{shift} week {weekday},{weekday} {2} {shift} week,{0} {date}{1} of {month},{0}{month?} {date?}{1} of {shift} {unit=6-7};{Weekday} {Month} {d}, {yyyy};{h}:{mm}:{ss}{tt};,yesterday,today,tomorrow;,ago|before,,from now|after|from|in;,last,the|this,next;last day,end,,first day|beginning',
 
-    'ja': '1;月;年;;日曜日,月曜日,火曜日,水曜日,木曜日,金曜日,土曜日;ミリ秒,秒,分,時間,日,週間|週,ヶ月|ヵ月|月,年;;;;午前,午後;時,分,秒;{num}{unit}{sign};{shift}{unit=5-7}{weekday?},{year}年{month?}月?{date?}日?,{month}月{date?}日?,{date}日;{yyyy}年{M}月{d}日 {Weekday};{H}時{mm}分{ss}秒;一昨日,昨日,今日,明日,明後日;,前,,後;,去|先,,来',
+    'ja': '1;月;年;;日曜日,月曜日,火曜日,水曜日,木曜日,金曜日,土曜日;ミリ秒,秒,分,時間,日,週間|週,ヶ月|ヵ月|月,年;;;;;午前,午後;時,分,秒;{num}{unit}{sign};{shift}{unit=5-7}{weekday?},{year}年{month?}月?{date?}日?,{month}月{date?}日?,{date}日;{yyyy}年{M}月{d}日 {Weekday};{H}時{mm}分{ss}秒;一昨日,昨日,今日,明日,明後日;,前,,後;,去|先,,来',
 
-    'ko': '1;월;년;;일요일,월요일,화요일,수요일,목요일,금요일,토요일;밀리초,초,분,시간,일,주,개월|달,년;일|한,이,삼,사,오,육,칠,팔,구,십;;;오전,오후;시,분,초;{num}{unit} {sign},{shift?} {unit=5-7};{shift} {unit=5?} {weekday},{year}년{month?}월?{date?}일?,{month}월{date?}일?,{date}일;{yyyy}년{M}월{d}일 {Weekday};{H}시{mm}분{ss}초;그저께,어제,오늘,내일,모레;,전,,후;,지난|작,이번,다음|내',
+    'ko': '1;월;년;;일요일,월요일,화요일,수요일,목요일,금요일,토요일;밀리초,초,분,시간,일,주,개월|달,년;일|한,이,삼,사,오,육,칠,팔,구,십;;;;오전,오후;시,분,초;{num}{unit} {sign},{shift?} {unit=5-7};{shift} {unit=5?} {weekday},{year}년{month?}월?{date?}일?,{month}월{date?}일?,{date}일;{yyyy}년{M}월{d}일 {Weekday};{H}시{mm}분{ss}초;그저께,어제,오늘,내일,모레;,전,,후;,지난|작,이번,다음|내',
 
-    'ru': '4;;;Январ:я|ь,Феврал:я|ь,Март:а|,Апрел:я|ь,Ма:я|й,Июн:я|ь,Июл:я|ь,Август:а|,Сентябр:я|ь,Октябр:я|ь,Ноябр:я|ь,Декабр:я|ь;Воскресенье,Понедельник,Вторник,Среда,Четверг,Пятница,Суббота;миллисекунд:а|у|ы|,секунд:а|у|ы|,минут:а|у|ы|,час:||а|ов,день|день|дня|дней,недел:я|ю|и|ь|е,месяц:||а|ев|е,год|год|года|лет|году;од:ин|ну,дв:а|е,три,четыре,пять,шесть,семь,восемь,девять,десять;;в|на,года;am,pm;;{num} {unit} {sign},{sign} {num} {unit},{month} {year},{0} {shift} {unit=5-7};{date} {month} {year?} {1},{0} {shift} {weekday};{Weekday} {d} {month} {yyyy} года;{H}:{mm}:{ss};позавчера,вчера,сегодня,завтра,послезавтра;,назад,,через;,прошл:ый|ой|ом,,следующ:ий|ей|ем',
+    'ru': '4;;;Январ:я|ь,Феврал:я|ь,Март:а|,Апрел:я|ь,Ма:я|й,Июн:я|ь,Июл:я|ь,Август:а|,Сентябр:я|ь,Октябр:я|ь,Ноябр:я|ь,Декабр:я|ь;Воскресенье,Понедельник,Вторник,Среда,Четверг,Пятница,Суббота;миллисекунд:а|у|ы|,секунд:а|у|ы|,минут:а|у|ы|,час:||а|ов,день|день|дня|дней,недел:я|ю|и|ь|е,месяц:||а|ев|е,год|год|года|лет|году;од:ин|ну,дв:а|е,три,четыре,пять,шесть,семь,восемь,девять,десять;;в|на,года;в; утра, вечера;;{num} {unit} {sign},{sign} {num} {unit},{month} {year},{0} {shift} {unit=5-7};{date} {month} {year?} {1},{0} {shift} {weekday};{Weekday} {d} {month} {yyyy} года;{H}:{mm}:{ss};позавчера,вчера,сегодня,завтра,послезавтра;,назад,,через;,прошл:ый|ой|ом,,следующ:ий|ей|ем',
 
-    'es': '6;;;enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre;domingo,lunes,martes,miércoles|miercoles,jueves,viernes,sábado|sabado;milisegundo:|s,segundo:|s,minuto:|s,hora:|s,día|días|dia|dias,semana:|s,mes:|es,año|años|ano|anos;uno,dos,tres,cuatro,cinco,seis,siete,ocho,nueve,diez;;el,de;am,pm;;{sign} {num} {unit},{num} {unit} {sign},{0} {unit=5-7} {shift},{0} {shift} {unit=5-7};{shift} {weekday},{weekday} {shift},{date?} {1} {month} {1} {year?};{Weekday} {d} {month} {yyyy};{H}:{mm}:{ss};anteayer,ayer,hoy,mañana|manana;,hace,,de ahora;,pasad:o|a,,próximo|próxima|proximo|proxima',
+    'es': '6;;;enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre;domingo,lunes,martes,miércoles|miercoles,jueves,viernes,sábado|sabado;milisegundo:|s,segundo:|s,minuto:|s,hora:|s,día|días|dia|dias,semana:|s,mes:|es,año|años|ano|anos;uno,dos,tres,cuatro,cinco,seis,siete,ocho,nueve,diez;;el,de;a las;am,pm;;{sign} {num} {unit},{num} {unit} {sign},{0} {unit=5-7} {shift},{0} {shift} {unit=5-7};{shift} {weekday},{weekday} {shift},{date?} {1} {month} {1} {year?};{Weekday} {d} {month} {yyyy};{H}:{mm}:{ss};anteayer,ayer,hoy,mañana|manana;,hace,,de ahora;,pasad:o|a,,próximo|próxima|proximo|proxima',
 
-    'pt': '6;;;janeiro,fevereiro,março,abril,maio,junho,julho,agosto,setembro,outubro,novembro,dezembro;domingo,segunda-feira,terça-feira,quarta-feira,quinta-feira,sexta-feira,sábado|sabado;milisegundo:|s,segundo:|s,minuto:|s,hora:|s,dia:|s,semana:|s,mês|mêses|mes|meses,ano:|s;um,dois,três|tres,quatro,cinco,seis,sete,oito,nove,dez,uma,duas;;a,de;am,pm;;{num} {unit} {sign},{sign} {num} {unit},{0} {unit=5-7} {shift},{0} {shift} {unit=5-7};{date?} {1} {month} {1} {year?},{0} {shift} {weekday};{Weekday}, {d} de {month} de {yyyy};{H}:{mm}:{ss};anteontem,ontem,hoje,amanh:ã|a;,atrás|atras|há|ha,,daqui a;,passad:o|a,,próximo|próxima|proximo|proxima',
+    'pt': '6;;;janeiro,fevereiro,março,abril,maio,junho,julho,agosto,setembro,outubro,novembro,dezembro;domingo,segunda-feira,terça-feira,quarta-feira,quinta-feira,sexta-feira,sábado|sabado;milisegundo:|s,segundo:|s,minuto:|s,hora:|s,dia:|s,semana:|s,mês|mêses|mes|meses,ano:|s;um,dois,três|tres,quatro,cinco,seis,sete,oito,nove,dez,uma,duas;;a,de;às;am,pm;;{num} {unit} {sign},{sign} {num} {unit},{0} {unit=5-7} {shift},{0} {shift} {unit=5-7};{date?} {1} {month} {1} {year?},{0} {shift} {weekday};{Weekday}, {d} de {month} de {yyyy};{H}:{mm}:{ss};anteontem,ontem,hoje,amanh:ã|a;,atrás|atras|há|ha,,daqui a;,passad:o|a,,próximo|próxima|proximo|proxima',
 
-    'fr': '2;;;janvier,février|fevrier,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre|decembre;dimanche,lundi,mardi,mercredi,jeudi,vendredi,samedi;milliseconde:|s,seconde:|s,minute:|s,heure:|s,jour:|s,semaine:|s,mois,an:|s|née|nee;un:|e,deux,trois,quatre,cinq,six,sept,huit,neuf,dix;;l\'|la|le;am,pm;;{sign} {num} {unit},{sign} {num} {unit},{0} {unit=5-7} {shift};{0} {date?} {month} {year?},{0} {weekday} {shift};{Weekday} {d} {month} {yyyy};{H}:{mm}:{ss};,hier,aujourd\'hui,demain;,il y a,,dans|d\'ici;,derni:èr|er|ère|ere,,prochain:|e',
+    'fr': '2;;;janvier,février|fevrier,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre|decembre;dimanche,lundi,mardi,mercredi,jeudi,vendredi,samedi;milliseconde:|s,seconde:|s,minute:|s,heure:|s,jour:|s,semaine:|s,mois,an:|s|née|nee;un:|e,deux,trois,quatre,cinq,six,sept,huit,neuf,dix;;l\'|la|le;à;am,pm;;{sign} {num} {unit},{sign} {num} {unit},{0} {unit=5-7} {shift};{0} {date?} {month} {year?},{0} {weekday} {shift};{Weekday} {d} {month} {yyyy};{H}:{mm}:{ss};,hier,aujourd\'hui,demain;,il y a,,dans|d\'ici;,derni:èr|er|ère|ere,,prochain:|e',
 
-    'it': '2;;;Gennaio,Febbraio,Marzo,Aprile,Maggio,Giugno,Luglio,Agosto,Settembre,Ottobre,Novembre,Dicembre;Domenica,Luned:ì|i,Marted:ì|i,Mercoled:ì|i,Gioved:ì|i,Venerd:ì|i,Sabato;millisecond:o|i,second:o|i,minut:o|i,or:a|e,giorn:o|i,settiman:a|e,mes:e|i,ann:o|i;un:|\'|a|o,due,tre,quattro,cinque,sei,sette,otto,nove,dieci;;l\'|la|il;am,pm;;{num} {unit} {sign},{0} {unit=5-7} {shift},{0} {shift} {unit=5-7};{weekday?} {date?} {month} {year?},{shift} {weekday};{Weekday} {d} {Month} {yyyy};{H}:{mm}:{ss};,ieri,oggi,domani,dopodomani;,fa,,da adesso;,scors:o|a,,prossim:o|a',
+    'it': '2;;;Gennaio,Febbraio,Marzo,Aprile,Maggio,Giugno,Luglio,Agosto,Settembre,Ottobre,Novembre,Dicembre;Domenica,Luned:ì|i,Marted:ì|i,Mercoled:ì|i,Gioved:ì|i,Venerd:ì|i,Sabato;millisecond:o|i,second:o|i,minut:o|i,or:a|e,giorn:o|i,settiman:a|e,mes:e|i,ann:o|i;un:|\'|a|o,due,tre,quattro,cinque,sei,sette,otto,nove,dieci;;l\'|la|il;alle;am,pm;;{num} {unit} {sign},{0} {unit=5-7} {shift},{0} {shift} {unit=5-7};{weekday?} {date?} {month} {year?},{shift} {weekday};{Weekday} {d} {Month} {yyyy};{H}:{mm}:{ss};,ieri,oggi,domani,dopodomani;,fa,,da adesso;,scors:o|a,,prossim:o|a',
 
-    'de': '2;;;Januar,Februar,März|Marz,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember;Sonntag,Montag,Dienstag,Mittwoch,Donnerstag,Freitag,Samstag;Millisekunde:|n,Sekunde:|n,Minute:|n,Stunde:|n,Tag:|en,Woche:|n,Monat:|en,Jahr:|en;ein:|e|er|em|en,zwei,drei,vier,fuenf,sechs,sieben,acht,neun,zehn;;der;am,pm;;{sign} {num} {unit},{num} {unit} {sign},{shift} {unit=5-7};{weekday?} {date?} {month} {year?},{shift} {weekday};{Weekday} {d}. {Month} {yyyy};{H}:{mm}:{ss};vorgestern,gestern,heute,morgen,übermorgen|ubermorgen|uebermorgen;,vor:|her,,in;,letzte:|r|n|s,,nächste:|r|n|s+naechste:|r|n|s+kommende:n|r',
+    'de': '2;;;Januar,Februar,März|Marz,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember;Sonntag,Montag,Dienstag,Mittwoch,Donnerstag,Freitag,Samstag;Millisekunde:|n,Sekunde:|n,Minute:|n,Stunde:|n,Tag:|en,Woche:|n,Monat:|en,Jahr:|en;ein:|e|er|em|en,zwei,drei,vier,fuenf,sechs,sieben,acht,neun,zehn;;der;um;am,pm;;{sign} {num} {unit},{num} {unit} {sign},{shift} {unit=5-7};{weekday?} {date?} {month} {year?},{shift} {weekday};{Weekday} {d}. {Month} {yyyy};{H}:{mm}:{ss};vorgestern,gestern,heute,morgen,übermorgen|ubermorgen|uebermorgen;,vor:|her,,in;,letzte:|r|n|s,,nächste:|r|n|s+naechste:|r|n|s+kommende:n|r',
 
-    'zh-TW': '1;月;年;;星期日|週日,星期一|週一,星期二|週二,星期三|週三,星期四|週四,星期五|週五,星期六|週六;毫秒,秒鐘,分鐘,小時,天,個星期|週,個月,年;;;日|號;上午,下午;點|時,分鐘?,秒;{num}{unit}{sign},{shift}{unit=5-7};{shift}{weekday},{year}年{month?}月?{date?}{0},{month}月{date?}{0},{date}{0};{yyyy}年{M}月{d}日 {Weekday};{tt}{h}:{mm}:{ss};前天,昨天,今天,明天,後天;,前,,後;,上|去,這,下|明',
+    'zh-TW': '1;月;年;;星期日|週日,星期一|週一,星期二|週二,星期三|週三,星期四|週四,星期五|週五,星期六|週六;毫秒,秒鐘,分鐘,小時,天,個星期|週,個月,年;;;日|號;;上午,下午;點|時,分鐘?,秒;{num}{unit}{sign},{shift}{unit=5-7};{shift}{weekday},{year}年{month?}月?{date?}{0},{month}月{date?}{0},{date}{0};{yyyy}年{M}月{d}日 {Weekday};{tt}{h}:{mm}:{ss};前天,昨天,今天,明天,後天;,前,,後;,上|去,這,下|明',
 
-    'zh-CN': '9;月;年;;星期日|周日,星期一|周一,星期二|周二,星期三|周三,星期四|周四,星期五|周五,星期六|周六;毫秒,秒钟,分钟,小时,天,个星期|周,个月,年;;;日|号;上午,下午;点|时,分钟?,秒;{num}{unit}{sign},{shift}{unit=5-7};{shift}{weekday},{year}年{month?}月?{date?}{0},{month}月{date?}{0},{date}{0};{yyyy}年{M}月{d}日 {Weekday};{tt}{h}:{mm}:{ss};前天,昨天,今天,明天,后天;,前,,后;,上|去,这,下|明'
+    'zh-CN': '9;月;年;;星期日|周日,星期一|周一,星期二|周二,星期三|周三,星期四|周四,星期五|周五,星期六|周六;毫秒,秒钟,分钟,小时,天,个星期|周,个月,年;;;日|号;;上午,下午;点|时,分钟?,秒;{num}{unit}{sign},{shift}{unit=5-7};{shift}{weekday},{year}年{month?}月?{date?}{0},{month}月{date?}{0},{date}{0};{yyyy}年{M}月{d}日 {Weekday};{tt}{h}:{mm}:{ss};前天,昨天,今天,明天,后天;,前,,后;,上|去,这,下|明'
 
   }
-
 
   // Localization object
 
@@ -2283,7 +2282,7 @@
     },
 
     addFormat: function(src, allowsTime, match, variant, iso) {
-      var to = match || [], loc = this, time, lastIsNumeral;
+      var to = match || [], loc = this, time, timeMarkers, lastIsNumeral;
 
       src = src.replace(/\s+/g, '[-,. ]*');
       src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
@@ -2318,12 +2317,13 @@
         }
       });
       if(allowsTime) {
-        time = prepareTime(RequiredTime, this, iso)
+        time = prepareTime(RequiredTime, loc, iso);
+        timeMarkers = ['t','[\\s\\u3000]'].concat(loc['timeMarkers']);
         lastIsNumeral = src.match(/\\d\{\d,\d\}\)+\??$/);
-        addDateInputFormat(this, '(?:' + time + ')[,\\s\\u3000]+?' + src, TimeFormat.concat(to), variant);
-        addDateInputFormat(this, src + '(?:[,\\s]*(?:t|at |[\\s\\u3000]'+ (lastIsNumeral ? '+' : '*') +')' + time + ')?', to.concat(TimeFormat), variant);
+        addDateInputFormat(loc, '(?:' + time + ')[,\\s\\u3000]+?' + src, TimeFormat.concat(to), variant);
+        addDateInputFormat(loc, src + '(?:[,\\s]*(?:' + timeMarkers.join('|') + (lastIsNumeral ? '+' : '*') +')' + time + ')?', to.concat(TimeFormat), variant);
       } else {
-        addDateInputFormat(this, src, to, variant);
+        addDateInputFormat(loc, src, to, variant);
       }
     }
 
@@ -2332,19 +2332,25 @@
 
   // Localization helpers
 
-  function getLocalization(localeCode, skipFallback, set) {
-    var loc;
-    if(!localeCode || !isString(localeCode)) return CurrentLocalization;
+  function getLocalization(localeCode, fallback) {
+    var loc, set;
+    if(!isString(localeCode)) localeCode = '';
     loc = Localizations[localeCode] || Localizations[localeCode.slice(0,2)];
-    if(!loc || set)  loc = setLocalization(localeCode, set, skipFallback);
-    return loc;
+    if(!loc && (set = getCommonLocalization(localeCode))) {
+      return setLocalization(localeCode, set);
+    }
+    if(fallback === false && !loc) {
+      throw new Error('Invalid locale.');
+    }
+    return loc || CurrentLocalization;
   }
 
-  function setLocalization(localeCode, set, skipFallback) {
-    var loc, time;
-    set = set || getCommonLocalization(localeCode);
-    if(!set) return skipFallback ? false : CurrentLocalization;
-    loc = new Localization(set);
+  function setLocalization(localeCode, set) {
+    var loc;
+
+    function initializeField(name) {
+      loc[name] = loc[name] || [];
+    }
 
     function eachAlternate(str, fn) {
       str = str.split('+').map(function(split) {
@@ -2398,6 +2404,11 @@
       loc['day'] += '|' + arrayToAlternates(loc['weekdays']);
       loc['modifiers'] = arr;
     }
+
+    // Initialize the locale
+    loc = new Localization(set);
+    initializeField('modifiers');
+    eachLocaleField(initializeField);
 
     setArray('months', true, 12);
     setArray('weekdays', true, 7);
@@ -2453,12 +2464,12 @@
     }
     set['monthSuffix'] = pre[1];
     set['yearSuffix'] = pre[2];
-    ['months','weekdays','units','numbers','articles','optionals','12hr','timeSuffixes','formats','timeFormats'].forEach(function(name, i) {
+    eachLocaleField(function(name, i) {
       set[name] = pre[i + 3] ? pre[i + 3].split(',') : [];
     });
 
-    dateFormat = pre[13];
-    timeFormat = pre[14];
+    dateFormat = pre[14];
+    timeFormat = pre[15];
     shortDate  = dateFormat.replace(/[,\s]*\{Weekday\}[,\s]*/, '');
     shortTime  = timeFormat.replace(/:?\{ss\}[^{]?/, '');
 
@@ -2469,8 +2480,8 @@
 
     set['pm'] = set['12hr'][1];
     ['day','sign','shift','edge'].forEach(function(name, i) {
-      if(!pre[i + 15]) return;
-      pre[i + 15].split(',').forEach(function(t, j) {
+      if(!pre[i + 16]) return;
+      pre[i + 16].split(',').forEach(function(t, j) {
         if(t) set['modifiers'].push({ name: name, src: t, value: j - 2 });
       });
     });
@@ -2484,6 +2495,10 @@
     set['durationFormat'] = set['formats'][0].replace(/\s*\{sign\}\s*/, '');
     set['variant'] = bool(4);
     return set;
+  }
+
+  function eachLocaleField(fn) {
+    'months,weekdays,units,numbers,articles,optionals,timeMarkers,12hr,timeSuffixes,formats,timeFormats'.split(',').forEach(fn);
   }
 
 
@@ -2591,7 +2606,7 @@
 
       // The act of getting the localization will pre-initialize
       // if it is missing and add the required formats.
-      baseLocalization = getLocalization(localeCode, true);
+      baseLocalization = getLocalization(localeCode);
 
       // Clean the input and convert Kanji based numerals if they exist.
       f = cleanDateInput(f);
@@ -3651,6 +3666,17 @@
     },
 
      /***
+     * @method Date.addLocale(<code>, <set>)
+     * @returns Locale
+     * @short Adds a locale by an object <set> to the locales understood by Sugar.
+     * @extra For more see @date_format.
+     *
+     ***/
+    'addLocale': function(localeCode, set) {
+      return setLocalization(localeCode, set);
+    },
+
+     /***
      * @method Date.setLocale(<code>, [set])
      * @returns Locale
      * @short Sets the current locale to be used with dates.
@@ -3658,14 +3684,12 @@
      *
      ***/
     'setLocale': function(localeCode, set) {
-      var loc = getLocalization(localeCode, true, set);
-      if(loc) {
-        CurrentLocalization = loc;
-        // The code is allowed to be more specific than the codes which are required:
-        // i.e. zh-CN or en-US. Currently this only affects US date variants such as 8/10/2000.
-        if(localeCode && localeCode != loc['code']) {
-          loc['code'] = localeCode;
-        }
+      var loc = getLocalization(localeCode, false);
+      CurrentLocalization = loc;
+      // The code is allowed to be more specific than the codes which are required:
+      // i.e. zh-CN or en-US. Currently this only affects US date variants such as 8/10/2000.
+      if(localeCode && localeCode != loc['code']) {
+        loc['code'] = localeCode;
       }
       return loc;
     },
@@ -3678,7 +3702,7 @@
      *
      ***/
     'getLocale': function(localeCode) {
-      return getLocalization(localeCode);
+      return !localeCode ? CurrentLocalization : getLocalization(localeCode, false);
     },
 
      /***
@@ -4185,7 +4209,7 @@
     /***
      * @method isValid()
      * @returns Boolean
-     * @short Return true if the DateRange is valid, false otherwise.
+     * @short Returns true if the DateRange is valid, false otherwise.
      * @example
      *
      *   Date.range(Date.create('2003'), Date.create('2005')).isValid() -> true
@@ -4212,7 +4236,7 @@
     /***
      * @method contains(<d>)
      * @returns Boolean
-     * @short Return true if the <d> is contained inside the DateRange. <d> may be a date or another DateRange.
+     * @short Returns true if <d> is contained inside the DateRange. <d> may be a date or another DateRange.
      * @example
      *
      *   Date.range(Date.create('2003'), Date.create('2005')).contains(Date.create('2004')) -> true
@@ -4255,7 +4279,7 @@
     /***
      * @method union(<range>)
      * @returns DateRange
-     * @short Returns a new DateRange with the earliest starting point as its start, and the latest ending point as its end. If the two ranges do not intersect this will effecctively remove the "gap" between them.
+     * @short Returns a new DateRange with the earliest starting point as its start, and the latest ending point as its end. If the two ranges do not intersect this will effectively remove the "gap" between them.
      * @example
      *
      *   Date.range(new Date(2003, 1), new Date(2005, 1)).union(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2003..Jan 1, 2006
@@ -4271,7 +4295,7 @@
     /***
      * @method intersect(<range>)
      * @returns DateRange
-     * @short Returns a new DateRange with the latest starting point as its start, and the earliest ending point as its end. If the two ranges do not intersect this will effecctively produce an invalid range.
+     * @short Returns a new DateRange with the latest starting point as its start, and the earliest ending point as its end. If the two ranges do not intersect this will effectively produce an invalid range.
      * @example
      *
      *   Date.range(new Date(2003, 1), new Date(2005, 1)).intersect(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2004..Jan 1, 2005
@@ -4303,8 +4327,8 @@
    *
    * @example
    *
-   *   Date.range(new Date(2003, 1), new Date(2003, 3)).eachMonth() -> [...]
-   *   Date.range(new Date(2003, 1), new Date(2003, 3)).eachDay()   -> [...]
+   *   Date.range(new Date(2003, 1), new Date(2003, 2)).eachMonth() -> [...]
+   *   Date.range(new Date(2003, 1, 15), new Date(2003, 1, 16)).eachDay()   -> [...]
    *
    ***/
   extendSimilar(DateRange, true, false, 'Millisecond,Second,Minute,Hour,Day,Week,Month,Year', function(methods, name) {
@@ -5766,7 +5790,7 @@
      /***
       * @method encodeBase64()
       * @returns String
-      * @short Encodes the string into base 64 encoding.
+      * @short Encodes the string into base64 encoding.
       * @extra This methods wraps the browser native %btoa% when available, and uses a custom implementation when not available.
       * @example
       *
@@ -5781,7 +5805,7 @@
      /***
       * @method decodeBase64()
       * @returns String
-      * @short Decodes the string from base 64 encoding.
+      * @short Decodes the string from base64 encoding.
       * @extra This methods wraps the browser native %atob% when available, and uses a custom implementation when not available.
       * @example
       *
@@ -6163,7 +6187,7 @@
      *   'jumpy'.at(5)               -> 'j'
      *   'jumpy'.at(5, false)        -> ''
      *   'jumpy'.at(-1)              -> 'y'
-     *   'luckly charms'.at(1,3,5,7) -> ['u','k','y',c']
+     *   'lucky charms'.at(2,4,6,8) -> ['u','k','y',c']
      *
      ***/
     'at': function() {
@@ -6483,7 +6507,7 @@
      * @method assign(<obj1>, <obj2>, ...)
      * @returns String
      * @short Assigns variables to tokens in a string.
-     * @extra If an object is passed, it's properties can be assigned using the object's keys. If a non-object (string, number, etc.) is passed it can be accessed by the argument number beginning with 1 (as with regex tokens). Multiple objects can be passed and will be merged together.
+     * @extra If an object is passed, it's properties can be assigned using the object's keys. If a non-object (string, number, etc.) is passed it can be accessed by the argument number beginning with 1 (as with regex tokens). Multiple objects can be passed and will be merged together (original objects are unaffected).
      * @example
      *
      *   'Welcome, Mr. {name}.'.assign({ name: 'Franklin' })   -> 'Welcome, Mr. Franklin.'
