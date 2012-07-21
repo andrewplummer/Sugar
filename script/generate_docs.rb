@@ -178,7 +178,7 @@ def extract_docs(package)
     i = 0
     current_module = nil
     f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
-      if match = b.match(/(\w+) package/)
+      if match = b.match(/@package (\w+)/)
 
         name = match[1]
 
