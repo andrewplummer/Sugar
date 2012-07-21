@@ -22,14 +22,14 @@ def get_property(prop, s, multiline = false)
 end
 
 def get_html_parameters(str)
-  return nil if !str
-  str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
-  str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
-  str.gsub!(/@date_format/, '<a target="_blank" href="/dates">dates</a>')
-  str.gsub!(/@array_sorting/, '<a target="_blank" href="/sorting">array sorting</a>')
-  str.gsub!(/extended objects/, '<a target="_blank" href="/objects#extended_objects">extended objects</a>')
-  str.gsub!(/Object\.extend\(\)/, '<a target="_blank" href="/objects#object_extend" class="monospace">Object.extend()</a>')
-  str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
+  #return nil if !str
+  #str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
+  #str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
+  #str.gsub!(/@date_format/, '<a target="_blank" href="/dates">dates</a>')
+  #str.gsub!(/@array_sorting/, '<a target="_blank" href="/sorting">array sorting</a>')
+  #str.gsub!(/extended objects/, '<a target="_blank" href="/objects#extended_objects">extended objects</a>')
+  #str.gsub!(/Object\.extend\(\)/, '<a target="_blank" href="/objects#object_extend" class="monospace">Object.extend()</a>')
+  #str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
 end
 
 def get_method(s)
@@ -87,7 +87,7 @@ def get_method(s)
   [name, method]
 end
 
-def get_examples(s, name)
+def get_examples(s)
   lines = get_property(:example, s, true)
   return nil if !lines
   examples = []
@@ -201,24 +201,24 @@ def extract_docs(package)
         method[:short] = get_property(:short, b)
         method[:extra] = get_property(:extra, b)
         method[:set] = get_set(b)
-        method[:examples] = get_examples(b, method[:name])
+        method[:examples] = get_examples(b)
         method[:alias] = get_property(:alias, b)
         #method[:module] = @current_module_name
         get_html_parameters(method[:short])
         get_html_parameters(method[:extra])
         current_module[name] = method
         #@current_module << method
-        if method[:name] == 'stripTags' || method[:name] == 'removeTags' || method[:name] == 'escapeHTML' || method[:name] == 'unescapeHTML'
+        if name == 'stripTags' || name == 'removeTags' || name == 'escapeHTML' || name == 'unescapeHTML'
           method[:escape_html] = true
         end
         if method[:alias]
           method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
-          method[:short] = "Alias for <span class=\"code\">#{method[:alias]}</span>."
+          method[:short] = "Alias for %#{method[:alias]}%."
         end
-        if method[:name] =~ /\[/
-          method[:set_base] = method[:name].gsub(/\w*\[(\w+?)\]\w*/, '\1')
-          method[:name].gsub!(/[\[\]]/, '')
-        end
+        #if name =~ /\[/
+          #method[:set_base] = method[:name].gsub(/\w*\[(\w+?)\]\w*/, '\1')
+          #method[:name].gsub!(/[\[\]]/, '')
+        #end
         clean(method)
         #if current_module[:name] == 'Object' && method[:name] != 'create'
         #  instance_version = method.dup

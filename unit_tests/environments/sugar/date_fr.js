@@ -132,5 +132,7 @@ test('Dates | French', function () {
   equal(Date.create('5 month from now', 'en').relative(),  'dans 5 mois',   'Date#create | French | relative format future');
   equal(Date.create('5 year from now', 'en').relative(),   'dans 5 ans',     'Date#create | French | relative format future');
 
+  dateEqual(Date.create('demain à 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | French | tomorrow at 3:30');
+
 
 });
