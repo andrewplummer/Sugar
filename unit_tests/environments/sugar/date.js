@@ -2400,7 +2400,12 @@ test('Date', function () {
 
 
 
+  // Date.create should clone a date
 
+  var d1 = new Date(5000);
+  var d2 = Date.create(d1);
+  d1.setTime(10000);
 
+  equal(d1.getTime() === d2.getTime(), false, 'Date.create | created date should not be affected');
 
 });

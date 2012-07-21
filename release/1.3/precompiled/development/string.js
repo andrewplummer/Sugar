@@ -1,8 +1,8 @@
 
   /***
-   * String package
+   * @package String
    * @dependency core
-   * @description Language-based helpers, character conversion, base64 encoding, string escaping, splitting on regexes.
+   * @description String manupulation, escaping, encoding, truncation, and:conversion.
    *
    ***/
 
@@ -173,7 +173,7 @@
       * @method encodeBase64()
       * @returns String
       * @short Encodes the string into base64 encoding.
-      * @extra This methods wraps the browser native %btoa% when available, and uses a custom implementation when not available.
+      * @extra This method wraps the browser native %btoa% when available, and uses a custom implementation when not available.
       * @example
       *
       *   'gonna get encoded!'.encodeBase64()  -> 'Z29ubmEgZ2V0IGVuY29kZWQh'
@@ -188,7 +188,7 @@
       * @method decodeBase64()
       * @returns String
       * @short Decodes the string from base64 encoding.
-      * @extra This methods wraps the browser native %atob% when available, and uses a custom implementation when not available.
+      * @extra This method wraps the browser native %atob% when available, and uses a custom implementation when not available.
       * @example
       *
       *   'aHR0cDovL3R3aXR0ZXIuY29tLw=='.decodeBase64() -> 'http://twitter.com/'
@@ -565,6 +565,7 @@
      * @method camelize([first] = true)
      * @returns String
      * @short Converts underscores and hyphens to camel case. If [first] is true the first letter will also be capitalized.
+     * @extra If the Inflections package is included acryonyms can also be defined that will be used when camelizing.
      * @example
      *
      *   'caps_lock'.camelize()              -> 'CapsLock'
@@ -833,21 +834,22 @@
     },
 
     /***
-     * @method namespace()
+     * @method namespace([init] = global)
      * @returns Mixed
-     * @short Tries to find the namespace or property with the name specified in the string.
-     * @extra Namespacing begins at the global level and operates on every "." in the string. If any level returns %undefined% the result will be %undefined%.
+     * @short Finds the namespace or property indicated by the string.
+     * @extra [init] can be passed to provide a starting context, otherwise the global context will be used. If any level returns a falsy value, that will be the final result.
      * @example
      *
      *   'Path.To.Namespace'.namespace() -> Path.To.Namespace
+     *   '$.fn'.namespace()              -> $.fn
      *
      ***/
-    'namespace': function() {
-      var scope = globalContext;
+    'namespace': function(context) {
+      context = context || globalContext;
       iterateOverObject(this.split('.'), function(i,s) {
-          return !!(scope = scope[s]);
+          return !!(context = context[s]);
       });
-      return scope;
+      return context;
     }
 
   });
