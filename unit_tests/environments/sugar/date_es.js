@@ -112,5 +112,7 @@ test('Dates | Spanish', function () {
   equal(Date.create('5 month from now', 'en').relative(),  '5 meses de ahora',   'Date#create | Spanish | relative format future');
   equal(Date.create('5 year from now', 'en').relative(),   '5 años de ahora',     'Date#create | Spanish | relative format future');
 
+  dateEqual(Date.create('mañana a las 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | Spanish | tomorrow at 3:30');
+
 
 });

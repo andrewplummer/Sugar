@@ -17,7 +17,7 @@ test('Dates | Traditional Chinese', function () {
   dateEqual(Date.create('二十五號'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Traditional Chinese | 號 should be understood as well');
 
   dateEqual(Date.create('2011年5月15日 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Traditional Chinese date 3:45');
-  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Traditional Chinese date 3:45pm');
+  dateEqual(Date.create('2011年5月15日 下午3:45'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Traditional Chinese date 3:45pm');
   dateEqual(Date.create('2011年5月15日 3點45分鐘'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Traditional Chinese date 3:45pm kanji');
   dateEqual(Date.create('2011年5月15日 下午3點45分鐘'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Traditional Chinese date 3:45pm kanji afternoon');
 

@@ -14,7 +14,7 @@ test('Dates | Russian', function () {
   dateEqual(Date.create('понедельник'), getDateWithWeekdayAndOffset(1), 'Date#create | Russian | Monday');
 
   dateEqual(Date.create('15 мая 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Russian date 3:45');
-  dateEqual(Date.create('15 мая 2011 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Russian date 3:45pm');
+  dateEqual(Date.create('15 мая 2011 3:45 вечера'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Russian date 3:45pm');
 
   dateEqual(Date.create('одну миллисекунду назад'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Russian | one millisecond ago');
   dateEqual(Date.create('одну секунду назад'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Russian | one second ago');
@@ -71,7 +71,7 @@ test('Dates | Russian', function () {
   dateEqual(Date.create('следующий понедельник'), getDateWithWeekdayAndOffset(1,  7), 'Date#create | Russian | next monday');
   dateEqual(Date.create('в прошлый вторник'), getDateWithWeekdayAndOffset(2, -7), 'Date#create | Russian | last tuesday');
 
-  dateEqual(Date.create('следующий понедельник 3:45pm'), getDateWithWeekdayAndOffset(1,7).set({ hour: 15, minute: 45 }, true), 'Date#create | Russian | next monday');
+  dateEqual(Date.create('следующий понедельник 3:45 вечера'), getDateWithWeekdayAndOffset(1,7).set({ hour: 15, minute: 45 }, true), 'Date#create | Russian | next monday');
 
   equal(then.format(), '25 августа 2011 года 15:45', 'Date#create | Russian | standard format');
   equal(then.format(), '25 августа 2011 года 15:45', 'Date#create | Russian | standard format');
@@ -188,5 +188,6 @@ test('Dates | Russian', function () {
   equal(Date.create('5 months from now', 'en').relative(),  'через 5 месяцев',   'Date#relative | Russian | relative format future');
   equal(Date.create('5 years from now', 'en').relative(),   'через 5 лет',     'Date#relative | Russian | relative format future');
 
+  dateEqual(Date.create('Завтра в 3:30 утра'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | Russian | tomorrow at 3:30');
 
 });

@@ -120,5 +120,6 @@ test('Dates | Italian', function () {
 
   dateEqual(Date.create('17:32 18 agosto'), new Date(now.getFullYear(), 7, 18, 17, 32), 'Date#create | Italian | August 18, 17:32');
 
+  dateEqual(Date.create('domani alle 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | Italian | tomorrow at 3:30');
 
 });
