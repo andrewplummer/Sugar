@@ -2440,8 +2440,8 @@
     }
 
     loc.addFormat('{day}', true);
-    loc.addFormat('{month}' + loc['monthSuffix']);
-    loc.addFormat('{year}' + loc['yearSuffix']);
+    loc.addFormat('{month}' + (loc['monthSuffix'] || ''));
+    loc.addFormat('{year}' + (loc['yearSuffix'] || ''));
 
     loc['timeFormats'].forEach(function(src) {
       loc.addFormat(src, true);

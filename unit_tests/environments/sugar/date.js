@@ -2388,4 +2388,19 @@ test('Date', function () {
   // Issue #160
   equal(Date.create('12/01/2013').is('November 2013'), false, 'Date#is | December 2013 is not November 2013');
 
+
+  // Adding a locale
+
+  Date.setLocale('en');
+  Date.addLocale('foobar', { months: ['a','b','c'] });
+
+  equal(Date.getLocale().code, Date.getLocale('en').code, 'Date.addLocale | adding a locale does not affect the current locale');
+  equal(Date.getLocale('foobar').months[0], 'a', 'Date.addLocale | new locale has been added');
+  dateEqual(Date.create('a', 'foobar'), Date.create('January'), 'Date.addLocale | formats have been recognized');
+
+
+
+
+
+
 });
