@@ -556,35 +556,6 @@ test('Inflections', function () {
 
 
 
-  // Test namespace (JS equivalent of ActiveSupport::Inflector.safe_constantize)
-
-  equal('foobar'.namespace(), undefined, 'String#namespace | undefined namespace')
-
-  // Global
-  Foo = 'bar';
-
-  equal('Foo'.namespace(), 'bar', 'String#namespace | simple namespace')
-
-  // Global
-  Foo = {
-    Bar: {
-      Moo: {
-        Car: 'wasabi',
-        Fn: function(){},
-        NULL: null
-      }
-    }
-  };
-
-  equal('Foo.Bar.Moo.Car'.namespace(), 'wasabi', 'String#namespace | deep namespace')
-  equal('Foo.Bar.Moo.Fn'.namespace(), Foo.Bar.Moo.Fn, 'String#namespace | function')
-  equal('Foo.Bar.Moo.NULL'.namespace(), null, 'String#namespace | null')
-  equal('Dumb.Bar.Moo'.namespace(), undefined, 'String#namespace | non-existant top')
-  equal('Foo.Dumb.Moo'.namespace(), undefined, 'String#namespace | non-existant middle')
-  equal('Foo.Bar.Dumb'.namespace(), undefined, 'String#namespace | non-existant bottom')
-
-
-
   // Test dasherize
   testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
       equal(under.dasherize(), dasherized, 'String#dasherize')
