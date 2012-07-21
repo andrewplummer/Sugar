@@ -1,8 +1,8 @@
 
   /***
-   * Number package
+   * @package Number
    * @dependency core
-   * @description Aliases to Math, number padding, and rounding with precision, number formatting.
+   * @description Number formatting, rounding (with precision), and ranges. Aliases to Math methods.
    *
    ***/
 
@@ -383,7 +383,7 @@
    ***
    * @method [math]()
    * @returns Number
-   * @short Math related functions are mapped as shortcuts to numbers and are identical. Note that %Number%log% provides some special defaults.
+   * @short Math related functions are mapped as shortcuts to numbers and are identical. Note that %Number#log% provides some special defaults.
    *
    * @set
    *   abs

@@ -1,4 +1,19 @@
 
+  /***
+   *
+   * @package Language
+   * @dependency string
+   * @description Normalizing accented characters, character width conversion, Hiragana and Katakana conversions.
+   *
+   ***/
+
+  /***
+   * String module
+   *
+   ***/
+
+
+
   var NormalizeMap,
       NormalizeReg = '',
       NormalizeSource;

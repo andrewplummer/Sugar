@@ -1,14 +1,14 @@
 
   /***
-   * DateRange package
+   * @package DateRange
    * @dependency date
-   * @description DateRanges define a range of time with a definite start and finish, and allow enumeration over specific points within that range. They can also be manipulated and compared.
+   * @description DateRanges define a range of time. They can enumerate over specific points within that range, and be manipulated and compared.
    *
    ***/
 
   var DateRange = function(start, end) {
-    this.start = isDate(start) ? start.clone() : new date();
-    this.end   = isDate(end)   ? end.clone()   : new date();
+    this.start = date.create(start);
+    this.end   = date.create(end);
   };
 
   // 'toString' doesn't appear in a for..in loop in IE even though
@@ -24,7 +24,7 @@
      * @short Returns a string representation of the DateRange.
      * @example
      *
-     *   Date.range(Date.create('2003'), Date.create('2005')).toString() -> January 1, 2003..January 1, 2005
+     *   Date.range('2003', '2005').toString() -> January 1, 2003..January 1, 2005
      *
      ***/
     return this.isValid() ? this.start.full() + '..' + this.end.full() : 'Invalid DateRange';
@@ -38,8 +38,8 @@
      * @short Returns true if the DateRange is valid, false otherwise.
      * @example
      *
-     *   Date.range(Date.create('2003'), Date.create('2005')).isValid() -> true
-     *   Date.range(Date.create('2005'), Date.create('2003')).isValid() -> false
+     *   Date.range('2003', '2005').isValid() -> true
+     *   Date.range('2005', '2003').isValid() -> false
      *
      ***/
     'isValid': function() {
@@ -52,7 +52,7 @@
      * @short Return the duration of the DateRange in milliseconds.
      * @example
      *
-     *   Date.range(Date.create('2003'), Date.create('2005')).duration() -> 94694400000
+     *   Date.range('2003', '2005').duration() -> 94694400000
      *
      ***/
     'duration': function() {
@@ -65,7 +65,7 @@
      * @short Returns true if <d> is contained inside the DateRange. <d> may be a date or another DateRange.
      * @example
      *
-     *   Date.range(Date.create('2003'), Date.create('2005')).contains(Date.create('2004')) -> true
+     *   Date.range('2003', '2005').contains(Date.create('2004')) -> true
      *
      ***/
     'contains': function(obj) {
