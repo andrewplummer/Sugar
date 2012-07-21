@@ -145,4 +145,7 @@ test('Dates | German', function () {
 
   dateEqual(Date.create('3:45 15. Mai 2011'), new Date(2011, 4, 15, 3, 45), 'Date#create | time first format');
 
+  dateEqual(Date.create('morgen um 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | German | tomorrow at 3:30');
+
+
 });
