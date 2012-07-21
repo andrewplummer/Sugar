@@ -139,7 +139,7 @@ test('Dates | Japanese', function () {
 
   dateEqual(Date.create('二千十一年五月十五日　午後三時四十五分'), new Date(2011, 4, 15, 15, 45), 'Date#create | Japanese | full date with full kanji and full markers');
 
-  dateEqual(Date.create('2011年5月15日 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | Japanese | pm still works');
+  dateEqual(Date.create('2011年5月15日 午後3:45'), new Date(2011, 4, 15, 15, 45), 'Date#create | Japanese | pm still works');
 
 
   dateEqual(Date.create('5月15日 3:45:59'), new Date(now.getFullYear(), 4, 15, 3, 45, 59), 'Date#create | Japanese | mm-dd format with time');

@@ -107,4 +107,9 @@ test('Dates | Portuguese', function () {
   equal(Date.create('5 month from now', 'en').relative(),  'daqui a 5 mêses',   'Date#create | Portuguese | relative format future');
   equal(Date.create('5 year from now', 'en').relative(),   'daqui a 5 anos',     'Date#create | Portuguese | relative format future');
 
+
+  dateEqual(Date.create('amanhã às 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | Portuguese | tomorrow at 3:30');
+
+
+
 });

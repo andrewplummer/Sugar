@@ -17,7 +17,7 @@ test('Dates | Korean', function () {
 
 
   dateEqual(Date.create('2011년5월15일 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Korean date 3:45');
-  dateEqual(Date.create('2011년5월15일 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Korean date 3:45pm');
+  dateEqual(Date.create('2011년5월15일 오후3:45'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Korean date 3:45pm');
   dateEqual(Date.create('2011년5월15일 오후 3시 45분'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Korean date full korean letters');
 
   dateEqual(Date.create('1밀리초 전'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Korean | one millisecond ago');
@@ -46,7 +46,7 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('모레'), getRelativeDate(null, null, 2).reset(), 'Date#create | Korean | 모레');
 
   dateEqual(Date.create('내일 3:45'), getRelativeDate(null, null, 1).set({ hours: 3, minutes: 45 }, true), 'Date#create | Korean | tomorrow with time 3:45');
-  dateEqual(Date.create('내일 3:45pm'), getRelativeDate(null, null, 1).set({ hours: 15, minutes: 45 }, true), 'Date#create | Korean | tomorrow with time 3:45pm');
+  dateEqual(Date.create('내일 오후3:45'), getRelativeDate(null, null, 1).set({ hours: 15, minutes: 45 }, true), 'Date#create | Korean | tomorrow with time 3:45pm');
   dateEqual(Date.create('수요일 3:45'), getDateWithWeekdayAndOffset(3, 0).set({ hours: 3, minutes: 45 }, true), 'Date#create | Korean | wednesday with time 3:45');
 
   dateEqual(Date.create('지난 주'), getRelativeDate(null, null, -7), 'Date#create | Korean | Last week');
