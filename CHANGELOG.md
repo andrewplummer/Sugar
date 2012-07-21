@@ -10,6 +10,14 @@ v1.3
 - Added Object.size (also available to extended objects)
 - Object.equals now considers identical objects vs. extended objects to be the same
 - Refactored Object.isEmpty to be an enumerable method in the Array package. This means that it will error on non-objects now.
+- Added "language" package.
+- String#normalize moved from Inflections to Language package
+- String#has[Script] moved from String to Language package
+- String#hankaku and String#zenkaku moved from String to Language package
+- String#hiragana and String#katakana moved from String to Language package
+- String#namespace moved from Inflections to String package
+- String#parameterize now checks for normalize and also uses encodeURI for final output
+- String#split patching for regexes is now removed from the String package and is on its own in /lib/extra. It can be dropped in anywhere after Sugar is loaded.
 
 - Array#has is deprecated
 - Array#groupBy no longer returns extended objects
