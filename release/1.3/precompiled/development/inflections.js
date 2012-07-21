@@ -18,9 +18,6 @@
       uncountables = [],
       humans       = [],
       acronyms     = {},
-      NormalizeMap = {},
-      NormalizeReg = '',
-      NormalizeSource,
       Downcased,
       Inflector;
 
@@ -232,104 +229,6 @@
     'with', 'for'
   ];
 
-  NormalizeSource = {
-    'A':  'AⒶＡÀÁÂẦẤẪẨÃĀĂẰẮẴẲȦǠÄǞẢÅǺǍȀȂẠẬẶḀĄȺⱯ',
-    'B':  'BⒷＢḂḄḆɃƂƁ',
-    'C':  'CⒸＣĆĈĊČÇḈƇȻꜾ',
-    'D':  'DⒹＤḊĎḌḐḒḎĐƋƊƉꝹ',
-    'E':  'EⒺＥÈÉÊỀẾỄỂẼĒḔḖĔĖËẺĚȄȆẸỆȨḜĘḘḚƐƎ',
-    'F':  'FⒻＦḞƑꝻ',
-    'G':  'GⒼＧǴĜḠĞĠǦĢǤƓꞠꝽꝾ',
-    'H':  'HⒽＨĤḢḦȞḤḨḪĦⱧⱵꞍ',
-    'I':  'IⒾＩÌÍÎĨĪĬİÏḮỈǏȈȊỊĮḬƗ',
-    'J':  'JⒿＪĴɈ',
-    'K':  'KⓀＫḰǨḲĶḴƘⱩꝀꝂꝄꞢ',
-    'L':  'LⓁＬĿĹĽḶḸĻḼḺŁȽⱢⱠꝈꝆꞀ',
-    'M':  'MⓂＭḾṀṂⱮƜ',
-    'N':  'NⓃＮǸŃÑṄŇṆŅṊṈȠƝꞐꞤ',
-    'O':  'OⓄＯÒÓÔỒỐỖỔÕṌȬṎŌṐṒŎȮȰÖȪỎŐǑȌȎƠỜỚỠỞỢỌỘǪǬØǾƆƟꝊꝌ',
-    'P':  'PⓅＰṔṖƤⱣꝐꝒꝔ',
-    'Q':  'QⓆＱꝖꝘɊ',
-    'R':  'RⓇＲŔṘŘȐȒṚṜŖṞɌⱤꝚꞦꞂ',
-    'S':  'SⓈＳẞŚṤŜṠŠṦṢṨȘŞⱾꞨꞄ',
-    'T':  'TⓉＴṪŤṬȚŢṰṮŦƬƮȾꞆ',
-    'U':  'UⓊＵÙÚÛŨṸŪṺŬÜǛǗǕǙỦŮŰǓȔȖƯỪỨỮỬỰỤṲŲṶṴɄ',
-    'V':  'VⓋＶṼṾƲꝞɅ',
-    'W':  'WⓌＷẀẂŴẆẄẈⱲ',
-    'X':  'XⓍＸẊẌ',
-    'Y':  'YⓎＹỲÝŶỸȲẎŸỶỴƳɎỾ',
-    'Z':  'ZⓏＺŹẐŻŽẒẔƵȤⱿⱫꝢ',
-    'a':  'aⓐａẚàáâầấẫẩãāăằắẵẳȧǡäǟảåǻǎȁȃạậặḁąⱥɐ',
-    'b':  'bⓑｂḃḅḇƀƃɓ',
-    'c':  'cⓒｃćĉċčçḉƈȼꜿↄ',
-    'd':  'dⓓｄḋďḍḑḓḏđƌɖɗꝺ',
-    'e':  'eⓔｅèéêềếễểẽēḕḗĕėëẻěȅȇẹệȩḝęḙḛɇɛǝ',
-    'f':  'fⓕｆḟƒꝼ',
-    'g':  'gⓖｇǵĝḡğġǧģǥɠꞡᵹꝿ',
-    'h':  'hⓗｈĥḣḧȟḥḩḫẖħⱨⱶɥ',
-    'i':  'iⓘｉìíîĩīĭïḯỉǐȉȋịįḭɨı',
-    'j':  'jⓙｊĵǰɉ',
-    'k':  'kⓚｋḱǩḳķḵƙⱪꝁꝃꝅꞣ',
-    'l':  'lⓛｌŀĺľḷḹļḽḻſłƚɫⱡꝉꞁꝇ',
-    'm':  'mⓜｍḿṁṃɱɯ',
-    'n':  'nⓝｎǹńñṅňṇņṋṉƞɲŉꞑꞥ',
-    'o':  'oⓞｏòóôồốỗổõṍȭṏōṑṓŏȯȱöȫỏőǒȍȏơờớỡởợọộǫǭøǿɔꝋꝍɵ',
-    'p':  'pⓟｐṕṗƥᵽꝑꝓꝕ',
-    'q':  'qⓠｑɋꝗꝙ',
-    'r':  'rⓡｒŕṙřȑȓṛṝŗṟɍɽꝛꞧꞃ',
-    's':  'sⓢｓśṥŝṡšṧṣṩșşȿꞩꞅẛ',
-    't':  'tⓣｔṫẗťṭțţṱṯŧƭʈⱦꞇ',
-    'u':  'uⓤｕùúûũṹūṻŭüǜǘǖǚủůűǔȕȗưừứữửựụṳųṷṵʉ',
-    'v':  'vⓥｖṽṿʋꝟʌ',
-    'w':  'wⓦｗẁẃŵẇẅẘẉⱳ',
-    'x':  'xⓧｘẋẍ',
-    'y':  'yⓨｙỳýŷỹȳẏÿỷẙỵƴɏỿ',
-    'z':  'zⓩｚźẑżžẓẕƶȥɀⱬꝣ',
-    'AA': 'Ꜳ',
-    'AE': 'ÆǼǢ',
-    'AO': 'Ꜵ',
-    'AU': 'Ꜷ',
-    'AV': 'ꜸꜺ',
-    'AY': 'Ꜽ',
-    'DZ': 'ǱǄ',
-    'Dz': 'ǲǅ',
-    'LJ': 'Ǉ',
-    'Lj': 'ǈ',
-    'NJ': 'Ǌ',
-    'Nj': 'ǋ',
-    'OI': 'Ƣ',
-    'OO': 'Ꝏ',
-    'OU': 'Ȣ',
-    'TZ': 'Ꜩ',
-    'VY': 'Ꝡ',
-    'aa': 'ꜳ',
-    'ae': 'æǽǣ',
-    'ao': 'ꜵ',
-    'au': 'ꜷ',
-    'av': 'ꜹꜻ',
-    'ay': 'ꜽ',
-    'dz': 'ǳǆ',
-    'hv': 'ƕ',
-    'lj': 'ǉ',
-    'nj': 'ǌ',
-    'oi': 'ƣ',
-    'ou': 'ȣ',
-    'oo': 'ꝏ',
-    'ss': 'ß',
-    'tz': 'ꜩ',
-    'vy': 'ꝡ'
-  };
-
-  function buildNormalizeMap() {
-    iterateOverObject(NormalizeSource, function(normalized, str) {
-      str.split('').forEach(function(character) {
-        NormalizeMap[character] = normalized;
-      });
-      NormalizeReg += str;
-    });
-    NormalizeReg = regexp('[' + NormalizeReg + ']', 'g');
-  }
-
   Inflector.plural(/$/, 's');
   Inflector.plural(/s$/gi, 's');
   Inflector.plural(/(ax|test)is$/gi, '$1es');
@@ -482,24 +381,6 @@
     },
 
     /***
-     * @method namespace()
-     * @returns Mixed
-     * @short Tries to find the namespace or property with the name specified in the string.
-     * @extra Namespacing begins at the global level and operates on every "." in the string. If any level returns %undefined% the result will be %undefined%.
-     * @example
-     *
-     *   'Path.To.Namespace'.namespace() -> Path.To.Namespace
-     *
-     ***/
-    'namespace': function() {
-      var scope = globalContext;
-      iterateOverObject(this.split('.'), function(i,s) {
-          return !!(scope = scope[s]);
-      });
-      return scope;
-    },
-
-    /***
      * @method parameterize()
      * @returns String
      * @short Replaces special characters in a string so that it may be used as part of a pretty URL.
@@ -509,36 +390,19 @@
      *
      ***/
     'parameterize': function(separator) {
+      var str = this;
       if(separator === undefined) separator = '-';
-      var str = this.normalize();
+      if(str.normalize) {
+        str = str.normalize();
+      }
       str = str.replace(/[^a-z0-9\-_]+/gi, separator)
       if(separator) {
         str = str.replace(new regexp('^{sep}+|{sep}+$|({sep}){sep}+'.assign({ 'sep': escapeRegExp(separator) }), 'g'), '$1');
       }
-      return str.toLowerCase();
-    },
-
-    /***
-     * @method normalize()
-     * @returns String
-     * @short Returns the string with accented and non-standard Latin-based characters converted into ASCII approximate equivalents.
-     * @example
-     *
-     *   'á'.normalize()                  -> 'a'
-     *   'Ménage à trois'.normalize()     -> 'Menage a trois'
-     *   'Volkswagen'.normalize()         -> 'Volkswagen'
-     *   'ＦＵＬＬＷＩＤＴＨ'.normalize() -> 'FULLWIDTH'
-     *
-     ***/
-    'normalize': function() {
-      return this.replace(NormalizeReg, function(character) {
-        return NormalizeMap[character];
-      });
+      return encodeURI(str.toLowerCase());
     }
 
   });
-
-  buildNormalizeMap();
 
   string.Inflector = Inflector;
   string.Inflector.acronyms = acronyms;
