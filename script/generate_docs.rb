@@ -10,6 +10,11 @@ fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 @packages = {}
 @default_packages = [:core,:es5,:array,:object,:date,:date_ranges,:function,:number,:regexp,:string]
 
+def get_current_version
+  package = JSON.parse(File.open('package.json', 'r').read)
+  @version = package['version'].sub(/\.0$/, '')
+end
+
 def get_property(prop, s, multiline = false)
   if multiline
     r = Regexp.new('@'+prop.to_s+'[\s*]+\*\n?(.+?)\*\n', Regexp::MULTILINE)
@@ -147,7 +152,7 @@ end
 
 def get_minified_size(package)
   tmp = 'tmp/package.js'
-  `cp release/edge/precompiled/#{package}.js #{tmp}`
+  `cp release/#{@version}/precompiled/minified/#{package}.js #{tmp}`
   `gzip --best #{tmp}`
   size = File.size("#{tmp}.gz")
   # gzipping the packages together produces sizes
@@ -238,6 +243,8 @@ def extract_docs(package)
     end
   end
 end
+
+get_current_version
 
 extract_docs(:core)
 extract_docs(:es5)
