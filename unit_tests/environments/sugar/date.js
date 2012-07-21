@@ -1945,16 +1945,18 @@ test('Date', function () {
   Date.setLocale('ja');
 
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | changes the locale');
-  Date.setLocale();
+
+  raisesError(function(){ Date.setLocale(); }, 'Date.setLocale | no arguments raises error');
   equal(Date.getLocale().code, 'ja', 'Date.setLocale | setting locale with no arguments had no effect');
   equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if no argument passed');
   equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011 12:00am', 'Date#format | local locale should override global');
   equal(Date.create('5 months ago', 'en').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
-  Date.setLocale('');
-  equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
 
+  raisesError(function(){ Date.setLocale(''); }, 'Date.setLocale | "" raises an invalid locale error');
+  equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
   dateEqual(Date.create('2010-Jan-25', 'ja'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
-  equal(Date.setLocale('pink'), false, 'Non-existent locales will return false');
+
+  raisesError(function(){ Date.setLocale('pink') }, 'Date.setLocale | Non-existent locales will raise an error');
   equal(Date.create('2010-Jan-25').format(), '2010年1月25日 0時00分', 'Date#create | will not set the current locale to an invalid locale');
 
   Date.setLocale('en');
