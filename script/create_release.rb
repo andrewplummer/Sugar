@@ -8,7 +8,7 @@ if !@version
   exit
 end
 
-@packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections']
+@packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language']
 @default_package = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
 @delimiter = 'console.info("-----BREAK-----");'
 @full_path = "release/#{@version}"
