@@ -3,6 +3,7 @@ test('Array', function () {
 
 
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
+  var sparseArraySupport = 0 in [undefined];
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
   // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
@@ -1395,7 +1396,7 @@ test('Array', function () {
 
   // Prototype will compact but only if IE, so we can't assert this in that environment.
   skipEnvironments(['prototype'], function() {
-    equal([undefined].flatten().length, 1, 'Array#flatten | should not compact arrays');
+    equal([undefined].flatten().length, sparseArraySupport ? 1 : 0, 'Array#flatten | should not compact arrays');
   });
 
 
