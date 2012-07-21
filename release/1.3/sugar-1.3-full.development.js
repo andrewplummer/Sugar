@@ -9,7 +9,7 @@
 (function(){
 
   /***
-   * Core package
+   * @package Core
    * @description Internal utility and common methods.
    ***/
 
@@ -338,8 +338,8 @@
 
 
   /***
-   * ES5 package
-   * @description Shim methods that provide ES5 compatible functionality. This package can be excluded if you do not require legacy browser support (notably if you are not supporting IE8 and below).
+   * @package ES5
+   * @description Shim methods that provide ES5 compatible functionality. This package can be excluded if you do not require legacy browser support (IE8 and below).
    *
    ***/
 
@@ -522,7 +522,7 @@
      * @method indexOf(<search>, [fromIndex])
      * @returns Number
      * @short Searches the array and returns the first index where <search> occurs, or -1 if the element is not found.
-     * @extra [fromIndex] is the index from which to begin the search. This method performs a simple strict equality comparison on <search>. It does not support enhanced functionality such as searching the contents against a regex, callback, or deep comparison of objects. For such functionality, use the %find% method instead.
+     * @extra [fromIndex] is the index from which to begin the search. This method performs a simple strict equality comparison on <search>. It does not support enhanced functionality such as searching the contents against a regex, callback, or deep comparison of objects. For such functionality, use the %findIndex% method instead.
      * @example
      *
      *   [1,2,3].indexOf(3)           -> 1
@@ -577,15 +577,15 @@
      * @method reduce(<fn>, [init])
      * @returns Mixed
      * @short Reduces the array to a single result.
-     * @extra If [init] is passed as a starting value, that value will be passed as the first argument to the callback. The second argument will be the first element in the array. From that point , the result of the callback will then be used as the first argument of the next iteration. This is often refered to as "accumulation", and [init] is often called an "accumulator". If [init] is not passed, then <fn> will be called n - 1 times, where n is the length of the array. In this case, on the first iteration only, the first argument will be the first element of the array, and the second argument will be the second. After that callbacks work as normal, using the result of the previous callback as the first argument of the next. This method is only provided for those browsers that do not support it natively.
+     * @extra If [init] is passed as a starting value, that value will be passed as the first argument to the callback. The second argument will be the first element in the array. From that point, the result of the callback will then be used as the first argument of the next iteration. This is often refered to as "accumulation", and [init] is often called an "accumulator". If [init] is not passed, then <fn> will be called n - 1 times, where n is the length of the array. In this case, on the first iteration only, the first argument will be the first element of the array, and the second argument will be the second. After that callbacks work as normal, using the result of the previous callback as the first argument of the next. This method is only provided for those browsers that do not support it natively.
      *
      * @example
      *
      +   [1,2,3,4].reduce(function(a, b) {
-     *     return a + b;
+     *     return a - b;
      *   });
      +   [1,2,3,4].reduce(function(a, b) {
-     *     return a + b;
+     *     return a - b;
      *   }, 100);
      *
      ***/
@@ -596,8 +596,8 @@
     /***
      * @method reduceRight([fn], [init])
      * @returns Mixed
-     * @short Reduces the array to a single result by stepping through it from the right.
-     * @extra If [init] is passed as a starting value, that value will be passed as the first argument to the callback. The second argument will be the last element in the array. From that point , the result of the callback will then be used as the first argument of the next iteration (stepping backward through the array). This is often refered to as "accumulation", and [init] is often called an "accumulator". If [init] is not passed, then <fn> will be called n - 1 times, where n is the length of the array. In this case, on the first iteration only, the first argument will be the last element of the array, and the second argument will be the second to last. After that callbacks work as normal, using the result of the previous callback as the first argument of the next. This method is only provided for those browsers that do not support it natively.
+     * @short Identical to %Array#reduce%, but operates on the elements in reverse order.
+     * @extra This method is only provided for those browsers that do not support it natively.
      *
      *
      *
@@ -683,7 +683,7 @@
        * @method bind(<scope>, [arg1], ...)
        * @returns Function
        * @short Binds <scope> as the %this% object for the function when it is called. Also allows currying an unlimited number of parameters.
-       * @extra "currying" means setting parameters ([arg1], [arg2], etc.) ahead of time so that they are passed when the function is called later. If you pass additional parameters when the function is actually called, they will be added will be added to the end of the curried parameters.
+       * @extra "currying" means setting parameters ([arg1], [arg2], etc.) ahead of time so that they are passed when the function is called later. If you pass additional parameters when the function is actually called, they will be added will be added to the end of the curried parameters. This method is provided for browsers that don't support it internally.
        * @example
        *
        +   (function() {
@@ -732,12 +732,30 @@
    * @method toJSON()
    * @returns String
    * @short Returns a JSON representation of the date.
-   * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Implemented for browsers that do not support it.
+   * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Provided for browsers that do not support this method.
    * @example
    *
    *   Date.create().toJSON() -> ex. 2011-07-05 12:24:55.528Z
    *
    ***/
+
+  extend(date, false, false, {
+
+     /***
+     * @method Date.now()
+     * @returns String
+     * @short Returns the number of milliseconds since January 1st, 1970 00:00:00 (UTC time).
+     * @extra Provided for browsers that do not support this method.
+     * @example
+     *
+     *   Date.now() -> ex. 1311938296231
+     *
+     ***/
+    'now': function() {
+      return new date().getTime();
+    }
+
+  });
 
    function buildISOString() {
     var d = new date(date.UTC(1999, 11, 31)), target = '1999-12-31T00:00:00.000Z';
@@ -764,7 +782,7 @@
 
 
   /***
-   * Array package
+   * @package Array
    * @dependency core
    * @description Array manipulation and traversal, "fuzzy matching" against elements, alphanumeric sorting and collation, enumerable methods on Object.
    *
@@ -809,14 +827,14 @@
 
   // Basic array internal methods
 
-  function arrayEach(arr, fn, startIndex, loop, sparse) {
+  function arrayEach(arr, fn, startIndex, loop) {
     var length, index, i;
     if(startIndex < 0) startIndex = arr.length + startIndex;
     i = isNaN(startIndex) ? 0 : startIndex;
     length = loop === true ? arr.length + i : arr.length;
     while(i < length) {
       index = i % arr.length;
-      if(!(index in arr) && sparse === true) {
+      if(!(index in arr)) {
         return iterateOverSparseArray(arr, fn, i, loop);
       } else if(fn.call(arr, arr[index], index, arr) === false) {
         break;
@@ -1259,7 +1277,7 @@
      * @method unique([map] = null)
      * @returns Array
      * @short Removes all duplicate elements in the array.
-     * @extra [map] may be a function mapping the value to be uniqued on or a string acting as a shortcut. This is most commonly used when you have a key that ensures the object's uniqueness, and don't need to check all fields.
+     * @extra [map] may be a function mapping the value to be uniqued on or a string acting as a shortcut. This is most commonly used when you have a key that ensures the object's uniqueness, and don't need to check all fields. This method will also correctly operate on arrays of objects.
      * @example
      *
      *   [1,2,2,3].unique()                 -> [1,2,3]
@@ -1293,6 +1311,7 @@
      * @method union([a1], [a2], ...)
      * @returns Array
      * @short Returns an array containing all elements in all arrays with duplicates removed.
+     * @extra This method will also correctly operate on arrays of objects.
      * @example
      *
      *   [1,3,5].union([5,7,9])     -> [1,3,5,7,9]
@@ -1307,6 +1326,7 @@
      * @method intersect([a1], [a2], ...)
      * @returns Array
      * @short Returns an array containing the elements all arrays have in common.
+     * @extra This method will also correctly operate on arrays of objects.
      * @example
      *
      *   [1,3,5].intersect([5,7,9])   -> [5]
@@ -1321,6 +1341,7 @@
      * @method subtract([a1], [a2], ...)
      * @returns Array
      * @short Subtracts from the array all elements in [a1], [a2], etc.
+     * @extra This method will also correctly operate on arrays of objects.
      * @example
      *
      *   [1,3,5].subtract([5,7,9])   -> [1,3]
@@ -1603,7 +1624,7 @@
      * @method sortBy(<map>, [desc] = false)
      * @returns Array
      * @short Sorts the array by <map>.
-     * @extra <map> may be a function, a string acting as a shortcut, or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal algorithm that is optimized for major Western languages, but can be customized. For more information see @array_sorting.
+     * @extra <map> may be a function, a string acting as a shortcut, or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see @array_sorting.
      * @example
      *
      *   ['world','a','new'].sortBy('length')       -> ['a','new','world']
@@ -1636,7 +1657,7 @@
     /***
      * @method randomize()
      * @returns Array
-     * @short Randomizes the array.
+     * @short Returns a copy of the array with the elements randomized.
      * @extra Uses Fisher-Yates algorithm.
      * @example
      *
@@ -1670,10 +1691,10 @@
     },
 
     /***
-     * @method sample([num] = null)
+     * @method sample([num])
      * @returns Mixed
      * @short Returns a random element from the array.
-     * @extra If [num] is a number greater than 0, will return an array containing [num] samples.
+     * @extra If [num] is passed, will return [num] samples from the array.
      * @example
      *
      *   [1,2,3,4,5].sample()  -> // Random element
@@ -1682,7 +1703,7 @@
      ***/
     'sample': function(num) {
       var result = [], arr = this.clone(), index;
-      if(!(num > 0)) num = 1;
+      if(isUndefined(num)) num = 1;
       while(result.length < num) {
         index = floor(math.random() * (arr.length - 1));
         result.push(arr[index]);
@@ -1695,7 +1716,7 @@
     /***
      * @method each(<fn>, [index] = 0, [loop] = false)
      * @returns Array
-     * @short Runs <fn> against elements in the array. Enhanced version of %Array#forEach%.
+     * @short Runs <fn> against each element in the array. Enhanced version of %Array#forEach%.
      * @extra Parameters passed to <fn> are identical to %forEach%, ie. the first parameter is the current element, second parameter is the current index, and third parameter is the array itself. If <fn> returns %false% at any time it will break out of the loop. Once %each% finishes, it will return the array. If [index] is passed, <fn> will begin at that index and work its way to the end. If [loop] is true, it will then start over from the beginning of the array and continue until it reaches [index] - 1.
      * @example
      *
@@ -1708,7 +1729,7 @@
      *
      ***/
     'each': function(fn, index, loop) {
-      arrayEach(this, fn, index, loop, true);
+      arrayEach(this, fn, index, loop);
       return this;
     },
 
@@ -1874,8 +1895,8 @@
   /***
    * @method [enumerable](<obj>)
    * @returns Boolean
-   * @short Enumerable methods on Arrays are also available to the Object class. They will perform their normal operations for every property available in <obj>.
-   * @extra In cases where a callback is used, instead of %element, index%, the callback will instead be passed %key, value%. Enumerable methods are also available to extended objects as instance methods. Note that an error will be raised when any enumerable method is call on a non-object.
+   * @short Enumerable methods in the Array package are also available to the Object class. They will perform their normal operations for every property in <obj>.
+   * @extra In cases where a callback is used, instead of %element, index%, the callback will instead be passed %key, value%. Enumerable methods are also available to extended objects as instance methods.
    *
    * @set
    *   map
@@ -1899,7 +1920,7 @@
    *   Object.any({foo:'bar'}, 'bar')            -> true
    *   Object.extended({foo:'bar'}).any('bar')   -> true
    *   Object.isEmpty({})                        -> true
-   *   Object.map({ fred: { age: 52 } }, 'age'); -> { fred: 52 }
+   +   Object.map({ fred: { age: 52 } }, 'age'); -> { fred: 52 }
    *
    ***/
 
@@ -1942,20 +1963,6 @@
         return obj[key];
       });
       return values.reduce.apply(values, multiArgs(arguments).slice(1));
-    },
-
-    /***
-     * @method size(<obj>)
-     * @returns Number
-     * @short Returns the number of properties in <obj>.
-     * @extra %size% is available as an instance method on extended objects.
-     * @example
-     *
-     *   Object.size({ foo: 'bar' }) -> 1
-     *
-     ***/
-    'size': function (obj) {
-      return keysWithCoercion(obj).length;
     }
 
   });
@@ -1964,13 +1971,13 @@
   buildAlphanumericSort();
   buildEnumerableMethods('any,all,none,count,find,findAll,isEmpty');
   buildEnumerableMethods('sum,average,min,max,least,most', true);
-  buildObjectInstanceMethods('map,reduce,size', Hash);
+  buildObjectInstanceMethods('map,reduce', Hash);
 
 
   /***
-   * Date package
+   * @package Date
    * @dependency core
-   * @description Date parsing and formatting, relative formats like "1 minute ago", localization support including 11 locales, methods on the Number class like Number#daysAgo.
+   * @description Date parsing and formatting, relative formats like "1 minute ago", localization support including 11 locales, Number methods "daysAgo".
    *
    ***/
 
@@ -2596,7 +2603,7 @@
   function getExtendedDate(f, localeCode, prefer) {
     var d = new date(), relative = false, baseLocalization, loc, format, set, unit, weekday, num, tmp, after;
     if(isDate(f)) {
-      d = f;
+      d = f.clone();
     } else if(isNumber(f)) {
       d = new date(f);
     } else if(isObject(f)) {
@@ -3068,7 +3075,7 @@
    * @method [units]Since([d], [locale] = currentLocale)
    * @returns Number
    * @short Returns the time since [d] in the appropriate unit.
-   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. For more see @date_format.
+   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. %[unit]Ago% is provided as an alias to make this more readable when [d] is assumed to be the current date. For more see @date_format.
    *
    * @set
    *   millisecondsSince
@@ -3112,7 +3119,7 @@
    * @method [units]Until([d], [locale] = currentLocale)
    * @returns Number
    * @short Returns the time until [d] in the appropriate unit.
-   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. %[unit]FromNow% is provided as an alias to make this more readable. For more see @date_format.
+   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. %[unit]FromNow% is provided as an alias to make this more readable when [d] is assumed to be the current date. For more see @date_format.
    *
    * @set
    *   millisecondsUntil
@@ -3412,6 +3419,570 @@
     });
   }
 
+  function setDateProperties() {
+    date.extend({
+      'RFC1123': '{Dow}, {dd} {Mon} {yyyy} {HH}:{mm}:{ss} {tz}',
+      'RFC1036': '{Weekday}, {dd}-{Mon}-{yy} {HH}:{mm}:{ss} {tz}',
+      'ISO8601_DATE': '{yyyy}-{MM}-{dd}',
+      'ISO8601_DATETIME': '{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{fff}{isotz}'
+    }, false, false);
+  }
+
+  function buildDate() {
+    English = date.setLocale('en');
+    buildDateUnits();
+    buildDateMethods();
+    buildCoreInputFormats();
+    buildDateOutputShortcuts();
+    buildAsianDigits();
+    buildRelativeAliases();
+    setDateProperties();
+  }
+
+
+  date.extend({
+
+     /***
+     * @method Date.create(<d>, [locale] = currentLocale)
+     * @returns Date
+     * @short Alternate Date constructor which understands many different text formats, a timestamp, or another date.
+     * @extra If no argument is given, date is assumed to be now. %Date.create% additionally can accept enumerated parameters as with the standard date constructor. [locale] can be passed to specify the locale that the date is in. When unspecified, the current locale (default is English) is assumed. For more information, see @date_format.
+     * @example
+     *
+     *   Date.create('July')          -> July of this year
+     *   Date.create('1776')          -> 1776
+     *   Date.create('today')         -> today
+     *   Date.create('wednesday')     -> This wednesday
+     *   Date.create('next friday')   -> Next friday
+     *   Date.create('July 4, 1776')  -> July 4, 1776
+     *   Date.create(-446806800000)   -> November 5, 1955
+     *   Date.create(1776, 6, 4)      -> July 4, 1776
+     *   Date.create('1776年07月04日', 'ja') -> July 4, 1776
+     *
+     ***/
+    'create': function() {
+      return createDate(arguments);
+    },
+
+     /***
+     * @method Date.past(<d>, [locale] = currentLocale)
+     * @returns Date
+     * @short Alternate form of %Date.create% with any ambiguity assumed to be the past.
+     * @extra For example %"Sunday"% can be either "the Sunday coming up" or "the Sunday last" depending on context. Note that dates explicitly in the future ("next Sunday") will remain in the future. This method simply provides a hint when ambiguity exists.
+     * @example
+     *
+     *   Date.past('July')          -> July of this year or last depending on the current month
+     *   Date.past('Wednesday')     -> This wednesday or last depending on the current weekday
+     *
+     ***/
+    'past': function() {
+      return createDate(arguments, -1);
+    },
+
+     /***
+     * @method Date.future(<d>, [locale] = currentLocale)
+     * @returns Date
+     * @short Alternate form of %Date.create% with any ambiguity assumed to be the future.
+     * @extra For example %"Sunday"% can be either "the Sunday coming up" or "the Sunday last" depending on context. Note that dates explicitly in the past ("last Sunday") will remain in the past. This method simply provides a hint when ambiguity exists.
+     * @example
+     *
+     *   Date.future('July')          -> July of this year or next depending on the current month
+     *   Date.future('Wednesday')     -> This wednesday or next depending on the current weekday
+     *
+     ***/
+    'future': function() {
+      return createDate(arguments, 1);
+    },
+
+     /***
+     * @method Date.addLocale(<code>, <set>)
+     * @returns Locale
+     * @short Adds a locale <set> to the locales understood by Sugar.
+     * @extra For more see @date_format.
+     *
+     ***/
+    'addLocale': function(localeCode, set) {
+      return setLocalization(localeCode, set);
+    },
+
+     /***
+     * @method Date.setLocale(<code>)
+     * @returns Locale
+     * @short Sets the current locale to be used with dates.
+     * @extra Predefined locales are: English (en), French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). In addition to predefined locales, you can define a new locale with %Date.addLocale%. For more see @date_format.
+     *
+     ***/
+    'setLocale': function(localeCode, set) {
+      var loc = getLocalization(localeCode, false);
+      CurrentLocalization = loc;
+      // The code is allowed to be more specific than the codes which are required:
+      // i.e. zh-CN or en-US. Currently this only affects US date variants such as 8/10/2000.
+      if(localeCode && localeCode != loc['code']) {
+        loc['code'] = localeCode;
+      }
+      return loc;
+    },
+
+     /***
+     * @method Date.getLocale([code] = current)
+     * @returns Locale
+     * @short Gets the locale for the given code, or the current locale.
+     * @extra The resulting locale object can be manipulated to provide more control over date localizations. For more about locales, see @date_format.
+     *
+     ***/
+    'getLocale': function(localeCode) {
+      return !localeCode ? CurrentLocalization : getLocalization(localeCode, false);
+    },
+
+     /**
+     * @method Date.addFormat(<format>, <match>, [code] = null)
+     * @returns Nothing
+     * @short Manually adds a new date input format.
+     * @extra This method allows fine grained control for alternate formats. <format> is a string that can have regex tokens inside. <match> is an array of the tokens that each regex capturing group will map to, for example %year%, %date%, etc. For more, see @date_format.
+     *
+     **/
+    'addFormat': function(format, match, localeCode) {
+      addDateInputFormat(getLocalization(localeCode), format, match);
+    }
+
+  }, false, false);
+
+  date.extend({
+
+     /***
+     * @method set(<set>, [reset] = false)
+     * @returns Date
+     * @short Sets the date object.
+     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. %setUTC% will set the date according to universal time.
+     *
+     * @set
+     *   setUTC
+     *
+     * @example
+     *
+     *   new Date().set({ year: 2011, month: 11, day: 31 }) -> December 31, 2011
+     *   new Date().set(2011, 11, 31)                       -> December 31, 2011
+     *   new Date().set(86400000)                           -> 1 day after Jan 1, 1970
+     *   new Date().set({ year: 2004, month: 6 }, true)     -> June 1, 2004, 00:00:00.000
+     *
+     ***/
+    'set': function() {
+      var args = collectDateArguments(arguments);
+      return updateDate(this, args[0], args[1])
+    },
+
+    'setUTC': function() {
+      var args = collectDateArguments(arguments);
+      return updateDate(this, args[0], args[1], true)
+    },
+
+     /***
+     * @method setWeekday()
+     * @returns Nothing
+     * @short Sets the weekday of the date.
+     * @extra %setUTCWeekday% sets according to universal time.
+     *
+     * @set
+     *   setUTCWeekday
+     *
+     * @example
+     *
+     *   d = new Date(); d.setWeekday(1); d; -> Monday of this week
+     *   d = new Date(); d.setWeekday(6); d; -> Saturday of this week
+     *
+     ***/
+    'setWeekday': function(dow) {
+      if(isUndefined(dow)) return;
+      this.setDate(this.getDate() + dow - this.getDay());
+    },
+
+    'setUTCWeekday': function(dow) {
+      if(isUndefined(dow)) return;
+      this.setDate(this.getUTCDate() + dow - this.getDay());
+    },
+
+     /***
+     * @method setWeek()
+     * @returns Nothing
+     * @short Sets the week (of the year).
+     * @extra %setUTCWeek% sets according to universal time.
+     *
+     * @set
+     *   setUTCWeek
+     *
+     * @example
+     *
+     *   d = new Date(); d.setWeek(15); d; -> 15th week of the year
+     *
+     ***/
+    'setWeek': function(week) {
+      if(isUndefined(week)) return;
+      var date = this.getDate();
+      this.setMonth(0);
+      this.setDate((week * 7) + 1);
+    },
+
+    'setUTCWeek': function(week) {
+      if(isUndefined(week)) return;
+      var date = this.getUTCDate();
+      this.setMonth(0);
+      this.setUTCDate((week * 7) + 1);
+    },
+
+     /***
+     * @method getWeek()
+     * @returns Number
+     * @short Gets the date's week (of the year).
+     * @extra %getUTCWeek% gets the week according to universal time.
+     *
+     * @set
+     *   getUTCWeek
+     *
+     * @example
+     *
+     *   new Date().getWeek()    -> today's week of the year
+     *   new Date().getUTCWeek() -> today's week of the year
+     *
+     ***/
+    'getWeek': function() {
+      return getWeekNumber(this);
+    },
+
+    'getUTCWeek': function() {
+      return getWeekNumber(this.toUTC());
+    },
+
+     /***
+     * @method getUTCOffset([iso])
+     * @returns String
+     * @short Returns a string representation of the offset from UTC time. If [iso] is true the offset will be in ISO8601 format.
+     * @example
+     *
+     *   new Date().getUTCOffset()     -> "+0900"
+     *   new Date().getUTCOffset(true) -> "+09:00"
+     *
+     ***/
+    'getUTCOffset': function(iso) {
+      var offset = this.utc ? 0 : this.getTimezoneOffset();
+      var colon  = iso === true ? ':' : '';
+      if(!offset && iso) return 'Z';
+      return padNumber(round(-offset / 60), 2, true) + colon + padNumber(offset % 60, 2);
+    },
+
+     /***
+     * @method toUTC()
+     * @returns Date
+     * @short Converts the date to UTC time, effectively subtracting the timezone offset.
+     * @extra Note here that the method %getTimezoneOffset% will still show an offset even after this method is called, as this method effectively just rewinds the date. %format% however, will correctly set the %{tz}% (timezone) token as UTC once this method has been called on the date, and %isUTC% will return %true%. Once a date is set to UTC the only way to unset is the %clone% method.
+     * @example
+     *
+     *   new Date().toUTC() -> current time in UTC
+     *
+     ***/
+    'toUTC': function() {
+      if(this.utc) return this;
+      var d = this.clone().addMinutes(this.getTimezoneOffset());
+      d.utc = true;
+      return d;
+    },
+
+     /***
+     * @method isUTC()
+     * @returns Boolean
+     * @short Returns true if the date has no timezone offset.
+     * @extra This will also return true for a date that has had %toUTC% called on it. This is intended to help approximate shifting timezones which is not possible in client-side Javascript. Note that the native method %getTimezoneOffset% will always report the same thing, even if %isUTC% becomes true.
+     * @example
+     *
+     *   new Date().isUTC()         -> true or false?
+     *   new Date().toUTC().isUTC() -> true
+     *
+     ***/
+    'isUTC': function() {
+      return this.utc || this.getTimezoneOffset() === 0;
+    },
+
+     /***
+     * @method advance(<set>, [reset] = false)
+     * @returns Date
+     * @short Sets the date forward.
+     * @extra This method can accept multiple formats including an object, a string in the format %3 days%, a single number as milliseconds, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see @date_format.
+     * @example
+     *
+     *   new Date().advance({ year: 2 }) -> 2 years in the future
+     *   new Date().advance('2 days')    -> 2 days in the future
+     *   new Date().advance(0, 2, 3)     -> 2 months 3 days in the future
+     *   new Date().advance(86400000)    -> 1 day in the future
+     *
+     ***/
+    'advance': function() {
+      var args = collectDateArguments(arguments, true);
+      return updateDate(this, args[0], args[1], false, 1);
+    },
+
+     /***
+     * @method rewind(<set>, [reset] = false)
+     * @returns Date
+     * @short Sets the date back.
+     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see @date_format.
+     * @example
+     *
+     *   new Date().rewind({ year: 2 }) -> 2 years in the past
+     *   new Date().rewind(0, 2, 3)     -> 2 months 3 days in the past
+     *   new Date().rewind(86400000)    -> 1 day in the past
+     *
+     ***/
+    'rewind': function() {
+      var args = collectDateArguments(arguments, true);
+      return updateDate(this, args[0], args[1], false, -1);
+    },
+
+     /***
+     * @method isValid()
+     * @returns Boolean
+     * @short Returns true if the date is valid.
+     * @example
+     *
+     *   new Date().isValid()         -> true
+     *   new Date('flexor').isValid() -> false
+     *
+     ***/
+    'isValid': function() {
+      return !isNaN(this.getTime());
+    },
+
+     /***
+     * @method isAfter(<d>, [margin] = 0)
+     * @returns Boolean
+     * @short Returns true if the date is after the <d>.
+     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See @date_format for more information.
+     * @example
+     *
+     *   new Date().isAfter('tomorrow')  -> false
+     *   new Date().isAfter('yesterday') -> true
+     *
+     ***/
+    'isAfter': function(d, margin) {
+      return this.getTime() > date.create(d).getTime() - (margin || 0);
+    },
+
+     /***
+     * @method isBefore(<d>, [margin] = 0)
+     * @returns Boolean
+     * @short Returns true if the date is before <d>.
+     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See @date_format for more information.
+     * @example
+     *
+     *   new Date().isBefore('tomorrow')  -> true
+     *   new Date().isBefore('yesterday') -> false
+     *
+     ***/
+    'isBefore': function(d, margin) {
+      return this.getTime() < date.create(d).getTime() + (margin || 0);
+    },
+
+     /***
+     * @method isBetween(<d1>, <d2>, [margin] = 0)
+     * @returns Boolean
+     * @short Returns true if the date falls between <d1> and <d2>.
+     * @extra [margin] is to allow extra margin of error (in ms). <d1> and <d2> will accept a date object, timestamp, or text format. If not specified, they are assumed to be now. See @date_format for more information.
+     * @example
+     *
+     *   new Date().isBetween('yesterday', 'tomorrow')    -> true
+     *   new Date().isBetween('last year', '2 years ago') -> false
+     *
+     ***/
+    'isBetween': function(d1, d2, margin) {
+      var t  = this.getTime();
+      var t1 = date.create(d1).getTime();
+      var t2 = date.create(d2).getTime();
+      var lo = math.min(t1, t2);
+      var hi = math.max(t1, t2);
+      margin = margin || 0;
+      return (lo - margin < t) && (hi + margin > t);
+    },
+
+     /***
+     * @method isLeapYear()
+     * @returns Boolean
+     * @short Returns true if the date is a leap year.
+     * @example
+     *
+     *   Date.create('2000').isLeapYear() -> true
+     *
+     ***/
+    'isLeapYear': function() {
+      var year = this.getFullYear();
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    },
+
+     /***
+     * @method daysInMonth()
+     * @returns Number
+     * @short Returns the number of days in the date's month.
+     * @example
+     *
+     *   Date.create('May').daysInMonth()            -> 31
+     *   Date.create('February, 2000').daysInMonth() -> 29
+     *
+     ***/
+    'daysInMonth': function() {
+      return 32 - new date(this.getFullYear(), this.getMonth(), 32).getDate();
+    },
+
+     /***
+     * @method format(<format>, [locale] = currentLocale)
+     * @returns String
+     * @short Formats and outputs the date.
+     * @extra <format> can be a number of pre-determined formats or a string of tokens. Locale-specific formats are %short%, %long%, and %full% which have their own aliases and can be called with %date.short()%, etc. If <format> is not specified the %long% format is assumed. [locale] specifies a locale code to use (if not specified the current locale is used). See @date_format for more details.
+     *
+     * @set
+     *   short
+     *   long
+     *   full
+     *
+     * @example
+     *
+     *   Date.create().format()                                   -> ex. July 4, 2003
+     *   Date.create().format('{Weekday} {d} {Month}, {yyyy}')    -> ex. Monday July 4, 2003
+     *   Date.create().format('{hh}:{mm}')                        -> ex. 15:57
+     *   Date.create().format('{12hr}:{mm}{tt}')                  -> ex. 3:57pm
+     *   Date.create().format(Date.ISO8601_DATETIME)              -> ex. 2011-07-05 12:24:55.528Z
+     *   Date.create('last week').format('short', 'ja')                -> ex. 先週
+     *   Date.create('yesterday').format(function(value,unit,ms,loc) {
+     *     // value = 1, unit = 3, ms = -86400000, loc = [current locale object]
+     *   });                                                      -> ex. 1 day ago
+     *
+     ***/
+    'format': function(f, localeCode) {
+      return formatDate(this, f, false, localeCode);
+    },
+
+     /***
+     * @method relative([fn], [locale] = currentLocale)
+     * @returns String
+     * @short Returns a relative date string offset to the current time.
+     * @extra [fn] can be passed to provide for more granular control over the resulting string. [fn] is passed 4 arguments: the adjusted value, unit, offset in milliseconds, and a localization object. As an alternate syntax, [locale] can also be passed as the first (and only) parameter. For more information, see @date_format.
+     * @example
+     *
+     *   Date.create('90 seconds ago').relative() -> 1 minute ago
+     *   Date.create('January').relative()        -> ex. 5 months ago
+     *   Date.create('January').relative('ja')    -> 3ヶ月前
+     *   Date.create('120 minutes ago').relative(function(val,unit,ms,loc) {
+     *     // value = 2, unit = 3, ms = -7200, loc = [current locale object]
+     *   });                                      -> ex. 5 months ago
+     *
+     ***/
+    'relative': function(f, localeCode) {
+      if(isString(f)) {
+        localeCode = f;
+        f = null;
+      }
+      return formatDate(this, f, true, localeCode);
+    },
+
+     /***
+     * @method is(<d>, [margin] = 0)
+     * @returns Boolean
+     * @short Returns true if the date is <d>.
+     * @extra <d> will accept a date object, timestamp, or text format. %is% additionally understands more generalized expressions like month/weekday names, 'today', etc, and compares to the precision implied in <d>. [margin] allows an extra margin of error in milliseconds.  For more information, see @date_format.
+     * @example
+     *
+     *   Date.create().is('July')               -> true or false?
+     *   Date.create().is('1776')               -> false
+     *   Date.create().is('today')              -> true
+     *   Date.create().is('weekday')            -> true or false?
+     *   Date.create().is('July 4, 1776')       -> false
+     *   Date.create().is(-6106093200000)       -> false
+     *   Date.create().is(new Date(1776, 6, 4)) -> false
+     *
+     ***/
+    'is': function(d, margin) {
+      var tmp;
+      if(!this.isValid()) return;
+      if(isString(d)) {
+        d = d.trim().toLowerCase();
+        switch(true) {
+          case d === 'future':  return this.getTime() > new date().getTime();
+          case d === 'past':    return this.getTime() < new date().getTime();
+          case d === 'weekday': return this.getDay() > 0 && this.getDay() < 6;
+          case d === 'weekend': return this.getDay() === 0 || this.getDay() === 6;
+          case (tmp = English['weekdays'].indexOf(d) % 7) > -1: return this.getDay() === tmp;
+          case (tmp = English['months'].indexOf(d) % 12) > -1:  return this.getMonth() === tmp;
+        }
+      }
+      return compareDate(this, d, margin);
+    },
+
+     /***
+     * @method reset([unit] = 'hours')
+     * @returns Date
+     * @short Resets the unit passed and all smaller units. Default is "hours", effectively resetting the time.
+     * @example
+     *
+     *   Date.create().reset('day')   -> Beginning of today
+     *   Date.create().reset('month') -> 1st of the month
+     *
+     ***/
+    'reset': function(unit) {
+      var params = {};
+      unit = unit || 'hours';
+      params[unit] = unit.match(/^days?/) ? 1 : 0;
+      return this.set(params, true);
+    },
+
+     /***
+     * @method clone()
+     * @returns Date
+     * @short Clones the date.
+     * @example
+     *
+     *   Date.create().clone() -> Copy of now
+     *
+     ***/
+    'clone': function() {
+      return new date(this.getTime());
+    }
+
+  });
+
+
+  // Instance aliases
+  date.extend({
+
+     /***
+     * @method iso()
+     * @alias toISOString
+     *
+     ***/
+    'iso': function() {
+      return this.toISOString();
+    },
+
+     /***
+     * @method getWeekday()
+     * @returns Number
+     * @short Alias for %getDay%.
+     * @set
+     *   getUTCWeekday
+     *
+     * @example
+     *
+     +   Date.create().getWeekday();    -> (ex.) 3
+     +   Date.create().getUTCWeekday();    -> (ex.) 3
+     *
+     ***/
+    'getWeekday':    date.prototype.getDay,
+    'getUTCWeekday':    date.prototype.getUTCDay
+
+  });
+
+
+
+  /***
+   * Number module
+   *
+   ***/
+
   /***
    * @method [unit]()
    * @returns Number
@@ -3577,578 +4148,6 @@
     number.extend(methods);
   }
 
-  function setDateProperties() {
-    date.extend({
-      'RFC1123': '{Dow}, {dd} {Mon} {yyyy} {HH}:{mm}:{ss} {tz}',
-      'RFC1036': '{Weekday}, {dd}-{Mon}-{yy} {HH}:{mm}:{ss} {tz}',
-      'ISO8601_DATE': '{yyyy}-{MM}-{dd}',
-      'ISO8601_DATETIME': '{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{fff}{isotz}'
-    }, false, false);
-  }
-
-  function buildDate() {
-    English = date.setLocale('en');
-    buildDateUnits();
-    buildDateMethods();
-    buildCoreInputFormats();
-    buildDateOutputShortcuts();
-    buildAsianDigits();
-    buildRelativeAliases();
-    setDateProperties();
-  }
-
-
-  date.extend({
-
-     /***
-     * @method Date.create(<d>, [locale] = currentLocale)
-     * @returns Date
-     * @short Alternate Date constructor which understands various formats.
-     * @extra Accepts a multitude of text formats, a timestamp, or another date. If no argument is given, date is assumed to be now. %Date.create% additionally can accept enumerated parameters as with the standard date constructor. [locale] can be passed to specify the locale that the date is in. When unspecified, the current locale (default is English) is assumed. For more information, see @date_format.
-     * @example
-     *
-     *   Date.create('July')          -> July of this year
-     *   Date.create('1776')          -> 1776
-     *   Date.create('today')         -> today
-     *   Date.create('wednesday')     -> This wednesday
-     *   Date.create('next friday')   -> Next friday
-     *   Date.create('July 4, 1776')  -> July 4, 1776
-     *   Date.create(-446806800000)   -> November 5, 1955
-     *   Date.create(1776, 6, 4)      -> July 4, 1776
-     *   Date.create('1776年07月04日', 'ja') -> July 4, 1776
-     *
-     ***/
-    'create': function() {
-      return createDate(arguments);
-    },
-
-     /***
-     * @method Date.past(<d>, [locale] = currentLocale)
-     * @returns Date
-     * @short Alternate form of %Date.create% with any ambiguity assumed to be the past.
-     * @extra For example %"Sunday"% can be either "the Sunday coming up" or "the Sunday last" depending on context. Note that dates explicitly in the future ("next Sunday") will remain in the future. This method simply provides a hint when ambiguity exists.
-     * @example
-     *
-     *   Date.past('July')          -> July of this year or last depending on the current month
-     *   Date.past('Wednesday')     -> This wednesday or last depending on the current weekday
-     *
-     ***/
-    'past': function() {
-      return createDate(arguments, -1);
-    },
-
-     /***
-     * @method Date.future(<d>, [locale] = currentLocale)
-     * @returns Date
-     * @short Alternate form of %Date.create% with any ambiguity assumed to be the future.
-     * @extra For example %"Sunday"% can be either "the Sunday coming up" or "the Sunday last" depending on context. Note that dates explicitly in the past ("last Sunday") will remain in the past. This method simply provides a hint when ambiguity exists.
-     * @example
-     *
-     *   Date.future('July')          -> July of this year or next depending on the current month
-     *   Date.future('Wednesday')     -> This wednesday or next depending on the current weekday
-     *
-     ***/
-    'future': function() {
-      return createDate(arguments, 1);
-    },
-
-     /***
-     * @method Date.now()
-     * @returns String
-     * @short Returns the number of milliseconds since January 1st, 1970 00:00:00 (UTC time).
-     * @example
-     *
-     *   Date.now() -> ex. 1311938296231
-     *
-     ***/
-    'now': function() {
-      return new date().getTime();
-    },
-
-     /***
-     * @method Date.addLocale(<code>, <set>)
-     * @returns Locale
-     * @short Adds a locale by an object <set> to the locales understood by Sugar.
-     * @extra For more see @date_format.
-     *
-     ***/
-    'addLocale': function(localeCode, set) {
-      return setLocalization(localeCode, set);
-    },
-
-     /***
-     * @method Date.setLocale(<code>, [set])
-     * @returns Locale
-     * @short Sets the current locale to be used with dates.
-     * @extra Predefined locales are: English (en), French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). In addition to available major locales, you can define a new local here by passing an object for [set]. For more see @date_format.
-     *
-     ***/
-    'setLocale': function(localeCode, set) {
-      var loc = getLocalization(localeCode, false);
-      CurrentLocalization = loc;
-      // The code is allowed to be more specific than the codes which are required:
-      // i.e. zh-CN or en-US. Currently this only affects US date variants such as 8/10/2000.
-      if(localeCode && localeCode != loc['code']) {
-        loc['code'] = localeCode;
-      }
-      return loc;
-    },
-
-     /***
-     * @method Date.getLocale([code] = current)
-     * @returns Locale
-     * @short Gets the locale for the given code, or the current locale.
-     * @extra Returns undefined if there is no locale for the given code. Manipulating the locale object can give you more control over date localizations. For more about locales, see @date_format.
-     *
-     ***/
-    'getLocale': function(localeCode) {
-      return !localeCode ? CurrentLocalization : getLocalization(localeCode, false);
-    },
-
-     /***
-     * @method Date.addFormat(<format>, <match>, [locale] = null)
-     * @returns Nothing
-     * @short Manually adds a new date input format.
-     * @extra This method allows fine grained control for alternate formats. <format> is a string that can have regex tokens inside. <match> is an array of the tokens that each regex capturing group will map to, for example %year%, %date%, etc. For more, see @date_format.
-     *
-     ***/
-    'addFormat': function(format, match, localeCode) {
-      addDateInputFormat(getLocalization(localeCode), format, match);
-    }
-
-  }, false, false);
-
-  date.extend({
-
-     /***
-     * @method set(<set>, [reset] = false)
-     * @returns Date
-     * @short Sets the date object.
-     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. %setUTC% will set the date according to universal time.
-     *
-     * @set
-     *   setUTC
-     *
-     * @example
-     *
-     *   new Date().set({ year: 2011, month: 11, day: 31 }) -> December 31, 2011
-     *   new Date().set(2011, 11, 31)                       -> December 31, 2011
-     *   new Date().set(86400000)                           -> 1 day after Jan 1, 1970
-     *   new Date().set({ year: 2004, month: 6 }, true)     -> June 1, 2004, 00:00:00.000
-     *
-     ***/
-    'set': function() {
-      var args = collectDateArguments(arguments);
-      return updateDate(this, args[0], args[1])
-    },
-
-    'setUTC': function() {
-      var args = collectDateArguments(arguments);
-      return updateDate(this, args[0], args[1], true)
-    },
-
-     /***
-     * @method setWeekday()
-     * @returns Nothing
-     * @short Sets the weekday of the date.
-     * @extra %setUTCWeekday% sets according to universal time.
-     *
-     * @set
-     *   setUTCWeekday
-     *
-     * @example
-     *
-     *   d = new Date(); d.setWeekday(1); d; -> Monday of this week
-     *   d = new Date(); d.setWeekday(6); d; -> Saturday of this week
-     *
-     ***/
-    'setWeekday': function(dow) {
-      if(isUndefined(dow)) return;
-      this.setDate(this.getDate() + dow - this.getDay());
-    },
-
-    'setUTCWeekday': function(dow) {
-      if(isUndefined(dow)) return;
-      this.setDate(this.getUTCDate() + dow - this.getDay());
-    },
-
-     /***
-     * @method setWeek()
-     * @returns Nothing
-     * @short Sets the week (of the year).
-     * @extra %setUTCWeek% sets according to universal time.
-     *
-     * @set
-     *   setUTCWeek
-     *
-     * @example
-     *
-     *   d = new Date(); d.setWeek(15); d; -> 15th week of the year
-     *
-     ***/
-    'setWeek': function(week) {
-      if(isUndefined(week)) return;
-      var date = this.getDate();
-      this.setMonth(0);
-      this.setDate((week * 7) + 1);
-    },
-
-    'setUTCWeek': function(week) {
-      if(isUndefined(week)) return;
-      var date = this.getUTCDate();
-      this.setMonth(0);
-      this.setUTCDate((week * 7) + 1);
-    },
-
-     /***
-     * @method getWeek()
-     * @returns Number
-     * @short Gets the date's week (of the year).
-     * @extra %getUTCWeek% gets the time according to universal time.
-     *
-     * @set
-     *   getUTCWeek
-     *
-     * @example
-     *
-     *   new Date().getWeek() -> today's week of the year
-     *
-     ***/
-    'getWeek': function() {
-      return getWeekNumber(this);
-    },
-
-    'getUTCWeek': function() {
-      return getWeekNumber(this.toUTC());
-    },
-
-     /***
-     * @method getUTCOffset([iso])
-     * @returns String
-     * @short Returns a string representation of the offset from UTC time. If [iso] is true the offset will be in ISO8601 format.
-     * @example
-     *
-     *   new Date().getUTCOffset()     -> "+0900"
-     *   new Date().getUTCOffset(true) -> "+09:00"
-     *
-     ***/
-    'getUTCOffset': function(iso) {
-      var offset = this.utc ? 0 : this.getTimezoneOffset();
-      var colon  = iso === true ? ':' : '';
-      if(!offset && iso) return 'Z';
-      return padNumber(round(-offset / 60), 2, true) + colon + padNumber(offset % 60, 2);
-    },
-
-     /***
-     * @method toUTC()
-     * @returns Date
-     * @short Converts the date to UTC time, effectively subtracting the timezone offset.
-     * @extra Note here that the method %getTimezoneOffset% will still show an offset even after this method is called, as this method effectively just rewinds the date. %format% however, will correctly set the %{tz}% (timezone) token as UTC once this method has been called on the date. Once a date is set to UTC the only way to unset is the %clone% method.
-     * @example
-     *
-     *   new Date().toUTC() -> current time in UTC
-     *
-     ***/
-    'toUTC': function() {
-      if(this.utc) return this;
-      var d = this.clone().addMinutes(this.getTimezoneOffset());
-      d.utc = true;
-      return d;
-    },
-
-     /***
-     * @method isUTC()
-     * @returns Boolean
-     * @short Returns true if the date has no timezone offset.
-     * @example
-     *
-     *   new Date().isUTC() -> true or false?
-     *
-     ***/
-    'isUTC': function() {
-      return this.utc || this.getTimezoneOffset() === 0;
-    },
-
-     /***
-     * @method advance(<set>, [reset] = false)
-     * @returns Date
-     * @short Sets the date forward.
-     * @extra This method can accept multiple formats including an object, a string in the format "3 days", a single number as milliseconds, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see @date_format.
-     * @example
-     *
-     *   new Date().advance({ year: 2 }) -> 2 years in the future
-     *   new Date().advance('2 days')    -> 2 days in the future
-     *   new Date().advance(0, 2, 3)     -> 2 months 3 days in the future
-     *   new Date().advance(86400000)    -> 1 day in the future
-     *
-     ***/
-    'advance': function() {
-      var args = collectDateArguments(arguments, true);
-      return updateDate(this, args[0], args[1], false, 1);
-    },
-
-     /***
-     * @method rewind(<set>, [reset] = false)
-     * @returns Date
-     * @short Sets the date back.
-     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see @date_format.
-     * @example
-     *
-     *   new Date().rewind({ year: 2 }) -> 2 years in the past
-     *   new Date().rewind(0, 2, 3)     -> 2 months 3 days in the past
-     *   new Date().rewind(86400000)    -> 1 day in the past
-     *
-     ***/
-    'rewind': function() {
-      var args = collectDateArguments(arguments, true);
-      return updateDate(this, args[0], args[1], false, -1);
-    },
-
-     /***
-     * @method isValid()
-     * @returns Boolean
-     * @short Returns true if the date is valid.
-     * @example
-     *
-     *   new Date().isValid()         -> true
-     *   new Date('flexor').isValid() -> false
-     *
-     ***/
-    'isValid': function() {
-      return !isNaN(this.getTime());
-    },
-
-     /***
-     * @method isAfter(<d>, [margin])
-     * @returns Boolean
-     * @short Returns true if the date is after the <d>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See @date_format for more information.
-     * @example
-     *
-     *   new Date().isAfter('tomorrow')  -> false
-     *   new Date().isAfter('yesterday') -> true
-     *
-     ***/
-    'isAfter': function(d, margin) {
-      return this.getTime() > date.create(d).getTime() - (margin || 0);
-    },
-
-     /***
-     * @method isBefore(<d>, [margin])
-     * @returns Boolean
-     * @short Returns true if the date is before <d>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See @date_format for more information.
-     * @example
-     *
-     *   new Date().isBefore('tomorrow')  -> true
-     *   new Date().isBefore('yesterday') -> false
-     *
-     ***/
-    'isBefore': function(d, margin) {
-      return this.getTime() < date.create(d).getTime() + (margin || 0);
-    },
-
-     /***
-     * @method isBetween(<d1>, <d2>, [buffer] = 0)
-     * @returns Boolean
-     * @short Returns true if the date falls between <d1> and <d2>.
-     * @extra [buffer] is to allow extra buffer of error (in ms). <d1> and <d2> will accept a date object, timestamp, or text format. If not specified, they are assumed to be now. See @date_format for more information.
-     * @example
-     *
-     *   new Date().isBetween('yesterday', 'tomorrow')    -> true
-     *   new Date().isBetween('last year', '2 years ago') -> false
-     *
-     ***/
-    'isBetween': function(d1, d2, buffer) {
-      var t  = this.getTime();
-      var t1 = date.create(d1).getTime();
-      var t2 = date.create(d2).getTime();
-      var lo = math.min(t1, t2);
-      var hi = math.max(t1, t2);
-      buffer = buffer || 0;
-      return (lo - buffer < t) && (hi + buffer > t);
-    },
-
-     /***
-     * @method isLeapYear()
-     * @returns Boolean
-     * @short Returns true if the date is a leap year.
-     * @example
-     *
-     *   Date.create('2000').isLeapYear() -> true
-     *
-     ***/
-    'isLeapYear': function() {
-      var year = this.getFullYear();
-      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-    },
-
-     /***
-     * @method daysInMonth()
-     * @returns Number
-     * @short Returns the number of days in the date's month.
-     * @example
-     *
-     *   Date.create('May').daysInMonth()            -> 31
-     *   Date.create('February, 2000').daysInMonth() -> 29
-     *
-     ***/
-    'daysInMonth': function() {
-      return 32 - new date(this.getFullYear(), this.getMonth(), 32).getDate();
-    },
-
-     /***
-     * @method format(<format>, [locale] = currentLocale)
-     * @returns String
-     * @short Formats and outputs the date.
-     * @extra <format> can be a number of pre-determined formats or a string of tokens. Locale-specific formats are %short%, %long%, and %full% which have their own aliases and can be called with %date.short()%, etc. If <format> is not specified the %long% format is assumed. [locale] specifies a locale code to use (if not specified the current locale is used). See @date_format for more details.
-     *
-     * @set
-     *   short
-     *   long
-     *   full
-     *
-     * @example
-     *
-     *   Date.create().format()                                   -> ex. July 4, 2003
-     *   Date.create().format('{Weekday} {d} {Month}, {yyyy}')    -> ex. Monday July 4, 2003
-     *   Date.create().format('{hh}:{mm}')                        -> ex. 15:57
-     *   Date.create().format('{12hr}:{mm}{tt}')                  -> ex. 3:57pm
-     *   Date.create().format(Date.ISO8601_DATETIME)              -> ex. 2011-07-05 12:24:55.528Z
-     *   Date.create('last week').format('', 'ja')                -> ex. 先週
-     *   Date.create('yesterday').format(function(value,unit,ms,loc) {
-     *     // value = 1, unit = 3, ms = -86400000, loc = [current locale object]
-     *   });                                                      -> ex. 1 day ago
-     *
-     ***/
-    'format': function(f, localeCode) {
-      return formatDate(this, f, false, localeCode);
-    },
-
-     /***
-     * @method relative([fn], [locale] = currentLocale)
-     * @returns String
-     * @short Returns a relative date string offset to the current time.
-     * @extra [fn] can be passed to provide for more granular control over the resulting string. [fn] is passed 4 arguments: the adjusted value, unit, offset in milliseconds, and a localization object. As an alternate syntax, [locale] can also be passed as the first (and only) parameter. For more information, see @date_format.
-     * @example
-     *
-     *   Date.create('90 seconds ago').relative() -> 1 minute ago
-     *   Date.create('January').relative()        -> ex. 5 months ago
-     *   Date.create('January').relative('ja')    -> 3ヶ月前
-     *   Date.create('120 minutes ago').relative(function(val,unit,ms,loc) {
-     *     // value = 2, unit = 3, ms = -7200, loc = [current locale object]
-     *   });                                      -> ex. 5 months ago
-     *
-     ***/
-    'relative': function(f, localeCode) {
-      if(isString(f)) {
-        localeCode = f;
-        f = null;
-      }
-      return formatDate(this, f, true, localeCode);
-    },
-
-     /***
-     * @method is(<d>, [margin])
-     * @returns Boolean
-     * @short Returns true if the date is <d>.
-     * @extra <d> will accept a date object, timestamp, or text format. %is% additionally understands more generalized expressions like month/weekday names, 'today', etc, and compares to the precision implied in <d>. [margin] allows an extra margin of error in milliseconds.  For more information, see @date_format.
-     * @example
-     *
-     *   Date.create().is('July')               -> true or false?
-     *   Date.create().is('1776')               -> false
-     *   Date.create().is('today')              -> true
-     *   Date.create().is('weekday')            -> true or false?
-     *   Date.create().is('July 4, 1776')       -> false
-     *   Date.create().is(-6106093200000)       -> false
-     *   Date.create().is(new Date(1776, 6, 4)) -> false
-     *
-     ***/
-    'is': function(d, margin) {
-      var tmp;
-      if(!this.isValid()) return;
-      if(isString(d)) {
-        d = d.trim().toLowerCase();
-        switch(true) {
-          case d === 'future':  return this.getTime() > new date().getTime();
-          case d === 'past':    return this.getTime() < new date().getTime();
-          case d === 'weekday': return this.getDay() > 0 && this.getDay() < 6;
-          case d === 'weekend': return this.getDay() === 0 || this.getDay() === 6;
-          case (tmp = English['weekdays'].indexOf(d) % 7) > -1: return this.getDay() === tmp;
-          case (tmp = English['months'].indexOf(d) % 12) > -1:  return this.getMonth() === tmp;
-        }
-      }
-      return compareDate(this, d, margin);
-    },
-
-     /***
-     * @method reset([unit] = 'hours')
-     * @returns Date
-     * @short Resets the unit passed and all smaller units. Default is "hours", effectively resetting the time.
-     * @example
-     *
-     *   Date.create().reset('day')   -> Beginning of today
-     *   Date.create().reset('month') -> 1st of the month
-     *
-     ***/
-    'reset': function(unit) {
-      var params = {};
-      unit = unit || 'hours';
-      params[unit] = unit.match(/^days?/) ? 1 : 0;
-      return this.set(params, true);
-    },
-
-     /***
-     * @method clone()
-     * @returns Date
-     * @short Clones the date.
-     * @example
-     *
-     *   Date.create().clone() -> Copy of now
-     *
-     ***/
-    'clone': function() {
-      return new date(this.getTime());
-    }
-
-  });
-
-
-  // Instance aliases
-  date.extend({
-
-     /***
-     * @method iso()
-     * @alias toISOString
-     *
-     ***/
-    'iso': function() {
-      return this.toISOString();
-    },
-
-     /***
-     * @method getWeekday()
-     * @alias getDay
-     *
-     ***/
-    'getWeekday':    date.prototype.getDay,
-
-     /***
-     * @method getUTCWeekday()
-     * @alias getUTCDay
-     *
-     ***/
-    'getUTCWeekday':    date.prototype.getUTCDay
-
-  });
-
-
-
-  /***
-   * Number module
-   *
-   ***/
-
   number.extend({
 
      /***
@@ -4174,15 +4173,15 @@
 
 
   /***
-   * DateRange package
+   * @package DateRange
    * @dependency date
-   * @description DateRanges define a range of time with a definite start and finish, and allow enumeration over specific points within that range. They can also be manipulated and compared.
+   * @description DateRanges define a range of time. They can enumerate over specific points within that range, and be manipulated and compared.
    *
    ***/
 
   var DateRange = function(start, end) {
-    this.start = isDate(start) ? start.clone() : new date();
-    this.end   = isDate(end)   ? end.clone()   : new date();
+    this.start = date.create(start);
+    this.end   = date.create(end);
   };
 
   // 'toString' doesn't appear in a for..in loop in IE even though
@@ -4198,7 +4197,7 @@
      * @short Returns a string representation of the DateRange.
      * @example
      *
-     *   Date.range(Date.create('2003'), Date.create('2005')).toString() -> January 1, 2003..January 1, 2005
+     *   Date.range('2003', '2005').toString() -> January 1, 2003..January 1, 2005
      *
      ***/
     return this.isValid() ? this.start.full() + '..' + this.end.full() : 'Invalid DateRange';
@@ -4212,8 +4211,8 @@
      * @short Returns true if the DateRange is valid, false otherwise.
      * @example
      *
-     *   Date.range(Date.create('2003'), Date.create('2005')).isValid() -> true
-     *   Date.range(Date.create('2005'), Date.create('2003')).isValid() -> false
+     *   Date.range('2003', '2005').isValid() -> true
+     *   Date.range('2005', '2003').isValid() -> false
      *
      ***/
     'isValid': function() {
@@ -4226,7 +4225,7 @@
      * @short Return the duration of the DateRange in milliseconds.
      * @example
      *
-     *   Date.range(Date.create('2003'), Date.create('2005')).duration() -> 94694400000
+     *   Date.range('2003', '2005').duration() -> 94694400000
      *
      ***/
     'duration': function() {
@@ -4239,7 +4238,7 @@
      * @short Returns true if <d> is contained inside the DateRange. <d> may be a date or another DateRange.
      * @example
      *
-     *   Date.range(Date.create('2003'), Date.create('2005')).contains(Date.create('2004')) -> true
+     *   Date.range('2003', '2005').contains(Date.create('2004')) -> true
      *
      ***/
     'contains': function(obj) {
@@ -4357,7 +4356,7 @@
 
 
   /***
-   * Function package
+   * @package Function
    * @dependency core
    * @description Lazy, throttled, and memoized functions, delayed functions and handling of timers, argument currying.
    *
@@ -4379,7 +4378,7 @@
      * @method lazy([ms] = 1, [limit] = Infinity)
      * @returns Function
      * @short Creates a lazy function that, when called repeatedly, will queue execution and wait [ms] milliseconds to execute again.
-     * @extra Lazy functions will always execute as many times as they are called up to [limit], after which point subsequent calls will be ignored (if it is set to a finite number)j Compare this to %throttle%, which will execute only once per [ms] milliseconds. %lazy% is useful when you need to be sure that every call to a function is executed, but in a non-blocking manner. Calling %cancel% on a lazy function will clear the entire queue.
+     * @extra Lazy functions will always execute as many times as they are called up to [limit], after which point subsequent calls will be ignored (if it is set to a finite number). Compare this to %throttle%, which will execute only once per [ms] milliseconds. %lazy% is useful when you need to be sure that every call to a function is executed, but in a non-blocking manner. Calling %cancel% on a lazy function will clear the entire queue. Note that [ms] can also be a fraction.
      * @example
      *
      *   (function() {
@@ -4481,7 +4480,7 @@
      * @method cancel()
      * @returns Function
      * @short Cancels a delayed function scheduled to be run.
-     * @extra %delay%, %lazy%, %throttle%, and %debounce% can all set delays. Note that this method won't work when using certain other frameworks like Prototype, as they will retain their %delay% method.
+     * @extra %delay%, %lazy%, %throttle%, and %debounce% can all set delays.
      * @example
      *
      *   (function() {
@@ -4579,9 +4578,9 @@
 
 
   /***
-   * Number package
+   * @package Number
    * @dependency core
-   * @description Aliases to Math, number padding, and rounding with precision, number formatting.
+   * @description Number formatting, rounding (with precision), and ranges. Aliases to Math methods.
    *
    ***/
 
@@ -4962,7 +4961,7 @@
    ***
    * @method [math]()
    * @returns Number
-   * @short Math related functions are mapped as shortcuts to numbers and are identical. Note that %Number%log% provides some special defaults.
+   * @short Math related functions are mapped as shortcuts to numbers and are identical. Note that %Number#log% provides some special defaults.
    *
    * @set
    *   abs
@@ -5001,7 +5000,7 @@
 
 
   /***
-   * Object package
+   * @package Object
    * @dependency core
    * @description Object manipulation, type checking (isNumber, isString, ...), extended objects with hash-like methods available as instance methods.
    *
@@ -5011,7 +5010,7 @@
    ***/
 
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
-  var ObjectHashMethods = 'keys,values,each,merge,clone,equal,watch,tap,has'.split(',');
+  var ObjectHashMethods = 'keys,values,each,merge,clone,equal,watch,tap,has,size'.split(',');
 
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
@@ -5042,10 +5041,10 @@
 
 
   /***
-   * @method is[Type](<obj>)
+   * @method Object.is[Type](<obj>)
    * @returns Boolean
    * @short Returns true if <obj> is an object of that type.
-   * @extra %isObject% will return false on anything that is not an object literal, including instances of inherited classes. Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number". Type methods are available as instance methods on extended objects.
+   * @extra %isObject% will return false on anything that is not an object literal, including instances of inherited classes. Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number".
    *
    * @set
    *   isArray
@@ -5361,6 +5360,20 @@
      ***/
     'has': function (obj, key) {
       return hasOwnProperty(obj, key);
+    },
+
+    /***
+     * @method size(<obj>)
+     * @returns Number
+     * @short Returns the number of properties in <obj>.
+     * @extra %size% is available as an instance method on extended objects.
+     * @example
+     *
+     *   Object.size({ foo: 'bar' }) -> 1
+     *
+     ***/
+    'size': function (obj) {
+      return keysWithCoercion(obj).length;
     }
 
   });
@@ -5372,7 +5385,7 @@
 
 
   /***
-   * RegExp package
+   * @package RegExp
    * @dependency core
    * @description Escaping regexes and manipulating their flags.
    *
@@ -5464,9 +5477,9 @@
 
 
   /***
-   * String package
+   * @package String
    * @dependency core
-   * @description Language-based helpers, character conversion, base64 encoding, string escaping, splitting on regexes.
+   * @description String manupulation, escaping, encoding, truncation, and:conversion.
    *
    ***/
 
@@ -5637,7 +5650,7 @@
       * @method encodeBase64()
       * @returns String
       * @short Encodes the string into base64 encoding.
-      * @extra This methods wraps the browser native %btoa% when available, and uses a custom implementation when not available.
+      * @extra This method wraps the browser native %btoa% when available, and uses a custom implementation when not available.
       * @example
       *
       *   'gonna get encoded!'.encodeBase64()  -> 'Z29ubmEgZ2V0IGVuY29kZWQh'
@@ -5652,7 +5665,7 @@
       * @method decodeBase64()
       * @returns String
       * @short Decodes the string from base64 encoding.
-      * @extra This methods wraps the browser native %atob% when available, and uses a custom implementation when not available.
+      * @extra This method wraps the browser native %atob% when available, and uses a custom implementation when not available.
       * @example
       *
       *   'aHR0cDovL3R3aXR0ZXIuY29tLw=='.decodeBase64() -> 'http://twitter.com/'
@@ -6029,6 +6042,7 @@
      * @method camelize([first] = true)
      * @returns String
      * @short Converts underscores and hyphens to camel case. If [first] is true the first letter will also be capitalized.
+     * @extra If the Inflections package is included acryonyms can also be defined that will be used when camelizing.
      * @example
      *
      *   'caps_lock'.camelize()              -> 'CapsLock'
@@ -6297,21 +6311,22 @@
     },
 
     /***
-     * @method namespace()
+     * @method namespace([init] = global)
      * @returns Mixed
-     * @short Tries to find the namespace or property with the name specified in the string.
-     * @extra Namespacing begins at the global level and operates on every "." in the string. If any level returns %undefined% the result will be %undefined%.
+     * @short Finds the namespace or property indicated by the string.
+     * @extra [init] can be passed to provide a starting context, otherwise the global context will be used. If any level returns a falsy value, that will be the final result.
      * @example
      *
      *   'Path.To.Namespace'.namespace() -> Path.To.Namespace
+     *   '$.fn'.namespace()              -> $.fn
      *
      ***/
-    'namespace': function() {
-      var scope = globalContext;
+    'namespace': function(context) {
+      context = context || globalContext;
       iterateOverObject(this.split('.'), function(i,s) {
-          return !!(scope = scope[s]);
+          return !!(context = context[s]);
       });
-      return scope;
+      return context;
     }
 
   });
@@ -6334,9 +6349,9 @@
 
   /***
    *
-   * Inflections package
+   * @package Inflections
    * @dependency string
-   * @description Pluralization similar to ActiveSupport including uncountable words and acronyms. Also humanizing strings and normalizing accented characters.
+   * @description Pluralization similar to ActiveSupport including uncountable words and acronyms. Humanized and URL-friendly strings.
    *
    ***/
 
@@ -6739,6 +6754,21 @@
 
   string.Inflector = Inflector;
   string.Inflector.acronyms = acronyms;
+
+
+  /***
+   *
+   * @package Language
+   * @dependency string
+   * @description Normalizing accented characters, character width conversion, Hiragana and Katakana conversions.
+   *
+   ***/
+
+  /***
+   * String module
+   *
+   ***/
+
 
 
   var NormalizeMap,

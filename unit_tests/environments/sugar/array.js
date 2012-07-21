@@ -1585,6 +1585,8 @@ test('Array', function () {
   equal(arr.sample(11).length, 10, "Array#sample | can't sample more than the length of the array");
   equal(arr.sample(10).unique().length, arr.length, "Array#sample | should not sample the same element twice");
 
+  equal(arr.sample(0).length, 0, 'Array#sample | 0');
+
   // Array#findAll - Complex matching
 
   var people = [
