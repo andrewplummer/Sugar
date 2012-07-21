@@ -35,7 +35,7 @@
     /***
      * @method isValid()
      * @returns Boolean
-     * @short Return true if the DateRange is valid, false otherwise.
+     * @short Returns true if the DateRange is valid, false otherwise.
      * @example
      *
      *   Date.range(Date.create('2003'), Date.create('2005')).isValid() -> true
@@ -62,7 +62,7 @@
     /***
      * @method contains(<d>)
      * @returns Boolean
-     * @short Return true if the <d> is contained inside the DateRange. <d> may be a date or another DateRange.
+     * @short Returns true if <d> is contained inside the DateRange. <d> may be a date or another DateRange.
      * @example
      *
      *   Date.range(Date.create('2003'), Date.create('2005')).contains(Date.create('2004')) -> true
@@ -105,7 +105,7 @@
     /***
      * @method union(<range>)
      * @returns DateRange
-     * @short Returns a new DateRange with the earliest starting point as its start, and the latest ending point as its end. If the two ranges do not intersect this will effecctively remove the "gap" between them.
+     * @short Returns a new DateRange with the earliest starting point as its start, and the latest ending point as its end. If the two ranges do not intersect this will effectively remove the "gap" between them.
      * @example
      *
      *   Date.range(new Date(2003, 1), new Date(2005, 1)).union(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2003..Jan 1, 2006
@@ -121,7 +121,7 @@
     /***
      * @method intersect(<range>)
      * @returns DateRange
-     * @short Returns a new DateRange with the latest starting point as its start, and the earliest ending point as its end. If the two ranges do not intersect this will effecctively produce an invalid range.
+     * @short Returns a new DateRange with the latest starting point as its start, and the earliest ending point as its end. If the two ranges do not intersect this will effectively produce an invalid range.
      * @example
      *
      *   Date.range(new Date(2003, 1), new Date(2005, 1)).intersect(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2004..Jan 1, 2005
@@ -153,8 +153,8 @@
    *
    * @example
    *
-   *   Date.range(new Date(2003, 1), new Date(2003, 3)).eachMonth() -> [...]
-   *   Date.range(new Date(2003, 1), new Date(2003, 3)).eachDay()   -> [...]
+   *   Date.range(new Date(2003, 1), new Date(2003, 2)).eachMonth() -> [...]
+   *   Date.range(new Date(2003, 1, 15), new Date(2003, 1, 16)).eachDay()   -> [...]
    *
    ***/
   extendSimilar(DateRange, true, false, 'Millisecond,Second,Minute,Hour,Day,Week,Month,Year', function(methods, name) {

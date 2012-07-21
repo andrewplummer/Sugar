@@ -115,7 +115,8 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('7 gennaio 2012', 'it-IT'), new Date(2012, 0, 7), 'Date#create | Italian | it-IT');
 
   // Issue #150 Unrecognized locales will result in invalid dates, but will not throw an error
-  equal(Date.create('7 gennaio 2012', 'ux_UX').isValid(), false, 'Date#create | Italian | unknown locale code');
+  // Update: Now it will fall back to the current locale.
+  equal(Date.create('7 gennaio 2012', 'ux_UX').isValid(), true, 'Date#create | Italian | unknown locale code');
   equal(Date.create('2012/08/25', 'ux_UX').isValid(), true, 'Date#create | Italian | System intelligible formats are still parsed');
 
   dateEqual(Date.create('17:32 18 agosto'), new Date(now.getFullYear(), 7, 18, 17, 32), 'Date#create | Italian | August 18, 17:32');
