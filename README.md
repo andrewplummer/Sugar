@@ -20,7 +20,12 @@ Custom Builds
 
 Sugar now allows custom builds that let you opt in or out packages. This can be done [here](http://sugarjs.com/customize).
 Custom builds can also be created with `script/build_custom.rb`. With ruby installed, simply call:
-`ruby script/build_custom.rb core array string` listing the packages you want to include. The advantage of using this
+
+```
+ruby script/build_custom.rb core array string
+```
+
+listing the packages you want to include. The advantage of using this
 script is that it will perform all the minification on the fly, providing more fine-grained control by allowing you to
 manipulate the source code in `lib` before building. If you want to remove specific methods from a package, you can do it this way.
 Be careful about removing dependencies, however, especially methods in `core.js`, the extending methods of which are required.
