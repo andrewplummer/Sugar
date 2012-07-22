@@ -15,4 +15,10 @@ get_current_version
 
 `ruby script/create_release.rb #{@version} #{ARGV.join(' ')}`
 
-puts "Your custom build is available at releases/#{@version}/sugar-#{@version}-custom.min.js"
+puts "\n"
+puts "\n"
+puts "--------------------------------------------------------------------------------"
+puts "\n"
+puts "    Your custom build is available at releases/#{@version}/sugar-#{@version}-custom.min.js"
+puts "\n"
+puts "--------------------------------------------------------------------------------"
