@@ -3924,10 +3924,14 @@
      *
      ***/
     'reset': function(unit) {
-      var params = {};
+      var params = {}, recognized;
       unit = unit || 'hours';
+      if(unit === 'date') unit = 'days';
+      recognized = DateUnits.some(function(u) {
+        return unit === u.unit || unit === u.unit + 's';
+      });
       params[unit] = unit.match(/^days?/) ? 1 : 0;
-      return this.set(params, true);
+      return recognized ? this.set(params, true) : this;
     },
 
      /***
