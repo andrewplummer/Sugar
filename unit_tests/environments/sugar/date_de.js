@@ -108,7 +108,6 @@ test('Dates | German', function () {
   equal(then.full(), 'Donnerstag 25. August 2011 15:45:50', 'Date#create | German | full shortcut');
   equal(then.format('short'), '25. August 2011', 'Date#create | German | short format');
   equal(then.short(), '25. August 2011', 'Date#create | German | short shortcut');
-  equal(then.format('nein! {time}'), 'nein! 15:45:50', 'Date#create | German | short format');
 
 
   equal(Date.create('1 second ago', 'en').relative(), 'vor 1 Sekunde', 'Date#create | German | relative format past');
@@ -147,5 +146,6 @@ test('Dates | German', function () {
 
   dateEqual(Date.create('morgen um 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | German | tomorrow at 3:30');
 
+  equal((5).hours().duration('de'), '5 Stunden', 'Date#create | German | simple duration');
 
 });
