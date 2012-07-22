@@ -70,13 +70,12 @@ test('Dates | Simplified Chinese', function () {
   equal(then.format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Simplified Chinese | format');
 
   // Format shortcuts
-  equal(then.format('long'), '2011年8月25日 下午3:45', 'Date#create | Traditional Chinese | long format');
-  equal(then.long(), '2011年8月25日 下午3:45', 'Date#create | Traditional Chinese | long shortcut');
-  equal(then.format('full'), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Traditional Chinese | full format');
-  equal(then.full(), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Traditional Chinese | full format');
-  equal(then.format('short'), '2011年8月25日', 'Date#create | Traditional Chinese | short format');
-  equal(then.short(), '2011年8月25日', 'Date#create | Traditional Chinese | short format');
-  equal(then.format('lo mein {time}'), 'lo mein 下午3:45:50', 'Date#create | Traditional Chinese | custom time format');
+  equal(then.format('long'), '2011年8月25日 下午3:45', 'Date#create | Simplified Chinese | long format');
+  equal(then.long(), '2011年8月25日 下午3:45', 'Date#create | Simplified Chinese | long shortcut');
+  equal(then.format('full'), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Simplified Chinese | full format');
+  equal(then.full(), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Simplified Chinese | full format');
+  equal(then.format('short'), '2011年8月25日', 'Date#create | Simplified Chinese | short format');
+  equal(then.short(), '2011年8月25日', 'Date#create | Simplified Chinese | short format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1秒钟前', 'Date#create | Simplified Chinese | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1分钟前',  'Date#create | Simplified Chinese | relative format past');
@@ -166,6 +165,8 @@ test('Dates | Simplified Chinese', function () {
 
   dateEqual(Date.create('上午3时12分'), new Date().set({ hour: 3, minute: 12 }, true), 'Date#create | Simplified Chinese | 时 | 3:12am');
   dateEqual(Date.create('上午3时'), new Date().set({ hour: 3 }, true), 'Date#create | Simplified Chinese | 时 | 3am');
+
+  equal((5).hours().duration('zh-CN'),   '5小时',     'Date#create | Simplified Chinese | simple duration');
 
 });
 

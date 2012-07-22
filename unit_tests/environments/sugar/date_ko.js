@@ -76,7 +76,6 @@ test('Dates | Korean', function () {
   equal(then.long(), '2011년8월25일 15시45분', 'Date#create | Korean | long shortcut');
   equal(then.format('short'), '2011년8월25일', 'Date#create | Korean | short format');
   equal(then.short(), '2011년8월25일', 'Date#create | Korean | short shortcut');
-  equal(then.format('time'), '15시45분50초', 'Date#create | Korean | time format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1초 전', 'Date#create | Korean | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1분 전',  'Date#create | Korean | relative format past');
@@ -109,5 +108,7 @@ test('Dates | Korean', function () {
   equal(Date.create('5 week from now', 'en').relative(),   '1개월 후',  'Date#create | Korean | relative format future');
   equal(Date.create('5 month from now', 'en').relative(),  '5개월 후',   'Date#create | Korean | relative format future');
   equal(Date.create('5 year from now', 'en').relative(),   '5년 후',     'Date#create | Korean | relative format future');
+
+  equal((5).hours().duration('ko'),   '5시간',     'Date#create | Korean | simple duration');
 
 });

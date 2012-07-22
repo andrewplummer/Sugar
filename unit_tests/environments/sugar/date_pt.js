@@ -73,7 +73,6 @@ test('Dates | Portuguese', function () {
   equal(then.full(), 'Quinta-feira, 25 de agosto de 2011 15:45:50', 'Date#create | Portuguese | full shortcut');
   equal(then.format('short'), '25 de agosto de 2011', 'Date#create | Portuguese | short format');
   equal(then.short(), '25 de agosto de 2011', 'Date#create | Portuguese | short shortcut');
-  equal(then.format('wow {time}'), 'wow 15:45:50', 'Date#create | Portuguese | custom time format');
 
   equal(Date.create('1 second ago', 'en').relative(), '1 segundo atrás', 'Date#create | Portuguese | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1 minuto atrás',  'Date#create | Portuguese | relative format past');
@@ -110,6 +109,6 @@ test('Dates | Portuguese', function () {
 
   dateEqual(Date.create('amanhã às 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | Portuguese | tomorrow at 3:30');
 
-
+  equal((5).hours().duration('pt'),   '5 horas',     'Date#create | Portuguese | simple duration');
 
 });
