@@ -79,10 +79,10 @@
      * @method every(<increment>, [fn])
      * @returns Array
      * @short Iterates through the DateRange for every <increment>, calling [fn] if it is passed. Returns an array of each increment visited.
-     * @extra When <increment> is a number, increments will be to the exact millisecond. <increment> can also be a string in the format %{number} {unit}s%, in which case it will increment in the unit specified. Note that a discrepancy exists in the case of months, as %2.months()% is an approximation. Stepping through the actual months by passing %"2 months"% is usually preferable in this case.
+     * @extra When <increment> is a number, increments will be to the exact millisecond. <increment> can also be a string in the format %{number} {unit}s%, in which case it will increment in the unit specified. Note that a discrepancy exists in the case of months, as %(2).months()% is an approximation. Stepping through the actual months by passing %"2 months"% is usually preferable in this case.
      * @example
      *
-     *   Date.range(new Date(2003, 1), new Date(2003, 3)).every("2 months") -> [...]
+     *   Date.range('2003-01', '2003-03').every("2 months") -> [...]
      *
      ***/
     'every': function(increment, fn) {
@@ -108,7 +108,7 @@
      * @short Returns a new DateRange with the earliest starting point as its start, and the latest ending point as its end. If the two ranges do not intersect this will effectively remove the "gap" between them.
      * @example
      *
-     *   Date.range(new Date(2003, 1), new Date(2005, 1)).union(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2003..Jan 1, 2006
+     *   Date.range('2003=01', '2005-01').union(Date.range('2004-01', '2006-01')) -> Jan 1, 2003..Jan 1, 2006
      *
      ***/
     'union': function(range) {
@@ -124,7 +124,7 @@
      * @short Returns a new DateRange with the latest starting point as its start, and the earliest ending point as its end. If the two ranges do not intersect this will effectively produce an invalid range.
      * @example
      *
-     *   Date.range(new Date(2003, 1), new Date(2005, 1)).intersect(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2004..Jan 1, 2005
+     *   Date.range('2003-01', '2005-01').intersect(Date.range('2004-01', '2006-01')) -> Jan 1, 2004..Jan 1, 2005
      *
      ***/
     'intersect': function(range) {
@@ -153,8 +153,8 @@
    *
    * @example
    *
-   *   Date.range(new Date(2003, 1), new Date(2003, 2)).eachMonth() -> [...]
-   *   Date.range(new Date(2003, 1, 15), new Date(2003, 1, 16)).eachDay()   -> [...]
+   *   Date.range('2003-01', '2003-02').eachMonth()     -> [...]
+   *   Date.range('2003-01-15', '2003-01-16').eachDay() -> [...]
    *
    ***/
   extendSimilar(DateRange, true, false, 'Millisecond,Second,Minute,Hour,Day,Week,Month,Year', function(methods, name) {

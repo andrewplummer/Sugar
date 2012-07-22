@@ -2,6 +2,7 @@
 require 'pp'
 
 @version  = ARGV[0]
+@custom_packages = ARGV[1..-1]
 
 if !@version
   puts "No version specified!"
@@ -9,7 +10,7 @@ if !@version
 end
 
 @packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language']
-@default_package = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
+@default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
 @delimiter = 'console.info("-----BREAK-----");'
 @full_path = "release/#{@version}"
 @copyright = File.open('release/copyright.txt').read.gsub(/VERSION/, @version)
@@ -60,7 +61,10 @@ end
 
 def create_packages
   create_package('full', @packages)
-  create_package('default', @default_package)
+  create_package('default', @default_packages)
+  if @custom_packages.length > 0
+    create_package('custom', @custom_packages)
+  end
 end
 
 def create_package(name, arr)
@@ -79,7 +83,7 @@ end
 def cleanup
   `rm tmp/compiled.js`
   `rm tmp/uncompiled.js`
-  `cd release;rm full.js;ln -s #{@version}/sugar-#{@version}-full.development.js full.js`
+  `cd release;rm sugar-edge.js;ln -s #{@version}/sugar-#{@version}-full.development.js sugar-edge.js`
 end
 
 concat
