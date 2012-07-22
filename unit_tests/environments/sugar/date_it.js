@@ -71,7 +71,6 @@ test('Dates | Italian', function () {
   equal(then.full(), 'Giovedì 25 Agosto 2011 15:45:50', 'Date#create | Italian | full shortcut');
   equal(then.format('short'), '25 Agosto 2011', 'Date#create | Italian | short format');
   equal(then.short(), '25 Agosto 2011', 'Date#create | Italian | short shortcut');
-  equal(then.format('mario! {time}'), 'mario! 15:45:50', 'Date#create | Italian | short format');
 
 
   equal(Date.create('1 second ago', 'en').relative(), '1 secondo fa', 'Date#create | Italian | relative format past');
@@ -122,5 +121,7 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('17:32 18 agosto'), new Date(now.getFullYear(), 7, 18, 17, 32), 'Date#create | Italian | August 18, 17:32');
 
   dateEqual(Date.create('domani alle 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | Italian | tomorrow at 3:30');
+
+  equal((5).hours().duration('it'), '5 ore', 'Date#create | Italian | simple duration');
 
 });

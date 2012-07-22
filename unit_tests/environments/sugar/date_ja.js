@@ -95,7 +95,6 @@ test('Dates | Japanese', function () {
   equal(then.short(), '2011年8月25日', 'Date#create | Japanese | short shortcut');
   equal(then.short('en'), 'August 25, 2011', 'Date#create | Japanese | short locale override');
   equal(then.format('{yyyy}年{MM}月{dd}日'), '2011年08月25日', 'Date#create | Japanese | custom format');
-  equal(then.format('look at the {time}'), 'look at the 15時45分50秒', 'Date#create | Japanese | custom format with time');
 
   equal(Date.create('1 second ago', 'en').relative(), '1秒前', 'Date#create | Japanese | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), '1分前',  'Date#create | Japanese | relative format past');
@@ -154,5 +153,6 @@ test('Dates | Japanese', function () {
   dateEqual(Date.create('火曜日午後3:00'), getDateWithWeekdayAndOffset(2, 0).set({ hours: 15 }), 'Date.create | Japanese | Tuesday at 3:00pm');
   dateEqual(Date.create('2012年6月5日3:00'), new Date(2012, 5, 5, 3), 'Date.create | Japanese | June 5th at 3:00pm');
 
+  equal((5).hours().duration('ja'),   '5時間',     'Date#create | Japanese | simple duration');
 
 });
