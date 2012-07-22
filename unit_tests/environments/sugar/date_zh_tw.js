@@ -75,7 +75,6 @@ test('Dates | Traditional Chinese', function () {
   equal(then.full(), '2011年8月25日 星期四 下午3:45:50', 'Date#create | Traditional Chinese | full format');
   equal(then.format('short'), '2011年8月25日', 'Date#create | Traditional Chinese | short format');
   equal(then.short(), '2011年8月25日', 'Date#create | Traditional Chinese | short format');
-  equal(then.format('lo mein {time}'), 'lo mein 下午3:45:50', 'Date#create | Traditional Chinese | custom time format');
 
 
 
@@ -111,6 +110,6 @@ test('Dates | Traditional Chinese', function () {
   equal(Date.create('5 month from now', 'en').relative(),  '5個月後',   'Date#create | Traditional Chinese | relative format future');
   equal(Date.create('5 year from now', 'en').relative(),   '5年後',     'Date#create | Traditional Chinese | relative format future');
 
-  //dateEqual(Date.create('1/2/13'), new Date(2013, 1, 1), 'Date#create | Traditional Chinese | uses American style ambiguity');
+  equal((5).hours().duration('zh-TW'),   '5小時',     'Date#create | Traditional Chinese | simple duration');
 
 });

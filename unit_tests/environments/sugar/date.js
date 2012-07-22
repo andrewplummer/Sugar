@@ -948,7 +948,11 @@ test('Date', function () {
   equal(d.long(), 'August 5, 2010 4:03am', 'Date#format | shortcuts | long method');
   equal(d.format('full'), 'Thursday August 5, 2010 4:03:02am', 'Date#format | shortcuts | full');
   equal(d.full(), 'Thursday August 5, 2010 4:03:02am', 'Date#format | shortcuts | full method');
-  equal(d.format('w00t {time}'), 'w00t 4:03:02am', 'Date#format | shortcuts | custom time format');
+
+  // Don't want this for now as there's no set concept of a "time" necessarily without
+  // raising questions like "with seconds?" etc... treads on short/long/full so find a better
+  // way to handle this if necessary.
+  // equal(d.format('w00t {time}'), 'w00t 4:03:02am', 'Date#format | shortcuts | custom time format');
 
 
 

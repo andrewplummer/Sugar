@@ -77,7 +77,6 @@ test('Dates | Spanish', function () {
   equal(then.full(), 'Jueves 25 agosto 2011 15:45:50', 'Date#create | Spanish | full shortcut');
   equal(then.format('short'), '25 agosto 2011', 'Date#create | Spanish | short format');
   equal(then.short(), '25 agosto 2011', 'Date#create | Spanish | short shortcut');
-  equal(then.format('hmmm {time}'), 'hmmm 15:45:50', 'Date#create | Spanish | custom time format');
 
 
   equal(Date.create('1 second ago', 'en').relative(), 'hace 1 segundo', 'Date#create | Spanish | relative format past');
@@ -114,5 +113,6 @@ test('Dates | Spanish', function () {
 
   dateEqual(Date.create('mañana a las 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | Spanish | tomorrow at 3:30');
 
+  equal((5).hours().duration('es'),   '5 horas',     'Date#create | Spanish | simple duration');
 
 });

@@ -98,7 +98,6 @@ test('Dates | French', function () {
   equal(then.full(), 'Jeudi 25 août 2011 15:45:50', 'Date#create | French | full format');
   equal(then.format('short'), '25 août 2011', 'Date#create | French | short format');
   equal(then.short(), '25 août 2011', 'Date#create | French | short shortcut');
-  equal(then.format('beuf {time}'), 'beuf 15:45:50', 'Date#create | French | custom time');
 
   equal(Date.create('1 second ago', 'en').relative(), 'il y a 1 seconde', 'Date#create | French | relative format past');
   equal(Date.create('1 minute ago', 'en').relative(), 'il y a 1 minute',  'Date#create | French | relative format past');
@@ -134,5 +133,6 @@ test('Dates | French', function () {
 
   dateEqual(Date.create('demain à 3:30'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | French | tomorrow at 3:30');
 
+  equal((5).hours().duration('fr'), '5 heures', 'Date#create | French | simple duration');
 
 });

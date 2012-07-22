@@ -190,4 +190,6 @@ test('Dates | Russian', function () {
 
   dateEqual(Date.create('Завтра в 3:30 утра'), getRelativeDate(null, null, 1).set({hours:3,minutes:30}, true), 'Date#create | Russian | tomorrow at 3:30');
 
+  equal((5).hours().duration('ru'), '5 часов', 'Date#create | Russian | simple duration');
+
 });
