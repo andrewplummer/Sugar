@@ -1538,6 +1538,9 @@ test('Date', function () {
   dateEqual(d.clone().reset('second'),      new Date(2012, 1, 29, 22, 15), 'Date#reset | second');
   dateEqual(d.clone().reset('millisecond'), new Date(2012, 1, 29, 22, 15, 42), 'Date#reset | millisecond');
 
+  dateEqual(d.clone().reset('date'),         new Date(2012, 1, 1), 'Date#reset | date');
+  dateEqual(d.clone().reset('flegh'), new Date(2012, 1, 29, 22, 15, 42), 'Date#reset | an unknown string will do nothing');
+
   dateEqual(d.clone().addDays(5, true), new Date(2012, 2, 5), 'Date#addDays | can also reset the time');
 
 
