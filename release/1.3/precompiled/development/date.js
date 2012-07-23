@@ -1017,57 +1017,6 @@
     return getExtendedDate(f, args[1], prefer).date;
   }
 
-  function buildEnglish() {
-    English = date.addLocale('en', {
-      'plural':     true,
-      'timeMarker': 'at',
-      'ampm':       'am,pm',
-      'months':     'January,February,March,April,May,June,July,August,September,October,November,December',
-      'weekdays':   'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
-      'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
-      'numbers':    'one,two,three,four,five,six,seven,eight,nine,ten',
-      'articles':   'a,an,the',
-      'optionals':  'the,st|nd|rd|th,of',
-      'short':      '{Month} {d}, {yyyy}',
-      'long':       '{Month} {d}, {yyyy} {h}:{mm}{tt}',
-      'full':       '{Weekday} {Month} {d}, {yyyy} {h}:{mm}:{ss}{tt}',
-      'past':       '{num} {unit} {sign}',
-      'future':     '{num} {unit} {sign}',
-      'duration':   '{num} {unit}',
-      'modifiers': [
-        { 'name': 'day',   'src': 'yesterday', 'value': -1 },
-        { 'name': 'day',   'src': 'today', 'value': 0 },
-        { 'name': 'day',   'src': 'tomorrow', 'value': 1 },
-        { 'name': 'sign',  'src': 'ago|before', 'value': -1 },
-        { 'name': 'sign',  'src': 'from now|after|from|in', 'value': 1 },
-        { 'name': 'edge',  'src': 'last day', 'value': -2 },
-        { 'name': 'edge',  'src': 'end', 'value': -1 },
-        { 'name': 'edge',  'src': 'first day|beginning', 'value': 1 },
-        { 'name': 'shift', 'src': 'last', 'value': -1 },
-        { 'name': 'shift', 'src': 'the|this', 'value': 0 },
-        { 'name': 'shift', 'src': 'next', 'value': 1 }
-      ],
-      'dateParse': [
-        '{num} {unit} {sign}',
-        '{sign} {num} {unit}',
-        '{num} {unit=4-5} {sign} {day}',
-        '{month} {year}',
-        '{shift} {unit=5-7}',
-        '{0} {edge} of {shift?} {unit=4-7?}{month?}{year?}'
-      ],
-      'timeParse': [
-        '{0} {num}{1} {day} of {month} {year?}',
-        '{weekday?} {month} {date}{1} {year?}',
-        '{date} {month} {year}',
-        '{shift} {weekday}',
-        '{shift} week {weekday}',
-        '{weekday} {2} {shift} week',
-        '{0} {date}{1} of {month}',
-        '{0}{month?} {date?}{1} of {shift} {unit=6-7}'
-      ]
-    });
-  }
-
   function buildDateUnits() {
     DateUnitsReversed = DateUnits.concat().reverse();
     DateArgumentUnits = DateUnits.concat();
@@ -1433,7 +1382,6 @@
   }
 
   function buildDate() {
-    buildEnglish();
     buildDateUnits();
     buildDateMethods();
     buildCoreInputFormats();
@@ -2175,6 +2123,62 @@
       return getLocalization(localeCode).getDuration(this);
     }
 
+  });
+
+
+  /***
+   * @package Locales
+   * @dependency date
+   * @description blahblahblah
+   *
+   ***/
+  English = date.addLocale('en', {
+    'plural':     true,
+    'timeMarker': 'at',
+    'ampm':       'am,pm',
+    'months':     'January,February,March,April,May,June,July,August,September,October,November,December',
+    'weekdays':   'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+    'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
+    'numbers':    'one,two,three,four,five,six,seven,eight,nine,ten',
+    'articles':   'a,an,the',
+    'optionals':  'the,st|nd|rd|th,of',
+    'short':      '{Month} {d}, {yyyy}',
+    'long':       '{Month} {d}, {yyyy} {h}:{mm}{tt}',
+    'full':       '{Weekday} {Month} {d}, {yyyy} {h}:{mm}:{ss}{tt}',
+    'past':       '{num} {unit} {sign}',
+    'future':     '{num} {unit} {sign}',
+    'duration':   '{num} {unit}',
+    'modifiers': [
+      { 'name': 'day',   'src': 'yesterday', 'value': -1 },
+      { 'name': 'day',   'src': 'today', 'value': 0 },
+      { 'name': 'day',   'src': 'tomorrow', 'value': 1 },
+      { 'name': 'sign',  'src': 'ago|before', 'value': -1 },
+      { 'name': 'sign',  'src': 'from now|after|from|in', 'value': 1 },
+      { 'name': 'edge',  'src': 'last day', 'value': -2 },
+      { 'name': 'edge',  'src': 'end', 'value': -1 },
+      { 'name': 'edge',  'src': 'first day|beginning', 'value': 1 },
+      { 'name': 'shift', 'src': 'last', 'value': -1 },
+      { 'name': 'shift', 'src': 'the|this', 'value': 0 },
+      { 'name': 'shift', 'src': 'next', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}',
+      '{num} {unit=4-5} {sign} {day}',
+      '{month} {year}',
+      '{shift} {unit=5-7}',
+      '{0} {edge} of {shift?} {unit=4-7?}{month?}{year?}'
+    ],
+    'timeParse': [
+      '{0} {num}{1} {day} of {month} {year?}',
+      '{weekday?} {month} {date}{1} {year?}',
+      '{date} {month} {year}',
+      '{shift} {weekday}',
+      '{shift} week {weekday}',
+      '{weekday} {2} {shift} week',
+      '{0} {date}{1} of {month}',
+      '{0}{month?} {date?}{1} of {shift} {unit=6-7}'
+    ]
   });
 
   buildDate();

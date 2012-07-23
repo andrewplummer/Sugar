@@ -9,7 +9,7 @@ if !@version
   exit
 end
 
-@packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language']
+@packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language','locales']
 @default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
 @delimiter = 'console.info("-----BREAK-----");'
 @full_path = "release/#{@version}"
@@ -29,18 +29,28 @@ NOTICE
 def concat
   File.open('tmp/uncompiled.js', 'w') do |file|
     @packages.each do |p|
-      file.puts content = File.open("lib/#{p}.js").read + @delimiter
+      content = get_content(p)
+      file.puts content = content + @delimiter
     end
   end
 end
 
-def create_development
-  content = ''
-  @packages.each do |p|
-    content << File.open("lib/#{p}.js").read
-    `cp lib/#{p}.js release/#{@version}/precompiled/development/#{p}.js`
+def get_content(package)
+  if package == 'locales'
+    `cat lib/locales/*`
+  else
+    File.open("lib/#{package}.js").read
   end
-  File.open("release/#{@version}/sugar-#{@version}-full.development.js", 'w').write(@copyright + wrap(content))
+end
+
+def create_development
+  full_content = ''
+  @packages.each do |p|
+    content = get_content(p)
+    File.open("release/#{@version}/precompiled/development/#{p}.js", 'w').write(content)
+    full_content << content
+  end
+  File.open("release/#{@version}/sugar-#{@version}-full.development.js", 'w').write(@copyright + wrap(full_content))
 end
 
 def compile
