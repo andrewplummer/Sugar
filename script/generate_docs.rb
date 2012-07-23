@@ -5,14 +5,33 @@ require 'pp'
 
 fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/javascripts/packages.js'
 
+@locales_preamble = <<TEXT
+  /***
+   * @package Date Locales
+   * @dependency date
+   * @description Locale definitions French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Polish (pl), Swedish (sv), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). Locales can also be included individually. See @date_locales for more.
+   *
+   ***/
+TEXT
+
 fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
 @packages = {}
 @default_packages = [:core,:es5,:array,:object,:date,:date_ranges,:function,:number,:regexp,:string]
 
+def create_locale_package
+  file = 'lib/date_locales.js'
+  locales = `cat lib/locales/*`
+  File.open(file, 'w').write(@locales_preamble + locales)
+end
+
 def get_current_version
   package = JSON.parse(File.open('package.json', 'r').read)
   @version = package['version'].sub(/\.0$/, '')
+end
+
+def cleanup
+  `rm lib/date_locales.js`
 end
 
 def get_property(prop, s, multiline = false)
@@ -24,17 +43,6 @@ def get_property(prop, s, multiline = false)
     match = s.match(Regexp.new('@'+prop.to_s+' (.*)'))
     match[1] if match
   end
-end
-
-def get_html_parameters(str)
-  #return nil if !str
-  #str.gsub!(/<(.+?)>/, '<span class="required parameter">\1</span>')
-  #str.gsub!(/\[(.+?)\]/, '<span class="optional parameter">\1</span>')
-  #str.gsub!(/@date_format/, '<a target="_blank" href="/dates">dates</a>')
-  #str.gsub!(/@array_sorting/, '<a target="_blank" href="/sorting">array sorting</a>')
-  #str.gsub!(/extended objects/, '<a target="_blank" href="/objects#extended_objects">extended objects</a>')
-  #str.gsub!(/Object\.extend\(\)/, '<a target="_blank" href="/objects#object_extend" class="monospace">Object.extend()</a>')
-  #str.gsub!(/%(.+?)%/, '<span class="code">\1</span>')
 end
 
 def get_method(s)
@@ -170,7 +178,7 @@ end
 def extract_docs(package)
   @packages[package] ||= {
     :size => get_full_size(package),
-    :minified_size    => get_minified_size(package),
+    :minified_size => get_minified_size(package),
     :extra => !@default_packages.include?(package),
     :modules => {}
   }
@@ -208,11 +216,7 @@ def extract_docs(package)
         method[:set] = get_set(b)
         method[:examples] = get_examples(b)
         method[:alias] = get_property(:alias, b)
-        #method[:module] = @current_module_name
-        get_html_parameters(method[:short])
-        get_html_parameters(method[:extra])
         current_module[name] = method
-        #@current_module << method
         if name == 'stripTags' || name == 'removeTags' || name == 'escapeHTML' || name == 'unescapeHTML'
           method[:escape_html] = true
         end
@@ -220,30 +224,13 @@ def extract_docs(package)
           method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
           method[:short] = "Alias for %#{method[:alias]}%."
         end
-        #if name =~ /\[/
-          #method[:set_base] = method[:name].gsub(/\w*\[(\w+?)\]\w*/, '\1')
-          #method[:name].gsub!(/[\[\]]/, '')
-        #end
         clean(method)
-        #if current_module[:name] == 'Object' && method[:name] != 'create'
-        #  instance_version = method.dup
-        #  instance_version[:class_method] = false
-        #  instance_version[:short].gsub!(/<span class=".*?">obj<\/span>/, 'the object')
-        #  if method[:name] == 'merge'
-        #    instance_version[:short].gsub!(/the first/, 'itself')
-        #  end
-        #  if method[:name] == 'equals'
-        #    instance_version[:short].gsub!(/(<span class=".*?">a<\/span>).+are equal/, 'the object is equal to \\1')
-        #  end
-        #  instance_version[:params].delete_if { |p| p[:name] == 'obj' || p[:name] == 'a' }
-        #  instance_version[:short] << ' This method is only available on objects created with the alternate constructor <span class="code">Object.create</span>.'
-        #  current_module[:methods] << instance_version
-        #end
       end
     end
   end
 end
 
+create_locale_package
 get_current_version
 
 extract_docs(:core)
@@ -251,6 +238,7 @@ extract_docs(:es5)
 extract_docs(:array)
 extract_docs(:object)
 extract_docs(:date)
+extract_docs(:date_locales)
 extract_docs(:date_ranges)
 extract_docs(:function)
 extract_docs(:number)
@@ -259,19 +247,8 @@ extract_docs(:string)
 extract_docs(:inflections)
 extract_docs(:language)
 
-pp @packages[:date_ranges][:description]
-
-
-
-#@modules.each do |name, mod|
-#  mod.sort! do |a,b|
-#    if a[:class_method] == b[:class_method]
-#      a[:name] <=> b[:name]
-#    else
-#      a[:class_method] ? -1 : 1
-#    end
-#  end
-#end
+cleanup
+puts 'Done!'
 
 File.open(fileout, 'w') do |f|
   f.puts "SugarPackages = #{@packages.to_json};"

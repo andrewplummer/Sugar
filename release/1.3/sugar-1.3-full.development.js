@@ -1977,7 +1977,7 @@
   /***
    * @package Date
    * @dependency core
-   * @description Date parsing and formatting, relative formats like "1 minute ago", localization support including 11 locales, Number methods "daysAgo".
+   * @description Date parsing and formatting, relative formats like "1 minute ago", Number methods like "daysAgo", localization support with default English locale definition.
    *
    ***/
 
@@ -4101,12 +4101,6 @@
   });
 
 
-  /***
-   * @package Locales
-   * @dependency date
-   * @description blahblahblah
-   *
-   ***/
   English = date.addLocale('en', {
     'plural':     true,
     'timeMarker': 'at',
@@ -4162,7 +4156,7 @@
   /***
    * @package DateRange
    * @dependency date
-   * @description DateRanges define a range of time. They can enumerate over specific points within that range, and be manipulated and compared.
+   * @description Date Ranges define a range of time. They can enumerate over specific points within that range, and be manipulated and compared.
    *
    ***/
 
@@ -7126,7 +7120,7 @@
 
   buildUnicodeScripts();
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7204,7 +7198,7 @@ Date.addLocale('de', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7281,7 +7275,7 @@ Date.addLocale('es', {
     '{date?} {1} {month} {1} {year?}'
   ]
 });
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7356,7 +7350,7 @@ Date.addLocale('fr', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7432,7 +7426,7 @@ Date.addLocale('it', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7506,7 +7500,7 @@ Date.addLocale('ja', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7584,7 +7578,7 @@ Date.addLocale('ko', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7662,7 +7656,7 @@ Date.addLocale('pl', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7739,7 +7733,7 @@ Date.addLocale('pt', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7816,7 +7810,7 @@ Date.addLocale('ru', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7896,7 +7890,7 @@ Date.addLocale('sv', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -7974,7 +7968,7 @@ Date.addLocale('zh-CN', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
