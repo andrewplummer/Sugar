@@ -15,6 +15,9 @@ v1.3+
 
 
 - Level: Major
+  - Date locales are now moved into a separate package. This means that now with the default download package, setting the date locale to anything other than English will throw an error. If you require locales other than English, please include them from [the customize page](http://sugarjs.com/customize).
+
+- Level: Major
   - `Array#has` is deprecated. Use `Array#some` or `Array#any` instead.
 
 - Level: Major
