@@ -220,26 +220,6 @@ test('Object', function () {
 
 
 
-  count = 0;
-  result = obj.each(function(key, value, o) {
-    equal(key, keys[count], 'Object#each | accepts a block | key is first param', { mootools: values[count] });
-    equal(value, values[count], 'Object#each | accepts a block | value is second param', { mootools: keys[count] });
-    equal(o, obj, 'Object#each | accepts a block | object is third param');
-    count++;
-  });
-  equal(count, 3, 'Object#each | accepts a block | iterated properly');
-  equal(result, obj, 'Object#each | accepts a block | result should equal object passed in', { mootools: undefined });
-
-
-  count = 0;
-  result = Object.each(obj, function(key, value, o) {
-    equal(key, keys[count], 'Object.each | accepts a block', { mootools: values[count] });
-    equal(value, values[count], 'Object.each | accepts a block', { mootools: keys[count] });
-    equal(o, obj, 'Object.each | accepts a block | object is third param');
-    count++;
-  });
-  equal(count, 3, 'Object.each | accepts a block | iterated properly');
-  equal(result, obj, 'Object.each | accepts a block | result should equal object passed in', { mootools: undefined });
 
 
   equal(Object.merge({ foo: 'bar' }, { broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object.merge | basic');
@@ -488,9 +468,8 @@ test('Object', function () {
   count = 0;
   equal(({ foo: 'bar' }).keys(function() { count++; }), ['foo'], 'Object#keys | Object.prototype');
   equal(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], 'Object#values | Object.prototype', { prototype: ['bar'].concat(prototypeBaseValues) });
-  ({ foo: 'bar' }).each(function() { count++; });
 
-  equal(count, 3, 'Object | Object.prototype should have correctly called all functions', { prototype: 2, mootools: 2 });
+  equal(count, 2, 'Object | Object.prototype should have correctly called all functions', { prototype: 2, mootools: 2 });
 
   equal(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
   equal(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype', { mootools: Object.clone({ foo: 'bar', moo: 'car' }) });
