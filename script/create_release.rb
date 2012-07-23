@@ -9,7 +9,7 @@ if !@version
   exit
 end
 
-@packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language','locales']
+@packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language','date_locales']
 @default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
 @delimiter = 'console.info("-----BREAK-----");'
 @full_path = "release/#{@version}"
@@ -36,7 +36,7 @@ def concat
 end
 
 def get_content(package)
-  if package == 'locales'
+  if package == 'date_locales'
     `cat lib/locales/*`
   else
     File.open("lib/#{package}.js").read
