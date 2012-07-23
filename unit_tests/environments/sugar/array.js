@@ -2592,5 +2592,42 @@ test('Array', function () {
   testClassAndInstance('size', new Foo, [], 1, 'Object.size | class instances with a single property');
 
 
+
+
+  // Object.each
+
+  var obj = Object.extended({
+    number: 3,
+    person: 'jim',
+    date: d
+  });
+
+  var keys = ['number','person','date'];
+  var values = [3,'jim',d];
+  var count = 0;
+
+  result = obj.each(function(key, value, o) {
+    equal(key, keys[count], 'Object#each | accepts a block | key is first param', { mootools: values[count] });
+    equal(value, values[count], 'Object#each | accepts a block | value is second param', { mootools: keys[count] });
+    equal(o, obj, 'Object#each | accepts a block | object is third param');
+    count++;
+  });
+  equal(count, 3, 'Object#each | accepts a block | iterated properly');
+  equal(result, obj, 'Object#each | accepts a block | result should equal object passed in', { mootools: undefined });
+
+
+  count = 0;
+  result = Object.each(obj, function(key, value, o) {
+    equal(key, keys[count], 'Object.each | accepts a block', { mootools: values[count] });
+    equal(value, values[count], 'Object.each | accepts a block', { mootools: keys[count] });
+    equal(o, obj, 'Object.each | accepts a block | object is third param');
+    count++;
+  });
+  equal(count, 3, 'Object.each | accepts a block | iterated properly');
+  equal(result, obj, 'Object.each | accepts a block | result should equal object passed in', { mootools: undefined });
+
+
+
+
 });
 

@@ -192,4 +192,10 @@ test('Date Ranges', function () {
 
   equal(range.start.getTime() === 410194800000, false, 'Date.range | start time of the range should not be affected');
 
+
+
+  range = Date.range('2 hours ago', 'now');
+  equal(range.isValid(), true, 'Date.range | understands relative strings');
+
+
 });
