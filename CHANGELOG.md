@@ -5,7 +5,7 @@ v1.3
 ### API Changes ###
 
 - Sugar packages are now further split up and can easily be customized and repackaged. Aside from "core" there is the "es5" package that can be opted out of if <= IE8 support isn't an issue. DateRanges (below) are now their own package, as are inflections.
-
+- Date locales are now a separate package, only English is included in the base "date" package.
 - Enumerable methods are now available as class methods on Object, and instance methods on extended objects. This includes: map, any, all, none, count, sum, average, find, findAll, min, max, least, most, and reduce.
 - Added Object.size (also available to extended objects)
 - Object.equals now considers identical objects vs. extended objects to be the same
