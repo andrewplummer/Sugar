@@ -38,6 +38,7 @@ Date.prototype.toUTC               = function() {};
 Date.prototype.compare             = function() {};
 Date.getLocale                     = function() {};
 Date.setLocale                     = function() {};
+Date.addLocale                     = function() {};
 Function.prototype.cancel          = function() {};
 Function.prototype.lazy            = function() {};
 Number.prototype.abs               = function() {};
