@@ -1,4 +1,4 @@
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -76,7 +76,7 @@ Date.addLocale('de', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -153,7 +153,7 @@ Date.addLocale('es', {
     '{date?} {1} {month} {1} {year?}'
   ]
 });
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -228,7 +228,7 @@ Date.addLocale('fr', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -304,7 +304,7 @@ Date.addLocale('it', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -378,7 +378,7 @@ Date.addLocale('ja', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -456,7 +456,7 @@ Date.addLocale('ko', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -534,7 +534,7 @@ Date.addLocale('pl', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -611,7 +611,7 @@ Date.addLocale('pt', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -688,7 +688,7 @@ Date.addLocale('ru', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -768,7 +768,7 @@ Date.addLocale('sv', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
@@ -846,7 +846,7 @@ Date.addLocale('zh-CN', {
   ]
 });
 
-/***
+/*
  *
  * Note that this localization is alredy included by default.
  * Simply call Date.addLocale(<code>)
