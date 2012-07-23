@@ -2,7 +2,7 @@
   /***
    * @package Date
    * @dependency core
-   * @description Date parsing and formatting, relative formats like "1 minute ago", localization support including 11 locales, Number methods "daysAgo".
+   * @description Date parsing and formatting, relative formats like "1 minute ago", Number methods like "daysAgo", localization support with default English locale definition.
    *
    ***/
 
@@ -2126,12 +2126,6 @@
   });
 
 
-  /***
-   * @package Locales
-   * @dependency date
-   * @description blahblahblah
-   *
-   ***/
   English = date.addLocale('en', {
     'plural':     true,
     'timeMarker': 'at',
