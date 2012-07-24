@@ -2596,25 +2596,15 @@ test('Array', function () {
 
   // Object.each
 
-  var obj = Object.extended({
+  var obj = {
     number: 3,
     person: 'jim',
     date: d
-  });
+  };
 
   var keys = ['number','person','date'];
   var values = [3,'jim',d];
   var count = 0;
-
-  result = obj.each(function(key, value, o) {
-    equal(key, keys[count], 'Object#each | accepts a block | key is first param', { mootools: values[count] });
-    equal(value, values[count], 'Object#each | accepts a block | value is second param', { mootools: keys[count] });
-    equal(o, obj, 'Object#each | accepts a block | object is third param');
-    count++;
-  });
-  equal(count, 3, 'Object#each | accepts a block | iterated properly');
-  equal(result, obj, 'Object#each | accepts a block | result should equal object passed in', { mootools: undefined });
-
 
   count = 0;
   result = Object.each(obj, function(key, value, o) {
@@ -2626,6 +2616,7 @@ test('Array', function () {
   equal(count, 3, 'Object.each | accepts a block | iterated properly');
   equal(result, obj, 'Object.each | accepts a block | result should equal object passed in', { mootools: undefined });
 
+  testClassAndInstance('each', obj, [], obj, 'Object.size | each returns itself');
 
 
 

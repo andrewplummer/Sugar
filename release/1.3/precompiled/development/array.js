@@ -1183,13 +1183,27 @@
         return obj[key];
       });
       return values.reduce.apply(values, multiArgs(arguments).slice(1));
+    },
+
+    /***
+     * @method size(<obj>)
+     * @returns Number
+     * @short Returns the number of properties in <obj>.
+     * @extra %size% is available as an instance method on extended objects.
+     * @example
+     *
+     *   Object.size({ foo: 'bar' }) -> 1
+     *
+     ***/
+    'size': function (obj) {
+      return keysWithCoercion(obj).length;
     }
 
   });
 
   buildEnhancements();
   buildAlphanumericSort();
-  buildEnumerableMethods('any,all,none,count,find,findAll,isEmpty');
+  buildEnumerableMethods('each,any,all,none,count,find,findAll,isEmpty');
   buildEnumerableMethods('sum,average,min,max,least,most', true);
-  buildObjectInstanceMethods('map,reduce', Hash);
+  buildObjectInstanceMethods('map,reduce,size', Hash);
 
