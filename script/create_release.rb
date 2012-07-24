@@ -83,7 +83,8 @@ def create_package(name, arr)
     contents << File.open("#{@full_path}/precompiled/minified/#{s}.js").read
   end
   contents = @copyright + wrap(contents.sub(/\n+\Z/m, ''))
-  File.open("#{@full_path}/sugar-#{@version}-#{name}.min.js", 'w').write(contents)
+  ext = name == 'default' ? '' : '-' + name
+  File.open("#{@full_path}/sugar-#{@version}#{ext}.min.js", 'w').write(contents)
 end
 
 def wrap(js)
