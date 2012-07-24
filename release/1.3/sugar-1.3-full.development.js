@@ -174,7 +174,7 @@
   // Hash definition
 
   function Hash(obj) {
-    object.merge(this, obj);
+    simpleMerge(this, obj);
   };
 
   Hash.prototype.constructor = object;
@@ -1963,15 +1963,29 @@
         return obj[key];
       });
       return values.reduce.apply(values, multiArgs(arguments).slice(1));
+    },
+
+    /***
+     * @method size(<obj>)
+     * @returns Number
+     * @short Returns the number of properties in <obj>.
+     * @extra %size% is available as an instance method on extended objects.
+     * @example
+     *
+     *   Object.size({ foo: 'bar' }) -> 1
+     *
+     ***/
+    'size': function (obj) {
+      return keysWithCoercion(obj).length;
     }
 
   });
 
   buildEnhancements();
   buildAlphanumericSort();
-  buildEnumerableMethods('any,all,none,count,find,findAll,isEmpty');
+  buildEnumerableMethods('each,any,all,none,count,find,findAll,isEmpty');
   buildEnumerableMethods('sum,average,min,max,least,most', true);
-  buildObjectInstanceMethods('map,reduce', Hash);
+  buildObjectInstanceMethods('map,reduce,size', Hash);
 
 
   /***
@@ -4991,7 +5005,7 @@
    ***/
 
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
-  var ObjectHashMethods = 'keys,values,each,merge,clone,equal,watch,tap,has,size'.split(',');
+  var ObjectHashMethods = 'keys,values,each,merge,clone,equal,watch,tap,has'.split(',');
 
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
@@ -5241,30 +5255,6 @@
     },
 
     /***
-     * @method each(<obj>, [fn])
-     * @returns Object
-     * @short Iterates over each property in <obj> calling [fn] on each iteration.
-     * @extra %each% is available as an instance method on extended objects.
-     * @example
-     *
-     *   Object.each({ broken:'wear' }, function(key, value) {
-     *     // Iterates over each key/value pair.
-     *   });
-     *   Object.extended({ broken:'wear' }).each(function(key, value) {
-     *     // Iterates over each key/value pair.
-     *   });
-     *
-     ***/
-    'each': function(obj, fn) {
-      if(fn) {
-        iterateOverObject(obj, function(k,v) {
-          fn.call(obj, k, v, obj);
-        });
-      }
-      return obj;
-    },
-
-    /***
      * @method clone(<obj> = {}, [deep] = false)
      * @returns Cloned object
      * @short Creates a clone (copy) of <obj>.
@@ -5342,20 +5332,6 @@
      ***/
     'has': function (obj, key) {
       return hasOwnProperty(obj, key);
-    },
-
-    /***
-     * @method size(<obj>)
-     * @returns Number
-     * @short Returns the number of properties in <obj>.
-     * @extra %size% is available as an instance method on extended objects.
-     * @example
-     *
-     *   Object.size({ foo: 'bar' }) -> 1
-     *
-     ***/
-    'size': function (obj) {
-      return keysWithCoercion(obj).length;
     }
 
   });
