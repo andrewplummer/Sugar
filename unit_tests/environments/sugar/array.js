@@ -842,7 +842,7 @@ test('Array', function () {
   equal([1,2,3].most(null), 1, 'Array#most | null | returns first');
   equal([1,2,3].most(4), 1, 'Array#most | number | returns first');
 
-  equal(people.most(function(person) { return person.age; }), {name:'jim',age:27,hair:'brown'}, 'Array#most | age | returns first');
+  equal(people.most(function(person) { return person.age; }).age, 27, 'Array#most | age | age is 27');
   equal(people.most(function(person) { return person.age; }, true), [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'Array#most | age | returns all');
   equal(people.most(function(person) { return person.hair; }), {name:'jim',age:27,hair:'brown'}, 'Array#most | hair');
 
@@ -870,8 +870,8 @@ test('Array', function () {
   equal([1,2,3].least(null), 1, 'Array#least | null');
   equal([1,2,3].least(4), 1, 'Array#least | number');
 
-  equal(people.least(), people[0], 'Array#least | contains mary | returns first');
-  equal(people.least(function(person) { return person.age; }), people[1], 'Array#least | map age | contains mary');
+  equal(people.least(), people[0], 'Array#least | contains mary | does not return most');
+  equal(people.least(function(person) { return person.age; }).age != 27, true, 'Array#least | map age | does not return most');
   equal(people.least(function(person) { return person.age; }, true).sortBy('name'), [people[1], people[2]], 'Array#least | contains mary and ronnie');
   equal(people.least(function(person) { return person.age; }, true).sortBy('age'), [{name:'ronnie',age:13,hair:'brown'}, {name:'mary',age:52,hair:'blonde'}], 'Array#least | age and sorted by age');
 
