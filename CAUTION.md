@@ -18,6 +18,9 @@ v1.3+
   - Date locales are now moved into a separate package. This means that now with the default download package, setting the date locale to anything other than English will throw an error. If you require locales other than English, please include them from [the customize page](http://sugarjs.com/customize).
 
 - Level: Major
+  - `Array#min`, `Array#max`, `Array#least`, and `Array#most` now return a single value instead of an array. If you need to get "all min" or "all max" values, then pass `true` as the second argument to these methods.
+
+- Level: Major
   - `Array#has` is deprecated. Use `Array#some` or `Array#any` instead.
 
 - Level: Major

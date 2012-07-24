@@ -8,6 +8,7 @@ v1.3
 - Date locales are now a separate package, only English is included in the base "date" package.
 - Enumerable methods are now available as class methods on Object, and instance methods on extended objects. This includes: map, any, all, none, count, sum, average, find, findAll, min, max, least, most, and reduce.
 - Added Object.size (also available to extended objects)
+- Array#min, Array#max, Array#least, and Array#most now return a single element by default with the option to return multiple elements.
 - Object.equals now considers identical objects vs. extended objects to be the same
 - Refactored Object.isEmpty to be an enumerable method in the Array package. This means that it will error on non-objects now.
 - Added "language" package.
