@@ -1,7 +1,9 @@
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('de');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -78,8 +80,10 @@ Date.addLocale('de', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('es');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -155,8 +159,10 @@ Date.addLocale('es', {
 });
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('fr');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -230,8 +236,10 @@ Date.addLocale('fr', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('it');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -306,8 +314,10 @@ Date.addLocale('it', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('ja');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -380,8 +390,10 @@ Date.addLocale('ja', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('ko');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -458,8 +470,10 @@ Date.addLocale('ko', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('pl');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -536,8 +550,10 @@ Date.addLocale('pl', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('pt');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -613,8 +629,10 @@ Date.addLocale('pt', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('ru');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -690,8 +708,10 @@ Date.addLocale('ru', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('sv');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -770,8 +790,10 @@ Date.addLocale('sv', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('zh-CN');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
@@ -848,8 +870,10 @@ Date.addLocale('zh-CN', {
 
 /*
  *
- * Note that this localization is alredy included by default.
- * Simply call Date.addLocale(<code>)
+ * Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Date.setLocale('zh-TW');
  *
  * var locale = Date.getLocale(<code>) will return this object, which
  * can be tweaked to change the behavior of parsing/formatting in the locales.
