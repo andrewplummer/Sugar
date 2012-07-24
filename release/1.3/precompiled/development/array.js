@@ -156,21 +156,24 @@
 
   // Support methods
 
-  function getMinOrMax(obj, map, which, isArray) {
-    var max = which === 'max', min = which === 'min';
-    var edge = max ? -Infinity : Infinity;
-    var result = [];
+  function getMinOrMax(obj, map, which, all) {
+    var edge,
+        result = [],
+        max = which === 'max',
+        min = which === 'min',
+        isArray = Array.isArray(obj);
     iterateOverObject(obj, function(key) {
-      var entry = obj[key];
-      var test = transformArgument(entry, map, obj, isArray ? [entry, parseInt(key), obj] : []);
+      var el = obj[key];
+      var test = transformArgument(el, map, obj, isArray ? [el, parseInt(key), obj] : []);
       if(test === edge) {
-        result.push(entry);
-      } else if((max && test > edge) || (min && test < edge)) {
-        result = [entry];
+        result.push(el);
+      } else if(isUndefined(edge) || (max && test > edge) || (min && test < edge)) {
+        result = [el];
         edge = test;
       }
     });
-    return result;
+    if(!isArray) result = arrayFlatten(result, 1);
+    return all ? result : result[0];
   }
 
 
@@ -656,14 +659,15 @@
     },
 
     /***
-     * @method min([map])
-     * @returns Array
-     * @short Returns the elements in the array with the lowest value.
-     * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut.
+     * @method min([map], [all] = false)
+     * @returns Mixed
+     * @short Returns the element in the array with the lowest value.
+     * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return all min values in an array.
      * @example
      *
-     *   [1,2,3].min()                    -> [1]
-     *   ['fee','fo','fum'].min('length') -> ['fo']
+     *   [1,2,3].min()                          -> 1
+     *   ['fee','fo','fum'].min('length')       -> 'fo'
+     *   ['fee','fo','fum'].min('length', true) -> ['fo']
      +   ['fee','fo','fum'].min(function(n) {
      *     return n.length;
      *   });                              -> ['fo']
@@ -672,26 +676,27 @@
      *   });                              -> [{a:2}]
      *
      ***/
-    'min': function(map) {
-      return arrayUnique(getMinOrMax(this, map, 'min', true));
+    'min': function(map, all) {
+      return getMinOrMax(this, map, 'min', all);
     },
 
     /***
-     * @method max([map])
-     * @returns Array
-     * @short Returns the elements in the array with the greatest value.
-     * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut.
+     * @method max([map], [all] = false)
+     * @returns Mixed
+     * @short Returns the element in the array with the greatest value.
+     * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return all max values in an array.
      * @example
      *
-     *   [1,2,3].max()                    -> [3]
-     *   ['fee','fo','fum'].max('length') -> ['fee','fum']
+     *   [1,2,3].max()                          -> 3
+     *   ['fee','fo','fum'].max('length')       -> 'fee'
+     *   ['fee','fo','fum'].max('length', true) -> ['fee']
      +   [{a:3,a:2}].max(function(n) {
      *     return n['a'];
-     *   });                              -> [{a:3}]
+     *   });                              -> {a:3}
      *
      ***/
-    'max': function(map) {
-      return arrayUnique(getMinOrMax(this, map, 'max', true));
+    'max': function(map, all) {
+      return getMinOrMax(this, map, 'max', all);
     },
 
     /***
@@ -708,9 +713,8 @@
      *   });                               -> [{age:35,name:'ken'}]
      *
      ***/
-    'least': function() {
-      var result = arrayFlatten(getMinOrMax(this.groupBy.apply(this, arguments), 'length', 'min'));
-      return result.length === this.length ? [] : arrayUnique(result);
+    'least': function(map, all) {
+      return getMinOrMax(this.groupBy.apply(this, [map]), 'length', 'min', all);
     },
 
     /***
@@ -727,9 +731,8 @@
      *   });                              -> [{age:12,name:'bob'},{age:12,name:'ted'}]
      *
      ***/
-    'most': function() {
-      var result = arrayFlatten(getMinOrMax(this.groupBy.apply(this, arguments), 'length', 'max'));
-      return result.length === this.length ? [] : arrayUnique(result);
+    'most': function(map, all) {
+      return getMinOrMax(this.groupBy.apply(this, [map]), 'length', 'max', all);
     },
 
     /***
@@ -1154,7 +1157,7 @@
           } else {
             return multiMatch(obj[key], arg1, obj, [key, obj[key], obj]);
           }
-        });
+        }, arg2);
         if(isArray(result)) {
           // The method has returned an array of keys so use this array
           // to build up the resulting object in the form we want it in.
