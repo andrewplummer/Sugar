@@ -4115,7 +4115,7 @@
   });
 
 
-  English = date.addLocale('en', {
+  English = CurrentLocalization = date.addLocale('en', {
     'plural':     true,
     'timeMarker': 'at',
     'ampm':       'am,pm',

@@ -1,5 +1,8 @@
 test('Date', function () {
 
+
+  equal(Date.getLocale().code !== undefined, true, 'Current locale must be something... other libs may overwrite this');
+
   Date.setLocale('en');
 
 
