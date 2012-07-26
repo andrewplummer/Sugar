@@ -28,7 +28,7 @@ v1.3
 - All Math methods are now mapped onto Number and are accessible as instance methods
 
 - String#capitalize all will capitalize any letter after a letter that could not be capitalized.
-- String#insert now treats negative indexes like String#slice
+- String#insert, and Array#insert now treat negative indexes like String#slice
 - Fixed issue with decodeBase64 shim (Issue 145)
 
 - Date parsing formats are now scoped by locale. This means that if the current locale is set to English, only English formats will be parsed when Date#create does not specify a locale, even if a different locale was initialized previously. Numeric and common formats are available in all locales.
