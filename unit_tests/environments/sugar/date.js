@@ -3,6 +3,15 @@ test('Date', function () {
 
   equal(Date.getLocale().code !== undefined, true, 'Current locale must be something... other libs may overwrite this');
 
+  // Imaginary local to test locale switching
+  Date.addLocale('fo', {
+    units: 'do,re,mi,fa,so,la,ti,do',
+    months: 'do,re,mi,fa,so,la,ti,do',
+    dateParse: '{year}kupo',
+    duration: '{num}{unit}momoney',
+    long: 'yeehaw'
+  });
+
   Date.setLocale('en');
 
 
@@ -1932,8 +1941,8 @@ test('Date', function () {
   Date.addFormat('(\\d+)\\^\\^(\\d+)%%(\\d+), but at the (beginning|end)', ['date','year','month','edge']);
   dateEqual(Date.create('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
 
-  Date.addFormat('on ze (\\d+)th of (janvier|février|mars|avril|mai) lavigne', ['date','month'], 'fr');
-  dateEqual(Date.create('on ze 18th of avril lavigne', 'fr'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other languages');
+  Date.addFormat('on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en');
+  dateEqual(Date.create('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other formats');
 
   equal(typeof Date.getLocale(), 'object', 'Date Locale | current localization object is exposed in case needed');
   equal(Date.getLocale().code, 'en', 'Date Locale | adding the format did not change the current locale');
@@ -1946,28 +1955,26 @@ test('Date', function () {
   equal(getRelativeDate(null, null, null, -1).relative(), '1 hour ago', 'Date Locales | Non-initialized relative formatting is also English');
   equal(Date.create('June 18, 2011').isValid(), true, 'Date Locales | English dates will also be properly parsed without being initialized or passing a locale code');
 
-  // Can't guarantee this one for now as the loading order of the unit tests can be random.
-  // equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not be parsed before the locale is set');
-  equal(Date.create('２０１１年０６月１８日', 'ja').isValid(), true, 'Date Locales | Japanese dates will parse if their locale is passed');
-  equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | Japanese dates will not parse thereafter as the current locale is still en');
 
+  Date.setLocale('fo');
 
-  Date.setLocale('ja');
+  equal(Date.create('2011kupo', 'fo').isValid(), true, 'Date Locales | dates will parse if their locale is passed');
+  equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | dates will not parse thereafter as the current locale is still en');
 
-  equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | changes the locale');
+  equal(new Date(2011, 5, 6).format('{Month}'), 'La', 'Date.setLocale | june is La');
 
   raisesError(function(){ Date.setLocale(); }, 'Date.setLocale | no arguments raises error');
-  equal(Date.getLocale().code, 'ja', 'Date.setLocale | setting locale with no arguments had no effect');
-  equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if no argument passed');
+  equal(Date.getLocale().code, 'fo', 'Date.setLocale | setting locale with no arguments had no effect');
+  equal(new Date(2011, 5, 6).format('{Month}'), 'La', 'Date.setLocale | will not change the locale if no argument passed');
   equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011 12:00am', 'Date#format | local locale should override global');
   equal(Date.create('5 months ago', 'en').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
 
   raisesError(function(){ Date.setLocale(''); }, 'Date.setLocale | "" raises an invalid locale error');
-  equal(new Date(2011, 5, 6).format('{Month}'), '6月', 'Date.setLocale | will not change the locale if blank string passed');
-  dateEqual(Date.create('2010-Jan-25', 'ja'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
+  equal(new Date(2011, 5, 6).format('{Month}'), 'La', 'Date.setLocale | will not change the locale if blank string passed');
+  dateEqual(Date.create('2010-Jan-25', 'fo'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
 
   raisesError(function(){ Date.setLocale('pink') }, 'Date.setLocale | Non-existent locales will raise an error');
-  equal(Date.create('2010-Jan-25').format(), '2010年1月25日 0時00分', 'Date#create | will not set the current locale to an invalid locale');
+  equal(Date.create('2010-Jan-25').format(), 'yeehaw', 'Date#create | will not set the current locale to an invalid locale');
 
   Date.setLocale('en');
 
@@ -2230,22 +2237,22 @@ test('Date', function () {
   equal((15).years().duration(), '15 years', 'Number#duration | 15 years');
   equal((1500).years().duration(), '1500 years', 'Number#duration | 1500 years');
 
-  Date.setLocale('ja');
+  Date.setLocale('fo');
 
-  equal((5).days().duration(), '5日', 'Number#duration | Japanese | 5 days');
-  equal((150).days().duration(), '4ヶ月', 'Number#duration | Japanese | 150 days');
-  equal((38000).seconds().duration(), '10時間', 'Number#duration | Japanese | 38000 seconds');
-  equal((38000).minutes().duration(), '3週間', 'Number#duration | Japanese | 38000 minutes');
-  equal((38000).hours().duration(), '4年', 'Number#duration | Japanese | 38000 hours');
+  equal((5).days().duration(), '5somomoney', 'Number#duration | Fake locale | 5 days');
+  equal((150).days().duration(), '4timomoney', 'Number#duration | Fake locale | 150 days');
+  equal((38000).seconds().duration(), '10famomoney', 'Number#duration | Fake locale | 38000 seconds');
+  equal((38000).minutes().duration(), '3lamomoney', 'Number#duration | Fake locale | 38000 minutes');
+  equal((38000).hours().duration(), '4domomoney', 'Number#duration | Fake locale | 38000 hours');
 
 
   // Duration without setting the locale code
 
-  equal((5).days().duration('ko'), '5일', 'Number#duration | Korean | 5 days');
-  equal((150).days().duration('ko'), '4개월', 'Number#duration | Korean | 150 days');
-  equal((38000).seconds().duration('ko'), '10시간', 'Number#duration | Korean | 38000 seconds');
-  equal((38000).minutes().duration('ko'), '3주', 'Number#duration | Korean | 38000 minutes');
-  equal((38000).hours().duration('ko'), '4년', 'Number#duration | Korean | 38000 hours');
+  equal((5).days().duration('en'), '5 days', 'Number#duration | English | 5 days');
+  equal((150).days().duration('en'), '4 months', 'Number#duration | English | 150 days');
+  equal((38000).seconds().duration('en'), '10 hours', 'Number#duration | English | 38000 seconds');
+  equal((38000).minutes().duration('en'), '3 weeks', 'Number#duration | English | 38000 minutes');
+  equal((38000).hours().duration('en'), '4 years', 'Number#duration | English | 38000 hours');
 
   Date.setLocale('en');
 
