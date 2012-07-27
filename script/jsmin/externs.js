@@ -41,6 +41,7 @@ Date.setLocale                     = function() {};
 Date.addLocale                     = function() {};
 Function.prototype.cancel          = function() {};
 Function.prototype.lazy            = function() {};
+Function.prototype.timers          = []
 Number.prototype.abs               = function() {};
 Number.prototype.ceil              = function() {};
 Number.prototype.chr               = function() {};
