@@ -3453,7 +3453,7 @@
      * @method Date.setLocale(<code>)
      * @returns Locale
      * @short Sets the current locale to be used with dates.
-     * @extra Predefined locales are: English (en), French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). In addition to predefined locales, you can define a new locale with %Date.addLocale%. For more see @date_format.
+     * @extra Sugar has support for 13 locales that are available through the "Date Locales" package. In addition you can define a new locale with %Date.addLocale%. For more see @date_format.
      *
      ***/
     'setLocale': function(localeCode, set) {
@@ -4341,7 +4341,7 @@
 
      /***
      * @method Date.range([start], [end])
-     * @returns Nothing
+     * @returns DateRange
      * @short Creates a new date range.
      * @extra If either [start] or [end] are null, they will default to the current date.
      *
