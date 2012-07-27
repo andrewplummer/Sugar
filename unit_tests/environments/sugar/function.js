@@ -49,6 +49,7 @@ test('Function', function () {
     fn.delay(delayTime / 5);
     fn.delay(delayTime / 6);
     ref = fn.cancel();
+    equal(typeof fn.timers, 'object', 'Function#delay | timers object should be exposed');
     equal(ref, fn, 'Function#cancel | returns a reference to the function');
     setTimeout(function() {
       equal(shouldBeFalse, false, 'Function#delay | cancel is working', { prototype: true, mootools: true });
