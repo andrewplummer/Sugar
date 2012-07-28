@@ -39,6 +39,7 @@ Date.prototype.compare             = function() {};
 Date.getLocale                     = function() {};
 Date.setLocale                     = function() {};
 Date.addLocale                     = function() {};
+DateRange                          = function() {};
 Function.prototype.cancel          = function() {};
 Function.prototype.lazy            = function() {};
 Function.prototype.timers          = []
