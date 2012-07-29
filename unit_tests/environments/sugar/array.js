@@ -1527,6 +1527,13 @@ test('Array', function () {
   equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
 
+  // This test will only be run in a browser environment
+  if(typeof document !== false && document.querySelector) {
+    var body = document.querySelector('body');
+    body.className += ' woot';
+    equal(Array.create(body.classList).any('woot'), true, 'Array.create | handles array-like objects');
+  }
+
 
   // Array#zip
 
