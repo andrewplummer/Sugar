@@ -1617,7 +1617,7 @@ test('Array', function () {
   ];
 
 
-  equal(people.findAll({}), [], 'Array#findAll | complex | empty object');
+  equal(people.findAll({}), people, 'Array#findAll | complex | empty object');
   equal(people.findAll(), [], 'Array#findAll | complex | no arguments');
   equal(people.findAll('age'), [], 'Array#findAll | complex | string argument');
   equal(people.findAll(4), [], 'Array#findAll | complex | number argument');
@@ -2408,7 +2408,7 @@ test('Array', function () {
   equal([one, two, three, four].findAll(undefined), [], 'Array#findAll | matches class instances | undefined');
   equal([one, two, three, four].findAll({ a: 'twof' }), [], 'Array#findAll | matches class instances | nonexistent string');
   equal([one, two, three, four].findAll({ b: 'one' }), [], 'Array#findAll | matches class instances | nonexistent property');
-  equal([one, two, three, four].findAll({}), [], 'Array#findAll | matches class instances | empty object');
+  equal([one, two, three, four].findAll({}), [one, two, three, four], 'Array#findAll | matches class instances | empty object');
   equal([one, two, three, four].findAll({ a: new Date(2001, 3, 15) }), [four], 'Array#findAll | matches class instances | object with correct date');
   equal([one, two, three, four].findAll({ b: new Date(2001, 3, 15) }), [], 'Array#findAll | matches class instances | object with correct date but wrong property');
   equal([one, two, three, four].findAll({ a: new Date(2001, 3, 16) }), [], 'Array#findAll | matches class instances | object with incorrect date');
