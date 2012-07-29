@@ -31,6 +31,7 @@ v1.3
 - String#insert, and Array#insert now treat negative indexes like String#slice
 - Fixed issue with decodeBase64 shim (Issue 145)
 
+- String#toDate is now deprecated.
 - Date parsing formats are now scoped by locale. This means that if the current locale is set to English, only English formats will be parsed when Date#create does not specify a locale, even if a different locale was initialized previously. Numeric and common formats are available in all locales.
 - Added output formats Date#long and Date#full which now included the time. Date#long (mm dd, yyyy hh:mm) is now the default for Date#format, and the previous default (no time) is now Date#short. Date#full includes milliseconds and weekday.
 - Date format "just now" now supported

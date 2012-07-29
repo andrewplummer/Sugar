@@ -24,6 +24,9 @@ v1.3+
   - `Array#has` is deprecated. Use `Array#some` or `Array#any` instead.
 
 - Level: Major
+  - `String#toDate` is deprecated. Use `Date.create` instead.
+
+- Level: Major
   - `String#add`, `String#insert`, `Array#add`, and `Array#insert` now consider negative indexes to be the same as built-in `Array#slice`. This means that adding 'd' to 'abc' at index -1 now results in 'abdc' instead of 'abcd'.
 
 - Level: Major
