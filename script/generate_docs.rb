@@ -185,7 +185,16 @@ def extract_docs(package)
   File.open("lib/#{package}.js", 'r') do |f|
     i = 0
     current_module = nil
-    f.read.scan(/\*\*\*.+?(?:\*\*\*\/|(?=\*\*\*))/m) do |b|
+    b = ''
+    linenum = nil
+    f.each_line do |line|
+      if line =~ /\/\*\*\*/
+        b = ''
+        linenum = f.lineno
+      end
+      is_end = line =~ /\*\*\*\//
+      b << line
+      next if !is_end
       if match = b.match(/@package (\w+)/)
 
         name = match[1]
@@ -210,6 +219,8 @@ def extract_docs(package)
         current_module = @packages[package][:modules][name.to_sym]
       else
         name, method = get_method(b)
+        # Go 5 lines up so there's a little padding (Github doesn't do this)
+        method[:line] = [0, linenum - 5].max
         method[:returns] = get_property(:returns, b)
         method[:short] = get_property(:short, b)
         method[:extra] = get_property(:extra, b)
