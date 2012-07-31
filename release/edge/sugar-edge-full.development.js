@@ -2121,6 +2121,7 @@
     {
       unit: 'year',
       method: 'FullYear',
+      ambiguous: true,
       multiplier: function(d) {
         var adjust = d ? (d.isLeapYear() ? 1 : 0) : 0.25;
         return (365 + adjust) * 24 * 60 * 60 * 1000;
@@ -2622,7 +2623,8 @@
                 // to be set after the actual set because it requires overriding the "prefer" argument which
                 // could unintentionally send the year into the future, past, etc.
                 after = function() {
-                  updateDate(d, { 'weekday': weekday + (7 * (set['num'] - 1)) }, false, false, false, 1);
+                  var w = d.getWeekday();
+                  d.setWeekday((7 * (set['num'] - 1)) + (w > weekday ? weekday + 7 : weekday));
                 }
                 set['day'] = 1;
               } else {
@@ -2852,7 +2854,7 @@
   }
 
   function updateDate(d, params, reset, utc, advance, prefer) {
-    var weekday;
+    var weekday, specificityIndex;
 
     function getParam(key) {
       return isDefined(params[key]) ? params[key] : params[key + 's'];
@@ -2862,8 +2864,9 @@
       return isDefined(getParam(key));
     }
 
-    function canDisambiguate(u, higherUnit) {
-      return prefer && u.ambiguous && !paramExists(higherUnit.unit);
+    function canDisambiguate() {
+      var now = new date;
+      return (prefer === -1 && d > now) || (prefer === 1 && d < now);
     }
 
     if(isNumber(params) && advance) {
@@ -2887,6 +2890,7 @@
       var isDay = u.unit === 'day';
       if(paramExists(u.unit) || (isDay && paramExists('weekday'))) {
         params.specificity = u.unit;
+        specificityIndex = +i;
         return false;
       } else if(reset && u.unit !== 'week' && (!isDay || !paramExists('week'))) {
         // Days are relative to months, not weeks, so don't reset if a week exists.
@@ -2899,17 +2903,6 @@
       var unit = u.unit, method = u.method, higherUnit = DateUnits[i - 1], value;
       value = getParam(unit)
       if(isUndefined(value)) return;
-      if(canDisambiguate(u, higherUnit)) {
-        // Formats like "June" have an ambiguous year. If no preference is stated, this
-        // is fine as "June of this year", however in a future context, this would mean
-        // "the next June", which may be either this year or next year. If we have an
-        // ambiguity *and* a preference for resolving it, then advance or rewind the
-        // higher order as necessary. Note that weekdays are handled differently below.
-        var current = callDateMethod(new date, 'get', utc, u.method);
-        if(current >= value === (prefer === 1)) {
-          d[higherUnit.addMethod](prefer);
-        }
-      }
       if(advance) {
         if(unit === 'week') {
           value  = (params['day'] || 0) + (value * 7);
@@ -2943,18 +2936,17 @@
     // to reflect the updated date so that resetting works properly.
     if(!advance && !paramExists('day') && paramExists('weekday')) {
       var weekday = getParam('weekday'), isAhead, futurePreferred;
-      if(isDefined(prefer)) {
-        // If there is a preference as to whether this weekday is in the future,
-        // then add an offset as needed. NOTE: Was previously doing something much
-        // more one-liner-hipster here, but it made Opera choke (order of operations
-        // bug??) ... better to be more explicit here anyway.
-       isAhead = callDateMethod(d, 'get', utc, 'Day') - (weekday % 7) >= 0;
-       futurePreferred = prefer === 1;
-       if(isAhead === futurePreferred) {
-         weekday += prefer * 7;
-       }
-      }
       callDateMethod(d, 'set', utc, 'Weekday', weekday)
+    }
+
+    if(canDisambiguate()) {
+      iterateOverObject(DateUnitsReversed.slice(specificityIndex + 1), function(i,u) {
+        var ambiguous = u.ambiguous || (u.unit === 'week' && paramExists('weekday'));
+        if(ambiguous && !paramExists(u.unit)) {
+          d[u.addMethod](prefer);
+          return false;
+        }
+      });
     }
     return d;
   }
