@@ -175,6 +175,52 @@ def get_full_size(package)
   File.size("lib/#{package}.js")
 end
 
+def match_block(b, linenum, package)
+  return if b.strip == ''
+  if match = b.match(/@package (\w+)/)
+
+    name = match[1]
+
+    # package dependency
+    match = b.match(/@dependency (.+)/)
+    if match && match[1]
+      @packages[package][:dependency] = match[1]
+    end
+
+    # package description
+    match = b.match(/@description (.+)/)
+    if match && match[1]
+      @packages[package][:description] = match[1]
+    end
+
+    @packages[package][:modules][name.to_sym] ||= {}
+    @current_module = @packages[package][:modules][name.to_sym]
+  elsif match = b.match(/(\w+) module/)
+    name = match[1]
+    @packages[package][:modules][name.to_sym] ||= {}
+    @current_module = @packages[package][:modules][name.to_sym]
+  else
+    name, method = get_method(b)
+    # Go 5 lines up so there's a little padding (Github doesn't do this)
+    method[:line] = [0, linenum - 5].max
+    method[:returns] = get_property(:returns, b)
+    method[:short] = get_property(:short, b)
+    method[:extra] = get_property(:extra, b)
+    method[:set] = get_set(b)
+    method[:examples] = get_examples(b)
+    method[:alias] = get_property(:alias, b)
+    @current_module[name] = method
+    if name == 'stripTags' || name == 'removeTags' || name == 'escapeHTML' || name == 'unescapeHTML'
+      method[:escape_html] = true
+    end
+    if method[:alias]
+      method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
+      method[:short] = "Alias for %#{method[:alias]}%."
+    end
+    clean(method)
+  end
+end
+
 def extract_docs(package)
   @packages[package] ||= {
     :size => get_full_size(package),
@@ -184,59 +230,18 @@ def extract_docs(package)
   }
   File.open("lib/#{package}.js", 'r') do |f|
     i = 0
-    current_module = nil
     b = ''
     linenum = nil
     f.each_line do |line|
       if line =~ /\/\*\*\*/
         b = ''
         linenum = f.lineno
+      elsif line =~ /\*\*\*/
+        match_block(b, linenum, package)
+        b = ''
+        linenum = f.lineno
       end
-      is_end = line =~ /\*\*\*\//
       b << line
-      next if !is_end
-      if match = b.match(/@package (\w+)/)
-
-        name = match[1]
-
-        # package dependency
-        match = b.match(/@dependency (.+)/)
-        if match && match[1]
-          @packages[package][:dependency] = match[1]
-        end
-
-        # package description
-        match = b.match(/@description (.+)/)
-        if match && match[1]
-          @packages[package][:description] = match[1]
-        end
-
-        @packages[package][:modules][name.to_sym] ||= {}
-        current_module = @packages[package][:modules][name.to_sym]
-      elsif match = b.match(/(\w+) module/)
-        name = match[1]
-        @packages[package][:modules][name.to_sym] ||= {}
-        current_module = @packages[package][:modules][name.to_sym]
-      else
-        name, method = get_method(b)
-        # Go 5 lines up so there's a little padding (Github doesn't do this)
-        method[:line] = [0, linenum - 5].max
-        method[:returns] = get_property(:returns, b)
-        method[:short] = get_property(:short, b)
-        method[:extra] = get_property(:extra, b)
-        method[:set] = get_set(b)
-        method[:examples] = get_examples(b)
-        method[:alias] = get_property(:alias, b)
-        current_module[name] = method
-        if name == 'stripTags' || name == 'removeTags' || name == 'escapeHTML' || name == 'unescapeHTML'
-          method[:escape_html] = true
-        end
-        if method[:alias]
-          method.delete_if { |k,v| v.nil? || (v.is_a?(Array) && v.empty?) }
-          method[:short] = "Alias for %#{method[:alias]}%."
-        end
-        clean(method)
-      end
     end
   end
 end
