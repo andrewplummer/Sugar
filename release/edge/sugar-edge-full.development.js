@@ -3539,12 +3539,12 @@
      ***/
     'setWeekday': function(dow) {
       if(isUndefined(dow)) return;
-      this.setDate(this.getDate() + dow - this.getDay());
+      return this.setDate(this.getDate() + dow - this.getDay());
     },
 
     'setUTCWeekday': function(dow) {
       if(isUndefined(dow)) return;
-      this.setDate(this.getUTCDate() + dow - this.getDay());
+      return this.setDate(this.getUTCDate() + dow - this.getDay());
     },
 
      /***
