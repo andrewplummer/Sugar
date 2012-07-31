@@ -2386,6 +2386,13 @@ test('Date', function () {
   equal(Date.future('the 1st Friday of February').getFullYear(), new Date().getMonth() > 1 ? thisYear + 1 : thisYear, 'Date#future | 1st friday of February should be this year or next');
   equal(Date.past('the 1st Friday of February').getFullYear(), new Date().getMonth() < 1 ? thisYear - 1 : thisYear, 'Date#past | 1st friday of February should be this year or last');
 
+
+  equal(Date.future('1:00am').isFuture(), true, 'Date#future | 1am should be the future');
+  equal(Date.future('11:00pm').isFuture(), true, 'Date#future | 11pm should be the future');
+
+  equal(Date.future('1:00am') < Date.create('1 day from now'), true, 'Date#future | 1am should be the future');
+  equal(Date.future('11:00pm') < Date.create('1 day from now'), true, 'Date#future | 11pm should be the future');
+
   dateEqual(Date.create('in 60 seconds'), new Date().addMinutes(1), 'Date#create | in 60 seconds');
   dateEqual(Date.create('in 45 minutes'), new Date().addMinutes(45), 'Date#create | in 45 minutes');
   dateEqual(Date.create('in 5 hours'), new Date().addHours(5), 'Date#create | in 5 hours');
