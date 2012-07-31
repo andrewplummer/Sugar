@@ -626,6 +626,7 @@ test('Date', function () {
   d.setWeekday(6);
   equal(d.getDate(), 28, 'Date#setWeekday | saturday');
 
+  equal(d.setWeekday(6), d.getTime(), 'Date#setWeekday | should return the timestamp');
 
   d = new Date('August 25, 2010 11:45:20');
 
@@ -646,6 +647,7 @@ test('Date', function () {
   d.setUTCWeekday(6);
   equal(d.getDate(), 28, 'Date#setUTCWeekday | saturday');
 
+  equal(d.setUTCWeekday(6), d.getTime(), 'Date#setUTCWeekday | should return the timestamp');
 
   d.setDate(12);
   equal(d.getWeekday(), 4, 'Date#getWeekday | Thursday');
