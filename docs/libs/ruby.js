@@ -627,7 +627,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 2,
         original_code: "str.to_date",
-        sugar_code: "str.toDate();"
+        sugar_code: "Date.create(str);"
       },
       {
         name: 'truncate',
