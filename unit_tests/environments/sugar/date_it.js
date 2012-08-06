@@ -13,6 +13,7 @@ test('Dates | Italian', function () {
   dateEqual(Date.create('2011'), new Date(2011, 0), 'Date#create | Italian | year');
   dateEqual(Date.create('Maggio'), new Date(now.getFullYear(), 4), 'Date#create | Italian | month');
   dateEqual(Date.create('Lunedì'), getDateWithWeekdayAndOffset(1), 'Date#create | Italian | Monday');
+  dateEqual(Date.create('Lun'), getDateWithWeekdayAndOffset(1), 'Date#create | Italian | Monday abbreviated');
 
   dateEqual(Date.create('Martedì, 5 Gennaio 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | Italian | 2012-01-05 3:45');
   dateEqual(Date.create('Martedì, 5 Gennaio 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | Italian | 2012-01-05 3:45pm');

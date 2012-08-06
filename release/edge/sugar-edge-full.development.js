@@ -2345,7 +2345,7 @@
   }
 
   function setLocalization(localeCode, set) {
-    var loc;
+    var loc, canAbbreviate;
 
     function initializeField(name) {
       var val = loc[name];
@@ -2369,16 +2369,15 @@
 
     function setArray(name, abbreviate, multiple) {
       var arr = [];
-      if(!loc[name]) return;
-      loc[name].forEach(function(el, i) {
-        eachAlternate(el, function(str, j) {
-          arr[j * multiple + i] = str.toLowerCase();
+      loc[name].forEach(function(full, i) {
+        if(abbreviate) {
+          full += '+' + full.slice(0,3);
+        }
+        eachAlternate(full, function(day, j) {
+          arr[j * multiple + i] = day.toLowerCase();
         });
       });
-      if(abbreviate) arr = arr.concat(loc[name].map(function(str) {
-        return str.slice(0,3).toLowerCase();
-      }));
-      return loc[name] = arr;
+      loc[name] = arr;
     }
 
     function getDigit(start, stop, allowNumbers) {
@@ -2414,8 +2413,10 @@
     initializeField('modifiers');
     'months,weekdays,units,numbers,articles,optionals,timeMarker,ampm,timeSuffixes,dateParse,timeParse'.split(',').forEach(initializeField);
 
-    setArray('months', true, 12);
-    setArray('weekdays', true, 7);
+    canAbbreviate = !loc['monthSuffix'];
+
+    setArray('months',   canAbbreviate, 12);
+    setArray('weekdays', canAbbreviate, 7);
     setArray('units', false, 8);
     setArray('numbers', false, 10);
 
