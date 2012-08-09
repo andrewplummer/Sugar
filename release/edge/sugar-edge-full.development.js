@@ -2251,6 +2251,10 @@
       return code === 'en' || code === 'en-US' ? true : this['variant'];
     },
 
+    matchAM: function(str) {
+      return str === this['ampm'][0];
+    },
+
     matchPM: function(str) {
       return str === this['ampm'][1];
     },
@@ -2640,6 +2644,8 @@
             // If the time is 1pm-11pm advance the time by 12 hours.
             if(loc.matchPM(set['ampm']) && set['hour'] < 12) {
               set['hour'] += 12;
+            } else if(loc.matchAM(set['ampm']) && set['hour'] === 12) {
+              set['hour'] = 0;
             }
 
             // Adjust for timezone offset

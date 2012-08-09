@@ -2434,4 +2434,7 @@ test('Date', function () {
 
   equal(d1.getTime() === d2.getTime(), false, 'Date.create | created date should not be affected');
 
+  // Simple 12:00am
+
+  equal(Date.create('12:00am').getHours(), 0, 'Date.create| 12:00 hours should be 0');
 });
