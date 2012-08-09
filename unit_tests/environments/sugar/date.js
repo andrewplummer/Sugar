@@ -2436,5 +2436,6 @@ test('Date', function () {
 
   // Simple 12:00am
 
-  equal(Date.create('12:00am').getHours(), 0, 'Date.create| 12:00 hours should be 0');
+  equal(Date.create('12:00am').getHours(), 0, 'Date.create| 12:00am hours should be 0');
+  equal(Date.create('12am').getHours(), 0, 'Date.create| 12am hours should be 0');
 });
