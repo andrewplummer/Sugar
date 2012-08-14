@@ -623,22 +623,22 @@ test('Array', function () {
 
 
 
-  equal([1,2,3].intersect([3,4,5]), [3], 'Array#intersect | 1,2,3 + 3,4,5');
-  equal(['a','b','c'].intersect(['c','d','e']), ['c'], 'Array#intersect | a,b,c + c,d,e');
-  equal([1,2,3].intersect([1,2,3]), [1,2,3], 'Array#intersect | 1,2,3 + 1,2,3');
-  equal([1,2,3].intersect([3,2,1]), [1,2,3], 'Array#intersect | 1,2,3 + 3,2,1');
-  equal([].intersect([3]), [], 'Array#intersect | empty array + 3');
-  equal([3].intersect([]), [], 'Array#intersect | 3 + empty array');
+  equal([1,2,3].intersect([3,4,5]), [3], 'Array#intersect | 1,2,3 & 3,4,5');
+  equal(['a','b','c'].intersect(['c','d','e']), ['c'], 'Array#intersect | a,b,c & c,d,e');
+  equal([1,2,3].intersect([1,2,3]), [1,2,3], 'Array#intersect | 1,2,3 & 1,2,3');
+  equal([1,2,3].intersect([3,2,1]), [1,2,3], 'Array#intersect | 1,2,3 & 3,2,1');
+  equal([].intersect([3]), [], 'Array#intersect | empty array & 3');
+  equal([3].intersect([]), [], 'Array#intersect | 3 & empty array');
   equal([].intersect([]), [], 'Array#intersect | 2 empty arrays');
-  equal([null].intersect([]), [], 'Array#intersect | [null] + empty array');
-  equal([null].intersect([null]), [null], 'Array#intersect | [null] + [null]', { prototype: [], mootools: [] });
-  equal([false].intersect([false]), [false], 'Array#intersect | [false] + [false]', { prototype: [] });
-  equal([false].intersect([0]), [], 'Array#intersect | [false] + [0]');
-  equal([false].intersect([null]), [], 'Array#intersect | [false] + [null]');
-  equal([false].intersect([undefined]), [], 'Array#intersect | [false] + [undefined]');
-  equal([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], 'Array#intersect | a:1,b:2 + b:2,c:3', { prototype: [] });
-  equal([1,1,3].intersect([1,5,6]), [1], 'Array#intersect | 1,1,3 + 1,5,6');
-  equal([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 + 4,5,6');
+  equal([null].intersect([]), [], 'Array#intersect | [null] & empty array');
+  equal([null].intersect([null]), [null], 'Array#intersect | [null] & [null]', { prototype: [], mootools: [] });
+  equal([false].intersect([false]), [false], 'Array#intersect | [false] & [false]', { prototype: [] });
+  equal([false].intersect([0]), [], 'Array#intersect | [false] & [0]');
+  equal([false].intersect([null]), [], 'Array#intersect | [false] & [null]');
+  equal([false].intersect([undefined]), [], 'Array#intersect | [false] & [undefined]');
+  equal([{a:1},{b:2}].intersect([{b:2},{c:3}]), [{b:2}], 'Array#intersect | a:1,b:2 & b:2,c:3', { prototype: [] });
+  equal([1,1,3].intersect([1,5,6]), [1], 'Array#intersect | 1,1,3 & 1,5,6');
+  equal([1,2,3].intersect([4,5,6]), [], 'Array#intersect | 1,1,3 & 4,5,6');
 
   equal([1,2,3].intersect([3,4,5],[0,1]), [1,3], 'Array#intersect | handles multiple arguments', { prototype: [3] });
 
@@ -2216,7 +2216,85 @@ test('Array', function () {
 
 
   equal([function(){ return 'a' }].intersect([function() { return 'a'; }, function() { return 'b'; }]), [], 'Array#intersect | functions are always unique');
-  equal([xFunc].intersect([xFunc, yFunc]), [xFunc], 'Array#intersect | function references are ===');
+
+  equal([xFunc].intersect([]), [], 'Array#intersect | functions with different content | [x] & []');
+  equal([yFunc].intersect([]), [], 'Array#intersect | functions with different content | [y] & []');
+  equal([].intersect([xFunc]), [], 'Array#intersect | functions with different content | [] & [x]');
+  equal([].intersect([yFunc]), [], 'Array#intersect | functions with different content | [] & [y]');
+  equal([].intersect([xFunc, yFunc]), [], 'Array#intersect | functions with different content | [] & [x,y]');
+  equal([xFunc].intersect([xFunc]), [xFunc], 'Array#intersect | functions with different content | [x] & [x]');
+  equal([xFunc].intersect([yFunc]), [], 'Array#intersect | functions with different content | [x] & [y]');
+  equal([xFunc].intersect([xFunc, yFunc]), [xFunc], 'Array#intersect | functions with different content | [x] & [x,y]');
+  equal([xFunc, xFunc].intersect([xFunc, yFunc]), [xFunc], 'Array#intersect | functions with different content | [x,x] & [x,y]');
+  equal([xFunc, xFunc].intersect([xFunc, xFunc]), [xFunc], 'Array#intersect | functions with different content | [x,x] & [x,x]');
+  equal([xFunc, yFunc].intersect([xFunc, yFunc]), [xFunc,yFunc], 'Array#intersect | functions with different content | [x,y] & [x,y]');
+  equal([xFunc, yFunc].intersect([yFunc, xFunc]), [xFunc,yFunc], 'Array#intersect | functions with different content | [x,y] & [y,x]');
+  equal([xFunc, yFunc].intersect([yFunc, yFunc]), [yFunc], 'Array#intersect | functions with different content | [x,y] & [y,y]');
+  equal([yFunc, xFunc].intersect([yFunc, xFunc]), [yFunc,xFunc], 'Array#intersect | functions with different content | [y,x] & [y,x]');
+  equal([yFunc, xFunc].intersect([xFunc, yFunc]), [yFunc,xFunc], 'Array#intersect | functions with different content | [y,x] & [x,y]');
+  equal([yFunc, xFunc].intersect([xFunc, xFunc]), [xFunc], 'Array#intersect | functions with different content | [y,x] & [x,x]');
+  equal([xFunc, xFunc].intersect([yFunc, yFunc]), [], 'Array#intersect | functions with different content | [x,x] & [y,y]');
+  equal([yFunc, yFunc].intersect([xFunc, xFunc]), [], 'Array#intersect | functions with different content | [y,y] & [x,x]');
+
+  equal([xFunc].subtract([]), [xFunc], 'Array#subtract | functions with different content | [x] - []');
+  equal([yFunc].subtract([]), [yFunc], 'Array#subtract | functions with different content | [y] - []');
+  equal([].subtract([xFunc]), [], 'Array#subtract | functions with different content | [] - [x]');
+  equal([].subtract([yFunc]), [], 'Array#subtract | functions with different content | [] - [y]');
+  equal([].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with different content | [] - [x,y]');
+  equal([xFunc].subtract([xFunc]), [], 'Array#subtract | functions with different content | [x] - [x]');
+  equal([xFunc].subtract([yFunc]), [xFunc], 'Array#subtract | functions with different content | [x] - [y]');
+  equal([xFunc].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with different content | [x] - [x,y]');
+  equal([xFunc, xFunc].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with different content | [x,x] - [x,y]');
+  equal([xFunc, xFunc].subtract([xFunc, xFunc]), [], 'Array#subtract | functions with different content | [x,x] - [x,x]');
+  equal([xFunc, yFunc].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with different content | [x,y] - [x,y]');
+  equal([xFunc, yFunc].subtract([yFunc, xFunc]), [], 'Array#subtract | functions with different content | [x,y] - [y,x]');
+  equal([xFunc, yFunc].subtract([yFunc, yFunc]), [xFunc], 'Array#subtract | functions with different content | [x,y] - [y,y]');
+  equal([yFunc, xFunc].subtract([yFunc, xFunc]), [], 'Array#subtract | functions with different content | [y,x] - [y,x]');
+  equal([yFunc, xFunc].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with different content | [y,x] - [x,y]');
+  equal([yFunc, xFunc].subtract([xFunc, xFunc]), [yFunc], 'Array#subtract | functions with different content | [y,x] - [x,x]');
+  equal([xFunc, xFunc].subtract([yFunc, yFunc]), [xFunc,xFunc], 'Array#subtract | functions with different content | [x,x] - [y,y]');
+  equal([yFunc, yFunc].subtract([xFunc, xFunc]), [yFunc,yFunc], 'Array#subtract | functions with different content | [y,y] - [x,x]');
+
+  xFunc = function() {};
+  yFunc = function() {};
+
+  equal([xFunc].intersect([]), [], 'Array#intersect | functions with identical content | [x] & []');
+  equal([yFunc].intersect([]), [], 'Array#intersect | functions with identical content | [y] & []');
+  equal([].intersect([xFunc]), [], 'Array#intersect | functions with identical content | [] & [x]');
+  equal([].intersect([yFunc]), [], 'Array#intersect | functions with identical content | [] & [y]');
+  equal([].intersect([xFunc, yFunc]), [], 'Array#intersect | functions with identical content | [] & [x,y]');
+  equal([xFunc].intersect([xFunc]), [xFunc], 'Array#intersect | functions with identical content | [x] & [x]');
+  equal([xFunc].intersect([yFunc]), [], 'Array#intersect | functions with identical content | [x] & [y]');
+  equal([xFunc].intersect([xFunc, yFunc]), [xFunc], 'Array#intersect | functions with identical content | [x] & [x,y]');
+  equal([xFunc, xFunc].intersect([xFunc, yFunc]), [xFunc], 'Array#intersect | functions with identical content | [x,x] & [x,y]');
+  equal([xFunc, xFunc].intersect([xFunc, xFunc]), [xFunc], 'Array#intersect | functions with identical content | [x,x] & [x,x]');
+  equal([xFunc, yFunc].intersect([xFunc, yFunc]), [xFunc,yFunc], 'Array#intersect | functions with identical content | [x,y] & [x,y]');
+  equal([xFunc, yFunc].intersect([yFunc, xFunc]), [xFunc,yFunc], 'Array#intersect | functions with identical content | [x,y] & [y,x]');
+  equal([xFunc, yFunc].intersect([yFunc, yFunc]), [yFunc], 'jrray#intersect | functions with identical content | [x,y] & [y,y]');
+  equal([yFunc, xFunc].intersect([yFunc, xFunc]), [yFunc,xFunc], 'Array#intersect | functions with identical content | [y,x] & [y,x]');
+  equal([yFunc, xFunc].intersect([xFunc, yFunc]), [yFunc,xFunc], 'Array#intersect | functions with identical content | [y,x] & [x,y]');
+  equal([yFunc, xFunc].intersect([xFunc, xFunc]), [xFunc], 'Array#intersect | functions with identical content | [y,x] & [x,x]');
+  equal([xFunc, xFunc].intersect([yFunc, yFunc]), [], 'Array#intersect | functions with identical content | [x,x] & [y,y]');
+  equal([yFunc, yFunc].intersect([xFunc, xFunc]), [], 'Array#intersect | functions with identical content | [y,y] & [x,x]');
+
+  equal([xFunc].subtract([]), [xFunc], 'Array#subtract | functions with identical content | [x] - []');
+  equal([yFunc].subtract([]), [yFunc], 'Array#subtract | functions with identical content | [y] - []');
+  equal([].subtract([xFunc]), [], 'Array#subtract | functions with identical content | [] - [x]');
+  equal([].subtract([yFunc]), [], 'Array#subtract | functions with identical content | [] - [y]');
+  equal([].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with identical content | [] - [x,y]');
+  equal([xFunc].subtract([xFunc]), [], 'Array#subtract | functions with identical content | [x] - [x]');
+  equal([xFunc].subtract([yFunc]), [xFunc], 'Array#subtract | functions with identical content | [x] - [y]');
+  equal([xFunc].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with identical content | [x] - [x,y]');
+  equal([xFunc, xFunc].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with identical content | [x,x] - [x,y]');
+  equal([xFunc, xFunc].subtract([xFunc, xFunc]), [], 'Array#subtract | functions with identical content | [x,x] - [x,x]');
+  equal([xFunc, yFunc].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with identical content | [x,y] - [x,y]');
+  equal([xFunc, yFunc].subtract([yFunc, xFunc]), [], 'Array#subtract | functions with identical content | [x,y] - [y,x]');
+  equal([xFunc, yFunc].subtract([yFunc, yFunc]), [xFunc], 'Array#subtract | functions with identical content | [x,y] - [y,y]');
+  equal([yFunc, xFunc].subtract([yFunc, xFunc]), [], 'Array#subtract | functions with identical content | [y,x] - [y,x]');
+  equal([yFunc, xFunc].subtract([xFunc, yFunc]), [], 'Array#subtract | functions with identical content | [y,x] - [x,y]');
+  equal([yFunc, xFunc].subtract([xFunc, xFunc]), [yFunc], 'Array#subtract | functions with identical content | [y,x] - [x,x]');
+  equal([xFunc, xFunc].subtract([yFunc, yFunc]), [xFunc,xFunc], 'Array#subtract | functions with identical content | [x,x] - [y,y]');
+  equal([yFunc, yFunc].subtract([xFunc, xFunc]), [yFunc,yFunc], 'Array#subtract | functions with identical content | [y,y] - [x,x]');
 
   equal([function(){ return 'a' }, function() { return 'b'; }].subtract([function() { return 'a'; }]).length, 2, 'Array#subtract | functions are always unique');
   equal([xFunc, yFunc].subtract([xFunc]), [yFunc], 'Array#subtract | function references are ===');
@@ -2384,6 +2462,53 @@ test('Array', function () {
   }
 
   equal([aObj].union([bObj]).length, 1, 'Array#union | Properties may not be in the same order.');
+
+
+  xFunc = function (){ return 'x'; }
+  yFunc = function (){ return 'y'; }
+
+  equal([xFunc].union([]), [xFunc], 'Array#union | functions with different content | [x] + []');
+  equal([yFunc].union([]), [yFunc], 'Array#union | functions with different content | [y] + []');
+  equal([].union([xFunc]), [xFunc], 'Array#union | functions with different content | [] + [x]');
+  equal([].union([yFunc]), [yFunc], 'Array#union | functions with different content | [] + [y]');
+  equal([].union([xFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with different content | [] + [x,y]');
+  equal([xFunc].union([xFunc]), [xFunc], 'Array#union | functions with different content | [x] + [x]');
+  equal([xFunc].union([yFunc]), [xFunc,yFunc], 'Array#union | functions with different content | [x] + [y]');
+  equal([xFunc].union([xFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with different content | [x] + [x,y]');
+  equal([xFunc, xFunc].union([xFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with different content | [x,x] + [x,y]');
+  equal([xFunc, xFunc].union([xFunc, xFunc]), [xFunc], 'Array#union | functions with different content | [x,x] + [x,x]');
+  equal([xFunc, yFunc].union([xFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with different content | [x,y] + [x,y]');
+  equal([xFunc, yFunc].union([yFunc, xFunc]), [xFunc,yFunc], 'Array#union | functions with different content | [x,y] + [y,x]');
+  equal([xFunc, yFunc].union([yFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with different content | [x,y] + [y,y]');
+  equal([yFunc, xFunc].union([yFunc, xFunc]), [yFunc,xFunc], 'Array#union | functions with different content | [y,x] + [y,x]');
+  equal([yFunc, xFunc].union([xFunc, yFunc]), [yFunc,xFunc], 'Array#union | functions with different content | [y,x] + [x,y]');
+  equal([yFunc, xFunc].union([xFunc, xFunc]), [yFunc,xFunc], 'Array#union | functions with different content | [y,x] + [x,x]');
+  equal([xFunc, xFunc].union([yFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with different content | [x,x] + [y,y]');
+  equal([yFunc, yFunc].union([xFunc, xFunc]), [yFunc,xFunc], 'Array#union | functions with different content | [y,y] + [x,x]');
+
+
+  xFunc = function (){}
+  yFunc = function (){}
+
+  equal([xFunc].union([]), [xFunc], 'Array#union | functions with identical content | [x] + []');
+  equal([yFunc].union([]), [yFunc], 'Array#union | functions with identical content | [y] + []');
+  equal([].union([xFunc]), [xFunc], 'Array#union | functions with identical content | [] + [x]');
+  equal([].union([yFunc]), [yFunc], 'Array#union | functions with identical content | [] + [y]');
+  equal([].union([xFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with identical content | [] + [x,y]');
+  equal([xFunc].union([xFunc]), [xFunc], 'Array#union | functions with identical content | [x] + [x]');
+  equal([xFunc].union([yFunc]), [xFunc,yFunc], 'Array#union | functions with identical content | [x] + [y]');
+  equal([xFunc].union([xFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with identical content | [x] + [x,y]');
+  equal([xFunc, xFunc].union([xFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with identical content | [x,x] + [x,y]');
+  equal([xFunc, xFunc].union([xFunc, xFunc]), [xFunc], 'Array#union | functions with identical content | [x,x] + [x,x]');
+  equal([xFunc, yFunc].union([xFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with identical content | [x,y] + [x,y]');
+  equal([xFunc, yFunc].union([yFunc, xFunc]), [xFunc,yFunc], 'Array#union | functions with identical content | [x,y] + [y,x]');
+  equal([xFunc, yFunc].union([yFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with identical content | [x,y] + [y,y]');
+  equal([yFunc, xFunc].union([yFunc, xFunc]), [yFunc,xFunc], 'Array#union | functions with identical content | [y,x] + [y,x]');
+  equal([yFunc, xFunc].union([xFunc, yFunc]), [yFunc,xFunc], 'Array#union | functions with identical content | [y,x] + [x,y]');
+  equal([yFunc, xFunc].union([xFunc, xFunc]), [yFunc,xFunc], 'Array#union | functions with identical content | [y,x] + [x,x]');
+  equal([xFunc, xFunc].union([yFunc, yFunc]), [xFunc,yFunc], 'Array#union | functions with identical content | [x,x] + [y,y]');
+  equal([yFunc, yFunc].union([xFunc, xFunc]), [yFunc,xFunc], 'Array#union | functions with identical content | [y,y] + [x,x]');
+
 
 
   // Issue #157 Ensure that instances can be subject to fuzzy matches despite not being "objects"
