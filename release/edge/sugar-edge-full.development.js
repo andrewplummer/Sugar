@@ -877,12 +877,10 @@
   }
 
   function arrayUnique(arr, map) {
-    var result = [], o = {}, stringified, transformed;
+    var result = [], o = {}, transformed;
     arrayEach(arr, function(el, i) {
       transformed = map ? transformArgument(el, map, arr, [el, i, arr]) : el;
-      stringified = stringify(transformed);
-      if(!arrayObjectExists(o, stringified, el)) {
-        o[stringified] = transformed;
+      if(!checkForElementInHashAndSet(o, transformed)) {
         result.push(el);
       }
     })
@@ -892,15 +890,16 @@
   function arrayIntersect(arr1, arr2, subtract) {
     var result = [], o = {};
     arr2.each(function(el) {
-      o[stringify(el)] = el;
+      checkForElementInHashAndSet(o, el);
     });
     arr1.each(function(el) {
-      var stringified = stringify(el), exists = arrayObjectExists(o, stringified, el);
+      var stringified = stringify(el),
+          isReference = isFunction(el);
       // Add the result to the array if:
       // 1. We're subtracting intersections or it doesn't already exist in the result and
       // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
-      if(exists != subtract) {
-        delete o[stringified];
+      if(elementExistsInHash(o, stringified, el, isReference) != subtract) {
+        discardElementFromHash(o, stringified, el, isReference);
         result.push(el);
       }
     });
@@ -929,8 +928,43 @@
     return result;
   }
 
-  function arrayObjectExists(hash, stringified, obj) {
-    return stringified in hash && (typeof obj !== 'function' || obj === hash[stringified]);
+  function elementExistsInHash(hash, key, element, isReference) {
+    var exists = key in hash;
+    if(isReference) {
+      if(!hash[key]) {
+        hash[key] = [];
+      }
+      exists = hash[key].indexOf(element) !== -1;
+    }
+    return exists;
+  }
+
+  function checkForElementInHashAndSet(hash, element) {
+    var stringified = stringify(element),
+        isReference = isFunction(element),
+        exists = elementExistsInHash(hash, stringified, element, isReference);
+    if(isReference) {
+      hash[stringified].push(element);
+    } else {
+      hash[stringified] = element;
+    }
+    return exists;
+  }
+
+  function discardElementFromHash(hash, key, element, isReference) {
+    var arr, i = 0;
+    if(isReference) {
+      arr = hash[key];
+      while(i < arr.length) {
+        if(arr[i] === element) {
+          arr.splice(i, 1);
+        } else {
+          i += 1;
+        }
+      }
+    } else {
+      delete hash[key];
+    }
   }
 
 
