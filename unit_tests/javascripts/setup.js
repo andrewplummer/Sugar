@@ -46,7 +46,7 @@ var arrayEqual = function(one, two) {
   var i, result = true;
   // This MUST be .each as we can have very large sparse arrays in the tests!
   testArrayEach(one, function(a, i) {
-    if(!isEqual(one[i], two[i])) {
+    if(!testIsEqual(one[i], two[i])) {
       result = false;
     }
   });
@@ -137,7 +137,7 @@ var objectEqual = function(one, two) {
   for(key in one) {
     if(!one.hasOwnProperty(key)) continue;
     onep++;
-    if(!isEqual(one[key], two[key])) {
+    if(!testIsEqual(one[key], two[key])) {
       return false;
     }
   }
@@ -148,7 +148,7 @@ var objectEqual = function(one, two) {
   return onep === twop && one.toString() === two.toString();
 }
 
-var isEqual = function(one, two) {
+var testIsEqual = function(one, two) {
   if(one === nullScope && two === nullScope) {
     // Null scope should always be a strict equal check
     return true;
@@ -303,7 +303,7 @@ equal = function(actual, expected, message, exceptions, stack) {
     expected = exceptions[environment];
   }
   currentTest.assertions++;
-  if(!isEqual(actual, expected)) {
+  if(!testIsEqual(actual, expected)) {
     addFailure(actual, expected, message, stack);
   }
 }
