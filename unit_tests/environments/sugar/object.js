@@ -23,7 +23,7 @@ test('Object', function () {
   equal(Object.isObject(), false, 'Object.isObject | blank');
   equal(Object.isObject(false), false, 'Object.isObject | false');
   equal(Object.isObject(true), false, 'Object.isObject | true');
-  equal(Object.isObject(p), false, 'Object.isObject | {}');
+  equal(Object.isObject(p), true, 'Object.isObject | {}');
 
   equal(Object.isArray({}), false, 'Object.isArray | {}');
   equal(Object.isArray([]), true, 'Object.isArray | []');
