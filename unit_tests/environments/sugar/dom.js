@@ -17,16 +17,25 @@ test('DOM', function () {
 
     equal([el1].subtract([el1]), [], 'Array#subtract | DOM Elements | [a] - [a]');
     equal([el1].subtract([el2]), [el1], 'Array#subtract | DOM Elements | [a] - [b]');
+    equal([el1,el2].subtract([el2]), [el1], 'Array#subtract | DOM Elements | [a,b] - [b]');
+    equal([el1,el2].subtract([el1,el2]), [], 'Array#subtract | DOM Elements | [a,b] - [a,b]');
 
     equal([el1].intersect([el2]), [], 'Array#intersect | DOM Elements | [a] & [b]');
     equal([el1].intersect([el1]), [el1], 'Array#intersect | DOM Elements | [a] & [a]');
     equal([el1,el2].intersect([el2]), [el2], 'Array#intersect | DOM Elements | [a,b] & [b]');
     equal([el1,el2].intersect([el1,el2]), [el1,el2], 'Array#intersect | DOM Elements | [a,b] & [b]');
 
-    equal([el1,el2].any(el1), true, 'Array#any | DOM Elements | any a');
-    equal([el1,el2].any(el2), true, 'Array#any | DOM Elements | any b');
-    equal([el1].any(el1), true, 'Array#any | DOM Elements | any b');
-    equal([el1].any(el2), false, 'Array#any | DOM Elements | any b');
+    equal([el1,el2].any(el1), true, 'Array#any | DOM Elements | a in [a,b]');
+    equal([el1,el2].any(el2), true, 'Array#any | DOM Elements | b in [a,b]');
+    equal([el1].any(el1), true, 'Array#any | DOM Elements | a in [a]');
+    equal([el1].any(el2), false, 'Array#any | DOM Elements | b in [a]');
+
+    equal([el1,el2].every(el1), false, 'Array#every | DOM Elements | a in [a,b]');
+    equal([el1,el2].every(el2), false, 'Array#every | DOM Elements | b in [a,b]');
+    equal([el1].every(el1), true, 'Array#every | DOM Elements | a in [a]');
+    equal([el1].every(el2), false, 'Array#every | DOM Elements | b in [a]');
+
+
   });
 
 
