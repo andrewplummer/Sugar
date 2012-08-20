@@ -1,3 +1,20 @@
+v1.3.1
+======
+
+
+### API Changes ###
+
+- Matching by value in arrays is now opt-in and must meet certain requirements, namely being of class [object Object], and having `hasOwnProperty`. This will notably now exclude functions and host objects.
+
+- Fixed issue with Array.create not properly creating arrays #171
+- Timers set by delays are now exposed #170
+- Empty objects now match themselves in arrays #176
+- Date#setWeekday now returns a timestamp for consistency with Date#setDay #181
+- Various date parsing fixes.
+
+
+
+
 v1.3
 ======
 
