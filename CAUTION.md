@@ -10,6 +10,16 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.3.1+
+=======
+
+
+- Level: Major
+  - Array methods that allow fuzzy matching on an object (`findAll`, `filter`, `some`, etc.) as well as `unique`, `intersect`, `union`, and `subtract`, will now match by reference unless certain conditions are met. Most notably this means that arrays of functions as well as arrays of host objects (DOM elements, etc.) will now only match elements that are strictly true by reference (`===`). If you are using arrays of host objects or functions (event handlers and the like), use caution upgrading. Other kinds of arrays such as primitives (strings, numbers, etc) as well as object literals and instances of user-defined objects should not be affected.
+
+- Level: Minor
+  - Array methods matching an empty object `{}` will now return true instead of false against another empty object.
+
 v1.3+
 =======
 
