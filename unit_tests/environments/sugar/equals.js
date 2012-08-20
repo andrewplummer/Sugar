@@ -98,6 +98,7 @@ test('Equality', function() {
 
   equal(Object.equal({}, []), false, "Object literals and array literals are not equal");
   equal(Object.equal([], {}), false, "Commutative equality is implemented for objects and arrays");
+  equal(Object.equal((function(){ return arguments; })(), (function(){ return arguments; })()), true, "Empty arguments objects are equal");
 
   // Arrays with primitive and object values.
   equal(Object.equal([1, true, "Larry", true], [1, true, "Larry", true]), true, "Arrays containing identical primitives are equal");
