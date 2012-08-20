@@ -44,7 +44,6 @@ var deepEqual = function(one, two) {
 
 var arrayEqual = function(one, two) {
   var i, result = true;
-  // This MUST be .each as we can have very large sparse arrays in the tests!
   testArrayEach(one, function(a, i) {
     if(!testIsEqual(one[i], two[i])) {
       result = false;
@@ -155,14 +154,18 @@ var testIsEqual = function(one, two) {
   } else if(typeof two == 'number' && typeof one == 'number' && isNaN(two) && isNaN(one)) {
     // NaN is NaN: equal
     return true;
-  } else if(typeof two == 'object' && typeof one == 'object' && two != null && one != null && deepEqual(two, one)) {
-    // Deeply equal
-    return true;
   } else if(two === null && one === null) {
     // null is null: equal
     return true;
   } else if(two === undefined && one === undefined) {
     // undefined is undefined: equal
+    return true;
+  } else if(testCanBeDeeplyCompared(one) && testCanBeDeeplyCompared(two) && deepEqual(one, two)) {
+    // Deeply equal
+    return true;
+  } else if(testIsClass(one, 'Date') && testIsClass(two, 'Date') && one.getTime() === two.getTime()) {
+    return true;
+  } else if(testIsClass(one, 'RegExp') && testIsClass(two, 'RegExp') && String(one) === String(two)) {
     return true;
   } else if(one === two) {
     // Strictly equal
@@ -170,6 +173,15 @@ var testIsEqual = function(one, two) {
   } else {
     return false;
   }
+}
+
+var testCanBeDeeplyCompared = function(obj) {
+  var klass = Object.prototype.toString.call(obj);
+  return typeof obj === 'object' && ('hasOwnProperty' in obj) && (klass === '[object Object]' || klass === '[object Array]');
+}
+
+var testIsClass = function(obj, klass) {
+  return Object.prototype.toString.call(obj) === '[object ' + klass + ']';
 }
 
 var addFailure = function(actual, expected, message, stack, warning) {
