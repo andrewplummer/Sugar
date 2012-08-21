@@ -180,6 +180,19 @@ test('Function', function () {
   });
 
 
+  async(function() {
+    var counter = 0;
+    var fn = (function() { counter++; }).debounce(50);
+    fn();
+    fn();
+    fn();
+    fn.cancel();
+    equal(counter, 0, 'Function#debounce | debounced functions can also be canceled | immediate');
+    setTimeout(function() {
+      equal(counter, 0, 'Function#debounce | debounced functions can also be canceled | after delay');
+    }, 100);
+  });
+
   // Function#throttle
 
   async(function(){
