@@ -1,6 +1,5 @@
 
 
-
   /***
    * @package Array
    * @dependency core
@@ -29,7 +28,7 @@
       });
       return result;
     } else {
-      return stringify(el) === stringify(match);
+      return isEqual(el, match);
     }
   }
 
@@ -114,7 +113,7 @@
     });
     arr1.each(function(el) {
       var stringified = stringify(el),
-          isReference = isFunction(el);
+          isReference = !objectIsMatchedByValue(el);
       // Add the result to the array if:
       // 1. We're subtracting intersections or it doesn't already exist in the result and
       // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
@@ -161,7 +160,7 @@
 
   function checkForElementInHashAndSet(hash, element) {
     var stringified = stringify(element),
-        isReference = isFunction(element),
+        isReference = !objectIsMatchedByValue(element),
         exists = elementExistsInHash(hash, stringified, element, isReference);
     if(isReference) {
       hash[stringified].push(element);
@@ -186,7 +185,6 @@
       delete hash[key];
     }
   }
-
 
   // Support methods
 
