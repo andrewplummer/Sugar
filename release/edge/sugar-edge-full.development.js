@@ -24,7 +24,7 @@
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
   var definePropertySupport = object.defineProperty && object.defineProperties;
 
-  // Class initializers and isClass type helpers
+  // Class initializers and class helpers
 
   var ClassNames = 'Array,Boolean,Date,Function,Number,String,RegExp'.split(',');
 
@@ -38,12 +38,12 @@
 
   function buildClassCheck(type) {
     return function(obj) {
-      return isClass(obj, type);
+      return className(obj) === '[object '+type+']';
     }
   }
 
-  function isClass(obj, str) {
-    return object.prototype.toString.call(obj) === '[object '+str+']';
+  function className(obj) {
+    return object.prototype.toString.call(obj);
   }
 
   function initializeClasses() {
@@ -149,7 +149,9 @@
 
   function isObject(obj) {
     // === on the constructor is not safe across iframes
-    return !!obj && isClass(obj, 'Object') && string(obj.constructor) === string(object);
+    // 'hasOwnProperty' ensures that the object also inherits
+    // from Object, which is false for DOMElements in IE.
+    return !!obj && className(obj) === '[object Object]' && 'hasOwnProperty' in obj;
   }
 
   function hasOwnProperty(obj, key) {
@@ -263,16 +265,20 @@
   // Used by Array#unique and Object.equal
 
   function stringify(thing, stack) {
-    var value, klass, isObject, isArray, arr, i, key, type = typeof thing;
+    var type = typeof thing,
+        thingIsObject,
+        thingIsArray,
+        klass, value,
+        arr, key, i;
 
     // Return quickly if string to save cycles
     if(type === 'string') return thing;
 
-    klass    = object.prototype.toString.call(thing)
-    isObject = klass === '[object Object]';
-    isArray  = klass === '[object Array]';
+    klass         = object.prototype.toString.call(thing)
+    thingIsObject = isObject(thing);
+    thingIsArray  = klass === '[object Array]';
 
-    if(thing != null && isObject || isArray) {
+    if(thing != null && thingIsObject || thingIsArray) {
       // This method for checking for cyclic structures was egregiously stolen from
       // the ingenious method by @kitcambridge from the Underscore script:
       // https://github.com/documentcloud/underscore/issues/240
@@ -291,18 +297,38 @@
       }
       stack.push(thing);
       value = string(thing.constructor);
-      arr = isArray ? thing : object.keys(thing).sort();
+      arr = thingIsArray ? thing : object.keys(thing).sort();
       for(i = 0; i < arr.length; i++) {
-        key = isArray ? i : arr[i];
+        key = thingIsArray ? i : arr[i];
         value += key + stringify(thing[key], stack);
       }
       stack.pop();
     } else if(1 / thing === -Infinity) {
       value = '-0';
     } else {
-      value = string(thing && thing.valueOf());
+      value = string(thing && thing.valueOf ? thing.valueOf() : thing);
     }
     return type + klass + value;
+  }
+
+  function isEqual(a, b) {
+    if(objectIsMatchedByValue(a) && objectIsMatchedByValue(b)) {
+      return stringify(a) === stringify(b);
+    } else {
+      return a === b;
+    }
+  }
+
+  function objectIsMatchedByValue(obj) {
+    var klass = className(obj);
+    return klass === '[object Date]'      ||
+           klass === '[object Array]'     ||
+           klass === '[object String]'    ||
+           klass === '[object Number]'    ||
+           klass === '[object RegExp]'    ||
+           klass === '[object Boolean]'   ||
+           klass === '[object Arguments]' ||
+           isObject(obj);
   }
 
 
@@ -454,7 +480,7 @@
      *
      ***/
     'isArray': function(obj) {
-      return isClass(obj, 'Array');
+      return isArray(obj);
     }
 
   });
@@ -780,7 +806,6 @@
 
 
 
-
   /***
    * @package Array
    * @dependency core
@@ -809,7 +834,7 @@
       });
       return result;
     } else {
-      return stringify(el) === stringify(match);
+      return isEqual(el, match);
     }
   }
 
@@ -894,7 +919,7 @@
     });
     arr1.each(function(el) {
       var stringified = stringify(el),
-          isReference = isFunction(el);
+          isReference = !objectIsMatchedByValue(el);
       // Add the result to the array if:
       // 1. We're subtracting intersections or it doesn't already exist in the result and
       // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
@@ -941,7 +966,7 @@
 
   function checkForElementInHashAndSet(hash, element) {
     var stringified = stringify(element),
-        isReference = isFunction(element),
+        isReference = !objectIsMatchedByValue(element),
         exists = elementExistsInHash(hash, stringified, element, isReference);
     if(isReference) {
       hash[stringified].push(element);
@@ -966,7 +991,6 @@
       delete hash[key];
     }
   }
-
 
   // Support methods
 
@@ -2540,10 +2564,12 @@
   function getDateParamsFromString(str, num) {
     var params = {};
     match = str.match(/^(\d+)?\s?(\w+?)s?$/i);
-    if(isUndefined(num)) {
-      num = parseInt(match[1]) || 1;
+    if(match) {
+      if(isUndefined(num)) {
+        num = parseInt(match[1]) || 1;
+      }
+      params[match[2].toLowerCase()] = num;
     }
-    params[match[2].toLowerCase()] = num;
     return params;
   }
 
@@ -4396,13 +4422,14 @@
    ***/
 
   function setDelay(fn, ms, after, scope, args) {
+    var index;
     if(!fn.timers) fn.timers = [];
     if(!isNumber(ms)) ms = 0;
     fn.timers.push(setTimeout(function(){
       fn.timers.splice(index, 1);
       after.apply(scope, args || []);
     }, ms));
-    var index = fn.timers.length;
+    index = fn.timers.length;
   }
 
   extend(Function, true, false, {
@@ -4503,10 +4530,11 @@
      ***/
     'debounce': function(ms) {
       var fn = this;
-      return function() {
-        fn.cancel();
-        setDelay(fn, ms, fn, this, arguments);
-      }
+      function debounced() {
+        debounced.cancel();
+        setDelay(debounced, ms, fn, this, arguments);
+      };
+      return debounced;
     },
 
      /***
@@ -5103,7 +5131,7 @@
       var method = 'is' + name;
       ObjectTypeMethods.push(method);
       methods[method] = function(obj) {
-        return isClass(obj, name);
+        return className(obj) === '[object '+name+']';
       }
     });
   }
@@ -5198,7 +5226,7 @@
      *
      ***/
     'equal': function(a, b) {
-      return stringify(a) === stringify(b);
+      return isEqual(a, b);
     },
 
     /***

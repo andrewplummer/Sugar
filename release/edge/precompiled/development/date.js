@@ -511,10 +511,12 @@
   function getDateParamsFromString(str, num) {
     var params = {};
     match = str.match(/^(\d+)?\s?(\w+?)s?$/i);
-    if(isUndefined(num)) {
-      num = parseInt(match[1]) || 1;
+    if(match) {
+      if(isUndefined(num)) {
+        num = parseInt(match[1]) || 1;
+      }
+      params[match[2].toLowerCase()] = num;
     }
-    params[match[2].toLowerCase()] = num;
     return params;
   }
 
