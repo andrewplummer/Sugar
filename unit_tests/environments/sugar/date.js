@@ -47,15 +47,6 @@ test('Date', function () {
 
 
 
-  // All date modifications are clones
-
-  d.toUTC();
-
-  dateEqual(d, new Date(1998, 0), 'Date#toUTC | should not affect original date');
-  dateEqual(d.toUTC().toUTC(), d.toUTC(), 'Date#toUTC | cannot be chained');
-  equal(Date.create().toUTC().isUTC(), true, 'Date#isUTC | can be set by toUTC');
-
-
   // Date constructor accepts enumerated parameters
 
   dateEqual(Date.create(1998), new Date(1998), 'Date#create | enumerated | 1998');
@@ -87,7 +78,7 @@ test('Date', function () {
   var timestamp = 1294012800000;
   d = Date.create(timestamp); // 2011-01-03 00:00:00 
 
-  equal(d.getFullYear(), 2011, 'Date#create | Accepts numbers | 2011');
+  equal(d.getFullYear(), 2011, 'Date#create | Accepts numbers | 2011')
   equal(d.getMonth(), 0, 'Date#create | Accepts numbers | January');
   equal(d.getDate(), Math.floor(3 - (d.getTimezoneOffset() / 60 / 24)), 'Date#create | Accepts numbers | January');
 
@@ -111,9 +102,10 @@ test('Date', function () {
   dateEqual(Date.create('8/25/49'), new Date(2049, 7, 25), 'Date#create | American style slashes | m/dd/49');
   dateEqual(Date.create('8/25/50'), new Date(1950, 7, 25), 'Date#create | American style slashes | m/dd/50');
 
+
   // August 25, 0001... the numeral 1 gets interpreted as 1901...
   // freakin' unbelievable...
-  dateEqual(Date.create('08/25/0001'), new Date(-62115206400000).toUTC(), 'Date#create | American style slashes | mm/dd/0001');
+  dateEqual(toUTC(Date.create('08/25/0001')), new Date(-62115206400000), 'Date#create | American style slashes | mm/dd/0001');
 
   // Dashes (American style)
   dateEqual(Date.create('08-25-1978'), new Date(1978, 7, 25), 'Date#create | American style dashes | mm-dd-yyyy');
@@ -242,7 +234,7 @@ test('Date', function () {
   dateEqual(Date.create('Wednesday July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week');
   dateEqual(Date.create('Wed July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week abbreviated');
   dateEqual(Date.create('Wed. July 3rd, 2008'), new Date(2008, 6, 3), 'Date#create | Full Text | With day of week abbreviated plus dot');
-  dateEqual(Date.create('Wed, 03 Jul 2008 08:00:00 EST').toUTC(), new Date(2008, 6, 3, 13), 'Date#create | RFC822');
+  dateEqual(Date.create('Wed, 03 Jul 2008 08:00:00 EST'), new Date(Date.UTC(2008, 6, 3, 13)), 'Date#create | RFC822');
 
 
 
@@ -569,40 +561,40 @@ test('Date', function () {
   equal(d.getMilliseconds(), 0, 'Date#set | reset | milliseconds');
 
 
-  d = new Date('August 25, 2010 11:45:20');
-  d.setUTC({ years: 2008, hours: 4 }, true);
+  d = new Date('August 25, 2010 11:45:20').utc();
+  d.set({ years: 2008, hours: 4 }, true);
 
-  equal(d.getFullYear(), 2008, 'Date#set | reset utc | year');
-  equal(d.getMonth(), 7, 'Date#set | reset utc | month');
-  equal(d.getDate(), d.getTimezoneOffset() > 240 ? 24 : 25, 'Date#set | reset utc | date');
-  equal(d.getHours(), getHours(4 - (d.getTimezoneOffset() / 60)), 'Date#set | reset utc | hours');
-  equal(d.getMinutes(), Math.abs(d.getTimezoneOffset() % 60), 'Date#set | reset utc | minutes');
-  equal(d.getSeconds(), 0, 'Date#set | reset utc | seconds');
-  equal(d.getMilliseconds(), 0, 'Date#set | reset utc | milliseconds');
-
-
-  d = new Date('August 25, 2010 11:45:20');
-  d.setUTC({ years: 2005, hours: 2 }, false);
-
-  equal(d.getFullYear(), 2005, 'Date#set | no reset utc | year');
-  equal(d.getMonth(), 7, 'Date#set | no reset utc | month');
-  equal(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'Date#set | no reset utc | date');
-  equal(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'Date#set | no reset utc | hours');
-  equal(d.getMinutes(), 45, 'Date#set | no reset utc | minutes');
-  equal(d.getSeconds(), 20, 'Date#set | no reset utc | seconds');
-  equal(d.getMilliseconds(), 0, 'Date#set | no reset utc | milliseconds');
+  equal(d.getFullYear(), 2008, 'Date#set | utc | reset utc | year');
+  equal(d.getMonth(), 7, 'Date#set | utc | reset utc | month');
+  equal(d.getDate(), d.getTimezoneOffset() > 240 ? 24 : 25, 'Date#set | utc | reset utc | date');
+  equal(d.getHours(), getHours(4 - (d.getTimezoneOffset() / 60)), 'Date#set | utc | reset utc | hours');
+  equal(d.getMinutes(), Math.abs(d.getTimezoneOffset() % 60), 'Date#set | utc | reset utc | minutes');
+  equal(d.getSeconds(), 0, 'Date#set | utc | reset utc | seconds');
+  equal(d.getMilliseconds(), 0, 'Date#set | utc | reset utc | milliseconds');
 
 
-  d = new Date('August 25, 2010 11:45:20');
-  d.setUTC({ years: 2005, hours: 2 }, false);
+  d = new Date('August 25, 2010 11:45:20').utc();
+  d.set({ years: 2005, hours: 2 }, false);
 
-  equal(d.getFullYear(), 2005, 'Date#setUTC | no reset | year');
-  equal(d.getMonth(), 7, 'Date#setUTC | no reset | month');
-  equal(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'Date#setUTC | no reset | date');
-  equal(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'Date#setUTC | no reset | hours');
-  equal(d.getMinutes(), 45, 'Date#setUTC | no reset | minutes');
-  equal(d.getSeconds(), 20, 'Date#setUTC | no reset | seconds');
-  equal(d.getMilliseconds(), 0, 'Date#setUTC | no reset | milliseconds');
+  equal(d.getFullYear(), 2005, 'Date#set | utc | no reset utc | year');
+  equal(d.getMonth(), 7, 'Date#set | utc | no reset utc | month');
+  equal(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'Date#set | utc | no reset utc | date');
+  equal(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'Date#set | utc | no reset utc | hours');
+  equal(d.getMinutes(), 45, 'Date#set | utc | no reset utc | minutes');
+  equal(d.getSeconds(), 20, 'Date#set | utc | no reset utc | seconds');
+  equal(d.getMilliseconds(), 0, 'Date#set | utc | no reset utc | milliseconds');
+
+
+  d = new Date('August 25, 2010 11:45:20').utc();
+  d.set({ years: 2005, hours: 2 }, false);
+
+  equal(d.getFullYear(), 2005, 'Date#set | utc | no reset | year');
+  equal(d.getMonth(), 7, 'Date#set | utc | no reset | month');
+  equal(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'Date#set | utc | no reset | date');
+  equal(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'Date#set | utc | no reset | hours');
+  equal(d.getMinutes(), 45, 'Date#set | utc | no reset | minutes');
+  equal(d.getSeconds(), 20, 'Date#set | utc | no reset | seconds');
+  equal(d.getMilliseconds(), 0, 'Date#set | utc | no reset | milliseconds');
 
 
   dateEqual(Date.create('Next week'), getRelativeDate(null, null, 7), 'Date#create | Fuzzy Dates | Next week');
@@ -628,58 +620,67 @@ test('Date', function () {
 
   equal(d.setWeekday(6), d.getTime(), 'Date#setWeekday | should return the timestamp');
 
+  d = new Date('August 25, 2010 11:45:20').utc();
+
+  equal(d.getWeekday(), 3, 'Date#getUTCWeekday | wednesday');
+
+  d.setWeekday(0);
+  equal(d.getDate(), 22, 'Date#setWeekday | utc | sunday');
+  d.setWeekday(1);
+  equal(d.getDate(), 23, 'Date#setWeekday | utc | monday');
+  d.setWeekday(2);
+  equal(d.getDate(), 24, 'Date#setWeekday | utc | tuesday');
+  d.setWeekday(3);
+  equal(d.getDate(), 25, 'Date#setWeekday | utc | wednesday');
+  d.setWeekday(4);
+  equal(d.getDate(), 26, 'Date#setWeekday | utc | thursday');
+  d.setWeekday(5);
+  equal(d.getDate(), 27, 'Date#setWeekday | utc | friday');
+  d.setWeekday(6);
+  equal(d.getDate(), 28, 'Date#setWeekday | utc | saturday');
+
+  equal(d.setWeekday(6), d.getTime(), 'Date#setWeekday | utc | should return the timestamp');
+
+
   d = new Date('August 25, 2010 11:45:20');
-
-  equal(d.getUTCWeekday(), 3, 'Date#getUTCWeekday | wednesday');
-
-  d.setUTCWeekday(0);
-  equal(d.getDate(), 22, 'Date#setUTCWeekday | sunday');
-  d.setUTCWeekday(1);
-  equal(d.getDate(), 23, 'Date#setUTCWeekday | monday');
-  d.setUTCWeekday(2);
-  equal(d.getDate(), 24, 'Date#setUTCWeekday | tuesday');
-  d.setUTCWeekday(3);
-  equal(d.getDate(), 25, 'Date#setUTCWeekday | wednesday');
-  d.setUTCWeekday(4);
-  equal(d.getDate(), 26, 'Date#setUTCWeekday | thursday');
-  d.setUTCWeekday(5);
-  equal(d.getDate(), 27, 'Date#setUTCWeekday | friday');
-  d.setUTCWeekday(6);
-  equal(d.getDate(), 28, 'Date#setUTCWeekday | saturday');
-
-  equal(d.setUTCWeekday(6), d.getTime(), 'Date#setUTCWeekday | should return the timestamp');
 
   d.setDate(12);
   equal(d.getWeekday(), 4, 'Date#getWeekday | Thursday');
-  equal(d.getUTCWeekday(), 4, 'Date#setUTCWeekday | Thursday');
+  equal(d.clone().utc().getWeekday(), 4, 'Date#setWeekday | utc | Thursday');
 
   d.setDate(13);
   equal(d.getWeekday(), 5, 'Date#getWeekday | Friday');
-  equal(d.getUTCWeekday(), 5, 'Date#setUTCWeekday | Friday');
+  equal(d.clone().utc().getWeekday(), 5, 'Date#setWeekday | utc | Friday');
 
   d.setDate(14);
   equal(d.getWeekday(), 6, 'Date#getWeekday | Saturday');
-  equal(d.getUTCWeekday(), 6, 'Date#setUTCWeekday | Saturday');
+  equal(d.clone().utc().getWeekday(), 6, 'Date#getWeekday | utc | Saturday');
 
   d.setDate(15);
   equal(d.getWeekday(), 0, 'Date#getWeekday | Sunday');
-  equal(d.getUTCWeekday(), 0, 'Date#setUTCWeekday | Sunday');
+  equal(d.clone().utc().getWeekday(), 0, 'Date#getWeekday | utc | Sunday');
 
   d.setDate(16);
   equal(d.getWeekday(), 1, 'Date#getWeekday | Monday');
-  equal(d.getUTCWeekday(), 1, 'Date#setUTCWeekday | Monday');
+  equal(d.clone().utc().getWeekday(), 1, 'Date#getWeekday | utc | Monday');
 
   d.setDate(17);
   equal(d.getWeekday(), 2, 'Date#getWeekday | Tuesday');
-  equal(d.getUTCWeekday(), 2, 'Date#setUTCWeekday | Tuesday');
+  equal(d.clone().utc().getWeekday(), 2, 'Date#getWeekday | utc | Tuesday');
 
   d.setDate(18);
   equal(d.getWeekday(), 3, 'Date#getWeekday | Wednesday');
-  equal(d.getUTCWeekday(), 3, 'Date#setUTCWeekday | Wednesday');
+  equal(d.clone().utc().getWeekday(), 3, 'Date#getWeekday | utc | Wednesday');
 
 
   dateEqual(new Date().advance({ weekday: 7 }), new Date(), 'Date#advance | cannot advance by weekdays');
   dateEqual(new Date().rewind({ weekday: 7 }), new Date(), 'Date#advance | cannot rewind by weekdays');
+
+  var d = Date.createUTC(2010, 0, 1, 3);
+
+  d.setWeekday(1)
+  equal(d.getUTCDay(), 1, 'Date#setWeekday | should account for UTC shift | getUTCDay');
+
 
 
   var d = new Date(2010, 11, 31, 24, 59, 59);
@@ -688,27 +689,27 @@ test('Date', function () {
   equal(d.getUTCWeekday(), d.getUTCDay(), 'Date#getUTCWeekday | equal to getUTCDay');
 
 
-  d = new Date('August 25, 2010 11:45:20');
+  d = new Date('August 25, 2010 11:45:20').utc();
 
-  equal(d.getUTCWeekday(), 3, 'Date#getUTCWeekday | wednesday');
+  equal(d.getWeekday(), 3, 'Date#getWeekday | utc | wednesday');
 
-  d.setUTCWeekday(0);
-  equal(d.getDate(), 22, 'Date#setUTCWeekday | sunday');
-  d.setUTCWeekday(1);
-  equal(d.getDate(), 23, 'Date#setUTCWeekday | monday');
-  d.setUTCWeekday(2);
-  equal(d.getDate(), 24, 'Date#setUTCWeekday | tuesday');
-  d.setUTCWeekday(3);
-  equal(d.getDate(), 25, 'Date#setUTCWeekday | wednesday');
-  d.setUTCWeekday(4);
-  equal(d.getDate(), 26, 'Date#setUTCWeekday | thursday');
-  d.setUTCWeekday(5);
-  equal(d.getDate(), 27, 'Date#setUTCWeekday | friday');
-  d.setUTCWeekday(6);
-  equal(d.getDate(), 28, 'Date#setUTCWeekday | saturday');
+  d.setWeekday(0);
+  equal(d.getDate(), 22, 'Date#setWeekday | utc | sunday');
+  d.setWeekday(1);
+  equal(d.getDate(), 23, 'Date#setWeekday | utc | monday');
+  d.setWeekday(2);
+  equal(d.getDate(), 24, 'Date#setWeekday | utc | tuesday');
+  d.setWeekday(3);
+  equal(d.getDate(), 25, 'Date#setWeekday | utc | wednesday');
+  d.setWeekday(4);
+  equal(d.getDate(), 26, 'Date#setWeekday | utc | thursday');
+  d.setWeekday(5);
+  equal(d.getDate(), 27, 'Date#setWeekday | utc | friday');
+  d.setWeekday(6);
+  equal(d.getDate(), 28, 'Date#setWeekday | utc | saturday');
 
-  d.setUTCWeekday();
-  equal(d.getDate(), 28, 'Date#setUTCWeekday | undefined');
+  d.setWeekday();
+  equal(d.getDate(), 28, 'Date#setWeekday | utc | undefined');
 
 
   d = new Date('August 25, 2010 11:45:20');
@@ -819,6 +820,7 @@ test('Date', function () {
   equal(d.daysInMonth(), 29, 'Date#daysInMonth | feb leap year');
 
 
+  equal(Date.createUTC(2010, 1, 1).daysInMonth(), 28, 'Date#daysInMonth | utc | should find correct days in month');
 
   d = new Date('August 5, 2010 13:45:02');
   d.setMilliseconds(234);
@@ -869,6 +871,24 @@ test('Date', function () {
   dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week 52');
   d.setWeek();
   dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week stays set');
+
+
+  d = Date.createUTC('August 25, 2010 11:45:20');
+  equal(d.setWeek(1), 1262951120000, 'Date#setWeek | returns a timestamp');
+
+
+  d = Date.createUTC('January 1, 2010 02:15:20');
+
+  d.setWeek(1);
+  dateEqual(d, new Date(Date.UTC(2010,0,8,2,15,20)), 'Date#setWeek | utc | week 1');
+  d.setWeek(15);
+  dateEqual(d, new Date(Date.UTC(2010,3,16,2,15,20)), 'Date#setWeek | utc | week 15');
+  d.setWeek(27);
+  dateEqual(d, new Date(Date.UTC(2010,6,9,2,15,20)), 'Date#setWeek | utc | week 27');
+  d.setWeek(52);
+  dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'Date#setWeek | utc | week 52');
+  d.setWeek();
+  dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'Date#setWeek | utc | week stays set');
 
 
   // Date formatting. Much thanks to inspiration taken from Date.js here.
@@ -993,8 +1013,9 @@ test('Date', function () {
 
   var iso = d.getUTCFullYear()+'-'+testPadNumber(d.getUTCMonth()+1, 2)+'-'+testPadNumber(d.getUTCDate(), 2)+'T'+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+'.'+testPadNumber(d.getUTCMilliseconds(), 3)+'Z';
 
-  equal(d.toUTC().format(Date.ISO8601_DATETIME), iso, 'Date#format | constants | ISO8601_DATETIME UTC HOLY');
-  equal(d.toUTC().format('ISO8601_DATETIME'), iso, 'Date#format | string constants | ISO8601_DATETIME UTC');
+
+  equal(d.clone().utc().format(Date.ISO8601_DATETIME), iso, 'Date#format | constants | ISO8601_DATETIME UTC HOLY');
+  equal(d.clone().utc().format('ISO8601_DATETIME'), iso, 'Date#format | string constants | ISO8601_DATETIME UTC');
 
 
   var rfc1123 = testCapitalize(getWeekdayFromDate(d).slice(0,3))+', '+testPadNumber(d.getDate(), 2)+' '+testCapitalize(getMonthFromDate(d).slice(0,3))+' '+d.getFullYear()+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+d.getUTCOffset();
@@ -1007,8 +1028,9 @@ test('Date', function () {
 
   rfc1123 = testCapitalize(getWeekdayFromDate(d,true).slice(0,3))+', '+testPadNumber(d.getUTCDate(), 2)+' '+testCapitalize(getMonthFromDate(d,true).slice(0,3))+' '+d.getUTCFullYear()+' '+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+' +0000';
   rfc1036 = testCapitalize(getWeekdayFromDate(d,true))+', '+testPadNumber(d.getUTCDate(), 2)+'-'+testCapitalize(getMonthFromDate(d,true).slice(0,3))+'-'+d.getUTCFullYear().toString().slice(2)+' '+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+' +0000';
-  equal(d.toUTC().format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123 UTC');
-  equal(d.toUTC().format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036 UTC');
+
+  equal(d.clone().utc().format('RFC1123'), rfc1123, 'Date#format | string constants | RFC1123 UTC');
+  equal(d.clone().utc().format('RFC1036'), rfc1036, 'Date#format | string constants | RFC1036 UTC');
 
 
   equal(Date.create('totally invalid').format(Date.ISO8601_DATETIME), 'Invalid Date', 'Date#format | invalid');
@@ -1017,8 +1039,8 @@ test('Date', function () {
 
   // ISO format
 
-  equal(d.toISOString(), d.toUTC().format(Date.ISO8601_DATETIME), 'Date#toISOString is an alias for the ISO8601_DATETIME format in UTC');
-  equal(d.iso(), d.toUTC().format(Date.ISO8601_DATETIME), 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
+  equal(d.toISOString(), d.clone().utc().format(Date.ISO8601_DATETIME), 'Date#toISOString is an alias for the ISO8601_DATETIME format in UTC');
+  equal(d.iso(), d.clone().utc().format(Date.ISO8601_DATETIME), 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
 
 
 
@@ -1303,22 +1325,23 @@ test('Date', function () {
   d = new Date(2010,7,5,13,45,2,542);
 
   equal(d.getWeek(), 31, 'Date#getWeek | basic August 5th, 2010');
-  equal(d.getUTCWeek(), d.getTimezoneOffset() > 615 ? 32 : 31, 'Date#getUTCWeek | basic');
 
   equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
-  equal(new Date(2010, 0, 1).getUTCWeek(), 53, 'Date#getUTCWeek | January 1st UTC is actually 2009');
   equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th, 2010');
-  equal(new Date(2010, 0, 6).getUTCWeek(), 1, 'Date#getUTCWeek | January 6th');
   equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th, 2010');
-  equal(new Date(2010, 0, 7).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th');
   equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th, 2010 h23:59:59.999');
-  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getUTCWeek(), 1, 'Date#getUTCWeek | January 7th 23:59:59.999');
   equal(new Date(2010, 0, 8).getWeek(), 1, 'Date#getWeek | January 8th, 2010');
-  equal(new Date(2010, 0, 8).getUTCWeek(), 1, 'Date#getUTCWeek | January 8th');
   equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th, 2010');
-  equal(new Date(2010, 3, 15).getUTCWeek(), 15, 'Date#getUTCWeek | April 15th');
 
+  d = new Date(2010,7,5,13,45,2,542).utc();
 
+  equal(d.getWeek(), d.getTimezoneOffset() > 615 ? 32 : 31, 'Date#getWeek | utc | basic');
+  equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | utc | January 1st UTC is actually 2009');
+  equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | utc | January 6th');
+  equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | utc | January 7th');
+  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | utc | January 7th 23:59:59.999');
+  equal(new Date(2010, 0, 8).getWeek(), 1, 'Date#getWeek | utc | January 8th');
+  equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | utc | April 15th');
 
 
   d = new Date(2010,7,5,13,45,2,542);
@@ -1498,6 +1521,19 @@ test('Date', function () {
   dateEqual(new Date(d).endOfYear(true), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | reset if true | February 29, 2012');
 
 
+  d = Date.createUTC('January 1, 2010 02:00:00');
+
+  dateEqual(d.clone().beginningOfDay(), new Date(Date.UTC(2010, 0)), 'Date#beginningOfDay | utc');
+  dateEqual(d.clone().beginningOfWeek(), new Date(Date.UTC(2009, 11, 27)), 'Date#beginningOfWeek | utc');
+  dateEqual(d.clone().beginningOfMonth(), new Date(Date.UTC(2010, 0)), 'Date#beginningOfMonth | utc');
+  dateEqual(d.clone().beginningOfYear(), new Date(Date.UTC(2010, 0)), 'Date#beginningOfYear | utc');
+
+  dateEqual(d.clone().endOfDay(), new Date(Date.UTC(2010, 0, 1, 23, 59, 59, 999)), 'Date#endOfDay | utc');
+  dateEqual(d.clone().endOfWeek(), new Date(Date.UTC(2010, 0, 2, 23, 59, 59, 999)), 'Date#endOfWeek | utc');
+  dateEqual(d.clone().endOfMonth(), new Date(Date.UTC(2010, 0, 31, 23, 59, 59, 999)), 'Date#endOfMonth | utc');
+  dateEqual(d.clone().endOfYear(), new Date(Date.UTC(2010, 11, 31, 23, 59, 59, 999)), 'Date#endOfYear | utc');
+
+
 
   d = new Date('February 29, 2012 22:15:42');
 
@@ -1522,12 +1558,13 @@ test('Date', function () {
   dateEqual(new Date(d).addYears(-12), new Date(2000, 1, 29, 22, 15, 42), 'Date#addYears | negative | 12');
 
 
-  d = new Date('February 29, 2012 22:15:42');
-
-  dUTC = new Date(d.getTime() + (d.getTimezoneOffset() * 60 * 1000));
-
-  dateEqual(d.toUTC(), dUTC, 'Date#utc');
-
+  dateEqual(Date.createUTC('February 29, 2012 22:15:42'), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'Date#createUTC');
+  dateEqual(Date.createUTC('2012-05-31'), new Date(Date.UTC(2012, 4, 31)), 'Date#createUTC | 2012-05-31');
+  dateEqual(Date.createUTC(1998,1,23,11,54,32), new Date(Date.UTC(1998,1,23,11,54,32)), 'Date#createUTC | enumerated params');
+  dateEqual(Date.createUTC({ year: 1998, month: 1, day: 23, hour: 11 }), new Date(Date.UTC(1998,1,23,11)), 'Date#createUTC | object');
+  dateEqual(Date.createUTC('08-25-1978 11:42:32.488am'), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'Date#createUTC | full with ms');
+  dateEqual(Date.createUTC('1994-11-05T13:15:30Z'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), 'Date#createUTC | "Z" is still utc');
+  dateEqual(Date.createUTC('two days ago'), Date.create('two days ago'), 'Date#create | relative dates are not UTC');
 
 
 
@@ -2438,4 +2475,32 @@ test('Date', function () {
 
   equal(Date.create('12:00am').getHours(), 0, 'Date.create| 12:00am hours should be 0');
   equal(Date.create('12am').getHours(), 0, 'Date.create| 12am hours should be 0');
+
+
+  // New handling of UTC dates
+
+  d = new Date(2001, 5, 15).utc();
+
+  equal(typeof d._utc, 'boolean', 'Date#utc | internal parameter is exposed');
+  dateEqual(d.clone().beginningOfMonth(), toUTC(new Date(2001, 5, 1)), 'Date#utc | utc methods should be called after utc is set');
+
+
+  equal(Date.create('1 month ago').utc().isLastMonth(), true, 'Date#utc | isLastMonth');
+  equal(d.minutesSince(Date.createUTC(2001, 5, 15)), d.getTimezoneOffset(), 'Date#utc | minutesSince is equal to the timezone offset');
+  equal(d.hoursSince('2001-6-14'), 24, 'Date#utc | hoursSince | does not actually shift time');
+
+  equal(Date.createUTC('2001-01-15').iso(), '2001-01-15T00:00:00.000Z', 'Date#createUTC | will properly be output in UTC');
+  equal(Date.createUTC('2001-01-15').format('{tz}'), '+0000', 'Date#format | UTC date will have +0000 offset');
+
+
+  equal(Date.createUTC(2000, 0).utc().isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
+  equal(Date.createUTC(2000, 1, 14).utc().is('Monday'), true, 'Date#is | should handle utc dates');
+
+
+
+
+
+
+
+
 });
