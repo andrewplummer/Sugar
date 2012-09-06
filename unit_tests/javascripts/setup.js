@@ -140,36 +140,32 @@ var objectEqual = function(one, two) {
 }
 
 var testIsEqual = function(one, two) {
-  if(one === nullScope && two === nullScope) {
-    // Null scope should always be a strict equal check
-    return true;
-  } else if(typeof two == 'number' && typeof one == 'number' && isNaN(two) && isNaN(one)) {
-    // NaN is NaN: equal
-    return true;
-  } else if(two === null && one === null) {
-    // null is null: equal
-    return true;
-  } else if(two === undefined && one === undefined) {
-    // undefined is undefined: equal
-    return true;
-  } else if(testCanBeDeeplyCompared(one) && testCanBeDeeplyCompared(two) && deepEqual(one, two)) {
-    // Deeply equal
-    return true;
-  } else if(testIsClass(one, 'Date') && testIsClass(two, 'Date') && one.getTime() === two.getTime()) {
-    return true;
-  } else if(testIsClass(one, 'RegExp') && testIsClass(two, 'RegExp') && String(one) === String(two)) {
-    return true;
-  } else if(one === two) {
-    // Strictly equal
-    return true;
-  } else {
-    return false;
-  }
-}
 
-var testCanBeDeeplyCompared = function(obj) {
-  var klass = Object.prototype.toString.call(obj);
-  return typeof obj === 'object' && ('hasOwnProperty' in obj) && (klass === '[object Object]' || klass === '[object Array]');
+  var type, klass;
+
+  type = typeof one;
+
+  if(type === 'string' || type === 'boolean' || one == null) {
+    return one === two;
+  } else if(type === 'number') {
+    return (isNaN(one) && isNaN(two)) || one === two;
+  }
+
+  klass = Object.prototype.toString.call(one);
+
+  if(klass === '[object Date]') {
+    return one.getTime() === two.getTime();
+  } else if(klass === '[object RegExp]') {
+    return String(one) === String(two);
+  } else if(klass === '[object Array]') {
+    return arrayEqual(one, two);
+  } else if(klass === '[object Object]' && ('hasOwnProperty' in one) && type === 'object') {
+    return objectEqual(one, two);
+  } else if(isNaN(one) && isNaN(two)) {
+    return true;
+  }
+
+  return one === two;
 }
 
 var testIsClass = function(obj, klass) {
