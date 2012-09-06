@@ -2493,11 +2493,15 @@ test('Date', function () {
   equal(Date.createUTC('2001-01-15').format('{tz}'), '+0000', 'Date#format | UTC date will have +0000 offset');
 
 
-  equal(Date.createUTC(2000, 0).utc().isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
+  equal(Date.createUTC(2000, 0).isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
   equal(Date.createUTC(2000, 1, 14).utc().is('Monday'), true, 'Date#is | should handle utc dates');
 
+  equal(Date.createUTC(2000, 1, 14).format(), 'February 14, 2000 12:00am', 'Date#format | from UTC time');
 
 
+  d = new Date(2001, 5, 15);
+
+  var hours = d.getHours() - (d.getTimezoneOffset() / 60);
 
 
 
