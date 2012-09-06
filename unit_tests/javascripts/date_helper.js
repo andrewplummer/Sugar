@@ -1,6 +1,6 @@
 
 dateEqual = function(a, b, message) {
-  var format = '{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}'
+  var format = '{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}{tz}'
   var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number') {
     var d = new Date();
@@ -80,3 +80,7 @@ getHours = function(num) {
   return Math.floor(num < 0 ? 24 + num : num);
 }
 
+
+toUTC = function(d) {
+  return d.addMinutes(-d.getTimezoneOffset());
+}
