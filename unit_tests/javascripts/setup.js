@@ -34,14 +34,6 @@ var runtime;
 // Arrays and objects must be treated separately here because in IE arrays with undefined
 // elements will not pass the .hasOwnProperty check. For example [undefined].hasOwnProperty('0')
 // will report false.
-var deepEqual = function(one, two) {
-  if(one.length && two.length) {
-    return arrayEqual(one, two);
-  } else {
-    return objectEqual(one, two);
-  }
-}
-
 var arrayEqual = function(one, two) {
   var i, result = true;
   // This MUST be .each as we can have very large sparse arrays in the tests!
@@ -149,14 +141,13 @@ var objectEqual = function(one, two) {
 }
 
 var isEqual = function(one, two) {
-  if(one === nullScope && two === nullScope) {
+  var class1 = Object.prototype.toString.call(one);
+  var class2 = Object.prototype.toString.call(two);
+  if(one === two) {
+    // Strictly equal... return true up front
+    return true;
+  } else if(one === nullScope && two === nullScope) {
     // Null scope should always be a strict equal check
-    return true;
-  } else if(typeof two == 'number' && typeof one == 'number' && isNaN(two) && isNaN(one)) {
-    // NaN is NaN: equal
-    return true;
-  } else if(typeof two == 'object' && typeof one == 'object' && two != null && one != null && deepEqual(two, one)) {
-    // Deeply equal
     return true;
   } else if(two === null && one === null) {
     // null is null: equal
@@ -164,8 +155,19 @@ var isEqual = function(one, two) {
   } else if(two === undefined && one === undefined) {
     // undefined is undefined: equal
     return true;
-  } else if(one === two) {
-    // Strictly equal
+  } else if(class1 === '[object Boolean]' && class2 === '[object Boolean]') {
+    return one === two;
+  } else if(class1 === '[object Date]' && class2 === '[object Date]') {
+    return one.getTime() === two.getTime();
+  } else if(class1 === '[object RegExp]' && class2 === '[object RegExp]') {
+    return String(one) === String(two);
+  } else if(class1 === '[object Array]' && class2 === '[object Array]' && arrayEqual(one, two)) {
+    return true;
+  } else if(typeof two == 'number' && typeof one == 'number' && isNaN(two) && isNaN(one)) {
+    // NaN is NaN: equal
+    return true;
+  } else if(typeof two == 'object' && typeof one == 'object' && objectEqual(two, one)) {
+    // Deeply equal
     return true;
   } else {
     return false;
