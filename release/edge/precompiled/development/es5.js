@@ -117,7 +117,7 @@
      *
      ***/
     'isArray': function(obj) {
-      return isArray(obj);
+      return isClass(obj, 'Array');
     }
 
   });

@@ -7,14 +7,13 @@
    ***/
 
   function setDelay(fn, ms, after, scope, args) {
-    var index;
     if(!fn.timers) fn.timers = [];
     if(!isNumber(ms)) ms = 0;
     fn.timers.push(setTimeout(function(){
       fn.timers.splice(index, 1);
       after.apply(scope, args || []);
     }, ms));
-    index = fn.timers.length;
+    var index = fn.timers.length;
   }
 
   extend(Function, true, false, {
@@ -115,11 +114,10 @@
      ***/
     'debounce': function(ms) {
       var fn = this;
-      function debounced() {
-        debounced.cancel();
-        setDelay(debounced, ms, fn, this, arguments);
-      };
-      return debounced;
+      return function() {
+        fn.cancel();
+        setDelay(fn, ms, fn, this, arguments);
+      }
     },
 
      /***
