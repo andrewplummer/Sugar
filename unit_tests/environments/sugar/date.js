@@ -1325,6 +1325,7 @@ test('Date', function () {
   d = new Date(2010,7,5,13,45,2,542);
 
   equal(d.getWeek(), 31, 'Date#getWeek | basic August 5th, 2010');
+  dateEqual(d, new Date(2010,7,5,13,45,2,542), 'Date#getWeek | should not modify the date');
 
   equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
   equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th, 2010');
