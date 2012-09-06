@@ -70,7 +70,7 @@
       var method = 'is' + name;
       ObjectTypeMethods.push(method);
       methods[method] = function(obj) {
-        return className(obj) === '[object '+name+']';
+        return isClass(obj, name);
       }
     });
   }
@@ -165,7 +165,7 @@
      *
      ***/
     'equal': function(a, b) {
-      return isEqual(a, b);
+      return stringify(a) === stringify(b);
     },
 
     /***

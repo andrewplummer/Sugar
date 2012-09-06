@@ -34,14 +34,6 @@ var runtime;
 // Arrays and objects must be treated separately here because in IE arrays with undefined
 // elements will not pass the .hasOwnProperty check. For example [undefined].hasOwnProperty('0')
 // will report false.
-var deepEqual = function(one, two) {
-  if(one.length && two.length) {
-    return arrayEqual(one, two);
-  } else {
-    return objectEqual(one, two);
-  }
-}
-
 var arrayEqual = function(one, two) {
   var i, result = true;
   testArrayEach(one, function(a, i) {

@@ -16,7 +16,7 @@
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
   var definePropertySupport = object.defineProperty && object.defineProperties;
 
-  // Class initializers and class helpers
+  // Class initializers and isClass type helpers
 
   var ClassNames = 'Array,Boolean,Date,Function,Number,String,RegExp'.split(',');
 
@@ -30,12 +30,12 @@
 
   function buildClassCheck(type) {
     return function(obj) {
-      return className(obj) === '[object '+type+']';
+      return isClass(obj, type);
     }
   }
 
-  function className(obj) {
-    return object.prototype.toString.call(obj);
+  function isClass(obj, str) {
+    return object.prototype.toString.call(obj) === '[object '+str+']';
   }
 
   function initializeClasses() {
@@ -141,9 +141,7 @@
 
   function isObject(obj) {
     // === on the constructor is not safe across iframes
-    // 'hasOwnProperty' ensures that the object also inherits
-    // from Object, which is false for DOMElements in IE.
-    return !!obj && className(obj) === '[object Object]' && 'hasOwnProperty' in obj;
+    return !!obj && isClass(obj, 'Object') && string(obj.constructor) === string(object);
   }
 
   function hasOwnProperty(obj, key) {
@@ -257,20 +255,16 @@
   // Used by Array#unique and Object.equal
 
   function stringify(thing, stack) {
-    var type = typeof thing,
-        thingIsObject,
-        thingIsArray,
-        klass, value,
-        arr, key, i;
+    var value, klass, isObject, isArray, arr, i, key, type = typeof thing;
 
     // Return quickly if string to save cycles
     if(type === 'string') return thing;
 
-    klass         = object.prototype.toString.call(thing)
-    thingIsObject = isObject(thing);
-    thingIsArray  = klass === '[object Array]';
+    klass    = object.prototype.toString.call(thing)
+    isObject = klass === '[object Object]';
+    isArray  = klass === '[object Array]';
 
-    if(thing != null && thingIsObject || thingIsArray) {
+    if(thing != null && isObject || isArray) {
       // This method for checking for cyclic structures was egregiously stolen from
       // the ingenious method by @kitcambridge from the Underscore script:
       // https://github.com/documentcloud/underscore/issues/240
@@ -289,38 +283,18 @@
       }
       stack.push(thing);
       value = string(thing.constructor);
-      arr = thingIsArray ? thing : object.keys(thing).sort();
+      arr = isArray ? thing : object.keys(thing).sort();
       for(i = 0; i < arr.length; i++) {
-        key = thingIsArray ? i : arr[i];
+        key = isArray ? i : arr[i];
         value += key + stringify(thing[key], stack);
       }
       stack.pop();
     } else if(1 / thing === -Infinity) {
       value = '-0';
     } else {
-      value = string(thing && thing.valueOf ? thing.valueOf() : thing);
+      value = string(thing && thing.valueOf());
     }
     return type + klass + value;
-  }
-
-  function isEqual(a, b) {
-    if(objectIsMatchedByValue(a) && objectIsMatchedByValue(b)) {
-      return stringify(a) === stringify(b);
-    } else {
-      return a === b;
-    }
-  }
-
-  function objectIsMatchedByValue(obj) {
-    var klass = className(obj);
-    return klass === '[object Date]'      ||
-           klass === '[object Array]'     ||
-           klass === '[object String]'    ||
-           klass === '[object Number]'    ||
-           klass === '[object RegExp]'    ||
-           klass === '[object Boolean]'   ||
-           klass === '[object Arguments]' ||
-           isObject(obj);
   }
 
 

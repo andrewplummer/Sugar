@@ -1525,7 +1525,6 @@ test('Array', function () {
   equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
 
-
   // Array#zip
 
   equal([1, 2, 3].zip(), [[1], [2], [3]], 'Array.zip | one array');
