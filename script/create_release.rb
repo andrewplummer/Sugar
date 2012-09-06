@@ -45,12 +45,13 @@ end
 
 def create_development
   full_content = ''
-  @packages.each do |p|
+  packages = @custom_packages.length > 0 ? @custom_packages : @packages
+  packages.each do |p|
     content = get_content(p)
     File.open("release/#{@version}/precompiled/development/#{p}.js", 'w').write(content)
     full_content << content
   end
-  File.open("release/#{@version}/sugar-#{@version}-full.development.js", 'w').write(@copyright + wrap(full_content))
+  File.open("release/#{@version}/sugar-#{@version}-custom.development.js", 'w').write(@copyright + wrap(full_content))
 end
 
 def compile
