@@ -17,8 +17,29 @@ v1.3.1+
 - Level: Major
   - Array methods that allow fuzzy matching on an object (`findAll`, `filter`, `some`, etc.) as well as `unique`, `intersect`, `union`, and `subtract`, will now match by reference unless certain conditions are met. Most notably this means that arrays of functions as well as arrays of host objects (DOM elements, etc.) will now only match elements that are strictly true by reference (`===`). If you are using arrays of host objects or functions (event handlers and the like), use caution upgrading. Other kinds of arrays such as primitives (strings, numbers, etc) as well as object literals and instances of user-defined objects should not be affected.
 
+- Level: Major
+  - `Date#toUTC` deprecated. Previously, this method would subtract the timezone offset of the date, providing a pseudo-utc date. This was a very primitive way of handling the challenge of manipulating utc dates and had drawbacks such as subsequent date manipulations resetting to a localized time. This is now deprecated in favor of `Date#utc`, which simply sets an internal flag that will tell Sugar to use utc-based date methods or not. `Date#utc` will NOT manipulate the time in any way. To create a utc-based date that is set to utc time, a flag has been added to `Date#create`, and other creation methods like `Date#future` and `Date#past` to set the utc flag before parsing out the date.
+
+- Level: Major
+  - `Date#setUTC` deprecated. Instead, simply set the utc flag using `Date#utc` or passing `true` as the third argument to `Date#create`. After this point, utc-based methods will be used internally, making this method unnecessary.
+
+- Level: Major
+  - `Date#setUTCWeek` deprecated. Set the utc flag and use `Date#setWeek` instead.
+
+- Level: Major
+  - `Date#getUTCWeek` deprecated. Set the utc flag and use `Date#getWeek` instead.
+
+- Level: Major
+  - `Date#setUTCWeekday` deprecated. Set the utc flag and use `Date#setWeekday` instead.
+
+- Level: Minor
+  - `Date#clone` will now preserve the utc flag.
+
 - Level: Minor
   - Array methods matching an empty object `{}` will now return true instead of false against another empty object.
+
+- Level: Very Minor
+  - `Date#setWeekday` now returns a timestamp instead of `undefined`.
 
 v1.3+
 =======

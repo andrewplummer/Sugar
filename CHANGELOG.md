@@ -4,14 +4,22 @@ v1.3.1
 
 ### API Changes ###
 
-- Matching by value in arrays is now opt-in and must meet certain requirements, namely being of class [object Object], and having `hasOwnProperty`. This will notably now exclude functions and host objects.
-
+- Matching by value in arrays is now opt-in and must meet certain requirements, namely being of class [object Object], and having `hasOwnProperty`. This will notably now exclude functions and host objects such as DOM elements. This means that such excluded objects will be matched by reference only.
 - Fixed issue with Array.create not properly creating arrays #171
-- Timers set by delays are now exposed #170
 - Empty objects now match themselves in arrays #176
 - Date#setWeekday now returns a timestamp for consistency with Date#setDay #181
+- Date#toUTC deprecated in favor of Date#utc and utc flag in Date#create.
+- Date#setUTC deprecated in favor of direct use of utc flag.
+- Date#setUTCWeek deprecated in favor of direct use of utc flag.
+- Date#getUTCWeek deprecated in favor of direct use of utc flag.
+- Date#setUTCWeekday deprecated in favor of direct use of utc flag.
+- Date#clone now clones the utc flag of the date.
+- Fixed issue with DateRange causing an infinite loop when DST traverses back 1 hour.
+- Better date disambiguation for ambiguous dates ("Sunday", etc)
 - Various date parsing fixes.
-
+- Timers set by delays are now exposed #170
+- Function#debounce debounced function is now canceled instead of original.
+- Internal refactoring of class check handling.
 
 
 
