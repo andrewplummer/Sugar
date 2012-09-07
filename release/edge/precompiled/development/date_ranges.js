@@ -86,17 +86,29 @@
      *
      ***/
     'every': function(increment, fn) {
-      var current = this.start.clone(), result = [], index = 0, params;
+      var current = this.start.clone(), result = [], index = 0, params, isDay;
       if(isString(increment)) {
         current.advance(getDateParamsFromString(increment, 0), true);
         params = getDateParamsFromString(increment);
+        isDay = increment.toLowerCase() === 'day';
       } else {
         params = { 'milliseconds': increment };
       }
       while(current <= this.end) {
         result.push(current);
         if(fn) fn(current, index);
-        current = current.clone().advance(params, true);
+        if(isDay && callDateGet(current, 'Hours') === 23) {
+          // When DST traversal happens at 00:00 hours, the time is effectively
+          // pushed back to 23:00, meaning 1) 00:00 for that day does not exist,
+          // and 2) there is no difference between 23:00 and 00:00, as you are
+          // "jumping" around in time. Hours here will be reset before the date
+          // is advanced and the date will never in fact advance, so set the hours
+          // directly ahead to the next day to avoid this problem.
+          current = current.clone();
+          callDateSet(current, 'Hours', 48);
+        } else {
+          current = current.clone().advance(params, true);
+        }
         index++;
       }
       return result;
