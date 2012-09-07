@@ -3676,25 +3676,6 @@
     },
 
      /***
-     * @method toUTC()
-     * @returns Date
-     * @short Converts the date to UTC time, effectively subtracting the timezone offset.
-     * @extra Note here that the method %getTimezoneOffset% will still show an offset even after this method is called, as this method effectively just rewinds the date. %format% however, will correctly set the %{tz}% (timezone) token as UTC once this method has been called on the date, and %isUTC% will return %true%. Once a date is set to UTC the only way to unset is the %clone% method.
-     * @example
-     *
-     *   new Date().toUTC() -> current time in UTC
-     *
-     ***/
-     /*
-    'toUTC': function() {
-      if(this.utc) return this;
-      //var d = this.clone().addMinutes(this.getTimezoneOffset());
-      this.utc = true;
-      return this;
-    },
-    */
-
-     /***
      * @method isUTC()
      * @returns Boolean
      * @short Returns true if the date has no timezone offset.
