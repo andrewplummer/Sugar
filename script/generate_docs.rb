@@ -159,14 +159,14 @@ def get_set(s)
 end
 
 def get_minified_size(package)
-  tmp = 'tmp/package.js'
+  tmp = "tmp/package-#{package}.js"
   `cp release/#{@version}/precompiled/minified/#{package}.js #{tmp}`
   `gzip --best #{tmp}`
   size = File.size("#{tmp}.gz")
   # gzipping the packages together produces sizes
   # less than gzipping individually, so offset this
   # a bit... just eyeballin it
-  size -= 190 if package != :regexp
+  size -= 210 if package != :regexp
   `rm #{tmp}.gz`
   size
 end
