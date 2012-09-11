@@ -1,3 +1,12 @@
+v1.3.2
+======
+
+### API Changes ###
+
+- `Date#create` on ISO dates no longer sets the utc flag.
+- Fixed implementation of 'Function#bind', which was overriding native method due to an error in the MDN docs.
+
+
 v1.3.1
 ======
 
