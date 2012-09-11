@@ -801,7 +801,11 @@ test('ECMAScript', function () {
   equal(instance.second, 'jumpy', 'Function#bind | argument passed to the constructor makes it in as the second arg');
   equal(instance instanceof Person, true, 'Function#bind | instance of the class');
   equal(instance instanceof BoundPerson, true, 'Function#bind | instance of the bound class');
-  equal(new Person() instanceof BoundPerson, false, 'Function#bind | instance of unbound class is not an instance of the bound class');
+
+  // Note that this spec appears to be wrong in the MDN docs:
+  // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/bind
+  // Changing this test to assert true as native implementations all function this way.
+  equal(new Person() instanceof BoundPerson, true, 'Function#bind | instance of unbound class is not an instance of the bound class');
 
   // Binding functions without a prototype should not explode.
   Object.prototype.toString.bind('hooha')();
