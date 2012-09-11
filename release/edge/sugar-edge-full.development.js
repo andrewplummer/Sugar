@@ -120,7 +120,7 @@
   // Argument helpers
 
   function multiArgs(args, fn) {
-    var result = [], i = 0;
+    var result = [], i;
     for(i = 0; i < args.length; i++) {
       result.push(args[i]);
       if(fn) fn.call(args, args[i], i);
@@ -488,8 +488,19 @@
 
   extend(array, true, false, {
 
-    // Documented in Array package
-
+    /***
+     * @method every(<f>, [scope])
+     * @returns Boolean
+     * @short Returns true if all elements in the array match <f>.
+     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>. %all% is provided an alias.
+     * @example
+     *
+     +   ['a','a','a'].every(function(n) {
+     *     return n == 'a';
+     *   });
+     *   ['a','a','a'].every('a')   -> true
+     *   [{a:2},{a:2}].every({a:2}) -> true
+     ***/
     'every': function(fn, scope) {
       var length = this.length, index = 0;
       checkFirstArgumentExists(arguments);
@@ -502,8 +513,22 @@
       return true;
     },
 
-    // Documented in Array package
-
+    /***
+     * @method some(<f>, [scope])
+     * @returns Boolean
+     * @short Returns true if any element in the array matches <f>.
+     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>. %any% is provided as aliases.
+     * @example
+     *
+     +   ['a','b','c'].some(function(n) {
+     *     return n == 'a';
+     *   });
+     +   ['a','b','c'].some(function(n) {
+     *     return n == 'd';
+     *   });
+     *   ['a','b','c'].some('a')   -> true
+     *   [{a:2},{b:5}].some({a:2}) -> true
+     ***/
     'some': function(fn, scope) {
       var length = this.length, index = 0;
       checkFirstArgumentExists(arguments);
@@ -516,8 +541,21 @@
       return false;
     },
 
-    // Documented in Array package
-
+    /***
+     * @method map(<map>, [scope])
+     * @returns Array
+     * @short Maps the array to another array containing the values that are the result of calling <map> on each element.
+     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
+     * @example
+     *
+     +   [1,2,3].map(function(n) {
+     *     return n * 3;
+     *   });                                  -> [3,6,9]
+     *   ['one','two','three'].map(function(n) {
+     *     return n.length;
+     *   });                                  -> [3,3,5]
+     *   ['one','two','three'].map('length')  -> [3,3,5]
+     ***/
     'map': function(fn, scope) {
       var length = this.length, index = 0, result = new Array(length);
       checkFirstArgumentExists(arguments);
@@ -530,8 +568,19 @@
       return result;
     },
 
-    // Documented in Array package
-
+    /***
+     * @method filter(<f>, [scope])
+     * @returns Array
+     * @short Returns any elements in the array that match <f>.
+     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>.
+     * @example
+     *
+     +   [1,2,3].filter(function(n) {
+     *     return n > 1;
+     *   });
+     *   [1,2,2,4].filter(2) -> 2
+     *
+     ***/
     'filter': function(fn, scope) {
       var length = this.length, index = 0, result = [];
       checkFirstArgumentExists(arguments);
@@ -696,49 +745,41 @@
    ***/
 
 
-  function buildBind() {
-    var support = false;
-    if(Function.prototype.bind) {
-      function F() {};
-      var B = F.bind();
-      support = (new B instanceof B) && !(new F instanceof B);
-    }
-    extend(Function, true, !support, {
+  extend(Function, true, false, {
 
-       /***
-       * @method bind(<scope>, [arg1], ...)
-       * @returns Function
-       * @short Binds <scope> as the %this% object for the function when it is called. Also allows currying an unlimited number of parameters.
-       * @extra "currying" means setting parameters ([arg1], [arg2], etc.) ahead of time so that they are passed when the function is called later. If you pass additional parameters when the function is actually called, they will be added will be added to the end of the curried parameters. This method is provided for browsers that don't support it internally.
-       * @example
-       *
-       +   (function() {
-       *     return this;
-       *   }).bind('woof')(); -> returns 'woof'; function is bound with 'woof' as the this object.
-       *   (function(a) {
-       *     return a;
-       *   }).bind(1, 2)();   -> returns 2; function is bound with 1 as the this object and 2 curried as the first parameter
-       *   (function(a, b) {
-       *     return a + b;
-       *   }).bind(1, 2)(3);  -> returns 5; function is bound with 1 as the this object, 2 curied as the first parameter and 3 passed as the second when calling the function
-       *
-       ***/
-      'bind': function(scope) {
-        var fn = this, args = multiArgs(arguments).slice(1), nop, bound;
-        if(!isFunction(this)) {
-          throw new TypeError('Function.prototype.bind called on a non-function');
-        }
-        bound = function() {
-          return fn.apply(fn.prototype && this instanceof fn ? this : scope, args.concat(multiArgs(arguments)));
-        }
-        nop = function() {};
-        nop.prototype = this.prototype;
-        bound.prototype = new nop();
-        return bound;
+     /***
+     * @method bind(<scope>, [arg1], ...)
+     * @returns Function
+     * @short Binds <scope> as the %this% object for the function when it is called. Also allows currying an unlimited number of parameters.
+     * @extra "currying" means setting parameters ([arg1], [arg2], etc.) ahead of time so that they are passed when the function is called later. If you pass additional parameters when the function is actually called, they will be added will be added to the end of the curried parameters. This method is provided for browsers that don't support it internally.
+     * @example
+     *
+     +   (function() {
+     *     return this;
+     *   }).bind('woof')(); -> returns 'woof'; function is bound with 'woof' as the this object.
+     *   (function(a) {
+     *     return a;
+     *   }).bind(1, 2)();   -> returns 2; function is bound with 1 as the this object and 2 curried as the first parameter
+     *   (function(a, b) {
+     *     return a + b;
+     *   }).bind(1, 2)(3);  -> returns 5; function is bound with 1 as the this object, 2 curied as the first parameter and 3 passed as the second when calling the function
+     *
+     ***/
+    'bind': function(scope) {
+      var fn = this, args = multiArgs(arguments).slice(1), nop, bound;
+      if(!isFunction(this)) {
+        throw new TypeError('Function.prototype.bind called on a non-function');
       }
+      bound = function() {
+        return fn.apply(fn.prototype && this instanceof fn ? this : scope, args.concat(multiArgs(arguments)));
+      }
+      nop = function() {};
+      nop.prototype = this.prototype;
+      bound.prototype = new nop();
+      return bound;
+    }
 
-    });
-  }
+  });
 
   /***
    * Date module
@@ -801,7 +842,6 @@
 
   // Initialize
   buildTrim();
-  buildBind();
   buildISOString();
 
 
@@ -1069,63 +1109,6 @@
 
 
 
-  /***
-   * @method every(<f>, [scope])
-   * @returns Boolean
-   * @short Returns true if all elements in the array match <f>.
-   * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>. %all% is provided an alias.
-   * @example
-   *
-   +   ['a','a','a'].every(function(n) {
-   *     return n == 'a';
-   *   });
-   *   ['a','a','a'].every('a')   -> true
-   *   [{a:2},{a:2}].every({a:2}) -> true
-   *
-   ***
-   * @method some(<f>, [scope])
-   * @returns Boolean
-   * @short Returns true if any element in the array matches <f>.
-   * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>. %any% is provided as aliases.
-   * @example
-   *
-   +   ['a','b','c'].some(function(n) {
-   *     return n == 'a';
-   *   });
-   +   ['a','b','c'].some(function(n) {
-   *     return n == 'd';
-   *   });
-   *   ['a','b','c'].some('a')   -> true
-   *   [{a:2},{b:5}].some({a:2}) -> true
-   *
-   ***
-   * @method map(<map>, [scope])
-   * @returns Array
-   * @short Maps the array to another array containing the values that are the result of calling <map> on each element.
-   * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
-   * @example
-   *
-   +   [1,2,3].map(function(n) {
-   *     return n * 3;
-   *   });                                  -> [3,6,9]
-   *   ['one','two','three'].map(function(n) {
-   *     return n.length;
-   *   });                                  -> [3,3,5]
-   *   ['one','two','three'].map('length')  -> [3,3,5]
-   *
-   ***
-   * @method filter(<f>, [scope])
-   * @returns Array
-   * @short Returns any elements in the array that match <f>.
-   * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>.
-   * @example
-   *
-   +   [1,2,3].filter(function(n) {
-   *     return n > 1;
-   *   });
-   *   [1,2,2,4].filter(2) -> 2
-   *
-   ***/
   function buildEnhancements() {
     var callbackCheck = function() { var a = arguments; return a.length > 0 && !isFunction(a[0]); };
     extendSimilar(array, true, callbackCheck, 'map,every,all,some,any,none,filter', function(methods, name) {
@@ -2621,9 +2604,7 @@
   function getExtendedDate(f, localeCode, prefer, forceUTC) {
     var d = new date(), relative = false, baseLocalization, loc, format, set, unit, weekday, num, tmp, after;
 
-    if(forceUTC) {
-      d.utc();
-    }
+    d.utc(forceUTC);
 
     if(isDate(f)) {
       d = f.clone();
@@ -2820,6 +2801,9 @@
         after();
       }
 
+    }
+    if(!forceUTC) {
+      d.utc(false);
     }
     return {
       date: d,
