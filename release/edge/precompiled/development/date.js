@@ -568,9 +568,7 @@
   function getExtendedDate(f, localeCode, prefer, forceUTC) {
     var d = new date(), relative = false, baseLocalization, loc, format, set, unit, weekday, num, tmp, after;
 
-    if(forceUTC) {
-      d.utc();
-    }
+    d.utc(forceUTC);
 
     if(isDate(f)) {
       d = f.clone();
@@ -767,6 +765,9 @@
         after();
       }
 
+    }
+    if(!forceUTC) {
+      d.utc(false);
     }
     return {
       date: d,
