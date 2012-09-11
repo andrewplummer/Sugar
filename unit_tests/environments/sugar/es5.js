@@ -800,12 +800,27 @@ test('ECMAScript', function () {
   equal(instance.first, 'jump', 'Function#bind | curried argument makes it to the constructor');
   equal(instance.second, 'jumpy', 'Function#bind | argument passed to the constructor makes it in as the second arg');
   equal(instance instanceof Person, true, 'Function#bind | instance of the class');
-  equal(instance instanceof BoundPerson, true, 'Function#bind | instance of the bound class');
 
-  // Note that this spec appears to be wrong in the MDN docs:
-  // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/bind
-  // Changing this test to assert true as native implementations all function this way.
-  equal(new Person() instanceof BoundPerson, true, 'Function#bind | instance of unbound class is not an instance of the bound class');
+
+  // Node has a discrepancy in its implementation of instanceof, where it will throw a
+  // TypeError when the RHS has no prototype object. Looking at the spec it appears that
+  // this may in fact be correct behavior, but no other environment does this. Also note
+  // that the ONLY way I can see to create a function (instanceof will throw an error in
+  // any case on anything else) with no prototype is through the bind method. All other
+  // environments properly have an undefined prototype, but do not raise an error on instanceof.
+
+  skipEnvironments(['node'], function() {
+
+    equal(instance instanceof BoundPerson, true, 'Function#bind | instance of the bound class');
+
+    // Note that this spec appears to be wrong in the MDN docs:
+    // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/bind
+    // Changing this test to assert true as native implementations all function this way.
+    equal(new Person() instanceof BoundPerson, true, 'Function#bind | instance of unbound class is not an instance of the bound class');
+
+  });
+
+
 
   // Binding functions without a prototype should not explode.
   Object.prototype.toString.bind('hooha')();

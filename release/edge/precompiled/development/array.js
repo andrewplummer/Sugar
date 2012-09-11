@@ -263,63 +263,6 @@
 
 
 
-  /***
-   * @method every(<f>, [scope])
-   * @returns Boolean
-   * @short Returns true if all elements in the array match <f>.
-   * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>. %all% is provided an alias.
-   * @example
-   *
-   +   ['a','a','a'].every(function(n) {
-   *     return n == 'a';
-   *   });
-   *   ['a','a','a'].every('a')   -> true
-   *   [{a:2},{a:2}].every({a:2}) -> true
-   *
-   ***
-   * @method some(<f>, [scope])
-   * @returns Boolean
-   * @short Returns true if any element in the array matches <f>.
-   * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>. %any% is provided as aliases.
-   * @example
-   *
-   +   ['a','b','c'].some(function(n) {
-   *     return n == 'a';
-   *   });
-   +   ['a','b','c'].some(function(n) {
-   *     return n == 'd';
-   *   });
-   *   ['a','b','c'].some('a')   -> true
-   *   [{a:2},{b:5}].some({a:2}) -> true
-   *
-   ***
-   * @method map(<map>, [scope])
-   * @returns Array
-   * @short Maps the array to another array containing the values that are the result of calling <map> on each element.
-   * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
-   * @example
-   *
-   +   [1,2,3].map(function(n) {
-   *     return n * 3;
-   *   });                                  -> [3,6,9]
-   *   ['one','two','three'].map(function(n) {
-   *     return n.length;
-   *   });                                  -> [3,3,5]
-   *   ['one','two','three'].map('length')  -> [3,3,5]
-   *
-   ***
-   * @method filter(<f>, [scope])
-   * @returns Array
-   * @short Returns any elements in the array that match <f>.
-   * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts strings, numbers, deep objects, and arrays for <f>.
-   * @example
-   *
-   +   [1,2,3].filter(function(n) {
-   *     return n > 1;
-   *   });
-   *   [1,2,2,4].filter(2) -> 2
-   *
-   ***/
   function buildEnhancements() {
     var callbackCheck = function() { var a = arguments; return a.length > 0 && !isFunction(a[0]); };
     extendSimilar(array, true, callbackCheck, 'map,every,all,some,any,none,filter', function(methods, name) {
