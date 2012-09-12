@@ -574,7 +574,6 @@ test('Array', function () {
   equal([null, null].findAll(null, 0, true), [null, null], 'Array#findAll | looping | null');
   equal([null, null].findAll(null, 1, true), [null, null], 'Array#findAll | looping | null from index 1');
 
-
   // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
   arr = [{name:'john',age:10,food:'sushi'},{name:'randy',age:23,food:'natto'},{name:'karen',age:32,food:'salad'}];
   arr = [1,2,3,4,5,6,7,8,9];
@@ -2768,6 +2767,18 @@ test('Array', function () {
   testClassAndInstance('each', obj, [], obj, 'Object.size | each returns itself');
 
 
+
+  // Fuzzy matching behavior on functions.
+
+  var fn = function(){ count ++; };
+  count = 0;
+
+  [1,2,3].findAll(fn);
+  equal(count, 3, 'Array#findAll | functions treated as callbacks when matching against non-functions');
+
+  count = 0;
+  [function() {}, function() {}, function() {}].findAll(fn);
+  equal(count, 0, 'Array#findAll | functions directly matched when matching against functions');
 
 });
 
