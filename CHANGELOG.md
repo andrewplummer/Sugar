@@ -1,11 +1,18 @@
 v1.3.3
 ======
 
+### Internal Changes ###
+
+- multiMatch does not treat functions as callbacks when matching agains other functions.
+
+
+v1.3.2
+======
+
 ### API Changes ###
 
 - `Date#create` on ISO dates no longer sets the utc flag.
 - Fixed implementation of 'Function#bind', which was overriding native method due to an error in the MDN docs.
-- multiMatch does not treat functions as callbacks when matching agains other functions.
 
 
 v1.3.1
