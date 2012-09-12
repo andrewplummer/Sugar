@@ -201,8 +201,8 @@ def match_block(b, linenum, package)
     @current_module = @packages[package][:modules][name.to_sym]
   else
     name, method = get_method(b)
-    # Go 5 lines up so there's a little padding (Github doesn't do this)
-    method[:line] = [0, linenum - 5].max
+    # Go a line up so there's a little padding (Github doesn't do this)
+    method[:line] = [0, linenum - 1].max
     method[:returns] = get_property(:returns, b)
     method[:short] = get_property(:short, b)
     method[:extra] = get_property(:extra, b)
