@@ -678,7 +678,7 @@ test('Date', function () {
   dateEqual(new Date().rewind({ weekday: 7 }), new Date(), 'Date#advance | cannot rewind by weekdays');
 
   // UTC Date
-  var d = Date.create('2010-01-01 03:00', 'en', true);
+  var d = Date.utc.create('2010-01-01 03:00', 'en');
 
   d.setWeekday(1)
   equal(d.getUTCDay(), 1, 'Date#setWeekday | should account for UTC shift | getUTCDay');
@@ -873,11 +873,11 @@ test('Date', function () {
   dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week stays set');
 
 
-  d = Date.create('August 25, 2010 11:45:20', 'en', true);
+  d = Date.utc.create('August 25, 2010 11:45:20', 'en');
   equal(d.setWeek(1), 1262951120000, 'Date#setWeek | returns a timestamp');
 
 
-  d = Date.create('January 1, 2010 02:15:20', 'en', true);
+  d = Date.utc.create('January 1, 2010 02:15:20', 'en');
 
   d.setWeek(1);
   dateEqual(d, new Date(Date.UTC(2010,0,8,2,15,20)), 'Date#setWeek | utc | week 1');
@@ -1522,7 +1522,7 @@ test('Date', function () {
   dateEqual(new Date(d).endOfYear(true), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | reset if true | February 29, 2012');
 
 
-  d = Date.create('January 1, 2010 02:00:00', 'en', true);
+  d = Date.utc.create('January 1, 2010 02:00:00', 'en');
 
   dateEqual(d.clone().beginningOfDay(), new Date(Date.UTC(2010, 0)), 'Date#beginningOfDay | utc');
   dateEqual(d.clone().beginningOfWeek(), new Date(Date.UTC(2009, 11, 27)), 'Date#beginningOfWeek | utc');
@@ -1559,13 +1559,13 @@ test('Date', function () {
   dateEqual(new Date(d).addYears(-12), new Date(2000, 1, 29, 22, 15, 42), 'Date#addYears | negative | 12');
 
 
-  dateEqual(Date.create('February 29, 2012 22:15:42', 'en', true), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'Date#create | utc');
-  dateEqual(Date.create('2012-05-31', 'en', true), new Date(Date.UTC(2012, 4, 31)), 'Date#create | utc | 2012-05-31');
-  dateEqual(Date.create('1998-02-23 11:54:32', 'en', true), new Date(Date.UTC(1998,1,23,11,54,32)), 'Date#create | utc | enumerated params');
-  dateEqual(Date.create({ year: 1998, month: 1, day: 23, hour: 11 }, 'en', true), new Date(Date.UTC(1998,1,23,11)), 'Date#create | object');
-  dateEqual(Date.create('08-25-1978 11:42:32.488am', 'en', true), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'Date#create | full with ms');
-  dateEqual(Date.create('1994-11-05T13:15:30Z', 'en', true), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), 'Date#create | utc | "Z" is still utc');
-  dateEqual(Date.create('two days ago', 'en', true), Date.create('two days ago'), 'Date#create | utc | relative dates are not UTC');
+  dateEqual(Date.utc.create('February 29, 2012 22:15:42', 'en'), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'Date#create | utc');
+  dateEqual(Date.utc.create('2012-05-31', 'en'), new Date(Date.UTC(2012, 4, 31)), 'Date#create | utc | 2012-05-31');
+  dateEqual(Date.utc.create('1998-02-23 11:54:32', 'en'), new Date(Date.UTC(1998,1,23,11,54,32)), 'Date#create | utc | enumerated params');
+  dateEqual(Date.utc.create({ year: 1998, month: 1, day: 23, hour: 11 }, 'en'), new Date(Date.UTC(1998,1,23,11)), 'Date#create | object');
+  dateEqual(Date.utc.create('08-25-1978 11:42:32.488am', 'en'), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'Date#create | full with ms');
+  dateEqual(Date.utc.create('1994-11-05T13:15:30Z', 'en'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), 'Date#create | utc | "Z" is still utc');
+  dateEqual(Date.utc.create('two days ago', 'en'), Date.create('two days ago'), 'Date#create | utc | relative dates are not UTC');
 
 
 
@@ -2480,7 +2480,7 @@ test('Date', function () {
 
   // New handling of UTC dates
 
-  date1 = Date.create('2001-06-15', 'en', true);
+  date1 = Date.utc.create('2001-06-15', 'en');
   date2 = new Date(2001, 5, 15);
 
   dateEqual(date1, date2.addMinutes(-date2.getTimezoneOffset()), 'Date#create | utc | is equal to date with timezone subtracted');
@@ -2495,31 +2495,31 @@ test('Date', function () {
   dateEqual(d.clone().endOfMonth(), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'Date#endOfMonth | utc');
 
   equal(Date.create('1 month ago').utc().isLastMonth(), true, 'Date#utc | isLastMonth');
-  equal(d.minutesSince(Date.create('2001-06-15', 'en', true)), d.getTimezoneOffset(), 'Date#utc | minutesSince is equal to the timezone offset');
+  equal(d.minutesSince(Date.utc.create('2001-06-15', 'en')), d.getTimezoneOffset(), 'Date#utc | minutesSince is equal to the timezone offset');
   equal(d.hoursSince('2001-6-14'), 24, 'Date#utc | hoursSince | does not actually shift time');
 
-  d = Date.create('2001-06-15', 'en', true);
+  d = Date.utc.create('2001-06-15', 'en');
 
   equal(d.iso(), '2001-06-15T00:00:00.000Z', 'Date#create | utc | will properly be output in UTC');
   equal(d.format('{tz}'), '+0000', 'Date#format | UTC date will have +0000 offset');
   equal(d.getUTCOffset(), '+0000', 'Date#getUTCOffset | utc');
   dateEqual(d.clone().advance('1 month'), new Date(Date.UTC(2001, 6, 15)), 'Date#advance | utc');
 
-  equal(Date.create('2010-02-01', 'en', true).daysInMonth(), 28, 'Date#daysInMonth | utc | should find correct days in month');
-  equal(Date.create('2000-01', 'en', true).isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
+  equal(Date.utc.create('2010-02-01', 'en').daysInMonth(), 28, 'Date#daysInMonth | utc | should find correct days in month');
+  equal(Date.utc.create('2000-01', 'en').isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
 
 
   // COME BACK TO THIS
-  d = Date.create('2000-02-18 11:00pm', 'en', true);
+  d = Date.utc.create('2000-02-18 11:00pm', 'en');
 
   equal(d.is('Friday', null, true), true, 'Date#is | utc | friday');
   equal(d.isWeekday(true), true, 'Date#isWeekday | utc | friday');
   equal(d.is('2000-02-18', null, true), true, 'Date#is | utc | friday | full date');
-  equal(d.isAfter(Date.create('2000-02-18 10:00pm', 'en', true)), true, 'Date#isAfter | utc | friday | full date');
+  equal(d.isAfter(Date.utc.create('2000-02-18 10:00pm', 'en')), true, 'Date#isAfter | utc | friday | full date');
   equal(d.clone().reset(), new Date(Date.UTC(2000, 1, 18)), 'Date#reset | utc');
 
 
-  d = Date.create('2000-02-14', 'en', true);
+  d = Date.utc.create('2000-02-14', 'en');
 
   equal(d.is('Monday', null, true), true, 'Date#is | utc | monday');
   equal(d.isWeekday(true), true, 'Date#isWeekday | utc | monday');
@@ -2532,7 +2532,7 @@ test('Date', function () {
   equal(d.short(), 'February 14, 2000', 'Date#short | from UTC time');
 
   // Relative dates are unaffected
-  equal(Date.create('1 minute ago', 'en', true).relative(), '1 minute ago', 'Date#relative | utc');
+  equal(Date.utc.create('1 minute ago', 'en').relative(), '1 minute ago', 'Date#relative | utc');
 
 
   d = new Date(2001, 5, 15).utc().utc(false);
