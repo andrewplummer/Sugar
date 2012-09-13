@@ -1,3 +1,11 @@
+v1.3.4
+======
+
+### API Changes ###
+
+- Refactored 3rd utc argument into a separate object for clarity.
+
+
 v1.3.3
 ======
 
