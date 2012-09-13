@@ -1522,7 +1522,7 @@ test('Date', function () {
   dateEqual(new Date(d).endOfYear(true), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | reset if true | February 29, 2012');
 
 
-  d = Date.utc.create('January 1, 2010 02:00:00', 'en');
+  d = Date.utc.create('January 1, 2010 02:00:00', 'en').utc(true);
 
   dateEqual(d.clone().beginningOfDay(), new Date(Date.UTC(2010, 0)), 'Date#beginningOfDay | utc');
   dateEqual(d.clone().beginningOfWeek(), new Date(Date.UTC(2009, 11, 27)), 'Date#beginningOfWeek | utc');
@@ -2484,7 +2484,7 @@ test('Date', function () {
   date2 = new Date(2001, 5, 15);
 
   dateEqual(date1, date2.addMinutes(-date2.getTimezoneOffset()), 'Date#create | utc | is equal to date with timezone subtracted');
-  equal(date1._utc, true, 'Date#create | utc | sets internal flag');
+  equal(date1._utc, false, 'Date#create | utc | does not set internal flag');
 
 
   d = new Date(2001, 5, 15).utc();
@@ -2498,7 +2498,7 @@ test('Date', function () {
   equal(d.minutesSince(Date.utc.create('2001-06-15', 'en')), d.getTimezoneOffset(), 'Date#utc | minutesSince is equal to the timezone offset');
   equal(d.hoursSince('2001-6-14'), 24, 'Date#utc | hoursSince | does not actually shift time');
 
-  d = Date.utc.create('2001-06-15', 'en');
+  d = Date.utc.create('2001-06-15', 'en').utc(true);
 
   equal(d.iso(), '2001-06-15T00:00:00.000Z', 'Date#create | utc | will properly be output in UTC');
   equal(d.format('{tz}'), '+0000', 'Date#format | UTC date will have +0000 offset');
@@ -2509,8 +2509,7 @@ test('Date', function () {
   equal(Date.utc.create('2000-01', 'en').isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
 
 
-  // COME BACK TO THIS
-  d = Date.utc.create('2000-02-18 11:00pm', 'en');
+  d = Date.utc.create('2000-02-18 11:00pm', 'en').utc(true);
 
   equal(d.is('Friday', null, true), true, 'Date#is | utc | friday');
   equal(d.isWeekday(true), true, 'Date#isWeekday | utc | friday');
@@ -2519,7 +2518,7 @@ test('Date', function () {
   equal(d.clone().reset(), new Date(Date.UTC(2000, 1, 18)), 'Date#reset | utc');
 
 
-  d = Date.utc.create('2000-02-14', 'en');
+  d = Date.utc.create('2000-02-14', 'en').utc(true);
 
   equal(d.is('Monday', null, true), true, 'Date#is | utc | monday');
   equal(d.isWeekday(true), true, 'Date#isWeekday | utc | monday');
