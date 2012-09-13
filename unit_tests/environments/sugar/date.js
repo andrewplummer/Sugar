@@ -678,7 +678,7 @@ test('Date', function () {
   dateEqual(new Date().rewind({ weekday: 7 }), new Date(), 'Date#advance | cannot rewind by weekdays');
 
   // UTC Date
-  var d = Date.utc.create('2010-01-01 03:00', 'en');
+  var d = Date.utc.create('2010-01-01 03:00', 'en').utc();
 
   d.setWeekday(1)
   equal(d.getUTCDay(), 1, 'Date#setWeekday | should account for UTC shift | getUTCDay');
@@ -873,11 +873,11 @@ test('Date', function () {
   dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week stays set');
 
 
-  d = Date.utc.create('August 25, 2010 11:45:20', 'en');
+  d = Date.utc.create('August 25, 2010 11:45:20', 'en').utc();
   equal(d.setWeek(1), 1262951120000, 'Date#setWeek | returns a timestamp');
 
 
-  d = Date.utc.create('January 1, 2010 02:15:20', 'en');
+  d = Date.utc.create('January 1, 2010 02:15:20', 'en').utc(true);
 
   d.setWeek(1);
   dateEqual(d, new Date(Date.UTC(2010,0,8,2,15,20)), 'Date#setWeek | utc | week 1');
@@ -2505,8 +2505,8 @@ test('Date', function () {
   equal(d.getUTCOffset(), '+0000', 'Date#getUTCOffset | utc');
   dateEqual(d.clone().advance('1 month'), new Date(Date.UTC(2001, 6, 15)), 'Date#advance | utc');
 
-  equal(Date.utc.create('2010-02-01', 'en').daysInMonth(), 28, 'Date#daysInMonth | utc | should find correct days in month');
-  equal(Date.utc.create('2000-01', 'en').isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
+  equal(Date.utc.create('2010-02-01', 'en').utc().daysInMonth(), 28, 'Date#daysInMonth | utc | should find correct days in month');
+  equal(Date.utc.create('2000-01', 'en').utc().isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
 
 
   d = Date.utc.create('2000-02-18 11:00pm', 'en').utc(true);
