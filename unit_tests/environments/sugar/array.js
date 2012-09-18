@@ -1521,6 +1521,11 @@ test('Array', function () {
   equal(Array.create([1,2,3], [1,2,3]), [1,2,3,1,2,3], 'Array.create | passing two arrays will concat them');
   equal(Array.create([1,2,3], 'four'), [1,2,3,'four'], 'Array.create | passing an array and another object will concat them');
 
+  equal(Array.create({a:1}), [{a:1}], 'Array.create | object');
+  equal(Array.create({a:1}, {b:2}), [{a:1},{b:2}], 'Array.create | two objects');
+  equal(Array.create({a:1}, ['b']), [{a:1}, 'b'], 'Array.create | object and array');
+  equal(Array.create({a:1}, 'b'), [{a:1}, 'b'], 'Array.create | object and string');
+
   equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
 
