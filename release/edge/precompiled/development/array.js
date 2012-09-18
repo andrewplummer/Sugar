@@ -296,6 +296,14 @@
     array[AlphanumericSortEquivalents] = equivalents;
   }
 
+  function isArguments(obj) {
+    if(object.prototype.toString.call(obj) === '[object Arguments]') {
+      return true;
+    }
+    for(var i in obj) return false;
+    return obj && !!obj.callee;
+  }
+
   extend(array, false, false, {
 
     /***
@@ -316,11 +324,10 @@
     'create': function() {
       var result = []
       multiArgs(arguments, function(a) {
-        if(isObjectPrimitive(a)) {
-          result = result.concat(array.prototype.slice.call(a));
-        } else {
-          result.push(a);
+        if(isArguments(a)) {
+          a = array.prototype.slice.call(a);
         }
+        result = result.concat(a);
       });
       return result;
     }
