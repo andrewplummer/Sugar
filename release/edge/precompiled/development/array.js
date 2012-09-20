@@ -296,14 +296,6 @@
     array[AlphanumericSortEquivalents] = equivalents;
   }
 
-  function isArguments(obj) {
-    if(object.prototype.toString.call(obj) === '[object Arguments]') {
-      return true;
-    }
-    for(var i in obj) return false;
-    return obj && !!obj.callee;
-  }
-
   extend(array, false, false, {
 
     /***
@@ -322,10 +314,13 @@
      *
      ***/
     'create': function() {
-      var result = []
+      var result = [], tmp;
       multiArgs(arguments, function(a) {
-        if(isArguments(a)) {
-          a = array.prototype.slice.call(a);
+        if(isObjectPrimitive(a)) {
+          tmp = array.prototype.slice.call(a);
+          if(tmp.length > 0) {
+            a = tmp;
+          }
         }
         result = result.concat(a);
       });
