@@ -1508,26 +1508,35 @@ test('Array', function () {
 
   // Array.create
 
+  equal(Array.create(), [], 'Array.create | no args');
   equal(Array.create('one'), ['one'], 'Array.create | string');
   equal(Array.create(2), [2], 'Array.create | number');
+  equal(Array.create([2]), [2], 'Array.create | in array | number');
   equal(Array.create(true), [true], 'Array.create | boolean');
-  equal(Array.create(), [], 'Array.create | no args');
+  equal(Array.create([true]), [true], 'Array.create | in array | boolean');
   equal(Array.create(null), [null], 'Array.create | null');
+  equal(Array.create([null]), [null], 'Array.create | in array | null');
   equal(Array.create(undefined), [undefined], 'Array.create | mixed');
+  equal(Array.create([undefined]), [undefined], 'Array.create | in array | mixed');
   equal(Array.create('one', 2, true, null), ['one', 2, true, null], 'Array.create | mixed 1');
   equal(Array.create('one', 2, true, undefined), ['one', 2, true, undefined], 'Array.create | mixed 2');
 
   equal(Array.create([1,2,3]), [1,2,3], 'Array.create | passing an array');
+  equal(Array.create([[1,2,3]]), [[1,2,3]], 'Array.create | in array | is nested');
   equal(Array.create([1,2,3], [1,2,3]), [1,2,3,1,2,3], 'Array.create | passing two arrays will concat them');
   equal(Array.create([1,2,3], 'four'), [1,2,3,'four'], 'Array.create | passing an array and another object will concat them');
 
   equal(Array.create({a:1}), [{a:1}], 'Array.create | object');
+  equal(Array.create([{a:1}]), [{a:1}], 'Array.create | in array | object');
   equal(Array.create({a:1}, {b:2}), [{a:1},{b:2}], 'Array.create | two objects');
   equal(Array.create({a:1}, ['b']), [{a:1}, 'b'], 'Array.create | object and array');
   equal(Array.create({a:1}, 'b'), [{a:1}, 'b'], 'Array.create | object and string');
 
   equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
-  equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
+  equal((function(){ return Array.create(arguments); })('one').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
+  equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | two | converted arguments object is a true array');
+
+  equal((function(){ return Array.create([arguments]); })(true), [[true]], 'Array.create | nested arguments is a nested array');
 
   // Array#zip
 
