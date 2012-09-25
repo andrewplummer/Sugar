@@ -16,7 +16,7 @@ test('Dates | Dutch', function () {
   dateEqual(Date.create('Ma'), getDateWithWeekdayAndOffset(1), 'Date#create | Dutch | Monday abbreviated');
 
   dateEqual(Date.create('Dinsdag, 5 Januari 2012 3:45'), new Date(2012, 0, 5, 3, 45), 'Date#create | Dutch | 2012-01-05 3:45');
-  dateEqual(Date.create('Dinsdag, 5 Januari 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), 'Date#create | Dutch | 2012-01-05 3:45pm');
+  equal(Date.create('Dinsdag, 5 Januari 2012 3:45pm').isValid(), false, 'Date#create | Dutch | does not support am/pm');
 
   dateEqual(Date.create('een milliseconde geleden'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Dutch | one millisecond ago');
   dateEqual(Date.create('een seconde geleden'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Dutch | one second ago');
