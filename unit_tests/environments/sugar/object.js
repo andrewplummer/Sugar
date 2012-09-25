@@ -636,6 +636,8 @@ test('Object', function () {
   equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'Object.fromQueryString | handles partially escaped params');
   equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'Object.fromQueryString | handles fully escaped params');
 
+  equal(Object.fromQueryString('url=http%3A%2F%2Fwww.site.com%2Fslug%3Fin%3D%2Fuser%2Fjoeyblake'), { url: 'http://www.site.com/slug?in=/user/joeyblake' }, 'Object.fromQueryString | equal must be escaped as well');
+
   equal(Object.fromQueryString('http://fake.com?foo=bar'), { foo: 'bar' }, 'Object.fromQueryString | handles whole URLs');
   equal(Object.fromQueryString('foo=bar&moo=car').keys(), ['foo', 'moo'], 'Object.fromQueryString | should be extended');
   equal(Object.fromQueryString(), {}, 'Object.fromQueryString | will not die if no arguments');
