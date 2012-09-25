@@ -90,6 +90,7 @@
     {
       token: '[Tt]{1,2}',
       format: function(d, loc, n, format) {
+        if(loc['ampm'].length == 0) return '';
         var hours = callDateGet(d, 'Hours');
         var str = loc['ampm'][floor(hours / 12)];
         if(format.length === 1) str = str.slice(0,1);
@@ -264,7 +265,7 @@
     },
 
     matchPM: function(str) {
-      return str === this['ampm'][1];
+      return str && str === this['ampm'][1];
     },
 
     convertAdjustedToFormat: function(adu, format) {
@@ -571,7 +572,7 @@
     d.utc(forceUTC);
 
     if(isDate(f)) {
-      d = f.clone();
+      d = new date(f.getTime());
     } else if(isNumber(f)) {
       d = new date(f);
     } else if(isObject(f)) {
@@ -2151,7 +2152,7 @@
       { 'name': 'day',   'src': 'today', 'value': 0 },
       { 'name': 'day',   'src': 'tomorrow', 'value': 1 },
       { 'name': 'sign',  'src': 'ago|before', 'value': -1 },
-      { 'name': 'sign',  'src': 'from now|after|from|in', 'value': 1 },
+      { 'name': 'sign',  'src': 'from now|after|from|in|later', 'value': 1 },
       { 'name': 'edge',  'src': 'last day', 'value': -2 },
       { 'name': 'edge',  'src': 'end', 'value': -1 },
       { 'name': 'edge',  'src': 'first day|beginning', 'value': 1 },
@@ -2162,7 +2163,6 @@
     'dateParse': [
       '{num} {unit} {sign}',
       '{sign} {num} {unit}',
-      '{num} {unit=4-5} {sign} {day}',
       '{month} {year}',
       '{shift} {unit=5-7}',
       '{0} {edge} of {shift?} {unit=4-7?}{month?}{year?}'
@@ -2174,6 +2174,7 @@
       '{shift} {weekday}',
       '{shift} week {weekday}',
       '{weekday} {2} {shift} week',
+      '{num} {unit=4-5} {sign} {day}',
       '{0} {date}{1} of {month}',
       '{0}{month?} {date?}{1} of {shift} {unit=6-7}'
     ]
