@@ -168,5 +168,7 @@ test('Dates | Simplified Chinese', function () {
 
   equal((5).hours().duration('zh-CN'),   '5小时',     'Date#create | Simplified Chinese | simple duration');
 
+  equal(Date.create('18:00', 'zh-CN').getHours(), 18, 'Date#create | Simplified Chinese | hour:minute only');
+
 });
 

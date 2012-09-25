@@ -112,4 +112,6 @@ test('Dates | Traditional Chinese', function () {
 
   equal((5).hours().duration('zh-TW'),   '5小時',     'Date#create | Traditional Chinese | simple duration');
 
+  equal(Date.create('18:00', 'zh-TW').getHours(), 18, 'Date#create | Traditional Chinese | hour:minute only');
+
 });
