@@ -314,13 +314,15 @@
      *
      ***/
     'create': function() {
-      var result = []
+      var result = [], tmp;
       multiArgs(arguments, function(a) {
         if(isObjectPrimitive(a)) {
-          result = result.concat(array.prototype.slice.call(a));
-        } else {
-          result.push(a);
+          tmp = array.prototype.slice.call(a);
+          if(tmp.length > 0) {
+            a = tmp;
+          }
         }
+        result = result.concat(a);
       });
       return result;
     }
