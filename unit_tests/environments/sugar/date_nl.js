@@ -120,4 +120,6 @@ test('Dates | Dutch', function () {
 
   equal((5).hours().duration('nl'), '5 uur', 'Date#create | Dutch | simple duration');
 
+  equal(new Date().format('{tt}'), '', 'Date#format | Dutch | am/pm token should not raise an error');
+
 });
