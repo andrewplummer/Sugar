@@ -2552,6 +2552,10 @@ test('Date', function () {
   var hours = d.getHours() - (d.getTimezoneOffset() / 60);
 
 
+  // Issue #203
+
+  dateEqual(Date.create('The day after tomorrow 3:45pm', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2, 15, 45), 'Date#create | Fuzzy Dates | The day after tomorrow at 3:45pm');
+  dateEqual(Date.create('The day before yesterday at 11:15am', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2, 11, 15), 'Date#create | Fuzzy Dates | the day before yesterday at 11:15am');
 
 
 
