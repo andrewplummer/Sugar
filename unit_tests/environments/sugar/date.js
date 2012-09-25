@@ -389,6 +389,15 @@ test('Date', function () {
   dateEqual(Date.create('2 seconds from now'), getRelativeDate(null, null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 seconds from now');
   dateEqual(Date.create('2 milliseconds from now'), getRelativeDate(null, null, null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 milliseconds from now');
 
+  dateEqual(Date.create('2 years later'), getRelativeDate(2), 'Date#create | Fuzzy Dates | 2 years later');
+  dateEqual(Date.create('2 months later'), getRelativeDate(null, 2), 'Date#create | Fuzzy Dates | 2 months later');
+  dateEqual(Date.create('2 weeks later'), getRelativeDate(null, null, 14), 'Date#create | Fuzzy Dates | 2 weeks later');
+  dateEqual(Date.create('2 days later'), getRelativeDate(null, null, 2), 'Date#create | Fuzzy Dates | 2 days later');
+  dateEqual(Date.create('2 hours later'), getRelativeDate(null, null, null, 2), 'Date#create | Fuzzy Dates | 2 hours later');
+  dateEqual(Date.create('2 minutes later'), getRelativeDate(null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 minutes later');
+  dateEqual(Date.create('2 seconds later'), getRelativeDate(null, null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 seconds later');
+  dateEqual(Date.create('2 milliseconds later'), getRelativeDate(null, null, null, null, null, null, 2), 'Date#create | Fuzzy Dates | 2 milliseconds later');
+
   // Article trouble
   dateEqual(Date.create('an hour ago'), getRelativeDate(null, null, null, -1), 'Date#create | Fuzzy Dates | an hours ago');
   dateEqual(Date.create('an hour from now'), getRelativeDate(null, null, null, 1), 'Date#create | Fuzzy Dates | an hour from now');
