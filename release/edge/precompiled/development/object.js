@@ -292,10 +292,10 @@
     'fromQueryString': function(str, deep) {
       var result = object.extended(), split;
       str = str && str.toString ? str.toString() : '';
-      decodeURIComponent(str.replace(/^.*?\?/, '')).split('&').forEach(function(p) {
+      str.replace(/^.*?\?/, '').split('&').forEach(function(p) {
         var split = p.split('=');
         if(split.length !== 2) return;
-        setParamsObject(result, split[0], split[1], deep);
+        setParamsObject(result, split[0], decodeURIComponent(split[1]), deep);
       });
       return result;
     },

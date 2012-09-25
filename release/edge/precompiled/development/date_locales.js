@@ -524,7 +524,6 @@ Date.addLocale('nl', {
   'future': '{num} {unit} {sign}',
   'duration': '{num} {unit}',
   'timeMarker': "'s|om",
-  'ampm': 'am,pm', // I don't think Dutch actually uses am or pm
   'modifiers': [
     { 'name': 'day', 'src': 'gisteren', 'value': -1 },
     { 'name': 'day', 'src': 'vandaag', 'value': 0 },
@@ -942,7 +941,7 @@ Date.addLocale('zh-CN', {
     '{shift}{weekday}',
     '{year}年{month?}月?{date?}{0}',
     '{month}月{date?}{0}',
-    '{date}{0}'
+    '{date}[日号]'
   ]
 });
 
@@ -1023,7 +1022,7 @@ Date.addLocale('zh-TW', {
     '{shift}{weekday}',
     '{year}年{month?}月?{date?}{0}',
     '{month}月{date?}{0}',
-    '{date}{0}'
+    '{date}[日號]'
   ]
 });
 
