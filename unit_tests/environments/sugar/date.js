@@ -2558,5 +2558,9 @@ test('Date', function () {
   dateEqual(Date.create('The day before yesterday at 11:15am', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2, 11, 15), 'Date#create | Fuzzy Dates | the day before yesterday at 11:15am');
 
 
+  dateEqual(Date.create('the 28th'), new Date().set({ date:28 }, true), 'Date#create | the 28th');
+  dateEqual(Date.create('28th'), new Date().set({ date:28 }, true), 'Date#create | 28th');
+  dateEqual(Date.create('the 28th of January'), new Date().set({ month: 0, date:28 }, true), 'Date#create | the 28th of January');
+  dateEqual(Date.create('28th of January'), new Date().set({ month: 0, date:28 }, true), 'Date#create | 28th of January');
 
 });
