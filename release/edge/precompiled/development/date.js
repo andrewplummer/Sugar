@@ -247,7 +247,7 @@
       return English['units'][this['units'].indexOf(n) % 8];
     },
 
-    relative: function(adu) {
+    getRelativeFormat: function(adu) {
       return this.convertAdjustedToFormat(adu, adu[2] > 0 ? 'future' : 'past');
     },
 
@@ -268,22 +268,20 @@
       return str && str === this['ampm'][1];
     },
 
-    convertAdjustedToFormat: function(adu, format) {
-      var num = adu[0], u = adu[1], ms = adu[2], sign, unit, last, mult;
-      if(this['code'] == 'ru') {
-        last = num.toString().slice(-1);
-        switch(true) {
-          case last == 1: mult = 1; break;
-          case last >= 2 && last <= 4: mult = 2; break;
-          default: mult = 3;
-        }
-      } else {
-        mult = this['plural'] && num > 1 ? 1 : 0;
+    convertAdjustedToFormat: function(adu, mode) {
+      var sign, unit, mult,
+          num    = adu[0],
+          u      = adu[1],
+          ms     = adu[2],
+          format = this[mode] || this['relative'];
+      if(isFunction(format)) {
+        return format.call(this, num, u, ms, mode);
       }
+      mult = this['plural'] && num > 1 ? 1 : 0;
       unit = this['units'][mult * 8 + u] || this['units'][u];
       if(this['capitalizeUnit']) unit = simpleCapitalize(unit);
       sign = this['modifiers'].filter(function(m) { return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1); })[0];
-      return this[format].replace(/\{(.*?)\}/g, function(full, match) {
+      return format.replace(/\{(.*?)\}/g, function(full, match) {
         switch(match) {
           case 'num': return num;
           case 'unit': return unit;
@@ -301,9 +299,13 @@
 
       src = src.replace(/\s+/g, '[-,. ]*');
       src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
-        var opt = k.match(/\?$/), slice = k.match(/(\d)(?:-(\d))?/), nc = k.match(/^\d+$/), key = k.replace(/[^a-z]+$/, ''), value, arr;
+        var value, arr, result,
+            opt   = k.match(/\?$/),
+            nc    = k.match(/^(\d+)\??$/),
+            slice = k.match(/(\d)(?:-(\d))?/),
+            key   = k.replace(/[^a-z]+$/, '');
         if(nc) {
-          value = loc['optionals'][nc[0]];
+          value = loc['tokens'][nc[1]];
         } else if(loc[key]) {
           value = loc[key];
         } else if(loc[key + 's']) {
@@ -323,13 +325,17 @@
           value = arrayToAlternates(value);
         }
         if(nc) {
-          return '(?:' + value + ')?';
+          result = '(?:' + value + ')';
         } else {
           if(!match) {
             to.push(key);
           }
-          return '(' + value + ')' + (opt ? '?' : '');
+          result = '(' + value + ')';
         }
+        if(opt) {
+          result += '?';
+        }
+        return result;
       });
       if(allowsTime) {
         time = prepareTime(RequiredTime, loc, iso);
@@ -424,7 +430,7 @@
     // Initialize the locale
     loc = new Localization(set);
     initializeField('modifiers');
-    'months,weekdays,units,numbers,articles,optionals,timeMarker,ampm,timeSuffixes,dateParse,timeParse'.split(',').forEach(initializeField);
+    'months,weekdays,units,numbers,articles,tokens,timeMarker,ampm,timeSuffixes,dateParse,timeParse'.split(',').forEach(initializeField);
 
     canAbbreviate = !loc['monthSuffix'];
 
@@ -825,7 +831,7 @@
         adu[1] = 1;
         adu[0] = 1;
       }
-      return loc.relative(adu);
+      return loc.getRelativeFormat(adu);
     }
 
     format = format || 'long';
@@ -2140,7 +2146,7 @@
     'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
     'numbers':    'one,two,three,four,five,six,seven,eight,nine,ten',
     'articles':   'a,an,the',
-    'optionals':  'the,st|nd|rd|th,of',
+    'tokens':  'the,st|nd|rd|th,of',
     'short':      '{Month} {d}, {yyyy}',
     'long':       '{Month} {d}, {yyyy} {h}:{mm}{tt}',
     'full':       '{Weekday} {Month} {d}, {yyyy} {h}:{mm}:{ss}{tt}',
@@ -2165,18 +2171,19 @@
       '{sign} {num} {unit}',
       '{month} {year}',
       '{shift} {unit=5-7}',
-      '{0} {edge} of {shift?} {unit=4-7?}{month?}{year?}'
+      '{0?} {date}{1}',
+      '{0?} {edge} of {shift?} {unit=4-7?}{month?}{year?}'
     ],
     'timeParse': [
       '{0} {num}{1} {day} of {month} {year?}',
-      '{weekday?} {month} {date}{1} {year?}',
+      '{weekday?} {month} {date}{1?} {year?}',
       '{date} {month} {year}',
       '{shift} {weekday}',
       '{shift} week {weekday}',
-      '{weekday} {2} {shift} week',
+      '{weekday} {2?} {shift} week',
       '{num} {unit=4-5} {sign} {day}',
-      '{0} {date}{1} of {month}',
-      '{0}{month?} {date?}{1} of {shift} {unit=6-7}'
+      '{0?} {date}{1} of {month}',
+      '{0?}{month?} {date?}{1?} of {shift} {unit=6-7}'
     ]
   });
 
