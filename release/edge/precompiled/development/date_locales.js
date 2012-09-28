@@ -170,14 +170,17 @@ Date.addLocale('fi', {
     'short':      '{d}. {month}ta {yyyy}',
     'long':       '{d}. {month}ta {yyyy} kello {H}.{mm}',
     'full':       '{Weekday}na {d}. {month}ta {yyyy} kello {H}.{mm}',
-    'past':       function(num, unit, ms) {
-      var mult = num > 1 ? 1 : 0;
-      return (num === 1 ? '' : num + ' ') + this['units'][(8 * mult) + unit] + ' sitten';
+    'relative':       function(num, unit, ms, format) {
+      var units = this['units'];
+      function numberWithUnit(mult) {
+        return (num === 1 ? '' : num + ' ') + units[(8 * mult) + unit];
+      }
+      switch(format) {
+        case 'duration':  return numberWithUnit(0);
+        case 'past':      return numberWithUnit(num > 1 ? 1 : 0) + ' sitten';
+        case 'future':    return numberWithUnit(4) + ' päästä';
+      }
     },
-    'future':       function(num, unit, ms) {
-      return (num === 1 ? '' : num + ' ') + this['units'][(8 * 4) + unit] + ' päästä';
-    },
-    'duration':   '{num} {unit}',
     'modifiers': [
         { 'name': 'day',   'src': 'toissa päivänä|toissa päiväistä', 'value': -2 },
         { 'name': 'day',   'src': 'eilen|eilistä', 'value': -1 },
@@ -810,8 +813,9 @@ Date.addLocale('ru', {
   'long': '{d} {month} {yyyy} года {H}:{mm}',
   'full': '{Weekday} {d} {month} {yyyy} года {H}:{mm}:{ss}',
   'relative': function(num, unit, ms, format) {
-    var last = last = num.toString().slice(-1), numberWithUnit;
+    var numberWithUnit, last = num.toString().slice(-1);
     switch(true) {
+      case num >= 11 && num <= 15: mult = 3; break;
       case last == 1: mult = 1; break;
       case last >= 2 && last <= 4: mult = 2; break;
       default: mult = 3;
