@@ -192,4 +192,33 @@ test('Dates | Russian', function () {
 
   equal((5).hours().duration('ru'), '5 часов', 'Date#create | Russian | simple duration');
 
+
+  equal(Date.create('11 hours ago', 'en').relative(), '11 часов назад', 'Date#relative | Russian | 11 hours ago');
+  equal(Date.create('12 hours ago', 'en').relative(), '12 часов назад', 'Date#relative | Russian | 12 hours ago');
+  equal(Date.create('13 hours ago', 'en').relative(), '13 часов назад', 'Date#relative | Russian | 13 hours ago');
+  equal(Date.create('14 hours ago', 'en').relative(), '14 часов назад', 'Date#relative | Russian | 14 hours ago');
+  equal(Date.create('15 hours ago', 'en').relative(), '15 часов назад', 'Date#relative | Russian | 15 hours ago');
+  equal(Date.create('16 hours ago', 'en').relative(), '16 часов назад', 'Date#relative | Russian | 16 hours ago');
+  equal(Date.create('17 hours ago', 'en').relative(), '17 часов назад', 'Date#relative | Russian | 17 hours ago');
+  equal(Date.create('18 hours ago', 'en').relative(), '18 часов назад', 'Date#relative | Russian | 18 hours ago');
+  equal(Date.create('19 hours ago', 'en').relative(), '19 часов назад', 'Date#relative | Russian | 19 hours ago');
+  equal(Date.create('20 hours ago', 'en').relative(), '20 часов назад', 'Date#relative | Russian | 20 hours ago');
+
+  equal(Date.create('21 hours ago', 'en').relative(), '21 час назад', 'Date#relative | Russian | 21 hours ago');
+  equal(Date.create('22 hours ago', 'en').relative(), '22 часа назад', 'Date#relative | Russian | 22 hours ago');
+
+  equal(Date.create('11 hours from now', 'en').relative(), 'через 11 часов', 'Date#relative | Russian | 11 hours ago');
+  equal(Date.create('12 hours from now', 'en').relative(), 'через 12 часов', 'Date#relative | Russian | 12 hours ago');
+  equal(Date.create('13 hours from now', 'en').relative(), 'через 13 часов', 'Date#relative | Russian | 13 hours ago');
+  equal(Date.create('14 hours from now', 'en').relative(), 'через 14 часов', 'Date#relative | Russian | 14 hours ago');
+  equal(Date.create('15 hours from now', 'en').relative(), 'через 15 часов', 'Date#relative | Russian | 15 hours ago');
+  equal(Date.create('16 hours from now', 'en').relative(), 'через 16 часов', 'Date#relative | Russian | 16 hours ago');
+  equal(Date.create('17 hours from now', 'en').relative(), 'через 17 часов', 'Date#relative | Russian | 17 hours ago');
+  equal(Date.create('18 hours from now', 'en').relative(), 'через 18 часов', 'Date#relative | Russian | 18 hours ago');
+  equal(Date.create('19 hours from now', 'en').relative(), 'через 19 часов', 'Date#relative | Russian | 19 hours ago');
+  equal(Date.create('20 hours from now', 'en').relative(), 'через 20 часов', 'Date#relative | Russian | 20 hours ago');
+
+  equal(Date.create('21 hours from now', 'en').relative(), 'через 21 час', 'Date#relative | Russian | 21 hours ago');
+  equal(Date.create('22 hours from now', 'en').relative(), 'через 22 часа', 'Date#relative | Russian | 22 hours ago');
+
 });
