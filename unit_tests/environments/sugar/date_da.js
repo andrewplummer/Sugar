@@ -15,7 +15,7 @@ test('Dates | Danish', function () {
     'Date#create | basic Danish date'
   );
 
-  dateEqual(Date.create('tirsdag 5 januari 2012'),
+  dateEqual(Date.create('tirsdag 5 januar 2012'),
     new Date(2012, 0, 5),
     'Date#create | Danish | 2012-01-05'
   );
