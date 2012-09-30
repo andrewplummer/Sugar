@@ -1,3 +1,17 @@
+v1.3.5
+======
+
+### API Changes ###
+
+- Now allowing "n days later" etc. as a parsable format (#199).
+- Added support for "the nth" format (#205).
+- Fixed issue with `Array.create` on objects (#195).
+- Fixed am/pm issues with Date parsing (#201).
+- Fixed issues with `Date.future` (#210), zh-CN locale time parsing, (#204).
+- Added support for Finnish locale (#185), Dutch, and Danish.
+- Fixed `Number.random` to have better random distribution (#196).
+- Issue with Date cloning (#200).
+
 v1.3.4
 ======
 
