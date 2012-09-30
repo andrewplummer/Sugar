@@ -41,6 +41,7 @@ v1.3.1+
 - Level: Very Minor
   - `Date#setWeekday` now returns a timestamp instead of `undefined`.
 
+
 v1.3+
 =======
 
