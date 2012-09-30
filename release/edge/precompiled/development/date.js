@@ -898,6 +898,10 @@
       return isDefined(getParam(key));
     }
 
+    function uniqueParamExists(key, isDay) {
+      return paramExists(key) || (isDay && paramExists('weekday'));
+    }
+
     function canDisambiguate() {
       var now = new date;
       return (prefer === -1 && d > now) || (prefer === 1 && d < now);
@@ -922,7 +926,7 @@
     // as setting hour: 3, minute: 345, etc.
     iterateOverObject(DateUnitsReversed, function(i,u) {
       var isDay = u.unit === 'day';
-      if(paramExists(u.unit) || (isDay && paramExists('weekday'))) {
+      if(uniqueParamExists(u.unit, isDay)) {
         params.specificity = u.unit;
         specificityIndex = +i;
         return false;
@@ -931,6 +935,7 @@
         callDateSet(d, u.method, (isDay ? 1 : 0));
       }
     });
+
 
     // Now actually set or advance the date in order, higher units first.
     DateUnits.forEach(function(u,i) {
@@ -966,6 +971,7 @@
       }
     });
 
+
     // If a weekday is included in the params, set it ahead of time and set the params
     // to reflect the updated date so that resetting works properly.
     if(!advance && !paramExists('day') && paramExists('weekday')) {
@@ -976,7 +982,7 @@
     if(canDisambiguate()) {
       iterateOverObject(DateUnitsReversed.slice(specificityIndex + 1), function(i,u) {
         var ambiguous = u.ambiguous || (u.unit === 'week' && paramExists('weekday'));
-        if(ambiguous && !paramExists(u.unit)) {
+        if(ambiguous && !uniqueParamExists(u.unit, u.unit === 'day')) {
           d[u.addMethod](prefer);
           return false;
         }

@@ -2563,4 +2563,8 @@ test('Date', function () {
   dateEqual(Date.create('the 28th of January'), new Date().set({ month: 0, date:28 }, true), 'Date#create | the 28th of January');
   dateEqual(Date.create('28th of January'), new Date().set({ month: 0, date:28 }, true), 'Date#create | 28th of January');
 
+  // Issue #210
+
+  equal(Date.future('Sunday at 3:00').getWeekday(), 0, 'Date.future | weekday should never be ambiguous');
+
 });
