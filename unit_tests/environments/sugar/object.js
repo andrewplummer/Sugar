@@ -788,5 +788,6 @@ test('Object', function () {
   equal(Object.merge({}, obj1, true).reg === obj1.reg, false, 'Object.merge | deep merging will clone regexes');
 
 
+
 });
 
