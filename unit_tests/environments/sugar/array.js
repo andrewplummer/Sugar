@@ -2755,33 +2755,6 @@ test('Array', function () {
 
 
 
-
-  // Object.each
-
-  var obj = {
-    number: 3,
-    person: 'jim',
-    date: d
-  };
-
-  var keys = ['number','person','date'];
-  var values = [3,'jim',d];
-  var count = 0;
-
-  count = 0;
-  result = Object.each(obj, function(key, value, o) {
-    equal(key, keys[count], 'Object.each | accepts a block', { mootools: values[count] });
-    equal(value, values[count], 'Object.each | accepts a block', { mootools: keys[count] });
-    equal(o, obj, 'Object.each | accepts a block | object is third param');
-    count++;
-  });
-  equal(count, 3, 'Object.each | accepts a block | iterated properly');
-  equal(result, obj, 'Object.each | accepts a block | result should equal object passed in', { mootools: undefined });
-
-  testClassAndInstance('each', obj, [], obj, 'Object.size | each returns itself');
-
-
-
   // Fuzzy matching behavior on functions.
 
   var fn = function(){ count ++; };
@@ -2793,6 +2766,38 @@ test('Array', function () {
   count = 0;
   [function() {}, function() {}, function() {}].findAll(fn);
   equal(count, 0, 'Array#findAll | functions directly matched when matching against functions');
+
+
+  // Object.each
+
+  var fn = function () {};
+  var obj = {
+    number: 3,
+    person: 'jim',
+    date: d,
+    func: fn
+  };
+
+  var keys = ['number','person','date','func'];
+  var values = [3, 'jim', d, fn];
+  var count = 0;
+
+  count = 0;
+  result = Object.each(obj, function(key, value, o) {
+    equal(key, keys[count], 'Object.each | accepts a block', { mootools: values[count] });
+    equal(value, values[count], 'Object.each | accepts a block', { mootools: keys[count] });
+    equal(o, obj, 'Object.each | accepts a block | object is third param');
+    count++;
+  });
+  equal(count, 4, 'Object.each | accepts a block | iterated properly');
+  equal(result, obj, 'Object.each | accepts a block | result should equal object passed in', { mootools: undefined });
+
+  raisesError(function(){
+    Object.each({foo:'bar'});
+  }, 'Object.each | no iterator raises an error');
+
+  testClassAndInstance('each', obj, [function () {}], obj, 'Object.size | each returns itself');
+
 
 });
 
