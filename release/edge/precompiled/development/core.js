@@ -120,6 +120,12 @@
     return result;
   }
 
+  function checkCallback(fn) {
+    if(!fn || !fn.call) {
+      throw new TypeError('Callback is not callable');
+    }
+  }
+
 
   // General helpers
 
@@ -154,7 +160,7 @@
     var key;
     for(key in obj) {
       if(!hasOwnProperty(obj, key)) continue;
-      if(fn.call(obj, key, obj[key]) === false) break;
+      if(fn.call(obj, key, obj[key], obj) === false) break;
     }
   }
 
