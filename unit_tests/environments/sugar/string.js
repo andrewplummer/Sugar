@@ -55,14 +55,21 @@ test('String', function () {
 
 
 
-  equal('<p>some text</p>'.escapeHTML(), '&lt;p&gt;some text&lt;/p&gt;', 'String#escapeHTML | <p>some text</p>');
+  equal('<p>some text</p>'.escapeHTML(), '&lt;p&gt;some text&lt;&#x2f;p&gt;', 'String#escapeHTML | <p>some text</p>');
   equal('war & peace & food'.escapeHTML(), 'war &amp; peace &amp; food', 'String#escapeHTML | war & peace');
   equal('&lt;span&gt;already escaped, yo&lt;/span&gt;', '&lt;span&gt;already escaped, yo&lt;/span&gt;', 'String#escapeHTML | already escaped will stay escaped');
 
+  equal("hell's".escapeHTML(), 'hell&apos;s', "String#escapeHTML | works on '");
+  equal('I know that "feel" bro'.escapeHTML(), 'I know that &quot;feel&quot; bro', 'String#escapeHTML | works on "');
+  equal('feel the /'.escapeHTML(), 'feel the &#x2f;', 'String#escapeHTML | works on /');
 
   equal('&lt;p&gt;some text&lt;/p&gt;'.unescapeHTML(), '<p>some text</p>', 'String#unescapeHTML | <p>some text</p>');
   equal('war &amp; peace &amp; food'.unescapeHTML(), 'war & peace & food', 'String#unescapeHTML | war & peace');
   equal('<span>already escaped, yo</span>', '<span>already escaped, yo</span>', 'String#escapeHTML | already escaped will stay escaped');
+
+  equal('hell&apos;s'.unescapeHTML(), "hell's", "String#unescapeHTML | works on '");
+  equal('I know that &quot;feel&quot; bro'.unescapeHTML(), 'I know that "feel" bro', 'String#unescapeHTML | works on "');
+  equal('feel the &#x2f;'.unescapeHTML(), 'feel the /', 'String#unescapeHTML | works on /');
 
 
 
