@@ -128,6 +128,12 @@
     return result;
   }
 
+  function checkCallback(fn) {
+    if(!fn || !fn.call) {
+      throw new TypeError('Callback is not callable');
+    }
+  }
+
 
   // General helpers
 
@@ -162,7 +168,7 @@
     var key;
     for(key in obj) {
       if(!hasOwnProperty(obj, key)) continue;
-      if(fn.call(obj, key, obj[key]) === false) break;
+      if(fn.call(obj, key, obj[key], obj) === false) break;
     }
   }
 
@@ -444,12 +450,6 @@
       return d;
     } else {
       return parseInt(i >> 0);
-    }
-  }
-
-  function checkCallback(fn) {
-    if(!fn || !fn.call) {
-      throw new TypeError('Callback is not callable');
     }
   }
 
@@ -1946,6 +1946,7 @@
    * @extra In cases where a callback is used, instead of %element, index%, the callback will instead be passed %key, value%. Enumerable methods are also available to extended objects as instance methods.
    *
    * @set
+   *   each
    *   map
    *   any
    *   all
@@ -2012,6 +2013,12 @@
       return values.reduce.apply(values, multiArgs(arguments).slice(1));
     },
 
+    'each': function(obj, fn) {
+      checkCallback(fn);
+      iterateOverObject(obj, fn);
+      return obj;
+    },
+
     /***
      * @method size(<obj>)
      * @returns Number
@@ -2030,7 +2037,7 @@
 
   buildEnhancements();
   buildAlphanumericSort();
-  buildEnumerableMethods('each,any,all,none,count,find,findAll,isEmpty');
+  buildEnumerableMethods('any,all,none,count,find,findAll,isEmpty');
   buildEnumerableMethods('sum,average,min,max,least,most', true);
   buildObjectInstanceMethods('map,reduce,size', Hash);
 
