@@ -2765,8 +2765,18 @@ test('Array', function () {
 
   count = 0;
   [function() {}, function() {}, function() {}].findAll(fn);
-  equal(count, 0, 'Array#findAll | functions directly matched when matching against functions');
+  equal(count, 3, 'Array#findAll | functions are not directly matched');
 
+
+  if(Object.equal) {
+    var fn1 = function() {};
+    var fn2 = function() {};
+    equal([fn1, fn1, fn1].all(function(el) { return Object.equal(el, fn1); }), true, 'Array#all | functions can be matched inside the callback');
+    equal([fn1, fn1, fn2].all(function(el) { return Object.equal(el, fn1); }), false, 'Array#all | functions can be matched inside the callback');
+    equal([fn1, fn1, fn2].any(function(el) { return Object.equal(el, fn1); }), true, 'Array#any | functions can be matched inside the callback');
+    equal([fn1, fn2, fn1].findAll(function(el) { return Object.equal(el, fn1); }), [fn1, fn1], 'Array#findAll | functions can be matched inside the callback');
+    equal([fn1, fn2, fn1].findAll(function(el) { return Object.equal(el, fn2); }), [fn2], 'Array#findAll | fn2 | functions can be matched inside the callback');
+  }
 
   // Object.each
 
