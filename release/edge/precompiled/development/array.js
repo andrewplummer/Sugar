@@ -16,7 +16,7 @@
     } else if(isRegExp(match) && isString(el)) {
       // Match against a regexp
       return regexp(match).test(el);
-    } else if(isFunction(match) && !isFunction(el)) {
+    } else if(isFunction(match)) {
       // Match against a filtering function
       return match.apply(scope, params);
     } else if(isObject(match) && isObjectPrimitive(el)) {
@@ -1132,7 +1132,8 @@
     extendSimilar(object, false, false, names, function(methods, name) {
       methods[name] = function(obj, arg1, arg2) {
         var result;
-        result = array.prototype[name].call(keysWithCoercion(obj), function(key) {
+        var x =  keysWithCoercion(obj);
+        result = array.prototype[name].call(x, function(key) {
           if(mapping) {
             return transformArgument(obj[key], arg1, obj, [key, obj[key], obj]);
           } else {
