@@ -1749,15 +1749,8 @@
      *
      ***/
     'sample': function(num) {
-      var result = [], arr = this.clone(), index;
-      if(isUndefined(num)) num = 1;
-      while(result.length < num) {
-        index = floor(math.random() * (arr.length - 1));
-        result.push(arr[index]);
-        arr.removeAt(index);
-        if(arr.length == 0) break;
-      }
-      return arguments.length > 0 ? result : result[0];
+      var arr = this.randomize();
+      return arguments.length > 0 ? arr.slice(0, num) : arr[0];
     },
 
     /***
@@ -5621,8 +5614,6 @@
     }
   }
 
-
-
   extend(string, true, false, {
 
      /***
@@ -5681,7 +5672,12 @@
       *
       ***/
     'escapeHTML': function() {
-      return this.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return this.replace(/&/g,  '&amp;' )
+                 .replace(/</g,  '&lt;'  )
+                 .replace(/>/g,  '&gt;'  )
+                 .replace(/"/g,  '&quot;')
+                 .replace(/'/g,  '&apos;')
+                 .replace(/\//g, '&#x2f;');
     },
 
      /***
@@ -5695,7 +5691,12 @@
       *
       ***/
     'unescapeHTML': function() {
-      return this.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      return this.replace(/&amp;/g,  '&')
+                 .replace(/&lt;/g,   '<')
+                 .replace(/&gt;/g,   '>')
+                 .replace(/&quot;/g, '"')
+                 .replace(/&apos;/g, "'")
+                 .replace(/&#x2f;/g, '/');
     },
 
      /***
@@ -6282,17 +6283,21 @@
      *
      *   'jumpy'.repeat(2) -> 'jumpyjumpy'
      *   'a'.repeat(5)     -> 'aaaaa'
+     *   'a'.repeat(0)     -> ''
      *
      ***/
     'repeat': function(num) {
-      var str = '', i = 0;
-      if(isNumber(num) && num > 0) {
-        while(i < num) {
-          str += this;
-          i++;
+      var result = '', str = this;
+      if(!isNumber(num) || num < 1) return '';
+      while (num) {
+        if (num & 1) {
+          result += str;
+        }
+        if (num >>= 1) {
+          str += str;
         }
       }
-      return str;
+      return result;
     },
 
     /***
@@ -6380,7 +6385,6 @@
       });
       return context;
     }
-
   });
 
 
