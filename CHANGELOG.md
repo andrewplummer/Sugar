@@ -1,3 +1,10 @@
+v1.3.6
+======
+
+### API Changes ###
+
+- Faster String#repeat (Issue #214 - Thanks to @termi!).
+
 v1.3.5
 ======
 
