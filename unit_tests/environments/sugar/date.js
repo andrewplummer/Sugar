@@ -2573,7 +2573,7 @@ test('Date', function () {
 
   equal(Date.create('59:00').isValid(), false, 'Date#create | no hours allowed outside range');
 
-  // These dates actually will parse out natively in node
+  // These dates actually will parse out natively in node v0.8.11
   skipEnvironments(['node'], function() {
     equal(Date.create('05:75').isValid(), false, 'Date#create | no minutes allowed outside range');
     equal(Date.create('05:59:60').isValid(), false, 'Date#create | no seconds allowed outside range');
