@@ -2054,8 +2054,10 @@
   var CurrentLocalization;
 
   var TimeFormat = ['ampm','hour','minute','second','ampm','utc','offset_sign','offset_hours','offset_minutes','ampm']
-  var FloatReg = '\\d{1,2}(?:[,.]\\d+)?';
-  var RequiredTime = '({t})?\\s*('+FloatReg+')(?:{h}('+FloatReg+')?{m}(?::?('+FloatReg+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
+  var DecimalReg = '(?:[,.]\\d+)?';
+  var HoursReg   = '2[0-4]|[01]?\\d' + DecimalReg;
+  var SixtyReg   = '[0-5]\\d' + DecimalReg;
+  var RequiredTime = '({t})?\\s*('+HoursReg+')(?:{h}('+SixtyReg+')?{m}(?::?('+SixtyReg+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
 
   var KanjiDigits     = '〇一二三四五六七八九十百千万';
   var FullWidthDigits = '０１２３４５６７８９';
@@ -6282,17 +6284,21 @@
      *
      *   'jumpy'.repeat(2) -> 'jumpyjumpy'
      *   'a'.repeat(5)     -> 'aaaaa'
+     *   'a'.repeat(0)     -> ''
      *
      ***/
     'repeat': function(num) {
-      var str = '', i = 0;
-      if(isNumber(num) && num > 0) {
-        while(i < num) {
-          str += this;
-          i++;
+      var result = '', str = this;
+      if(!isNumber(num) || num < 1) return '';
+      while (num) {
+        if (num & 1) {
+          result += str;
+        }
+        if (num >>= 1) {
+          str += str;
         }
       }
-      return str;
+      return result;
     },
 
     /***
@@ -6380,7 +6386,6 @@
       });
       return context;
     }
-
   });
 
 
