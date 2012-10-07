@@ -2567,4 +2567,12 @@ test('Date', function () {
 
   equal(Date.future('Sunday at 3:00').getWeekday(), 0, 'Date.future | weekday should never be ambiguous');
 
+  // Issue #219
+
+  equal(Date.create('59:00').isValid(), false, 'Date#create | no hours allowed outside range');
+  equal(Date.create('05:75').isValid(), false, 'Date#create | no minutes allowed outside range');
+  equal(Date.create('05:59:60').isValid(), false, 'Date#create | no seconds allowed outside range');
+  equal(Date.create('05:59:59').isValid(), true, 'Date#create | seconds within range');
+
+
 });
