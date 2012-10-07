@@ -1749,15 +1749,8 @@
      *
      ***/
     'sample': function(num) {
-      var result = [], arr = this.clone(), index;
-      if(isUndefined(num)) num = 1;
-      while(result.length < num) {
-        index = floor(math.random() * (arr.length - 1));
-        result.push(arr[index]);
-        arr.removeAt(index);
-        if(arr.length == 0) break;
-      }
-      return arguments.length > 0 ? result : result[0];
+      var arr = this.randomize();
+      return arguments.length > 0 ? arr.slice(0, num) : arr[0];
     },
 
     /***
@@ -5623,8 +5616,6 @@
     }
   }
 
-
-
   extend(string, true, false, {
 
      /***
@@ -5683,7 +5674,12 @@
       *
       ***/
     'escapeHTML': function() {
-      return this.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return this.replace(/&/g,  '&amp;' )
+                 .replace(/</g,  '&lt;'  )
+                 .replace(/>/g,  '&gt;'  )
+                 .replace(/"/g,  '&quot;')
+                 .replace(/'/g,  '&apos;')
+                 .replace(/\//g, '&#x2f;');
     },
 
      /***
@@ -5697,7 +5693,12 @@
       *
       ***/
     'unescapeHTML': function() {
-      return this.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+      return this.replace(/&amp;/g,  '&')
+                 .replace(/&lt;/g,   '<')
+                 .replace(/&gt;/g,   '>')
+                 .replace(/&quot;/g, '"')
+                 .replace(/&apos;/g, "'")
+                 .replace(/&#x2f;/g, '/');
     },
 
      /***
