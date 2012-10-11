@@ -146,7 +146,7 @@
      *
      ***/
     'isOdd': function() {
-      return !this.isMultipleOf(2);
+      return !isNaN(this) && !this.isMultipleOf(2);
     },
 
     /***

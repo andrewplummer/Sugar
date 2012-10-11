@@ -194,14 +194,22 @@ test('Number', function () {
 
 
 
-  equal((1).isOdd(), true, 'Number#odd | 1');
-  equal((2).isOdd(), false, 'Number#odd | 2');
+  equal((0).isOdd(), false, 'Number#isOdd | 0');
+  equal((1).isOdd(), true, 'Number#isOdd | 1');
+  equal((2).isOdd(), false, 'Number#isOdd | 2');
+  equal((24).isOdd(), false, 'Number#isOdd | 24');
+  equal((200).isOdd(), false, 'Number#isOdd | 200');
+  equal((NaN).isOdd(), false, 'Number#isOdd | NaN');
 
 
 
 
-  equal((1).isEven(), false, 'Number#even | 1');
-  equal((2).isEven(), true, 'Number#even | 2');
+  equal((0).isEven(), true, 'Number#isEven | 0');
+  equal((1).isEven(), false, 'Number#isEven | 1');
+  equal((2).isEven(), true, 'Number#isEven | 2');
+  equal((24).isEven(), true, 'Number#isEven | 24');
+  equal((200).isEven(), true, 'Number#isEven | 200');
+  equal((NaN).isEven(), false, 'Number#isEven | NaN');
 
 
 
