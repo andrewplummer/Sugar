@@ -3069,7 +3069,9 @@
   // (or 29th in the case of a leap year).
 
   function checkMonthTraversal(date, targetMonth) {
-    if(targetMonth < 0) targetMonth += 12;
+    if(targetMonth < 0) {
+      targetMonth = targetMonth % 12 + 12;
+    }
     if(targetMonth % 12 != callDateGet(date, 'Month')) {
       callDateSet(date, 'Date', 0);
     }
