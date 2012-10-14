@@ -2581,4 +2581,8 @@ test('Date', function () {
   equal(Date.create('05:59:59').isValid(), true, 'Date#create | seconds within range');
 
 
+  // Issue #221
+
+  dateEqual(new Date(2012, 0).addMonths(-13), new Date(2010, 11), 'Date#addMonths | Month traversal should not kick in when n < -12');
+
 });
