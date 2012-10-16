@@ -2571,7 +2571,9 @@ test('Date', function () {
 
   // Issue #219
 
-  equal(Date.create('59:00').isValid(), false, 'Date#create | no hours allowed outside range');
+  equal(Date.create('28:00').isValid(),  true,  'Date#create | hours may fall outside range');
+  equal(Date.create('59:00').isValid(),  true,  'Date#create | no hours allowed outside range');
+  equal(Date.create('139:00').isValid(), false, 'Date#create | 3 digits not supported');
 
   // These dates actually will parse out natively in node v0.8.11
   skipEnvironments(['node'], function() {
