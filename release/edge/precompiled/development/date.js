@@ -11,7 +11,7 @@
 
   var TimeFormat = ['ampm','hour','minute','second','ampm','utc','offset_sign','offset_hours','offset_minutes','ampm']
   var DecimalReg = '(?:[,.]\\d+)?';
-  var HoursReg   = '2[0-4]|[01]?\\d' + DecimalReg;
+  var HoursReg   = '\\d{1,2}' + DecimalReg;
   var SixtyReg   = '[0-5]\\d' + DecimalReg;
   var RequiredTime = '({t})?\\s*('+HoursReg+')(?:{h}('+SixtyReg+')?{m}(?::?('+SixtyReg+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
 
