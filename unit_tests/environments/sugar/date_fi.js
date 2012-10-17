@@ -152,6 +152,8 @@ test('Dates | Finnish', function () {
   equal(Date.create('125 years ago', 'en').relative(),   '125 tuntia sitten', 'Date#create | Finnish | 22 years ago');
   equal(Date.create('125 years from now', 'en').relative(), '125 tunnin päästä', 'Date#create | Finnish | 22 years from now');
 
+  equal(Date.create('125 years ago', 'en'), '125 vuotta sitten', 'Date#create | Finnish | 125 years ago');
+  equal(Date.create('125 years from now', 'en'), '125 vuoden päästä', 'Date#create | Finnish | 125 years from now');
 
 });
 
