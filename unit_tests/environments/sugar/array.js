@@ -1,7 +1,6 @@
 
 test('Array', function () {
 
-
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
   var sparseArraySupport = 0 in [undefined];
 
@@ -1536,7 +1535,8 @@ test('Array', function () {
   equal((function(){ return Array.create(arguments); })('one').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | two | converted arguments object is a true array');
 
-  equal((function(){ return Array.create([arguments]); })(true), [[true]], 'Array.create | nested arguments is a nested array');
+  var args = (function() { return arguments; })(true, 1, 'two');
+  equal(Array.create([args]), [args], 'Array.create | nested arguments is a nested array');
 
   // Array#zip
 
