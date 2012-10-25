@@ -5084,7 +5084,6 @@
 
   buildNumber();
 
-
   /***
    * @package Object
    * @dependency core
@@ -5114,7 +5113,7 @@
       });
       if(!key && paramIsArray) key = obj.length.toString();
       setParamsObject(obj, key, value);
-    } else if(value.match(/^[\d.]+$/)) {
+    } else if(value.match(/^[+-]?\d+(\.\d+)?$/)) {
       obj[param] = parseFloat(value);
     } else if(value === 'true') {
       obj[param] = true;
@@ -5394,7 +5393,9 @@
      * @example
      *
      *   Object.extend();
-     *   [2,4,6].map(Math.exp).tap(function(){ arr.pop(); }).map(Math.round); ->  [7,55]
+     *   [2,4,6].map(Math.exp).tap(function(arr) {
+     *     arr.pop()
+     *   });
      *   [2,4,6].map(Math.exp).tap('pop').map(Math.round); ->  [7,55]
      *
      ***/
