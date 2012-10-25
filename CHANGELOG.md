@@ -4,6 +4,13 @@ v1.3.6
 ### API Changes ###
 
 - Faster String#repeat (Issue #214 - Thanks to @termi!).
+- Fixed issue with Array#sample skewing randomization (Issue #216).
+- Limiting minute/second parsing to 0-59 (Issue #219).
+- Fixed issue with `addMonths` (Issue #221).
+- Fixed issue with NaN being true for `isOdd` (Issue #220).
+- Fixed issue with HTML escaping (Issue #212).
+- Fixed issue with float values parsing in `Object.fromQueryString` (Issue #225).
+- Internal refactoring of `Object.each`.
 
 v1.3.5
 ======
