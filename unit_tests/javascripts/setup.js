@@ -159,7 +159,7 @@ var testIsEqual = function(one, two) {
     return String(one) === String(two);
   } else if(klass === '[object Array]') {
     return arrayEqual(one, two);
-  } else if(klass === '[object Object]' && ('hasOwnProperty' in one) && type === 'object') {
+  } else if((klass === '[object Object]' || klass === '[object Arguments]') && ('hasOwnProperty' in one) && type === 'object') {
     return objectEqual(one, two);
   } else if(isNaN(one) && isNaN(two)) {
     return true;
