@@ -1161,10 +1161,12 @@
       var result = [], tmp;
       multiArgs(arguments, function(a) {
         if(isObjectPrimitive(a)) {
-          tmp = array.prototype.slice.call(a);
-          if(tmp.length > 0) {
-            a = tmp;
-          }
+          try {
+            tmp = array.prototype.slice.call(a, 0);
+            if(tmp.length > 0) {
+              a = tmp;
+            }
+          } catch(e) {}
         }
         result = result.concat(a);
       });
@@ -2956,7 +2958,9 @@
     }
 
     // "date" can also be passed for the day
-    if(params['date']) params['day'] = params['date'];
+    if(isDefined(params['date'])) {
+      params['day'] = params['date'];
+    }
 
     // Reset any unit lower than the least specific unit set. Do not do this for weeks
     // or for years. This needs to be performed before the acutal setting of the date
@@ -4225,6 +4229,7 @@
       '{0} {num}{1} {day} of {month} {year?}',
       '{weekday?} {month} {date}{1?} {year?}',
       '{date} {month} {year}',
+      '{date} {month}',
       '{shift} {weekday}',
       '{shift} week {weekday}',
       '{weekday} {2?} {shift} week',
