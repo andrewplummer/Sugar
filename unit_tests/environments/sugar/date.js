@@ -13,7 +13,6 @@ test('Date', function () {
 
   Date.setLocale('en');
 
-
   // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
   // which interferes with class methods as classes themselves are functions. Taking back this class method
   // for the sake of the tests.
@@ -2586,5 +2585,40 @@ test('Date', function () {
   // Issue #221
 
   dateEqual(new Date(2012, 0).addMonths(-13), new Date(2010, 11), 'Date#addMonths | Month traversal should not kick in when n < -12');
+
+  // Issue #227
+
+  dateEqual(Date.create('0 January'), new Date(now.getFullYear() - 1, 11, 31), 'Date#addMonths | 0 January');
+  dateEqual(Date.create('1 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 January');
+  dateEqual(Date.create('01 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 January');
+  dateEqual(Date.create('15 January'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 January');
+  dateEqual(Date.create('31 January'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 January');
+
+  dateEqual(Date.create('1 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 Jan');
+  dateEqual(Date.create('01 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 Jan');
+  dateEqual(Date.create('15 Jan'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 Jan');
+  dateEqual(Date.create('31 Jan'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 Jan');
+
+  dateEqual(Date.create('0 July'), new Date(now.getFullYear(), 5, 30), 'Date#addMonths | 0 July');
+  dateEqual(Date.create('1 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 1 July');
+  dateEqual(Date.create('01 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 01 July');
+  dateEqual(Date.create('15 July'), new Date(now.getFullYear(), 6, 15), 'Date#addMonths | 15 July');
+  dateEqual(Date.create('31 July'), new Date(now.getFullYear(), 6, 31), 'Date#addMonths | 31 July');
+  dateEqual(Date.create('32 July'), new Date(now.getFullYear(), 7, 1), 'Date#addMonths | 32 July');
+
+  dateEqual(Date.create('1 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 Dec');
+  dateEqual(Date.create('01 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 Dec');
+  dateEqual(Date.create('15 Dec'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 Dec');
+  dateEqual(Date.create('31 Dec'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 Dec');
+
+  dateEqual(Date.create('1 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 December');
+  dateEqual(Date.create('01 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 December');
+  dateEqual(Date.create('15 December'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 December');
+  dateEqual(Date.create('31 December'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 December');
+  dateEqual(Date.create('32 December'), new Date(now.getFullYear() + 1, 0, 1), 'Date#addMonths | 32 December');
+
+  dateEqual(Date.create('1 January 3pm'), new Date(now.getFullYear(), 0, 1, 15), 'Date#addMonths | 1 January 3pm');
+  dateEqual(Date.create('1 January 3:45pm'), new Date(now.getFullYear(), 0, 1, 15, 45), 'Date#addMonths | 1 January 3:45pm');
+
 
 });
