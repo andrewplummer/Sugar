@@ -11,6 +11,7 @@ v1.3.6
 - Fixed issue with HTML escaping (Issue #212).
 - Fixed issue with float values parsing in `Object.fromQueryString` (Issue #225).
 - Internal refactoring of `Object.each`.
+- Fixed issue with `7 July` date format (Issue #227).
 
 v1.3.5
 ======
