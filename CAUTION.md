@@ -9,6 +9,32 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.3.6+
+=======
+
+- Level: Very Minor
+  - Float values should be properly parsed in `Object.fromQueryString`, meaning IP addresses and the like will now parse as strings instead of truncated numbers.
+
+- Level: Very Minor
+  - NaN is no longer true for `isOdd`.
+
+- Level: Very Minor
+  - Date parsing now only allows a maximum of 59 for minutes and seconds.
+
+
+v1.3.5+
+=======
+
+- Level: Very Minor
+  - `Array.create` now properly creates arrays from objects.
+
+
+v1.3.2+
+=======
+
+- Level: Minor
+  - `Date.create` will no longer set the UTC flag on dates created from an ISO string with the "Z" flag. This can be considered a bug introduced in the last release. The "Z" flag indicates that a date is in UTC time, but should not serve as an indication that the date should further be manipulated as UTC, only as a cue when parsing. If you want the date to actually behave as UTC (internally call UTC methods), then you need to explicitly set with `Date#utc(true)` now.
+
 
 v1.3.1+
 =======

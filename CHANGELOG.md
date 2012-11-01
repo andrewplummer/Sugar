@@ -40,7 +40,7 @@ v1.3.3
 
 ### Internal Changes ###
 
-- multiMatch does not treat functions as callbacks when matching agains other functions.
+- multiMatch does not treat functions as callbacks when matching against other functions.
 
 
 v1.3.2
