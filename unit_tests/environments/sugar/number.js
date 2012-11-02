@@ -352,6 +352,9 @@ test('Number', function () {
   equal((1532587.5752).format(null, ' ', ','), '1 532 587,5752', 'Number#format | larger number with decimal')
   equal((9999999.99).format(), '9,999,999.99', 'Number#format | Standard');
   equal((9999999.99).format(null, '.',','), '9.999.999,99', 'Number#format | Euro style!');
+  equal((9999999.99).format(null, ''), '9999999.99', 'Number#format | empty string');
+  equal((9999999.99).format(null, '', ''), '999999999', 'Number#format | no punctuation');
+
   equal((1).format(2), '1.00', 'Number#format | to 2 places')
   equal((10).format(2), '10.00', 'Number#format | to 2 places')
   equal((100).format(2), '100.00', 'Number#format | to 2 places')
@@ -390,8 +393,6 @@ test('Number', function () {
   equal((553599.435).format(-3), '554,000', 'Number#format | 553,600')
   equal((553599.435).format(-4), '550,000', 'Number#format | 550,000')
   equal((553599.435).format(-5), '600,000', 'Number#format | 600,000')
-
-  raisesError(function(){ (1000).format(2, 5) }, 'Number#format | should raise an error if a digit is given for the thousands separator');
 
 
   equal((1).pad(0), '1', 'Number#pad | 1 no padding')
