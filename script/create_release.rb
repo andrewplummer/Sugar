@@ -99,9 +99,14 @@ def wrap(js)
 end
 
 def cleanup
+  linked_full_development_file = 'sugar-edge'
+  linked_full_minified_file    = 'sugar-edge-full.min'
+  linked_default_minified_file = 'sugar-edge-default.min'
   `rm tmp/compiled.js`
   `rm tmp/uncompiled.js`
-  `cd release;rm sugar-edge.js;ln -s #{@version}/sugar-#{@version}-full.development.js sugar-edge.js`
+  `cd release;rm #{linked_full_development_file}.js;ln -s #{@version}/sugar-#{@version}-full.development.js #{linked_full_development_file}.js`
+  `cd release;rm #{linked_default_minified_file}.js;ln -s #{@version}/sugar-#{@version}.min.js #{linked_default_minified_file}.js`
+  `cd release;rm #{linked_full_minified_file}.js;ln -s #{@version}/sugar-#{@version}-full.min.js #{linked_full_minified_file}.js`
 end
 
 concat
