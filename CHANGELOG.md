@@ -12,6 +12,8 @@ v1.3.6
 - Fixed issue with float values parsing in `Object.fromQueryString` (Issue #225).
 - Internal refactoring of `Object.each`.
 - Fixed issue with `7 July` date format (Issue #227).
+- Added "'yy" as a valid year format.
+- Allowing empty strings for thousands separator and decimal in `Number#format` (Issue #229).
 
 v1.3.5
 ======
