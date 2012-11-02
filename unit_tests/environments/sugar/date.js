@@ -2621,6 +2621,7 @@ test('Date', function () {
   dateEqual(Date.create('1 January 3:45pm'), new Date(now.getFullYear(), 0, 1, 15, 45), 'Date#addMonths | 1 January 3:45pm');
 
 
+  dateEqual(Date.create("'87"), new Date(1987, 0), "Date#create | '87");
   dateEqual(Date.create("May '87"), new Date(1987, 4), "Date#create | May '87");
   dateEqual(Date.create("14 May '87"), new Date(1987, 4, 14), "Date#create | 14 May '87");
 
