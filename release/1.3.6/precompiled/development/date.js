@@ -863,7 +863,8 @@
   // Date comparison helpers
 
   function compareDate(d, find, buffer, forceUTC) {
-    var p = getExtendedDate(find, null, null, forceUTC), accuracy = 0, loBuffer = 0, hiBuffer = 0, override, capitalized;
+    var p, t, min, max, minOffset, maxOffset, override, capitalized, accuracy = 0, loBuffer = 0, hiBuffer = 0;
+    p = getExtendedDate(find, null, null, forceUTC);
     if(buffer > 0) {
       loBuffer = hiBuffer = buffer;
       override = true;
@@ -889,10 +890,25 @@
         hiBuffer = -50;
       }
     }
-    var t   = d.getTime();
-    var min = p.date.getTime();
-    var max = max || (min + accuracy);
+    t   = d.getTime();
+    min = p.date.getTime();
+    max = max || (min + accuracy);
+    max = compensateForTimezoneTraversal(d, min, max);
     return t >= (min - loBuffer) && t <= (max + hiBuffer);
+  }
+
+  function compensateForTimezoneTraversal(d, min, max) {
+    var dMin, dMax, minOffset, maxOffset;
+    dMin = new Date(min);
+    dMax = new Date(max).utc(d.isUTC());
+    if(callDateGet(dMax, 'Hours') !== 23) {
+      minOffset = dMin.getTimezoneOffset();
+      maxOffset = dMax.getTimezoneOffset();
+      if(minOffset !== maxOffset) {
+        max += (maxOffset - minOffset).minutes();
+      }
+    }
+    return max;
   }
 
   function updateDate(d, params, reset, advance, prefer) {
