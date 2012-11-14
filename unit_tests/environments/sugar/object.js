@@ -348,11 +348,23 @@ test('Object', function () {
   equal(Object.clone({ foo: { broken: 'wear' }}), { foo: { broken: 'wear' }}, 'Object.clone | deep clone');
   equal(Object.clone({ foo: 'bar', broken: 1, wear: /foo/ }) == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object.clone | fully cloned');
   equal(Object.clone([1,2,3]), [1,2,3], 'Object.clone | clone on arrays');
+  equal(Object.clone(['a','b','c']), ['a','b','c'], 'Object.clone | clone on array of strings');
 
+  var arr1    = [1];
+  var arr2    = [2];
+  var arr3    = [3];
+  var shallow = Object.clone([arr1,arr2,arr3]);
+  var deep    = Object.clone([arr1,arr2,arr3], true);
+
+  equal(shallow[0] === arr1, true, 'Object.clone | shallow clone | index 0 is strictly equal');
+  equal(shallow[1] === arr2, true, 'Object.clone | shallow clone | index 1 is strictly equal');
+  equal(shallow[2] === arr3, true, 'Object.clone | shallow clone | index 2 is strictly equal');
+
+  equal(deep[0] === arr1, false, 'Object.clone | deep clone | index 0 is not strictly equal');
+  equal(deep[1] === arr2, false, 'Object.clone | deep clone | index 1 is not strictly equal');
+  equal(deep[2] === arr3, false, 'Object.clone | deep clone | index 2 is not strictly equal');
 
   var obj1, obj2, obj3;
-
-
 
   obj1 = {
     broken: 'wear',
@@ -384,6 +396,14 @@ test('Object', function () {
 
   obj1.foo.bar = ['a','b','c'];
   equal(obj3.foo.bar, [1,2,3], 'Object#clone | clone is deep', { prototype: ['a','b','c'] });
+
+  var arr1 = [obj1, obj1, obj1];
+  var arr2 = Object.clone(arr1, true);
+
+  equal(arr1.length, arr2.length, 'Object.clone | array deep | lengths should be equal');
+  equal(arr2[0] === obj1, false, 'Object.clone | array deep | obj1 is not equal');
+  equal(arr2[1] === obj2, false, 'Object.clone | array deep | obj2 is not equal');
+  equal(arr2[2] === obj3, false, 'Object.clone | array deep | obj3 is not equal');
 
 
   // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
