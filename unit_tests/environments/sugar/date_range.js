@@ -197,5 +197,12 @@ test('Date Ranges', function () {
   range = Date.range('2 hours ago', 'now');
   equal(range.isValid(), true, 'Date.range | understands relative strings');
 
+  // Range cloning (Issue #230)
+
+  range1 = Date.range(Date.create('2002'), Date.create('2004'));
+  range2 = range1.clone();
+
+  equal(range1, range2, 'DateRange#clone | clone object is equal by value');
+  equal(range1 === range2, false, 'DateRange#clone | clone is not strictly equal');
 
 });
