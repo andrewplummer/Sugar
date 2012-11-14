@@ -4,6 +4,7 @@ v1.3.7
 ### API Changes ###
 
 - Fix for Date.create not preserving the UTC flag when the source is also a date (Issue #235).
+- Object.clone on arrays with the "deep" flag set to true should create a deep clone of the array (Issue #237).
 
 
 v1.3.6
