@@ -807,7 +807,7 @@ test('Object', function () {
   }
 
   equal(Object.merge({}, obj1, true).reg === obj1.reg, false, 'Object.merge | deep merging will clone regexes');
-
+  equal(Object.equal(Object.clone(f), f), true, 'Object.clone | same constructor should be equal');
 
 
 });
