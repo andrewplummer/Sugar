@@ -1,3 +1,11 @@
+v1.3.7
+======
+
+### API Changes ###
+
+- Fix for Date.create not preserving the UTC flag when the source is also a date (Issue #235).
+
+
 v1.3.6
 ======
 
