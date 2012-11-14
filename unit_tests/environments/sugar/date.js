@@ -2623,4 +2623,9 @@ test('Date', function () {
   dateEqual(Date.create("May '87"), new Date(1987, 4), "Date#create | May '87");
   dateEqual(Date.create("14 May '87"), new Date(1987, 4, 14), "Date#create | 14 May '87");
 
+  // Issue #235
+
+  equal(Date.create().utc(true).clone().isUTC(), true, 'Date#clone | should preserve UTC');
+  equal(Date.create(new Date().utc(true)).isUTC(), true, 'Date#create | should preserve UTC');
+
 });
