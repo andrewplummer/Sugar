@@ -2627,5 +2627,6 @@ test('Date', function () {
 
   equal(Date.create().utc(true).clone().isUTC(), true, 'Date#clone | should preserve UTC');
   equal(Date.create(new Date().utc(true)).isUTC(), true, 'Date#create | should preserve UTC');
+  equal(Date.create(new Date()).isUTC(), false, 'Date#create | non utc date should not have UTC flag');
 
 });
