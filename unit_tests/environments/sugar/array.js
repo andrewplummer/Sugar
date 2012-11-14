@@ -764,14 +764,11 @@ test('Array', function () {
 
   equal([12,87,55].min(), 12, 'Array#min | no argument', { prototype: 12 });
   equal([12,87,55].min(undefined), 12, 'Array#min | undefined', { prototype: 12 });
-  equal([12,87,55].min(null), 12, 'Array#min | null in number not found so returns first value', { prototype: 12 });
-  equal([87,12,55].min(4), 87, 'Array#min | number not found in number, so returns first value', { prototype: 12 });
   equal([-12,-87,-55].min(), -87, 'Array#min | -87', { prototype: -87 });
   equal([5,5,5].min(), 5, 'Array#min | 5 is uniqued', { prototype: 5 });
   equal(['a','b','c'].min(), 'a', 'Array#min | strings are not counted', { prototype: 'a' });
   equal([].min(), undefined, 'Array#min | empty array', { prototype: undefined });
   equal([null].min(), null, 'Array#min | [null]', { prototype: null });
-  equal([undefined].min(), undefined, 'Array#min | [undefined]', { prototype: undefined });
   equal([{a:1,b:5},{a:2,b:5},{a:3,b:5}].min(function(el) { return el['a']; }), {a:1,b:5}, 'Array#min | key "a"', { prototype: 1 });
   equal([{a:1,b:5},{a:2,b:4},{a:3,b:3}].min(function(el) { return el['b']; }), {a:3,b:3}, 'Array#min | key "b", 1 found', { prototype: 3 });
   equal([{a:1,b:5},{a:3,b:3},{a:3,b:3}].min(function(el) { return el['b']; }), {a:3,b:3}, 'Array#min | key "b", 1 found', { prototype: 3 });
@@ -788,23 +785,26 @@ test('Array', function () {
       equal(this, [1], 'Array#min | scope should be the array');
       equal(i, 0, 'Array#min | second param should be the index');
       equal(a, [1], 'Array#min | third param should also be the array');
+      return el;
     });
   });
 
   equal([12,12,12].min(function(n) { return n; }, true), [12,12,12], 'Array#min | should not unique', { prototype: 12 });
 
+  raisesError(function() { [undefined].min(); }, 'Array#min | should raise an error when comparing undefined');
+  raisesError(function() { [1,undefined].min(); }, 'Array#min | should raise an error when comparing 1 to undefined');
+  raisesError(function() { [87,12,55].min(4); }, 'Array#min | number not found in number, so undefined');
+  raisesError(function() { [12,87,55].min(null); }, 'Array#min | null not found in number, so undefined');
+
 
   equal([12,87,55].max(), 87, 'Array#max | no argument', { prototype: 87 });
   equal([12,87,55].max(undefined), 87, 'Array#max | undefined', { prototype: 87 });
-  equal([12,87,55].max(null), 12, 'Array#max | null in number not found so first returned', { prototype: 87 });
-  equal([12,87,55].max(4), 12, 'Array#max | number in number not found so first returned', { prototype: 87 });
   equal([-12,-87,-55].max(), -12, 'Array#max | -12', { prototype: -12 });
   equal([5,5,128].max(), 128, 'Array#max | 128', { prototype: 128 });
   equal([128,128,128].max(), 128, 'Array#max | 128 is uniqued', { prototype: 128 });
   equal(['a','b','c'].max(), 'c', 'Array#max | strings are not counted', { prototype: 'c' });
   equal([].max(), undefined, 'Array#max | empty array', { prototype: undefined });
   equal([null].max(), null, 'Array#max | [null]', { prototype: null });
-  equal([undefined].max(), undefined, 'Array#max | [undefined]', { prototype: undefined });
   equal([{a:1,b:5},{a:2,b:5},{a:3,b:5}].max(function(el) { return el['a']; }), {a:3,b:5}, 'Array#max | key "a"', { prototype: 3 });
   equal([{a:1,b:5},{a:2,b:4},{a:3,b:3}].max(function(el) { return el['b']; }), {a:1,b:5}, 'Array#max | key "b" returns b:5', { prototype: 5 });
   equal([{a:1,b:3},{a:2,b:4},{a:3,b:3}].max(function(el) { return el['b']; }), {a:2,b:4}, 'Array#max | key "b" returns b:4', { prototype: 4 });
@@ -820,10 +820,16 @@ test('Array', function () {
       equal(this, [1], 'Array#max | scope should be the array');
       equal(i, 0, 'Array#max | second param should be the index');
       equal(a, [1], 'Array#max | third param should also be the array');
+      return el;
     });
   });
 
   equal([12,12,12].max(function(n){ return n; }, true), [12,12,12], 'Array#max | should not unique', { prototype: 12 });
+
+  raisesError(function() { [undefined].max(); }, 'Array#max | should raise an error when comparing undefined');
+  raisesError(function() { [1,undefined].max(); }, 'Array#max | should raise an error when comparing 1 to undefined');
+  raisesError(function() { [87,12,55].max(4); }, 'Array#max | number not found in number, so undefined');
+  raisesError(function() { [12,87,55].max(null); }, 'Array#max | null not found in number, so undefined');
 
 
 
@@ -834,8 +840,8 @@ test('Array', function () {
     { name: 'edmund', age: 27, hair: 'blonde' }
   ];
 
-  equal([1,2,3].most(undefined), 1, 'Array#most | undefined | returns first');
   equal([1,2,3].most(null), 1, 'Array#most | null | returns first');
+  equal([1,2,3].most(undefined), 1, 'Array#most | undefined | returns first');
   equal([1,2,3].most(4), 1, 'Array#most | number | returns first');
 
   equal(people.most(function(person) { return person.age; }).age, 27, 'Array#most | age | age is 27');
@@ -859,11 +865,12 @@ test('Array', function () {
     equal(this, [1], 'Array#most | scope should be the array');
     equal(i, 0, 'Array#most | second param should be the index');
     equal(a, [1], 'Array#most | third param should also be the array');
+    return el;
   });
 
 
-  equal([1,2,3].least(undefined), 1, 'Array#least | undefined');
   equal([1,2,3].least(null), 1, 'Array#least | null');
+  equal([1,2,3].least(undefined), 1, 'Array#least | undefined');
   equal([1,2,3].least(4), 1, 'Array#least | number');
 
   equal(people.least(), people[0], 'Array#least | contains mary | does not return most');
@@ -891,9 +898,8 @@ test('Array', function () {
     equal(this, [1], 'Array#least | scope should be the array');
     equal(i, 0, 'Array#least | second param should be the index');
     equal(a, [1], 'Array#least | third param should also be the array');
+    return e;
   });
-
-
 
   equal([12,87,55].sum(), 154, 'Array#sum | 12,87,55');
   equal([12,87,128].sum(), 227, 'Array#sum | 12,87,128');
@@ -2662,11 +2668,11 @@ test('Array', function () {
   testClassAndInstance('min', obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'Object.min | all | accepts a string shortcut');
 
 
-  testClassAndInstance('max', obj3, 'car', 'foo', 'Object.max | no args is first object');
-  testClassAndInstance('max', obj3, function(key, value) { return value; }, 'car', 'Object.max | return value');
-  testClassAndInstance('max', obj3, function(key, value) { return key.length; }, 'blue', 'Object.max | return key.length');
-  testClassAndInstance('max', obj3, function(key, value) { return key.charCodeAt(0); }, 'moo', 'Object.max | return the char code of first letter');
-  testClassAndInstance('max', obj4, 'age', 'car', 'Object.max | accepts a string shortcut');
+  testClassAndInstance('max', obj3, [], 'car', 'Object.max | no args is first object');
+  testClassAndInstance('max', obj3, [function(key, value) { return value; }], 'car', 'Object.max | return value');
+  testClassAndInstance('max', obj3, [function(key, value) { return key.length; }], 'blue', 'Object.max | return key.length');
+  testClassAndInstance('max', obj3, [function(key, value) { return key.charCodeAt(0); }], 'moo', 'Object.max | return the char code of first letter');
+  testClassAndInstance('max', obj4, ['age'], 'car', 'Object.max | accepts a string shortcut');
 
 
   testClassAndInstance('max', obj3, [function(key, value) { return value; }, true], {car:6}, 'Object.max | all | return value');
