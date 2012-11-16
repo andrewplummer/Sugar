@@ -194,21 +194,27 @@
      *
      ***/
     'format': function(place, thousands, decimal) {
-      var str, split, method, after, r = /(\d+)(\d{3})/;
-      if(string(thousands).match(/\d/)) throw new TypeError('Thousands separator cannot contain numbers.');
-      str = isNumber(place) ? round(this, place || 0).toFixed(math.max(place, 0)) : this.toString();
-      thousands = thousands || ',';
-      decimal = decimal || '.';
-      split = str.split('.');
-      str = split[0];
-      after = split[1] || '';
-      while (str.match(r)) {
-        str = str.replace(r, '$1' + thousands + '$2');
+      var i, str, split, integer, fraction, result = '';
+      if(isUndefined(thousands)) {
+        thousands = ',';
       }
-      if(after.length > 0) {
-        str += decimal + repeatString((place || 0) - after.length, '0') + after;
+      if(isUndefined(decimal)) {
+        decimal = '.';
       }
-      return str;
+      str      = (isNumber(place) ? round(this, place || 0).toFixed(math.max(place, 0)) : this.toString()).replace(/^-/, '');
+      split    = str.split('.');
+      integer  = split[0];
+      fraction = split[1];
+      for(i = integer.length; i > 0; i -= 3) {
+        if(i < integer.length) {
+          result = thousands + result;
+        }
+        result = integer.slice(math.max(0, i - 3), i) + result;
+      }
+      if(fraction) {
+        result += decimal + repeatString((place || 0) - fraction.length, '0') + fraction;
+      }
+      return (this < 0 ? '-' : '') + result;
     },
 
     /***
