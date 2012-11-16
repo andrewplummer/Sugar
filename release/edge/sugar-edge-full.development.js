@@ -1039,8 +1039,11 @@
         min = which === 'min',
         isArray = Array.isArray(obj);
     iterateOverObject(obj, function(key) {
-      var el = obj[key];
-      var test = transformArgument(el, map, obj, isArray ? [el, parseInt(key), obj] : []);
+      var el   = obj[key],
+          test = transformArgument(el, map, obj, isArray ? [el, parseInt(key), obj] : []);
+      if(isUndefined(test)) {
+        throw new TypeError('Cannot compare with undefined');
+      }
       if(test === edge) {
         result.push(el);
       } else if(isUndefined(edge) || (max && test > edge) || (min && test < edge)) {
@@ -1312,7 +1315,7 @@
     /***
      * @method clone()
      * @returns Array
-     * @short Clones the array.
+     * @short Makes a shallow clone of the array.
      * @example
      *
      *   [1,2,3].clone() -> [1,2,3]
@@ -2452,6 +2455,10 @@
       return arrayToAlternates(arr);
     }
 
+    function setDefault(name, value) {
+      loc[name] = loc[name] || value;
+    }
+
     function setModifiers() {
       var arr = [];
       loc.modifiersByName = {};
@@ -2480,10 +2487,10 @@
     setArray('units', false, 8);
     setArray('numbers', false, 10);
 
-    loc['code'] = localeCode;
-    loc['date'] = getDigit(1,2, loc['digitDate']);
-    loc['year'] = getDigit(4,4);
-    loc['num']  = getNum();
+    setDefault('code', localeCode);
+    setDefault('date', getDigit(1,2, loc['digitDate']));
+    setDefault('year', "'\\d{2}|" + getDigit(4,4));
+    setDefault('num', getNum());
 
     setModifiers();
 
@@ -2578,8 +2585,10 @@
     arr.forEach(function(key, i) {
       value = match[i + 1];
       if(isUndefined(value) || value === '') return;
-      if(key === 'year') obj.yearAsString = value;
-      num = parseFloat(value.replace(/,/, '.'));
+      if(key === 'year') {
+        obj.yearAsString = value.replace(/'/, '');
+      }
+      num = parseFloat(value.replace(/'/, '').replace(/,/, '.'));
       obj[key] = !isNaN(num) ? num : value.toLowerCase();
     });
     return obj;
@@ -2619,9 +2628,11 @@
     d.utc(forceUTC);
 
     if(isDate(f)) {
-      d = new date(f.getTime());
+      // If the source here is already a date object, then the operation
+      // is the same as cloning the date, which preserves the UTC flag.
+      d.utc(f.isUTC()).setTime(f.getTime());
     } else if(isNumber(f)) {
-      d = new date(f);
+      d.setTime(f);
     } else if(isObject(f)) {
       d.set(f, true);
       set = f;
@@ -2812,9 +2823,13 @@
       if(after) {
         after();
       }
-
+      // A date created by parsing a string presumes that the format *itself* is UTC, but
+      // not that the date, once created, should be manipulated as such. In other words,
+      // if you are creating a date object from a server time "2012-11-15T12:00:00Z",
+      // in the majority of cases you are using it to create a date that will, after creation,
+      // be manipulated as local, so reset the utc flag here.
+      d.utc(false);
     }
-    d.utc(false);
     return {
       date: d,
       set: set
@@ -2896,7 +2911,8 @@
   // Date comparison helpers
 
   function compareDate(d, find, buffer, forceUTC) {
-    var p = getExtendedDate(find, null, null, forceUTC), accuracy = 0, loBuffer = 0, hiBuffer = 0, override, capitalized;
+    var p, t, min, max, minOffset, maxOffset, override, capitalized, accuracy = 0, loBuffer = 0, hiBuffer = 0;
+    p = getExtendedDate(find, null, null, forceUTC);
     if(buffer > 0) {
       loBuffer = hiBuffer = buffer;
       override = true;
@@ -2922,10 +2938,25 @@
         hiBuffer = -50;
       }
     }
-    var t   = d.getTime();
-    var min = p.date.getTime();
-    var max = max || (min + accuracy);
+    t   = d.getTime();
+    min = p.date.getTime();
+    max = max || (min + accuracy);
+    max = compensateForTimezoneTraversal(d, min, max);
     return t >= (min - loBuffer) && t <= (max + hiBuffer);
+  }
+
+  function compensateForTimezoneTraversal(d, min, max) {
+    var dMin, dMax, minOffset, maxOffset;
+    dMin = new Date(min);
+    dMax = new Date(max).utc(d.isUTC());
+    if(callDateGet(dMax, 'Hours') !== 23) {
+      minOffset = dMin.getTimezoneOffset();
+      maxOffset = dMax.getTimezoneOffset();
+      if(minOffset !== maxOffset) {
+        max += (maxOffset - minOffset).minutes();
+      }
+    }
+    return max;
   }
 
   function updateDate(d, params, reset, advance, prefer) {
@@ -4197,7 +4228,7 @@
     'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
     'numbers':    'one,two,three,four,five,six,seven,eight,nine,ten',
     'articles':   'a,an,the',
-    'tokens':  'the,st|nd|rd|th,of',
+    'tokens':     'the,st|nd|rd|th,of',
     'short':      '{Month} {d}, {yyyy}',
     'long':       '{Month} {d}, {yyyy} {h}:{mm}{tt}',
     'full':       '{Weekday} {Month} {d}, {yyyy} {h}:{mm}:{ss}{tt}',
@@ -4394,6 +4425,19 @@
         this.start > range.start ? this.start : range.start,
         this.end   < range.end   ? this.end   : range.end
       );
+    },
+
+    /***
+     * @method clone()
+     * @returns DateRange
+     * @short Clones the DateRange.
+     * @example
+     *
+     *   Date.range('2003-01', '2005-01').intersect(Date.range('2004-01', '2006-01')) -> Jan 1, 2004..Jan 1, 2005
+     *
+     ***/
+    'clone': function(range) {
+      return new DateRange(this.start, this.end);
     }
 
   });
@@ -4863,21 +4907,27 @@
      *
      ***/
     'format': function(place, thousands, decimal) {
-      var str, split, method, after, r = /(\d+)(\d{3})/;
-      if(string(thousands).match(/\d/)) throw new TypeError('Thousands separator cannot contain numbers.');
-      str = isNumber(place) ? round(this, place || 0).toFixed(math.max(place, 0)) : this.toString();
-      thousands = thousands || ',';
-      decimal = decimal || '.';
-      split = str.split('.');
-      str = split[0];
-      after = split[1] || '';
-      while (str.match(r)) {
-        str = str.replace(r, '$1' + thousands + '$2');
+      var i, str, split, integer, fraction, result = '';
+      if(isUndefined(thousands)) {
+        thousands = ',';
       }
-      if(after.length > 0) {
-        str += decimal + repeatString((place || 0) - after.length, '0') + after;
+      if(isUndefined(decimal)) {
+        decimal = '.';
       }
-      return str;
+      str      = (isNumber(place) ? round(this, place || 0).toFixed(math.max(place, 0)) : this.toString()).replace(/^-/, '');
+      split    = str.split('.');
+      integer  = split[0];
+      fraction = split[1];
+      for(i = integer.length; i > 0; i -= 3) {
+        if(i < integer.length) {
+          result = thousands + result;
+        }
+        result = integer.slice(math.max(0, i - 3), i) + result;
+      }
+      if(fraction) {
+        result += decimal + repeatString((place || 0) - fraction.length, '0') + fraction;
+      }
+      return (this < 0 ? '-' : '') + result;
     },
 
     /***
@@ -5362,9 +5412,13 @@
      *
      ***/
     'clone': function(obj, deep) {
+      var target;
       if(!isObjectPrimitive(obj)) return obj;
-      if(array.isArray(obj)) return obj.concat();
-      var target = obj instanceof Hash ? new Hash() : {};
+      if (obj instanceof Hash) {
+        target = new Hash;
+      } else {
+        target = new obj.constructor;
+      }
       return object.merge(target, obj, deep);
     },
 
