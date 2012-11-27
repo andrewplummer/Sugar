@@ -144,6 +144,19 @@
         this.start > range.start ? this.start : range.start,
         this.end   < range.end   ? this.end   : range.end
       );
+    },
+
+    /***
+     * @method clone()
+     * @returns DateRange
+     * @short Clones the DateRange.
+     * @example
+     *
+     *   Date.range('2003-01', '2005-01').intersect(Date.range('2004-01', '2006-01')) -> Jan 1, 2004..Jan 1, 2005
+     *
+     ***/
+    'clone': function(range) {
+      return new DateRange(this.start, this.end);
     }
 
   });
