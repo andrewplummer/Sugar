@@ -413,6 +413,10 @@
       return arrayToAlternates(arr);
     }
 
+    function setDefault(name, value) {
+      loc[name] = loc[name] || value;
+    }
+
     function setModifiers() {
       var arr = [];
       loc.modifiersByName = {};
@@ -441,10 +445,10 @@
     setArray('units', false, 8);
     setArray('numbers', false, 10);
 
-    loc['code'] = localeCode;
-    loc['date'] = getDigit(1,2, loc['digitDate']);
-    loc['year'] = getDigit(4,4);
-    loc['num']  = getNum();
+    setDefault('code', localeCode);
+    setDefault('date', getDigit(1,2, loc['digitDate']));
+    setDefault('year', "'\\d{2}|" + getDigit(4,4));
+    setDefault('num', getNum());
 
     setModifiers();
 
@@ -539,8 +543,10 @@
     arr.forEach(function(key, i) {
       value = match[i + 1];
       if(isUndefined(value) || value === '') return;
-      if(key === 'year') obj.yearAsString = value;
-      num = parseFloat(value.replace(/,/, '.'));
+      if(key === 'year') {
+        obj.yearAsString = value.replace(/'/, '');
+      }
+      num = parseFloat(value.replace(/'/, '').replace(/,/, '.'));
       obj[key] = !isNaN(num) ? num : value.toLowerCase();
     });
     return obj;
@@ -580,9 +586,11 @@
     d.utc(forceUTC);
 
     if(isDate(f)) {
-      d = new date(f.getTime());
+      // If the source here is already a date object, then the operation
+      // is the same as cloning the date, which preserves the UTC flag.
+      d.utc(f.isUTC()).setTime(f.getTime());
     } else if(isNumber(f)) {
-      d = new date(f);
+      d.setTime(f);
     } else if(isObject(f)) {
       d.set(f, true);
       set = f;
@@ -743,6 +751,11 @@
         // The Date constructor does something tricky like checking the number
         // of arguments so simply passing in undefined won't work.
         d = f ? new date(f) : new date();
+        if(forceUTC) {
+          // Falling back to system date here which cannot be parsed as UTC,
+          // so if we're forcing UTC then simply add the offset.
+          d.addMinutes(d.getTimezoneOffset());
+        }
       } else if(relative) {
         d.advance(set);
       } else {
@@ -773,9 +786,13 @@
       if(after) {
         after();
       }
-
+      // A date created by parsing a string presumes that the format *itself* is UTC, but
+      // not that the date, once created, should be manipulated as such. In other words,
+      // if you are creating a date object from a server time "2012-11-15T12:00:00Z",
+      // in the majority of cases you are using it to create a date that will, after creation,
+      // be manipulated as local, so reset the utc flag here.
+      d.utc(false);
     }
-    d.utc(false);
     return {
       date: d,
       set: set
@@ -857,7 +874,8 @@
   // Date comparison helpers
 
   function compareDate(d, find, buffer, forceUTC) {
-    var p = getExtendedDate(find, null, null, forceUTC), accuracy = 0, loBuffer = 0, hiBuffer = 0, override, capitalized;
+    var p, t, min, max, minOffset, maxOffset, override, capitalized, accuracy = 0, loBuffer = 0, hiBuffer = 0;
+    p = getExtendedDate(find, null, null, forceUTC);
     if(buffer > 0) {
       loBuffer = hiBuffer = buffer;
       override = true;
@@ -883,10 +901,25 @@
         hiBuffer = -50;
       }
     }
-    var t   = d.getTime();
-    var min = p.date.getTime();
-    var max = max || (min + accuracy);
+    t   = d.getTime();
+    min = p.date.getTime();
+    max = max || (min + accuracy);
+    max = compensateForTimezoneTraversal(d, min, max);
     return t >= (min - loBuffer) && t <= (max + hiBuffer);
+  }
+
+  function compensateForTimezoneTraversal(d, min, max) {
+    var dMin, dMax, minOffset, maxOffset;
+    dMin = new Date(min);
+    dMax = new Date(max).utc(d.isUTC());
+    if(callDateGet(dMax, 'Hours') !== 23) {
+      minOffset = dMin.getTimezoneOffset();
+      maxOffset = dMax.getTimezoneOffset();
+      if(minOffset !== maxOffset) {
+        max += (maxOffset - minOffset).minutes();
+      }
+    }
+    return max;
   }
 
   function updateDate(d, params, reset, advance, prefer) {
@@ -1654,7 +1687,7 @@
      *
      ***/
     'utc': function(set) {
-      this._utc = set === true || arguments.length === 0;
+      defineProperty(this, '_utc', set === true || arguments.length === 0);
       return this;
     },
 
@@ -1662,11 +1695,11 @@
      * @method isUTC()
      * @returns Boolean
      * @short Returns true if the date has no timezone offset.
-     * @extra This will also return true for a date that has had %toUTC% called on it. This is intended to help approximate shifting timezones which is not possible in client-side Javascript. Note that the native method %getTimezoneOffset% will always report the same thing, even if %isUTC% becomes true.
+     * @extra This will also return true for utc-based dates (dates that have the %utc% method set true). Note that even if the utc flag is set, %getTimezoneOffset% will always report the same thing as Javascript always reports that based on the environment's locale.
      * @example
      *
-     *   new Date().isUTC()         -> true or false?
-     *   new Date().toUTC().isUTC() -> true
+     *   new Date().isUTC()           -> true or false?
+     *   new Date().utc(true).isUTC() -> true
      *
      ***/
     'isUTC': function() {
@@ -1918,7 +1951,7 @@
      ***/
     'clone': function() {
       var d = new date(this.getTime());
-      d._utc = this._utc;
+      d.utc(this.isUTC());
       return d;
     }
 
@@ -2158,7 +2191,7 @@
     'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
     'numbers':    'one,two,three,four,five,six,seven,eight,nine,ten',
     'articles':   'a,an,the',
-    'tokens':  'the,st|nd|rd|th,of',
+    'tokens':     'the,st|nd|rd|th,of',
     'short':      '{Month} {d}, {yyyy}',
     'long':       '{Month} {d}, {yyyy} {h}:{mm}{tt}',
     'full':       '{Weekday} {Month} {d}, {yyyy} {h}:{mm}:{ss}{tt}',

@@ -195,8 +195,11 @@
         min = which === 'min',
         isArray = Array.isArray(obj);
     iterateOverObject(obj, function(key) {
-      var el = obj[key];
-      var test = transformArgument(el, map, obj, isArray ? [el, parseInt(key), obj] : []);
+      var el   = obj[key],
+          test = transformArgument(el, map, obj, isArray ? [el, parseInt(key), obj] : []);
+      if(isUndefined(test)) {
+        throw new TypeError('Cannot compare with undefined');
+      }
       if(test === edge) {
         result.push(el);
       } else if(isUndefined(edge) || (max && test > edge) || (min && test < edge)) {
@@ -468,7 +471,7 @@
     /***
      * @method clone()
      * @returns Array
-     * @short Clones the array.
+     * @short Makes a shallow clone of the array.
      * @example
      *
      *   [1,2,3].clone() -> [1,2,3]
