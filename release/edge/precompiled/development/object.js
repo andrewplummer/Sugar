@@ -271,9 +271,13 @@
      *
      ***/
     'clone': function(obj, deep) {
+      var target;
       if(!isObjectPrimitive(obj)) return obj;
-      if(array.isArray(obj)) return obj.concat();
-      var target = obj instanceof Hash ? new Hash() : {};
+      if (obj instanceof Hash) {
+        target = new Hash;
+      } else {
+        target = new obj.constructor;
+      }
       return object.merge(target, obj, deep);
     },
 
