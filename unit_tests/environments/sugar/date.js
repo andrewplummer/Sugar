@@ -1416,16 +1416,16 @@ test('Date', function () {
   equal(d.millisecondsUntil('the last day of 2011'), 44273697458 - dst, 'Date#millisecondsUntil | milliseconds until the last day of 2011');
   equal(d.secondsSince('the last day of 2011'), -44273697 + (dst / 1000), 'Date#secondsSince | seconds since the last day of 2011');
   equal(d.secondsUntil('the last day of 2011'), 44273697 - (dst / 1000), 'Date#secondsUntil | seconds until the last day of 2011');
-  equal(d.minutesSince('the last day of 2011'), -737895 + (dst / 60 / 1000), 'Date#minutesSince | minutes since the last day of 2011');
-  equal(d.minutesUntil('the last day of 2011'), 737895 - (dst / 60 / 1000), 'Date#minutesUntil | minutes until the last day of 2011');
+  equal(d.minutesSince('the last day of 2011'), -737894 + (dst / 60 / 1000), 'Date#minutesSince | minutes since the last day of 2011');
+  equal(d.minutesUntil('the last day of 2011'), 737894 - (dst / 60 / 1000), 'Date#minutesUntil | minutes until the last day of 2011');
   equal(d.hoursSince('the last day of 2011'), -12298 + (dst / 60 / 60 / 1000), 'Date#hoursSince | hours since the last day of 2011');
   equal(d.hoursUntil('the last day of 2011'), 12298 - (dst / 60 / 60 / 1000), 'Date#hoursUntil | hours until the last day of 2011');
   equal(d.daysSince('the last day of 2011'), -512, 'Date#daysSince | days since the last day of 2011');
   equal(d.daysUntil('the last day of 2011'), 512, 'Date#daysUntil | days until the last day of 2011');
   equal(d.weeksSince('the last day of 2011'), -73, 'Date#weeksSince | weeks since the last day of 2011');
   equal(d.weeksUntil('the last day of 2011'), 73, 'Date#weeksUntil | weeks until the last day of 2011');
-  equal(d.monthsSince('the last day of 2011'), -17, 'Date#monthsSince | months since the last day of 2011');
-  equal(d.monthsUntil('the last day of 2011'), 17, 'Date#monthsUntil | months until the last day of 2011');
+  equal(d.monthsSince('the last day of 2011'), -16, 'Date#monthsSince | months since the last day of 2011');
+  equal(d.monthsUntil('the last day of 2011'), 16, 'Date#monthsUntil | months until the last day of 2011');
   equal(d.yearsSince('the last day of 2011'), -1, 'Date#yearsSince | years since the last day of 2011');
   equal(d.yearsUntil('the last day of 2011'), 1, 'Date#yearsUntil | years until the last day of 2011');
 
@@ -2633,5 +2633,9 @@ test('Date', function () {
 
   var d = Date.utc.create('999');
   equal(d.getHours(), (24 + (d.getTimezoneOffset() / 60)) % 24, 'Date.utc.create | non-parseable dates should also be set to UTC');
+
+  // Issue #236
+
+  equal((14).hoursFromNow().daysFromNow(), 0, 'Date#daysFromNow | should floor the number rather than round');
 
 });

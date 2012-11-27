@@ -9,6 +9,13 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.3.7+
+=======
+
+- Level: Moderate
+  - Aliases on dates such as `daysAgo` will now count "past" an integer instead of rounding. This means that `Date.create('23 hours ago').daysAgo()` will now be `0`. There is however a small margin of error (roughly 0.1%) that will trigger a round up, which is higher for months, which have a more vague definition and a higher margin for error.
+
+
 v1.3.6+
 =======
 
