@@ -2193,7 +2193,8 @@
           }
         }
         return days * 24 * 60 * 60 * 1000;
-      }
+      },
+      error: 0.919
     },
     {
       unit: 'week',
@@ -3336,11 +3337,33 @@
     extendSimilar(date, true, false, DateUnits, function(methods, u, i) {
       var unit = u.unit, caps = simpleCapitalize(unit), multiplier = u.multiplier(), since, until;
       u.addMethod = 'add' + caps + 's';
+      // "since/until now" only count "past" an integer, i.e. "2 days ago" is
+      // anything between 2 - 2.999 days. The default margin of error is 0.999,
+      // but "months" have an inherently larger margin, as the number of days
+      // in a given month may be significantly less than the number of days in
+      // the average month, so for example "30 days" before March 15 may in fact
+      // be 1 month ago. Years also have a margin of error due to leap years,
+      // but this is roughly 0.999 anyway (365 / 365.25). Other units do not
+      // technically need the error margin applied to them but this accounts
+      // for discrepancies like (15).hoursAgo() which technically creates the
+      // current date first, then creates a date 15 hours before and compares
+      // them, the discrepancy between the creation of the 2 dates means that
+      // they may actually be 15.0001 hours apart. Milliseconds don't have
+      // fractions, so they won't be subject to this error margin.
+      function applyErrorMargin(ms) {
+        var num      = ms / multiplier,
+            fraction = num % 1,
+            error    = u.error || 0.999;
+        if(fraction && math.abs(fraction % 1) > error) {
+          num = round(num);
+        }
+        return parseInt(num);
+      }
       since = function(f, localeCode) {
-        return round((this.getTime() - date.create(f, localeCode).getTime()) / multiplier);
+        return applyErrorMargin(this.getTime() - date.create(f, localeCode).getTime());
       };
       until = function(f, localeCode) {
-        return round((date.create(f, localeCode).getTime() - this.getTime()) / multiplier);
+        return applyErrorMargin(date.create(f, localeCode).getTime() - this.getTime());
       };
       methods[unit+'sAgo']     = until;
       methods[unit+'sUntil']   = until;
