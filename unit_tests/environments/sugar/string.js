@@ -597,6 +597,7 @@ test('String', function () {
   '<p>text with links, &quot;entities&quot; and bold tags</p>' +
   '</div>';
   equal(html.stripTags('a', 'b'), stripped, 'String#stripTags | stripped <a> and <b> tags', { prototype: allStripped });
+  equal(html.stripTags(['a', 'b']), stripped, 'String#stripTags | array | stripped <a> and <b> tags', { prototype: allStripped });
 
 
   stripped =
@@ -604,6 +605,7 @@ test('String', function () {
   'text with links, &quot;entities&quot; and <b>bold</b> tags' +
   '</div>';
   equal(html.stripTags('p', 'a'), stripped, 'String#stripTags | stripped <p> and <a> tags', { prototype: allStripped });
+  equal(html.stripTags(['p', 'a']), stripped, 'String#stripTags | array | stripped <p> and <a> tags', { prototype: allStripped });
 
 
   stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>';
@@ -681,11 +683,13 @@ test('String', function () {
   '<p>text with , &quot;entities&quot; and  tags</p>' +
   '</div>';
   equal(html.removeTags('a', 'b'), removed, 'String#removeTags | <a> and <b> tags removed');
+  equal(html.removeTags(['a', 'b']), removed, 'String#removeTags | array | <a> and <b> tags removed');
 
 
   removed =
   '<div class="outer"></div>';
   equal(html.removeTags('p', 'a'), removed, 'String#removeTags | <p> and <a> tags removed');
+  equal(html.removeTags(['p', 'a']), removed, 'String#removeTags | array | <p> and <a> tags removed');
 
 
   equal(html.removeTags('div'), '', 'String#removeTags | <div> tags removed');
