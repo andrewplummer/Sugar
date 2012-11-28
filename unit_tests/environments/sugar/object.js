@@ -810,5 +810,52 @@ test('Object', function () {
   equal(Object.equal(Object.clone(f), f), true, 'Object.clone | same constructor should be equal');
 
 
+  // Object.select
+
+  var obj = {
+    one:    1,
+    two:    2,
+    three:  3,
+    four:   4,
+    five:   5
+  };
+
+  var obj2 = { foo: obj };
+
+  testClassAndInstance('select', obj, ['one'], { one: 1 }, 'Object.select | one key');
+  testClassAndInstance('select', obj, ['foo'], {}, 'Object.select | nonexistent key');
+  testClassAndInstance('select', obj, ['one', 'two'], { one: 1, two: 2 }, 'Object.select | two keys');
+  testClassAndInstance('select', obj, ['one', 'foo'], { one: 1 }, 'Object.select | one existing one non-existing');
+  testClassAndInstance('select', obj, ['four', 'two'], { two: 2, four: 4 }, 'Object.select | keys out of order');
+  testClassAndInstance('select', obj, [['four', 'two']], { two: 2, four: 4 }, 'Object.select | keys in an array');
+  testClassAndInstance('select', obj, [/o/], { one: 1, two: 2, four: 4 }, 'Object.select | regex');
+  testClassAndInstance('select', obj, [/o$/], { two: 2 }, 'Object.select | regex $');
+  testClassAndInstance('select', obj, [/^o/], { one: 1 }, 'Object.select | ^ regex');
+  testClassAndInstance('select', obj, [/z/], {}, 'Object.select | non-matching regex');
+  testClassAndInstance('select', obj, [{ one: 1 }], { one: 1 }, 'Object.select | comparing object');
+  testClassAndInstance('select', obj, [{ one: 'foobar' }], { one: 1 }, 'Object.select | comparing object with different values');
+  testClassAndInstance('select', obj, [{}], {}, 'Object.select | empty object');
+  testClassAndInstance('select', obj, [[/^o/, /^f/]], { one: 1, four: 4, five: 5 }, 'Object.select | complex nested array of regexes');
+
+  equal(Object.select(obj2, 'foo').foo === obj, true, 'Object.select | selected values should be equal by reference');
+
+
+  testClassAndInstance('reject', obj, ['one'], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | one key');
+  testClassAndInstance('reject', obj, ['foo'], obj, 'Object.reject | nonexistent key');
+  testClassAndInstance('reject', obj, ['one', 'two'], { three: 3, four: 4, five: 5 }, 'Object.reject | two keys');
+  testClassAndInstance('reject', obj, ['one', 'foo'], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | one existing one non-existing');
+  testClassAndInstance('reject', obj, ['four', 'two'], { one: 1, three: 3, five: 5 }, 'Object.reject | keys out of order');
+  testClassAndInstance('reject', obj, [['four', 'two']], { one: 1, three: 3, five: 5 }, 'Object.reject | keys in an array');
+  testClassAndInstance('reject', obj, [/o/], { three: 3, five: 5 }, 'Object.reject | regex');
+  testClassAndInstance('reject', obj, [/o$/], { one: 1, three: 3, four: 4, five: 5 }, 'Object.reject | regex $');
+  testClassAndInstance('reject', obj, [/^o/], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | ^ regex');
+  testClassAndInstance('reject', obj, [/z/], obj, 'Object.reject | non-matching regex');
+  testClassAndInstance('reject', obj, [{ one: 1 }], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | comparing object');
+  testClassAndInstance('reject', obj, [{ one: 'foobar' }], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | comparing object with different values');
+  testClassAndInstance('reject', obj, [{}], obj, 'Object.reject | empty object');
+  testClassAndInstance('reject', obj, [[/^o/, /^f/]], { two: 2, three: 3 }, 'Object.reject | complex nested array of regexes');
+
+  equal(Object.reject(obj2, 'moo').foo === obj, true, 'Object.reject | rejected values should be equal by reference');
+
 });
 
