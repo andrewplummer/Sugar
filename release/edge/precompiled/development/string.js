@@ -92,6 +92,56 @@
     }
   }
 
+
+  extend(string, true, function(reg) { return isRegExp(reg) || arguments.length > 2; }, {
+
+    /***
+     * @method startsWith(<find>, [pos] = 0, [case] = true)
+     * @returns Boolean
+     * @short Returns true if the string starts with <find>.
+     * @extra <find> may be either a string or regex. Search begins at [pos], which defaults to the entire string. Case sensitive if [case] is true.
+     * @example
+     *
+     *   'hello'.startsWith('hell')           -> true
+     *   'hello'.startsWith(/[a-h]/)          -> true
+     *   'hello'.startsWith('HELL')           -> false
+     *   'hello'.startsWith('ell', 1)         -> true
+     *   'hello'.startsWith('HELL', 0, false) -> true
+     *
+     ***/
+    'startsWith': function(reg, pos, c) {
+      var str = this, source;
+      if(pos) str = str.slice(pos);
+      if(isUndefined(c)) c = true;
+      source = isRegExp(reg) ? reg.source.replace('^', '') : escapeRegExp(reg);
+      return regexp('^' + source, c ? '' : 'i').test(str);
+    },
+
+    /***
+     * @method endsWith(<find>, [pos] = length, [case] = true)
+     * @returns Boolean
+     * @short Returns true if the string ends with <find>.
+     * @extra <find> may be either a string or regex. Search ends at [pos], which defaults to the entire string. Case sensitive if [case] is true.
+     * @example
+     *
+     *   'jumpy'.endsWith('py')            -> true
+     *   'jumpy'.endsWith(/[q-z]/)         -> true
+     *   'jumpy'.endsWith('MPY')           -> false
+     *   'jumpy'.endsWith('mp', 4)         -> false
+     *   'jumpy'.endsWith('MPY', 5, false) -> true
+     *
+     ***/
+    'endsWith': function(reg, pos, c) {
+      var str = this, source;
+      if(isDefined(pos)) str = str.slice(0, pos);
+      if(isUndefined(c)) c = true;
+      source = isRegExp(reg) ? reg.source.replace('$', '') : escapeRegExp(reg);
+      return regexp(source + '$', c ? '' : 'i').test(str);
+    }
+
+  });
+
+
   extend(string, true, false, {
 
      /***
@@ -355,44 +405,6 @@
     },
 
     /***
-     * @method startsWith(<find>, [case] = true)
-     * @returns Boolean
-     * @short Returns true if the string starts with <find>.
-     * @extra <find> may be either a string or regex. Case sensitive if [case] is true.
-     * @example
-     *
-     *   'hello'.startsWith('hell')        -> true
-     *   'hello'.startsWith(/[a-h]/)       -> true
-     *   'hello'.startsWith('HELL')        -> false
-     *   'hello'.startsWith('HELL', false) -> true
-     *
-     ***/
-    'startsWith': function(reg, c) {
-      if(isUndefined(c)) c = true;
-      var source = isRegExp(reg) ? reg.source.replace('^', '') : escapeRegExp(reg);
-      return regexp('^' + source, c ? '' : 'i').test(this);
-    },
-
-    /***
-     * @method endsWith(<find>, [case] = true)
-     * @returns Boolean
-     * @short Returns true if the string ends with <find>.
-     * @extra <find> may be either a string or regex. Case sensitive if [case] is true.
-     * @example
-     *
-     *   'jumpy'.endsWith('py')         -> true
-     *   'jumpy'.endsWith(/[q-z]/)      -> true
-     *   'jumpy'.endsWith('MPY')        -> false
-     *   'jumpy'.endsWith('MPY', false) -> true
-     *
-     ***/
-    'endsWith': function(reg, c) {
-      if(isUndefined(c)) c = true;
-      var source = isRegExp(reg) ? reg.source.replace('$', '') : escapeRegExp(reg);
-      return regexp(source + '$', c ? '' : 'i').test(this);
-    },
-
-    /***
      * @method isBlank()
      * @returns Boolean
      * @short Returns true if the string has a length of 0 or contains only whitespace.
@@ -617,7 +629,7 @@
      ***/
     'stripTags': function() {
       var str = this, args = arguments.length > 0 ? arguments : [''];
-      multiArgs(args, function(tag) {
+      flattenedArgs(args, function(tag) {
         str = str.replace(regexp('<\/?' + escapeRegExp(tag) + '[^<>]*>', 'gi'), '');
       });
       return str;
@@ -636,7 +648,7 @@
      ***/
     'removeTags': function() {
       var str = this, args = arguments.length > 0 ? arguments : ['\\S+'];
-      multiArgs(args, function(t) {
+      flattenedArgs(args, function(t) {
         var reg = regexp('<(' + t + ')[^<>]*(?:\\/>|>.*?<\\/\\1>)', 'gi');
         str = str.replace(reg, '');
       });

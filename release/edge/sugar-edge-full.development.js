@@ -128,6 +128,10 @@
     return result;
   }
 
+  function flattenedArgs(obj, fn, from) {
+    multiArgs(array.prototype.concat.apply([], array.prototype.slice.call(obj, from || 0)), fn);
+  }
+
   function checkCallback(fn) {
     if(!fn || !fn.call) {
       throw new TypeError('Callback is not callable');
@@ -458,7 +462,6 @@
       throw new TypeError('First argument must be defined');
     }
   }
-
 
 
 
@@ -1169,7 +1172,7 @@
             if(tmp.length > 0) {
               a = tmp;
             }
-          } catch(e) {}
+          } catch(e) {};
         }
         result = result.concat(a);
       });
@@ -5178,7 +5181,7 @@
    ***/
 
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
-  var ObjectHashMethods = 'keys,values,each,merge,clone,equal,watch,tap,has'.split(',');
+  var ObjectHashMethods = 'keys,values,select,reject,each,merge,clone,equal,watch,tap,has'.split(',');
 
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
@@ -5205,6 +5208,32 @@
     } else {
       obj[param] = value;
     }
+  }
+
+  function matchKey(key, match) {
+    if(isRegExp(match)) {
+      return match.test(key);
+    } else if(isObjectPrimitive(match)) {
+      return key in match;
+    } else {
+      return key === string(match);
+    }
+  }
+
+  function selectFromObject(obj, args, select) {
+    var result = {}, match;
+    iterateOverObject(obj, function(key, value) {
+      match = false;
+      flattenedArgs(args, function(arg) {
+        if(matchKey(key, arg)) {
+          match = true;
+        }
+      }, 1);
+      if(match === select) {
+        result[key] = value;
+      }
+    });
+    return result;
   }
 
 
@@ -5511,6 +5540,42 @@
      ***/
     'has': function (obj, key) {
       return hasOwnProperty(obj, key);
+    },
+
+    /***
+     * @method select(<obj>, <find>, ...)
+     * @returns Object
+     * @short Builds a new object containing the values specified in <find>.
+     * @extra When <find> is a string, that single key will be selected. It can also be a regex, selecting any key that matches, or an object which will match if the key also exists in that object, effectively doing an "intersect" operation on that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %select% is available as an instance method on extended objects.
+     * @example
+     *
+     *   Object.select({a:1,b:2}, 'a')        -> {a:1}
+     *   Object.select({a:1,b:2}, /[a-z]/)    -> {a:1,ba:2}
+     *   Object.select({a:1,b:2}, {a:1})      -> {a:1}
+     *   Object.select({a:1,b:2}, 'a', 'b')   -> {a:1,b:2}
+     *   Object.select({a:1,b:2}, ['a', 'b']) -> {a:1,b:2}
+     *
+     ***/
+    'select': function (obj) {
+      return selectFromObject(obj, arguments, true);
+    },
+
+    /***
+     * @method reject(<obj>, <find>, ...)
+     * @returns Object
+     * @short Builds a new object containing all values except those specified in <find>.
+     * @extra When <find> is a string, that single key will be selected. It can also be a regex, rejecting any key that matches, or an object which will match if the key also exists in that object, effectively "subtracting" that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %reject% is available as an instance method on extended objects.
+     * @example
+     *
+     *   Object.reject({a:1,b:2}, 'a')        -> {b:2}
+     *   Object.reject({a:1,b:2}, /[a-z]/)    -> {}
+     *   Object.reject({a:1,b:2}, {a:1})      -> {b:2}
+     *   Object.reject({a:1,b:2}, 'a', 'b')   -> {}
+     *   Object.reject({a:1,b:2}, ['a', 'b']) -> {}
+     *
+     ***/
+    'reject': function (obj) {
+      return selectFromObject(obj, arguments, false);
     }
 
   });
@@ -5705,6 +5770,56 @@
       return output;
     }
   }
+
+
+  extend(string, true, function(reg) { return isRegExp(reg) || arguments.length > 2; }, {
+
+    /***
+     * @method startsWith(<find>, [pos] = 0, [case] = true)
+     * @returns Boolean
+     * @short Returns true if the string starts with <find>.
+     * @extra <find> may be either a string or regex. Search begins at [pos], which defaults to the entire string. Case sensitive if [case] is true.
+     * @example
+     *
+     *   'hello'.startsWith('hell')           -> true
+     *   'hello'.startsWith(/[a-h]/)          -> true
+     *   'hello'.startsWith('HELL')           -> false
+     *   'hello'.startsWith('ell', 1)         -> true
+     *   'hello'.startsWith('HELL', 0, false) -> true
+     *
+     ***/
+    'startsWith': function(reg, pos, c) {
+      var str = this, source;
+      if(pos) str = str.slice(pos);
+      if(isUndefined(c)) c = true;
+      source = isRegExp(reg) ? reg.source.replace('^', '') : escapeRegExp(reg);
+      return regexp('^' + source, c ? '' : 'i').test(str);
+    },
+
+    /***
+     * @method endsWith(<find>, [pos] = length, [case] = true)
+     * @returns Boolean
+     * @short Returns true if the string ends with <find>.
+     * @extra <find> may be either a string or regex. Search ends at [pos], which defaults to the entire string. Case sensitive if [case] is true.
+     * @example
+     *
+     *   'jumpy'.endsWith('py')            -> true
+     *   'jumpy'.endsWith(/[q-z]/)         -> true
+     *   'jumpy'.endsWith('MPY')           -> false
+     *   'jumpy'.endsWith('mp', 4)         -> false
+     *   'jumpy'.endsWith('MPY', 5, false) -> true
+     *
+     ***/
+    'endsWith': function(reg, pos, c) {
+      var str = this, source;
+      if(isDefined(pos)) str = str.slice(0, pos);
+      if(isUndefined(c)) c = true;
+      source = isRegExp(reg) ? reg.source.replace('$', '') : escapeRegExp(reg);
+      return regexp(source + '$', c ? '' : 'i').test(str);
+    }
+
+  });
+
 
   extend(string, true, false, {
 
@@ -5969,44 +6084,6 @@
     },
 
     /***
-     * @method startsWith(<find>, [case] = true)
-     * @returns Boolean
-     * @short Returns true if the string starts with <find>.
-     * @extra <find> may be either a string or regex. Case sensitive if [case] is true.
-     * @example
-     *
-     *   'hello'.startsWith('hell')        -> true
-     *   'hello'.startsWith(/[a-h]/)       -> true
-     *   'hello'.startsWith('HELL')        -> false
-     *   'hello'.startsWith('HELL', false) -> true
-     *
-     ***/
-    'startsWith': function(reg, c) {
-      if(isUndefined(c)) c = true;
-      var source = isRegExp(reg) ? reg.source.replace('^', '') : escapeRegExp(reg);
-      return regexp('^' + source, c ? '' : 'i').test(this);
-    },
-
-    /***
-     * @method endsWith(<find>, [case] = true)
-     * @returns Boolean
-     * @short Returns true if the string ends with <find>.
-     * @extra <find> may be either a string or regex. Case sensitive if [case] is true.
-     * @example
-     *
-     *   'jumpy'.endsWith('py')         -> true
-     *   'jumpy'.endsWith(/[q-z]/)      -> true
-     *   'jumpy'.endsWith('MPY')        -> false
-     *   'jumpy'.endsWith('MPY', false) -> true
-     *
-     ***/
-    'endsWith': function(reg, c) {
-      if(isUndefined(c)) c = true;
-      var source = isRegExp(reg) ? reg.source.replace('$', '') : escapeRegExp(reg);
-      return regexp(source + '$', c ? '' : 'i').test(this);
-    },
-
-    /***
      * @method isBlank()
      * @returns Boolean
      * @short Returns true if the string has a length of 0 or contains only whitespace.
@@ -6231,7 +6308,7 @@
      ***/
     'stripTags': function() {
       var str = this, args = arguments.length > 0 ? arguments : [''];
-      multiArgs(args, function(tag) {
+      flattenedArgs(args, function(tag) {
         str = str.replace(regexp('<\/?' + escapeRegExp(tag) + '[^<>]*>', 'gi'), '');
       });
       return str;
@@ -6250,7 +6327,7 @@
      ***/
     'removeTags': function() {
       var str = this, args = arguments.length > 0 ? arguments : ['\\S+'];
-      multiArgs(args, function(t) {
+      flattenedArgs(args, function(t) {
         var reg = regexp('<(' + t + ')[^<>]*(?:\\/>|>.*?<\\/\\1>)', 'gi');
         str = str.replace(reg, '');
       });
