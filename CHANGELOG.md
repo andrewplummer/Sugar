@@ -3,6 +3,7 @@ v1.3.7
 
 ### API Changes ###
 
+- Added Object.select and Object.reject to help filter keys in objects.
 - Fix for Date.create not preserving the UTC flag when the source is also a date (Issue #235).
 - Object.clone on arrays with the "deep" flag set to true should create a deep clone of the array (Issue #237).
 - Array#min/max should throw an error when comparing to undefined (Issue #232).
