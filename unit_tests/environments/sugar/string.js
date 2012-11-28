@@ -301,33 +301,49 @@ test('String', function () {
 
 
 
+  // startsWith/endsWith is defined in Harmony, so only passing a regex or
+  // 3 arguments will actually test this code.
 
-  equal('hello'.startsWith('hell'), true, 'String#startsWith | hello starts with hell');
-  equal('HELLO'.startsWith('HELL'), true, 'String#startsWith | HELLO starts with HELL');
-  equal('HELLO'.startsWith('hell'), false, 'String#startsWith | HELLO starts with hell');
-  equal('HELLO'.startsWith('hell', true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
-  equal('hello'.startsWith(/hell/), true, 'String#startsWith | accepts regex', { prototype: false });
-  equal('hello'.startsWith(/[a-h]/), true, 'String#startsWith | accepts regex alternates', { prototype: false });
-  equal('HELLO'.startsWith('hell', false), true, 'String#startsWith | case insensitive | HELLO starts with hell', { prototype: false });
+  equal('hello'.startsWith('hell', 0, true), true, 'String#startsWith | hello starts with hell');
+  equal('HELLO'.startsWith('HELL', 0, true), true, 'String#startsWith | HELLO starts with HELL');
+  equal('HELLO'.startsWith('hell', 0, true), false, 'String#startsWith | HELLO starts with hell');
+  equal('HELLO'.startsWith('hell', 0, true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
+  equal('hello'.startsWith(/hell/, 0, true), true, 'String#startsWith | accepts regex', { prototype: false });
+  equal('hello'.startsWith(/[a-h]/, 0, true), true, 'String#startsWith | accepts regex alternates', { prototype: false });
+  equal('HELLO'.startsWith('hell', 0, false), true, 'String#startsWith | case insensitive | HELLO starts with hell', { prototype: false });
   equal('HELLO'.startsWith(), false, 'String#startsWith | undefined produces false');
+  equal('hello'.startsWith('hell', -20, true), true, 'String#startsWith | from pos -20');
+  equal('hello'.startsWith('hell', 1, true), false, 'String#startsWith | from pos 1');
+  equal('hello'.startsWith('hell', 2, true), false, 'String#startsWith | from pos 2');
+  equal('hello'.startsWith('hell', 3, true), false, 'String#startsWith | from pos 3');
+  equal('hello'.startsWith('hell', 4, true), false, 'String#startsWith | from pos 4');
+  equal('hello'.startsWith('hell', 5, true), false, 'String#startsWith | from pos 5');
+  equal('hello'.startsWith('hell', 20, true), false, 'String#startsWith | from pos 20');
   equal('10'.startsWith(10), true, 'String#startsWith | Numbers will be converted');
-  equal('valley girls\nrock'.startsWith('valley girls'), true, 'String#startsWith | valley girls rock starts with valley girls');
-  equal('valley girls\nrock'.startsWith('valley girls r'), false, 'String#startsWith | valley girls rock starts with valley girls r');
+  equal('valley girls\nrock'.startsWith('valley girls', 0, true), true, 'String#startsWith | valley girls rock starts with valley girls');
+  equal('valley girls\nrock'.startsWith('valley girls r', 0, true), false, 'String#startsWith | valley girls rock starts with valley girls r');
 
 
-  equal('vader'.endsWith('der'), true, 'String#endsWith | vader ends with der');
-  equal('VADER'.endsWith('DER'), true, 'String#endsWith | VADER ends with DER');
-  equal('VADER'.endsWith('der'), false, 'String#endsWith | VADER ends with der');
-  equal('VADER'.endsWith('DER', false), true, 'String#endsWith | case insensitive | VADER ends with DER');
-  equal('vader'.endsWith(/der/), true, 'String#endsWith | accepts regex', { prototype: false });
-  equal('vader'.endsWith(/[q-z]/), true, 'String#endsWith | accepts regex alternates', { prototype: false });
-  equal('VADER'.endsWith('der', false), true, 'String#endsWith | case insensitive |  VADER ends with der', { prototype: false });
-  equal('VADER'.endsWith('DER', true), true, 'String#endsWith | case sensitive | VADER ends with DER');
-  equal('VADER'.endsWith('der', true), false, 'String#endsWith | case sensitive |  VADER ends with der');
+  equal('vader'.endsWith('der', 5, true), true, 'String#endsWith | vader ends with der');
+  equal('VADER'.endsWith('DER', 5, true), true, 'String#endsWith | VADER ends with DER');
+  equal('VADER'.endsWith('der', 5, true), false, 'String#endsWith | VADER ends with der');
+  equal('VADER'.endsWith('DER', 5, false), true, 'String#endsWith | case insensitive | VADER ends with DER');
+  equal('vader'.endsWith(/der/, 5, true), true, 'String#endsWith | accepts regex', { prototype: false });
+  equal('vader'.endsWith(/[q-z]/, 5, true), true, 'String#endsWith | accepts regex alternates', { prototype: false });
+  equal('VADER'.endsWith('der', 5, false), true, 'String#endsWith | case insensitive |  VADER ends with der', { prototype: false });
+  equal('VADER'.endsWith('DER', 5, true), true, 'String#endsWith | case sensitive | VADER ends with DER');
+  equal('VADER'.endsWith('der', 5, true), false, 'String#endsWith | case sensitive |  VADER ends with der');
+  equal('vader'.endsWith('der', -20, true), false, 'String#startsWith | from pos -20');
+  equal('vader'.endsWith('der', 0, true), false, 'String#startsWith | from pos 0');
+  equal('vader'.endsWith('der', 1, true), false, 'String#startsWith | from pos 1');
+  equal('vader'.endsWith('der', 2, true), false, 'String#startsWith | from pos 2');
+  equal('vader'.endsWith('der', 3, true), false, 'String#startsWith | from pos 3');
+  equal('vader'.endsWith('der', 4, true), false, 'String#startsWith | from pos 4');
+  equal('vader'.endsWith('der', 20, true), true, 'String#startsWith | from pos 20');
   equal('HELLO'.endsWith(), false, 'String#endsWith | undefined produces false');
   equal('10'.endsWith(10), true, 'String#endsWith | Numbers will be converted');
-  equal('i aint your\nfather'.endsWith('father'), true, 'String#endsWith | vader ends with der');
-  equal('i aint your\nfather'.endsWith('r father'), false, 'String#endsWith | vader ends with der');
+  equal('i aint your\nfather'.endsWith('father', 18, true), true, 'String#endsWith | vader ends with der');
+  equal('i aint your\nfather'.endsWith('r father', 18, false), false, 'String#endsWith | vader ends with der');
 
 
   equal(''.isBlank(), true, 'String#blank | blank string');
