@@ -2634,4 +2634,8 @@ test('Date', function () {
 
   equal((14).hoursFromNow().daysFromNow(), 0, 'Date#daysFromNow | should floor the number rather than round');
 
+  // Issue #224
+
+  equal(Date.create('').isValid(), false, 'Date.create | empty strings are not valid');
+
 });
