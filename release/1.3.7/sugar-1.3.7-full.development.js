@@ -5219,7 +5219,7 @@
     if(isRegExp(match)) {
       return match.test(key);
     } else if(isObjectPrimitive(match)) {
-      return key in match;
+      return hasOwnProperty(match, key);
     } else {
       return key === string(match);
     }
@@ -5573,7 +5573,7 @@
      * @method reject(<obj>, <find>, ...)
      * @returns Object
      * @short Builds a new object containing all values except those specified in <find>.
-     * @extra When <find> is a string, that single key will be selected. It can also be a regex, rejecting any key that matches, or an object which will match if the key also exists in that object, effectively "subtracting" that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %reject% is available as an instance method on extended objects.
+     * @extra When <find> is a string, that single key will be rejected. It can also be a regex, rejecting any key that matches, or an object which will match if the key also exists in that object, effectively "subtracting" that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %reject% is available as an instance method on extended objects.
      * @example
      *
      *   Object.reject({a:1,b:2}, 'a')        -> {b:2}
