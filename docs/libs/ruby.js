@@ -1046,7 +1046,7 @@ var SugarRubyMethods = [
         original_code:  "arr.member?('foo')",
         js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'foo') { return true; } } return false;",
         es5_code: "arr.some(function(el){ return el == 'foo'; });",
-        sugar_code: "arr.has('foo');",
+        sugar_code: "arr.any('foo');",
         ref: 'Array/has'
       },
       {
@@ -1438,7 +1438,7 @@ var SugarRubyMethods = [
         original_code:  "arr.include?('foo')",
         js_code: "for(var i = 0; i < arr.length; i++) { if(arr[i] == 'foo') { return true; } } return false;",
         es5_code: "arr.some(function(el){ return el == 'foo'; });",
-        sugar_code: "arr.has('foo');",
+        sugar_code: "arr.any('foo');",
         ref: 'Array/has'
       },
       {
