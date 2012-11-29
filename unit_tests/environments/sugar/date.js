@@ -2632,7 +2632,10 @@ test('Date', function () {
   // Issue #244
 
   var d = Date.utc.create('999');
-  equal(d.getHours(), (24 + (d.getTimezoneOffset() / 60)) % 24, 'Date.utc.create | non-parseable dates should also be set to UTC');
+
+  if(d.isValid()) {
+    equal(d.getHours(), (24 + (d.getTimezoneOffset() / 60)) % 24, 'Date.utc.create | non-parseable dates should also be set to UTC');
+  }
 
   // Issue #236
 
