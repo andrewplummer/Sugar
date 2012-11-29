@@ -1190,9 +1190,14 @@
 
   });
 
+  var EnumerableFindingMethods = 'any,all,none,count,find,findAll,isEmpty'.split(',');
+  var EnumerableMappingMethods = 'sum,average,min,max,least,most'.split(',');
+  var EnumerableOtherMethods   = 'map,reduce,size'.split(',');
+  var EnumerableMethods        = EnumerableFindingMethods.concat(EnumerableMappingMethods).concat(EnumerableOtherMethods);
+
   buildEnhancements();
   buildAlphanumericSort();
-  buildEnumerableMethods('any,all,none,count,find,findAll,isEmpty');
-  buildEnumerableMethods('sum,average,min,max,least,most', true);
-  buildObjectInstanceMethods('map,reduce,size', Hash);
+  buildEnumerableMethods(EnumerableFindingMethods);
+  buildEnumerableMethods(EnumerableMappingMethods, true);
+  buildObjectInstanceMethods(EnumerableOtherMethods, Hash);
 
