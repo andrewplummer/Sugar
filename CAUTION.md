@@ -15,6 +15,9 @@ v1.3.7+
 - Level: Major
   - `String#startsWith` and `String#endsWith` now accept different arguments to better align them with the Harmony proposal of the same name. The second argument is now the "position" that limits where the string starts/ends, and the "case" flag indicating case sensitivity is now pushed to the 3rd argument.
 
+- Level: Major
+  - Enumerable object methods are now included when using `Object.extend()` making it that much more dangerous, especially as generic methods like `count` are now defined on the Object prototype. If you use this method, make sure you are in the habit of using `hasOwnProperty` when checking for presence inside a hash (probably not a bad idea anyway). Also note that Sugar itself has a number of areas that may exhibit unexpected behavior when this method is applied. Please report if you find any.
+
 - Level: Moderate
   - Aliases on dates such as `daysAgo` will now count "past" an integer instead of rounding. This means that `Date.create('23 hours ago').daysAgo()` will now be `0`. There is however a small margin of error (roughly 0.1%) that will trigger a round up, which is higher for months, which have a more vague definition and a higher margin for error.
 
