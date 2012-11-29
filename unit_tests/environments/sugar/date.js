@@ -2629,13 +2629,6 @@ test('Date', function () {
   equal(Date.create(new Date().utc(true)).isUTC(), true, 'Date#create | should preserve UTC');
   equal(Date.create(new Date()).isUTC(), false, 'Date#create | non utc date should not have UTC flag');
 
-  // Issue #244
-
-  var d = Date.utc.create('999');
-
-  if(d.isValid()) {
-    equal(d.getHours(), (24 + (d.getTimezoneOffset() / 60)) % 24, 'Date.utc.create | non-parseable dates should also be set to UTC');
-  }
 
   // Issue #236
 
