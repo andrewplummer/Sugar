@@ -791,8 +791,8 @@ test('Array', function () {
 
   equal([12,12,12].min(function(n) { return n; }, true), [12,12,12], 'Array#min | should not unique', { prototype: 12 });
 
-  raisesError(function() { [undefined].min(); }, 'Array#min | should raise an error when comparing undefined');
-  raisesError(function() { [1,undefined].min(); }, 'Array#min | should raise an error when comparing 1 to undefined');
+  raisesError(function() { arrayOfUndefined.min(); }, 'Array#min | should raise an error when comparing undefined');
+  raisesError(function() { [1].concat(arrayOfUndefined).min(); }, 'Array#min | should raise an error when comparing 1 to undefined');
   raisesError(function() { [87,12,55].min(4); }, 'Array#min | number not found in number, so undefined');
   raisesError(function() { [12,87,55].min(null); }, 'Array#min | null not found in number, so undefined');
 
@@ -826,8 +826,8 @@ test('Array', function () {
 
   equal([12,12,12].max(function(n){ return n; }, true), [12,12,12], 'Array#max | should not unique', { prototype: 12 });
 
-  raisesError(function() { [undefined].max(); }, 'Array#max | should raise an error when comparing undefined');
-  raisesError(function() { [1,undefined].max(); }, 'Array#max | should raise an error when comparing 1 to undefined');
+  raisesError(function() { arrayOfUndefined.max(); }, 'Array#max | should raise an error when comparing undefined');
+  raisesError(function() { [1].concat(arrayOfUndefined).max(); }, 'Array#max | should raise an error when comparing 1 to undefined');
   raisesError(function() { [87,12,55].max(4); }, 'Array#max | number not found in number, so undefined');
   raisesError(function() { [12,87,55].max(null); }, 'Array#max | null not found in number, so undefined');
 
