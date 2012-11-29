@@ -10,6 +10,7 @@ v1.3.7
 - Array#min/max should throw an error when comparing to undefined (Issue #232).
 - Fix for dates that fallback to native parsing when forcing UTC flag (Issue #244).
 - Date#since/fromNow aliases will now count "past" integers instead of rounding (Issue #236).
+- Adding enumerable methods to `Object.extend()`.
 
 
 v1.3.6
