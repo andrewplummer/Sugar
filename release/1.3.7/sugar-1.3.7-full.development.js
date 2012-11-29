@@ -2037,11 +2037,16 @@
 
   });
 
+  var EnumerableFindingMethods = 'any,all,none,count,find,findAll,isEmpty'.split(',');
+  var EnumerableMappingMethods = 'sum,average,min,max,least,most'.split(',');
+  var EnumerableOtherMethods   = 'map,reduce,size'.split(',');
+  var EnumerableMethods        = EnumerableFindingMethods.concat(EnumerableMappingMethods).concat(EnumerableOtherMethods);
+
   buildEnhancements();
   buildAlphanumericSort();
-  buildEnumerableMethods('any,all,none,count,find,findAll,isEmpty');
-  buildEnumerableMethods('sum,average,min,max,least,most', true);
-  buildObjectInstanceMethods('map,reduce,size', Hash);
+  buildEnumerableMethods(EnumerableFindingMethods);
+  buildEnumerableMethods(EnumerableMappingMethods, true);
+  buildObjectInstanceMethods(EnumerableOtherMethods, Hash);
 
 
   /***
@@ -5191,7 +5196,7 @@
       allKeys.forEach(function(k) {
         paramIsArray = !k || k.match(/^\d+$/);
         if(!key && isArray(obj)) key = obj.length;
-        if(!obj[key]) {
+        if(!hasOwnProperty(obj, key)) {
           obj[key] = paramIsArray ? [] : {};
         }
         obj = obj[key];
@@ -5275,7 +5280,11 @@
   function buildObjectExtend() {
     extend(object, false, function(){ return arguments.length === 0; }, {
       'extend': function() {
-        buildObjectInstanceMethods(ObjectTypeMethods.concat(ObjectHashMethods), object);
+        var methods = ObjectTypeMethods.concat(ObjectHashMethods)
+        if(typeof EnumerableMethods !== 'undefined') {
+          methods = methods.concat(EnumerableMethods);
+        }
+        buildObjectInstanceMethods(methods, object);
       }
     });
   }
@@ -6918,10 +6927,11 @@
      *
      ***/
     'humanize': function() {
-      var str = runReplacements(this, humans);
+      var str = runReplacements(this, humans), acronym;
       str = str.replace(/_id$/g, '');
       str = str.replace(/(_)?([a-z\d]*)/gi, function(match, _, word){
-        return (_ ? ' ' : '') + (acronyms[word] || word.toLowerCase());
+        acronym = hasOwnProperty(acronyms, word) ? acronyms[word] : null;
+        return (_ ? ' ' : '') + (acronym || word.toLowerCase());
       });
       return capitalize(str);
     },
