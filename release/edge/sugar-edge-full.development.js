@@ -2037,11 +2037,16 @@
 
   });
 
+  var EnumerableFindingMethods = 'any,all,none,count,find,findAll,isEmpty'.split(',');
+  var EnumerableMappingMethods = 'sum,average,min,max,least,most'.split(',');
+  var EnumerableOtherMethods   = 'map,reduce,size'.split(',');
+  var EnumerableMethods        = EnumerableFindingMethods.concat(EnumerableMappingMethods).concat(EnumerableOtherMethods);
+
   buildEnhancements();
   buildAlphanumericSort();
-  buildEnumerableMethods('any,all,none,count,find,findAll,isEmpty');
-  buildEnumerableMethods('sum,average,min,max,least,most', true);
-  buildObjectInstanceMethods('map,reduce,size', Hash);
+  buildEnumerableMethods(EnumerableFindingMethods);
+  buildEnumerableMethods(EnumerableMappingMethods, true);
+  buildObjectInstanceMethods(EnumerableOtherMethods, Hash);
 
 
   /***
@@ -2599,7 +2604,7 @@
   }
 
   function cleanDateInput(str) {
-    str = str.trim().replace(/^(just )?now|\.+$/i, '');
+    str = str.trim().replace(/^just (?=now)|\.+$/i, '');
     return convertAsianDigits(str);
   }
 
@@ -2796,11 +2801,13 @@
       if(!format) {
         // The Date constructor does something tricky like checking the number
         // of arguments so simply passing in undefined won't work.
-        d = f ? new date(f) : new date();
+        if(f !== 'now') {
+          d = new date(f);
+        }
         if(forceUTC) {
           // Falling back to system date here which cannot be parsed as UTC,
           // so if we're forcing UTC then simply add the offset.
-          d.addMinutes(d.getTimezoneOffset());
+          d.addMinutes(-d.getTimezoneOffset());
         }
       } else if(relative) {
         d.advance(set);
@@ -5191,7 +5198,7 @@
       allKeys.forEach(function(k) {
         paramIsArray = !k || k.match(/^\d+$/);
         if(!key && isArray(obj)) key = obj.length;
-        if(!obj[key]) {
+        if(!hasOwnProperty(obj, key)) {
           obj[key] = paramIsArray ? [] : {};
         }
         obj = obj[key];
@@ -5214,7 +5221,7 @@
     if(isRegExp(match)) {
       return match.test(key);
     } else if(isObjectPrimitive(match)) {
-      return key in match;
+      return hasOwnProperty(match, key);
     } else {
       return key === string(match);
     }
@@ -5275,7 +5282,11 @@
   function buildObjectExtend() {
     extend(object, false, function(){ return arguments.length === 0; }, {
       'extend': function() {
-        buildObjectInstanceMethods(ObjectTypeMethods.concat(ObjectHashMethods), object);
+        var methods = ObjectTypeMethods.concat(ObjectHashMethods)
+        if(typeof EnumerableMethods !== 'undefined') {
+          methods = methods.concat(EnumerableMethods);
+        }
+        buildObjectInstanceMethods(methods, object);
       }
     });
   }
@@ -5564,7 +5575,7 @@
      * @method reject(<obj>, <find>, ...)
      * @returns Object
      * @short Builds a new object containing all values except those specified in <find>.
-     * @extra When <find> is a string, that single key will be selected. It can also be a regex, rejecting any key that matches, or an object which will match if the key also exists in that object, effectively "subtracting" that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %reject% is available as an instance method on extended objects.
+     * @extra When <find> is a string, that single key will be rejected. It can also be a regex, rejecting any key that matches, or an object which will match if the key also exists in that object, effectively "subtracting" that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %reject% is available as an instance method on extended objects.
      * @example
      *
      *   Object.reject({a:1,b:2}, 'a')        -> {b:2}
@@ -6918,10 +6929,11 @@
      *
      ***/
     'humanize': function() {
-      var str = runReplacements(this, humans);
+      var str = runReplacements(this, humans), acronym;
       str = str.replace(/_id$/g, '');
       str = str.replace(/(_)?([a-z\d]*)/gi, function(match, _, word){
-        return (_ ? ' ' : '') + (acronyms[word] || word.toLowerCase());
+        acronym = hasOwnProperty(acronyms, word) ? acronyms[word] : null;
+        return (_ ? ' ' : '') + (acronym || word.toLowerCase());
       });
       return capitalize(str);
     },
