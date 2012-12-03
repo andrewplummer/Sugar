@@ -554,7 +554,7 @@
   }
 
   function cleanDateInput(str) {
-    str = str.trim().replace(/^(just )?now|\.+$/i, '');
+    str = str.trim().replace(/^just (?=now)|\.+$/i, '');
     return convertAsianDigits(str);
   }
 
@@ -751,11 +751,13 @@
       if(!format) {
         // The Date constructor does something tricky like checking the number
         // of arguments so simply passing in undefined won't work.
-        d = f ? new date(f) : new date();
+        if(f !== 'now') {
+          d = new date(f);
+        }
         if(forceUTC) {
           // Falling back to system date here which cannot be parsed as UTC,
           // so if we're forcing UTC then simply add the offset.
-          d.addMinutes(d.getTimezoneOffset());
+          d.addMinutes(-d.getTimezoneOffset());
         }
       } else if(relative) {
         d.advance(set);

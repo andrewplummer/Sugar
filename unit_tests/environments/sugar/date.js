@@ -2631,11 +2631,21 @@ test('Date', function () {
 
 
   // Issue #236
-
   equal((14).hoursFromNow().daysFromNow(), 0, 'Date#daysFromNow | should floor the number rather than round');
 
   // Issue #224
-
   equal(Date.create('').isValid(), false, 'Date.create | empty strings are not valid');
+
+
+  // Issue #244
+  d = Date.utc.create('999')
+  // Not all implementations support this syntax
+  if(d.isValid()) {
+    dateEqual(Date.utc.create('999'), new Date('0999'), 'Date.utc.create | 3 digit year 999 should be equal to ISO8601');
+  }
+  d = Date.utc.create('123')
+  if(d.isValid()) {
+    dateEqual(Date.utc.create('123'), new Date('0123'), 'Date.utc.create | 3 digit year 123 should be equal to ISO8601');
+  }
 
 });
