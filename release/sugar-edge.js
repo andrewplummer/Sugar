@@ -1,1 +1,1 @@
-1.3.7/sugar-1.3.7-full.development.js
+edge/sugar-edge-full.development.js
