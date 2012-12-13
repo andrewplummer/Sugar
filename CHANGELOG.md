@@ -1,3 +1,12 @@
+v1.3.8
+======
+
+### API Changes ###
+
+- Performance improvement to return early using typeof for type checks.
+- Performance improvement for loops.
+
+
 v1.3.7
 ======
 
