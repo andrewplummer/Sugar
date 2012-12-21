@@ -2648,4 +2648,12 @@ test('Date', function () {
     dateEqual(Date.utc.create('123'), new Date('0123'), 'Date.utc.create | 3 digit year 123 should be equal to ISO8601');
   }
 
+  // Issue #251
+
+
+  d = Date.create('2013');
+  d.setWeek(1);
+
+  dateEqual(d, new Date(2012, 11, 31), 'Date#setWeek | Should follow ISO8601');
+
 });
