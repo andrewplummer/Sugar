@@ -1,7 +1,9 @@
 **/*.html
+component.json
 docs/
 script/
 unit_tests/images/
 unit_tests/stylesheets/
 unit_tests/environments/prototype/
 unit_tests/environments/mootools/
+release/precompiled/

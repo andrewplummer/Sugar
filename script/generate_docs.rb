@@ -25,11 +25,6 @@ def create_locale_package
   File.open(file, 'w').write(@locales_preamble + locales)
 end
 
-def get_current_version
-  package = JSON.parse(File.open('package.json', 'r').read)
-  @version = package['version'].sub(/\.0$/, '')
-end
-
 def cleanup
   `rm lib/date_locales.js`
 end
@@ -160,7 +155,7 @@ end
 
 def get_minified_size(package)
   tmp = "tmp/package-#{package}.js"
-  `cp release/#{@version}/precompiled/minified/#{package}.js #{tmp}`
+  `cp release/precompiled/#{package}.js #{tmp}`
   `gzip --best #{tmp}`
   size = File.size("#{tmp}.gz")
   # gzipping the packages together produces sizes
@@ -247,7 +242,6 @@ def extract_docs(package)
 end
 
 create_locale_package
-get_current_version
 
 extract_docs(:core)
 extract_docs(:es5)

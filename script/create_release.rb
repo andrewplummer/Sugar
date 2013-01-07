@@ -12,7 +12,6 @@ end
 @packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language','date_locales']
 @default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
 @delimiter = 'console.info("-----BREAK-----");'
-@full_path = "release/#{@version}"
 @copyright = File.open('release/copyright.txt').read.gsub(/VERSION/, @version)
 
 @precompiled_notice = <<NOTICE
@@ -20,11 +19,11 @@ Note that the files in this directory are not prodution ready. They are
 intended to be concatenated together and wrapped with a closure.
 NOTICE
 
-`mkdir release/#{@version}`
-`mkdir release/#{@version}/precompiled`
-`mkdir release/#{@version}/precompiled/minified`
-`mkdir release/#{@version}/precompiled/development`
 
+PARENT_DIR = "release"
+PRECOMPILED_MIN_DIR = PARENT_DIR + "/precompiled"
+
+`mkdir #{PRECOMPILED_MIN_DIR}`
 
 def concat
   File.open('tmp/uncompiled.js', 'w') do |file|
@@ -54,10 +53,11 @@ def create_development
   end
   packages.each do |p|
     content = get_content(p)
-    File.open("release/#{@version}/precompiled/development/#{p}.js", 'w').write(content)
+    # don't think I need to store this
+    # File.open(PRECOMPILED_DIR + "/development/#{p}.js", 'w').write(content)
     full_content << content
   end
-  File.open("release/#{@version}/sugar-#{@version}-#{type}.development.js", 'w').write(@copyright + wrap(full_content))
+  File.open(PARENT_DIR + "/sugar-#{type}.development.js", 'w').write(@copyright + wrap(full_content))
 end
 
 def compile
@@ -69,11 +69,11 @@ end
 def split_compiled
   contents = File.open('tmp/compiled.js', 'r').read.split(@delimiter)
   @packages.each_with_index do |name, index|
-    File.open("#{@full_path}/precompiled/minified/#{name}.js", 'w') do |f|
+    File.open(PRECOMPILED_MIN_DIR + "/#{name}.js", 'w') do |f|
       f.puts contents[index].gsub(/\A\n+/, '')
     end
   end
-  `echo "#{@precompiled_notice}" > release/#{@version}/precompiled/readme.txt`
+  `echo "#{@precompiled_notice}" > #{PRECOMPILED_MIN_DIR}/readme.txt`
 end
 
 def create_packages
@@ -87,11 +87,11 @@ end
 def create_package(name, arr)
   contents = ''
   arr.each do |s|
-    contents << File.open("#{@full_path}/precompiled/minified/#{s}.js").read
+    contents << File.open(PRECOMPILED_MIN_DIR + "/#{s}.js").read
   end
   contents = @copyright + wrap(contents.sub(/\n+\Z/m, ''))
   ext = name == 'default' ? '' : '-' + name
-  File.open("#{@full_path}/sugar-#{@version}#{ext}.min.js", 'w').write(contents)
+  File.open(PARENT_DIR + "/sugar#{ext}.min.js", 'w').write(contents)
 end
 
 def wrap(js)
@@ -99,14 +99,8 @@ def wrap(js)
 end
 
 def cleanup
-  linked_full_development_file = 'sugar-edge'
-  linked_full_minified_file    = 'sugar-edge-full.min'
-  linked_default_minified_file = 'sugar-edge-default.min'
   `rm tmp/compiled.js`
   `rm tmp/uncompiled.js`
-  `cd release;rm #{linked_full_development_file}.js;ln -s #{@version}/sugar-#{@version}-full.development.js #{linked_full_development_file}.js`
-  `cd release;rm #{linked_default_minified_file}.js;ln -s #{@version}/sugar-#{@version}.min.js #{linked_default_minified_file}.js`
-  `cd release;rm #{linked_full_minified_file}.js;ln -s #{@version}/sugar-#{@version}-full.min.js #{linked_full_minified_file}.js`
 end
 
 concat
