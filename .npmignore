@@ -1,9 +1,16 @@
 **/*.html
+**/*.min.js
 component.json
 docs/
 script/
 unit_tests/images/
 unit_tests/stylesheets/
+unit_tests/javascripts/jquery-1.7.1.js
+unit_tests/javascripts/environment.js
+unit_tests/javascripts/tooltip.js
+unit_tests/javascripts/suite.js
+unit_tests/environments/underscore/
 unit_tests/environments/prototype/
 unit_tests/environments/mootools/
+release/copyright.txt
 release/precompiled/
