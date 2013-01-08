@@ -135,4 +135,9 @@ test('Dates | French', function () {
 
   equal((5).hours().duration('fr'), '5 heures', 'Date#create | French | simple duration');
 
+
+  // Issue #249
+
+  dateEqual(Date.create('mardi 11 decembre 2012','fr'), new Date(2012, 11, 11), 'Date#create | French | mardi 11 decembre 2012');
+
 });

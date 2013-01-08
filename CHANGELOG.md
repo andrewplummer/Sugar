@@ -8,6 +8,7 @@ v1.3.8
 - Performance improvement to return early using typeof for type checks.
 - Performance improvement for loops.
 - Fix for Array#sample sometimes returning undefined (Issue #252).
+- Fix for French locales (Issue #249).
 
 
 v1.3.7
