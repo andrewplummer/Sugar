@@ -9,6 +9,7 @@ v1.3.8
 - Performance improvement for loops.
 - Fix for Array#sample sometimes returning undefined (Issue #252).
 - Fix for French locales (Issue #249).
+- Fix for conflict with Coffeescript (Issue #248).
 
 
 v1.3.7
