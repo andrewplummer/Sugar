@@ -3,6 +3,8 @@ v1.3.8
 
 ### API Changes ###
 
+- Renamed `Date#getWeek` and `Date#setWeek` to `Date#getISOWeek` and `Date#setISOWeek`.
+- Updating `Date#setWeek` (now `Date#setISOWeek`) to follow ISO-8601 standard.
 - Performance improvement to return early using typeof for type checks.
 - Performance improvement for loops.
 
