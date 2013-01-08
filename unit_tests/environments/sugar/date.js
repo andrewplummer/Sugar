@@ -870,19 +870,19 @@ test('Date', function () {
 
   d = new Date('August 25, 2010 11:45:20');
   d.setWeek(1);
-  dateEqual(d, new Date(2010,0,8,11,45,20), 'Date#setWeek | week 1');
+  dateEqual(d, new Date(2010,0,6,11,45,20), 'Date#setWeek | week 1');
   d.setWeek(15);
-  dateEqual(d, new Date(2010,3,16,11,45,20), 'Date#setWeek | week 15');
+  dateEqual(d, new Date(2010,3,14,11,45,20), 'Date#setWeek | week 15');
   d.setWeek(27);
-  dateEqual(d, new Date(2010,6,9,11,45,20), 'Date#setWeek | week 27');
+  dateEqual(d, new Date(2010,6,7,11,45,20), 'Date#setWeek | week 27');
   d.setWeek(52);
-  dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week 52');
+  dateEqual(d, new Date(2010,11,29,11,45,20), 'Date#setWeek | week 52');
   d.setWeek();
-  dateEqual(d, new Date(2010,11,31,11,45,20), 'Date#setWeek | week stays set');
+  dateEqual(d, new Date(2010,11,29,11,45,20), 'Date#setWeek | week stays set');
 
 
-  d = Date.utc.create('August 25, 2010 11:45:20', 'en').utc();
-  equal(d.setWeek(1), 1262951120000, 'Date#setWeek | returns a timestamp');
+  d = Date.create('August 25, 2010 11:45:20', 'en');
+  equal(d.setWeek(1), 1262745920000, 'Date#setWeek | returns a timestamp');
 
 
   d = Date.utc.create('January 1, 2010 02:15:20', 'en').utc(true);
@@ -1586,7 +1586,7 @@ test('Date', function () {
 
   dateEqual(d.clone().reset('years'),        yearZero, 'Date#reset | years');
   dateEqual(d.clone().reset('months'),       new Date(2012, 0), 'Date#reset | months');
-  dateEqual(d.clone().reset('weeks'),        new Date(2012, 0), 'Date#reset | identical to resetting the month');
+  dateEqual(d.clone().reset('weeks'),        new Date(2012, 0, 4), 'Date#reset | weeks | ISO8601');
   dateEqual(d.clone().reset('days'),         new Date(2012, 1, 1), 'Date#reset | days');
   dateEqual(d.clone().reset('hours'),        new Date(2012, 1, 29), 'Date#reset | hours');
   dateEqual(d.clone().reset('minutes'),      new Date(2012, 1, 29, 22), 'Date#reset | minutes');
@@ -1595,7 +1595,7 @@ test('Date', function () {
 
   dateEqual(d.clone().reset('year'),        yearZero, 'Date#reset | year');
   dateEqual(d.clone().reset('month'),       new Date(2012, 0), 'Date#reset | month');
-  dateEqual(d.clone().reset('week'),        new Date(2012, 0), 'Date#reset | identical to resetting the month');
+  dateEqual(d.clone().reset('week'),        new Date(2012, 0, 4), 'Date#reset | weeks | ISO8601');
   dateEqual(d.clone().reset('day'),         new Date(2012, 1, 1), 'Date#reset | day');
   dateEqual(d.clone().reset('hour'),        new Date(2012, 1, 29), 'Date#reset | hour');
   dateEqual(d.clone().reset('minute'),      new Date(2012, 1, 29, 22), 'Date#reset | minute');
@@ -2651,9 +2651,10 @@ test('Date', function () {
   // Issue #251
 
 
-  d = Date.create('2013');
-  d.setWeek(1);
-
-  dateEqual(d, new Date(2012, 11, 31), 'Date#setWeek | Should follow ISO8601');
+  equal(new Date(2013, 0).setWeek(1), new Date(2013, 0, 1).getTime(), 'Date#setWeek | Should follow ISO8601');
+  equal(new Date(2013, 0, 6).setWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setWeek | Sunday should remain at the end of the week as per ISO8601 standard');
+  equal(new Date(2013, 0, 13).setWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setWeek | Sunday one week ahead');
+  equal(new Date(2013, 0, 7).setWeek(1), new Date(2012, 11, 31).getTime(), 'Date#setWeek | Monday should remain at the beginning of the week as per ISO8601 standard');
+  equal(new Date(2013, 0, 14).setWeek(2), new Date(2013, 0, 7).getTime(), 'Date#setWeek | Monday one week ahead');
 
 });
