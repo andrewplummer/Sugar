@@ -9,6 +9,13 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.3.8+
+=======
+
+- Level: Major
+  - Renamed `Date#getWeek` and `Date#setWeek` to `Date#getISOWeek` and `Date#setISOWeek`.
+
+
 v1.3.7+
 =======
 
