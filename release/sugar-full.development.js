@@ -19,6 +19,7 @@
 
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
+  var typeChecks = {};
 
   // defineProperty exists in IE8 but will error when trying to define a property on
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
@@ -37,16 +38,18 @@
   var isRegExp   = buildClassCheck(ClassNames[6]);
 
   function buildClassCheck(name) {
-    var type;
+    var type, fn;
     if(name === 'String' || name === 'Number' || name === 'Boolean') {
       type = name.toLowerCase();
     }
-    return (name === 'Array' && array.isArray) || function(obj) {
+    fn = (name === 'Array' && array.isArray) || function(obj) {
       if(type && typeof obj === type) {
         return true;
       }
       return className(obj) === '[object '+name+']';
     }
+    typeChecks[name] = fn;
+    return fn;
   }
 
   function className(obj) {
@@ -2218,7 +2221,7 @@
     },
     {
       unit: 'week',
-      method: 'Week',
+      method: 'ISOWeek',
       multiplier: function() {
         return 7 * 24 * 60 * 60 * 1000;
       }
@@ -2894,6 +2897,20 @@
     return [value, unit, ms];
   }
 
+  function getAdjustedUnitWithMonthFallback(date) {
+    var adu = getAdjustedUnit(date.millisecondsFromNow());
+    if(adu[1] === 6) {
+      // If the adjusted unit is in months, then better to use
+      // the "monthsfromNow" which applies a special error margin
+      // for edge cases such as Jan-09 - Mar-09 being less than
+      // 2 months apart (when using a strict numeric definition).
+      // The third "ms" element in the array will handle the sign
+      // (past or future), so simply take the absolute value here.
+      adu[0] = math.abs(date.monthsFromNow());
+    }
+    return adu;
+  }
+
 
   // Date formatting helpers
 
@@ -2904,11 +2921,11 @@
     } else if(Date[format]) {
       format = Date[format];
     } else if(isFunction(format)) {
-      adu = getAdjustedUnit(date.millisecondsFromNow());
+      adu = getAdjustedUnitWithMonthFallback(date);
       format = format.apply(date, adu.concat(loc));
     }
     if(!format && relative) {
-      adu = adu || getAdjustedUnit(date.millisecondsFromNow());
+      adu = adu || getAdjustedUnitWithMonthFallback(date);
       // Adjust up if time is in ms, as this doesn't
       // look very good for a standard relative date.
       if(adu[1] === 0) {
@@ -3700,6 +3717,7 @@
      * @method setWeekday()
      * @returns Nothing
      * @short Sets the weekday of the date.
+     * @extra In order to maintain a parallel with %getWeekday% (which itself is an alias for Javascript native %getDay%), Sunday is considered day %0%. This contrasts with ISO-8601 standard (used in %getISOWeek% and %setISOWeek%) which places Sunday at the end of the week (day 7). This effectively means that passing %0% to this method while in the middle of a week will rewind the date, where passing %7% will advance it.
      *
      * @example
      *
@@ -3713,37 +3731,42 @@
     },
 
      /***
-     * @method setWeek()
+     * @method setISOWeek()
      * @returns Nothing
-     * @short Sets the week (of the year).
+     * @short Sets the week (of the year) as defined by the ISO-8601 standard.
+     * @extra Note that this standard places Sunday at the end of the week (day 7).
      *
      * @example
      *
-     *   d = new Date(); d.setWeek(15); d; -> 15th week of the year
+     *   d = new Date(); d.setISOWeek(15); d; -> 15th week of the year
      *
      ***/
-    'setWeek': function(week) {
+    'setISOWeek': function(week) {
+      var weekday = callDateGet(this, 'Day') || 7;
       if(isUndefined(week)) return;
       this.set({ month: 0, date: 4 });
       this.set({ weekday: 1 });
       if(week > 1) {
         this.addWeeks(week - 1);
       }
+      if(weekday !== 1) {
+        this.advance({ days: weekday - 1 });
+      }
       return this.getTime();
     },
 
      /***
-     * @method getWeek()
+     * @method getISOWeek()
      * @returns Number
-     * @short Gets the date's week (of the year).
-     * @extra If %utc% is set on the date, the week will be according to UTC time.
+     * @short Gets the date's week (of the year) as defined by the ISO-8601 standard.
+     * @extra Note that this standard places Sunday at the end of the week (day 7). If %utc% is set on the date, the week will be according to UTC time.
      *
      * @example
      *
-     *   new Date().getWeek()    -> today's week of the year
+     *   new Date().getISOWeek()    -> today's week of the year
      *
      ***/
-    'getWeek': function() {
+    'getISOWeek': function() {
       return getWeekNumber(this);
     },
 
@@ -5285,9 +5308,9 @@
    ***/
   function buildTypeMethods() {
     extendSimilar(object, false, false, ClassNames, function(methods, name) {
-      var method = 'is' + name, type;
+      var method = 'is' + name;
       ObjectTypeMethods.push(method);
-      methods[method] = globalContext[method];
+      methods[method] = typeChecks[name];
     });
   }
 
