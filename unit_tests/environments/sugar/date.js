@@ -869,34 +869,34 @@ test('Date', function () {
   dateEqual(d.advance({ month: 1 }), new Date(2010,1,28), 'Date#set | reset dates will not accidentally traverse into a different month');
 
   d = new Date('August 25, 2010 11:45:20');
-  d.setWeek(1);
-  dateEqual(d, new Date(2010,0,6,11,45,20), 'Date#setWeek | week 1');
-  d.setWeek(15);
-  dateEqual(d, new Date(2010,3,14,11,45,20), 'Date#setWeek | week 15');
-  d.setWeek(27);
-  dateEqual(d, new Date(2010,6,7,11,45,20), 'Date#setWeek | week 27');
-  d.setWeek(52);
-  dateEqual(d, new Date(2010,11,29,11,45,20), 'Date#setWeek | week 52');
-  d.setWeek();
-  dateEqual(d, new Date(2010,11,29,11,45,20), 'Date#setWeek | week stays set');
+  d.setISOWeek(1);
+  dateEqual(d, new Date(2010,0,6,11,45,20), 'Date#setISOWeek | week 1');
+  d.setISOWeek(15);
+  dateEqual(d, new Date(2010,3,14,11,45,20), 'Date#setISOWeek | week 15');
+  d.setISOWeek(27);
+  dateEqual(d, new Date(2010,6,7,11,45,20), 'Date#setISOWeek | week 27');
+  d.setISOWeek(52);
+  dateEqual(d, new Date(2010,11,29,11,45,20), 'Date#setISOWeek | week 52');
+  d.setISOWeek();
+  dateEqual(d, new Date(2010,11,29,11,45,20), 'Date#setISOWeek | week stays set');
 
 
   d = Date.create('August 25, 2010 11:45:20', 'en');
-  equal(d.setWeek(1), 1262745920000, 'Date#setWeek | returns a timestamp');
+  equal(d.setISOWeek(1), 1262745920000, 'Date#setISOWeek | returns a timestamp');
 
 
   d = Date.utc.create('January 1, 2010 02:15:20', 'en').utc(true);
 
-  d.setWeek(1);
-  dateEqual(d, new Date(Date.UTC(2010,0,8,2,15,20)), 'Date#setWeek | utc | week 1');
-  d.setWeek(15);
-  dateEqual(d, new Date(Date.UTC(2010,3,16,2,15,20)), 'Date#setWeek | utc | week 15');
-  d.setWeek(27);
-  dateEqual(d, new Date(Date.UTC(2010,6,9,2,15,20)), 'Date#setWeek | utc | week 27');
-  d.setWeek(52);
-  dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'Date#setWeek | utc | week 52');
-  d.setWeek();
-  dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'Date#setWeek | utc | week stays set');
+  d.setISOWeek(1);
+  dateEqual(d, new Date(Date.UTC(2010,0,8,2,15,20)), 'Date#setISOWeek | utc | week 1');
+  d.setISOWeek(15);
+  dateEqual(d, new Date(Date.UTC(2010,3,16,2,15,20)), 'Date#setISOWeek | utc | week 15');
+  d.setISOWeek(27);
+  dateEqual(d, new Date(Date.UTC(2010,6,9,2,15,20)), 'Date#setISOWeek | utc | week 27');
+  d.setISOWeek(52);
+  dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'Date#setISOWeek | utc | week 52');
+  d.setISOWeek();
+  dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'Date#setISOWeek | utc | week stays set');
 
 
   // Date formatting. Much thanks to inspiration taken from Date.js here.
@@ -1332,25 +1332,25 @@ test('Date', function () {
 
   d = new Date(2010,7,5,13,45,2,542);
 
-  equal(d.getWeek(), 31, 'Date#getWeek | basic August 5th, 2010');
-  dateEqual(d, new Date(2010,7,5,13,45,2,542), 'Date#getWeek | should not modify the date');
+  equal(d.getISOWeek(), 31, 'Date#getISOWeek | basic August 5th, 2010');
+  dateEqual(d, new Date(2010,7,5,13,45,2,542), 'Date#getISOWeek | should not modify the date');
 
-  equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | January 1st, 2010');
-  equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | January 6th, 2010');
-  equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | January 7th, 2010');
-  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | January 7th, 2010 h23:59:59.999');
-  equal(new Date(2010, 0, 8).getWeek(), 1, 'Date#getWeek | January 8th, 2010');
-  equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | April 15th, 2010');
+  equal(new Date(2010, 0, 1).getISOWeek(), 53, 'Date#getISOWeek | January 1st, 2010');
+  equal(new Date(2010, 0, 6).getISOWeek(), 1, 'Date#getISOWeek | January 6th, 2010');
+  equal(new Date(2010, 0, 7).getISOWeek(), 1, 'Date#getISOWeek | January 7th, 2010');
+  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getISOWeek(), 1, 'Date#getISOWeek | January 7th, 2010 h23:59:59.999');
+  equal(new Date(2010, 0, 8).getISOWeek(), 1, 'Date#getISOWeek | January 8th, 2010');
+  equal(new Date(2010, 3, 15).getISOWeek(), 15, 'Date#getISOWeek | April 15th, 2010');
 
   d = new Date(2010,7,5,13,45,2,542).utc();
 
-  equal(d.getWeek(), d.getTimezoneOffset() > 615 ? 32 : 31, 'Date#getWeek | utc | basic');
-  equal(new Date(2010, 0, 1).getWeek(), 53, 'Date#getWeek | utc | January 1st UTC is actually 2009');
-  equal(new Date(2010, 0, 6).getWeek(), 1, 'Date#getWeek | utc | January 6th');
-  equal(new Date(2010, 0, 7).getWeek(), 1, 'Date#getWeek | utc | January 7th');
-  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getWeek(), 1, 'Date#getWeek | utc | January 7th 23:59:59.999');
-  equal(new Date(2010, 0, 8).getWeek(), 1, 'Date#getWeek | utc | January 8th');
-  equal(new Date(2010, 3, 15).getWeek(), 15, 'Date#getWeek | utc | April 15th');
+  equal(d.getISOWeek(), d.getTimezoneOffset() > 615 ? 32 : 31, 'Date#getISOWeek | utc | basic');
+  equal(new Date(2010, 0, 1).getISOWeek(), 53, 'Date#getISOWeek | utc | January 1st UTC is actually 2009');
+  equal(new Date(2010, 0, 6).getISOWeek(), 1, 'Date#getISOWeek | utc | January 6th');
+  equal(new Date(2010, 0, 7).getISOWeek(), 1, 'Date#getISOWeek | utc | January 7th');
+  equal(new Date(2010, 0, 7, 23, 59, 59, 999).getISOWeek(), 1, 'Date#getISOWeek | utc | January 7th 23:59:59.999');
+  equal(new Date(2010, 0, 8).getISOWeek(), 1, 'Date#getISOWeek | utc | January 8th');
+  equal(new Date(2010, 3, 15).getISOWeek(), 15, 'Date#getISOWeek | utc | April 15th');
 
 
   d = new Date(2010,7,5,13,45,2,542);
@@ -2213,29 +2213,29 @@ test('Date', function () {
 
 
 
-  // Date#getWeek
+  // Date#getISOWeek
 
-  equal(new Date(2011, 0, 1).getWeek(), 52, 'String#getWeek | January 1, 2011');
-  equal(new Date(2011, 0, 2).getWeek(), 52, 'String#getWeek | January 2, 2011');
-  equal(new Date(2011, 0, 3).getWeek(),  1, 'String#getWeek | January 3, 2011');
-  equal(new Date(2011, 0, 4).getWeek(),  1, 'String#getWeek | January 4, 2011');
+  equal(new Date(2011, 0, 1).getISOWeek(), 52, 'String#getISOWeek | January 1, 2011');
+  equal(new Date(2011, 0, 2).getISOWeek(), 52, 'String#getISOWeek | January 2, 2011');
+  equal(new Date(2011, 0, 3).getISOWeek(),  1, 'String#getISOWeek | January 3, 2011');
+  equal(new Date(2011, 0, 4).getISOWeek(),  1, 'String#getISOWeek | January 4, 2011');
 
-  equal(new Date(2011, 11, 25).getWeek(), 51, 'String#getWeek | December 25, 2011');
-  equal(new Date(2011, 11, 26).getWeek(), 52, 'String#getWeek | December 26, 2011');
-  equal(new Date(2011, 11, 27).getWeek(), 52, 'String#getWeek | December 27, 2011');
+  equal(new Date(2011, 11, 25).getISOWeek(), 51, 'String#getISOWeek | December 25, 2011');
+  equal(new Date(2011, 11, 26).getISOWeek(), 52, 'String#getISOWeek | December 26, 2011');
+  equal(new Date(2011, 11, 27).getISOWeek(), 52, 'String#getISOWeek | December 27, 2011');
 
-  equal(new Date(2011, 11, 31).getWeek(), 52, 'String#getWeek | December 31, 2011');
-  equal(new Date(2012, 0, 1).getWeek(),   52, 'String#getWeek | January 1, 2012');
-  equal(new Date(2012, 0, 2).getWeek(),    1, 'String#getWeek | January 2, 2012');
+  equal(new Date(2011, 11, 31).getISOWeek(), 52, 'String#getISOWeek | December 31, 2011');
+  equal(new Date(2012, 0, 1).getISOWeek(),   52, 'String#getISOWeek | January 1, 2012');
+  equal(new Date(2012, 0, 2).getISOWeek(),    1, 'String#getISOWeek | January 2, 2012');
 
-  equal(new Date(2013, 11, 28).getWeek(), 52, 'String#getWeek | December 28, 2013');
-  equal(new Date(2013, 11, 29).getWeek(), 52, 'String#getWeek | December 29, 2013');
-  equal(new Date(2013, 11, 30).getWeek(),  1, 'String#getWeek | December 30, 2013');
-  equal(new Date(2013, 11, 31).getWeek(),  1, 'String#getWeek | December 31, 2013');
-  equal(new Date(2014,  0,  1).getWeek(),  1, 'String#getWeek | January 01, 2014');
-  equal(new Date(2014,  0,  2).getWeek(),  1, 'String#getWeek | January 02, 2014');
-  equal(new Date(2014,  0,  5).getWeek(),  1, 'String#getWeek | January 05, 2014');
-  equal(new Date(2014,  0,  6).getWeek(),  2, 'String#getWeek | January 06, 2014');
+  equal(new Date(2013, 11, 28).getISOWeek(), 52, 'String#getISOWeek | December 28, 2013');
+  equal(new Date(2013, 11, 29).getISOWeek(), 52, 'String#getISOWeek | December 29, 2013');
+  equal(new Date(2013, 11, 30).getISOWeek(),  1, 'String#getISOWeek | December 30, 2013');
+  equal(new Date(2013, 11, 31).getISOWeek(),  1, 'String#getISOWeek | December 31, 2013');
+  equal(new Date(2014,  0,  1).getISOWeek(),  1, 'String#getISOWeek | January 01, 2014');
+  equal(new Date(2014,  0,  2).getISOWeek(),  1, 'String#getISOWeek | January 02, 2014');
+  equal(new Date(2014,  0,  5).getISOWeek(),  1, 'String#getISOWeek | January 05, 2014');
+  equal(new Date(2014,  0,  6).getISOWeek(),  2, 'String#getISOWeek | January 06, 2014');
 
 
   // Date.restore may not exist in dates-only build.
@@ -2651,10 +2651,10 @@ test('Date', function () {
   // Issue #251
 
 
-  equal(new Date(2013, 0).setWeek(1), new Date(2013, 0, 1).getTime(), 'Date#setWeek | Should follow ISO8601');
-  equal(new Date(2013, 0, 6).setWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setWeek | Sunday should remain at the end of the week as per ISO8601 standard');
-  equal(new Date(2013, 0, 13).setWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setWeek | Sunday one week ahead');
-  equal(new Date(2013, 0, 7).setWeek(1), new Date(2012, 11, 31).getTime(), 'Date#setWeek | Monday should remain at the beginning of the week as per ISO8601 standard');
-  equal(new Date(2013, 0, 14).setWeek(2), new Date(2013, 0, 7).getTime(), 'Date#setWeek | Monday one week ahead');
+  equal(new Date(2013, 0).setISOWeek(1), new Date(2013, 0, 1).getTime(), 'Date#setISOWeek | Should follow ISO8601');
+  equal(new Date(2013, 0, 6).setISOWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setISOWeek | Sunday should remain at the end of the week as per ISO8601 standard');
+  equal(new Date(2013, 0, 13).setISOWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setISOWeek | Sunday one week ahead');
+  equal(new Date(2013, 0, 7).setISOWeek(1), new Date(2012, 11, 31).getTime(), 'Date#setISOWeek | Monday should remain at the beginning of the week as per ISO8601 standard');
+  equal(new Date(2013, 0, 14).setISOWeek(2), new Date(2013, 0, 7).getTime(), 'Date#setISOWeek | Monday one week ahead');
 
 });
