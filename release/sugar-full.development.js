@@ -19,6 +19,8 @@
 
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
+
+  // Type check methods need a way to be accessed dynamically outside global context.
   var typeChecks = {};
 
   // defineProperty exists in IE8 but will error when trying to define a property on
@@ -67,16 +69,22 @@
     if(klass['SugarMethods']) return;
     defineProperty(klass, 'SugarMethods', {});
     extend(klass, false, false, {
-      'restore': function() {
-        var all = arguments.length === 0, methods = multiArgs(arguments);
-        iterateOverObject(klass['SugarMethods'], function(name, m) {
-          if(all || methods.indexOf(name) > -1) {
-            defineProperty(m.instance ? klass.prototype : klass, name, m.method);
-          }
-        });
-      },
       'extend': function(methods, override, instance) {
         extend(klass, instance !== false, override, methods);
+      },
+      'sugarRestore': function() {
+        return batchMethodExecute(klass, arguments, function(target, name, m) {
+          defineProperty(target, name, m.method);
+        });
+      },
+      'sugarRevert': function() {
+        return batchMethodExecute(klass, arguments, function(target, name, m) {
+          if(m.existed) {
+            defineProperty(target, name, m.original);
+          } else {
+            delete target[name];
+          }
+        });
       }
     });
   }
@@ -84,10 +92,11 @@
   // Class extending methods
 
   function extend(klass, instance, override, methods) {
-    var extendee = instance ? klass.prototype : klass, original;
+    var extendee = instance ? klass.prototype : klass;
     initializeClass(klass);
     iterateOverObject(methods, function(name, method) {
-      original = extendee[name];
+      var original = extendee[name];
+      var existed  = hasOwnProperty(extendee, name);
       if(typeof override === 'function') {
         method = wrapNative(extendee[name], method, override);
       }
@@ -95,7 +104,7 @@
         defineProperty(extendee, name, method);
       }
       // If the method is internal to Sugar, then store a reference so it can be restored later.
-      klass['SugarMethods'][name] = { instance: instance, method: method, original: original };
+      klass['SugarMethods'][name] = { instance: instance, method: method, original: original, existed: existed };
     });
   }
 
@@ -106,6 +115,17 @@
       fn(methods, name, i);
     });
     extend(klass, instance, override, methods);
+  }
+
+  function batchMethodExecute(klass, args, fn) {
+    var all = args.length === 0, methods = multiArgs(args), changed = false;
+    iterateOverObject(klass['SugarMethods'], function(name, m) {
+      if(all || methods.indexOf(name) > -1) {
+        changed = true;
+        fn(m.instance ? klass.prototype : klass, name, m);
+      }
+    });
+    return changed;
   }
 
   function wrapNative(nativeFn, extendedFn, condition) {
@@ -7780,7 +7800,7 @@ Date.addLocale('fr', {
     '{0?} {unit=5-7} {shift}'
   ],
   'timeParse': [
-    '{0?} {date?} {month} {year?}',
+    '{weekday?} {0?} {date?} {month} {year?}',
     '{0?} {weekday} {shift}'
   ]
 });
