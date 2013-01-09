@@ -1,5 +1,6 @@
 test('Date', function () {
 
+
   equal(Date.getLocale().code !== undefined, true, 'Current locale must be something... other libs may overwrite this');
 
   // Imaginary local to test locale switching
@@ -21,8 +22,7 @@ test('Date', function () {
   };
 
   var day, d, date1, date2, dst, o;
-  var staticWinterTimezoneOffset = new Date(2011, 0, 1).getTimezoneOffset();
-  var staticSummerTimezoneOffset = new Date(2011, 8, 1).getTimezoneOffset();
+  var isCurrentlyGMT = new Date(2011, 0, 1).getTimezoneOffset() === 0;
   var now = new Date();
   var thisYear = now.getFullYear();
 
@@ -882,7 +882,7 @@ test('Date', function () {
 
 
   d = Date.create('August 25, 2010 11:45:20', 'en');
-  equal(d.setISOWeek(1), 1262745920000, 'Date#setISOWeek | returns a timestamp');
+  equal(d.setISOWeek(1), new Date(2010, 0, 6, 11, 45, 20).getTime(), 'Date#setISOWeek | returns a timestamp');
 
 
   d = Date.utc.create('January 1, 2010 02:15:20', 'en').utc(true);
@@ -2170,7 +2170,8 @@ test('Date', function () {
   dateEqual((10).minutesBefore((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesBefore | 10 minutes before 5 minutes from now');
 
 
-  var christmas = new Date('December 25, 1965');
+  var christmas = new Date('December 25, 1972');
+
   dateEqual((5).minutesBefore(christmas), getRelativeDate.call(christmas, null, null, null, null, -5), 'Number#minutesBefore | 5 minutes before christmas');
   dateEqual((5).minutesAfter(christmas), getRelativeDate.call(christmas, null, null, null, null, 5), 'Number#minutesAfter | 5 minutes after christmas');
 
@@ -2189,7 +2190,7 @@ test('Date', function () {
   dateEqual((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore | 5 years before christmas');
   dateEqual((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter | 5 years after christmas');
 
-  dateEqual((5).hoursBefore(1965, 11, 25), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | accepts numbers');
+  dateEqual((5).hoursBefore(1972, 11, 25), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | accepts numbers');
 
   // Hooking it all up!!
 
@@ -2626,8 +2627,9 @@ test('Date', function () {
   // Issue #235
 
   equal(Date.create().utc(true).clone().isUTC(), true, 'Date#clone | should preserve UTC');
+  equal(new Date().clone()._utc, false, 'Date#clone | should never be UTC if flag not set');
   equal(Date.create(new Date().utc(true)).isUTC(), true, 'Date#create | should preserve UTC');
-  equal(Date.create(new Date()).isUTC(), false, 'Date#create | non utc date should not have UTC flag');
+  equal(Date.create(new Date()).isUTC(), isCurrentlyGMT, 'Date#create | non utc date should not have UTC flag');
 
 
   // Issue #236
@@ -2656,7 +2658,6 @@ test('Date', function () {
   equal(new Date(2013, 0, 13).setISOWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setISOWeek | Sunday one week ahead');
   equal(new Date(2013, 0, 7).setISOWeek(1), new Date(2012, 11, 31).getTime(), 'Date#setISOWeek | Monday should remain at the beginning of the week as per ISO8601 standard');
   equal(new Date(2013, 0, 14).setISOWeek(2), new Date(2013, 0, 7).getTime(), 'Date#setISOWeek | Monday one week ahead');
-  equal(new Date(2013, 0, 14).utc().set({ week: 1 }).getTime(), 1357484400000, 'Date#set | utc dates should not throw errors on week set');
-
+  dateEqual(Date.utc.create(2013, 0, 14).utc().set({ week: 1 }), Date.utc.create(2012, 11, 31), 'Date#set | utc dates should not throw errors on week set');
 
 });
