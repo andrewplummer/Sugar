@@ -17,7 +17,7 @@ dateRangeEqual = function(a, b, message) {
 }
 
 getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
-  var d = this.getFullYear ? this : new Date();
+  var d = this.getFullYear ? new Date(this.getTime()) : new Date();
   var setYear  = d.getFullYear() + (year || 0)
   var setMonth = d.getMonth() + (month || 0)
   var setDate  = d.getDate() + (day || 0);
