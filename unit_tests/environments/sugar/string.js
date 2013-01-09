@@ -71,7 +71,8 @@ test('String', function () {
   equal('I know that &quot;feel&quot; bro'.unescapeHTML(), 'I know that "feel" bro', 'String#unescapeHTML | works on "');
   equal('feel the &#x2f;'.unescapeHTML(), 'feel the /', 'String#unescapeHTML | works on /');
 
-
+  equal('&gt;'.escapeHTML().unescapeHTML(), '&gt;', 'String#unescapeHTML | is the reverse of escapeHTML');
+  equal('&amp;lt;'.unescapeHTML(), '&lt;', 'String#unescapeHTML | unescapes a single level of HTML escaping');
 
   equal('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
   equal('I grow, I prosper; Now, gods, stand up for bastards!'.encodeBase64(), 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'String#encodeBase64 | gods');
