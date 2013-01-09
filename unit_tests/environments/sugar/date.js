@@ -2656,5 +2656,7 @@ test('Date', function () {
   equal(new Date(2013, 0, 13).setISOWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setISOWeek | Sunday one week ahead');
   equal(new Date(2013, 0, 7).setISOWeek(1), new Date(2012, 11, 31).getTime(), 'Date#setISOWeek | Monday should remain at the beginning of the week as per ISO8601 standard');
   equal(new Date(2013, 0, 14).setISOWeek(2), new Date(2013, 0, 7).getTime(), 'Date#setISOWeek | Monday one week ahead');
+  equal(new Date(2013, 0, 14).utc().set({ week: 1 }).getTime(), 1357484400000, 'Date#set | utc dates should not throw errors on week set');
+
 
 });
