@@ -7,7 +7,6 @@
  *
  * ---------------------------- */
 (function(){
-
   /***
    * @package Core
    * @description Internal utility and common methods.
@@ -41,7 +40,7 @@
 
   function buildClassCheck(name) {
     var type, fn;
-    if(name === 'String' || name === 'Number' || name === 'Boolean') {
+    if(/String|Number|Boolean/.test(name)) {
       type = name.toLowerCase();
     }
     fn = (name === 'Array' && array.isArray) || function(obj) {
@@ -130,11 +129,13 @@
 
   function wrapNative(nativeFn, extendedFn, condition) {
     return function() {
+      var fn;
       if(nativeFn && (condition === true || !condition.apply(this, arguments))) {
-        return nativeFn.apply(this, arguments);
+        fn = nativeFn;
       } else {
-        return extendedFn.apply(this, arguments);
+        fn = extendedFn;
       }
+      return fn.apply(this, arguments);
     }
   }
 
@@ -361,13 +362,7 @@
 
   function objectIsMatchedByValue(obj) {
     var klass = className(obj);
-    return klass === '[object Date]'      ||
-           klass === '[object Array]'     ||
-           klass === '[object String]'    ||
-           klass === '[object Number]'    ||
-           klass === '[object RegExp]'    ||
-           klass === '[object Boolean]'   ||
-           klass === '[object Arguments]' ||
+    return /^\[object Date|Array|String|Number|RegExp|Boolean|Arguments\]$/.test(klass) ||
            isObject(obj);
   }
 
@@ -3135,7 +3130,7 @@
   }
 
   function callDateSet(d, method, value) {
-    return d['set' + (d._utc ? 'UTC' : '') + method](value);
+    return d['set' + (d._utc && method != 'ISOWeek' ? 'UTC' : '') + method](value);
   }
 
   // The ISO format allows times strung together without a demarcating ":", so make sure
