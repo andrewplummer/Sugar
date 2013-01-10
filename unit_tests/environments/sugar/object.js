@@ -871,7 +871,11 @@ test('Object', function () {
   equal(Object.reject(obj2, 'moo').foo === obj, true, 'Object.reject | rejected values should be equal by reference');
 
 
+  // Issue #256
 
+  if(Date.prototype.clone) {
+    equal(Object.clone(new Date().utc())._utc, true, 'Object.clone | should preserve utc flag when set');
+  }
 
 });
 
