@@ -10,6 +10,7 @@ v1.3.8
 - Fix for Array#sample sometimes returning undefined (Issue #252).
 - Fix for French locales (Issue #249).
 - Fix for conflict with Coffeescript (Issue #248).
+- Fix for Object.clone not preserving date _utc flag (Issue #256).
 
 
 v1.3.7
