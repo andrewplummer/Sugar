@@ -5531,8 +5531,12 @@
      ***/
     'clone': function(obj, deep) {
       var target;
-      if(!isObjectPrimitive(obj)) return obj;
-      if (obj instanceof Hash) {
+      // Preserve internal UTC flag when applicable.
+      if(isDate(obj) && obj.clone) {
+        return obj.clone();
+      } else if(!isObjectPrimitive(obj)) {
+        return obj;
+      } else if (obj instanceof Hash) {
         target = new Hash;
       } else {
         target = new obj.constructor;
