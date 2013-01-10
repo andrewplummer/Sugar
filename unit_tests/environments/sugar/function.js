@@ -197,7 +197,7 @@ test('Function', function () {
 
   async(function(){
     var fn, ret, counter = 0, expected = [['3p0', 1],['luke', 6]];
-    var fn = (function(one){
+    fn = (function(one){
       equal([this.toString(), one], expected[counter], 'Function#throttle | immediate execution | scope and arguments are correct');
       counter++;
     }).throttle(50);
@@ -221,6 +221,22 @@ test('Function', function () {
       equal(counter, 2, 'Function#throttle | immediate execution | counter is correct');
     }, 200);
   });
+
+  async(function(){
+
+    var n = 1;
+
+    var fn = (function() { return ++n; }).throttle(50);
+
+    equal(fn(), 2, 'Function#throttle | memoize | iteration 1');
+    equal(fn(), 2, 'Function#throttle | memoize | iteration 2');
+    equal(fn(), 2, 'Function#throttle | memoize | iteration 3');
+
+    setTimeout(function() {
+      equal(fn(), 3, 'Function#throttle | memoize | cache expires after 200 ms');
+    }, 200);
+  });
+
 
 
   // Function#after
