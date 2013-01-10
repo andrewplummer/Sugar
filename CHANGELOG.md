@@ -5,6 +5,7 @@ v1.3.8
 
 - Renamed `Date#getWeek` and `Date#setWeek` to `Date#getISOWeek` and `Date#setISOWeek`.
 - Updating `Date#setWeek` (now `Date#setISOWeek`) to follow ISO-8601 standard.
+- Allowing lazy and throttled functions to return a memoized result, allowing them to double as a caching mechanism.
 - Performance improvement to return early using typeof for type checks.
 - Performance improvement for loops.
 - Fix for Array#sample sometimes returning undefined (Issue #252).
