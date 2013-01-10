@@ -15,6 +15,9 @@ v1.3.8+
 - Level: Major
   - Renamed `Date#getWeek` and `Date#setWeek` to `Date#getISOWeek` and `Date#setISOWeek`.
 
+- Level: Very Minor
+  - Object.clone will now preserve a date's internal utc flag when set.
+
 
 v1.3.7+
 =======
