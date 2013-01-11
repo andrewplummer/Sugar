@@ -3,7 +3,7 @@ require 'rubygems'
 require 'json'
 require 'pp'
 
-fileout  = ARGV[0] || '/Volumes/Andrew/Sites/sugarjs.com/public_html/javascripts/packages.js'
+fileout  = ARGV[0] || ENV['SUGAR_SITE_PATH'] + '/javascripts/packages.js'
 
 @locales_preamble = <<TEXT
   /***
