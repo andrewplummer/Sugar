@@ -22,4 +22,4 @@ node_modules
 ## PROJECT::SPECIFIC
 release/sugar-test.min.js
 release/utf8/sugar-test.min.js
-release/precomplied
+release/precompiled
