@@ -3759,13 +3759,13 @@
     'setISOWeek': function(week) {
       var weekday = callDateGet(this, 'Day') || 7;
       if(isUndefined(week)) return;
-      this.set({ month: 0, date: 4 });
-      this.set({ weekday: 1 });
+      this.set({ 'month': 0, 'date': 4 });
+      this.set({ 'weekday': 1 });
       if(week > 1) {
         this.addWeeks(week - 1);
       }
       if(weekday !== 1) {
-        this.advance({ days: weekday - 1 });
+        this.advance({ 'days': weekday - 1 });
       }
       return this.getTime();
     },
