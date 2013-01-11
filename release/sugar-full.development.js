@@ -4587,6 +4587,8 @@
 
   function setDelay(fn, ms, after, scope, args) {
     var index;
+    // Delay of infinity is never called of course...
+    if(ms === Infinity) return;
     if(!fn.timers) fn.timers = [];
     if(!isNumber(ms)) ms = 0;
     fn.timers.push(setTimeout(function(){
@@ -4621,7 +4623,7 @@
       ms = ms || 1;
       limit = limit || Infinity;
       rounded = ceil(ms);
-      perExecution = round(rounded / ms);
+      perExecution = round(rounded / ms) || 1;
       execute = function() {
         if(lock || queue.length == 0) return;
         // Allow fractions of a millisecond by calling
@@ -4773,10 +4775,7 @@
      *
      ***/
     'once': function() {
-      var fn = this;
-      return function() {
-        return hasOwnProperty(fn, 'memo') ? fn['memo'] : fn['memo'] = fn.apply(this, arguments);
-      }
+      return this.throttle(Infinity);
     },
 
      /***
