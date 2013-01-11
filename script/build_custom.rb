@@ -1,4 +1,6 @@
 
+# This script may be broken!
+
 require 'json'
 
 if ARGV.size == 0
