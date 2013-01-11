@@ -21,9 +21,11 @@ NOTICE
 
 
 PARENT_DIR = "release"
-PRECOMPILED_MIN_DIR = PARENT_DIR + "/precompiled"
+PRECOMPILED_MIN_DIR = PARENT_DIR + "/precompiled/minified"
+PRECOMPILED_DEV_DIR = PARENT_DIR + "/precompiled/development"
 
 `mkdir #{PRECOMPILED_MIN_DIR}`
+`mkdir #{PRECOMPILED_DEV_DIR}`
 
 def concat
   File.open('tmp/uncompiled.js', 'w') do |file|
@@ -54,7 +56,7 @@ def create_development
   packages.each do |p|
     content = get_content(p)
     # don't think I need to store this
-    # File.open(PRECOMPILED_DIR + "/development/#{p}.js", 'w').write(content)
+    File.open(PRECOMPILED_DEV_DIR + "/#{p}.js", 'w').write(content)
     full_content << content
   end
   File.open(PARENT_DIR + "/sugar-#{type}.development.js", 'w').write(@copyright + wrap(full_content))
