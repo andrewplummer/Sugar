@@ -1450,8 +1450,8 @@ test('Date', function () {
   var actualSecSince = Math.round(offset / 1000);
   var actualSecUntil = Math.round(-offset / 1000);
 
-  equal((secSince <= actualSecSince + 1) && (secSince >= actualSecSince - 1), true, 'Date#secondsSince | seconds since last week');
-  equal((secUntil <= actualSecUntil + 1) && (secUntil >= actualSecUntil - 1), true, 'Date#secondsUntil | seconds until last week');
+  equal((secSince <= actualSecSince + 5) && (secSince >= actualSecSince - 5), true, 'Date#secondsSince | seconds since last week');
+  equal((secUntil <= actualSecUntil + 5) && (secUntil >= actualSecUntil - 5), true, 'Date#secondsUntil | seconds until last week');
 
   equal(d.minutesSince('last week'), Math.round(offset / 1000 / 60), 'Date#minutesSince | minutes since last week');
   equal(d.minutesUntil('last week'), Math.round(-offset / 1000 / 60), 'Date#minutesUntil | minutes until last week');
