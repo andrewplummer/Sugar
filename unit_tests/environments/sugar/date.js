@@ -2640,15 +2640,9 @@ test('Date', function () {
 
 
   // Issue #244
-  d = Date.utc.create('999')
-  // Not all implementations support this syntax
-  if(d.isValid()) {
-    dateEqual(Date.utc.create('999'), new Date('0999'), 'Date.utc.create | 3 digit year 999 should be equal to ISO8601');
-  }
-  d = Date.utc.create('123')
-  if(d.isValid()) {
-    dateEqual(Date.utc.create('123'), new Date('0123'), 'Date.utc.create | 3 digit year 123 should be equal to ISO8601');
-  }
+
+  dateEqual(Date.utc.create('0999'), new Date(Date.UTC(999, 0)), 'Date.utc.create | 3 digit year 999 should be equal to ISO8601');
+  dateEqual(Date.utc.create('0123'), new Date(Date.UTC(123, 0)), 'Date.utc.create | 3 digit year 123 should be equal to ISO8601');
 
   // Issue #251
 
