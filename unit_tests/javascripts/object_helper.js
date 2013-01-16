@@ -46,3 +46,10 @@ testClassAndInstance = function(name, obj, args, expected, message) {
     equal(extended[name].apply(extended, args), expected, message + ' | On extended object');
   }
 }
+
+assertQueryStringGenerated = function(obj, args, expected, message) {
+  expected = expected.replace(/\[/g, '%5B').replace(/\]/g, '%5D');
+  //expected = expected.replace(/%3D/g, '=').replace(/%20/g, '+').replace(/%26/, '&');
+  testClassAndInstance('toQueryString', obj, args, expected, message);
+}
+

@@ -877,5 +877,65 @@ test('Object', function () {
     equal(Object.clone(new Date().utc())._utc, true, 'Object.clone | should preserve utc flag when set');
   }
 
+
+  var date = new Date(2012, 8, 25);
+  var encodedDate = encodeURIComponent(date).replace(/%20/g, '+');
+
+  assertQueryStringGenerated({foo:'bar'}, [], 'foo=bar', 'Object.toQueryString | basic string');
+  assertQueryStringGenerated({foo:'bar',moo:'car'}, [], 'foo=bar&moo=car', 'Object.toQueryString | two keys');
+  assertQueryStringGenerated({foo:'bar',moo:8}, [], 'foo=bar&moo=8', 'Object.toQueryString | one string one numeric');
+  assertQueryStringGenerated({foo:'bar3'}, [], 'foo=bar3', 'Object.toQueryString | number in back');
+  assertQueryStringGenerated({foo:'3bar'}, [], 'foo=3bar', 'Object.toQueryString | number in front');
+  assertQueryStringGenerated({foo: 3}, [], 'foo=3', 'Object.toQueryString | basic number');
+  assertQueryStringGenerated({foo: true}, [], 'foo=true', 'Object.toQueryString | basic boolean');
+  assertQueryStringGenerated({foo: /reg/}, [], 'foo=%2Freg%2F', 'Object.toQueryString | regexp');
+  assertQueryStringGenerated({foo:'a b'}, [], 'foo=a+b', 'Object.toQueryString | should escape string');
+  assertQueryStringGenerated({foo: date}, [], 'foo=' + encodedDate, 'Object.toQueryString | should stringify date');
+  assertQueryStringGenerated({foo:['a','b','c']}, [], 'foo[0]=a&foo[1]=b&foo[2]=c', 'Object.toQueryString | basic array');
+  assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, [], 'foo[bar]=tee&foo[car]=hee', 'Object.toQueryString | basic object');
+
+  assertQueryStringGenerated({foo:undefined}, [], 'foo=', 'Object.toQueryString | undefined');
+  assertQueryStringGenerated({foo:false}, [], 'foo=false', 'Object.toQueryString | false');
+  assertQueryStringGenerated({foo:null}, [], 'foo=', 'Object.toQueryString | null');
+  assertQueryStringGenerated({foo:NaN}, [], 'foo=', 'Object.toQueryString | NaN');
+  assertQueryStringGenerated({foo:''}, [], 'foo=', 'Object.toQueryString | empty string');
+  assertQueryStringGenerated({foo:0}, [], 'foo=0', 'Object.toQueryString | 0');
+  assertQueryStringGenerated({foo:[['fap','cap']]}, [], 'foo[0][0]=fap&foo[0][1]=cap', 'Object.toQueryString | array double nested');
+  assertQueryStringGenerated({foo:[['fap'],['cap']]}, [], 'foo[0][0]=fap&foo[1][0]=cap', 'Object.toQueryString | array horizonal nested');
+  assertQueryStringGenerated({foo:{bar:{map:'fap'}}}, [], 'foo[bar][map]=fap', 'Object.toQueryString | object double nested');
+
+  assertQueryStringGenerated({foo:'bar'}, ['paw'], 'paw[foo]=bar', 'Object.toQueryString | namespace | basic string');
+  assertQueryStringGenerated({foo:'bar',moo:'car'}, ['paw'], 'paw[foo]=bar&paw[moo]=car', 'Object.toQueryString | namespace | two keys');
+  assertQueryStringGenerated({foo:'bar',moo:8}, ['paw'], 'paw[foo]=bar&paw[moo]=8', 'Object.toQueryString | namespace | one string one numeric');
+  assertQueryStringGenerated({foo:'bar3'}, ['paw'], 'paw[foo]=bar3', 'Object.toQueryString | namespace | number in back');
+  assertQueryStringGenerated({foo:'3bar'}, ['paw'], 'paw[foo]=3bar', 'Object.toQueryString | namespace | number in front');
+  assertQueryStringGenerated({foo: 3}, ['paw'], 'paw[foo]=3', 'Object.toQueryString | namespace | basic number');
+  assertQueryStringGenerated({foo: true}, ['paw'], 'paw[foo]=true', 'Object.toQueryString | namespace | basic boolean');
+  assertQueryStringGenerated({foo: /reg/}, ['paw'], 'paw[foo]=%2Freg%2F', 'Object.toQueryString | namespace | regexp');
+  assertQueryStringGenerated({foo:'a b'}, ['paw'], 'paw[foo]=a+b', 'Object.toQueryString | namespace | should escape string');
+  assertQueryStringGenerated({foo: date}, ['paw'], 'paw[foo]=' + encodedDate, 'Object.toQueryString | namespace | should stringify date');
+  assertQueryStringGenerated({foo:['a','b','c']}, ['paw'], 'paw[foo][0]=a&paw[foo][1]=b&paw[foo][2]=c', 'Object.toQueryString | namespace | basic array');
+  assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, ['paw'], 'paw[foo][bar]=tee&paw[foo][car]=hee', 'Object.toQueryString | namespace | basic object');
+
+  assertQueryStringGenerated({foo:undefined}, ['paw'], 'paw[foo]=', 'Object.toQueryString | namespace | undefined');
+  assertQueryStringGenerated({foo:false}, ['paw'], 'paw[foo]=false', 'Object.toQueryString | namespace | false');
+  assertQueryStringGenerated({foo:null}, ['paw'], 'paw[foo]=', 'Object.toQueryString | namespace | null');
+  assertQueryStringGenerated({foo:NaN}, ['paw'], 'paw[foo]=', 'Object.toQueryString | namespace | NaN');
+  assertQueryStringGenerated({foo:''}, ['paw'], 'paw[foo]=', 'Object.toQueryString | namespace | empty string');
+  assertQueryStringGenerated({foo:0}, ['paw'], 'paw[foo]=0', 'Object.toQueryString | namespace | 0');
+  assertQueryStringGenerated({foo:[['fap','cap']]}, ['paw'], 'paw[foo][0][0]=fap&paw[foo][0][1]=cap', 'Object.toQueryString | namespace | array double nested');
+  assertQueryStringGenerated({foo:[['fap'],['cap']]}, ['paw'], 'paw[foo][0][0]=fap&paw[foo][1][0]=cap', 'Object.toQueryString | namespace | array horizonal nested');
+  assertQueryStringGenerated({foo:{bar:{map:'fap'}}}, ['paw'], 'paw[foo][bar][map]=fap', 'Object.toQueryString | namespace | object double nested');
+
+  assertQueryStringGenerated({'hello there': 'bar'}, [], 'hello+there=bar', 'Object.toQueryString | spaces in key');
+  assertQueryStringGenerated({'"/+': 'bar'}, [], '%22%2F%2B=bar', 'Object.toQueryString | key requires encoding');
+  assertQueryStringGenerated({'時刻': 'bar'}, [], '%E6%99%82%E5%88%BB=bar', 'Object.toQueryString | Japanese key');
+  assertQueryStringGenerated({'%20': 'bar'}, [], '%2520=bar', 'Object.toQueryString | %20');
+
+  assertQueryStringGenerated(['a','b','c'], [], '0=a&1=b&2=c', 'Object.toQueryString | straight array no namespace');
+  assertQueryStringGenerated('foo', [], '0=f&1=o&2=o', 'Object.toQueryString | straight string no namespace');
+  assertQueryStringGenerated(8, [], '', 'Object.toQueryString | straight number no namespace');
+
+
 });
 
