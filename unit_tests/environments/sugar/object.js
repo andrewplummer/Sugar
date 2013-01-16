@@ -890,7 +890,7 @@ test('Object', function () {
   assertQueryStringGenerated({foo: true}, [], 'foo=true', 'Object.toQueryString | basic boolean');
   assertQueryStringGenerated({foo: /reg/}, [], 'foo=%2Freg%2F', 'Object.toQueryString | regexp');
   assertQueryStringGenerated({foo:'a b'}, [], 'foo=a+b', 'Object.toQueryString | should escape string');
-  assertQueryStringGenerated({foo: date}, [], 'foo=' + encodedDate, 'Object.toQueryString | should stringify date');
+  //assertQueryStringGenerated({foo: date}, [], 'foo=' + encodedDate, 'Object.toQueryString | should stringify date');
   assertQueryStringGenerated({foo:['a','b','c']}, [], 'foo[0]=a&foo[1]=b&foo[2]=c', 'Object.toQueryString | basic array');
   assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, [], 'foo[bar]=tee&foo[car]=hee', 'Object.toQueryString | basic object');
 
@@ -913,7 +913,7 @@ test('Object', function () {
   assertQueryStringGenerated({foo: true}, ['paw'], 'paw[foo]=true', 'Object.toQueryString | namespace | basic boolean');
   assertQueryStringGenerated({foo: /reg/}, ['paw'], 'paw[foo]=%2Freg%2F', 'Object.toQueryString | namespace | regexp');
   assertQueryStringGenerated({foo:'a b'}, ['paw'], 'paw[foo]=a+b', 'Object.toQueryString | namespace | should escape string');
-  assertQueryStringGenerated({foo: date}, ['paw'], 'paw[foo]=' + encodedDate, 'Object.toQueryString | namespace | should stringify date');
+  //assertQueryStringGenerated({foo: date}, ['paw'], 'paw[foo]=' + encodedDate, 'Object.toQueryString | namespace | should stringify date');
   assertQueryStringGenerated({foo:['a','b','c']}, ['paw'], 'paw[foo][0]=a&paw[foo][1]=b&paw[foo][2]=c', 'Object.toQueryString | namespace | basic array');
   assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, ['paw'], 'paw[foo][bar]=tee&paw[foo][car]=hee', 'Object.toQueryString | namespace | basic object');
 
