@@ -1,5 +1,5 @@
 /*
- *  Sugar Library v1.3.8
+ *  Sugar Library vedge
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) 2013 Andrew Plummer
@@ -5244,7 +5244,7 @@
    ***/
 
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
-  var ObjectHashMethods = 'keys,values,select,reject,each,merge,clone,equal,watch,tap,has'.split(',');
+  var ObjectHashMethods = 'keys,values,select,reject,each,merge,clone,equal,watch,tap,has,toQueryString'.split(',');
 
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
@@ -5271,6 +5271,27 @@
     } else {
       obj[param] = value;
     }
+  }
+
+  function objectToQueryString(base, obj) {
+    var tmp;
+    if(isObjectPrimitive(obj) && !isRegExp(obj)) {
+      tmp = [];
+      iterateOverObject(obj, function(key, value) {
+        if(base) {
+          key = base + '[' + key + ']';
+        }
+        tmp.push(objectToQueryString(key, value));
+      });
+      return tmp.join('&');
+    } else {
+      return sanitizeURIComponent(base) + '=' + sanitizeURIComponent(obj);
+    }
+  }
+
+  function sanitizeURIComponent(str) {
+    // "+" is allowed in query string
+    return !str && str !== false && str !== 0 ? '' : encodeURIComponent(str).replace(/%20/g, '+');
   }
 
   function matchKey(key, match) {
@@ -5571,6 +5592,22 @@
     },
 
     /***
+     * @method Object.toQueryString(<obj>, [namespace] = true)
+     * @returns Object
+     * @short Converts the object into a query string.
+     * @extra Accepts deep nested objects and arrays. If [namespace] is passed, it will be prefixed to all param names.
+     * @example
+     *
+     *   Object.toQueryString({foo:'bar'})          -> 'foo=bar'
+     *   Object.toQueryString({foo:['a','b','c']})  -> 'foo[0]=a&foo[1]=b&foo[2]=c'
+     *   Object.toQueryString({name:'Bob'}, 'user') -> 'user[name]=Bob'
+     *
+     ***/
+    'toQueryString': function(obj, namespace) {
+      return objectToQueryString(namespace, object(obj));
+    },
+
+    /***
      * @method tap(<obj>, <fn>)
      * @returns Object
      * @short Runs <fn> and returns <obj>.
@@ -5665,10 +5702,6 @@
    * and compiled regexes here. If you're using JS in CouchDB, it is safer to ALWAYS compile your regexes from a string.
    *
    ***/
-
-  function uniqueRegExpFlags(flags) {
-    return flags.split('').sort().join('').replace(/([gimy])\1+/g, '$1');
-  }
 
   extend(regexp, false, false, {
 
