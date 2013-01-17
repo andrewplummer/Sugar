@@ -16,6 +16,9 @@
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, math = Math, Undefined;
 
+  // Internal toString
+  var internalToString = object.prototype.toString;
+
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
 
@@ -25,6 +28,7 @@
   // defineProperty exists in IE8 but will error when trying to define a property on
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
   var definePropertySupport = object.defineProperty && object.defineProperties;
+
 
   // Class initializers and class helpers
 
@@ -54,7 +58,7 @@
   }
 
   function className(obj) {
-    return object.prototype.toString.call(obj);
+    return internalToString.call(obj);
   }
 
   function initializeClasses() {
@@ -315,7 +319,7 @@
     // Return quickly if string to save cycles
     if(type === 'string') return thing;
 
-    klass         = object.prototype.toString.call(thing)
+    klass         = internalToString.call(thing)
     thingIsObject = isObject(thing);
     thingIsArray  = klass === '[object Array]';
 
@@ -5275,7 +5279,8 @@
 
   function objectToQueryString(base, obj) {
     var tmp;
-    if(isObjectPrimitive(obj) && !isRegExp(obj)) {
+    // If a custom toString exists bail here and use that instead
+    if(isArray(obj) || (isObject(obj) && obj.toString === internalToString)) {
       tmp = [];
       iterateOverObject(obj, function(key, value) {
         if(base) {
@@ -5285,13 +5290,15 @@
       });
       return tmp.join('&');
     } else {
-      return sanitizeURIComponent(base) + '=' + sanitizeURIComponent(obj);
+      if(!base) return '';
+      return sanitizeURIComponent(base) + '=' + (isDate(obj) ? obj.getTime() : sanitizeURIComponent(obj));
     }
   }
 
-  function sanitizeURIComponent(str) {
-    // "+" is allowed in query string
-    return !str && str !== false && str !== 0 ? '' : encodeURIComponent(str).replace(/%20/g, '+');
+  function sanitizeURIComponent(obj) {
+    // undefined, null, and NaN are represented as a blank string,
+    // while false and 0 are stringified. "+" is allowed in query string
+    return !obj && obj !== false && obj !== 0 ? '' : encodeURIComponent(obj).replace(/%20/g, '+');
   }
 
   function matchKey(key, match) {
@@ -5604,7 +5611,7 @@
      *
      ***/
     'toQueryString': function(obj, namespace) {
-      return objectToQueryString(namespace, object(obj));
+      return objectToQueryString(namespace, obj);
     },
 
     /***
