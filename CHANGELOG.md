@@ -1,3 +1,11 @@
+v1.3.9
+======
+
+### API Changes ###
+
+- Added `Object.toQueryString`.
+
+
 v1.3.8
 ======
 
