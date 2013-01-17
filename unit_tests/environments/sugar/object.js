@@ -879,7 +879,6 @@ test('Object', function () {
 
 
   var date = new Date(2012, 8, 25);
-  var encodedDate = encodeURIComponent(date).replace(/%20/g, '+');
 
   assertQueryStringGenerated({foo:'bar'}, [], 'foo=bar', 'Object.toQueryString | basic string');
   assertQueryStringGenerated({foo:'bar',moo:'car'}, [], 'foo=bar&moo=car', 'Object.toQueryString | two keys');
@@ -890,7 +889,7 @@ test('Object', function () {
   assertQueryStringGenerated({foo: true}, [], 'foo=true', 'Object.toQueryString | basic boolean');
   assertQueryStringGenerated({foo: /reg/}, [], 'foo=%2Freg%2F', 'Object.toQueryString | regexp');
   assertQueryStringGenerated({foo:'a b'}, [], 'foo=a+b', 'Object.toQueryString | should escape string');
-  //assertQueryStringGenerated({foo: date}, [], 'foo=' + encodedDate, 'Object.toQueryString | should stringify date');
+  assertQueryStringGenerated({foo: date}, [], 'foo=' + date.getTime(), 'Object.toQueryString | should stringify date');
   assertQueryStringGenerated({foo:['a','b','c']}, [], 'foo[0]=a&foo[1]=b&foo[2]=c', 'Object.toQueryString | basic array');
   assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, [], 'foo[bar]=tee&foo[car]=hee', 'Object.toQueryString | basic object');
 
@@ -913,7 +912,7 @@ test('Object', function () {
   assertQueryStringGenerated({foo: true}, ['paw'], 'paw[foo]=true', 'Object.toQueryString | namespace | basic boolean');
   assertQueryStringGenerated({foo: /reg/}, ['paw'], 'paw[foo]=%2Freg%2F', 'Object.toQueryString | namespace | regexp');
   assertQueryStringGenerated({foo:'a b'}, ['paw'], 'paw[foo]=a+b', 'Object.toQueryString | namespace | should escape string');
-  //assertQueryStringGenerated({foo: date}, ['paw'], 'paw[foo]=' + encodedDate, 'Object.toQueryString | namespace | should stringify date');
+  assertQueryStringGenerated({foo: date}, ['paw'], 'paw[foo]=' + date.getTime(), 'Object.toQueryString | namespace | should stringify date');
   assertQueryStringGenerated({foo:['a','b','c']}, ['paw'], 'paw[foo][0]=a&paw[foo][1]=b&paw[foo][2]=c', 'Object.toQueryString | namespace | basic array');
   assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, ['paw'], 'paw[foo][bar]=tee&paw[foo][car]=hee', 'Object.toQueryString | namespace | basic object');
 
@@ -933,9 +932,25 @@ test('Object', function () {
   assertQueryStringGenerated({'%20': 'bar'}, [], '%2520=bar', 'Object.toQueryString | %20');
 
   assertQueryStringGenerated(['a','b','c'], [], '0=a&1=b&2=c', 'Object.toQueryString | straight array no namespace');
-  assertQueryStringGenerated('foo', [], '0=f&1=o&2=o', 'Object.toQueryString | straight string no namespace');
   assertQueryStringGenerated(8, [], '', 'Object.toQueryString | straight number no namespace');
+  assertQueryStringGenerated(date, [], '', 'Object.toQueryString | straight date no namespace');
+  assertQueryStringGenerated({foo:'bar'}, ['萬'], '%E8%90%AC[foo]=bar', 'Object.toQueryString | Japanese characters in the namespace');
+  equal(Object.toQueryString('foo'), '', 'Object.toQueryString | straight string no namespace');
 
+  var obj = {
+    toString: function() {
+      return 'hardyhar';
+    }
+  }
+
+  assertQueryStringGenerated({foo: obj}, [], 'foo=hardyhar', 'Object.toQueryString | toString object member');
+
+  var Foo = function() {};
+  Foo.prototype.toString = function() {
+    return 'custom';
+  }
+
+  assertQueryStringGenerated({foo: new Foo}, [], 'foo=custom', 'Object.toQueryString | toString inherited method');
 
 });
 
