@@ -4,6 +4,7 @@ v1.3.9
 ### API Changes ###
 
 - Added `Object.toQueryString`.
+- Fix for timzone offset -0330, etc (Issue #262).
 
 
 v1.3.8
