@@ -1002,7 +1002,7 @@ test('Date', function () {
   // Be VERY careful here. Timezone offset is NOT always guaranteed to be the same for a given timezone,
   // as DST may come into play.
   var offset = d.getTimezoneOffset();
-  var isotzd = testPadNumber(Math.round(-offset / 60), 2, true) + ':' + testPadNumber(offset % 60, 2);
+  var isotzd = testPadNumber(Math.floor(-offset / 60), 2, true) + ':' + testPadNumber(Math.abs(offset % 60), 2);
   var tzd = isotzd.replace(/:/, '');
   if(d.isUTC()) {
     isotzd = 'Z';
@@ -2653,5 +2653,11 @@ test('Date', function () {
   equal(new Date(2013, 0, 7).setISOWeek(1), new Date(2012, 11, 31).getTime(), 'Date#setISOWeek | Monday should remain at the beginning of the week as per ISO8601 standard');
   equal(new Date(2013, 0, 14).setISOWeek(2), new Date(2013, 0, 7).getTime(), 'Date#setISOWeek | Monday one week ahead');
   dateEqual(Date.utc.create(2013, 0, 14).utc().set({ week: 1 }), Date.utc.create(2012, 11, 31), 'Date#set | utc dates should not throw errors on week set');
+
+
+  // Issue #262
+
+  equal(/-/.test(new Date().format('{timezone}')), false, 'Date#format | Timezone format should not include hyphens')
+
 
 });
