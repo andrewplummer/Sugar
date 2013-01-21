@@ -5,6 +5,7 @@ v1.3.9
 
 - Added `Object.toQueryString`.
 - Fix for timzone offset -0330, etc (Issue #262).
+- Fix for methods like `isToday` not working when using a non-English locale (Issue #264).
 
 
 v1.3.8
