@@ -2660,4 +2660,22 @@ test('Date', function () {
   equal(/-/.test(new Date().format('{timezone}')), false, 'Date#format | Timezone format should not include hyphens')
 
 
+  // Issue #264
+
+  Date.setLocale('ja');
+  equal(Date.create().isToday(), true, 'Date#isToday | should always work regardless of locale');
+  equal(Date.create('yesterday', 'en').isYesterday(), true, 'Date#isYesterday | should always work regardless of locale');
+  equal(Date.create('tomorrow', 'en').isTomorrow(), true, 'Date#isTomorrow | should always work regardless of locale');
+  equal(Date.create('monday', 'en').isMonday(), true, 'Date#isMonday | should always work regardless of locale');
+  equal(Date.create('tuesday', 'en').isTuesday(), true, 'Date#isTuesday | should always work regardless of locale');
+  equal(Date.create('wednesday', 'en').isWednesday(), true, 'Date#isWednesday | should always work regardless of locale');
+  equal(Date.create('thursday', 'en').isThursday(), true, 'Date#isThursday | should always work regardless of locale');
+  equal(Date.create('friday', 'en').isFriday(), true, 'Date#isFriday | should always work regardless of locale');
+  equal(Date.create('saturday', 'en').isSaturday(), true, 'Date#isSaturday | should always work regardless of locale');
+  equal(Date.create('sunday', 'en').isSunday(), true, 'Date#isSunday | should always work regardless of locale');
+  equal(Date.create('1 day ago', 'en').isPast(), true, 'Date#isPast | should always work regardless of locale');
+  equal(Date.create('1 day from now', 'en').isFuture(), true, 'Date#isFuture | should always work regardless of locale');
+  Date.setLocale('en');
+
+
 });
