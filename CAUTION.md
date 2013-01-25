@@ -9,6 +9,13 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.3.9+
+=======
+
+- Level: Major
+  - Removed `String#namespace`.
+
+
 v1.3.8+
 =======
 
