@@ -2505,6 +2505,9 @@
     function setModifiers() {
       var arr = [];
       loc.modifiersByName = {};
+      loc['modifiers'].push({ 'name': 'day', 'src': 'yesterday', 'value': -1 });
+      loc['modifiers'].push({ 'name': 'day', 'src': 'today', 'value': 0 });
+      loc['modifiers'].push({ 'name': 'day', 'src': 'tomorrow', 'value': 1 });
       loc['modifiers'].forEach(function(modifier) {
         var name = modifier.name;
         eachAlternate(modifier.src, function(t) {
@@ -3803,7 +3806,7 @@
       var offset = this._utc ? 0 : this.getTimezoneOffset();
       var colon  = iso === true ? ':' : '';
       if(!offset && iso) return 'Z';
-      return padNumber(round(-offset / 60), 2, true) + colon + padNumber(offset % 60, 2);
+      return padNumber(floor(-offset / 60), 2, true) + colon + padNumber(math.abs(offset % 60), 2);
     },
 
      /***
@@ -4330,9 +4333,6 @@
     'future':     '{num} {unit} {sign}',
     'duration':   '{num} {unit}',
     'modifiers': [
-      { 'name': 'day',   'src': 'yesterday', 'value': -1 },
-      { 'name': 'day',   'src': 'today', 'value': 0 },
-      { 'name': 'day',   'src': 'tomorrow', 'value': 1 },
       { 'name': 'sign',  'src': 'ago|before', 'value': -1 },
       { 'name': 'sign',  'src': 'from now|after|from|in|later', 'value': 1 },
       { 'name': 'edge',  'src': 'last day', 'value': -2 },
