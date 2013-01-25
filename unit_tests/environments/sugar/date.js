@@ -2662,7 +2662,7 @@ test('Date', function () {
 
   // Issue #264
 
-  Date.setLocale('ja');
+  Date.setLocale('fo');
   equal(Date.create().isToday(), true, 'Date#isToday | should always work regardless of locale');
   equal(Date.create('yesterday', 'en').isYesterday(), true, 'Date#isYesterday | should always work regardless of locale');
   equal(Date.create('tomorrow', 'en').isTomorrow(), true, 'Date#isTomorrow | should always work regardless of locale');
