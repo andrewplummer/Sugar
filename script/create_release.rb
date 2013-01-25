@@ -21,9 +21,11 @@ NOTICE
 
 
 PARENT_DIR = "release"
+PRECOMPILED_DIR = PARENT_DIR     + "/precompiled"
 PRECOMPILED_MIN_DIR = PARENT_DIR + "/precompiled/minified"
 PRECOMPILED_DEV_DIR = PARENT_DIR + "/precompiled/development"
 
+`mkdir #{PRECOMPILED_DIR}`
 `mkdir #{PRECOMPILED_MIN_DIR}`
 `mkdir #{PRECOMPILED_DEV_DIR}`
 

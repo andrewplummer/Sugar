@@ -6445,7 +6445,7 @@
 
     /***
      * @method truncate(<length>, [split] = true, [from] = 'right', [ellipsis] = '...')
-     * @returns Object
+     * @returns String
      * @short Truncates a string.
      * @extra If [split] is %false%, will not split words up, and instead discard the word where the truncation occurred. [from] can also be %"middle"% or %"left"%.
      * @example
@@ -6643,26 +6643,8 @@
       return this.replace(/\{([^{]+?)\}/g, function(m, key) {
         return hasOwnProperty(assign, key) ? assign[key] : m;
       });
-    },
-
-    /***
-     * @method namespace([init] = global)
-     * @returns Mixed
-     * @short Finds the namespace or property indicated by the string.
-     * @extra [init] can be passed to provide a starting context, otherwise the global context will be used. If any level returns a falsy value, that will be the final result.
-     * @example
-     *
-     *   'Path.To.Namespace'.namespace() -> Path.To.Namespace
-     *   '$.fn'.namespace()              -> $.fn
-     *
-     ***/
-    'namespace': function(context) {
-      context = context || globalContext;
-      iterateOverObject(this.split('.'), function(i,s) {
-          return !!(context = context[s]);
-      });
-      return context;
     }
+
   });
 
 
