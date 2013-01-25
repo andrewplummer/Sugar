@@ -2,7 +2,7 @@
 objectPrototypeMethods = {};
 sugarEnabledMethods = [
   'isArray','isBoolean','isDate','isFunction','isNumber','isString','isRegExp','isNaN','isObject',                       // Type methods
-  'keys','values','select','reject','each','merge','isEmpty','equals','clone','watch','tap','has',                       // Hash methods
+  'keys','values','select','reject','each','merge','isEmpty','equals','clone','watch','tap','has','toQueryString',       // Hash methods
   'any','all','none','count','find','findAll','isEmpty','sum','average','min','max','least','most','map','reduce','size' // Enumerable methods
 ];
 
