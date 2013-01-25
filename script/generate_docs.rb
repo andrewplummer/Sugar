@@ -155,7 +155,7 @@ end
 
 def get_minified_size(package)
   tmp = "tmp/package-#{package}.js"
-  `cp release/precompiled/#{package}.js #{tmp}`
+  `cp release/precompiled/minified/#{package}.js #{tmp}`
   `gzip --best #{tmp}`
   size = File.size("#{tmp}.gz")
   # gzipping the packages together produces sizes
