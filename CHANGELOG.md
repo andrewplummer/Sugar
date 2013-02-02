@@ -1,3 +1,11 @@
+v1.3.10
+======
+
+### API Changes ###
+
+- Fix for relative times with "4 weeks" that are actually past the single month threshold.
+
+
 v1.3.9
 ======
 
