@@ -2429,9 +2429,15 @@ test('Date', function () {
   dateEqual(Date.create('the 5th Friday of February, 2012'), new Date(2012, 2, 2), 'Date#create | the 5th Friday of February');
   dateEqual(Date.create('the 6th Friday of February, 2012'), new Date(2012, 2, 9), 'Date#create | the 6th Friday of February');
 
+  var firstFridayOfFeb = new Date(thisYear, 1);
+  firstFridayOfFeb.setWeekday(5);
+  if(firstFridayOfFeb.getMonth() < 1) {
+    firstFridayOfFeb.add({ weeks: 1 });
+  }
+
   equal(Date.create('the 1st Friday of February').getFullYear(), thisYear, 'Date#create | 1st friday of February should be this year');
-  equal(Date.future('the 1st Friday of February').getFullYear(), new Date().getMonth() > 1 ? thisYear + 1 : thisYear, 'Date#future | 1st friday of February should be this year or next');
-  equal(Date.past('the 1st Friday of February').getFullYear(), new Date().getMonth() < 1 ? thisYear - 1 : thisYear, 'Date#past | 1st friday of February should be this year or last');
+  equal(Date.future('the 1st Friday of February').getFullYear(), now > firstFridayOfFeb ? thisYear + 1 : thisYear, 'Date#future | 1st friday of February should be this year or next');
+  equal(Date.past('the 1st Friday of February').getFullYear(), now < firstFridayOfFeb ? thisYear - 1 : thisYear, 'Date#past | 1st friday of February should be this year or last');
 
 
   equal(Date.future('1:00am').isFuture(), true, 'Date#future | 1am should be the future');
