@@ -798,7 +798,7 @@
      *
      ***/
     'bind': function(scope) {
-      var fn = this, args = multiArgs(arguments).slice(1), nop, bound;
+      var fn = this, args = multiArgs(arguments).slice(1), bound;
       if(!isFunction(this)) {
         throw new TypeError('Function.prototype.bind called on a non-function');
       }
@@ -2919,9 +2919,9 @@
     return [value, unit, ms];
   }
 
-  function getAdjustedUnitWithMonthFallback(date) {
+  function getRelativeWithMonthFallback(date) {
     var adu = getAdjustedUnit(date.millisecondsFromNow());
-    if(adu[1] === 6) {
+    if(allowMonthFallback(date, adu)) {
       // If the adjusted unit is in months, then better to use
       // the "monthsfromNow" which applies a special error margin
       // for edge cases such as Jan-09 - Mar-09 being less than
@@ -2929,8 +2929,16 @@
       // The third "ms" element in the array will handle the sign
       // (past or future), so simply take the absolute value here.
       adu[0] = math.abs(date.monthsFromNow());
+      adu[1] = 6;
     }
     return adu;
+  }
+
+  function allowMonthFallback(date, adu) {
+    // Allow falling back to monthsFromNow if the unit is in months...
+    return adu[1] === 6 ||
+    // ...or if it's === 4 weeks and there are more days than in the given month
+    (adu[1] === 5 && adu[0] === 4 && date.daysFromNow() >= new Date().daysInMonth());
   }
 
 
@@ -2943,11 +2951,11 @@
     } else if(Date[format]) {
       format = Date[format];
     } else if(isFunction(format)) {
-      adu = getAdjustedUnitWithMonthFallback(date);
+      adu = getRelativeWithMonthFallback(date);
       format = format.apply(date, adu.concat(loc));
     }
     if(!format && relative) {
-      adu = adu || getAdjustedUnitWithMonthFallback(date);
+      adu = adu || getRelativeWithMonthFallback(date);
       // Adjust up if time is in ms, as this doesn't
       // look very good for a standard relative date.
       if(adu[1] === 0) {
@@ -5599,7 +5607,7 @@
     },
 
     /***
-     * @method Object.toQueryString(<obj>, [namespace] = true)
+     * @method Object.toQueryString(<obj>, [namespace] = null)
      * @returns Object
      * @short Converts the object into a query string.
      * @extra Accepts deep nested objects and arrays. If [namespace] is passed, it will be prefixed to all param names.
