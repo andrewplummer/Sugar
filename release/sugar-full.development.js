@@ -5109,6 +5109,21 @@
     },
 
     /***
+     * @method clamp(min, max)
+     * @returns Number
+     * @short Returns a string at the code point of the number.
+     * @example
+     *
+     *   (6).clamp(2,5) -> 5
+     *   (3).clamp(2,5) -> 3
+     *   (1).clamp(2,5) -> 2
+     *
+     ***/
+    'clamp': function(min,max) {
+      return Math.max(min,Math.min(max,this));
+    },
+
+    /***
      * @method chr()
      * @returns String
      * @short Returns a string at the code point of the number.
