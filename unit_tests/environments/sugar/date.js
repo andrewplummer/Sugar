@@ -2662,8 +2662,7 @@ test('Date', function () {
 
 
   // Issue #262
-
-  equal(/-/.test(new Date().format('{timezone}')), false, 'Date#format | Timezone format should not include hyphens')
+  equal(/\d+-/.test(new Date().format('{timezone}')), false, 'Date#format | Timezone format should not include hyphens')
 
 
   // Issue #264
