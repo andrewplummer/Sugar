@@ -2226,6 +2226,7 @@
     },
     {
       unit: 'month',
+      error: 0.919, // Feb 1-28 over 1 month
       method: 'Month',
       ambiguous: true,
       multiplier: function(d, ms) {
@@ -2237,8 +2238,7 @@
           }
         }
         return days * 24 * 60 * 60 * 1000;
-      },
-      error: 0.919
+      }
     },
     {
       unit: 'week',
@@ -2249,6 +2249,7 @@
     },
     {
       unit: 'day',
+      error: 0.958, // DST traversal over 1 day
       method: 'Date',
       ambiguous: true,
       multiplier: function() {
@@ -3428,7 +3429,7 @@
         if(fraction && math.abs(fraction % 1) > error) {
           num = round(num);
         }
-        return parseInt(num);
+        return num < 0 ? ceil(num) : floor(num);
       }
       since = function(f, localeCode) {
         return applyErrorMargin(this.getTime() - date.create(f, localeCode).getTime());
