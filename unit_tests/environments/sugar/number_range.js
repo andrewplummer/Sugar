@@ -11,7 +11,7 @@ test('Number Ranges', function () {
 
   equal(range.toString(), '5..10', 'Number | Range | toString');
   equal(range.isValid(), true, 'Number | Range | isValid');
-  equal(range.size(), 5, 'Number | Range | size');
+  equal(range.size(), 6, 'Number | Range | size');
   equal(range.contains(), false, 'Number | Range | contains undefined');
   equal(range.contains(1), false, 'Number | Range | contains 1');
   equal(range.contains(4), false, 'Number | Range | contains 4');
@@ -149,6 +149,61 @@ test('Number Ranges', function () {
   equal(range.toString(), '1..4', 'Number | Range | inverse | toString');
   equal(range.isValid(), true, 'Number | Range | inverse | isValid');
 
-  equal(Number.range(NaN, NaN).toString(), 'Invalid range.', 'Number | Range | invalid | toString');
+  equal(Number.range(NaN, NaN).toString(), 'Invalid Range', 'Number | Range | invalid | toString');
+
+
+  range = Number.range(1, Infinity);
+  equal(range.contains(1), true, 'Number | 1..Infinity | contains 1');
+  equal(range.contains(10), true, 'Number | 1..Infinity | contains 10');
+  equal(range.contains(100), true, 'Number | 1..Infinity | contains 100');
+  equal(range.contains(Infinity), true, 'Number | 1..Infinity | contains 100');
+  equal(range.contains(0), false, 'Number | 1..Infinity | contains 0');
+  equal(range.contains(-1), false, 'Number | 1..Infinity | contains -1');
+  equal(range.contains(-10), false, 'Number | 1..Infinity | contains -10');
+  equal(range.contains(-100), false, 'Number | 1..Infinity | contains -100');
+  equal(range.contains(-Infinity), false, 'Number | 1..Infinity | contains -Infinity');
+
+  range = Number.range(-Infinity, 1);
+  equal(range.contains(1), true, 'Number | -Infinity..1 | contains 1');
+  equal(range.contains(10), false, 'Number | -Infinity..1 | contains 10');
+  equal(range.contains(100), false, 'Number | -Infinity..1 | contains 100');
+  equal(range.contains(Infinity), false, 'Number | -Infinity..1 | contains 100');
+  equal(range.contains(0), true, 'Number | -Infinity..1 | contains 0');
+  equal(range.contains(-1), true, 'Number | -Infinity..1 | contains -1');
+  equal(range.contains(-10), true, 'Number | -Infinity..1 | contains -10');
+  equal(range.contains(-100), true, 'Number | -Infinity..1 | contains -100');
+  equal(range.contains(-Infinity), true, 'Number | -Infinity..1 | contains -Infinity');
+
+  range = Number.range(-Infinity, Infinity);
+  equal(range.contains(1), true, 'Number | -Infinity..Infinity | contains 1');
+  equal(range.contains(10), true, 'Number | -Infinity..Infinity | contains 10');
+  equal(range.contains(100), true, 'Number | -Infinity..Infinity | contains 100');
+  equal(range.contains(Infinity), true, 'Number | -Infinity..Infinity | contains 100');
+  equal(range.contains(0), true, 'Number | -Infinity..Infinity | contains 0');
+  equal(range.contains(-1), true, 'Number | -Infinity..Infinity | contains -1');
+  equal(range.contains(-10), true, 'Number | -Infinity..Infinity | contains -10');
+  equal(range.contains(-100), true, 'Number | -Infinity..Infinity | contains -100');
+  equal(range.contains(-Infinity), true, 'Number | -Infinity..Infinity | contains -Infinity');
+
+  range = Number.range(0, 0);
+  equal(range.contains(-1), false, 'Number | 0..0 | contains -1');
+  equal(range.contains(0), true, 'Number | 0..0 | contains 0');
+  equal(range.contains(1), false, 'Number | 0..0 | contains 1');
+
+
+  range = Number.range(null, null);
+  equal(range.contains(-1), false, 'Number | null..null | contains -1');
+  equal(range.contains(0), true, 'Number | null..null | contains 0');
+  equal(range.contains(1), false, 'Number | null..null | contains 1');
+  equal(range.isValid(), false, 'Number | null..null | isValid');
+
+
+  range = Number.range(undefined, undefined);
+  equal(range.contains(-1), false, 'Number | undefined..undefined | contains -1');
+  equal(range.contains(0), false, 'Number | undefined..undefined | contains 0');
+  equal(range.contains(1), false, 'Number | undefined..undefined | contains 1');
+  equal(range.isValid(), false, 'Number | undefined..undefined | isValid');
+
+  equal(Number.range(new Date(2010, 0).getTime(), new Date(2010, 2).getTime()).contains(new Date(2010, 0)), true, 'Number | range | contains different type');
 
 });
