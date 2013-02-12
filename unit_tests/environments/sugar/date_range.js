@@ -9,7 +9,7 @@ test('Date Ranges', function () {
   equal(range.isValid(), false, 'DateRange | invalid range');
   equal(typeof range.start.getTime, 'function', 'DateRange | start is not minified');
   equal(typeof range.end.getTime, 'function', 'DateRange | end is not minified');
-  equal(isNaN(range.duration()), true, 'DateRange | invalid ranges have no duration');
+  equal(isNaN(range.size()), true, 'DateRange | invalid ranges have no duration');
   equal(range.toString(), 'Invalid DateRange', 'DateRange | invalid toString');
 
 
@@ -17,7 +17,7 @@ test('Date Ranges', function () {
   tzOffset = range.end.getTimezoneOffset() - range.start.getTimezoneOffset();
 
   equal(range.toString(), 'Friday September 10, 2010 9:00:00am..Wednesday November 10, 2010 9:00:00am', 'DateRange | toString');
-  equal(range.duration(), 5270400000 + (tzOffset * 60 * 1000), 'DateRange | duration');
+  equal(range.size(), 5270400000 + (tzOffset * 60 * 1000), 'DateRange | duration');
   equal(range.isValid(), true, 'DateRange | valid range');
 
   equal(range.eachYear(), [new Date(2010, 0)], 'DateRange | 2010-9 - 2010-11 | eachYear');
