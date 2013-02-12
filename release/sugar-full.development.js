@@ -123,7 +123,7 @@
   function batchMethodExecute(klass, args, fn) {
     var all = args.length === 0, methods = multiArgs(args), changed = false;
     iterateOverObject(klass['SugarMethods'], function(name, m) {
-      if(all || methods.indexOf(name) > -1) {
+      if(all || methods.indexOf(name) !== -1) {
         changed = true;
         fn(m.instance ? klass.prototype : klass, name, m);
       }
@@ -252,6 +252,8 @@
   function floor(val, precision) {
     return round(val, precision, 'floor');
   }
+
+  // Used by Number and Date
 
   function padNumber(num, place, sign, base) {
     var str = math.abs(num).toString(base || 10);
@@ -2224,6 +2226,7 @@
     },
     {
       unit: 'month',
+      error: 0.919, // Feb 1-28 over 1 month
       method: 'Month',
       ambiguous: true,
       multiplier: function(d, ms) {
@@ -2235,8 +2238,7 @@
           }
         }
         return days * 24 * 60 * 60 * 1000;
-      },
-      error: 0.919
+      }
     },
     {
       unit: 'week',
@@ -2247,6 +2249,7 @@
     },
     {
       unit: 'day',
+      error: 0.958, // DST traversal over 1 day
       method: 'Date',
       ambiguous: true,
       multiplier: function() {
@@ -3426,7 +3429,7 @@
         if(fraction && math.abs(fraction % 1) > error) {
           num = round(num);
         }
-        return parseInt(num);
+        return num < 0 ? ceil(num) : floor(num);
       }
       since = function(f, localeCode) {
         return applyErrorMargin(this.getTime() - date.create(f, localeCode).getTime());
@@ -6027,7 +6030,7 @@
       * @method encodeBase64()
       * @returns String
       * @short Encodes the string into base64 encoding.
-      * @extra This method wraps the browser native %btoa% when available, and uses a custom implementation when not available.
+      * @extra This method wraps the browser native %btoa% when available, and uses a custom implementation when not available. It can also handle Unicode string encodings.
       * @example
       *
       *   'gonna get encoded!'.encodeBase64()  -> 'Z29ubmEgZ2V0IGVuY29kZWQh'
@@ -6035,14 +6038,14 @@
       *
       ***/
     'encodeBase64': function() {
-      return btoa(this);
+      return btoa(unescape(encodeURIComponent(this)));
     },
 
      /***
       * @method decodeBase64()
       * @returns String
       * @short Decodes the string from base64 encoding.
-      * @extra This method wraps the browser native %atob% when available, and uses a custom implementation when not available.
+      * @extra This method wraps the browser native %atob% when available, and uses a custom implementation when not available. It can also handle Unicode string encodings.
       * @example
       *
       *   'aHR0cDovL3R3aXR0ZXIuY29tLw=='.decodeBase64() -> 'http://twitter.com/'
@@ -6050,7 +6053,7 @@
       *
       ***/
     'decodeBase64': function() {
-      return atob(this);
+      return decodeURIComponent(escape(atob(this)));
     },
 
     /***

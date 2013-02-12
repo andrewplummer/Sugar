@@ -1,6 +1,5 @@
 test('Date', function () {
 
-
   equal(Date.getLocale().code !== undefined, true, 'Current locale must be something... other libs may overwrite this');
 
   // Imaginary local to test locale switching
@@ -2682,5 +2681,11 @@ test('Date', function () {
   equal(Date.create('1 day from now', 'en').isFuture(), true, 'Date#isFuture | should always work regardless of locale');
   Date.setLocale('en');
 
+
+
+  // Issue #267
+
+  equal(new Date('Mar 01, 2013').daysUntil(new Date('Mar 28, 2013')), 27, 'Date#daysUntil | should not be phased by DST traversal');
+  equal(new Date('Mar 10, 2013').daysUntil(new Date('Mar 11, 2013')), 1, 'Date#daysUntil | exact DST traversal point for CST/CDT');
 
 });
