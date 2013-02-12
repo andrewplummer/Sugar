@@ -144,5 +144,11 @@ test('Number Ranges', function () {
   equal((0).clamp(5, 10), 5, 'Number#clamp | 0');
   equal((-1).clamp(5, 10), 5, 'Number#clamp | -1');
 
+  range = Number.range(4, 1);
+
+  equal(range.toString(), '1..4', 'Number | Range | inverse | toString');
+  equal(range.isValid(), true, 'Number | Range | inverse | isValid');
+
+  equal(Number.range(NaN, NaN).toString(), 'Invalid range.', 'Number | Range | invalid | toString');
 
 });
