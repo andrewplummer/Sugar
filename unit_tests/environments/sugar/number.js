@@ -131,8 +131,9 @@ test('Number', function () {
 
   counter = 0;
   var dCounter = 5;
-  ret = (5).downto(1, function(i) {
-    equal(i, dCounter, 'Number#downto | index is set');
+  ret = (5).downto(1, function(n, i) {
+    equal(n, dCounter, 'Number#downto | n is set');
+    equal(i, counter, 'Number#downto | index is set');
     counter++;
     dCounter--;
   });
@@ -142,8 +143,9 @@ test('Number', function () {
 
   counter = 0;
   var dCounter = 1;
-  ret = (1).upto(5, function(i) {
-    equal(i, dCounter, 'Number#upto | index is set');
+  ret = (1).upto(5, function(n, i) {
+    equal(n, dCounter, 'Number#upto | n is set');
+    equal(i, counter, 'Number#upto | index is set');
     counter++;
     dCounter++;
   });
@@ -151,14 +153,26 @@ test('Number', function () {
   equal(ret, [1,2,3,4,5], 'Number#upto | returns array');
 
   counter = 0;
-  ret = (5).downto(10, function() {});
-  equal(counter, 0, 'Number#downto | 5 downto 10 | iterates 0 times');
-  equal(ret, [], 'Number#downto | 5 downto 10 | returns empty array');
+  var dCounter = 5;
+  ret = (5).downto(10, function(n, i) {
+    equal(n, dCounter, 'Number#downto | n is set');
+    equal(i, counter, 'Number#downto | index is set');
+    counter++;
+    dCounter++;
+  });
+  equal(counter, 6, 'Number#downto | 5 downto 10 | iterates 6 times');
+  equal(ret, [5,6,7,8,9,10], 'Number#downto | 5 downto 10 | returns equivalent of Number#upto');
 
   counter = 0;
-  ret = (5).upto(1, function() {});
-  equal(counter, 0, 'Number#upto | 5 up to 1 | iterates 0 times');
-  equal(ret, [], 'Number#upto | 5 up to 1 | returns empty array');
+  var dCounter = 5;
+  ret = (5).upto(1, function(n, i) {
+    equal(n, dCounter, 'Number#downto | n is set');
+    equal(i, counter, 'Number#downto | index is set');
+    counter++;
+    dCounter--;
+  });
+  equal(counter, 5, 'Number#upto | 5 up to 1 | iterates 5 times');
+  equal(ret, [5,4,3,2,1], 'Number#upto | 5 up to 1 | returns equivalent of Number#downto');
 
   equal((3).upto(9, null, 3), [3,6,9], 'Number#upto | can handle multiples');
   equal((3).upto(10, null, 3), [3,6,9], 'Number#upto | can handle multiples stops at 9');
