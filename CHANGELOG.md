@@ -1,9 +1,16 @@
-v1.3.10
+v1.4.0
 ======
 
 ### API Changes ###
 
+- Adding generalized ranges for Numbers and Strings in addition to Dates.
+- Date ranges are now part of the Range package and are no longer dependent on the Date package.
+- Adding `clamp` for ranges and an alias for Number.
+- `Array.create` will understand ranges and can build an array from one.
+- `DateRange#duration` is deprecated in favor of `Range#span`.
 - Fix for relative times with "4 weeks" that are actually past the single month threshold.
+- `Number#upto` and `Number#downto` will now work on inverse ranges.
+
 
 
 v1.3.9
