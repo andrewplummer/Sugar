@@ -9,6 +9,13 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
+v1.4+
+=======
+
+- Level: Minor
+  - Removed `Number#upto` and `Number#downto` will now work on inverse ranges. In other words (1).downto(5) if represented as an array will now produce [1,2,3,4,5] even though 1 is less than 5 and the operator was "downto". It will also step through the range accordingly.
+
+
 v1.3.9+
 =======
 

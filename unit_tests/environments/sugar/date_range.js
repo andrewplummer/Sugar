@@ -9,7 +9,7 @@ test('Date Ranges', function () {
   equal(range.isValid(), false, 'Date Range | invalid range');
   equal(typeof range.start.getTime, 'function', 'Date Range | Invalid | start is not minified');
   equal(typeof range.end.getTime, 'function', 'Date Range | Invalid | end is not minified');
-  equal(isNaN(range.size()), true, 'Date Range | Invalid | has no duration');
+  equal(isNaN(range.span()), true, 'Date Range | Invalid | has no duration');
   equal(range.toString(), 'Invalid Range', 'Date Range | Invalid | invalid toString');
 
   range = Date.range(new Date(2011,8,10,9), new Date(2010,10,10,9));
@@ -17,8 +17,8 @@ test('Date Ranges', function () {
   equal(range.isValid(), true, 'Date Range | Inverted | range');
   equal(typeof range.start.getTime, 'function', 'Date Range | Inverted | start is not minified');
   equal(typeof range.end.getTime, 'function', 'Date Range | Inverted | end is not minified');
-  equal(isNaN(range.size()), false, 'Date Range | Inverted | has no duration');
-  equal(range.toString(), new Date(2010,10,10,9).toString() + '..' + new Date(2011,8,10,9).toString(), 'Date Range | Inverted | invalid toString');
+  equal(range.span(), -26265599999, 'Date Range | Inverted | duration');
+  equal(range.toString(), new Date(2011,8,10,9).toString() + '..' + new Date(2010,10,10,9).toString(), 'Date Range | Inverted | toString');
 
   range = Date.range(new Date(2011,8,10,9), new Date(2010,10,10,9));
 
@@ -26,7 +26,7 @@ test('Date Ranges', function () {
   tzOffset = range.end.getTimezoneOffset() - range.start.getTimezoneOffset();
 
   equal(range.toString(), new Date(2010,8,10,9).toString() + '..' + new Date(2010,10,10,9).toString(), 'Date Range | toString');
-  equal(range.size(), 5270400000 + (tzOffset * 60 * 1000) + 1, 'Date Range | duration');
+  equal(range.span(), 5270400000 + (tzOffset * 60 * 1000) + 1, 'Date Range | duration');
   equal(range.isValid(), true, 'Date Range | valid range');
 
   equal(range.step('year'), [new Date(2010,8,10,9)], 'Range#step | 2010-9 - 2010-11');
@@ -88,8 +88,8 @@ test('Date Ranges', function () {
   equal(range.end.is(new Date(), 10), true, 'Date Range | null end is current time');
 
   range = Date.range(null, new Date(2010,3,25));
-  equal(range.end.is(new Date(), 10), true, 'Date Range | null defaults to current time');
-  dateEqual(range.start, new Date(2010,3,25), 'Date Range | start is reversed when null is current');
+  equal(range.start.is(new Date(), 10), true, 'Date Range | null defaults to current time');
+  dateEqual(range.end, new Date(2010,3,25), 'Date Range | start is reversed when null is current');
 
   range = Date.range();
   equal(range.start.is(new Date(), 10), true, 'Date Range | both null | start');
@@ -231,13 +231,6 @@ test('Date Ranges', function () {
   equal(range.clamp(new Date(2010, 5).getTime()), new Date(2010, 5).getTime(), 'Date Range#clamp | mid number');
 
 
-  // Direct clamping
-
-  dateEqual(new Date(2008, 0).clamp(new Date(2010,0), new Date(2011, 0)), new Date(2010, 0), 'Date#clamp | low');
-  dateEqual(new Date(2012, 0).clamp(new Date(2010,0), new Date(2011, 0)), new Date(2011, 0), 'Date#clamp | high');
-  dateEqual(new Date(2010, 6).clamp(new Date(2010,0), new Date(2011, 0)), new Date(2010, 6), 'Date#clamp | mid');
-  dateEqual(new Date(2010, 0).clamp(new Date(2010,0), new Date(2011, 0)), new Date(2010, 0), 'Date#clamp | low equal');
-  dateEqual(new Date(2011, 0).clamp(new Date(2010,0), new Date(2011, 0)), new Date(2011, 0), 'Date#clamp | high equal');
 
   // Deep range cloning
 

@@ -11,7 +11,7 @@ test('String Ranges', function () {
 
   equal(range.toString(), 'k..o', 'String | Range | toString');
   equal(range.isValid(), true, 'String | Range | isValid');
-  equal(range.size(), 5, 'String | Range | size');
+  equal(range.span(), 5, 'String | Range | span');
   equal(range.contains(), false, 'String | Range | contains undefined');
   equal(range.contains('j'), false, 'String | Range | contains j');
   equal(range.contains('k'), true, 'String | Range | contains k');
