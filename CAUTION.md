@@ -9,8 +9,17 @@ Read all the ones that are greater than the version you are migrating from.
 
 
 
-v1.4+
+v1.4.0+
 =======
+
+- Level: Major
+  - Date range methods `eachDay`, `eachMonth`, etc. are deprecated in favor of the syntax `every("day")`, etc.
+
+- Level: Major
+  - Date range method `duration` is deprecated in favor of `span`. Additionally it will add 1 to the duration to include the starting number itself. In effect for date ranges this means that `duration` will be 1 ms longer.
+
+- Level: Minor
+  - Date ranges that have an end that is less than the start are now no longer considered invalid, and can be iterated across in exactly the same manner. This means that ranges can now be iterated in reverse and .start and .end are no longer equivalent to .min and .max.
 
 - Level: Minor
   - Removed `Number#upto` and `Number#downto` will now work on inverse ranges. In other words (1).downto(5) if represented as an array will now produce [1,2,3,4,5] even though 1 is less than 5 and the operator was "downto". It will also step through the range accordingly.
