@@ -2457,7 +2457,7 @@ test('Array', function () {
 
   arrayEquivalent([NaN,NaN].union([NaN,NaN]), [NaN], 'Array#union | NaN');
   arrayEquivalent([null,null].union([null,null]), [null], 'Array#union | Null');
-  arrayEquivalent(arrayOfUndefined.union(arrayOfUndefined), sparseArraySupport ? [undefined] : [], 'Array#union | undefined');
+  arrayEquivalent([undefined].union([undefined]), sparseArraySupport ? [undefined] : [], 'Array#union | undefined');
 
 
   var aObj = {
