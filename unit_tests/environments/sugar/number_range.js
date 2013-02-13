@@ -144,6 +144,18 @@ test('Number Ranges', function () {
   equal((0).clamp(5, 10), 5, 'Number#clamp | 0');
   equal((-1).clamp(5, 10), 5, 'Number#clamp | -1');
 
+  equal((25).clamp(10, 5), 10, 'Number#clamp | inverted | 25');
+  equal((10).clamp(10, 5), 10, 'Number#clamp | inverted | 10');
+  equal((9).clamp(10, 5), 9, 'Number#clamp | inverted | 9');
+  equal((8).clamp(10, 5), 8, 'Number#clamp | inverted | 8');
+  equal((7).clamp(10, 5), 7, 'Number#clamp | inverted | 7');
+  equal((6).clamp(10, 5), 6, 'Number#clamp | inverted | 6');
+  equal((5).clamp(10, 5), 5, 'Number#clamp | inverted | 5');
+  equal((4).clamp(10, 5), 5, 'Number#clamp | inverted | 4');
+  equal((1).clamp(10, 5), 5, 'Number#clamp | inverted | 1');
+  equal((0).clamp(10, 5), 5, 'Number#clamp | inverted | 0');
+  equal((-1).clamp(10, 5), 5, 'Number#clamp | inverted | -1');
+
   range = Number.range(4, 1);
 
   equal(range.toString(), '4..1', 'Number | Range | inverse | toString');
@@ -210,5 +222,9 @@ test('Number Ranges', function () {
 
   equal(Number.range(1, 5).step(null, function(){}), [1,2,3,4,5], 'Number | 1..5 | null increment defaults to 1');
 
+  if(Array.create) {
+    equal(Array.create(Number.range(1, 5)), [1,2,3,4,5], 'Array.create | should work on number ranges');
+    equal(Array.create(Number.range(5, 1)), [5,4,3,2,1], 'Array.create | should work on inverse number ranges');
+  }
 
 });
