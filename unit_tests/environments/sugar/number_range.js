@@ -11,7 +11,7 @@ test('Number Ranges', function () {
 
   equal(range.toString(), '5..10', 'Number | Range | toString');
   equal(range.isValid(), true, 'Number | Range | isValid');
-  equal(range.size(), 6, 'Number | Range | size');
+  equal(range.span(), 6, 'Number | Range | span');
   equal(range.contains(), false, 'Number | Range | contains undefined');
   equal(range.contains(1), false, 'Number | Range | contains 1');
   equal(range.contains(4), false, 'Number | Range | contains 4');
@@ -146,8 +146,9 @@ test('Number Ranges', function () {
 
   range = Number.range(4, 1);
 
-  equal(range.toString(), '1..4', 'Number | Range | inverse | toString');
+  equal(range.toString(), '4..1', 'Number | Range | inverse | toString');
   equal(range.isValid(), true, 'Number | Range | inverse | isValid');
+  equal(range.step(), [4,3,2,1], 'Number | Range | inverse | step');
 
   equal(Number.range(NaN, NaN).toString(), 'Invalid Range', 'Number | Range | invalid | toString');
 
@@ -205,5 +206,9 @@ test('Number Ranges', function () {
   equal(range.isValid(), false, 'Number | undefined..undefined | isValid');
 
   equal(Number.range(new Date(2010, 0).getTime(), new Date(2010, 2).getTime()).contains(new Date(2010, 0)), true, 'Number | range | contains different type');
+
+
+  equal(Number.range(1, 5).step(null, function(){}), [1,2,3,4,5], 'Number | 1..5 | null increment defaults to 1');
+
 
 });
