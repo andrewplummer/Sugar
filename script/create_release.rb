@@ -9,7 +9,7 @@ if !@version
   exit
 end
 
-@packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language','date_locales']
+@packages = ['core','es5','array','date','range','function','number','object','regexp','string','inflections','language','date_locales']
 @default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
 @delimiter = 'console.info("-----BREAK-----");'
 @copyright = File.open('release/copyright.txt').read.gsub(/VERSION/, @version)
