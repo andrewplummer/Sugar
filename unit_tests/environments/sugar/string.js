@@ -76,8 +76,20 @@ test('String', function () {
 
   equal('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
   equal('I grow, I prosper; Now, gods, stand up for bastards!'.encodeBase64(), 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'String#encodeBase64 | gods');
-  equal('räksmörgås'.encodeBase64(), 'cuRrc232cmflcw==', 'String#encodeBase64 | shrimp sandwich');
-  equal('rÃ¤ksmÃ¶rgÃ¥s'.encodeBase64(), 'csOka3Ntw7ZyZ8Olcw==', 'String#encodeBase64 | shrimp sandwich');
+  equal('räksmörgås'.encodeBase64(), 'csOka3Ntw7ZyZ8Olcw==', 'String#encodeBase64 | shrimp sandwich');
+  equal('rÃ¤ksmÃ¶rgÃ¥s'.encodeBase64(), 'csODwqRrc23Dg8K2cmfDg8Klcw==', 'String#encodeBase64 | shrimp sandwich encoded');
+
+
+  equal('АБВ'.encodeBase64(), '0JDQkdCS', 'String#encodeBase64 | Russian');
+  equal('日本語'.encodeBase64(), '5pel5pys6Kqe', 'String#encodeBase64 | Japanese');
+  equal('にほんご'.encodeBase64(), '44Gr44G744KT44GU', 'String#encodeBase64 | Hiragana');
+  equal('한국어'.encodeBase64(), '7ZWc6rWt7Ja0', 'String#encodeBase64 | Korean');
+
+  equal('АБВ'.encodeBase64().decodeBase64(), 'АБВ', 'String#encodeBase64 | reverse | Russian');
+  equal('日本語'.encodeBase64().decodeBase64(), '日本語', 'String#encodeBase64 | reverse | Japanese');
+  equal('にほんご'.encodeBase64().decodeBase64(), 'にほんご', 'String#encodeBase64 | reverse | Hiragana');
+  equal('한국어'.encodeBase64().decodeBase64(), '한국어', 'String#encodeBase64 | reverse | Korean');
+
 
   // Ensure that btoa and atob don't leak in node
   if(environment == 'node') {
