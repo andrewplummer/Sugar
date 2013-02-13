@@ -2,6 +2,7 @@ test('Date Ranges', function () {
 
   Date.setLocale('en');
 
+  var d1, d2;
   var range, expected, result, count, range1, range2, tzOffset;
 
   range = Date.range(NaN, NaN);
@@ -12,28 +13,29 @@ test('Date Ranges', function () {
   equal(isNaN(range.span()), true, 'Date Range | Invalid | has no duration');
   equal(range.toString(), 'Invalid Range', 'Date Range | Invalid | invalid toString');
 
-  range = Date.range(new Date(2011,8,10,9), new Date(2010,10,10,9));
+  d1 = new Date(2011,8,10,9);
+  d2 = new Date(2010,10,10,9)
+  range = Date.range(d1, d2);
 
   equal(range.isValid(), true, 'Date Range | Inverted | range');
   equal(typeof range.start.getTime, 'function', 'Date Range | Inverted | start is not minified');
   equal(typeof range.end.getTime, 'function', 'Date Range | Inverted | end is not minified');
-  equal(range.span(), -26265599999, 'Date Range | Inverted | duration');
+  equal(range.span(), Math.abs(d2 - d1) + 1, 'Date Range | Inverted | duration');
   equal(range.toString(), new Date(2011,8,10,9).toString() + '..' + new Date(2010,10,10,9).toString(), 'Date Range | Inverted | toString');
 
-  range = Date.range(new Date(2011,8,10,9), new Date(2010,10,10,9));
+  range = Date.range(new Date(2010,6,10,9), new Date(2010,8,10,9));
 
-  range = Date.range(new Date(2010,8,10,9), new Date(2010,10,10,9));
   tzOffset = range.end.getTimezoneOffset() - range.start.getTimezoneOffset();
 
-  equal(range.toString(), new Date(2010,8,10,9).toString() + '..' + new Date(2010,10,10,9).toString(), 'Date Range | toString');
-  equal(range.span(), 5270400000 + (tzOffset * 60 * 1000) + 1, 'Date Range | duration');
+  equal(range.toString(), new Date(2010,6,10,9).toString() + '..' + new Date(2010,8,10,9).toString(), 'Date Range | toString');
+  equal(range.span(), new Date(2010,8,10,9) - new Date(2010,6,10,9) + (tzOffset * 60 * 1000) + 1, 'Date Range | duration');
   equal(range.isValid(), true, 'Date Range | valid range');
 
-  equal(range.step('year'), [new Date(2010,8,10,9)], 'Range#step | 2010-9 - 2010-11');
+  equal(range.step('year'), [new Date(2010,6,10,9)], 'Range#step | 2010-9 - 2010-11');
 
 
   count = 0;
-  expected = [new Date(2010,8,10,9), new Date(2010,9,10,9), new Date(2010,10,10,9)]
+  expected = [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)]
   result = range.step('month', function(d, index) {
     dateEqual(d, expected[count], 'Date Range | date is first argument');
     equal(index, count, 'Date Range | index is second argument');
@@ -42,30 +44,30 @@ test('Date Ranges', function () {
   equal(result, expected, 'Date Range | 2010-9 - 2010-11 | every month');
   equal(count, 3, 'Date Range | 2010-9 - 2010-11 | has iterated 3 times');
 
-  equal(range.every('year'), [new Date(2010,8,10,9)], 'Date Range | 2010-9 - 2010-11 | every year');
-  equal(range.every('month'), [new Date(2010,8,10,9), new Date(2010,9,10,9), new Date(2010,10,10,9)], 'Date Range | 2010-9 - 2010-11 | every month');
+  equal(range.every('year'), [new Date(2010,6,10,9)], 'Date Range | 2010-9 - 2010-11 | every year');
+  equal(range.every('month'), [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)], 'Date Range | 2010-9 - 2010-11 | every month');
 
   // Discrepancies exist here because of the definition of a month
-  equal(range.every((2).months()), [new Date(2010,8,10,9), new Date(2010,10,10,6)], 'Date Range | 2010-9 - 2010-11 | every 2 months');
+  equal(range.every((2).months()), [new Date(2010,6,10,9), new Date(2010,8,9,6)], 'Date Range | 2010-9 - 2010-11 | every 2 months');
 
   // This version will run every month then iterate over every other
-  equal(range.every('2 months'), [new Date(2010,8,10,9), new Date(2010,10,10,9)], 'Date Range | 2010-9 - 2010-11 | every 2 months text format');
+  equal(range.every('2 months'), [new Date(2010,6,10,9), new Date(2010,8,10,9)], 'Date Range | 2010-9 - 2010-11 | every 2 months text format');
 
-  equal(range.every((10).days()), [new Date(2010, 8, 10, 9), new Date(2010, 8, 20, 9), new Date(2010, 8, 30, 9), new Date(2010, 9, 10, 9), new Date(2010, 9, 20, 9), new Date(2010, 9, 30, 9), new Date(2010, 10, 9, 9)], 'Date Range | 2010-9 - 2010-11 | every 10 days');
+  equal(range.every((10).days()), [new Date(2010,6,10,9), new Date(2010,6,20,9), new Date(2010,6,30,9), new Date(2010,7,9,9), new Date(2010,7,19,9), new Date(2010,7,29,9), new Date(2010,8,8,9)], 'Date Range | 2010-9 - 2010-11 | every 10 days');
 
-  equal(range.every('day'), [new Date(2010,8,10,9), new Date(2010,8,11,9), new Date(2010,8,12,9), new Date(2010,8,13,9), new Date(2010,8,14,9), new Date(2010,8,15,9), new Date(2010,8,16,9), new Date(2010,8,17,9), new Date(2010,8,18,9), new Date(2010,8,19,9), new Date(2010,8,20,9), new Date(2010,8,21,9), new Date(2010,8,22,9), new Date(2010,8,23,9), new Date(2010,8,24,9), new Date(2010,8,25,9), new Date(2010,8,26,9), new Date(2010,8,27,9), new Date(2010,8,28,9), new Date(2010,8,29,9), new Date(2010,8,30,9), new Date(2010,9,1,9), new Date(2010,9,2,9), new Date(2010,9,3,9), new Date(2010,9,4,9), new Date(2010,9,5,9), new Date(2010,9,6,9), new Date(2010,9,7,9), new Date(2010,9,8,9), new Date(2010,9,9,9), new Date(2010,9,10,9), new Date(2010,9,11,9), new Date(2010,9,12,9), new Date(2010,9,13,9), new Date(2010,9,14,9), new Date(2010,9,15,9), new Date(2010,9,16,9), new Date(2010,9,17,9), new Date(2010,9,18,9), new Date(2010,9,19,9), new Date(2010,9,20,9), new Date(2010,9,21,9), new Date(2010,9,22,9), new Date(2010,9,23,9), new Date(2010,9,24,9), new Date(2010,9,25,9), new Date(2010,9,26,9), new Date(2010,9,27,9), new Date(2010,9,28,9), new Date(2010,9,29,9), new Date(2010,9,30,9), new Date(2010,9,31,9), new Date(2010,10,1,9), new Date(2010,10,2,9), new Date(2010,10,3,9), new Date(2010,10,4,9), new Date(2010,10,5,9), new Date(2010,10,6,9), new Date(2010,10,7,9), new Date(2010,10,8,9), new Date(2010,10,9,9), new Date(2010,10,10,9) ], 'Date Range | 2010-9 - 2010 - 11 | every day');
+  equal(range.every('day'), [new Date(2010,6,10,9), new Date(2010,6,11,9), new Date(2010,6,12,9), new Date(2010,6,13,9), new Date(2010,6,14,9), new Date(2010,6,15,9), new Date(2010,6,16,9), new Date(2010,6,17,9), new Date(2010,6,18,9), new Date(2010,6,19,9), new Date(2010,6,20,9), new Date(2010,6,21,9), new Date(2010,6,22,9), new Date(2010,6,23,9), new Date(2010,6,24,9), new Date(2010,6,25,9), new Date(2010,6,26,9), new Date(2010,6,27,9), new Date(2010,6,28,9), new Date(2010,6,29,9), new Date(2010,6,30,9), new Date(2010,6,31,9), new Date(2010,7,1,9), new Date(2010,7,2,9), new Date(2010,7,3,9), new Date(2010,7,4,9), new Date(2010,7,5,9), new Date(2010,7,6,9), new Date(2010,7,7,9), new Date(2010,7,8,9), new Date(2010,7,9,9), new Date(2010,7,10,9), new Date(2010,7,11,9), new Date(2010,7,12,9), new Date(2010,7,13,9), new Date(2010,7,14,9), new Date(2010,7,15,9), new Date(2010,7,16,9), new Date(2010,7,17,9), new Date(2010,7,18,9), new Date(2010,7,19,9), new Date(2010,7,20,9), new Date(2010,7,21,9), new Date(2010,7,22,9), new Date(2010,7,23,9), new Date(2010,7,24,9), new Date(2010,7,25,9), new Date(2010,7,26,9), new Date(2010,7,27,9), new Date(2010,7,28,9), new Date(2010,7,29,9), new Date(2010,7,30,9), new Date(2010,7,31,9), new Date(2010,8,1,9), new Date(2010,8,2,9), new Date(2010,8,3,9), new Date(2010,8,4,9), new Date(2010,8,5,9), new Date(2010,8,6,9), new Date(2010,8,7,9), new Date(2010,8,8,9), new Date(2010,8,9,9), new Date(2010,8,10,9) ], 'Date Range | 2010-9 - 2010 - 11 | every day');
 
-  dateEqual(range.start, new Date(2010,8,10,9), 'Date Range | Start has not been modified');
-  dateEqual(range.end, new Date(2010,10,10,9), 'Date Range | End has not been modified');
+  dateEqual(range.start, new Date(2010,6,10,9), 'Date Range | Start has not been modified');
+  dateEqual(range.end, new Date(2010,8,10,9), 'Date Range | End has not been modified');
 
-  equal(range.contains(new Date(2010, 7,  10)), false, 'Date Range#contains | before');
-  equal(range.contains(new Date(2010, 9,  10)), true, 'Date Range#contains | middle');
-  equal(range.contains(new Date(2010, 11, 10)), false, 'Date Range#contains | after');
-  equal(range.contains(Date.range(new Date(2010, 8, 10, 9), new Date(2010, 9, 10, 9))), true, 'Date Range#contains | contained range');
-  equal(range.contains(Date.range(new Date(2010, 8, 10), new Date(2010, 9, 10, 9))), false, 'Date Range#contains | 9 hours before the start');
-  equal(range.contains(Date.range(new Date(2010, 8, 10, 9), new Date(2010, 10, 10, 10))), false, 'Date Range#contains | 1 minute after the end');
+  equal(range.contains(new Date(2010, 5,  10)), false, 'Date Range#contains | before');
+  equal(range.contains(new Date(2010, 7,  10)), true, 'Date Range#contains | middle');
+  equal(range.contains(new Date(2010, 9, 10)), false, 'Date Range#contains | after');
+  equal(range.contains(Date.range(new Date(2010,6,10,9), new Date(2010,7,10,9))), true, 'Date Range#contains | contained range');
+  equal(range.contains(Date.range(new Date(2010,4,10), new Date(2010,7,10,9))), false, 'Date Range#contains | 9 hours before the start');
+  equal(range.contains(Date.range(new Date(2010,4,10,9), new Date(2010,6,10,10))), false, 'Date Range#contains | 1 minute after the end');
 
-  range = Date.range(new Date(2010,3,25,12), new Date(2010, 3, 25, 18));
+  range = Date.range(new Date(2010,3,25,12), new Date(2010,3,25,18));
 
   equal(range.every('hour'), [new Date(2010,3,25,12),new Date(2010,3,25,13),new Date(2010,3,25,14),new Date(2010,3,25,15),new Date(2010,3,25,16),new Date(2010,3,25,17),new Date(2010,3,25,18)], 'Date Range | every hour');
 
