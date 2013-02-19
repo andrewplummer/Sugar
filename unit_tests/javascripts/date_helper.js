@@ -8,7 +8,7 @@ dateEqual = function(a, b, message) {
     b = d;
   }
   var offset = Math.abs(a.getTime() - b.getTime());
-  equal(offset < buffer, true, message + ' | expected: ' + b.format(format) + ' got: ' + a.format(format));
+  equal(offset < buffer, true, message + ' | expected: ' + b.format(format) + ' got: ' + a.format(format), null, 1);
 }
 
 dateRangeEqual = function(a, b, message) {
