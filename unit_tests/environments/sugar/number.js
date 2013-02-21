@@ -12,7 +12,7 @@ test('Number', function () {
   equal(rand % 1, 0, 'Number.random | number is whole', { mootools: NaN });
 
   rand = Number.random(536224, 536280);
- equal(rand >= 536224 && rand <= 536280, true, 'Number.random | min and max defined');
+  equal(rand >= 536224 && rand <= 536280, true, 'Number.random | min and max defined');
 
   rand = Number.random(6, -5);
   equal(rand >= -5 && rand <= 6, true, 'Number.random | min and max can be reversed');
@@ -846,5 +846,11 @@ test('Number', function () {
   equal(((10).pow(16)).bytes(), '9,095TB', 'Number#bytes | 10 ^ 16 bytes');
   equal(((10).pow(16)).bytes(-2), '9,100TB', 'Number#bytes | 10 ^ 16 bytes | -2 places');
 
+  equal((6).clamp(2,5), 5, "Number#clamp | 6 between 2 and 5 | 5");
+  equal((6).clamp(2,5), 5, "Number#clamp | 1 between 2 and 5 | 2");
+  equal((0.5).clamp(-1.0, 1.0), 0.5, "Number#clamp | 0.5 between -1.0 and 1.0 | 0.5");
+  equal((-2.5).clamp(-1.0, 1.0), -1.0, "Number#clamp | -2.5 between -1.0 and 1.0 | -1.0");
+  equal((0.0).clamp(0, 0), 0.0, "Number#clamp | 0.0 between 0 and 0 | 0.0");
+  equal((Math.pow(10,20)).clamp(0,Math.pow(10,-20)), Math.pow(10,-20), "Number#clamp | 10e+20 between 0 and 10e-20 | 10e-20");
 });
 
