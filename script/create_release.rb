@@ -6,7 +6,7 @@ require 'pp'
 
 if !@version
   puts "No version specified!"
-  exit
+  exit false
 end
 
 @packages = ['core','es5','array','date','date_ranges','function','number','object','regexp','string','inflections','language','date_locales']
