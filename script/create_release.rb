@@ -5,7 +5,7 @@ require 'pp'
 @custom_packages = ARGV[1..-1]
 
 if !@version
-  puts "No version specified!"
+  $stderr.puts "No version specified!"
   exit false
 end
 
