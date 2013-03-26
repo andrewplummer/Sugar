@@ -5,8 +5,8 @@ require 'pp'
 @custom_packages = ARGV[1..-1]
 
 if !@version
-  puts "No version specified!"
-  exit
+  $stderr.puts "No version specified!"
+  exit false
 end
 
 @packages = ['core','es5','array','date','range','function','number','object','regexp','string','inflections','language','date_locales']
