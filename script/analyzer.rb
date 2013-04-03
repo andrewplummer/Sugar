@@ -1,3 +1,4 @@
+#! /usr/bin/env ruby
 
 
 analyzer_file = 'lib/analyzer.js'
