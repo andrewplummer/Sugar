@@ -403,7 +403,6 @@
   initializeClasses();
 
 
-
   /***
    * @package ES5
    * @description Shim methods that provide ES5 compatible functionality. This package can be excluded if you do not require legacy browser support (IE8 and below).
@@ -5259,7 +5258,7 @@
    ***/
 
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
-  var ObjectHashMethods = 'keys,values,select,reject,each,merge,clone,invert,equal,watch,tap,has,toQueryString'.split(',');
+  var ObjectHashMethods = 'keys,values,select,reject,each,merge,clone,each,invert,equal,watch,tap,has,toQueryString'.split(',');
 
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
@@ -5588,12 +5587,37 @@
     },
 
     /***
+     * @method each(<obj>, <fn>)
+     * @returns The value returned if execution was broken early, otherwise undefined.
+     * @short Calls <fn> for each key-value pair in <obj> with the key and value as arguments.
+     * @extra If a value (not undefined) is returned iteration will stop and that value will be returned.
+     * @example
+     *
+     *   Object.invert({foo:'bar',one:2}, function(k, v) {
+     *     // Called with ('foo', 'bar') then with ('one', 2).
+     *   });
+     *
+     ***/
+    'each': function(obj, func) {
+      var r;
+      object.extended(obj).keys().some(function(k) {
+        r = func(k, obj[k]);
+        if ( typeof r != "undefined" ) return true;
+      });
+      return r;
+    },
+
+    /***
      * @method invert(<obj> = {})
      * @returns An object where the keys and values are swapped.
      * @short Swap an object's keys and values.
+     * @extra Note that keys are always strings!
      * @example
      *
-     *   Object.invert({foo:'bar'})            -> { bar: 'foo' }
+     *   Object.invert({foo:'bar'})          -> { bar: 'foo' }
+     *   Object.invert({'1':2,'true',false}) -> { '2': '1', 'false': 'true' }
+     *   Object.invert({a:2}).keys           -> undefined
+     *   Object.extended({{a:2}).keys()      -> ['2']
      *
      ***/
     'invert': function(obj) {
@@ -5601,7 +5625,7 @@
       object.extended(obj).each(function(k, v) {
         result[v] = k;
       });
-      return result;
+      return (obj instanceof Hash)?new Hash(result):result;
     },
 
     /***
