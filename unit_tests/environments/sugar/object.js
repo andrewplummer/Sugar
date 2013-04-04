@@ -450,34 +450,6 @@ test('Object', function () {
   equal(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
   equal(obj3.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified', { prototype: [1,'b',3] });
 
-  obj1 = {foo:'bar',one:1,'true':true};
-  obj2 = {};
-  Object.each(obj1, function(k, v) {
-    obj2[k] = v;
-  });
-  equal(obj1, obj2, 'Object.each | iterates over all keys');
-
-  obj1 = {x: 1, y: undefined};
-  obj2 = {};
-  Object.each(obj1, function(k, v) {
-    obj2[k] = v;
-  });
-  equal(obj1, obj2, 'Object.each | undefined keys');
-
-  obj1 = {};
-  obj2 = {};
-  Object.each(obj1, function(k, v) {
-    obj2[k] = v;
-  });
-  equal(obj1, obj2, 'Object.each | undefined keys');
-  equal(obj2,   {}, 'Object.each | empty');
-
-  fn1 = function(k,v){return k=='a'?true:undefined};
-  fn2 = function(k,v){return k=='a'?false:undefined};
-
-  equal(Object.each({a:1,b:'val'},fn1), true, 'Object.each | returns true');
-  equal(Object.each({a:4,b:'val'},fn2), false, 'Object.each | returns false');
-  equal(Object.each({x:4,b:'val'},fn1), undefined, 'Object.each | returns undefined');
 
 
   equal(Object.invert({a:1,b:false}), {'1':'a','false':'b'},            'Object.invert | works');

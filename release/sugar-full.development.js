@@ -5587,27 +5587,6 @@
     },
 
     /***
-     * @method each(<obj>, <fn>)
-     * @returns The value returned if execution was broken early, otherwise undefined.
-     * @short Calls <fn> for each key-value pair in <obj> with the key and value as arguments.
-     * @extra If a value (not undefined) is returned iteration will stop and that value will be returned.
-     * @example
-     *
-     *   Object.invert({foo:'bar',one:2}, function(k, v) {
-     *     // Called with ('foo', 'bar') then with ('one', 2).
-     *   });
-     *
-     ***/
-    'each': function(obj, func) {
-      var r;
-      object.extended(obj).keys().some(function(k) {
-        r = func(k, obj[k]);
-        if ( typeof r != "undefined" ) return true;
-      });
-      return r;
-    },
-
-    /***
      * @method invert(<obj> = {})
      * @returns An object where the keys and values are swapped.
      * @short Swap an object's keys and values.
@@ -5622,8 +5601,8 @@
      ***/
     'invert': function(obj) {
       var result = {};
-      object.extended(obj).each(function(k, v) {
-        result[v] = k;
+      object.extended(obj).keys().each(function(k) {
+        result[v] = obj[k];
       });
       return (obj instanceof Hash)?new Hash(result):result;
     },
