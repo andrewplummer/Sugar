@@ -5195,7 +5195,7 @@
     /***
      * @method cap([high]= Infinity)
      * @returns Number
-     * @short Returns the nearest number that is lower then [high].  This is a shortcut for %bound(-Infinity, high)%.
+     * @short Returns the nearest number that is lower then [high].  This is equivalent to %bound(-Infinity, high)%.
      * @example
      *
      *   (5).cap()          -> 5
@@ -5204,7 +5204,8 @@
      *
      ***/
     'cap': function(high) {
-      return this.bound(-Infinity, high);
+      if (isUndefined(high)) high = Infinity;
+      return Math.min(this, high);
     }
 
   });
