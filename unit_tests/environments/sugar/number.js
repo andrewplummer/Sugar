@@ -846,5 +846,15 @@ test('Number', function () {
   equal(((10).pow(16)).bytes(), '9,095TB', 'Number#bytes | 10 ^ 16 bytes');
   equal(((10).pow(16)).bytes(-2), '9,100TB', 'Number#bytes | 10 ^ 16 bytes | -2 places');
 
-});
+  equal((5).bound(), 5, 'Number#bound | no arguments');
+  equal((-100).bound(8), 8, 'Number#bound | one arg, no effect');
+  equal(( Infinity).bound(3,17), 17, 'Number#bound | high bound');
+  equal((-Infinity).bound(3,17), 3, 'Number#bound | low bound');
+  equal((-15).bound(undefined,15), -15, 'Number#bound | undefined first');
+  equal((-15).bound(-Infinity,15), -15, 'Number#bound | -Infinity first');
+  equal((0).bound(1, -1), NaN, 'Number#bound | low bigger than high');
 
+  equal((5).cap(), 5, 'Number#cap | no arguments');
+  equal((Infinity).cap(18), 18, 'Number#cap | bound');
+  equal((4).cap(9), 4, 'Number#cap | no effect');
+});
