@@ -198,6 +198,8 @@ test('Array', function () {
   equal([0,1,2,3,4,5,6,7,8,9].cut(0, -0, 3, 2), [0,1,3,4,6,7,9], 'Array#cut | Two of three');
   equal([0,1,2,3,4,5,6,7,8,9].cut(-2, undefined, 2, 4, false), [0,1,0,1,2,3,2,3,4,5,4,5,6,7,6,7,8,9,8,9], 'Array#cut | Double');
   equal([0,1,2,3,4,5,6,7,8,9].cut(-1, undefined, 3, -1, false), [1,4,7], 'Array#cut | Every one before third');
+  equal([0,1,2,3,4].cut(1, -1, 1, 2), [1,2,2,3,3,4], 'Array#cut | Check optimization num');
+  equal([0,1,2,3,4].cut(1, -1, 1, -2), [0,0,1,1,2], 'Array#cut | Check optimization negative num');
 
   equal([1,2,3,4].replace(), [], 'Array#replace | Empties');
   equal([1,2,3,4].replace(1,2), [1,4], 'Array#replace | Removes part');
