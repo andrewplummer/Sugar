@@ -854,10 +854,10 @@ test('Object', function () {
 
   var obj3 = Object.extended(obj);
 
-  equal(Object.select(obj,  'one') instanceof Hash, false, 'Object.select | non-Hash should return non Hash');
-  equal(Object.select(obj,  'two', 'three') instanceof Hash, false, 'Object.select | non-Hash should return non Hash');
-  equal(Object.select(obj3, 'one') instanceof Hash, true, 'Object.select | Hash should return Hash');
-  equal(Object.select(obj3, 'two', 'three') instanceof Hash, true, 'Object.select | Hash should return Hash');
+  equal(typeof Object.select(obj,  'one').select, "undefined", 'Object.select | non-Hash should return non Hash');
+  equal(typeof Object.select(obj,  'two', 'three').select, "undefined", 'Object.select | non-Hash should return non Hash');
+  equal(typeof Object.select(obj3, 'one').select, "function", 'Object.select | Hash should return Hash');
+  equal(typeof Object.select(obj3, 'two', 'three').select, "function", 'Object.select | Hash should return Hash');
 
   testClassAndInstance('reject', obj, ['one'], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | one key');
   testClassAndInstance('reject', obj, ['foo'], obj, 'Object.reject | nonexistent key');
