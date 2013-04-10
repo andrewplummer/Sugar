@@ -535,6 +535,15 @@ test('String', function () {
   equal('quack'.from(-3), 'ack', 'String#from | from -3');
   equal('quack'.from(-4), 'uack', 'String#from | from -4');
 
+  equal('quack'.from('q'), 'quack', 'String#from | strings | q');
+  equal('quack'.from('u'), 'uack', 'String#from | strings | u');
+  equal('quack'.from('a'), 'ack', 'String#from | strings | a');
+  equal('quack'.from('k'), 'k', 'String#from | strings | k');
+  equal('quack'.from(''), 'quack', 'String#from | strings | empty string');
+  equal('quack'.from('ua'), 'uack', 'String#from | strings | 2 characters');
+  equal('quack'.from('uo'), '', 'String#from | strings | 2 non-existent characters');
+  equal('quack'.from('quack'), 'quack', 'String#from | strings | full string');
+
 
   equal('quack'.to(), 'quack', 'String#to | no params');
   equal('quack'.to(0), '', 'String#to | to 0');
@@ -545,6 +554,14 @@ test('String', function () {
   equal('quack'.to(-3), 'qu', 'String#to | to -3');
   equal('quack'.to(-4), 'q', 'String#to | to -4');
 
+  equal('quack'.to('q'), '', 'String#to | strings | q');
+  equal('quack'.to('u'), 'q', 'String#to | strings | u');
+  equal('quack'.to('a'), 'qu', 'String#to | strings | a');
+  equal('quack'.to('k'), 'quac', 'String#to | strings | k');
+  equal('quack'.to(''), '', 'String#to | strings | empty string');
+  equal('quack'.to('ua'), 'q', 'String#to | strings | 2 characters');
+  equal('quack'.to('uo'), '', 'String#to | strings | 2 non-existent characters');
+  equal('quack'.to('quack'), '', 'String#to | strings | full string');
 
   equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
   equal('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
