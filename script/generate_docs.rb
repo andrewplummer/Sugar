@@ -18,6 +18,7 @@ TEXT
 fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
 @packages = {}
+@plugins  = {}
 @default_packages = [:core,:es5,:array,:object,:date,:date_ranges,:function,:number,:regexp,:string]
 
 def create_locale_package
@@ -171,7 +172,7 @@ def get_full_size(package)
   File.size("lib/#{package}.js")
 end
 
-def match_block(b, linenum, package)
+def match_block(b, linenum, target)
   return if b.strip == ''
   if match = b.match(/@package (\w+)/)
 
@@ -180,21 +181,21 @@ def match_block(b, linenum, package)
     # package dependency
     match = b.match(/@dependency (.+)/)
     if match && match[1]
-      @packages[package][:dependency] = match[1]
+      target[:dependency] = match[1]
     end
 
     # package description
     match = b.match(/@description (.+)/)
     if match && match[1]
-      @packages[package][:description] = match[1]
+      target[:description] = match[1]
     end
 
-    @packages[package][:modules][name.to_sym] ||= {}
-    @current_module = @packages[package][:modules][name.to_sym]
+    target[:modules][name.to_sym] ||= {}
+    @current_module = target[:modules][name.to_sym]
   elsif match = b.match(/(\w+) module/)
     name = match[1]
-    @packages[package][:modules][name.to_sym] ||= {}
-    @current_module = @packages[package][:modules][name.to_sym]
+    target[:modules][name.to_sym] ||= {}
+    @current_module = target[:modules][name.to_sym]
   else
     name, method = get_method(b)
     # Go a line up so there's a little padding (Github doesn't do this)
@@ -202,6 +203,8 @@ def match_block(b, linenum, package)
     method[:returns] = get_property(:returns, b)
     method[:short] = get_property(:short, b)
     method[:extra] = get_property(:extra, b)
+    method[:author] = get_property(:author, b)
+    method[:dependencies] = get_property(:dependencies, b)
     method[:set] = get_set(b)
     method[:examples] = get_examples(b)
     method[:alias] = get_property(:alias, b)
@@ -217,14 +220,18 @@ def match_block(b, linenum, package)
   end
 end
 
-def extract_docs(package)
+def extract_package(package)
   @packages[package] ||= {
     :size => get_full_size(package),
     :minified_size => get_minified_size(package),
     :extra => !@default_packages.include?(package),
     :modules => {}
   }
-  File.open("lib/#{package}.js", 'r') do |f|
+  extract_methods("lib/#{package}.js", @packages[package])
+end
+
+def extract_methods(path, target)
+  File.open(path, 'r') do |f|
     i = 0
     b = ''
     linenum = nil
@@ -233,7 +240,7 @@ def extract_docs(package)
         b = ''
         linenum = f.lineno
       elsif line =~ /\*\*\*/
-        match_block(b, linenum, package)
+        match_block(b, linenum, target)
         b = ''
         linenum = f.lineno
       end
@@ -242,25 +249,42 @@ def extract_docs(package)
   end
 end
 
-create_locale_package
+def extract_main_docs
+  extract_package(:core)
+  extract_package(:es5)
+  extract_package(:array)
+  extract_package(:object)
+  extract_package(:date)
+  extract_package(:date_locales)
+  extract_package(:date_ranges)
+  extract_package(:function)
+  extract_package(:number)
+  extract_package(:regexp)
+  extract_package(:string)
+  extract_package(:inflections)
+  extract_package(:language)
+end
 
-extract_docs(:core)
-extract_docs(:es5)
-extract_docs(:array)
-extract_docs(:object)
-extract_docs(:date)
-extract_docs(:date_locales)
-extract_docs(:date_ranges)
-extract_docs(:function)
-extract_docs(:number)
-extract_docs(:regexp)
-extract_docs(:string)
-extract_docs(:inflections)
-extract_docs(:language)
+def extract_plugins
+  @current_module = nil
+  Dir['lib/plugins/**/*.js'].each do |path|
+    match = path.match(/plugins\/(\w+)\/(\w+)\.js/)
+    module_name = match[1]
+    method_name = match[2]
+    @plugins[module_name] ||= {}
+    @current_module = @plugins[module_name]
+    extract_methods(path, nil)
+  end
+end
+
+create_locale_package
+extract_main_docs
+extract_plugins
 
 cleanup
 puts 'Done!'
 
 File.open(fileout, 'w') do |f|
   f.puts "SugarPackages = #{@packages.to_json};"
+  f.puts "SugarPlugins  = #{@plugins.to_json};"
 end
