@@ -452,6 +452,23 @@ test('Object', function () {
 
 
 
+  equal(Object.invert({a:1,b:false}), {'1':'a','false':'b'},            'Object.invert | works');
+  equal(Object.extended({a:1,b:false}).invert(), {'1':'a','false':'b'}, 'Object.invert | works, extended');
+  equal(Object.invert({foo:'bar','3':2}), {'bar':'foo','2':'3'},            'Object.invert | still works');
+  equal(Object.extended({foo:'bar','3':2}).invert(), {'bar':'foo','2':'3'}, 'Object.invert | still works, extended');
+  equal(Object.invert(), {},              'Object.invert | empty');
+  equal(Object.extended({}).invert(), {}, 'Object.invert | empty, extended');
+  equal(Object.invert([]), {},            'Object.invert | empty array');
+  equal(Object.extended([]).invert(), {}, 'Object.invert | empty array, extended');
+  equal(Object.invert([1,'two',true]), {'1':'0','two':'1','true':'2'}, 'Object.invert | array');
+  equal(Object.extended([1,'two',true]).invert(), {'1':'0','two':'1','true':'2'}, 'Object.invert | array, extended');
+
+  equal(Object.invert({}) instanceof Hash, false,           'Object.invert | non-extended returns non-extended');
+  equal(Object.extended({}).invert() instanceof Hash, true, 'Object.invert | extended returns extended');
+
+
+
+
   equal(Object.equal({ broken: 'wear' }, { broken: 'wear' }), true, 'Object.equal | objects are equal');
   equal(Object.equal({ broken: 'wear' }, { broken: 'jumpy' }), false, 'Object.equal | objects are not equal');
   equal(Object.equal({}, {}), true, 'Object.equal | empty objects are equal');
@@ -953,4 +970,3 @@ test('Object', function () {
   assertQueryStringGenerated({foo: new Foo}, [], 'foo=custom', 'Object.toQueryString | toString inherited method');
 
 });
-
