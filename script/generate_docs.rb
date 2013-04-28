@@ -19,7 +19,7 @@ fileout_html  = File.open(fileout, 'r').read if File.exists?(fileout)
 
 @packages = {}
 @plugins  = {}
-@default_packages = [:core,:es5,:array,:object,:date,:date_ranges,:function,:number,:regexp,:string]
+@default_packages = [:core,:es5,:array,:object,:date,:range,:function,:number,:regexp,:string]
 
 def create_locale_package
   file = 'lib/date_locales.js'
@@ -256,7 +256,7 @@ def extract_main_docs
   extract_package(:object)
   extract_package(:date)
   extract_package(:date_locales)
-  extract_package(:date_ranges)
+  extract_package(:range)
   extract_package(:function)
   extract_package(:number)
   extract_package(:regexp)
