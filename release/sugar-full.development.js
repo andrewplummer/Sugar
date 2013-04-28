@@ -600,7 +600,7 @@
      * @method map(<map>, [scope])
      * @returns Array
      * @short Maps the array to another array containing the values that are the result of calling <map> on each element.
-     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
+     * @extra [scope] is the %this% object. When <map> is a function, it receives three arguments: the current element, the current index, and a reference to the array. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
      * @example
      *
      +   [1,2,3].map(function(n) {
@@ -4507,7 +4507,9 @@
      *
      ***/
     'span': function() {
-      return this.isValid() ? getRangeMemberNumericValue(this.end) - getRangeMemberNumericValue(this.start) + 1 : NaN;
+      return this.isValid() ? math.abs(
+        getRangeMemberNumericValue(this.end) - getRangeMemberNumericValue(this.start)
+      ) + 1 : NaN;
     },
 
     /***
@@ -4664,29 +4666,28 @@
   });
 
   /***
+   * Number module
+   ***
+   * @method Number.range([start], [end])
+   * @returns Range
+   * @short Creates a new range between [start] and [end].
+   ***
+   * String module
+   ***
+   * @method String.range([start], [end])
+   * @returns Range
+   * @short Creates a new range between [start] and [end].
+   ***
    * Date module
+   ***
+   * @method Date.range([start], [end])
+   * @returns Range
+   * @short Creates a new range between [start] and [end].
+   * @extra If either [start] or [end] are null, they will default to the current date.
    ***/
-
   [number, string, date].forEach(function(klass) {
      extend(klass, false, false, {
 
-       /***
-       * @method Number.range([start], [end])
-       * @returns Range
-       * @short Creates a new range between [start] and [end].
-       *
-       ***
-       * @method String.range([start], [end])
-       * @returns Range
-       * @short Creates a new range between [start] and [end].
-       *
-       ***
-       * @method Date.range([start], [end])
-       * @returns Range
-       * @short Creates a new range between [start] and [end].
-       * @extra If either [start] or [end] are null, they will default to the current date.
-       *
-       ***/
       'range': function(start, end) {
         if(klass.create) {
           start = klass.create(start);
@@ -4704,10 +4705,6 @@
    *
    ***/
 
-  var numberRangeStep = function(num, fn, step) {
-    return number.range(this, num).step(step, fn);
-  };
-
   number.extend({
 
     /***
@@ -4724,7 +4721,24 @@
      *   (2).upto(8, null, 2) -> [2, 4, 6, 8]
      *
      ***/
-    'upto': numberRangeStep,
+    'upto': function(num, fn, step) {
+      return number.range(this, num).step(step, fn);
+    },
+
+     /***
+     * @method clamp([start], [end])
+     * @returns Number
+     * @short Constrains the number so that it is between [start] and [end].
+     * @extra This alias will build a range object that can be accessed directly using %Number.range% and has an equivalent %clamp% method.
+     *
+     ***/
+    'clamp': function(start, end) {
+      return new Range(start, end).clamp(this);
+    }
+
+  });
+
+  extend(number, true, false, {
 
     /***
      * @method downto(<num>, [fn], [step] = 1)
@@ -4740,22 +4754,15 @@
      *   (8).downto(2, null, 2) -> [8, 6, 4, 2]
      *
      ***/
-    'downto': numberRangeStep,
-
-     /***
-     * @method clamp([start], [end])
-     * @returns Number
-     * @short Constrains the number so that it is between [start] and [end].
-     * @extra This alias will build a range object that can be accessed directly using %Number.range% and has an equivalent %clamp% method.
-     *
-     ***/
-    'clamp': function(start, end) {
-      return new Range(start, end).clamp(this);
-    }
+    'downto': number.prototype.upto
 
   });
 
 
+  /***
+   * Array module
+   *
+   ***/
 
   extend(array, false, function(a) { return a instanceof Range; }, {
 
@@ -5960,8 +5967,53 @@
     return padding.repeat(left) + str + padding.repeat(right);
   }
 
+  function truncateString(str, length, from, ellipsis, split) {
+    var str1, str2, len1, len2;
+    if(str.length <= length) {
+      return str;
+    }
+    ellipsis = isUndefined(ellipsis) ? '...' : ellipsis;
+    switch(from) {
+      case 'left':
+        str2 = split ? truncateOnWord(str, length, true) : str.slice(str.length - length);
+        return ellipsis + str2;
+      case 'middle':
+        len1 = ceil(length / 2);
+        len2 = floor(length / 2);
+        str1 = split ? truncateOnWord(str, len1) : str.slice(0, len1);
+        str2 = split ? truncateOnWord(str, len2, true) : str.slice(str.length - len2);
+        return str1 + ellipsis + str2;
+      default:
+        str1 = split ? truncateOnWord(str, length) : str.slice(0, length);
+        return str1 + ellipsis;
+    }
+  }
+
+  function truncateOnWord(str, limit, fromLeft) {
+    if(fromLeft) {
+      return truncateOnWord(str.reverse(), limit).reverse();
+    }
+    var reg = regexp('(?=[' + getTrimmableCharacters() + '])');
+    var words = str.split(reg);
+    var count = 0;
+    return words.filter(function(word) {
+      count += word.length;
+      return count <= limit;
+    }).join('');
+  }
+
   function chr(num) {
     return string.fromCharCode(num);
+  }
+
+  function numberOrIndex(str, n, from) {
+    if(isString(n)) {
+      n = str.indexOf(n);
+      if(n === -1) {
+        n = from ? str.length : 0;
+      }
+    }
+    return n;
   }
 
   var btoa, atob;
@@ -6463,8 +6515,8 @@
      *   'lucky charms'.from(7)  -> 'harms'
      *
      ***/
-    'from': function(num) {
-      return this.slice(num);
+    'from': function(from) {
+      return this.slice(numberOrIndex(this, from, true));
     },
 
     /***
@@ -6477,9 +6529,9 @@
      *   'lucky charms'.to(7)  -> 'lucky ch'
      *
      ***/
-    'to': function(num) {
-      if(isUndefined(num)) num = this.length;
-      return this.slice(0, num);
+    'to': function(to) {
+      if(isUndefined(to)) to = this.length;
+      return this.slice(0, numberOrIndex(this, to));
     },
 
     /***
@@ -6592,7 +6644,7 @@
     },
 
     /***
-     * @method truncate(<length>, [split] = true, [from] = 'right', [ellipsis] = '...')
+     * @method truncate(<length>, [from] = 'right', [ellipsis] = '...')
      * @returns String
      * @short Truncates a string.
      * @extra If [split] is %false%, will not split words up, and instead discard the word where the truncation occurred. [from] can also be %"middle"% or %"left"%.
@@ -6604,39 +6656,25 @@
      *   'just sittin on the dock of the bay'.truncate(20, true, 'left')   -> '...the dock of the bay'
      *
      ***/
-    'truncate': function(length, split, from, ellipsis) {
-      var pos,
-        prepend = '',
-        append = '',
-        str = this.toString(),
-        chars = '[' + getTrimmableCharacters() + ']+',
-        space = '[^' + getTrimmableCharacters() + ']*',
-        reg = regexp(chars + space + '$');
-      ellipsis = isUndefined(ellipsis) ? '...' : string(ellipsis);
-      if(str.length <= length) {
-        return str;
-      }
-      switch(from) {
-        case 'left':
-          pos = str.length - length;
-          prepend = ellipsis;
-          str = str.slice(pos);
-          reg = regexp('^' + space + chars);
-          break;
-        case 'middle':
-          pos    = floor(length / 2);
-          append = ellipsis + str.slice(str.length - pos).trimLeft();
-          str    = str.slice(0, pos);
-          break;
-        default:
-          pos = length;
-          append = ellipsis;
-          str = str.slice(0, pos);
-      }
-      if(split === false && this.slice(pos, pos + 1).match(/\S/)) {
-        str = str.remove(reg);
-      }
-      return prepend + str + append;
+    'truncate': function(length, from, ellipsis) {
+      return truncateString(this, length, from, ellipsis);
+    },
+
+    /***
+     * @method truncateOnWord(<length>, [from] = 'right', [ellipsis] = '...')
+     * @returns String
+     * @short Truncates a string.
+     * @extra If [split] is %false%, will not split words up, and instead discard the word where the truncation occurred. [from] can also be %"middle"% or %"left"%.
+     * @example
+     *
+     *   'just sittin on the dock of the bay'.truncate(20)                 -> 'just sittin on the do...'
+     *   'just sittin on the dock of the bay'.truncate(20, false)          -> 'just sittin on the...'
+     *   'just sittin on the dock of the bay'.truncate(20, true, 'middle') -> 'just sitt...of the bay'
+     *   'just sittin on the dock of the bay'.truncate(20, true, 'left')   -> '...the dock of the bay'
+     *
+     ***/
+    'truncateOnWord': function(length, from, ellipsis) {
+      return truncateString(this, length, from, ellipsis, true);
     },
 
     /***
@@ -6747,7 +6785,7 @@
     /***
      * @method capitalize([all] = false)
      * @returns String
-     * @short Capitalizes the first character in the string.
+     * @short Capitalizes the first character in the string and downcases all other letters.
      * @extra If [all] is true, all words in the string will be capitalized.
      * @example
      *
