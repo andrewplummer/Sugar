@@ -600,7 +600,7 @@
      * @method map(<map>, [scope])
      * @returns Array
      * @short Maps the array to another array containing the values that are the result of calling <map> on each element.
-     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
+     * @extra [scope] is the %this% object. When <map> is a function, it receives three arguments: the current element, the current index, and a reference to the array. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
      * @example
      *
      +   [1,2,3].map(function(n) {
@@ -5305,6 +5305,44 @@
      ***/
     'toNumber': function() {
       return parseFloat(this, 10);
+    },
+
+    /***
+     * @method bound([low]= -Infinity, [high]= Infinity)
+     * @returns Number
+     * @short Returns the nearest number that is greater then [low] and lower then [high].
+     * @example
+     *
+     *   (5).bound()               -> 5
+     *   (-100).bound(8)           -> 8
+     *   ( Infinity).bound(3,17)   -> 17
+     *   (-Infinity).bound(3,17)   -> 3
+     *   (-15).bound(undefined,15) -> -15
+     *   (-15).bound(-Infinity,15) -> -15
+     *   (0).bound(-1, 1)          -> NaN
+     *
+     ***/
+    'bound': function(low, high) {
+      if (isUndefined(low))  low  = -Infinity;
+      if (isUndefined(high)) high =  Infinity;
+      if ( low > high ) return NaN;
+      return math.max(low, Math.min(this, high));
+    },
+
+    /***
+     * @method cap([high]= Infinity)
+     * @returns Number
+     * @short Returns the nearest number that is lower then [high].  This is equivalent to %bound(-Infinity, high)%.
+     * @example
+     *
+     *   (5).cap()          -> 5
+     *   (Infinity).cap(18) -> 18
+     *   (4).cap(9)         -> 9
+     *
+     ***/
+    'cap': function(high) {
+      if (isUndefined(high)) high = Infinity;
+      return Math.min(this, high);
     }
 
   });
@@ -5384,7 +5422,6 @@
   }
 
   buildNumber();
-
   /***
    * @package Object
    * @dependency core
