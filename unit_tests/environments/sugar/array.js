@@ -184,7 +184,32 @@ test('Array', function () {
   }, 'this');
 
 
+  var a = [1,2,3,4];
+  equal([1,2,3,4].cut(), [1,2,3,4], 'Array#cut | No args');
+  equal(a.cut() === a, false, 'Array#cut | Returns copy');
+  equal([1,2,3,4].cut(2), [3,4], 'Array#cut | From start');
+  equal([1,2,3,4].cut(-2), [3,4], 'Array#cut | From end');
+  equal([1,2,3,4].cut(1,3), [2,3], 'Array#cut | Start and end');
+  equal([1,2,3,4].cut(1,-1), [2,3], 'Array#cut | start and negative end');
+  equal([1,2,3,4].cut(-0, 0, -1, -1), [4,3,2,1], 'Array#cut | Reverse');
+  equal([0,1,2,3,4,5,6,7,8,9].cut(0, -0, 2), [0,2,4,6,8], 'Array#cut | Evens');
+  equal([0,1,2,3,4,5,6,7,8,9].cut(1, -0, 2), [1,3,5,7,9], 'Array#cut | Odds');
+  equal([0,1,2,3,4,5,6,7,8,9].cut(0, -0, 3), [0,3,6,9], 'Array#cut | Every third');
+  equal([0,1,2,3,4,5,6,7,8,9].cut(0, -0, 3, 2), [0,1,3,4,6,7,9], 'Array#cut | Two of three');
+  equal([0,1,2,3,4,5,6,7,8,9].cut(-2, undefined, 2, 4, false), [0,1,0,1,2,3,2,3,4,5,4,5,6,7,6,7,8,9,8,9], 'Array#cut | Double');
+  equal([0,1,2,3,4,5,6,7,8,9].cut(-1, undefined, 3, -1, false), [1,4,7], 'Array#cut | Every one before third');
+  equal([0,1,2,3,4].cut(1, -1, 1, 2), [1,2,2,3,3,4], 'Array#cut | Check optimization num');
+  equal([0,1,2,3,4].cut(1, -1, 1, -2), [0,0,1,1,2], 'Array#cut | Check optimization negative num');
 
+  equal([1,2,3,4].replace(), [], 'Array#replace | Empties');
+  equal([1,2,3,4].replace(1,2), [1,4], 'Array#replace | Removes part');
+  equal([1,2,3,4].replace(1,2,['hi','there']), [1,'hi','there',4], 'Array#replace | Replaces');
+  equal([1,2,3,4].replace(1,2,'notarray'), [1,'notarray',4], 'Array#replace | Wraps');
+
+  var a = [1,2,3,4];
+  equal(a.replace(1,4) === a, true, 'Array#replace | Modifies this');
+  a = [1,2,3,4];
+  equal(a.replaced(1,4) === a, false, 'Array#replaced | Creates copy');
 
   // Array#each now splits functionality from forEach
 
@@ -2818,4 +2843,3 @@ test('Array', function () {
 
 
 });
-
