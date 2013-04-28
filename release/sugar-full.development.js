@@ -600,7 +600,7 @@
      * @method map(<map>, [scope])
      * @returns Array
      * @short Maps the array to another array containing the values that are the result of calling <map> on each element.
-     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
+     * @extra [scope] is the %this% object. When <map> is a function, it receives three arguments: the current element, the current index, and a reference to the array. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
      * @example
      *
      +   [1,2,3].map(function(n) {
@@ -5398,6 +5398,10 @@
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
   var ObjectHashMethods = 'keys,values,select,reject,each,merge,clone,equal,watch,tap,has,toQueryString'.split(',');
 
+  function hashOrObject(tomatch) {
+    return (tomatch instanceof Hash)?new Hash:{};
+  }
+
   function setParamsObject(obj, param, value, deep) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
     if(deep !== false && (match = param.match(reg))) {
@@ -5460,7 +5464,7 @@
   }
 
   function selectFromObject(obj, args, select) {
-    var result = {}, match;
+    var result = hashOrObject(obj), match;
     iterateOverObject(obj, function(key, value) {
       match = false;
       flattenedArgs(args, function(arg) {
@@ -5845,7 +5849,6 @@
   buildTypeMethods();
   buildObjectExtend();
   buildObjectInstanceMethods(ObjectHashMethods, Hash);
-
 
   /***
    * @package RegExp

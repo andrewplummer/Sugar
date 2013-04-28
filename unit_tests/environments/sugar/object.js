@@ -852,6 +852,12 @@ test('Object', function () {
 
   equal(Object.select(obj2, 'foo').foo === obj, true, 'Object.select | selected values should be equal by reference');
 
+  var obj3 = Object.extended(obj);
+
+  equal(typeof Object.select(obj,  'one').select, "undefined", 'Object.select | non-Hash should return non Hash');
+  equal(typeof Object.select(obj,  'two', 'three').select, "undefined", 'Object.select | non-Hash should return non Hash');
+  equal(typeof Object.select(obj3, 'one').select, "function", 'Object.select | Hash should return Hash');
+  equal(typeof Object.select(obj3, 'two', 'three').select, "function", 'Object.select | Hash should return Hash');
 
   testClassAndInstance('reject', obj, ['one'], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | one key');
   testClassAndInstance('reject', obj, ['foo'], obj, 'Object.reject | nonexistent key');
@@ -953,4 +959,3 @@ test('Object', function () {
   assertQueryStringGenerated({foo: new Foo}, [], 'foo=custom', 'Object.toQueryString | toString inherited method');
 
 });
-
