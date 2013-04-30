@@ -2688,4 +2688,22 @@ test('Date', function () {
   equal(new Date('Mar 01, 2013').daysUntil(new Date('Mar 28, 2013')), 27, 'Date#daysUntil | should not be phased by DST traversal');
   equal(new Date('Mar 10, 2013').daysUntil(new Date('Mar 11, 2013')), 1, 'Date#daysUntil | exact DST traversal point for CST/CDT');
 
+  // Issue #310
+
+  dateEqual(Date.create('6:30pm in 1 day'), getRelativeDate(null, null, 1).set({hours:18,minutes:30}, true), 'Date#create | 6:30pm in 1 day');
+  dateEqual(Date.create('6:30pm in 3 days'), getRelativeDate(null, null, 3).set({hours:18,minutes:30}, true), 'Date#create | 6:30pm in 3 days');
+  dateEqual(Date.create('6:30pm in -3 days'), getRelativeDate(null, null, -3).set({hours:18,minutes:30}, true), 'Date#create | 6:30pm in -3 days');
+
+  dateEqual(Date.create('6:30pm 2 days ago'), getRelativeDate(null, null, -2).set({hours:18,minutes:30}, true), 'Date#create | 6:30pm in 2 days ago');
+
+  dateEqual(Date.create('21:00 in 2 weeks'), getRelativeDate(null, null, 14).set({hours:21}, true), 'Date#create | 21:00pm in 2 weeks');
+  dateEqual(Date.create('5:00am in a month'), getRelativeDate(null, 1).set({hours:5}, true), 'Date#create | 5:00am in a month');
+  dateEqual(Date.create('5am in a month'), getRelativeDate(null, 1).set({hours:5}, true), 'Date#create | 5am in a month');
+  dateEqual(Date.create('5:01am in a month'), getRelativeDate(null, 1).set({hours:5,minutes:1}, true), 'Date#create | 5:01am in a month');
+
+  equal(Date.create('5am in an hour').isValid(), false, 'Date#create | 5am in an hour is invalid');
+  equal(Date.create('5am in a minute').isValid(), false, 'Date#create | 5am in a minute is invalid');
+
+
 });
+
