@@ -1,3 +1,4 @@
+#! /usr/bin/env ruby
 
 # This script may be broken!
 
