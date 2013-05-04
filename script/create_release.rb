@@ -2,6 +2,8 @@
 
 require 'pp'
 
+require_relative 'compile'
+
 @version  = ARGV[0]
 @custom_packages = ARGV[1..-1]
 
@@ -26,12 +28,15 @@ PRECOMPILED_DIR = PARENT_DIR     + "/precompiled"
 PRECOMPILED_MIN_DIR = PARENT_DIR + "/precompiled/minified"
 PRECOMPILED_DEV_DIR = PARENT_DIR + "/precompiled/development"
 
+TMP_COMPILED_FILE = 'tmp/compiled.js'
+TMP_UNCOMPILED_FILE = 'tmp/uncompiled.js'
+
 `mkdir #{PRECOMPILED_DIR}`
 `mkdir #{PRECOMPILED_MIN_DIR}`
 `mkdir #{PRECOMPILED_DEV_DIR}`
 
 def concat
-  File.open('tmp/uncompiled.js', 'w') do |file|
+  File.open(TMP_UNCOMPILED_FILE, 'w') do |file|
     @packages.each do |p|
       content = get_content(p)
       file.puts content = content + @delimiter
@@ -65,14 +70,8 @@ def create_development
   File.open(PARENT_DIR + "/sugar-#{type}.development.js", 'w').write(@copyright + wrap(full_content))
 end
 
-def compile
-  command = "java -jar script/jsmin/compiler.jar --warning_level QUIET --compilation_level ADVANCED_OPTIMIZATIONS --externs script/jsmin/externs.js --js tmp/uncompiled.js --js_output_file tmp/compiled.js"
-  puts "EXECUTING: #{command}"
-  `#{command}`
-end
-
 def split_compiled
-  contents = File.open('tmp/compiled.js', 'r').read.split(@delimiter)
+  contents = File.open(TMP_COMPILED_FILE, 'r').read.split(@delimiter)
   @packages.each_with_index do |name, index|
     File.open(PRECOMPILED_MIN_DIR + "/#{name}.js", 'w') do |f|
       f.puts contents[index].gsub(/\A\n+/, '')
@@ -104,12 +103,12 @@ def wrap(js)
 end
 
 def cleanup
-  `rm tmp/compiled.js`
-  `rm tmp/uncompiled.js`
+  `rm #{TMP_COMPILED_FILE}`
+  `rm #{TMP_UNCOMPILED_FILE}`
 end
 
 concat
-compile
+compile(TMP_UNCOMPILED_FILE, TMP_COMPILED_FILE)
 split_compiled
 create_packages
 create_development
