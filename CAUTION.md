@@ -18,6 +18,9 @@ v1.4.0+
 - Level: Major
   - Date range method `duration` is deprecated in favor of `span`. Additionally it will add 1 to the duration to include the starting number itself. In effect for date ranges this means that `duration` will be 1 ms longer.
 
+- Level: Major
+  - `pad`, `padLeft`, and `padRight` now pad to the exact character. This means that `padLeft(20)` will produce a string exactly 20 characters long, instead of adding 20 characters worth of padding to the left side of the string as before. You can use `String#repeat` for the same effect as the old functionality.
+
 - Level: Minor
   - Date ranges that have an end that is less than the start are now no longer considered invalid, and can be iterated across in exactly the same manner. This means that ranges can now be iterated in reverse and .start and .end are no longer equivalent to .min and .max.
 
