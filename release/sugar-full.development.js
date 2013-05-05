@@ -6012,14 +6012,14 @@
     }
   }
 
-  function padString(str, p, left, right) {
-    var padding = string(p);
-    if(padding != p) {
-      padding = '';
+  function padString(num, padding) {
+    if(isNaN(num)) {
+      throw new TypeError('Invalid Number.');
     }
-    if(!isNumber(left))  left = 1;
-    if(!isNumber(right)) right = 1;
-    return padding.repeat(left) + str + padding.repeat(right);
+    if(isUndefined(padding)) {
+      padding = ' ';
+    }
+    return repeatString(num, padding);
   }
 
   function truncateString(str, length, from, ellipsis, split) {
@@ -6733,10 +6733,9 @@
     },
 
     /***
-     * @method pad[Side](<padding> = '', [num] = 1)
+     * @method pad[Side](<num> = null, [padding] = ' ')
      * @returns String
-     * @short Pads either/both sides of the string.
-     * @extra [num] is the number of characters on each side, and [padding] is the character to pad with.
+     * @short Pads the string out with [padding] to be exactly <num> characters.
      *
      * @set
      *   pad
@@ -6745,22 +6744,26 @@
      *
      * @example
      *
-     *   'wasabi'.pad('-')         -> '-wasabi-'
-     *   'wasabi'.pad('-', 2)      -> '--wasabi--'
-     *   'wasabi'.padLeft('-', 2)  -> '--wasabi'
-     *   'wasabi'.padRight('-', 2) -> 'wasabi--'
+     *   'wasabi'.pad(8)           -> ' wasabi '
+     *   'wasabi'.padLeft(8)       -> '  wasabi'
+     *   'wasabi'.padRight(8)      -> 'wasabi  '
+     *   'wasabi'.padRight(8, '-') -> 'wasabi--'
      *
      ***/
-    'pad': function(padding, num) {
-      return repeatString(num, padding) + this + repeatString(num, padding);
+    'pad': function(num, padding) {
+      var half, front, back;
+      half  = (num - this.length) / 2;
+      front = floor(half);
+      back  = ceil(half);
+      return padString(front, padding) + this + padString(back, padding);
     },
 
-    'padLeft': function(padding, num) {
-      return repeatString(num, padding) + this;
+    'padLeft': function(num, padding) {
+      return padString(num - this.length, padding) + this;
     },
 
-    'padRight': function(padding, num) {
-      return this + repeatString(num, padding);
+    'padRight': function(num, padding) {
+      return this + padString(num - this.length, padding);
     },
 
     /***
