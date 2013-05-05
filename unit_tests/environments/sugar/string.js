@@ -137,26 +137,69 @@ test('String', function () {
   equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim | should trim left whitespace only');
   equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim | should trim right whitespace only');
 
-  equal('wasabi'.pad(), 'wasabi', 'String#pad | passing no params');
-  equal('wasabi'.pad('"'), '"wasabi"', 'String#pad | padding with quotes');
-  equal('wasabi'.pad('s'), 'swasabis', 'String#pad | padding with s');
-  equal('wasabi'.pad(5), '5wasabi5', 'String#pad | padding with a number');
-  equal('wasabi'.pad(null), 'wasabi', 'String#pad | padding with a null');
-  equal('wasabi'.pad(undefined), 'wasabi', 'String#pad | padding with undefined');
-  equal('wasabi'.pad(NaN), 'wasabi', 'String#pad | padding with NaN');
-  equal('wasabi'.pad(' ', 0), 'wasabi', 'String#pad | passing in 0');
-  equal('wasabi'.pad(' ', -1), 'wasabi', 'String#pad | passing in -1');
-  equal('wasabi'.pad(' ', 3), '   wasabi   ', 'String#pad | should pad the string with 3 spaces');
-  equal('wasabi'.pad(' ', 5), '     wasabi     ', 'String#pad | should pad the string with 5 spaces');
-  equal('wasabi'.pad('-', 5), '-----wasabi-----', 'String#pad | should pad the string with 5 hyphens');
-  equal('wasabi'.pad(' ', 2).pad('-', 3), '---  wasabi  ---', 'String#pad | should pad the string with 2 spaces and 3 hyphens');
 
-  equal('wasabi'.padRight('-', 0), 'wasabi', 'String#padRight | 0 does not pad');
-  equal('wasabi'.padRight('-', 3), 'wasabi---', 'String#padRight | should pad the string with 3 hyphens on the right');
-  equal('wasabi'.padRight(' ', 3), 'wasabi   ', 'String#padRight | should pad the string with 3 spaces on the right');
-  equal('wasabi'.padLeft('-', 0), 'wasabi', 'String#padLeft | 0 does not pad');
-  equal('4'.padLeft('0', 3), '0004', 'String#padLeft | should pad the string with 4 zeroes on the left');
-  equal('wasabi'.padLeft(' ', 3), '   wasabi', 'String#padLeft | should pad the string with 3 spaces on the left');
+  raisesError(function(){ 'wasabi'.pad(); }, 'String#pad | no arguments raises error');
+  raisesError(function(){ 'wasabi'.pad(undefined); }, 'String#pad | undefined');
+  raisesError(function(){ 'wasabi'.pad(NaN); }, 'String#pad | NaN raises error');
+
+  equal('wasabi'.pad(-1), 'wasabi', 'String#pad | -1');
+  equal('wasabi'.pad(0), 'wasabi', 'String#pad | 0');
+  equal('wasabi'.pad(1), 'wasabi', 'String#pad | 1');
+  equal('wasabi'.pad(2), 'wasabi', 'String#pad | 2');
+  equal('wasabi'.pad(3), 'wasabi', 'String#pad | 3');
+  equal('wasabi'.pad(4), 'wasabi', 'String#pad | 4');
+  equal('wasabi'.pad(5), 'wasabi', 'String#pad | 5');
+  equal('wasabi'.pad(6), 'wasabi', 'String#pad | 6');
+  equal('wasabi'.pad(7), 'wasabi ', 'String#pad | 7');
+  equal('wasabi'.pad(8), ' wasabi ', 'String#pad | 8');
+  equal('wasabi'.pad(9), ' wasabi  ', 'String#pad | 9');
+  equal('wasabi'.pad(10), '  wasabi  ', 'String#pad | 10');
+  equal('wasabi'.pad(12), '   wasabi   ', 'String#pad | 12');
+  equal('wasabi'.pad(20), '       wasabi       ', 'String#pad | 12');
+
+  equal('wasabi'.pad(8, '"'), '"wasabi"', 'String#pad | padding with quotes');
+  equal('wasabi'.pad(8, 's'), 'swasabis', 'String#pad | padding with s');
+  equal('wasabi'.pad(8, 5), '5wasabi5', 'String#pad | padding with a number');
+  equal('wasabi'.pad(12, '-'), '---wasabi---', 'String#pad | should pad the string with 6 hyphens');
+  equal('wasabi'.pad(null), 'wasabi', 'String#pad | padding with a null');
+
+
+  equal('wasabi'.padLeft(-1), 'wasabi', 'String#padLeft | -1');
+  equal('wasabi'.padLeft(0), 'wasabi', 'String#padLeft | 0');
+  equal('wasabi'.padLeft(1), 'wasabi', 'String#padLeft | 1');
+  equal('wasabi'.padLeft(2), 'wasabi', 'String#padLeft | 2');
+  equal('wasabi'.padLeft(3), 'wasabi', 'String#padLeft | 3');
+  equal('wasabi'.padLeft(4), 'wasabi', 'String#padLeft | 4');
+  equal('wasabi'.padLeft(5), 'wasabi', 'String#padLeft | 5');
+  equal('wasabi'.padLeft(6), 'wasabi', 'String#padLeft | 6');
+  equal('wasabi'.padLeft(7), ' wasabi', 'String#padLeft | 7');
+  equal('wasabi'.padLeft(8), '  wasabi', 'String#padLeft | 8');
+  equal('wasabi'.padLeft(9), '   wasabi', 'String#padLeft | 9');
+  equal('wasabi'.padLeft(10), '    wasabi', 'String#padLeft | 10');
+  equal('wasabi'.padLeft(12), '      wasabi', 'String#padLeft | 12');
+  equal('wasabi'.padLeft(20), '              wasabi', 'String#padLeft | 20');
+  equal('wasabi'.padLeft(12, '-'), '------wasabi', 'String#padLeft | 12 with hyphens');
+  equal('wasabi'.padLeft(12, '+'), '++++++wasabi', 'String#padLeft | 12 with plusses');
+
+
+  equal('wasabi'.padRight(-1), 'wasabi', 'String#padRight | -1');
+  equal('wasabi'.padRight(0), 'wasabi', 'String#padRight | 0');
+  equal('wasabi'.padRight(1), 'wasabi', 'String#padRight | 1');
+  equal('wasabi'.padRight(2), 'wasabi', 'String#padRight | 2');
+  equal('wasabi'.padRight(3), 'wasabi', 'String#padRight | 3');
+  equal('wasabi'.padRight(4), 'wasabi', 'String#padRight | 4');
+  equal('wasabi'.padRight(5), 'wasabi', 'String#padRight | 5');
+  equal('wasabi'.padRight(6), 'wasabi', 'String#padRight | 6');
+  equal('wasabi'.padRight(7), 'wasabi ', 'String#padRight | 7');
+  equal('wasabi'.padRight(8), 'wasabi  ', 'String#padRight | 8');
+  equal('wasabi'.padRight(9), 'wasabi   ', 'String#padRight | 9');
+  equal('wasabi'.padRight(10), 'wasabi    ', 'String#padRight | 10');
+  equal('wasabi'.padRight(12), 'wasabi      ', 'String#padRight | 12');
+  equal('wasabi'.padRight(20), 'wasabi              ', 'String#padRight | 20');
+  equal('wasabi'.padRight(12, '-'), 'wasabi------', 'String#padRight | 12 with hyphens');
+  equal('wasabi'.padRight(12, '+'), 'wasabi++++++', 'String#padRight | 12 with plusses');
+
+
 
   equal('wasabi'.repeat(0), '', 'String#repeat | 0 should repeat the string 0 times');
   equal('wasabi'.repeat(-1), '', 'String#repeat | -1 should repeat the string 0 times');
@@ -793,8 +836,6 @@ test('String', function () {
   equal(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft | wasabi with whitespace');
   equal(''.trimRight(), '', 'String#trimRight | blank');
   equal(' wasabi '.trimRight(), ' wasabi', 'String#trimRight | wasabi with whitespace');
-  equal(''.pad(' ', 0), '', 'String#pad | blank');
-  equal('wasabi'.pad(' ', 1), ' wasabi ', 'String#pad | wasabi padded to 1');
   equal('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
   equal('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
   equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
