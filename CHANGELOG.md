@@ -10,6 +10,7 @@ v1.4.0
 - `DateRange#duration` is deprecated in favor of `Range#span`.
 - Fix for relative times with "4 weeks" that are actually past the single month threshold.
 - `Number#upto` and `Number#downto` will now work on inverse ranges.
+- `pad`, `padLeft`, and `padRight` now pad to the specified length, instead of simply adding to string.
 
 
 
