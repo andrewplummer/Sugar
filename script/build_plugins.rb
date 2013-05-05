@@ -8,6 +8,7 @@ require_relative 'size'
 require_relative 'docs'
 
 @output_path = ARGV[0] || './tmp'
+@output_path = @output_path.gsub(/\/$/, '')
 
 @json_path = "#{@output_path}/javascripts/plugins.js"
 @file_path = "#{@output_path}/release/plugins"
@@ -48,7 +49,16 @@ def copy_plugins
   end
 end
 
-#copy_plugins
+def concat_minified
+  content = ''
+  Dir["#{@file_path}/minified/*.js"].each do |path|
+    content << File.open(path, 'r').read
+  end
+  File.open("#{@file_path}/all.js", 'w').write(content)
+end
+
+copy_plugins
 build_plugin_docs
+concat_minified
 puts 'Done!'
 
