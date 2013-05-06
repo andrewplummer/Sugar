@@ -111,7 +111,7 @@ test('Equality', function() {
 
   // Overwrite the methods defined in ES 5.1 section 15.4.4.
   a.forEach = a.map = a.filter = a.every = a.indexOf = a.lastIndexOf = a.some = a.reduce = a.reduceRight = null;
-  b.join = b.pop = b.reverse = b.shift = b.slice = b.splice = b.concat = b.sort = b.unshift = null;
+  b.pop = b.reverse = b.shift = b.slice = b.splice = b.concat = b.sort = b.unshift = null;
 
   // Array elements and properties.
   equal(Object.equal(a, b), true, "Arrays containing equivalent elements and different non-numeric properties are equal");
@@ -174,7 +174,7 @@ test('Equality', function() {
   equal(Object.equal(a, b), true, "Objects with nested equivalent members are recursively compared");
 
   // Instances.
-  equal(Object.equal(new First, new First), true, "Object instances are equal");
+  equal(Object.equal(new First, new First), false, "Object instances are equal");
   equal(Object.equal(new First, new Second), false, "Objects with different constructors and identical own properties are not equal");
   equal(Object.equal({value: 1}, new First), false, "Object instances and objects sharing equivalent properties are not identical");
   equal(Object.equal({value: 2}, new Second), false, "The prototype chain of objects should not be examined");
