@@ -23,7 +23,7 @@ test('Object', function () {
   equal(Object.isObject(), false, 'Object.isObject | blank');
   equal(Object.isObject(false), false, 'Object.isObject | false');
   equal(Object.isObject(true), false, 'Object.isObject | true');
-  equal(Object.isObject(p), true, 'Object.isObject | {}');
+  equal(Object.isObject(p), false, 'Object.isObject | instance');
 
   equal(Object.isArray({}), false, 'Object.isArray | {}');
   equal(Object.isArray([]), true, 'Object.isArray | []');
@@ -803,6 +803,12 @@ test('Object', function () {
 
   equal(Object.merge({}, f).bar, undefined, 'Object.merge should not merge inherited properties');
 
+  // Issue #307  Object.clone should error when cloning unknown types.
+
+  raisesError(function(){ Object.clone(f); }, 'Object.clone | raises an error if clone is not a basic object type');
+
+
+
   // Object.merge should not choke when target and source contain strictly equal objects
 
   var obj = { foo: 'bar' };
@@ -820,7 +826,6 @@ test('Object', function () {
   }
 
   equal(Object.merge({}, obj1, true).reg === obj1.reg, false, 'Object.merge | deep merging will clone regexes');
-  equal(Object.equal(Object.clone(f), f), true, 'Object.clone | same constructor should be equal');
 
 
   // Object.select
