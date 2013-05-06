@@ -2536,7 +2536,8 @@ test('Array', function () {
   equal([one, two, three, four].findAll({ a: 'one' }), [one], 'Array#findAll | matches class instances | object with string');
   equal([one, two, three, four].findAll({ a: /t/ }), [two, three], 'Array#findAll | matches class instances | object with regex');
   equal([one, two, three, four].findAll('one'), [], 'Array#findAll | matches class instances | string');
-  equal([one, two, three, four].findAll(/t/), [], 'Array#findAll | matches class instances | regex');
+  equal([one, two, three, four].findAll(/t/), [one, two, three, four], 'Array#findAll | directly passing a regex is matching the objects stringified');
+  equal([one, two, three, four].findAll(/x/), [], 'Array#findAll | directly passing a regex with no matching letter');
   equal([one, two, three, four].findAll(true), [], 'Array#findAll | matches class instances | boolean');
   equal([one, two, three, four].findAll(new Date()), [], 'Array#findAll | matches class instances | now');
   equal([one, two, three, four].findAll(new Date(2001, 3, 15)), [], 'Array#findAll | matches class instances | correct date');

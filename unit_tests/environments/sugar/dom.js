@@ -42,5 +42,17 @@ test('DOM', function () {
 
   });
 
+  if(Object.isObject) {
+    equal(Object.isObject(window), false, 'Object.isObject | window');
+    equal(Object.isObject(document), false, 'Object.isObject | document');
+  }
+
+  if(Object.clone) {
+    // Issue #307  Object.clone should error when cloning unknown types.
+    raisesError(function(){ Object.clone(document.body); }, 'Object.clone | raises an error if trying to clone a DOM element');
+    raisesError(function(){ Object.clone(new MouseEvent('click')); }, 'Object.clone | raises an error if trying to a browser event');
+  }
+
+
 
 });
