@@ -47,11 +47,12 @@
     if(/String|Number|Boolean/.test(name)) {
       type = name.toLowerCase();
     }
-    fn = (name === 'Array' && array.isArray) || function(obj) {
+    fn = (name === 'Array' && array.isArray) || function(obj, klass) {
       if(type && typeof obj === type) {
         return true;
       }
-      return className(obj) === '[object '+name+']';
+      klass = klass || className(obj);
+      return klass === '[object '+name+']';
     }
     typeChecks[name] = fn;
     return fn;
@@ -192,11 +193,25 @@
     return obj && typeof obj === 'object';
   }
 
-  function isObject(obj) {
+  function isPlainObject(obj, klass) {
+    klass = klass || className(obj);
+    try {
+      // Not own constructor property must be Object
+      // This code was borrowed from jQuery.isPlainObject
+      if (obj.constructor &&
+            !hasOwnProperty(obj, 'constructor') &&
+            !hasOwnProperty(obj.constructor.prototype, 'isPrototypeOf')) {
+        return false;
+      }
+    } catch (e) {
+      // IE8,9 Will throw exceptions on certain host objects.
+      return false;
+    }
     // === on the constructor is not safe across iframes
     // 'hasOwnProperty' ensures that the object also inherits
     // from Object, which is false for DOMElements in IE.
-    return !!obj && className(obj) === '[object Object]' && 'hasOwnProperty' in obj;
+    // AP: CAN THIS NOW BE REMOVED WITH THE CODE ABOVE IN PLACE???
+    return !!obj && klass === '[object Object]' && 'hasOwnProperty' in obj;
   }
 
   function hasOwnProperty(obj, key) {
@@ -343,8 +358,8 @@
     if(type === 'string') return thing;
 
     klass         = internalToString.call(thing)
-    thingIsObject = isObject(thing);
     thingIsArray  = klass === '[object Array]';
+    thingIsObject = isObjectPrimitive(thing) && !thingIsArray;
 
     if(thing != null && thingIsObject || thingIsArray) {
       // This method for checking for cyclic structures was egregiously stolen from
@@ -364,7 +379,7 @@
         }
       }
       stack.push(thing);
-      value = string(thing.constructor);
+      value = thing.valueOf() + string(thing.constructor);
       arr = thingIsArray ? thing : object.keys(thing).sort();
       for(i = 0, len = arr.length; i < len; i++) {
         key = thingIsArray ? i : arr[i];
@@ -388,9 +403,11 @@
   }
 
   function objectIsMatchedByValue(obj) {
+    // Only known objects are matched by value. This is notably excluding functions, DOM Elements, and instances of
+    // user-created classes. The latter can arguably be matched by value, but distinguishing between these and
+    // host objects -- which should never be compared by value -- is very tricky so not dealing with it here.
     var klass = className(obj);
-    return /^\[object Date|Array|String|Number|RegExp|Boolean|Arguments\]$/.test(klass) ||
-           isObject(obj);
+    return /^\[object Date|Array|String|Number|RegExp|Boolean|Arguments\]$/.test(klass) || isPlainObject(obj, klass);
   }
 
 
@@ -912,13 +929,17 @@
     if(el === match) {
       // Match strictly equal values up front.
       return true;
-    } else if(isRegExp(match) && isString(el)) {
+    } else if(isRegExp(match)) {
       // Match against a regexp
       return regexp(match).test(el);
+    } else if(isDate(match)) {
+      // Match against a date. isEqual below should also
+      // catch this but matching directly up front for speed.
+      return isDate(el) && match.getTime() === el.getTime();
     } else if(isFunction(match)) {
       // Match against a filtering function
       return match.apply(scope, params);
-    } else if(isObject(match) && isObjectPrimitive(el)) {
+    } else if(isPlainObject(match) && isObjectPrimitive(el)) {
       // Match against a hash or array.
       iterateOverObject(match, function(key, value) {
         if(!multiMatch(el[key], match[key], scope, [el[key], el])) {
@@ -2622,7 +2643,7 @@
 
   function collectDateArguments(args, allowDuration) {
     var obj;
-    if(isObject(args[0])) {
+    if(isObjectPrimitive(args[0])) {
       return args;
     } else if (isNumber(args[0]) && !isNumber(args[1])) {
       return [args[0]];
@@ -2775,7 +2796,7 @@
       d.utc(f.isUTC()).setTime(f.getTime());
     } else if(isNumber(f)) {
       d.setTime(f);
-    } else if(isObject(f)) {
+    } else if(isObjectPrimitive(f)) {
       d.set(f, true);
       set = f;
     } else if(isString(f)) {
@@ -5490,7 +5511,7 @@
   function objectToQueryString(base, obj) {
     var tmp;
     // If a custom toString exists bail here and use that instead
-    if(isArray(obj) || (isObject(obj) && obj.toString === internalToString)) {
+    if(isArray(obj) || (isObjectPrimitive(obj) && obj.toString === internalToString)) {
       tmp = [];
       iterateOverObject(obj, function(key, value) {
         if(base) {
@@ -5644,7 +5665,7 @@
   extend(object, false, false, {
 
     'isObject': function(obj) {
-      return isObject(obj);
+      return isPlainObject(obj);
     },
 
     'isNaN': function(obj) {
@@ -5773,15 +5794,23 @@
      ***/
     'clone': function(obj, deep) {
       var target;
-      // Preserve internal UTC flag when applicable.
-      if(isDate(obj) && obj.clone) {
-        return obj.clone();
-      } else if(!isObjectPrimitive(obj)) {
+      if(!isObjectPrimitive(obj)) {
         return obj;
-      } else if (obj instanceof Hash) {
+      }
+      klass = className(obj);
+      if(isDate(obj, klass) && obj.clone) {
+        // Preserve internal UTC flag when applicable.
+        return obj.clone();
+      } else if(isDate(obj, klass) || isRegExp(obj, klass)) {
+        return new obj.constructor(obj);
+      } else if(obj instanceof Hash) {
         target = new Hash;
+      } else if(isArray(obj, klass)) {
+        target = [];
+      } else if(isPlainObject(obj, klass)) {
+        target = {};
       } else {
-        target = new obj.constructor;
+        throw new TypeError('Invalid target.');
       }
       return object.merge(target, obj, deep);
     },
@@ -6877,8 +6906,8 @@
      ***/
     'assign': function() {
       var assign = {};
-      multiArgs(arguments, function(a, i) {
-        if(isObject(a)) {
+      flattenedArgs(arguments, function(a, i) {
+        if(isObjectPrimitive(a)) {
           simpleMerge(assign, a);
         } else {
           assign[i + 1] = a;
